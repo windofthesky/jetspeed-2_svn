@@ -58,8 +58,11 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,7 +108,7 @@ public class FileSystemScanner extends Thread
         this.delay = delay;
         this.dispatcher = dispatcher;
         this.deployedFiles = new ArrayList();
-		this.fileDates = new HashMap();
+        this.fileDates = new HashMap();
 
         Set fileExtensions = fileTypeHandlers.keySet();
         this.filter = new AllowedFileTypeFilter((String[]) fileExtensions.toArray(new String[1]));
@@ -119,7 +122,7 @@ public class FileSystemScanner extends Thread
     {
         while (started)
         {
-            File[] stagedFiles = getStagedFiles();
+            String[] stagedFiles = getStagedFiles();
             undeployRemovedArtifacts(stagedFiles);
             redeployChangedArtifacts(stagedFiles);
             deployNewArtifacts(stagedFiles);
@@ -145,13 +148,13 @@ public class FileSystemScanner extends Thread
         started = false;
     }
 
-    private void deployNewArtifacts(File[] stagedFiles)
+    private void deployNewArtifacts(String[] stagedFiles)
     {
         for (int i = 0; i < stagedFiles.length; i++)
         {
             // check for new deployment
-            File aFile = stagedFiles[i];
-            if (!isDeployed(aFile))
+            File aFile = new File(directoryToWatchFile, stagedFiles[i]);
+            if (!isDeployed(stagedFiles[i]))
             {
 
                 try
@@ -162,10 +165,10 @@ public class FileSystemScanner extends Thread
                     dispatcher.dispatch(event);
                     // we are responsible for reclaiming the FSObject's resource
                     objHandler.close();
-                    deployedFiles.add(aFile);
+                    deployedFiles.add(stagedFiles[i]);
                     // record the lastModified so we can watch for re-deployment                    
                     long lastModified = aFile.lastModified();
-                    fileDates.put(aFile, new Long(lastModified));                    
+                    fileDates.put(stagedFiles[i], new Long(lastModified));
 
                 }
                 catch (Exception e1)
@@ -176,24 +179,58 @@ public class FileSystemScanner extends Thread
         }
     }
 
-    protected boolean isDeployed(File aFile)
+    protected boolean isDeployed(String fileName)
     {
-        return deployedFiles.contains(aFile);
+        return deployedFiles.contains(fileName);
     }
 
-    private void redeployChangedArtifacts(File[] stagedFiles)
-    {
-
-    }
-
-    private void undeployRemovedArtifacts(File[] stagedFiles)
+    private void redeployChangedArtifacts(String[] stagedFiles)
     {
 
     }
 
-    protected File[] getStagedFiles()
+    private void undeployRemovedArtifacts(String[] stagedFiles)
     {
-        return this.directoryToWatchFile.listFiles(this.filter);
+        List fileList = Arrays.asList(stagedFiles);
+        
+        
+        
+        for (int i=0; i<deployedFiles.size(); i++)
+        {
+            // get a current list of all the files in the deploy directory
+			String fileName = (String) deployedFiles.get(i);
+            File aFile = new File(directoryToWatchFile, fileName);
+            
+            // File is still on the file system, so skip it
+            if(fileList.contains(fileName))
+            {            	
+            	continue;
+            }
+
+            try
+            {
+                FSObjectHandler objHandler = getFSObjectHandler(aFile);
+
+                DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, objHandler);                
+                dispatcher.dispatch(event);
+                // we are responsible for reclaiming the FSObject's resource
+                objHandler.close();
+                deployedFiles.remove(i);
+                fileDates.remove(fileName);
+
+            }
+            catch (Exception e1)
+            {
+                log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
+            }
+
+        }
+
+    }
+
+    protected String[] getStagedFiles()
+    {
+        return this.directoryToWatchFile.list(this.filter);
         // return this.directoryToWatchFile.listFiles();
     }
 
