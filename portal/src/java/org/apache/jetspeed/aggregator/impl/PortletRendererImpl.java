@@ -26,7 +26,6 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.cps.BaseCommonService;
@@ -189,10 +188,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
     protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-        
-        // TODO: make renderer a component, assemble entity accessor in constructor        
-        PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
-        
+                
         // TODO: make renderer a component, assemble window accessor in constructor
         PortletWindowAccessor windowAccess = (PortletWindowAccessor)Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
         

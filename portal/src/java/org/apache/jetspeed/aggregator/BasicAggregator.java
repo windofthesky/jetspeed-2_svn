@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
@@ -179,7 +180,10 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
                 throw new JetspeedException("Failed to load: " + fragment.getName() + " from registry");
             }
             
-            PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
+            // TODO: make renderer a component, assemble window accessor in constructor
+            PortletWindowAccessor windowAccess = (PortletWindowAccessor)Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+            
+            PortletWindow portletWindow = windowAccess.getPortletWindow(fragment);
 
             HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
