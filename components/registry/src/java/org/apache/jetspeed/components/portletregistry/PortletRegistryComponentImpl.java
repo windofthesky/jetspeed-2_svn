@@ -33,19 +33,12 @@ import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
-import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
-import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
-import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
-import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
-import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -66,7 +59,8 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * <td>persistence.store.name</td>
  * <td>true</td>
  * <td>jetspeed</td>
- * <td>Name of the persistence store that will be used for persistence operations.</td>
+ * <td>Name of the persistence store that will be used for persistence
+ * operations.</td>
  * </tr>
  * </table>
  * 
@@ -78,24 +72,24 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(PortletRegistryComponentImpl.class);
-    
-    /** 
+
+    /**
      * The separator used to create a unique portlet name as
      * {portletApplication}::{portlet}
      */
     static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
 
     protected static final String KEY_STORE_NAME = "persistence.store.name";
-    
+
     private Class portletDefClass;
     private Class portletAppClass;
-    
+
     private PersistenceStore persistenceStore;
 
     /**
      *  
      */
-    public PortletRegistryComponentImpl(PersistenceStore persistenceStore) throws RegistryException
+    public PortletRegistryComponentImpl( PersistenceStore persistenceStore ) throws RegistryException
     {
         if (persistenceStore == null)
         {
@@ -104,6 +98,8 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         this.persistenceStore = persistenceStore;
         portletDefClass = PortletDefinitionImpl.class;
         portletAppClass = PortletApplicationDefinitionImpl.class;
+
+        PortletDefinitionImpl.setPortletRegistry(this);
     }
 
     /**
@@ -111,8 +107,9 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * createLanguage
      * </p>
      * 
-     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#createLanguage(java.util.Locale, java.lang.String,
-     *      java.lang.String, java.lang.String, java.util.Collection)
+     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#createLanguage(java.util.Locale,
+     *      java.lang.String, java.lang.String, java.lang.String,
+     *      java.util.Collection)
      * @param locale
      * @param title
      * @param shortTitle
@@ -121,8 +118,8 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @return @throws
      *         RegistryException
      */
-    public Language createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords)
-        throws RegistryException
+    public Language createLanguage( Locale locale, String title, String shortTitle, String description,
+            Collection keywords ) throws RegistryException
     {
         try
         {
@@ -180,7 +177,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param id
      * @return
      */
-    public MutablePortletApplication getPortletApplication(ObjectID id)
+    public MutablePortletApplication getPortletApplication( ObjectID id )
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -190,7 +187,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         return (MutablePortletApplication) postLoad(store.getObjectByQuery(query));
     }
 
-    private void prepareTransaction(PersistenceStore store)
+    private void prepareTransaction( PersistenceStore store )
     {
         if (store.getTransaction() == null || !store.getTransaction().isOpen())
         {
@@ -207,7 +204,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param name
      * @return
      */
-    public MutablePortletApplication getPortletApplication(String name)
+    public MutablePortletApplication getPortletApplication( String name )
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -226,7 +223,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param ident
      * @return
      */
-    public MutablePortletApplication getPortletApplicationByIdentifier(String ident)
+    public MutablePortletApplication getPortletApplicationByIdentifier( String ident )
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -272,7 +269,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param ident
      * @return
      */
-    public PortletDefinitionComposite getPortletDefinitionByIdentifier(String ident)
+    public PortletDefinitionComposite getPortletDefinitionByIdentifier( String ident )
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -284,12 +281,11 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         {
             if (portlet.getPortletApplicationDefinition() == null)
             {
-                final String msg =
-                    "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
+                final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
-            return getStoreableInstance((PortletDefinitionComposite) postLoad(portlet));
+            return (PortletDefinitionComposite) postLoad(portlet);
         }
         else
         {
@@ -306,7 +302,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param name
      * @return
      */
-    public PortletDefinitionComposite getPortletDefinitionByUniqueName(String name)
+    public PortletDefinitionComposite getPortletDefinitionByUniqueName( String name )
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -330,14 +326,13 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 MutablePortletApplication app = (MutablePortletApplication) store.getObjectByQuery(query);
                 if (null == app)
                 {
-                    final String msg =
-                        "getPortletDefinitionByUniqueName() returned a PortletDefinition that has no parent PortletApplication.";
+                    final String msg = "getPortletDefinitionByUniqueName() returned a PortletDefinition that has no parent PortletApplication.";
                     log.error(msg);
                     throw new IllegalStateException(msg);
                 }
                 portlet.setPortletApplicationDefinition(app);
             }
-            return getStoreableInstance((PortletDefinitionComposite)postLoad(portlet));
+            return (PortletDefinitionComposite) postLoad(portlet);
         }
         else
         {
@@ -354,7 +349,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param appIdentity
      * @return
      */
-    public boolean portletApplicationExists(String appIdentity)
+    public boolean portletApplicationExists( String appIdentity )
     {
         return getPortletApplicationByIdentifier(appIdentity) != null;
     }
@@ -368,7 +363,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param portletIndentity
      * @return
      */
-    public boolean portletDefinitionExists(String portletIdentity)
+    public boolean portletDefinitionExists( String portletIdentity )
     {
         return getPortletDefinitionByIdentifier(portletIdentity) != null;
     }
@@ -384,7 +379,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param app
      * @return
      */
-    public boolean portletDefinitionExists(String portletName, MutablePortletApplication app)
+    public boolean portletDefinitionExists( String portletName, MutablePortletApplication app )
     {
         return getPortletDefinitionByUniqueName(app.getName() + "::" + portletName) != null;
     }
@@ -398,7 +393,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param newApp
      * @throws RegistryException
      */
-    public void registerPortletApplication(PortletApplicationDefinition newApp) throws RegistryException
+    public void registerPortletApplication( PortletApplicationDefinition newApp ) throws RegistryException
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -422,82 +417,30 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param app
      * @throws TransactionStateException
      */
-    public void removeApplication(PortletApplicationDefinition app) throws RegistryException
+    public void removeApplication( PortletApplicationDefinition app ) throws RegistryException
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
 
-        Filter filter = store.newFilter();
+        String appNodePath = MutablePortletApplication.PREFS_ROOT + "/" + ((MutablePortletApplication) app).getName();
         try
         {
-            Iterator portlets = app.getPortletDefinitionList().iterator();
-            while (portlets.hasNext())
+            if (Preferences.systemRoot().nodeExists(appNodePath))
             {
-                PortletDefinitionImpl curPortlet = (PortletDefinitionImpl) portlets.next();
+                Preferences node = Preferences.systemRoot().node(appNodePath);
+                log.info("Removing Application preference node " + node.absolutePath());
+                node.removeNode();
+            }
+        }
+        catch (BackingStoreException e)
+        {
+            throw new RegistryException(e.toString(), e);
+        }
 
-                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletDefinitionLocalizedFieldImpl.class, filter));
-                store.getTransaction().checkpoint();
+        try
+        {
+            store.deletePersistent(app);            
 
-                filter = store.newFilter();
-                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletDisplayNameImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(LanguageImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(ContentTypeImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletInitParameterImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-//                filter = store.newFilter();
-//                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-//
-//                store.getTransaction().checkpoint();
-                
-                String appNodePath = MutablePortletApplication.PREFS_ROOT + "/" +((MutablePortletApplication)app).getName();
-                try
-                {
-                    if(Preferences.systemRoot().nodeExists(appNodePath))
-                    {                   
-                        Preferences node = Preferences.systemRoot().node(appNodePath);
-                        log.info("Removing Application preference node "+node.absolutePath());
-                        node.removeNode();
-                    }
-                }
-                catch (BackingStoreException e)
-                {
-                   throw new RegistryException(e.toString(), e);
-                }
-                
-                filter = store.newFilter();
-                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletDescriptionImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("id", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletDefinitionImpl.class, filter));
-                store.getTransaction().checkpoint();
-            }            
-            filter = store.newFilter();
-            filter.addEqualTo("id", new Long(app.getId().toString()));
-            store.deleteAll(store.newQuery(MutablePortletApplication.class, filter));
-            store.getTransaction().checkpoint();
         }
         catch (LockFailedException e)
         {
@@ -514,7 +457,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      * @param app
      * @throws RegistryException
      */
-    public void updatePortletApplication(PortletApplicationDefinition app) throws RegistryException
+    public void updatePortletApplication( PortletApplicationDefinition app ) throws RegistryException
     {
         try
         {
@@ -529,19 +472,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         }
     }
 
-    public PortletDefinitionComposite getStoreableInstance(PortletDefinitionComposite portlet)
-    {
-        if (portlet != null)
-        {
-            return new StoreablePortletDefinitionDelegate(portlet, getPersistenceStore());
-        }
-        else
-        {
-            return null;
-        }
-    }
-    
-    private Object postLoad(Object obj)
+    private Object postLoad( Object obj )
     {
         if (obj == null)
         {
@@ -559,5 +490,21 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
             }
         }
         return obj;
+    }
+
+    public void savePortletDefinition( PortletDefinition portlet ) throws RegistryException
+    {
+        try
+        {
+            PersistenceStore store = getPersistenceStore();
+            prepareTransaction(store);
+            store.lockForWrite(portlet);
+            store.getTransaction().checkpoint();
+        }
+        catch (LockFailedException e)
+        {
+            throw new RegistryException("Unable to lock PortletDefintion for update: " + e.toString(), e);
+        }
+
     }
 }

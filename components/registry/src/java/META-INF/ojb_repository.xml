@@ -185,7 +185,7 @@ limitations under the License.
       <collection-descriptor
          name="portlets"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
 
@@ -374,7 +374,7 @@ limitations under the License.
      <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
       >
@@ -385,7 +385,7 @@ limitations under the License.
       <collection-descriptor
          name="languageSet"
          element-class-ref="org.apache.jetspeed.om.impl.LanguageImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
       >
@@ -396,7 +396,7 @@ limitations under the License.
       <collection-descriptor
          name="contentTypes"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
       >
@@ -409,7 +409,7 @@ limitations under the License.
          name="parameterSet"
          proxy="true"
          element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
       >
@@ -422,7 +422,7 @@ limitations under the License.
        <collection-descriptor
          name="securityRoleRefSet"
          element-class-ref="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
 
@@ -433,7 +433,7 @@ limitations under the License.
      <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
       >
