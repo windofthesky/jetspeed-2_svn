@@ -123,6 +123,10 @@ public class CauseExtractor
         {
 
             e4.printStackTrace();
+        }        
+        catch (ClassCastException e5)
+        {
+            e5.printStackTrace();
         }
     }
 
