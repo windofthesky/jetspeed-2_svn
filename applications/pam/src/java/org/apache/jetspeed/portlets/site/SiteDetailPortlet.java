@@ -165,7 +165,7 @@ public class SiteDetailPortlet extends GenericServletPortlet
                 
                 if(node != null)
                 {
-                    node.setAcl(acl);
+                    // acls depricated: node.setAcl(acl);
                 }
                 
                 //how to store ??
