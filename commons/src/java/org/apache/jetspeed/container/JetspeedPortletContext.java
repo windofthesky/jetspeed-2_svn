@@ -27,6 +27,8 @@ import javax.portlet.PortletRequestDispatcher;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.services.JetspeedPortletServices;
+import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.container.namespace.NamespaceMapper;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
@@ -108,6 +110,12 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public java.lang.Object getAttribute(java.lang.String name)
     {
+        if (name.startsWith("cps:"))
+        {
+            String serviceName = name.substring("cps:".length());
+            PortletServices services = JetspeedPortletServices.getSingleton();
+            return services.getService(serviceName);
+        }
         String attributeName = NamespaceMapper.encode(application.getId().toString(), name);
         Object attribute = servletContext.getAttribute(attributeName);
 
