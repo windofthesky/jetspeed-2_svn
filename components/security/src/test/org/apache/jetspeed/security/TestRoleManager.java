@@ -564,8 +564,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
     protected void destroyRoles()
     {
         final String[] users = new String[] { "anonuser1", "anonuser2", "anonuser3", "anonuser4", "anonuser5", };
-        final String[] roles = new String[] { "testrole1", "testrole2", "testrole3", "testgetrole",
-                "testuserrolemapping", "testusertorole1", "testuserrolemapping.role1", "testuserrolemapping2.role2" };
+        final String[] roles = new String[] { "testrole", "testrole1", "testrole2", "testrole3", "testgetrole",
+                "testusertorole1", "testuserrolemapping.role1", "testuserrolemapping2.role2", "testuserrolemapping","testuserrolemapping2" };
         final String[] groups = new String[] { "testusertorole1" };
 
         for (int i = 0; i < users.length; i++)
