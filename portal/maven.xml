@@ -93,8 +93,10 @@
     <attainGoal name="db.execute" />
     <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db.sql" />
     <attainGoal name="db.execute" />
+<!--
     <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db-phase2.sql" />
     <attainGoal name="db.execute" />
+-->
   </goal>
 
   <!-- ================================================================ -->
