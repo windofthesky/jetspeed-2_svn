@@ -51,58 +51,11 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityMappingHandler"/></constructor-arg>
   </bean>
   
-  <!-- Security: User Manager -->
-  <bean id="org.apache.jetspeed.security.UserManager" 
-  	   class="org.apache.jetspeed.security.impl.UserManagerImpl"
+  <!-- Security: Authorization Provider -->
+  <bean id="org.apache.jetspeed.security.AuthorizationProvider" 
+  	   class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>
-  </bean>
-  
-   <!-- Security: Group Manager -->
-  <bean id="org.apache.jetspeed.security.GroupManager" 
-  	   class="org.apache.jetspeed.security.impl.GroupManagerImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
-  </bean>
-  
-  <!-- Security: Role Manager -->
-  <bean id="org.apache.jetspeed.security.RoleManager" 
-  	   class="org.apache.jetspeed.security.impl.RoleManagerImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
-  </bean>
-  
-  <!-- ************** Login Module ************** -->
-  <!-- Security: Login Module Proxy -->
-  <bean id="org.apache.jetspeed.security.LoginModuleProxy" 
-  	   class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>   
   </bean>
 
-  
-  <!-- ************** Authorization ************** -->
-  <!-- Security: Permission Manager -->
-  <bean id="org.apache.jetspeed.security.impl.PermissionManagerImpl" 
-  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"  />
-  
-  <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy" 
-		name="permissionManager" >
-		<property name="proxyInterfaces">
-			<value>org.apache.jetspeed.security.PermissionManager</value>
-		</property>
-		<property name="target">
-			<ref bean="org.apache.jetspeed.security.impl.PermissionManagerImpl"/>
-		</property>
-		<property name="transactionAttributes">
-			<props>				
-				<prop key="remove*">PROPAGATION_REQUIRED</prop>
-				<prop key="grant*">PROPAGATION_REQUIRED</prop>
-				<prop key="revoke*">PROPAGATION_REQUIRED</prop>
-				<prop key="grant*">PROPAGATION_REQUIRED</prop>
-				<prop key="add*">PROPAGATION_REQUIRED</prop>
-				<prop key="*">PROPAGATION_SUPPORTS</prop>
-			</props>
-		</property>
-   </bean>
 </beans>

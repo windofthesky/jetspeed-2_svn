@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -13,19 +15,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project default="java:jar"
-         xmlns:j="jelly:core"
-         xmlns:define="jelly:define"
-         xmlns:maven="jelly:maven">
+<beans>
+  
+  <!-- ************** Login Module ************** -->
+  <!-- Security: Login Module Proxy -->
+  <bean id="org.apache.jetspeed.security.LoginModuleProxy" 
+  	   class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  </bean>
 
-  <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.security.TestAuthenticationProviderProxy'/>
-
- 
-  <goal name="deployJar">
-  	<attainGoal name="jar:install"/>
-  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/lib"/>
-  </goal>
-
-
-</project>
+</beans>

@@ -23,12 +23,5 @@ limitations under the License.
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>  	   
   </bean>
-  
-  <!-- Security: Authorization Provider -->
-  <bean id="org.apache.jetspeed.security.AuthorizationProvider" 
-  	   class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>   
-  </bean>
 
 </beans>

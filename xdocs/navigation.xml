@@ -34,11 +34,12 @@ limitations under the License.
       <item name="Sub Projects" href="projects-overview.html"/>
     </menu>
     <menu name='Security'>        
-      <item name="Security Overview" href="security-overview.html"/>       
+      <item name="Security Overview" href="multiproject/jetspeed-security/index.html"/>       
       <item name="Authentication" href="authentication.html"/>
       <item name="JAAS Authorization" href="authorization.html"/>
       <item name="PSML Authorization" href="bronco.html"/>
       <item name="SPI: Providers and Handlers" href="spi.html"/>
+      <item name="Security Services Configuration" href="multiproject/jetspeed-security/config.html"/>
       <item name="Single Sign on" href="sso.html"/>        
     </menu>
     <menu name='Portal Design'>

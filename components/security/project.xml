@@ -233,6 +233,9 @@ limitations under the License.
       <includes>
         <include>**/Test*.java</include>
       </includes>
+      <excludes>
+        <exclude>**/ldap/*</exclude>
+      </excludes>
 
       <resources>
         <resource>

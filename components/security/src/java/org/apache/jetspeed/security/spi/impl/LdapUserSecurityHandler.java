@@ -15,69 +15,130 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDaoImpl;
 
 /**
  * @see org.apache.jetspeed.security.spi.UserSecurityHandler
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
 public class LdapUserSecurityHandler implements UserSecurityHandler
 {
+    /** The logger. */
+    private static final Log LOG = LogFactory.getLog(LdapUserSecurityHandler.class);
+
+    /** The {@link LdapUserSecurityDao}. */
+    private LdapUserSecurityDao ldap;
+
+    /**
+     * @param ldap The {@link LdapUserSecurityDao}.
+     */
+    public LdapUserSecurityHandler(LdapUserSecurityDao ldap)
+    {
+        this.ldap = ldap;
+    }
+
     /**
      * <p>
-     * Default Constructor.
+     * Default constructor.
      * </p>
      */
     public LdapUserSecurityHandler()
     {
+        this(new LdapUserSecurityDaoImpl());
     }
-    
+
     /**
+     * <p>
+     * Lookup the user by his UID attribute on the Ldap Server.
+     * </p>
+     * 
+     * @return true if the Ldap Server finds a user with that UID; false if he
+     *         is not found or some sort of NamingException occurred.
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#isUserPrincipal(java.lang.String)
      */
-    public boolean isUserPrincipal(String userName)
+    public boolean isUserPrincipal(String uid)
     {
-        return userName.equals("ldap1") || userName.equals("ldap2") || userName.equals("ldap3");
+        verifyUid(uid);
+        return getUserPrincipal(uid) != null;
     }
-    
+
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
-    public Principal getUserPrincipal(String username)
+    public Principal getUserPrincipal(String uid)
     {
-        UserPrincipal userPrincipal = null;
-        if (username.equals("ldap1"))
+        verifyUid(uid);
+        try
         {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap1"));
+            String dn = ldap.lookupByUid(uid);
+
+            if (!StringUtils.isEmpty(dn))
+            {
+                return new UserPrincipalImpl(uid);
+            }
         }
-        else if (username.equals("ldap2"))
+        catch (SecurityException e)
         {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap2"));
+            logSecurityException(e, uid);
         }
-        else if (username.equals("ldap3"))
-        {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap3"));
-        }
-        return userPrincipal;
+
+        return null;
     }
-    
+
+    /**
+     * <p>
+     * Verify the uid.
+     * </p>
+     * 
+     * @param uid The uid.
+     */
+    private void verifyUid(String uid)
+    {
+        if (StringUtils.isEmpty(uid))
+        {
+            throw new IllegalArgumentException("The uid cannot be null or empty.");
+        }
+    }
+
+    /**
+     * @param se SecurityException Throws a {@link SecurityException}.
+     * @param uid The uid.
+     */
+    private void logSecurityException(SecurityException se, String uid)
+    {
+        if (LOG.isErrorEnabled())
+        {
+            LOG.error("An LDAP error has occurred for user uid:" + uid, se);
+        }
+    }
+
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipals(java.lang.String)
      */
     public List getUserPrincipals(String filter)
     {
-        List userPrincipals = new LinkedList();
-        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap1")));
-        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap2")));
-        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap3")));
+        try
+        {
+            return Arrays.asList(ldap.find(filter));
+        }
+        catch (SecurityException e)
+        {
+            logSecurityException(e, filter);
+        }
 
-        return userPrincipals;
+        return new ArrayList();
     }
 
     /**
@@ -85,23 +146,49 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
      */
     public void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        // To implement.
+        verifyUserPrincipal(userPrincipal);
+
+        String uid = userPrincipal.getName();
+        if (isUserPrincipal(uid))
+        {
+            throw new SecurityException("The user:" + uid + " already exists.");
+        }
+        ldap.create(uid);
     }
-    
+
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#updateUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
      */
     public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        // To implement.
+        verifyUserPrincipal(userPrincipal);
+        String uid = userPrincipal.getName();
+        if (!isUserPrincipal(uid))
+        {
+            ldap.create(uid);
+        }
     }
-    
+
+    /**
+     * @param userPrincipal
+     */
+    private void verifyUserPrincipal(UserPrincipal userPrincipal)
+    {
+        if (userPrincipal == null)
+        {
+            throw new IllegalArgumentException("The UserPrincipal cannot be null or empty.");
+        }
+    }
+
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#removeUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
      */
     public void removeUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        // To implement        
-    }
+        verifyUserPrincipal(userPrincipal);
 
+        String uid = userPrincipal.getName();
+
+        ldap.delete(uid);
+    }
 }

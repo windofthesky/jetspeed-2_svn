@@ -25,7 +25,7 @@ limitations under the License.
       <item name="Authorization Security Services" href="#"/>
       <item name="Aggregate Security Services" href="#"/>
       <item name="SPI Architecture" href="#"/>
-      <item name="Security Services Configuration" href="#"/>
+      <item name="Security Services Configuration" href="config.html"/>
     </menu>
     <menu name="Misc.">
       <item name="Tasks" href="tasks.html"/>
