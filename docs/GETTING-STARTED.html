@@ -120,6 +120,9 @@ code {font-size: 10pt;}
 </table>
 <h2><br>
   3. Changes to Tomcat's server.xml</h2>
+<p><font color='red'>
+<b>NOTE:</b> This step is no longer necessary if you use the "deploy" goal 
+   from the portal project. The "deploy" goal handles adding the cross context property.</p></font>
 <p>Edit ${CATALINA_BASE}/conf/server.xml, add this line:<br>
   (this only needs to be done once)</p>
 <p> <code>&lt;Context path=&quot;/jetspeed&quot; docBase=&quot;jetspeed&quot; 
