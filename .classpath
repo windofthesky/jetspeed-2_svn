@@ -34,9 +34,8 @@
     <classpathentry kind="var" path="MAVEN_REPO/mx4j/jars/mx4j-tools-1.1.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/commons-modeler/jars/commons-modeler-1.1M1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/ojb/jars/ojb-1.0.rc3-PATCHED.jar"/>
-    <classpathentry kind="var" path="MAVEN_REPO/pluto-container/jars/pluto-0.46.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xerces-2.3.0.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/xml-apis/jars/xml-apis-2.0.2.jar"/>
-    <classpathentry kind="src" path="/pluto"/>
+    <classpathentry kind="src" path="/jakarta-pluto"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -80,13 +80,8 @@
         </attribute>
     </tag>
     <tag>
-        <name>encode</name>
-        <tagclass>org.apache.pluto.tags.EncodeTag</tagclass>
-        <bodycontent>JSP</bodycontent>
-        <attribute>
-            <name>name</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
+        <name>namespace</name>
+        <tagclass>org.apache.pluto.tags.NamespaceTag</tagclass>
+        <bodycontent>empty</bodycontent>
     </tag>
 </taglib>

@@ -3,7 +3,7 @@
 	<name>Jetspeed-2</name>
 	<comment></comment>
 	<projects>
-		<project>pluto</project>
+		<project>jakarta-pluto</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
