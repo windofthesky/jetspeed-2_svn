@@ -52,15 +52,18 @@ public class PageAggregatorImpl implements PageAggregator
     private int strategy = STRATEGY_SEQUENTIAL;
     private PortletRenderer renderer;
 
-    public PageAggregatorImpl(PortletRenderer renderer, int strategy)
+    private List fallBackContentPathes;
+
+    public PageAggregatorImpl(PortletRenderer renderer, int strategy, List fallBackContentPathes)
     {
         this.renderer = renderer;
         this.strategy = strategy;
+        this.fallBackContentPathes = fallBackContentPathes;
     }
 
-    public PageAggregatorImpl(PortletRenderer renderer)
+    public PageAggregatorImpl(PortletRenderer renderer, List fallBackContentPathes)
     {
-        this(renderer, STRATEGY_SEQUENTIAL);
+        this(renderer, STRATEGY_SEQUENTIAL, fallBackContentPathes);
     }
 
    
@@ -77,23 +80,23 @@ public class PageAggregatorImpl implements PageAggregator
         {
             throw new JetspeedException("Failed to find PSML Pin PageAggregator.build");
         }
-
+    
         //Set default acl
         String acl = page.getAcl();
         if (acl == null)
         {
             //TBD get system default acl;
         }
-
+    
         // Initialize fragment
         Stack stack = new Stack();
         Fragment currentFragment = page.getRootFragment();
-
+    
         if (currentFragment == null)
         {
             throw new JetspeedException("No root Fragment found in Page");
         }
-
+    
         String layoutDecorator = currentFragment.getDecorator();
         if (layoutDecorator == null)
         {
@@ -101,32 +104,40 @@ public class PageAggregatorImpl implements PageAggregator
         }
         
         String defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
-
+    
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //TODO: Remove hard coding of locations and use CM + TL
         //      DST: Im going to encapsulate this into a class, which can be accessed by 
         //           the PowerTool when aggregating content, and make sure to modify the search path
         //           according to the current decorator. Assigned issue to JiRa JS2-24        
         List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
-
+    
         if (contentPathes == null)
         {
             contentPathes = new ArrayList(2);
             context.setSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR, contentPathes);
         }
-
+        String mediaType = context.getCapabilityMap().getPreferredMediaType().getName();
         if (contentPathes.size() < 1)
         {
             // define the lookup order
-            contentPathes.add(currentFragment.getType() + "/html/" + layoutDecorator);
-            contentPathes.add("portlet/html/jetspeed");
-            contentPathes.add("portlet/html");
-            contentPathes.add("generic/html");
-            contentPathes.add("/html");
+            
+            contentPathes.add(currentFragment.getType() + "/"+mediaType+"/" + layoutDecorator);
+            Iterator defaults = fallBackContentPathes.iterator();
+            while(defaults.hasNext())
+            {
+                String path = (String)defaults.next();
+                contentPathes.add(path.replaceAll("\\{mediaType\\}", mediaType));
+            }
+            
+//            contentPathes.add("portlet/"+mediaType+"/jetspeed");
+//            contentPathes.add("portlet/" + mediaType);
+//            contentPathes.add("generic/" + mediaType);
+//            contentPathes.add("/" + mediaType);
         }
         else
         {
-            contentPathes.set(0, currentFragment.getType() + "/html/" + layoutDecorator);
+            contentPathes.set(0, currentFragment.getType() + "/"+mediaType+"/" + layoutDecorator);
         }
         
         
@@ -137,7 +148,7 @@ public class PageAggregatorImpl implements PageAggregator
         
                       
         ///////////////////////////////////////////////////////////////////////////////////////////////
-
+    
         if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
         {
             // handle maximized state
@@ -164,19 +175,19 @@ public class PageAggregatorImpl implements PageAggregator
             for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
             {
                 Fragment f = (Fragment) i.next();
-
+    
                 if (!"hidden".equals(f.getState()))
                 {
                     stack.push(f);
                 }
             }
-
+    
             // Walk through the Fragment tree, and start rendering "portlet" type
             // fragment
             while (!stack.isEmpty())
             {
                 currentFragment = (Fragment) stack.pop();
-
+    
                 if (checkAccess(context, ((currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl), "render"))
                 {
                     if (currentFragment.getType().equals("portlet"))
@@ -219,12 +230,12 @@ public class PageAggregatorImpl implements PageAggregator
                             log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
                         }
                     }
-
+    
                     // push the children frgaments on the rendering stack
                     for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
                     {
                         Fragment f = (Fragment) i.next();
-
+    
                         if (!"hidden".equals(f.getState()))
                         {
                             stack.push(f);
@@ -239,9 +250,9 @@ public class PageAggregatorImpl implements PageAggregator
             
             // Retrieves the content dispatcher appropriate for sequential
             // or parallel rendering
-
+    
             ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
-
+    
             // Now synchronously trigger the rendering of the whole page
             renderer.renderNow(page.getRootFragment(), context);
         }
@@ -249,7 +260,7 @@ public class PageAggregatorImpl implements PageAggregator
         {
             log.warn("Access denied RENDER page " + page);
         }
-
+    
     }
 
     public boolean checkAccess(RequestContext context, String acl, String action)

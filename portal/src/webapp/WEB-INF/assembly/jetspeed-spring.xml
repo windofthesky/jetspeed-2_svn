@@ -300,6 +300,15 @@ limitations under the License.
   	   	    1 = PageAggregatorImpl.STRATEGY_PARALLEL
   	   	 -->
   	   <constructor-arg index="1"><value>0</value></constructor-arg>
+  	   <constructor-arg index="2">
+  	   	<list>
+  	   		<value>portlet/{mediaType}/jetspeed</value>
+  	   		<value>portlet/{mediaType}</value>
+  	   		<value>layout/{mediaType}</value>
+  	   		<value>generic/{mediaType}</value>  	   		
+  	   		<value>{mediaType}</value>  	   		
+  	   	</list>
+  	   </constructor-arg>
   </bean>
   
   <!-- Aggregation: Portlet -->

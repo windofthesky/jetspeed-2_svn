@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.ArrayList;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -56,8 +58,14 @@ public class TestAggregator extends TestRenderer
     protected void setUp() throws Exception
     {
         super.setUp();
+        
+        ArrayList pathes = new ArrayList(4);
+        pathes.add("portlet/{mediaType}/jetspeed");
+        pathes.add("portlet/{mediaType}");
+        pathes.add("generic/{mediaType}");
+        pathes.add("/{mediaType}");
 
-        pageAggregator = new PageAggregatorImpl(renderer);
+        pageAggregator = new PageAggregatorImpl(renderer, pathes);
         portletAggregator = new PortletAggregatorImpl(renderer);
         
     }
