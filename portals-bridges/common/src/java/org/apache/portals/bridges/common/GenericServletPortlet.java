@@ -140,7 +140,7 @@ public class GenericServletPortlet extends GenericPortlet
     private String defaultViewPage = null;
 
     /**
-     * Creates a new instance of StrutsPortlet
+     * Creates a new instance of portlet
      */
     public GenericServletPortlet()
     {
