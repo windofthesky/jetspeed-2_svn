@@ -119,7 +119,7 @@ limitations under the License.
   	<!-- Define Velocity template compiler -->
 	<servlet>
 		<servlet-name>velocity</servlet-name>
-		<servlet-class>org.apache.portals.bridges.velocity.JetspeedVelocityViewServlet</servlet-class>
+		<servlet-class>org.apache.jetspeed.velocity.JetspeedVelocityViewServlet</servlet-class>
 		<init-param>
 			<param-name>org.apache.velocity.toolbox</param-name>
 			<param-value>/WEB-INF/toolbox.xml</param-value>
