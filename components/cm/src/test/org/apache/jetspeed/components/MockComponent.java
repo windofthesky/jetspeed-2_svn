@@ -48,4 +48,8 @@ public interface MockComponent
     int componentId();
     
     String getThreadName();
+    
+    Object getValue(String key);
+    
+    void setValue(String key, Object value);
 }

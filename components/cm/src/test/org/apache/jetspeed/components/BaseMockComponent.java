@@ -80,4 +80,33 @@ public class BaseMockComponent implements MockComponent
     {        
         return threadName;
     }
+    
+    public Object getValue( String key )
+    {
+        if(key.equals("1"))
+        {
+            return new Integer(getValue1());
+        }
+        else if(key.equals("2"))
+        {
+            return getValue2();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public void setValue( String key, Object value )
+    {
+        if(key.equals("1"))
+        {
+            setValue1(Integer.parseInt(value.toString()));
+        }
+        else if(key.equals("2"))
+        {
+            setValue2(value.toString());
+        }
+        
+
+    }
 }
