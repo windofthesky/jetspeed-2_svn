@@ -128,4 +128,13 @@ public interface PreferenceComposite extends PreferenceCtrl, Preference, Seriali
      */
     void setValues(String[] stringValues);
 
+    /**
+     * @return
+     */
+    String getType();
+    /**
+     * @param string
+     */
+    void setType(String string);
+
 }

@@ -91,9 +91,34 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
         super(wrappedSet);
     }
 
+    /**
+     * @param c
+     */
+    public PreferenceSetImpl(Collection c)
+    {
+        super(c);     
+    }
+
+    /**
+     * @param initialCapacity
+     * @param loadFactor
+     */
+    public PreferenceSetImpl(int initialCapacity, float loadFactor)
+    {
+        super(initialCapacity, loadFactor);        
+    }
+
+    /**
+     * @param initialCapacity
+     */
+    public PreferenceSetImpl(int initialCapacity)
+    {
+        super(initialCapacity);        
+    }
+
     public PreferenceSetImpl()
     {
-        prefMap = new HashMap();
+        super();
     }
 
     /**
@@ -109,7 +134,7 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
      */
     public Preference add(String name, Collection values)
     {
-        PreferenceImpl pref = new PreferenceImpl();
+        DefaultPreferenceImpl pref = new DefaultPreferenceImpl();
 
         pref.setType(preferenceType);
 

@@ -72,9 +72,19 @@ import org.apache.jetspeed.om.common.preference.PreferenceValue;
 public class PreferenceValueImpl implements Serializable, PreferenceValue
 {
 
-    private long preferenceId;
-    private long id;
     private String value;
+
+    public PreferenceValueImpl()
+    {
+        super();
+    }
+
+    public PreferenceValueImpl(String value)
+    {
+        this();
+        this.value = value;
+    }
+
     /**
      * @return
      */
@@ -113,6 +123,15 @@ public class PreferenceValueImpl implements Serializable, PreferenceValue
 
     protected final static void convertStringsToValueObjects(Collection stringValues, List valueObjects)
     {
+        if (valueObjects == null)
+        {
+            throw new IllegalArgumentException("valueObjects arg cannot be null");
+        }
+        if (stringValues == null)
+        {
+            throw new IllegalArgumentException("stringValues arg cannot be null");
+        }
+
         Iterator itr = stringValues.iterator();
         int count = 0;
         try
@@ -127,8 +146,8 @@ public class PreferenceValueImpl implements Serializable, PreferenceValue
                 }
                 else
                 {
-                    PreferenceValueImpl valueObj = new PreferenceValueImpl();                    
-                    
+                    PreferenceValueImpl valueObj = new PreferenceValueImpl();
+
                     valueObj.setValue(strValue);
                     valueObjects.add(valueObj);
                 }

@@ -51,22 +51,30 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+
 package org.apache.jetspeed.om.preference.impl;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 /**
+ * 
  * <p>
- * PreferenceImpl
+ * AbstractPreferenceImpl
  * </p>
  * 
- * 
- * @
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $ $
+ * @version $Id$
  *
  */
-public class PreferenceImpl extends AbstractPreference
+public class DefaultPreferenceImpl extends AbstractPreference implements Serializable
 {
-    private static final String CLASS_NAME = PreferenceImpl.class.getName();
+    private static final String CLASS_NAME = DefaultPreferenceImpl.class.getName();
     private String ojbConcreteClass = CLASS_NAME;
+
+    public Collection getValuesCollection()
+    {
+        return values;
+    }
 
 }
