@@ -193,5 +193,21 @@
       </java>   	
   	
   </postGoal>
+  
+  <goal name="quick">
+  	<echo message="====================================" />
+  	<echo message="        Stopping HSQL server        " />  	
+  	<echo message="====================================" />
+  	<java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="true" >
+       <classpath>
+         <path refid="maven.dependency.classpath"/>
+         <pathelement path="${maven.build.dest}"/>
+        </classpath>
+         <arg value="kill" />
+         <arg value="9001" />     
+         <arg value="sa" />
+         <arg value=" " />
+      </java>  
+  </goal>
 
 </project>
