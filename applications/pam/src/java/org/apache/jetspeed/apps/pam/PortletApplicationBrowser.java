@@ -25,10 +25,12 @@ import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 //import org.apache.jetspeed.cps.util.Streams;
 
@@ -76,7 +78,9 @@ public class PortletApplicationBrowser extends GenericPortlet
         
         PortletURL url = response.createRenderURL();
         PortletURL actionUrl = response.createActionURL();
-
+        url.setWindowState(WindowState.MAXIMIZED);
+        actionUrl.setPortletMode(PortletMode.EDIT);
+        
         // url.addParameter("test", "value");
         
         response.getWriter().println("<br/><b>Init Param 'Template' = " + this.getInitParameter("template") +  "</b>");
