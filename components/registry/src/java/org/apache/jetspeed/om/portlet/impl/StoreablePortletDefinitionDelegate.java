@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
@@ -26,6 +25,7 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;

@@ -14,13 +14,11 @@
  */
 package org.apache.jetspeed.userinfo;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
 import javax.portlet.PortletRequest;
-import javax.security.auth.Subject;
 
 import junit.framework.Test;
 
@@ -38,10 +36,7 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.tools.pamanager.PortletDescriptorUtilities;
-
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 import org.picocontainer.MutablePicoContainer;
 

@@ -32,7 +32,6 @@ import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
@@ -43,7 +42,6 @@ import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
 
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;

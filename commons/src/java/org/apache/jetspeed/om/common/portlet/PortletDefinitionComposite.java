@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;

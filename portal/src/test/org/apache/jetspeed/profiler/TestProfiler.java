@@ -15,15 +15,10 @@
  */
 package org.apache.jetspeed.profiler;
 
-import java.security.Principal;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
 
 import junit.framework.Test;
 

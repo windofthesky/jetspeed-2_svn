@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
@@ -45,7 +46,7 @@ import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.jetspeed.util.PortalObjectID;
+
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -63,6 +64,7 @@ import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.servlet.ServletDefinition;
+
 import org.odmg.DList;
 
 /**

@@ -15,9 +15,6 @@
  */
 package org.apache.jetspeed.container.session;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
@@ -32,9 +29,9 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
-import org.apache.jetspeed.services.information.PortletURLProviderImpl;
+
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.services.information.PortletURLProvider;
+
 import org.picocontainer.MutablePicoContainer;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;

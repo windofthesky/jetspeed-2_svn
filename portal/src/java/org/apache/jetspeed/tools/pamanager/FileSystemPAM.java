@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
@@ -27,7 +28,6 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.DirectoryUtils;
 
 /**

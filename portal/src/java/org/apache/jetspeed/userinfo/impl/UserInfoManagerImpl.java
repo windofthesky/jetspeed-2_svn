@@ -29,10 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryHelper;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
