@@ -84,22 +84,33 @@ limitations under the License.
   
   <goal name="jetspeed2:db.create">
   	<echo>Using DB: ${org.apache.jetspeed.production.database.default.name}</echo>
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase3ojb-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase1-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase2-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/registry-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/prefs-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/security-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/populate-db-default.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/test-persistence-schema.sql" />
-    <attainGoal name="jetspeed2:db.execute" />
+  	<echo>*************************************</echo>
+    <echo>*   Excuting standard SQL scripts   *</echo>
+    <echo>*************************************</echo>
+  	<!-- Run standard SQL scripts -->
+    <util:file name="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}" var="sqlSrcDir"/>
+    <j:if test="${sqlSrcDir.exists()}">
+      <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
+        <j:if test="${sqlFile.name.endsWith('.sql')}">
+          <j:set var="database.arg.script" value="${sqlFile.absolutePath}" />
+          <attainGoal name="jetspeed2:db.execute" />
+        </j:if>
+      </j:forEach>
+    </j:if>
+     
+    <!-- Run custom SQL scripts if they exist -->
+    <util:file name="src/sql" var="sqlSrcDir"/>
+    <j:if test="${sqlSrcDir.exists()}">
+    <echo>*************************************</echo>
+    <echo>* Excuting user-defined SQL Scripts *</echo>
+    <echo>*************************************</echo>
+    <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
+      <j:if test="${sqlFile.name.endsWith('.sql')}">
+        <j:set var="database.arg.script" value="${sqlFile.absolutePath}" />
+        <attainGoal name="jetspeed2:db.execute" />
+      </j:if>
+    </j:forEach>
+  </j:if>
   </goal>
   
 
@@ -324,6 +335,7 @@ limitations under the License.
         </filterset>
       </copy>    
 </goal>    
+
 
   
 </project>
