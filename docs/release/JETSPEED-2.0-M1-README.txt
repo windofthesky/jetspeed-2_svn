@@ -2,6 +2,13 @@
  Jetspeed 2.0-M1 Release
 --------------------------
 
+Tested App Servers:
+
+ * Tomcat 4.1.30
+ * Tomcat 5.0.30
+
+ (Tomcat 5.5 requires a different jetspeed.xml found in the source tree under src/resources/jetspeed-tomcat-5.5.xml)
+
 
 Installation Instructions
 --------------------------
@@ -49,4 +56,31 @@ Configuring another database
         $TOMCAT_HOME/shared/lib/portlet-api*.jar
         $TOMCAT_HOME/shared/lib/portals-bridges*.jar
         $TOMCAT_HOME/webapps/jetspeed
+
+
+Deployment Optimization
+-----------------------------
+There are some known issues with deployment and race conditions with the default jetspeed configuration.
+To optimize deployment, add these properties to your $HOME/build.properties:
+
+org.apache.jetspeed.services.autodeployment.user = admin
+org.apache.jetspeed.services.autodeployment.password = admin
+
+Edit your $TOMCAT_HOME/conf/tomcat-users.xml and add the required manager and admin roles and admin user:
+
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename="manager"/>
+  <role rolename="admin"/>
+  ...
+  <user username="admin" password="admin" roles="admin,manager,user"/>
+</tomcat-users>
+
+
+If you make these changes, its recommended to change Tomcat's server.xml and turn off Autodeployment feature:
+
+      <Host name="localhost" debug="0" appBase="webapps"
+       unpackWARs="true" autoDeploy="false">  <------------------
+
+
 
