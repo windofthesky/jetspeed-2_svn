@@ -527,27 +527,37 @@ public class PortletApplicationWar
         List allChildren = root.getChildren();
         List elementsBeforeList = Arrays.asList(elementsBefore);
         toInsert.detach();
-        int insertAfter = 0;        
+        int insertAfter = 0;  
+        boolean moreAfter = false;
         for (int i = 0; i < allChildren.size(); i++)
         {
             Element element = (Element) allChildren.get(i);            
             if (elementsBeforeList.contains(element.getName()))
             {
                 insertAfter = i;
+                moreAfter = false;
+            }
+            else 
+            {
+                moreAfter = true;
             }
         }
         
-      
-            try
+        try
+        {
+            if ( moreAfter )
             {
                 root.addContent((insertAfter+2), toInsert);
             }
-            catch (ArrayIndexOutOfBoundsException e)
+            else
             {
-                root.addContent(toInsert);
+                root.addContent((insertAfter+3), toInsert);
             }
-        
-
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            root.addContent(toInsert);
+        }
     }
 
     /**
