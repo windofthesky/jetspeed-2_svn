@@ -46,3 +46,21 @@ RELATIONSHIPS
    for entity 51:  /entities/51
 
 (c) fallback to Portlet Registry
+
+
+-----------------------------
+  Associations
+-----------------------------
+
+TABLE ENTITY_WINDOW_ASSOC
+(
+    ENTITY_ID INTEGER REFERENCES ENTITY,
+    WINDOW_ID INTEGER REFERENCES FRAGMENT
+)
+
+TABLE ENTITY_PREF_ASSOC
+(
+    ENTITY_ID INTEGER REFERENCES ENTITY,
+    PREFS_NODE INTEGER REFERENCES PREFS_NODE
+)
+
