@@ -2,6 +2,50 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans> 
+  
+  <bean id="LocalPortletInvokerTarget"
+        class="org.apache.jetspeed.container.invoker.LocalPortletInvoker" singleton="false"
+  />   
+  
+  <bean id="LocalPortletInvokerTargetSource" 
+    class="org.springframework.aop.target.CommonsPoolTargetSource">
+    <property name="targetBeanName"><value>LocalPortletInvokerTarget</value></property>
+    <property name="maxSize"><value>25</value></property>
+  </bean>
+
+  <bean id="LocalPortletInvoker" 
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
+    <property name="targetSource"><ref local="LocalPortletInvokerTargetSource"/></property>
+    <property name="proxyInterfaces">
+    	<value>org.apache.jetspeed.container.invoker.JetspeedPortletInvoker</value>
+    </property>
+  </bean> 
+  
+      
+  
+  <bean id="ServletPortletInvokerTarget"
+        class="org.apache.jetspeed.container.invoker.ServletPortletInvoker" singleton="false"
+  /> 
+  
+  <bean id="ServletPortletInvokerTargetSource" 
+    class="org.springframework.aop.target.CommonsPoolTargetSource">
+    <property name="targetBeanName"><value>ServletPortletInvokerTarget</value></property>
+    <property name="maxSize"><value>25</value></property>
+  </bean>
+
+  <bean id="ServletPortletInvoker" 
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
+    <property name="targetSource"><ref local="ServletPortletInvokerTargetSource"/></property>
+    <property name="proxyInterfaces">
+    	<value>org.apache.jetspeed.container.invoker.JetspeedPortletInvoker</value>
+    </property>
+  </bean>     
+     
+	
+	
+	
   <bean id="javax.portlet.ActionRequest"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
@@ -94,6 +138,16 @@
   >             
        <property name="className"><value>org.apache.jetspeed.container.invoker.PortletInvokerFactoryImpl</value></property>
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
+       <property name="props">
+       	<map>
+       	 <entry key="LocalPortletInvoker">
+       	 	<ref bean="LocalPortletInvoker" />
+       	 </entry>
+       	 <entry key="ServletPortletInvoker">
+       	 	<ref bean="ServletPortletInvoker" />
+       	 </entry>
+       	</map>       	
+       </property>
   </bean>
   
   <bean id="org.apache.pluto.util.NamespaceMapper"
