@@ -19,7 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.Jetspeed;
+import org.apache.commons.vfs.VFS;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
@@ -80,7 +80,7 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");
-        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Jetspeed.getDefaultLocale(), "unit-test", null);
+        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  VFS.getManager());
 
         MutablePortletApplication app = paWar.createPortletApp();
         assertNotNull("App is null", app);
