@@ -16,6 +16,8 @@
 package org.apache.jetspeed.demo.preferences;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -46,8 +48,9 @@ public class PreferencePortlet extends GenericPortlet
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         PortletContext context = getPortletContext();
+        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
 
-        request.setAttribute("viewMessage", "My Mode is view.");
+        request.setAttribute("viewMessage", resource.getString("preference.label.MyModeIsView"));
 
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/demo/preference/pref-view.jsp");
         rd.include(request, response);
@@ -67,6 +70,7 @@ public class PreferencePortlet extends GenericPortlet
      */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
+        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
         // Integer iCount = (Integer) request.getAttribute("org.apache.jetspeed.invocationCount");
         Integer iCount = (Integer) request.getPortletSession().getAttribute("org.apache.jetspeed.invocationCount");
         if (iCount == null)
@@ -79,9 +83,11 @@ public class PreferencePortlet extends GenericPortlet
 
         response.setRenderParameter("invocationCount", String.valueOf(count));
 
-        response.setRenderParameter("invokeMessage", "processAction() I was invoked " + count + " times!");
+        MessageFormat format = new MessageFormat(resource.getString("preference.label.processActionIWasInvoked"));
+        String[] patterns = { Integer.toString(count)};
+        response.setRenderParameter("invokeMessage", format.format(patterns));
         request.getPortletSession().setAttribute("org.apache.jetspeed.invocationCount", new Integer(count), PortletSession.PORTLET_SCOPE);
-        System.out.println("--------------------------- I was invoked!!!---------------------------------");
+        System.out.println(resource.getString("preference.label.IWasInvoked"));
     }
 
 }

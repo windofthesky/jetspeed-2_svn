@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlet.helloworld;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
@@ -87,12 +88,13 @@ public class HelloWorld extends GenericPortlet
     throws PortletException, IOException
     {
         PortletContext context = getPortletContext();
+        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
         response.setContentType("text/html");
 
         PortletURL url = response.createRenderURL();
         // url.addParameter("test", "value");
         
-        response.getWriter().println("<br/><b>Init Param 'Hello' = " + this.getInitParameter("hello") +  "</b>");
+        response.getWriter().println("<br/><b>"+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
         // response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
         
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
