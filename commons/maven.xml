@@ -22,7 +22,7 @@ limitations under the License.
   <goal name="deployJar">
   	<attainGoal name="jar:install"/>
 
-  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${catalina.shared.lib}"/>
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
 </project>

@@ -18,6 +18,59 @@ limitations under the License.
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
 
+  <goal name="_findProjectFile">
+    <j:set var="_projectFileFound" value="false"/>
+    <j:set var="_projectFile" value=""/>
+    <j:set var="myPom" value="${pom}"/>
+    <j:while test="${myPom!=null}">
+      <j:set var="pomDir" value="${myPom.file.parent}"/>
+      <j:new var="file" className="java.io.File">
+        <j:arg value="${pomDir}/${_findProjectFile}"/>
+      </j:new>
+      <j:if test="${file.exists()}">
+        <j:set var="_projectFile" value="${file}"/>
+        <j:set var="_projectFileFound" value="true"/>
+        <j:break/>
+      </j:if>
+      <j:set var="myPom" value="${myPom.parent}"/>
+    </j:while>
+  </goal>
+
+  <goal name="set.checkstyle.properties">
+
+    <j:set var="_findProjectFile" value="${org.apache.jetspeed.checkstyle.header.file}"/>
+    <attainGoal name="_findProjectFile"/>
+    <j:if test="${!_projectFileFound}">
+      <fail message="org.apache.jetspeed.checkstyle.header.file ${org.apache.jetspeed.checkstyle.header.file} not found in the project tree"/>
+    </j:if>
+    <j:set var="maven.checkstyle.header.file" value="${_projectFile.absolutePath}"/>
+    <echo message="using maven.checkstyle.header.file ${maven.checkstyle.header.file}"/>
+
+    <j:set var="_findProjectFile" value="${org.apache.jetspeed.checkstyle.properties}"/>
+    <attainGoal name="_findProjectFile"/>
+    <j:if test="${!_projectFileFound}">
+      <fail message="org.apache.jetspeed.checkstyle.properties ${org.apache.jetspeed.checkstyle.properties} not found in the project tree"/>
+    </j:if>
+    <j:set var="maven.checkstyle.properties" value="${_projectFile.absolutePath}"/>
+    <echo message="using maven.checkstyle.properties ${maven.checkstyle.properties}"/>
+  </goal>
+
+  <goal name="set.license.properties">
+
+    <j:set var="_findProjectFile" value="${org.apache.jetspeed.license.licenseFile}"/>
+    <attainGoal name="_findProjectFile"/>
+    <j:if test="${!_projectFileFound}">
+      <fail message="org.apache.jetspeed.license.licenseFile ${org.apache.jetspeed.license.licenseFile} not found in the project tree"/>
+    </j:if>
+    <j:set var="maven.license.licenseFile" value="${_projectFile.absolutePath}"/>
+    <echo message="using maven.license.licenseFile ${maven.license.licenseFile}"/>
+
+  </goal>
+
+  <preGoal name="checkstyle:init">
+    <attainGoal name="set.checkstyle.properties"/>
+    <attainGoal name="set.license.properties"/>
+  </preGoal>
 
   <goal name="allClean"
         description="Clean the master project and all subprojects">
@@ -76,10 +129,17 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/struts-portlet"
+               basedir="${basedir}/struts-portlet/spi"
                includes="project.xml"
-               goals="install"
-               banner="Build and Install the common jar"
+               goals="jar:install"
+               banner="Build and Install the Struts Portlet SPI jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}/struts-portlet/framework"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Struts Portlet jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
@@ -149,7 +209,7 @@ limitations under the License.
                basedir="${basedir}/components/registry"
                includes="project.xml"
                goals="jar:install"
-               banner="Build and Install the Regsitry Components jar"
+               banner="Build and Install the Registry Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
@@ -535,19 +595,25 @@ limitations under the License.
     <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
     
     <j:if test="${!pom.id.equals('jetspeed2:jetspeed')}">
-    <copy file="src/test/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
-     <filterset begintoken="@" endtoken="@">
-       <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
-     </filterset>    
-    </copy>
+      <available property="_found" file="src/test/repository_database.xml"/>
+      <j:if test="${_found}">
+        <copy file="src/test/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
+          <filterset begintoken="@" endtoken="@">
+            <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
+          </filterset>    
+        </copy>
+      </j:if>
     </j:if>
     
     <j:if test="${pom.id.equals('jetspeed2:jetspeed')}">
-      <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
-       <filterset begintoken="@" endtoken="@">
-        <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
-       </filterset>    
-      </copy>
+      <available property="_found" file="src/java/repository_database.xml"/>
+      <j:if test="${_found}">
+        <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
+         <filterset begintoken="@" endtoken="@">
+          <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
+         </filterset>    
+        </copy>
+      </j:if>
     </j:if>
 
     <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
@@ -556,21 +622,23 @@ limitations under the License.
   
     <goal name="check.required.properties"
         description="Check if the required properties are defined">
-    <fail message="Required property catalina.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.home"/>
-    <fail message="Required property catalina.version.major undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.version.major"/>
-    <fail message="Required property catalina.shared.lib undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.shared.lib"/>
-    <fail message="Required property deploy.war.dir undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="deploy.war.dir"/>
+    <fail message="Required property org.apache.jetspeed.server.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.server.home"/>
+    <fail message="Required property org.apache.jetspeed.catalina.version.major undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.catalina.version.major"/>
+    <fail message="Required property org.apache.jetspeed.server.shared undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.server.shared"/>
+    <fail message="Required property org.apache.jetspeed.deploy.war.dir undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.deploy.war.dir"/>
+    <fail message="Required property org.apache.jetspeed.services.autodeployment.user undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.services.autodeployment.user"/>
+    <fail message="Required property org.apache.jetspeed.services.autodeployment.password undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.services.autodeployment.password"/>
   </goal>  
 
   <goal name="check.patch.tomcat5.jaas.realm"
         description="Check if the Tomcat5 JAASRealm patch is needed">
     <j:set var="catalina_version_major" value="${catalina.version.major}"/>
     <j:if test="${catalina_version_major == '5'}">
-      <mkdir dir="${catalina.home}/server/classes"/>
-      <javac srcdir="src/tomcat5-jaas-patch" destdir="${catalina.home}/server/classes">
+      <mkdir dir="${org.apache.jetspeed.server.home}/server/classes"/>
+      <javac srcdir="src/tomcat5-jaas-patch" destdir="${org.apache.jetspeed.server.home}/server/classes">
         <classpath>
           <path refid="maven.dependency.classpath"/>
-          <fileset dir="${catalina.home}/server/lib">
+          <fileset dir="${org.apache.jetspeed.server.home}/server/lib">
             <include name="**/*.jar"/>
           </fileset>
         </classpath>

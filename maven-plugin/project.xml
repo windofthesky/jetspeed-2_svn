@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>maven-jetspeed2-plugin</id>
   <groupId>jetspeed2</groupId>

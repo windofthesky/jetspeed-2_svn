@@ -68,7 +68,7 @@ limitations under the License.
 			<echo>Using war ${pam.app.war}</echo>
 		</j:if>
 		
-		<echo>${deploy.war.dir}</echo>
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
 		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
 			<classpath>
 				<path refid="maven.dependency.classpath"/>
@@ -94,7 +94,7 @@ limitations under the License.
 			<arg value="${pam.app.war}"/>
 			
 			<arg value="-webappDir"/>
-			<arg value="${pam.deploy.dir}/"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
 			
 			<!--
 			<arg value="-ApplicationType"/>
@@ -125,7 +125,7 @@ limitations under the License.
 	<goal name="pam.template.register">
 		<echo>Performing action ${pam.action} with App ${pam.app.name}</echo>
 		
-		<echo>${deploy.war.dir}</echo>
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
 		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
 			<classpath>
 				<path refid="maven.dependency.classpath"/>
@@ -151,7 +151,7 @@ limitations under the License.
 			<arg value="${pam.app.war}"/>
 			
 			<arg value="-webappDir"/>
-			<arg value="${pam.deploy.dir}/"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
 			
 			<!--
 			<arg value="-ApplicationType"/>
@@ -185,7 +185,7 @@ limitations under the License.
 			<echo>Using war ${pam.app.war}</echo>
 		</j:if>
 		
-		<echo>${deploy.war.dir}</echo>
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
 		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
 			<classpath>
 				<path refid="maven.dependency.classpath"/>
@@ -211,7 +211,7 @@ limitations under the License.
 			<arg value="${pam.app.type}"/>
 			
 			<arg value="-webappDir"/>
-			<arg value="${pam.deploy.dir}/"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
 	
 			<!--
 			<arg value="-UserName"/>
@@ -354,20 +354,20 @@ limitations under the License.
   <!-- ================================================================ -->
   <goal name="deploy">
      <echo message="Deploying ${pom.id}, ${pom.name}"/>
-      <delete dir="${deploy.war.dir}/${webapp.name}"/>
-      <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
-      <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
+      <copy  file="./target/jetspeed.war" tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"/>
+      <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war" dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
 
-      <copy file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml" overwrite="true">
-        <filterset begintoken="@" endtoken="@">
-          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
-          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
-          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
-          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
-        </filterset>
-      </copy>
-<!-- uncomment for Tomcat5 -->
-      <copy file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/../conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+      <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+      <j:choose>
+        <j:when test="${catalina_version_major == '5'}" >
+          <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+        </j:when>
+        <j:otherwise>
+          <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
+        </j:otherwise>
+      </j:choose>
+      <copy file="./src/resources/jetspeed.xml" tofile="${context_dir}/jetspeed.xml" overwrite="true">
         <filterset begintoken="@" endtoken="@">
           <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
           <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
@@ -383,13 +383,13 @@ limitations under the License.
   <!-- Hot Deploy for mundane everyday development under Catalina       -->
   <!-- ================================================================ -->
   <goal name="hotdeploy">
-    <echo message="Hot Deploying ${pom.id}, ${pom.name} ${webapp.dir}"/>
-    <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
+    <echo message="Hot Deploying ${pom.id}, ${pom.name} ${maven.war.src}"/>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
         <fileset dir="${maven.build.dir}/classes">
         </fileset>
     </copy>
-    <copy todir="${deploy.war.dir}/${webapp.name}/">
-      <fileset dir="${webapp.dir}">
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/">
+      <fileset dir="${maven.war.src}">
          <exclude name="WEB-INF/db/**"/>
       </fileset>
     </copy>
@@ -417,65 +417,30 @@ limitations under the License.
   <goal name="deployClasses">
     <attainGoal name="java:compile"/>
     <attainGoal name="java:jar-resources"/>
-    <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
       <fileset dir="${basedir}/target/classes" />
     </copy>
-     <copy todir="${deploy.war.dir}/${webapp.name}">
+     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}">
       <fileset dir="${basedir}/src/webapp" />
     </copy>
-  </goal>
-
-  <goal name="debugWebapp">
-    <copy todir="${debug.webapp.dir}/jetspeed">
-      <fileset dir="${basedir}/src/webapp" />
-    </copy>
-
-     <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-       <classpath>
-
-         <path refid="maven.dependency.classpath"/>
-         <pathelement path="${maven.build.dest}"/>
-         <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-        </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-         <arg value="-action" />
-         <arg value="deploy" />
-         <arg value="-PortletAppName" />
-         <arg value="HW_App" />
-         <arg value="-warfilename" />
-         <arg value="../applications/demo/target/demo.war" />
-         <arg value="-webappDir" />
-         <arg value="${debug.webapp.dir}/" />
-         <arg value="-PortalName" />
-         <arg value="jetspeed" />
-         <arg value="-DbAlias" />
-         <arg value="${debug.webapp.dir}/jetspeed/WEB-INF/db/hsql/Registry" />
-
-      </java>
-
   </goal>
 
   <goal name="catalina:base-shared"
         description="Copy all base jars necessary for common container">
-    <echo>Copying from ${maven.repo.local} to ${catalina.shared.lib}...</echo>
-    <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>-->
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${catalina.shared.lib}"/>
+    <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
-    <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="../jetspeed-api/target/jetspeed-api-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
+    <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../jetspeed-api/target/jetspeed-api-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
   <!-- ================================================================ -->
@@ -575,14 +540,22 @@ limitations under the License.
     <attainGoal name="ojb.set.production.database.platform"/>
   </preGoal>
 
+  <postGoal name="war:webapp">
+    <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+      </filterset>
+    </copy>
+  </postGoal>
   
   <goal name='remove.wars'>
-    <delete dir="${deploy.war.dir}/${webapp.name}"/>
-    <delete file="${deploy.war.dir}/${webapp.name}.war"/>
-    <delete dir="${deploy.war.dir}/HW_App"/>
-    <delete dir="${deploy.war.dir}/pam"/>    
-    <delete dir="${deploy.war.dir}/security"/>
-    <delete dir="${deploy.war.dir}/struts-demo"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/HW_App"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
   </goal>
 
 </project>

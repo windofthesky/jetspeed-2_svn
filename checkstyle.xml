@@ -29,7 +29,9 @@ limitations under the License.
     <module name="FileLength"/>
     <module name="RegexpHeader">
       <property name="headerFile" value="${checkstyle.header.file}"/>
+      <!-- invalid property
       <property name="ignoreLines" value="4"/>
+      -->
     </module>
     <module name="LineLength">
       <property name="ignorePattern" value="(@version|@see|^import)"/>

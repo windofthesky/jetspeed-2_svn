@@ -8,13 +8,13 @@
   <!-- Hot Deploy for mundane everyday development under Catalina       -->
   <!-- ================================================================ -->
   <goal name="hotdeploy">
-    <echo message="Hot Deploying ${portlet.app.name} to ${deploy.war.dir}"/>
-    <copy todir="${deploy.war.dir}/${portlet.app.name}/WEB-INF/classes">
+    <echo message="Hot Deploying ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}"/>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/WEB-INF/classes">
         <fileset dir="${maven.build.dir}/classes">
         </fileset>
-    </copy>       
-    <copy todir="${deploy.war.dir}/${portlet.app.name}/">
-      <fileset dir="${webapp.dir}">
+    </copy>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/">
+      <fileset dir="${maven.war.src}">
       </fileset>
     </copy>
   </goal>
