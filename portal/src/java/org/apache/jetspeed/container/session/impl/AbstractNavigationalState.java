@@ -37,7 +37,12 @@ public abstract class AbstractNavigationalState
         this.context = context;
         this.nav = nav;        
     }
-            
+        
+    public void init(RequestContext context)
+    {
+        this.context = context;
+    }
+    
     public boolean isNavigationalParameter(String token)
     {
         return token.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));

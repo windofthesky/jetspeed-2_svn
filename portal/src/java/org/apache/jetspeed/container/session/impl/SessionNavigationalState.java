@@ -114,27 +114,53 @@ public class SessionNavigationalState
     }
     
     public void sync()
-    {
-        /*
+    {        
         PortalURL url = context.getPortalURL();
         PortalControlParameter pcp = url.getControlParameters();
         
-        System.out.println("SYNCING NOW: " + context.getPath());
-        
+        String pathInfo = context.getPath();
+        /*
         Iterator stateful = pcp.getStateFullControlParameter().entrySet().iterator();
         while (stateful.hasNext())
         {
             Map.Entry entry = (Map.Entry)stateful.next();
             System.out.println("STATEFUL KEY = " + entry.getKey() + ", VALUE = " + entry.getValue());            
         }
+        */
         Iterator stateless = pcp.getStateLessControlParameter().entrySet().iterator();
         while (stateless.hasNext())
         {
             Map.Entry entry = (Map.Entry)stateless.next();
-            System.out.println("STATELESS KEY = " + entry.getKey() + ", VALUE = " + entry.getValue());
+            String key = (String)entry.getKey();
+            String windowId = nav.getWindowIdFromKey(key);
+            if (null == windowId)
+            {
+                continue;
+            }
+            if (key.startsWith(nav.getNavigationKey(NavigationalStateComponent.STATE)))
+            {
+                String windowState = (String)entry.getValue();
+                WindowState previousState = (WindowState)states.get(windowId);
+                if (previousState != null)
+                {
+                    pstates.put(windowId, previousState);
+                }
+                states.put(windowId, new WindowState (windowState));
+                // System.out.println("STATE UPDATED = " + windowId + ", = " + windowState);                
+            }
+            else if (key.startsWith(nav.getNavigationKey(NavigationalStateComponent.MODE)))
+            {
+                String mode = (String)entry.getValue();
+                PortletMode previousMode = (PortletMode)modes.get(windowId);
+                if (previousMode != null)
+                {
+                    pmodes.put(windowId, previousMode);
+                }
+                modes.put(windowId, new PortletMode(mode));
+                // System.out.println("MODE UPDATED = " + windowId + ", = " + mode);
+            }
+            
         }
-        System.out.println("DONE SYNCING NOW: " );
-        */
     }
     
 }

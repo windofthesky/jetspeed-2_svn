@@ -65,6 +65,7 @@ public class JetspeedRequestContext implements RequestContext
     private PortalURL url;
     private PortletWindow actionWindow;
     private String encoding;
+    private String requestPath = null;
     
     public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
 
@@ -382,12 +383,16 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getPath()
     {
-        if (request.getPathInfo() == null)
+        if (this.requestPath != null)
         {
+            return this.requestPath;
+        }
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null)
+        {
+            this.requestPath = null;
             return null;
         }
-        String pathInfo = new String(request.getPathInfo());
-        // System.out.println("path info = " + pathInfo);
         StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
         StringBuffer path = new StringBuffer();
         int mode = 0; // 0=navigation, 1=control information
@@ -410,9 +415,11 @@ public class JetspeedRequestContext implements RequestContext
         String result = path.toString();
         if (result.equals("/") || result.trim().length() == 0)
         {
+            this.requestPath = null;
             return null;
         }
-        return result;
+        this.requestPath = result;
+        return this.requestPath;
     }
     
     public PortalURL getPortalURL()

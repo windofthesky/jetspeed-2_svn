@@ -18,6 +18,7 @@ package org.apache.jetspeed.container.session;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -81,5 +82,14 @@ public interface NavigationalState
      * 
      */
     void sync();
+    
+    
+    /**
+     * Initialize the navigation state with the current context.
+     * Necessary to do so per request invocation.
+     * 
+     * @param context 
+     */
+    void init(RequestContext context);
     
 }

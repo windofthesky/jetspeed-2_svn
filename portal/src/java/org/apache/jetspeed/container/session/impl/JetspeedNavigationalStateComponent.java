@@ -119,6 +119,10 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
                 Constructor constructor = navClass.getConstructor(new Class[] {RequestContext.class, NavigationalStateComponent.class});            
                 state = (NavigationalState) constructor.newInstance(new Object[] {context, this});
             }
+            else
+            {
+                state.init(context);
+            }
             
             if (sessionBased && session != null)
             {
@@ -179,4 +183,20 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         return "";        
     }
 
+    /**
+     * Given a navigational key, such as s_14 (state_windowid), return the window id
+     * @param key
+     * @return The window id from the key
+     */
+    public String getWindowIdFromKey(String key)
+    {
+        String delimiter = navigationKeyNames[NavigationalStateComponent.PREFIX];
+        StringTokenizer tokenizer = new StringTokenizer(key, delimiter);
+        if (!tokenizer.hasMoreTokens())
+            return null;
+        tokenizer.nextToken(); // navigational directive
+        if (!tokenizer.hasMoreTokens())
+            return null;        
+        return tokenizer.nextToken();                
+    }
 }

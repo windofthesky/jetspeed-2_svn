@@ -86,4 +86,11 @@ public interface NavigationalStateComponent
      */
     String getNavigationKey(int key);       
     
+    /**
+     * Given a navigational key, such as s_14 (state_windowid), return the window id portion.
+     * @param key The full key with navigation type and window id (mode_windowid)
+     * @return The window id from the key
+     */    
+    String getWindowIdFromKey(String key);
+    
 }

@@ -24,10 +24,12 @@ import java.util.Stack;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.configuration.Configuration;
@@ -39,6 +41,7 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
@@ -212,6 +215,30 @@ public class JetspeedPowerTool implements ViewTool
 
     }
 
+    /**
+     * Gets the window state for the current portlet window (fragment)
+     * 
+     * @return The window state for the current window
+     */
+    public WindowState getWindowState()
+    {
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        NavigationalState nav = context.getNavigationalState();
+        return nav.getState(windowAccess.getPortletWindow(getCurrentFragment()));
+    }
+    
+    /**
+     * Gets the portlet mode for a current portlet window (fragment) 
+     * 
+     * @return The portlet mode of the current window
+     */
+    public PortletMode getPortletMode()
+    {
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        NavigationalState nav = context.getNavigationalState();
+        return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));        
+    }
+    
     /**
      * @param request
      */
