@@ -141,6 +141,11 @@ public class JetspeedObjectID implements ObjectID, java.io.Serializable
         return new JetspeedObjectID(_id, idStr);
     }
 
+    /**
+     * @param portletDefinition
+     * @param instanceName
+     * @return
+     */
     public static JetspeedObjectID createPortletEntityId(PortletDefinition portletDefinition, String instanceName)
     {
         return createFromString(portletDefinition.getName() + ":" + portletDefinition.getId().toString() + ":" + instanceName);

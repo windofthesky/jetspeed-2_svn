@@ -113,10 +113,14 @@ public class PortletApplicationBrowser extends GenericPortlet
         response.setContentType("text/html");
         
         PortletURL url = response.createRenderURL();
+        PortletURL actionUrl = response.createActionURL();
+
         // url.addParameter("test", "value");
         
         response.getWriter().println("<br/><b>Init Param 'Template' = " + this.getInitParameter("template") +  "</b>");
-        response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
+        response.getWriter().println("<br/><b>Render URL = <a href='" + url +  "'>" + url + "</a></b>");
+        response.getWriter().println("<br/><b>Action URL = <a href='" + actionUrl +  "'>" + actionUrl + "</a></b>");
+        
         response.getWriter().println("<br/><b>Request dispatching now</b>");
         
         PortletRequestDispatcher rd = context.getRequestDispatcher("/hello.jsp");
