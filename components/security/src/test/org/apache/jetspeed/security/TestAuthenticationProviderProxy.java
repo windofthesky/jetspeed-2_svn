@@ -34,6 +34,7 @@ import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapCredentialHandler;
 import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>Unit testing for {@link TestAuthenticationProviderProxy}.</p>
@@ -43,15 +44,6 @@ import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
 public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
 {
 
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestAuthenticationProviderProxy(String testName)
-    {
-        super(testName);
-    }
-    
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -181,7 +173,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
             assertEquals("should not contain any role", 0, roles.size());
             
             // The mapping entry should be gone.
-            assertNull(cq.getInternalUserPrincipal("ldap1", true));
+            assertNull(securityAccess.getInternalUserPrincipal("ldap1", true));
             
             // Is user in roles?
             assertFalse(rms.isUserInRole("ldap1", "testrole1"));
@@ -227,7 +219,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
             assertEquals("should not contain any group", 0, groups.size());
             
             // The mapping entry should be gone.
-            assertNull(cq.getInternalUserPrincipal("ldap1", true));
+            assertNull(securityAccess.getInternalUserPrincipal("ldap1", true));
             
             // Is user in groups?
             assertFalse(gms.isUserInGroup("ldap1", "testgroup1"));

@@ -24,6 +24,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>Unit testing for {@link GeneralizationHierarchyResolver}.</p>
@@ -34,15 +35,6 @@ import org.apache.jetspeed.security.impl.UserManagerImpl;
 public class TestGeneralizationHierarchy extends AbstractSecurityTestcase
 {
 
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestGeneralizationHierarchy(String testName)
-    {
-        super(testName);
-    }
-    
     /**
      * @see junit.framework.TestCase#setUp()
      */

@@ -18,9 +18,9 @@ import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 
-import org.apache.jetspeed.security.AbstractSecurityTestcase;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -35,17 +35,6 @@ import junit.framework.TestSuite;
 public class TestRoleSecurityHandler extends AbstractSecurityTestcase
 {
 
-    /**
-     * <p>
-     * Defines the test case name for junit.
-     * </p>
-     * 
-     * @param testName The test case name.
-     */
-    public TestRoleSecurityHandler(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()

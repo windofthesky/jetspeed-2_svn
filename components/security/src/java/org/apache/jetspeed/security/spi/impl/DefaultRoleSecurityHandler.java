@@ -22,6 +22,7 @@ import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityAccess;
 
 /**
  * @see org.apache.jetspeed.security.spi.RoleSecurityHandler
@@ -30,14 +31,14 @@ import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 public class DefaultRoleSecurityHandler implements RoleSecurityHandler
 {
     /** Common queries. */
-    private CommonQueries commonQueries = null;
+    private SecurityAccess commonQueries = null;
 
     /**
      * <p>
      * Constructor providing access to the common queries.
      * </p>
      */
-    public DefaultRoleSecurityHandler(CommonQueries commonQueries)
+    public DefaultRoleSecurityHandler(SecurityAccess commonQueries)
     {
         this.commonQueries = commonQueries;
     }

@@ -14,13 +14,10 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.security.Principal;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -30,6 +27,10 @@ import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
+import org.apache.jetspeed.security.spi.SecurityAccess;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
 
 /**
  * <p>
@@ -38,24 +39,17 @@ import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
-public class CommonQueries
+public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport implements SecurityAccess
 {
-    private static final Log log = LogFactory.getLog(CommonQueries.class);
-
-    /** The persistence store. * */
-    private PersistenceStore persistenceStore;
+    
 
     /**
-     * @param persistenceStore The persistence store.
+     * 
+     * @param repositoryPath
      */
-    public CommonQueries(PersistenceStore persistenceStore)
+    public SecurityAccessImpl(String repositoryPath)
     {
-        if (persistenceStore == null)
-        {
-            throw new IllegalArgumentException("persistenceStore cannot be null for BaseSecurityImpl");
-        }
-
-        this.persistenceStore = persistenceStore;
+       super(repositoryPath);
     }
 
     /**
@@ -71,10 +65,10 @@ public class CommonQueries
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
         // Get user.
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, filter);
-        InternalUserPrincipal internalUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
+        InternalUserPrincipal internalUser = (InternalUserPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalUser;
     }
     
@@ -92,11 +86,11 @@ public class CommonQueries
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
         // Get user.
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", fullPath);
         filter.addEqualTo("isMappingOnly", new Boolean(isMappingOnly));
-        Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, filter);
-        InternalUserPrincipal internalUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
+        InternalUserPrincipal internalUser = (InternalUserPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalUser;
     }
 
@@ -110,10 +104,10 @@ public class CommonQueries
      */
     public Iterator getInternalUserPrincipals(String filter)
     {
-        Filter queryFilter = persistenceStore.newFilter();
-        queryFilter.addEqualTo("isMappingOnly", new Boolean(false));
-        Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, queryFilter);
-        Iterator result = persistenceStore.getIteratorByQuery(query);
+        Criteria queryCriteria = new Criteria();
+        queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
+        Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, queryCriteria);
+        Iterator result = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         return result;
     }
 
@@ -130,20 +124,16 @@ public class CommonQueries
     {
         try
         {
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.lockForWrite(internalUser);
             if (isMappingOnly)
             {
                 internalUser.setMappingOnly(isMappingOnly);
             }
-            tx.commit();
+            getPersistenceBrokerTemplate().store(internalUser);
         }
         catch (Exception e)
         {
             String msg = "Unable to lock user for update.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
     }
@@ -161,21 +151,17 @@ public class CommonQueries
         try
         {
             // Remove user.
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.deletePersistent(internalUser);
-            tx.commit();
-            if (log.isDebugEnabled())
+            getPersistenceBrokerTemplate().delete(internalUser);
+            if (logger.isDebugEnabled())
             {
-                log.debug("Deleted user: " + internalUser.getFullPath());
+                logger.debug("Deleted user: " + internalUser.getFullPath());
             }
 
         }
         catch (Exception e)
         {
             String msg = "Unable to lock User for update.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
     }
@@ -190,10 +176,10 @@ public class CommonQueries
      */
     public InternalRolePrincipal getInternalRolePrincipal(String roleFullPathName)
     {
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", roleFullPathName);
-        Object query = persistenceStore.newQuery(InternalRolePrincipalImpl.class, filter);
-        InternalRolePrincipal internalRole = (InternalRolePrincipal) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalRolePrincipalImpl.class, filter);
+        InternalRolePrincipal internalRole = (InternalRolePrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalRole;
     }
     
@@ -210,20 +196,16 @@ public class CommonQueries
     {
         try
         {
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.lockForWrite(internalRole);
             if (isMappingOnly)
             {
                 internalRole.setMappingOnly(isMappingOnly);
             }
-            tx.commit();
+            getPersistenceBrokerTemplate().store(internalRole);
         }
         catch (Exception e)
         {
             String msg = "Unable to lock role for update.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
     }
@@ -241,21 +223,18 @@ public class CommonQueries
         try
         {
             // Remove role.
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.deletePersistent(internalRole);
-            tx.commit();
-            if (log.isDebugEnabled())
+
+            getPersistenceBrokerTemplate().delete(internalRole);
+            if (logger.isDebugEnabled())
             {
-                log.debug("Deleted role: " + internalRole.getFullPath());
+                logger.debug("Deleted role: " + internalRole.getFullPath());
             }
 
         }
         catch (Exception e)
         {
             String msg = "Unable to lock role for delete.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
         
@@ -271,10 +250,10 @@ public class CommonQueries
      */
     public InternalGroupPrincipal getInternalGroupPrincipal(String groupFullPathName)
     {
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", groupFullPathName);
-        Object query = persistenceStore.newQuery(InternalGroupPrincipalImpl.class, filter);
-        InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, filter);
+        InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalGroup;
     }
     
@@ -291,20 +270,17 @@ public class CommonQueries
     {
         try
         {
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.lockForWrite(internalGroup);
+            
             if (isMappingOnly)
             {
                 internalGroup.setMappingOnly(isMappingOnly);
             }
-            tx.commit();
+            getPersistenceBrokerTemplate().store(internalGroup);
         }
         catch (Exception e)
         {
             String msg = "Unable to lock group for update.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);         
             throw new SecurityException(msg, e);
         }
     }
@@ -321,22 +297,19 @@ public class CommonQueries
     {
         try
         {
-            // Remove role.
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.deletePersistent(internalGroup);
-            tx.commit();
-            if (log.isDebugEnabled())
+            // Remove role.           
+            getPersistenceBrokerTemplate().delete(internalGroup);
+       
+            if (logger.isDebugEnabled())
             {
-                log.debug("Deleted group: " + internalGroup.getFullPath());
+                logger.debug("Deleted group: " + internalGroup.getFullPath());
             }
 
         }
         catch (Exception e)
         {
             String msg = "Unable to lock group for delete.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
         

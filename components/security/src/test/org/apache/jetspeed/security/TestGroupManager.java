@@ -22,6 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>
@@ -33,18 +34,6 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
  */
 public class TestGroupManager extends AbstractSecurityTestcase
 {
-
-    /**
-     * <p>
-     * Defines the test case name for junit.
-     * </p>
-     * 
-     * @param testName The test case name.
-     */
-    public TestGroupManager(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()

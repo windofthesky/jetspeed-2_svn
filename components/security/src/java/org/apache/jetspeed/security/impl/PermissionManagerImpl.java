@@ -24,11 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
@@ -37,6 +32,10 @@ import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalPermissionImpl;
 import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
+import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
  * <p>
@@ -64,28 +63,8 @@ import org.apache.jetspeed.util.ArgUtil;
  * 
  * 
  */
-public class PermissionManagerImpl implements PermissionManager
+public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implements PermissionManager 
 {
-    private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
-
-    /** The persistence store. */
-    private PersistenceStore persistenceStore;
-
-    /**
-     * <p>
-     * Constructor providing access to the persistence component.
-     * </p>
-     */
-    public PermissionManagerImpl(PersistenceStore persistenceStore)
-    {
-        if (persistenceStore == null)
-        {
-            throw new IllegalArgumentException("persistenceStore cannot be null.");
-        }
-
-        this.persistenceStore = persistenceStore;
-    }
-
     /**
      * @see org.apache.jetspeed.security.PermissionManager#getPermissions(java.security.Principal)
      */
@@ -119,10 +98,10 @@ public class PermissionManagerImpl implements PermissionManager
         Collection principalsFullPath = getPrincipalsFullPath(principals);
         if ((null != principalsFullPath) && principalsFullPath.size() > 0)
         {
-            Filter filter = persistenceStore.newFilter();
+            Criteria filter = new Criteria();
             filter.addIn("fullPath", principalsFullPath);
-            Object query = persistenceStore.newQuery(InternalPrincipalImpl.class, filter);
-            Collection internalPrincipals = persistenceStore.getCollectionByQuery(query);
+            Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
+            Collection internalPrincipals = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             Iterator internalPrincipalsIter = internalPrincipals.iterator();
             while (internalPrincipalsIter.hasNext())
             {
@@ -208,17 +187,13 @@ public class PermissionManagerImpl implements PermissionManager
         InternalPermission internalPermission = new InternalPermissionImpl(permission.getClass().getName(), permission
                 .getName(), permission.getActions());
         try
-        {
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.lockForWrite(internalPermission);
-            tx.commit();
+        {            
+            getPersistenceBrokerTemplate().store(internalPermission);            
         }
         catch (Exception e)
         {
             String msg = "Unable to add permission.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);            
             throw new SecurityException(msg, e);
         }
     }
@@ -237,16 +212,12 @@ public class PermissionManagerImpl implements PermissionManager
             try
             {
                 // Remove permission.
-                Transaction tx = persistenceStore.getTransaction();
-                tx.begin();
-                persistenceStore.deletePersistent(internalPermission);
-                tx.commit();
+                getPersistenceBrokerTemplate().delete(internalPermission);
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Permission for update.";
-                log.error(msg, e);
-                persistenceStore.getTransaction().rollback();
+                logger.error(msg, e);
                 throw new SecurityException(msg, e);
             }
         }
@@ -272,18 +243,15 @@ public class PermissionManagerImpl implements PermissionManager
             }
             try
             {
-                Transaction tx = persistenceStore.getTransaction();
-                tx.begin();
-                persistenceStore.lockForWrite(internalPrincipal);
                 internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 internalPrincipal.setPermissions(internalPermissions);
-                tx.commit();
+                
+                getPersistenceBrokerTemplate().store(internalPrincipal);
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Principal for update.";
-                log.error(msg, e);
-                persistenceStore.getTransaction().rollback();
+                logger.error(msg, e);                
                 throw new SecurityException(msg, e);
             }
         }
@@ -323,18 +291,15 @@ public class PermissionManagerImpl implements PermissionManager
         }
         try
         {
-            Transaction tx = persistenceStore.getTransaction();
-            tx.begin();
-            persistenceStore.lockForWrite(internalPrincipal);
             internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             internalPrincipal.setPermissions(internalPermissions);
-            tx.commit();
+            
+            getPersistenceBrokerTemplate().store(internalPrincipal);
         }
         catch (Exception e)
         {
             String msg = "Unable to lock Principal for update.";
-            log.error(msg, e);
-            persistenceStore.getTransaction().rollback();
+            logger.error(msg, e);            
             throw new SecurityException(msg, e);
         }
     }
@@ -391,18 +356,15 @@ public class PermissionManagerImpl implements PermissionManager
                 {
                     try
                     {
-                        Transaction tx = persistenceStore.getTransaction();
-                        tx.begin();
-                        persistenceStore.lockForWrite(internalPrincipal);
                         internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                         internalPrincipal.setPermissions(newInternalPermissions);
-                        tx.commit();
+
+                        getPersistenceBrokerTemplate().store(internalPrincipal);
                     }
                     catch (Exception e)
                     {
                         String msg = "Unable to lock principal for update.";
-                        log.error(msg, e);
-                        persistenceStore.getTransaction().rollback();
+                        logger.error(msg, e);                      
                         throw new SecurityException(msg, e);
                     }
                 }
@@ -420,10 +382,10 @@ public class PermissionManagerImpl implements PermissionManager
      */
     InternalPrincipal getInternalPrincipal(String fullPath)
     {
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = persistenceStore.newQuery(InternalPrincipalImpl.class, filter);
-        InternalPrincipal internalPrincipal = (InternalPrincipal) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
+        InternalPrincipal internalPrincipal = (InternalPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalPrincipal;
     }
 
@@ -437,12 +399,12 @@ public class PermissionManagerImpl implements PermissionManager
      */
     InternalPermission getInternalPermission(Permission permission)
     {
-        Filter filter = persistenceStore.newFilter();
+        Criteria filter = new Criteria();
         filter.addEqualTo("classname", permission.getClass().getName());
         filter.addEqualTo("name", permission.getName());
         filter.addEqualTo("actions", permission.getActions());
-        Object query = persistenceStore.newQuery(InternalPermissionImpl.class, filter);
-        InternalPermission internalPermission = (InternalPermission) persistenceStore.getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(InternalPermissionImpl.class, filter);
+        InternalPermission internalPermission = (InternalPermission) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalPermission;
     }
 

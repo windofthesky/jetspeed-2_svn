@@ -17,7 +17,7 @@ package org.apache.jetspeed.security.spi;
 import java.security.Principal;
 import java.util.Iterator;
 
-import org.apache.jetspeed.security.AbstractSecurityTestcase;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -32,18 +32,7 @@ import junit.framework.TestSuite;
 public class TestUserSecurityHandler extends AbstractSecurityTestcase
 {
 
-    /**
-     * <p>
-     * Defines the test case name for junit.
-     * </p>
-     * 
-     * @param testName The test case name.
-     */
-    public TestUserSecurityHandler(String testName)
-    {
-        super(testName);
-    }
-
+    
     /**
      * @see junit.framework.TestCase#setUp()
      */

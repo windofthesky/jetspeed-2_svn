@@ -24,6 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * TestSecurityHelper
@@ -33,17 +34,6 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  */
 public class TestSecurityHelper extends AbstractSecurityTestcase
 {
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestSecurityHelper(String name)
-    {
-        super(name);
-    }
-
- 
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.

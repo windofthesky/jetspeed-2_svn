@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>Unit testing for {@link PermissionManager}.</p>
@@ -34,15 +35,6 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  */
 public class TestPermissionManager extends AbstractSecurityTestcase
 {
-
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestPermissionManager(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()

@@ -22,6 +22,7 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityAccess;
 
 /**
  * @see org.apache.jetspeed.security.spi.GroupSecurityHandler
@@ -30,12 +31,12 @@ import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 public class DefaultGroupSecurityHandler implements GroupSecurityHandler
 {
     /** Common queries. */
-    private CommonQueries commonQueries = null;
+    private SecurityAccess commonQueries = null;
         
     /**
      * <p>Constructor providing access to the common queries.</p>
      */
-    public DefaultGroupSecurityHandler(CommonQueries commonQueries)
+    public DefaultGroupSecurityHandler(SecurityAccess commonQueries)
     {
         this.commonQueries = commonQueries;
     }

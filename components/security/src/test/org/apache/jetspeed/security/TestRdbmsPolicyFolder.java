@@ -30,6 +30,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * @author <a href="mailto:christophe.lombart@sword-technologies.com">Christophe Lombart</a>
@@ -39,15 +40,6 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
 {
     /** <p>The JAAS login context.</p> */
     private LoginContext loginContext = null;
-
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestRdbmsPolicyFolder(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()

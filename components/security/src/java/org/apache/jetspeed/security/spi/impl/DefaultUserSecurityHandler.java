@@ -24,6 +24,7 @@ import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
+import org.apache.jetspeed.security.spi.SecurityAccess;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
@@ -33,12 +34,12 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
 public class DefaultUserSecurityHandler implements UserSecurityHandler
 {
     /** Common queries. */
-    private CommonQueries commonQueries = null;
+    private SecurityAccess commonQueries = null;
     
     /**
      * <p>Constructor providing access to the common queries.</p>
      */
-    public DefaultUserSecurityHandler(CommonQueries commonQueries)
+    public DefaultUserSecurityHandler(SecurityAccess commonQueries)
     {
         this.commonQueries = commonQueries;
     }

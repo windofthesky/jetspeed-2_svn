@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
@@ -35,15 +36,6 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
 {
     /** <p>The JAAS login context.</p> */
     private LoginContext loginContext = null;
-
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestRdbmsPolicy(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()

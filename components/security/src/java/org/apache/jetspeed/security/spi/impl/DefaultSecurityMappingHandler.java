@@ -31,6 +31,7 @@ import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
+import org.apache.jetspeed.security.spi.SecurityAccess;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 
 /**
@@ -47,14 +48,14 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     HierarchyResolver groupHierarchyResolver = new GeneralizationHierarchyResolver();
 
     /** Common queries. */
-    private CommonQueries commonQueries = null;
+    private SecurityAccess commonQueries = null;
 
     /**
      * <p>
      * Constructor providing access to the common queries.
      * </p>
      */
-    public DefaultSecurityMappingHandler(CommonQueries commonQueries)
+    public DefaultSecurityMappingHandler(SecurityAccess commonQueries)
     {
         this.commonQueries = commonQueries;
     }
@@ -65,7 +66,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
      * resolvers.
      * </p>
      */
-    public DefaultSecurityMappingHandler(CommonQueries commonQueries, HierarchyResolver roleHierarchyResolver,
+    public DefaultSecurityMappingHandler(SecurityAccess commonQueries, HierarchyResolver roleHierarchyResolver,
             HierarchyResolver groupHierarchyResolver)
     {
         this.commonQueries = commonQueries;

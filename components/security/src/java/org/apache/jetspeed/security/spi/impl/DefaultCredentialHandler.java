@@ -29,6 +29,7 @@ import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.SecurityAccess;
 
 /**
  * @see org.apache.jetspeed.security.spi.CredentialHandler
@@ -45,14 +46,14 @@ public class DefaultCredentialHandler implements CredentialHandler
     private static final int PUBLIC = 1;
 
     /** Common queries. */
-    private CommonQueries commonQueries = null;
+    private SecurityAccess commonQueries = null;
 
     /**
      * <p>
      * Constructor providing access to the common queries.
      * </p>
      */
-    public DefaultCredentialHandler(CommonQueries commonQueries)
+    public DefaultCredentialHandler(SecurityAccess commonQueries)
     {
         this.commonQueries = commonQueries;
     }

@@ -24,6 +24,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.security.impl.AggregationHierarchyResolver;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>
@@ -35,18 +36,6 @@ import org.apache.jetspeed.security.impl.UserManagerImpl;
  */
 public class TestAggregationHierarchy extends AbstractSecurityTestcase
 {
-
-    /**
-     * <p>
-     * Defines the test case name for junit.
-     * </p>
-     * 
-     * @param testName The test case name.
-     */
-    public TestAggregationHierarchy(String testName)
-    {
-        super(testName);
-    }
 
     /**
      * @see junit.framework.TestCase#setUp()
