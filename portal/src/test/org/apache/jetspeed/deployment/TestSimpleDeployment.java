@@ -38,6 +38,8 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
+import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
+import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
@@ -72,7 +74,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     protected PortletWindowAccessor windowAccess;
     protected PortletCache portletCache;
     protected PortletFactory portletFactory;
-    
+    protected ApplicationServerManager manager;
  
 
     /**
@@ -141,13 +143,13 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     {
 
         System.out.println("Deployment src: " + deploySrc);
-
+        manager = new TomcatManager("", 0, "", "");
         SimpleRegistry simpleRegistry = new InMemoryRegistryImpl();
         DeployDecoratorEventListener ddel = new DeployDecoratorEventListener(simpleRegistry, deployRootFile
                 .getAbsolutePath());
 
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache), portletRegistry, portletFactory );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager), portletRegistry, portletFactory );
         ArrayList eventListeners = new ArrayList(2);
         eventListeners.add(ddel);
         eventListeners.add(dpal);
@@ -242,8 +244,10 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     
     public void testUndeployVersusRedeploy() throws Exception
     {
+        manager = new TomcatManager("", 0, "", "");
+        
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache), portletRegistry, portletFactory );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager), portletRegistry, portletFactory );
         ArrayList eventListeners = new ArrayList(1);
         
         eventListeners.add(dpal);
@@ -457,7 +461,8 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
      */
     public void tearDown() throws Exception
     {
-        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache);
+        manager = new TomcatManager("", 0, "", "");
+        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager);
 
         try
         {
