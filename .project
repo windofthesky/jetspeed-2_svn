@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>jetspeed-2</name>
+	<name>Jetspeed-2</name>
 	<comment></comment>
 	<projects>
+		<project>pluto</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

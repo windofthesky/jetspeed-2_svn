@@ -9,6 +9,7 @@
     <classpathentry excluding="**/CVS/*" kind="src" path="mockobjects/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="plugin/src/java"/>
     <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
@@ -36,5 +37,6 @@
     <classpathentry kind="var" path="MAVEN_REPO/pluto-container/jars/pluto-0.46.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xerces-2.3.0.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/xml-apis/jars/xml-apis-2.0.2.jar"/>
+    <classpathentry kind="src" path="/pluto"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

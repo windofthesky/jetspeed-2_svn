@@ -53,7 +53,7 @@
  */
 package org.apache.jetspeed.persistence;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 import org.apache.jetspeed.services.plugin.PluginInitializationException;
 
@@ -68,7 +68,7 @@ import org.apache.jetspeed.services.plugin.PluginInitializationException;
  * @version $Id$
  *
  */
-public interface PersistenceService extends Service
+public interface PersistenceService extends CommonService
 {
     String SERVICE_NAME = "PersistenceService";
 
