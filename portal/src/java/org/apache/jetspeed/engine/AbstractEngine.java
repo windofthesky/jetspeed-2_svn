@@ -25,7 +25,6 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -330,10 +329,9 @@ public abstract class AbstractEngine implements Engine
      */
     public RequestContext getCurrentRequestContext()
     {
-        RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
+        RequestContextComponent contextComponent = (RequestContextComponent) getComponentManager()
             .getComponent(RequestContextComponent.class);
         return contextComponent.getRequestContext();
-        //return (RequestContext) tlRequestContext.get();
     }
 
     public ComponentManager getComponentManager()
