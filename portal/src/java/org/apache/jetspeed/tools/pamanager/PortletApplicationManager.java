@@ -17,6 +17,9 @@ package org.apache.jetspeed.tools.pamanager;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
@@ -25,10 +28,18 @@ import org.apache.jetspeed.exception.JetspeedException;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+/**
+ * PortletApplicationManager
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
+ */
 /**
  * This is the interface that defines the Lifecycle-related methods to control
  * Portlet Applications.
@@ -39,6 +50,8 @@ import java.util.Map.Entry;
 
 public class PortletApplicationManager implements JetspeedEngineConstants
 {
+    private static final Log log = LogFactory.getLog("deployment");
+    
     /**
      * Command line utility to deploy a portlet application to an application server.
      * The command line has the following options:
@@ -59,6 +72,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      *   (optional: required for if deploying to Catalina)
      * -DPassword={Password to access the servers management system}
      *   (optional: required for if deploying to Catalina)
+     * -DImpl=(full class name i.e. org.apache.jetspeed.tools.pamanager.FileSystemPAM)
      *
      *Notes: The deploy action requires the WarFileName. If no ApplicationServer
      *       is defined it requires in additionthe WebappDir.
@@ -78,12 +92,16 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         String strAction = "";
         String strWarFileName = "";
         String strPortletAppName = "";
-        String strAppServer = "";
         String strPortalName = "jetspeed";
         String applicationType = "webapp";
 		String strUserName = "";
 		String strPassword = "";
 		String strServer = "localhost";
+        String className = "org.apache.jetspeed.tools.pamanager.FileSystemPAM"; // default
+        Deployment deployer = null;
+        Registration registrator = null;
+        Lifecycle lifecycle = null;
+        
 		int intServerPort = 8080;
         String jetspeedPropertiesFile = System.getProperty("pam.jetspeed.properties", "/WEB-INF/conf/jetspeed.properties");
         String appsDirectory = System.getProperty("pam.apps.directory", "/WEB-INF/apps/");
@@ -98,6 +116,11 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 if (i < args.length)
                     strPortletAppName = args[i++];
             }
+            else if (arg.equalsIgnoreCase("-Impl"))
+            {
+                if (i < args.length)
+                    className = args[i++];
+            }            
             else if (arg.equalsIgnoreCase("-Action"))
             {
                 if (i < args.length)
@@ -112,11 +135,6 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             {
                 if (i < args.length)
                     strWarFileName = args[i++];
-            }
-            else if (arg.equalsIgnoreCase("-ApplicationServer"))
-            {
-                if (i < args.length)
-                    strAppServer = args[i++];
             }
             else if (arg.equalsIgnoreCase("-PortalName"))
             {
@@ -161,7 +179,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 return;
             }
         }
-
+        
         // Portlet Application Name and action are required by all functions.
         // Make sure that the values were defined from the command line.
         if (strPortletAppName.length() == 0 || strAction.length() == 0)
@@ -170,6 +188,11 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 "\nPortlet Application Name and/or action are not defined."
                     + "Please use '-PortletAppName appName' and/or '-Action deploy' from the command line\n");
             helpScreen();
+            log.error("PAM Error: Invalid parameter(s) passed, cannot process PAM request.");
+            if (!log.isInfoEnabled())
+            {
+                logRequest(args, true);
+            }            
             return;
         }
 
@@ -186,32 +209,63 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             // Override the properties with PAM specifice settings
             overrideProperties(strAppRoot, properties);
 
-            engine = Jetspeed.createEngine(properties, strAppRoot, null);
-
+            engine = Jetspeed.createEngine(properties, strAppRoot, null);            
         }
         catch (Exception e)
         {
-            System.out.println("Failed connecting to registry service. Error: " + e.getMessage());
+            String msg = "PAM Error: Failed to create the Jetspeed Engine. Error: ";
+            System.out.println(msg + e.getMessage());
+            log.error(msg, e);
+            shutdownAndExit(engine);
         }
 
-        // Invoke the functions
-        if (strAction.compareToIgnoreCase("deploy") == 0)
+        logRequest(args, false);
+        
+        try
         {
-            // Make sure that the WarFileName and the ApplicationServer are defined
-            if (strWarFileName.length() == 0)
-            {
-                System.out.println(
-                    "\nDeploy action requires the war file name. Use '-WarFileName file.war' to specify the file name");
-                return;
+            System.out.println("Ready to run PAM implementation: " + className);
+            System.out.print("Supporting interfaces: Deployment");
+            Class clas = Class.forName(className);
+            deployer = (Deployment)clas.newInstance(); 
+            if (deployer instanceof Registration)
+            {                
+                System.out.print(", Registration");
+                registrator = (Registration)deployer;
             }
-            else
+            if (deployer instanceof Lifecycle)
             {
-                if (strAppServer.length() == 0)
+                System.out.print(", Lifecycle");
+                lifecycle = (Lifecycle)deployer;
+            }            
+            System.out.println();
+        }
+        catch (Exception e)
+        {
+            String msg = "PAM Error: Failed to create PAM implementation class object: " + className + " Error: ";
+            System.out.println(msg  + e.getMessage());
+            log.error(msg, e);
+            shutdownAndExit(engine);                        
+        }
+        
+        try
+        {
+            // Invoke the functions
+            if (strAction.compareToIgnoreCase("deploy") == 0)
+            {
+                // Make sure that the WarFileName and the ApplicationServer are defined
+                if (strWarFileName.length() == 0)
+                {
+                    System.out.println(
+                        "\nDeploy action requires the war file name. Use '-WarFileName file.war' to specify the file name");
+                    log.error("PAM Error: Web application (WAR) file name not specified.");
+                    shutdownAndExit(engine);                
+                }
+                else
                 {
                     if (applicationType.equals("local"))
                     {
                         String portletAppRoot = strAppRoot + appsDirectory;
-                        deploy(portletAppRoot, strWarFileName, strPortletAppName);
+                        deploy(deployer, portletAppRoot, strWarFileName, strPortletAppName); // [RUN]
                     }
                     else
                     {
@@ -220,62 +274,101 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                         {
                             System.out.println(
                                 "\nDeploy action requires the definition of the ApplicationServer or the Web application directory.");
-                            return;
+                            log.error("PAM Deploy Error: Web application (WAR) directory name not specified.");
+                            shutdownAndExit(engine);                        
                         }
-
+    
                         // File deploy uses Directory and warfile
-                        deploy(strWebAppDir, strWarFileName, strPortletAppName);
+                        deploy(deployer, strWebAppDir, strWarFileName, strPortletAppName); // [RUN]
                     }
                 }
-                else
-                {
-                    // Uses war file and applicationServerName
-                    // DST: deployServer(strWarFileName, strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
-                }
             }
-        }
-        else if (strAction.compareToIgnoreCase("register") == 0)
-        {
-            // Requires WebAppDir
-            if (strWebAppDir.length() == 0)
+            else if (strAction.compareToIgnoreCase("register") == 0)
             {
-                System.out.println("\nRegister action requires the definition of the Web application directory.");
-                return;
+                // Requires WebAppDir
+                if (strWebAppDir.length() == 0)
+                {
+                    System.out.println("\nRegister action requires the definition of the Web application directory.");
+                    log.error("PAM Register Error: Web application (WAR) directory name not specified.");                        
+                    shutdownAndExit(engine);
+                }
+                if (null == registrator)
+                {
+                    String msg = "PAM Register Error: Registration interface not supported by implementation: " + className;            
+                    System.out.println("\n" + msg);
+                    log.error(msg);
+                    shutdownAndExit(engine);                                
+                }
+    
+                register(registrator, strWebAppDir, strPortletAppName); // [RUN]
             }
-
-            register(strWebAppDir, strWarFileName, strPortletAppName);
+            else if (strAction.compareToIgnoreCase("unregister") == 0)
+            {          
+                if (null == registrator)
+                {
+                    String msg = "PAM Register Error: Registration interface not supported by implementation: " + className;            
+                    System.out.println("\n" + msg);
+                    log.error(msg);  
+                    shutdownAndExit(engine);                
+                }
+                
+                // Application server can be null -- using Catalina as default
+                unregister(registrator, strWebAppDir, strPortletAppName); // [RUN]
+            }
+            else if (strAction.compareToIgnoreCase("undeploy") == 0)
+            {
+                if (null == lifecycle)
+                {
+                    String msg = "PAM Lifecycle Error: Lifecycle interface not supported by implementation: " + className;            
+                    System.out.println("\n" + msg);
+                    log.error(msg);
+                    shutdownAndExit(engine);                                
+                }
+                
+                undeploy(deployer, strWebAppDir, strPortletAppName, strServer, intServerPort, strUserName, strPassword); // [RUN]
+            }
+            else if (strAction.compareToIgnoreCase("start") == 0)
+            {
+                if (null == lifecycle)
+                {
+                    String msg = "PAM Lifecycle Error: Lifecycle interface not supported by implementation: " + className;            
+                    System.out.println("\n" + msg);
+                    log.error(msg);
+                    shutdownAndExit(engine);                                
+                }
+    
+                start(lifecycle, strPortletAppName, strServer, intServerPort, strUserName, strPassword); // [RUN]
+            }
+            else if (strAction.compareToIgnoreCase("stop") == 0)
+            {
+                stop(lifecycle, strPortletAppName, strServer, intServerPort, strUserName, strPassword); // [RUN]
+            }
+            else if (strAction.compareToIgnoreCase("reload") == 0)
+            {
+                if (null == lifecycle)
+                {
+                    String msg = "PAM Lifecycle Error: Lifecycle interface not supported by implementation: " + className;            
+                    System.out.println("\n" + msg);
+                    log.error(msg);
+                    shutdownAndExit(engine);                                
+                }
+                // Application server can be null -- using Catalina as default
+                reload(lifecycle, strPortletAppName, strServer, intServerPort, strUserName, strPassword); // [RUN]
+            }
+            else
+            {
+                System.out.println("\nAction: " + strAction + " not recognized by the PortletApplicationManager.");
+                helpScreen();
+            }
         }
-        else if (strAction.compareToIgnoreCase("unregister") == 0)
+        catch (Exception e)
         {
-            // Application server can be null -- using Catalina as default
-            unregister(strWebAppDir, strPortletAppName, strAppServer);
+            String msg = "PAM Error: Failed during execution of " + strAction + ", error = " + e.getMessage();
+            System.out.println(msg);
+            log.error(msg);                        
+            shutdownAndExit(engine);                    
         }
-        else if (strAction.compareToIgnoreCase("undeploy") == 0)
-        {
-            // Application server can be null -- using Catalina as default
-            undeploy(strWebAppDir, strPortletAppName, strAppServer, strServer, intServerPort, strUserName, strPassword);
-        }
-        else if (strAction.compareToIgnoreCase("start") == 0)
-        {
-            // Application server can be null -- using Catalina as default
-            start(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
-        }
-        else if (strAction.compareToIgnoreCase("stop") == 0)
-        {
-            // Application server can be null -- using Catalina as default
-            stop(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
-        }
-        else if (strAction.compareToIgnoreCase("reload") == 0)
-        {
-            // Application server can be null -- using Catalina as default
-            reload(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
-        }
-        else
-        {
-            System.out.println("\nAction: " + strAction + " not recognized by the PortletApplicationManager.");
-            helpScreen();
-        }
-
+        
         try
         {
             if (engine != null)
@@ -286,12 +379,34 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         catch (JetspeedException e1)
         {
             System.out.println("Failed shutting down the engine. Error: " + e1.getMessage());
+            log.error("PAM Error: Failed shutting down the engine.", e1);                        
+            System.exit(0);            
         }
-        System.out.println("Done");
-        // return;
+        
+        String msg = "PAM: completed operation " + strAction;
+        System.out.println(msg);
+        log.info(msg);
         System.exit(0);
     }
 
+    public static void shutdownAndExit(Engine engine)
+    {
+        try
+        {
+            if (engine != null)
+            {
+                engine.shutdown();
+            }
+        }
+        catch (JetspeedException e1)
+        {
+            System.out.println("Failed shutting down the engine. Error: " + e1.getMessage());
+            log.error("PAM Error: Failed shutting down the engine.", e1);                        
+        }
+        
+        System.exit(0);                    
+    }
+    
     public static void helpScreen()
     {
         System.out.println("\nPortletApplicationManager [options]\n");
@@ -299,7 +414,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         System.out.println("\t-PortletAppName\t\t{AppName}\n");
         System.out.println("\t-WebAppDir\t\t{Path to target WebApp directory}\n");
         System.out.println("\t-WarFileName\t\t{Path to war file to deploy}\n");
-        System.out.println("\t-ApplicationServer\t{Application server}\n");
+        System.out.println("\t-Impl\t\t{class name of implementation}\n");
         System.out.println("\t-ApplicationType\t{webapp|local}\n");
 
         System.out.println("\nNotes:");
@@ -317,247 +432,196 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     /**
      * Registers the already deployed WAR into the Portal registry
      *
-     * @param webAppsDir The webapps directory inside the Application Server
-     * @param warFile The warFile containing the Portlet Application
-     * @param paName The Portlet Application name
+     * @param registrator PAM implementation supporting Registration interface
+     * @param webApplicationName The webapps directory or name inside the Application Server
+     * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
      */
 
-    public static void register(String webAppsDir, String warFile, String strPortletAppName)
+    public static void register(Registration registrator,
+                                String webApplicationName, 
+                                String portletApplicationName)
+    throws PortletApplicationException
     {
-        // Invoke FileSystemPAM
-        FileSystemPAM fs = new FileSystemPAM();
-        try
-        {
-            System.out.println("Calling FileSystemPAM...");
-
-            fs.deploy(webAppsDir, warFile, strPortletAppName, 2);
-        }
-        catch (PortletApplicationException e)
-        {
-            //e.printStackTrace(System.out);
-            System.out.println(e.getMessage());
-        }
+        System.out.println("Registering Web Application [" + webApplicationName + "] to Portlet Application [" + portletApplicationName + "]...");
+        registrator.register(webApplicationName, portletApplicationName);
+        System.out.println("...PAM Register done");        
     }
 
     /**
      * Unregisterd a deployed portlet application
      *
-     * @param paName The Portlet Application name
-     * @throws PortletApplicationException
+     * @param registrator PAM implementation supporting Registration interface
+     * @param webApplicationName The webapps directory or name inside the Application Server
+     * @param portletApplicationName The Portlet Application name
      */
 
-    public static void unregister(String strWebAppDir, String paName, String appServer)
+    public static void unregister(Registration registrator, 
+                                  String webApplicationName, 
+                                  String portletApplicationName)
+    throws PortletApplicationException    
     {
-        if (strWebAppDir.length() != 0)
-        {
-            // FileSystem undeploy
-            FileSystemPAM dc = new FileSystemPAM();
-            try
-            {
-                dc.unregister(strWebAppDir, paName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-        }
-
+        System.out.println("Unregistering Portlet Application [" + portletApplicationName + "...");
+        registrator.unregister(webApplicationName, portletApplicationName);
+        System.out.println("...PAM Unregister done");        
     }
 
     /**
      * Deploys the specified war file to the webapps dirctory specified.
      *
-     * @param webAppsDir The webapps directory inside the Application Server
+     * @param webApplicationName The webapps directory or name inside the Application Server
      * @param warFile The warFile containing the Portlet Application
-     * @param paName The Portlet Application name
+     * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
      */
 
-    public static void deploy(String webAppsDir, String warFile, String strPortletAppName)
+    public static void deploy(Deployment deployer,
+                              String webApplicationName, 
+                              String warFile,
+                              String portletApplicationName)
+    throws PortletApplicationException        
     {
-        // Invoke FileSystemPAM
-        FileSystemPAM fs = new FileSystemPAM();
-        try
-        {
-            System.out.println("Calling FileSystemPAM...");
-
-            fs.deploy(webAppsDir, warFile, strPortletAppName);
-        }
-        catch (PortletApplicationException e)
-        {
-            //e.printStackTrace(System.out);
-            System.out.println(e.getMessage());
-        }
+        System.out.println("Deploying Web Application [" + webApplicationName + "] to Portlet Application [" + portletApplicationName + "]...");
+        deployer.deploy(webApplicationName, warFile, portletApplicationName);
+        System.out.println("...PAM Deploy done");        
     }
 
-    /**
-     * Deploys the specified war file to the webapps directory on the Application Server.
-     * The appServer parameter specifies a specific Application Server.
-     *
-     * @param warFile The warFile containing the Portlet Application
-     * @param appServer The Application Server name receiving the Portlet Application.
-     * @param paName The Portlet Application name
-     * @throws PortletApplicationException
-     */
-/*
-    public static void deployServer(String warFile, String appServer, String strPortletAppName, String strServer, int intServerPort, String strUser, String strPassword)
-    {
-        Object dc;
-        if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-        {
-            
-            try
-            {
-                dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
-                ((Deployment) dc).deploy(warFile, strPortletAppName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-
-        }
-        else
-        {
-            System.out.println("Application Server: " + appServer + " not supported");
-        }
-    }
-*/
     /**
      * Prepares the specified war file for deployment.
      *
      * @param paName The Portlet Application name
      * @throws PortletApplicationException
-     */
-
-    public static void undeploy(String strWebAppDir, String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
+     */    
+    public static void undeploy(Deployment deployer,
+                                String webApplicationName, 
+                                String portletApplicationName, 
+                                String host, 
+                                int port, 
+                                String user, 
+                                String password)
+    throws PortletApplicationException    
     {
-        Object dc;
-        if (strWebAppDir.length() == 0)
+        Map map = new HashMap();        
+        if (deployer instanceof CatalinaPAM)
         {
-            if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-            {                
-                try
-                {
-					dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
-                    ((Deployment) dc).undeploy(paName);
-                }
-                catch (PortletApplicationException e)
-                {
-                    e.printStackTrace(System.out);
-                }
-
-            }
-            else
-            {
-                System.out.println("Application Server: " + appServer + " not supported");
-            }
+            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
+            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
+            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
+            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
         }
-        else
-        {
-            // FileSystem undeploy
-            dc = new FileSystemPAM();
-            try
-            {
-                ((Deployment) dc).undeploy(strWebAppDir, paName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-        }
-
+        System.out.println("Un-deploying Web Application [" + webApplicationName + "], Portlet Application [" + portletApplicationName + "]...");
+        deployer.connect(map);
+        deployer.undeploy(webApplicationName, portletApplicationName);
+        System.out.println("...PAM Undeploy done");                                
     }
 
     /**
-    * Starts the specified Portlet Application on the Application Server
-    *
-    * @param paName The Portlet Application name
-    * @throws PortletApplicationException
-    */
-
-    public static void start(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
+     * Starts the specified Portlet Application on the Application Server
+     * 
+     * @param lifecycle
+     * @param portletApplicationName
+     * @param host
+     * @param port
+     * @param user
+     * @param password
+     * @throws PortletApplicationException
+     */
+    public static void start(Lifecycle lifecycle,
+                             String portletApplicationName, 
+                             String host, 
+                             int port, 
+                             String user,
+                             String password)
+    throws PortletApplicationException
     {
-        Object dc;
-        if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
+        Map map = new HashMap();        
+        if (lifecycle instanceof CatalinaPAM)
         {
-            
-            try
-            {
-				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
-                ((Lifecycle) dc).start(paName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-
+            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
+            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
+            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
+            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
         }
-        else
+        System.out.println("Starting Portlet Application [" + portletApplicationName + "...");
+        if (lifecycle instanceof Deployment)
         {
-            System.out.println("Application Server: " + appServer + " not supported");
+            ((Deployment)lifecycle).connect(map);
         }
-
+        lifecycle.start(portletApplicationName);
+        System.out.println("...PAM Start done");                        
     }
 
     /**
      * Stops a portlet application from running on the Application Server
      *
-     * @param paName The Portlet Application name
-     * @throws PortletApplicationException
-     */
-
-    public static void stop(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
+     * @param lifecycle
+     * @param portletApplicationName
+     * @param appServer
+     * @param host
+     * @param port
+     * @param user
+     * @param password
+     */    
+    public static void stop(Lifecycle lifecycle, 
+                            String portletApplicationName, 
+                            String host, 
+                            int port, 
+                            String user, 
+                            String password)
+    throws PortletApplicationException        
     {
-        Object dc;
-        if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-        {            
-            try
-            {
-				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
-                ((Lifecycle) dc).stop(paName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-
-        }
-        else
+        Map map = new HashMap();        
+        if (lifecycle instanceof CatalinaPAM)
         {
-            System.out.println("Application Server: " + appServer + " not supported");
+            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
+            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
+            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
+            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
         }
-
+        System.out.println("Stopping Portlet Application [" + portletApplicationName + "...");
+        if (lifecycle instanceof Deployment)
+        {
+            ((Deployment)lifecycle).connect(map);
+        }
+        lifecycle.stop(portletApplicationName);
+        System.out.println("...PAM Stop done");                
     }
 
     /**
      * Reloads a portlet application.
-     *
-     * @param paName The Portlet Application name
+     * 
+     * @param lifecycle
+     * @param portletApplicationName
+     * @param appServer
+     * @param host
+     * @param port
+     * @param user
+     * @param password
      * @throws PortletApplicationException
-     */
-
-    public static void reload(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
-    {
-        Object dc;
-        if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-        {            
-            try
-            {
-				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
-                ((Lifecycle) dc).reload(paName);
-            }
-            catch (PortletApplicationException e)
-            {
-                e.printStackTrace(System.out);
-            }
-
-        }
-        else
+     */    
+    public static void reload(Lifecycle lifecycle, 
+                              String portletApplicationName, 
+                              String host, 
+                              int port, 
+                              String user, 
+                              String password)
+    throws PortletApplicationException    
+    {        
+        Map map = new HashMap();        
+        if (lifecycle instanceof CatalinaPAM)
         {
-            System.out.println("Application Server: " + appServer + " not supported");
+            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
+            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
+            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
+            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
         }
+        System.out.println("Reloading Portlet Application [" + portletApplicationName + "...");
+        if (lifecycle instanceof Deployment)
+        {
+            ((Deployment)lifecycle).connect(map);
+        }
+        lifecycle.reload(portletApplicationName);
+        System.out.println("...PSM Reload done");        
     }
 
     /*
@@ -582,6 +646,40 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 Entry entry = (Entry) it.next();
                 //if (entry.getValue() != null && ((String)entry.getValue()).length() > 0)
                 properties.setProperty((String) entry.getKey(), (String) entry.getValue());
+            }
+        }
+    }
+    
+    public static void logRequest(String[] args, boolean logAsError)
+    {
+        String startMsg = "Starting a PAM request. Parameters: ";
+        if (logAsError)
+        {
+            log.error(startMsg);
+        }
+        else
+        {
+            log.info(startMsg);            
+        }
+        
+        int ix;
+        
+        for (ix = 0; ix < args.length; ix++)
+        {
+            String paramName = args[ix];            
+            String paramValue = "--PARAMS OUT OF BALANCE--";
+            if (ix < args.length)
+            {
+                paramValue = args[++ix];
+            }
+
+            if (logAsError)
+            {            
+                log.error(paramName + " : " + paramValue);
+            }
+            else
+            {
+                log.info(paramName + " : " + paramValue);
             }
         }
     }

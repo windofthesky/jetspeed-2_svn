@@ -47,7 +47,6 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper,
     public JetspeedPortletContainerWrapper(PortletContainer pluto)
     {
         this.pluto = pluto;
-        System.out.println("PLUTO = " + pluto);
     }
 
     public void start()
@@ -83,18 +82,18 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper,
     public void renderPortlet(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
         throws PortletException, IOException, PortletContainerException
     {
-    	    	
-		if(portletWindow.getPortletEntity() == null)
-		{
-			log.warn("Could not render PortletWindow "+ portletWindow.getId() + " as it has no PortletEntity defined.");
-			return;
-		}		
-    	
-    	if(portletWindow.getPortletEntity().getPortletDefinition() == null)
-    	{
-    		log.warn("Could not render PortletWindow"+ portletWindow.getId() + " as it has no PortletDefintion defined.");
-    		return;
-    	}
+                
+        if(portletWindow.getPortletEntity() == null)
+        {
+            log.warn("Could not render PortletWindow "+ portletWindow.getId() + " as it has no PortletEntity defined.");
+            return;
+        }        
+        
+        if(portletWindow.getPortletEntity().getPortletDefinition() == null)
+        {
+            log.warn("Could not render PortletWindow"+ portletWindow.getId() + " as it has no PortletDefintion defined.");
+            return;
+        }
         pluto.renderPortlet(portletWindow, servletRequest, servletResponse);
         // TODO: figure out how to access pluto-services before container kicks in
         //                              ServletObjectAccess.getServletRequest(servletRequest),

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -116,7 +117,14 @@ public class CatalinaAutoDeploymentServiceImpl extends BaseCommonService impleme
 
         try
         {
-            CatalinaPAM catPAM = new CatalinaPAM(server, port, userName, password);
+            CatalinaPAM catPAM = new CatalinaPAM();
+            Map map = new HashMap();
+            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, server);
+            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
+            map.put(CatalinaPAM.PAM_PROPERTY_USER, userName);
+            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
+            
+            catPAM.connect(map);
             
             DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(targetDirFile.getCanonicalPath(), catPAM);
             DeploymentEventDispatcher dispatcher = new DeploymentEventDispatcher(targetDirFile.getCanonicalPath());

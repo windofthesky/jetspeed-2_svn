@@ -17,6 +17,8 @@ package org.apache.jetspeed.tools.pamanager;
 
 
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
@@ -33,27 +35,42 @@ import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
 public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
 {
     // Implementaion of deplyment interface
+    public final static String PAM_PROPERTY_SERVER = "server";
+    public final static String PAM_PROPERTY_PORT = "port";
+    public final static String PAM_PROPERTY_USER = "user";
+    public final static String PAM_PROPERTY_PASSWORD = "password";
 
-    private TomcatManager tomcatManager;
+    private TomcatManager tomcatManager = null;
     protected static final Log log = LogFactory.getLog("deployment");
 
-    public CatalinaPAM(String server, int port, String user, String password) throws PortletApplicationException
-    {		
+
+    public void connect(Map params)
+    throws PortletApplicationException
+    {      
         try
         {
-            tomcatManager = new TomcatManager(server, port, user, password);
+            int port = 8080;
+            String server = (String)params.get(PAM_PROPERTY_SERVER);
+            Integer portNumber = (Integer)params.get(PAM_PROPERTY_PORT);
+            if (null != portNumber)
+            {
+                port = portNumber.intValue();
+            }
+            String username = (String)params.get(PAM_PROPERTY_USER);
+            String password = (String)params.get(PAM_PROPERTY_PASSWORD);
+            
+            tomcatManager = new TomcatManager(server, port, username, password);
         }
         catch (Exception e)
         {
             throw new PortletApplicationException(e);
-        }
-
+        }        
     }
-
+    
     // Interface not supported by this implementation 
-    public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
+    public void deploy(String webAppsDir, String warFile, String paName) 
+    throws PortletApplicationException
     {
-        
         try
         {            
             super.deploy(webAppsDir, warFile, paName);
@@ -149,7 +166,7 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     /**
     * Starts the specified Portlet Application on the Application Server
     * 
-    * @param paName The Portlet Application name 
+    * @param paName The Portlet Application name
     * @throws PortletApplicationException
     */
 
@@ -173,7 +190,7 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     /**
      * Stops a portlet application from running on the Application Server
      * 
-     * @param paName The Portlet Application name 
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
 
@@ -196,14 +213,14 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     /**
      * Reloads a portlet application.
      * 
-     * @param paName The Portlet Application name 
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
-
     public void reload(String paName) throws PortletApplicationException
     {
         try
         {
+            
             checkResponse(tomcatManager.reload(paName));
         }
         catch (PortletApplicationException pe)

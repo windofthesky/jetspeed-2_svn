@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.util.Map;
+
 
 /**
  * This is the interface that defines the Lifecycle-related methods to control

@@ -20,7 +20,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
+<property name='testcase' value='org.apache.jetspeed.deployment.TestSimpleDeployment'/>
 
 <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
@@ -561,4 +561,5 @@ limitations under the License.
     <delete dir="${deploy.war.dir}/security"/>
     <delete dir="${deploy.war.dir}/struts-demo"/>      
   </goal>
+    
 </project>

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,9 +38,12 @@ import org.apache.jetspeed.util.DirectoryUtils;
  * @version $Id$
  */
 
-public class FileSystemPAM implements Deployment
+public class FileSystemPAM implements Deployment, Registration
 {
     // Implementation of deplyment interface
+    public final int DEPLOY_WAR = 0;
+    public final int UPDATE_WEB_XML = 1;
+    public final int UPDATE_REGISTRY = 2;
 
     protected String deploymentDbAlias;
     private static final Log log = LogFactory.getLog("deployment");
@@ -67,7 +71,7 @@ public class FileSystemPAM implements Deployment
      */
     public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
     {
-        sysDeploy(webAppsDir, warFile, paName, 0);
+        sysDeploy(webAppsDir, warFile, paName, DEPLOY_WAR);
 
     }
 
@@ -81,7 +85,7 @@ public class FileSystemPAM implements Deployment
      * @param warFile
      * @param paName
      * @param startState The deployment state where deployment should start:
-     * 0 deploy war - 1 Update Web XML - 2 Update Regsitry
+     * 0 deploy war - 1 Update Web XML - 2 Update Registry
      * @throws PortletApplicationException
      */
     public void deploy(String webAppsDir, String warFile, String paName, int startState) throws PortletApplicationException
@@ -100,6 +104,12 @@ public class FileSystemPAM implements Deployment
         throw new UnsupportedOperationException("FileSystemPAM.deploy(String warFile, String paName) is not supported.");
     }
 
+    public void register(String webApplicationName, String portletApplicationName) 
+    throws PortletApplicationException
+    {
+        sysDeploy(webApplicationName, "", portletApplicationName, UPDATE_REGISTRY);        
+    }
+    
     /**
      * Unregisters application.
      *
@@ -291,7 +301,7 @@ public class FileSystemPAM implements Deployment
         // 2 WEB XML updated
         // 3 Registry updated
         //
-        int nState = 0; //Initialize
+        int nState = DEPLOY_WAR; //Initialize
         MutablePortletApplication app = null;
 
         try
@@ -301,21 +311,21 @@ public class FileSystemPAM implements Deployment
                 util.deployArchive(webAppsDir, warFile, paName);
             }
 
-            nState = 1;
+            nState = UPDATE_WEB_XML;
 
             if (startState <= nState)
             {
                 util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
             }
 
-            nState = 2;
+            nState = UPDATE_REGISTRY;
 
             if (startState <= nState)
             {
                 registerApplication(webAppsDir, paName);
             }
 
-            nState = 3;
+            nState = UPDATE_REGISTRY;
 
             // DONE
             log.info("FileSystem deployment done.");
@@ -487,4 +497,9 @@ public class FileSystemPAM implements Deployment
         }
     }
 
+    public void connect(Map params)
+    throws PortletApplicationException
+    {        
+    }
+    
 }
