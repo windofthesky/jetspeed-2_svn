@@ -28,7 +28,6 @@ import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -461,20 +460,4 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
   					.getPortletApplicationDefinition()
   					.getWebApplicationDefinition().getContextRoot();
   	}
-  	
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServletRequest#getSession()
-     */
-    public HttpSession getSession()
-    {
-        return new NamespaceEncodedSession(super.getSession(), webAppId);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServletRequest#getSession(boolean)
-     */
-    public HttpSession getSession(boolean arg0)
-    {
-        return new NamespaceEncodedSession(super.getSession(arg0), webAppId);
-    }
 }
