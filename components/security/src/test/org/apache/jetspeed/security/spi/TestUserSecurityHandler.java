@@ -50,6 +50,8 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
+        destroyUsers();
+        initUsers();
     }
 
     /**
@@ -58,6 +60,7 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
     public void tearDown() throws Exception
     {
         super.tearDown();
+        destroyUsers();
     }
 
     /**
@@ -79,11 +82,9 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
      */
     public void testGetUserPrincipal() throws Exception
     {
-        initUsers();
         Principal principal = ush.getUserPrincipal("testuser1");
         assertNotNull(principal);
         assertEquals("testuser1", principal.getName());
-        destroyUsers();
     }
     
     /**
@@ -93,7 +94,6 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
      */
     public void testGetUserPrincipals() throws Exception
     {
-        initUsers();
         Iterator principals = ush.getUserPrincipals("");
         int count = 0;
         while (principals.hasNext())
@@ -111,7 +111,6 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
             }
             count ++;
         }
-        destroyUsers();
     }
 
     /**

@@ -49,6 +49,10 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
+        destroyGroupUser();
+        destroyRoleUser();
+        initGroupUser();
+        initRoleUser();
     }
 
     /**
@@ -56,6 +60,8 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
+        destroyGroupUser();
+        destroyRoleUser();
         super.tearDown();
     }
 
@@ -78,12 +84,12 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
      */
     public void testGetRolePrincipals() throws Exception
     {
-        initRoleUser();
+
         Set principals = smh.getRolePrincipals("testuser");
         assertNotNull(principals);
         // Hierarchy by generalization should return 3 roles.
         assertEquals(3, principals.size());
-        destroyRoleUser();
+
     }
     
     /**
@@ -93,12 +99,12 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
      */
     public void testGetGroupPrincipals() throws Exception
     {
-        initGroupUser();
+  
         Set principals = smh.getGroupPrincipals("testuser");
         assertNotNull(principals);
         // Hierarchy by generalization should return 3 roles.
         assertEquals(3, principals.size());
-        destroyGroupUser();
+
     }
 
     /**
@@ -125,6 +131,7 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
         ums.removeUser("testuser");
         gms.removeGroup("testusertogroup1");
         gms.removeGroup("testusertogroup2");
+        gms.removeGroup("testusertogroup2.group1");
     }
     
     /**
@@ -134,7 +141,7 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
      */
     protected void initRoleUser() throws Exception
     {
-        ums.addUser("testuser", "password");
+        
         rms.addRole("testusertorole1");
         rms.addRole("testusertorole2.role1");
         rms.addRoleToUser("testuser", "testusertorole1");
@@ -148,9 +155,10 @@ public class TestSecurityMappingHandler extends AbstractSecurityTestcase
      */
     protected void destroyRoleUser() throws Exception
     {
-        ums.removeUser("testuser");
+
         rms.removeRole("testusertorole1");
         rms.removeRole("testusertorole2");
+        rms.removeRole("testusertorole2.role1");
     }
 
 }

@@ -47,6 +47,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
+        destroyRoles();
     }
 
     /**
@@ -538,25 +539,69 @@ public class TestRoleManager extends AbstractSecurityTestcase
      */
     protected void destroyRoles()
     {
-        try
+        final String[] users = new String []{"anonuser1",
+                "anonuser2", "anonuser3", "anonuser4",
+                "anonuser5", };
+        final String[] roles = new String []{"testrole1", "testrole2",
+                "testrole3", "testgetrole", "testuserrolemapping",
+                "testusertorole1", "testuserrolemapping.role1", "testuserrolemapping2.role2"};
+        final String[] groups = new String[] {"testusertorole1"};
+        
+        for(int i=0; i<users.length; i++)
         {
-            ums.removeUser("anonuser1");
-            ums.removeUser("anonuser2");
-            ums.removeUser("anonuser3");
-            ums.removeUser("anonuser4");
-            ums.removeUser("anonuser5");
-            rms.removeRole("testrole1");
-            rms.removeRole("testrole2");
-            rms.removeRole("testrole3");
-            rms.removeRole("testgetrole");
-            rms.removeRole("testuserrolemapping");
-            gms.removeGroup("testrolegroupmapping");
-            rms.removeRole("testusertorole1");
+            try
+            {
+                ums.removeUser(users[i]);
+            }
+            catch (SecurityException e)
+            {
+                System.err.println(e.toString());
+            }
         }
-        catch (SecurityException sex)
+        
+        for(int i=0; i<roles.length; i++)
         {
-            assertTrue("could not remove user, group and role. exception caught: " + sex, false);
+            try
+            {
+                rms.removeRole(roles[i]);
+            }
+            catch (SecurityException e)
+            {
+                System.err.println(e.toString());
+            }
         }
+        
+        for(int i=0; i<groups.length; i++)
+        {
+            try
+            {
+                gms.removeGroup(groups[i]);
+            }
+            catch (SecurityException e)
+            {
+                System.err.println(e.toString());
+            }
+        }
+        
+//        try
+//        {
+//            ums.removeUser("anonuser1");
+//            ums.removeUser("anonuser2");
+//            ums.removeUser("anonuser3");
+//            ums.removeUser("anonuser4");
+//            ums.removeUser("anonuser5");
+//            rms.removeRole("testrole1");
+//            rms.removeRole("testrole2");
+//            rms.removeRole("testrole3");
+//            rms.removeRole("testgetrole");
+//            rms.removeRole("testuserrolemapping");
+//            gms.removeGroup("testrolegroupmapping");
+//            rms.removeRole("testusertorole1");
+//        }
+//        catch (SecurityException sex)
+//        {
+//            assertTrue("could not remove user, group and role. exception caught: " + sex, false);
+//        }
     }
 
 }
