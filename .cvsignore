@@ -9,3 +9,4 @@ bin
 .encoding
 .settings
 build.properties
+.springBeansProject
