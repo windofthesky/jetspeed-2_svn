@@ -255,10 +255,13 @@ public abstract class AbstractPageManager
         to.setSiblingFolders(from.getSiblingFolders());
         to.setRootLinks(from.getRootLinks());
         Iterator documentSetNamesIter = from.getDocumentSetNames();
-        while (documentSetNamesIter.hasNext())
+        if (documentSetNamesIter != null)
         {
-            String documentSetName = (String) documentSetNamesIter.next();
-            to.setDocumentSet(documentSetName, from.getDocumentSet(documentSetName), from.getDocumentSetNodes(documentSetName));
+            while (documentSetNamesIter.hasNext())
+            {
+                String documentSetName = (String) documentSetNamesIter.next();
+                to.setDocumentSet(documentSetName, from.getDocumentSet(documentSetName), from.getDocumentSetNodes(documentSetName));
+            }
         }
     }
 
