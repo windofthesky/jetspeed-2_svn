@@ -22,6 +22,14 @@ container = new DefaultPicoContainer()
 
 Long scanRate = 10
 cacheSize = 20
+if(parent != null)
+{
+	parent.registerComponentInstance(FileCache, new FileCache(scanRate, cacheSize))
+}
+
 container.registerComponentInstance(FileCache, new FileCache(scanRate, cacheSize))
+
+
+
 
 return container

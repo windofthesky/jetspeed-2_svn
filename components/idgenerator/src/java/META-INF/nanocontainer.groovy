@@ -23,6 +23,12 @@ Long counterStart = 65536
 peidPrefix = "P-"
 peidSuffix = ""
 idgenerator = new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix)
+if(parent != null)
+{
+	parent.registerComponentInstance("IdGenerator", idgenerator)
+}
+
 container.registerComponentInstance("IdGenerator", idgenerator)
+
 
 return container
