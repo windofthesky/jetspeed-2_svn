@@ -7,7 +7,7 @@
 #end
 
 #macro (defineLayoutObjects)
-  #set($_layoutDecorator = $myPage.getDefaultDecorator($myFragment.getType()))
+  #set($_layoutDecorator = $myPage.getDefaultDecorator("layout"))
   #set($_layoutDecoratorConfig = $jetspeed.getTypeConfiguration("layout", "${_layoutDecorator}", "decorations"))
   #set($_layouyBaseCssClass = $_layoutDecoratorConfig.getString("base.css.class"))
   #set($preferedLocale = $JS2RequestContext.locale)
