@@ -144,5 +144,22 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
 
         return dispatcher;
     }
+    
+    
 
+    /**
+     * <p>
+     * doEdit
+     * </p>
+     *
+     * @see javax.portlet.GenericPortlet#doEdit(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
+     * @param request
+     * @param response
+     * @throws PortletException
+     * @throws IOException
+     */
+    public void doEdit( RenderRequest request, RenderResponse response ) throws PortletException, IOException
+    {
+        doView(request, response);
+    }
 }

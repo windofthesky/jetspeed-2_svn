@@ -39,6 +39,16 @@ limitations under the License.
       #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
   #end
 
+
+#if($jetspeed.portletMode.toString() == "edit")
+  #set($editing = true)	
+  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
+  #set($layoutType =$portletConfig.getInitParameter("layoutType"))
+    <a href="$jetspeed.createAction(3).action">Done</a>
+#else
+	<a href="$jetspeed.createAction(4).action">Customize</a>
+#end	
+
 <table id="portal-layout-${myPage.id}" width="100%" cellspacing="0" cellpadding="0" class="portal-layout">
   <tr>
 
@@ -48,9 +58,46 @@ limitations under the License.
        #foreach($f in $entry)       
         <tr>
        	   	<td width="100%">
+		#if($editing)<div id="_$f.id"> 
+		
+		  <div style="position:relative; top:10px; left:0; width:100%; height:100%; border: solid thin blue; ">
+			#set($row = $f.getProperties($layoutType).get(0).intValue)
+			#set($col = $f.getProperties($layoutType).get(1).intValue)
+
+			#if($col > 0)			
+			  #set($leftUrl = $renderResponse.createRenderURL())	
+			  $!leftUrl.setParameter("moveBy","-1,0")
+			  $!leftUrl.setParameter("fragmentId","$f.id")			 
+			  <a href="$leftUrl">Move Left</a>
+			#end  
+			#if($col < $lastColumn )
+			  #set($rightUrl = $renderResponse.createRenderURL())	
+			  $!rightUrl.setParameter("moveBy","1,0")
+			  $!rightUrl.setParameter("fragmentId","$f.id")
+			  <a href="$rightUrl">Move Right</a>
+			#end
+			#if($row > 0)
+			 #set($upUrl = $renderResponse.createRenderURL())	
+			  $!upUrl.setParameter("moveBy","0,-1")
+			  $!upUrl.setParameter("fragmentId","$f.id")
+			  <a href="$upUrl">Move Up</a>
+			#end 
+			  #set($downUrl = $renderResponse.createRenderURL())	
+			  $!downUrl.setParameter("moveBy","0,1")
+			  $!downUrl.setParameter("fragmentId","$f.id")
+			<a href="$downUrl">Move Down</a>
+	  
+		#end	
+				
                 ## get the decorated Portlet content
-               $jetspeed.decorateAndInclude($f)                
-     </td></tr>
+               $jetspeed.decorateAndInclude($f)
+		 #if($editing)
+		   </div>
+		  </div> 
+		   
+		 #end			  
+         </td>
+	   </tr>
       #end
      </table></td>
    #end

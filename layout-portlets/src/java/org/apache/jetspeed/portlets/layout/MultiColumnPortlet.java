@@ -16,25 +16,26 @@
 package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
 import java.util.StringTokenizer;
-import java.util.Collections;
+import java.util.Vector;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  */
@@ -51,40 +52,58 @@ public class MultiColumnPortlet extends LayoutPortlet
     private int numColumns = 0;
     private String colSizes = null;
     private String portletName = null;
+    private String layoutType;
 
-    public void init(PortletConfig config)
-    throws PortletException
+    public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
         this.numColumns = Integer.parseInt(config.getInitParameter(PARAM_NUM_COLUMN));
         this.colSizes = config.getInitParameter(PARAM_COLUMN_SIZES);
         this.portletName = config.getPortletName();
+        this.layoutType = config.getInitParameter("layoutType");
     }
 
-    public void doView(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         RequestContext context = Jetspeed.getCurrentRequestContext();
         PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
-        
+
+        if (request.getParameter("moveBy") != null && request.getParameter("fragmentId") != null)
+        {
+            Page page = getPage(request);
+            ArrayList tempFrags = new ArrayList(page.getRootFragment().getFragments());
+            doMoveFragment(page.getFragmentById(request.getParameter("fragmentId")), request.getParameter("moveBy"), request, tempFrags);
+            PageManager pm = (PageManager) Jetspeed.getComponentManager().getComponent(PageManager.class);
+            try
+            {
+                pm.updatePage(page);
+            }
+            catch (Exception e)
+            {
+                throw new PortletException(e.toString(), e);
+            }
+            
+        }
+
         // if (targetState != null && targetState.isMaximized())
         if (window != null)
         {
-            super.doView(request,response);
+            super.doView(request, response);
             return;
         }
-        
+
         List[] columns = buildColumns(getFragment(request, false), this.numColumns);
 
         request.setAttribute("columns", columns);
+        request.setAttribute("numberOfColumns", new Integer(numColumns));
 
         // now invoke the JSP associated with this portlet
-        super.doView(request,response);
+        super.doView(request, response);
 
         request.removeAttribute("columns");
     }
 
-    protected List[] buildColumns(Fragment f, int colNum)
+    protected List[] buildColumns( Fragment f, int colNum )
     {
         // normalize the constraints and calculate max num of rows needed
         Iterator iterator = f.getFragments().iterator();
@@ -95,41 +114,28 @@ public class MultiColumnPortlet extends LayoutPortlet
         while (iterator.hasNext())
         {
             Fragment fChild = (Fragment) iterator.next();
-            List properties = fChild.getProperties(this.portletName);
 
-            if (properties != null)
+            try
             {
-                Iterator pIterator = properties.iterator();
 
-                while(pIterator.hasNext())
+                row = Integer.parseInt(fChild.getPropertyValue(this.layoutType, "row"));
+                if (row > rowNum)
                 {
-                    Property prop = (Property)pIterator.next();
-
-                    try
-                    {
-                        if (prop.getName().equals("row"))
-                        {
-                            row = Integer.parseInt(prop.getValue());
-                            if (row > rowNum)
-                            {
-                                rowNum = row;
-                            }
-                        }
-                        else if (prop.getName().equals("column"))
-                        {
-                            col = Integer.parseInt(prop.getValue());
-                            if (col > colNum)
-                            {
-                                prop.setValue(String.valueOf(col % colNum));
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        //ignore any malformed layout properties
-                    }
+                    rowNum = row;
                 }
+
+                col = Integer.parseInt(fChild.getPropertyValue(this.layoutType, "column"));
+                if (col > colNum)
+                {
+                    fChild.setPropertyValue(this.layoutType, "column", String.valueOf(col % colNum));
+                }
+
             }
+            catch (Exception e)
+            {
+                //ignore any malformed layout properties
+            }
+
         }
 
         int sCount = f.getFragments().size();
@@ -154,7 +160,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         //others
         for (int i = 0; i < sCount; i++)
         {
-            addElement((Fragment)f.getFragments().get(i), table, work, colNum);
+            addElement((Fragment) f.getFragments().get(i), table, work, colNum);
         }
 
         //insert the unconstrained elements in the table
@@ -189,13 +195,15 @@ public class MultiColumnPortlet extends LayoutPortlet
         return table;
     }
 
-    /** Parses the size config info and returns a list of
-     *  size values for the current set
-     *
-     *  @param sizeList java.lang.String a comma separated string a values
-     *  @return a List of values
+    /**
+     * Parses the size config info and returns a list of size values for the
+     * current set
+     * 
+     * @param sizeList
+     *            java.lang.String a comma separated string a values
+     * @return a List of values
      */
-    protected static List getCellSizes(String sizeList)
+    protected static List getCellSizes( String sizeList )
     {
         List list = new Vector();
 
@@ -211,7 +219,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         return list;
     }
 
-    protected static List getCellClasses(String classlist)
+    protected static List getCellClasses( String classlist )
     {
         List list = new Vector();
 
@@ -228,46 +236,32 @@ public class MultiColumnPortlet extends LayoutPortlet
     }
 
     /**
-     * Add an element to the "table" or "work" objects.  If the element is
-     * unconstrained, and the position is within the number of columns, then
-     * the element is added to "table".  Othewise the element is added to "work"
-     *
-     * @param f fragment to add
-     * @param table of positioned elements
-     * @param work list of un-positioned elements
-     * @param columnCount Number of colum
+     * Add an element to the "table" or "work" objects. If the element is
+     * unconstrained, and the position is within the number of columns, then the
+     * element is added to "table". Othewise the element is added to "work"
+     * 
+     * @param f
+     *            fragment to add
+     * @param table
+     *            of positioned elements
+     * @param work
+     *            list of un-positioned elements
+     * @param columnCount
+     *            Number of colum
      */
-    protected void addElement(Fragment f, List[] table, List work, int columnCount)
+    protected void addElement( Fragment f, List[] table, List work, int columnCount )
     {
         int row = -1;
         int col = -1;
 
-        List properties = f.getProperties(this.portletName);
-
-        if (properties != null)
+        try
         {
-            Iterator pIterator = properties.iterator();
-
-            while(pIterator.hasNext())
-            {
-                Property prop = (Property)pIterator.next();
-
-                try
-                {
-                    if (prop.getName().equals("row"))
-                    {
-                        row = Integer.parseInt(prop.getValue());
-                    }
-                    else if (prop.getName().equals("column"))
-                    {
-                        col = Integer.parseInt(prop.getValue());
-                    }
-                }
-                catch (Exception e)
-                {
-                    //ignore any malformed layout properties
-                }
-            }
+            row = Integer.parseInt(f.getPropertyValue(this.layoutType, "row"));
+            col = Integer.parseInt(f.getPropertyValue(this.layoutType, "column"));
+        }
+        catch (Exception e)
+        {
+            //ignore any malformed layout properties
         }
 
         if ((row >= 0) && (col >= 0) && (col < columnCount))
@@ -276,7 +270,107 @@ public class MultiColumnPortlet extends LayoutPortlet
         }
         else
         {
-           work.add(f);
+            work.add(f);
         }
+    }
+
+    protected void doMoveFragment( Fragment fToMove, String coordinates, RenderRequest request, List fragments )
+    {
+        
+        StringTokenizer coorTk = new StringTokenizer(coordinates, ",");
+        int x = Integer.parseInt(coorTk.nextToken());
+        int y = Integer.parseInt(coorTk.nextToken());
+        if (x == 0 && y == 0)
+        {
+            return;
+        }
+
+        
+        String rowValue = fToMove.getPropertyValue(layoutType, "row");
+        int row = Integer.parseInt(rowValue);
+        int column = Integer.parseInt(fToMove.getPropertyValue(layoutType, "column"));
+
+        int newRow = row + y;
+        int newColumn = column + x;
+        doMoveFragmentTo(fToMove, newColumn, newRow,  request, fragments);
+              
+    }
+    
+    protected void doMoveFragmentTo( Fragment fToMove, int column, int row, RenderRequest request, List fragments )
+    {        
+        //Wrapping logic 
+        if(column >= numColumns)
+        {
+            column = 0;
+            row+=1;
+            doMoveFragmentTo(fToMove, column, row, request, fragments);
+            return;
+            
+        }
+        else if(column < 0)
+        {
+            row-=1;
+            column=(numColumns-1);           
+            doMoveFragmentTo(fToMove, column, row, request, fragments);    
+            return;
+        }
+        else if(row < 0)
+        {           
+            row = getLastRowInColumn(column, fragments, fToMove)+1;
+            doMoveFragmentTo(fToMove, column, row, request, fragments);      
+            return;
+        }
+        else
+        {           
+           int currentRow = Integer.parseInt(fToMove.getPropertyValue(layoutType, "row"));
+           int currentColumn = Integer.parseInt(fToMove.getPropertyValue(layoutType, "column"));
+           
+           int lastRow = getLastRowInColumn(column, fragments, fToMove);
+           
+           // Prevent wacky row 999 if there are only 2 rows in the column
+           if(row > (lastRow+1))
+           {
+               row = lastRow + 1;
+           }
+           
+           fToMove.setPropertyValue(layoutType, "row", String.valueOf(row));
+           fToMove.setPropertyValue(layoutType, "column", String.valueOf(column));
+           
+           
+           for(int i=0; i<fragments.size(); i++)
+           {
+               Fragment aFragment = (Fragment) fragments.get(i);
+               if (!aFragment.equals(fToMove))
+               {
+                   int aRow = Integer.parseInt(aFragment.getPropertyValue(layoutType, "row"));
+                   int aColumn = Integer.parseInt(aFragment.getPropertyValue(layoutType, "column"));
+                   if (aColumn == column && aRow == row)
+                   {
+                         doMoveFragmentTo(aFragment, currentColumn, currentRow,  request, fragments );
+                   }
+               }
+               
+           }
+           return;
+        }
+        
+          
+    }
+    
+    protected int getLastRowInColumn(int column, List fragments, Fragment f)
+    {
+        int row=0;
+        Iterator allFrags = fragments.iterator();
+        while(allFrags.hasNext())
+        {
+            Fragment aFrag = (Fragment) allFrags.next();
+            int currentRow = Integer.parseInt(aFrag.getPropertyValue(layoutType, "row"));
+            int currentColumn = Integer.parseInt(aFrag.getPropertyValue(layoutType, "column"));
+            if(currentRow > row && currentColumn == column &&(f == null || !f.equals(aFrag)))
+            {
+                row = currentRow;
+            }                
+        }
+        return row;
     }
 }
