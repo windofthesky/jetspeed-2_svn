@@ -62,7 +62,6 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         ums = (UserManager) container.getComponentInstance(UserManager.class);
-        container.getComponentInstance(SecurityProvider.class);
         initUserObject();
 
         // Set up login context.
