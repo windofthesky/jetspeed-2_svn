@@ -55,6 +55,7 @@ package org.apache.jetspeed.om.impl;
 
 import java.util.Locale;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 
 /**
@@ -75,11 +76,13 @@ public class DisplayNameImpl implements MutableDisplayName
     /**
      * Links this DisplayName to the object that it describes
      */
-  //  protected long objectId;
+    //  protected long objectId;
 
     public DisplayNameImpl()
     {
         super();
+        // always init to default locale
+        locale=Jetspeed.getDefaultLocale();
     }
 
     /**
@@ -125,7 +128,11 @@ public class DisplayNameImpl implements MutableDisplayName
     public void setLocale(Locale locale)
     {
         this.locale = locale;
+    }
 
+    public void setLanguage(String lang)
+    {
+        this.locale = new Locale(lang);
     }
 
     /**
@@ -134,6 +141,20 @@ public class DisplayNameImpl implements MutableDisplayName
     public String getType()
     {
         return type;
+    }
+
+    /** 
+     * <p>
+     * setType
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.common.MutableDisplayName#setType(java.lang.String)
+     * @param type
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+
     }
 
 }

@@ -55,6 +55,7 @@ package org.apache.jetspeed.om.impl;
 
 import java.util.Locale;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.MutableDescription;
 
 /**
@@ -79,13 +80,15 @@ public class DescriptionImpl implements MutableDescription
     /**
      * Links this description to the object that it describes
      */
-  //  protected long objectId;
+    //  protected long objectId;
 
     // private long id;
 
     public DescriptionImpl()
     {
         super();
+        // always init to default locale
+        locale = Jetspeed.getDefaultLocale();
     }
 
     public DescriptionImpl(Locale locale, String description, String type)
@@ -130,12 +133,31 @@ public class DescriptionImpl implements MutableDescription
         return locale;
     }
 
+    public void setLanguage(String lang)
+    {
+        this.locale = new Locale(lang);
+    }
+
     /**
      * @return
      */
     public String getType()
     {
         return type;
+    }
+
+    /** 
+     * <p>
+     * setType
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.common.MutableDescription#setType(java.lang.String)
+     * @param type
+     * @return
+     */
+    public void setType(String type)
+    {        
+        this.type = type;
     }
 
 }
