@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.tools.pamanager.rules.LocalizedFieldRule;
+import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 
 /**
@@ -54,6 +55,8 @@ public class JetspeedDescriptorUtilities
             digester.setNamespaceAware(true);
             digester.push(app.getMetadata());
             
+            digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
+            /*
             digester.addRule("portlet-app/title", new LocalizedFieldRule());
             digester.addRule("portlet-app/contributor", new LocalizedFieldRule());
             digester.addRule("portlet-app/creator", new LocalizedFieldRule());
@@ -69,11 +72,23 @@ public class JetspeedDescriptorUtilities
             digester.addRule("portlet-app/subject", new LocalizedFieldRule());
             digester.addRule("portlet-app/type", new LocalizedFieldRule());
             digester.addRule("portlet-app/metadata", new LocalizedFieldRule());
+            */
             
             //	digester.addSetNext("portlet-app", "setMetadata");
             
 			//digester.addRule("portlet-app/portlet", new PortletRule(app));
+            
+            /*
+	            This will continually push an object onto the digester stack it will never pop it off.
+	            The only negative effect is increased memory/stack size.  
+	            
+	            This is not a problem because the rules will work with the last object on the stack
+	            to pop the object off the stack, a new rule mapped to portlet-app/portlet would
+	            need to be added that all it did was pop the current object at the portlet end element
+            */
 			digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
+			
+			/*
 			digester.addRule("portlet-app/portlet/title", new LocalizedFieldRule());
 			digester.addRule("portlet-app/portlet/contributor", new LocalizedFieldRule());
 			digester.addRule("portlet-app/portlet/creator", new LocalizedFieldRule());
@@ -89,7 +104,8 @@ public class JetspeedDescriptorUtilities
 			digester.addRule("portlet-app/portlet/subject", new LocalizedFieldRule());
 			digester.addRule("portlet-app/portlet/type", new LocalizedFieldRule());
 			digester.addRule("portlet-app/portlet/metadata", new LocalizedFieldRule());
-             
+            */
+			digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
             
             digester.parse(reader);
             result = true;
