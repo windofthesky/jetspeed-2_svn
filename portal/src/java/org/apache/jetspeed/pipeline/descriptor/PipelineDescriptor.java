@@ -15,43 +15,54 @@
  */
 package org.apache.jetspeed.pipeline.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This descriptor bean represents the configuration used to create a
- * Summit <code>Valve</code>.
+ * Summit <code>Pipeline</code>.
  *
  * @author <a href="mailto:john@zenplex.com">John Thorhauer</a>
  * @author <a href="mailto:jason@zenplex.com">Jason van Zyl</a>
  * @version $Id$
  */
-public class ValveDescriptor
-    extends BaseDescriptor
+public class PipelineDescriptor 
+    extends 
+        BaseDescriptor
+//    implements
+  //      PipelineDescriptorApi
 {
-    /** Class name of the valve. */
-    private String className;
+    /**
+     * List of valve descriptors
+     */
+    private List valveDescriptors;
 
     /**
      * Default contructor
      */
-    public ValveDescriptor()
+    public PipelineDescriptor()
     {
+        valveDescriptors = new ArrayList();
     }
 
     /**
-     * This is the full package/class name of the
-     * class used for the valve.
+     * Add a ValveDescriptor to the Pipeline
+     * descriptor
      *
-     * @param s the full package/class name used for the valve
+     * @param ValveDescriptor
      */
-    public void setClassName(String className)
+    public void addValveDescriptor(ValveDescriptor valveDescriptor)
     {
-        this.className = className;
+        valveDescriptors.add(valveDescriptor);
     }
 
     /**
-     * @return the full package/class name used for the valve
+     * Return a list of ValveDesccriptors
+     *
+     * @return List of ValveDesccriptors
      */
-    public String getClassName()
+    public List getValveDescriptors()
     {
-        return className;
+        return this.valveDescriptors;
     }
 }

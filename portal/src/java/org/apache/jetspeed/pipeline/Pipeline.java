@@ -17,6 +17,7 @@ package org.apache.jetspeed.pipeline;
 
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
+import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptorApi;
 import org.apache.jetspeed.pipeline.valve.Valve;
 
 /**

@@ -458,15 +458,18 @@ public class JetspeedEngine implements Engine
         PipelineDescriptor descriptor;
         try
         {
+            System.out.println("Class loader is " + Thread.currentThread().getContextClassLoader().getClass().getName());
             pipeline = (Pipeline) pipelineClass.newInstance();
             XmlReader reader = new XmlReader(PipelineDescriptor.class);
             descriptor = (PipelineDescriptor) reader.parse(new FileInputStream(
                     file));
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
+            System.out.println("Failure *****************************");
+            e.printStackTrace();
             throw new CPSInitializationException(
-                    "Failed to read pipeline descriptor from deployment");
+                    "Failed to read pipeline descriptor from deployment", e);
         }
         try
         {
