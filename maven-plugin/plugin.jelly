@@ -280,15 +280,32 @@ limitations under the License.
          </fileset>	             	       	       
      </copy>	
     </j:if>   
-
-	<attainGoal name='jetspeed2:copy.context'/>
+    <j:if test="${org.apache.jetspeed.copy.context}">
+	   <attainGoal name='jetspeed2:copy.context'/>
+	</j:if>
 	          
      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      <j:if test="${org.apache.jetspeed.explode.war}">
        <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      </j:if>
      
-     <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+
+     
+
+  </goal>
+  
+  <!--
+  <goal name="jetspeed2:unregister.core.pa">
+  	  <j:set var="pam.action" value="unregister"/>
+ 	 <j:set var="pam.app.name" value="jetspeed"/>
+ 	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
+ 	 <attainGoal name="pam.template.register"/>
+  </goal>
+-->
+
+<goal name="jetspeed2:copy.context">    
+
+	  <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
       <echo>Build jetspeed.xml for Tomcat version ${catalina_version_major}</echo>
       <j:choose>
         <j:when test="${catalina_version_major == '5'}" >
@@ -309,45 +326,7 @@ limitations under the License.
           <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
           <filter token="USE_CONTEXTCLASSLOADER" value="${use_contextclassloader}"/>
         </filterset>
-      </copy>
-     
-
-  </goal>
-  
-  <!--
-  <goal name="jetspeed2:unregister.core.pa">
-  	  <j:set var="pam.action" value="unregister"/>
- 	 <j:set var="pam.app.name" value="jetspeed"/>
- 	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
- 	 <attainGoal name="pam.template.register"/>
-  </goal>
--->
-
-<goal name="jetspeed2:copy.context">    
-
-	<!-- version -->
-    <j:choose>
-	    <j:when test="${catVer == '5'}" >
-	        <j:set var="catDir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>	    
-	    </j:when>
-	    <j:otherwise>
-	        <j:set var="catDir" value="${org.apache.jetspeed.deploy.war.dir}"/>	    
-	    </j:otherwise>
-  	</j:choose>
-  		
-	
-	<!-- context file destination -->  	
-    <j:set var="destinationFile" value="${catDir}/${org.apache.jetspeed.context.file.name}"/>	    
-
-	 <echo>Copy ${org.apache.jetspeed.context.file.source} to ${destinationFile}</echo>
-     <copy file="${org.apache.jetspeed.context.file.source}" tofile="${destinationFile}" overwrite="true">
-        <filterset begintoken="@" endtoken="@">
-          <filter token="USERNAME" value="${org.apache.jetspeed.database.user}"/>
-          <filter token="PASSWORD" value="${org.apache.jetspeed.database.password}"/>
-          <filter token="DRIVER" value="${org.apache.jetspeed.database.driver}"/>
-          <filter token="URL" value="${org.apache.jetspeed.database.url}"/>
-        </filterset>
-      </copy>    
+      </copy> 
 </goal>   
 
 
