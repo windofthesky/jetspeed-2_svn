@@ -118,6 +118,17 @@ public class JetspeedPortletFactory implements PortletFactory
                     catch (ClassNotFoundException e1)
                     {
                         // move along
+                        System.out.println("CNF: "  + e1.toString() + ":" + className);
+                    }
+                    catch (NoClassDefFoundError e2)
+                    {
+                        // move along
+                        System.out.println("NCDF: " + e2.toString() + ":" + className);                        
+                    }
+                    catch (ExceptionInInitializerError e3)
+                    {
+                        // move along
+                        System.out.println("EIIE: " + e3.toString() + ":" + className);                                                
                     }
                 }
             }
@@ -146,7 +157,7 @@ public class JetspeedPortletFactory implements PortletFactory
             portlet = portletCache.get(portletName);
             if (null != portlet)
             {
-               ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
+               // ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
                 return portlet;
             }
             
