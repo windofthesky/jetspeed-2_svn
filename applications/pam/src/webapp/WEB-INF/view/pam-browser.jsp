@@ -14,6 +14,11 @@ limitations under the License.
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
+
+<%@ page import="java.util.Collection" %>
+<%@ page import ="java.util.Map" %>
+<%@ page import="org.apache.jetspeed.search.ParsedObject" %>
+
 <portlet:defineObjects/>
 <h2>Portlet Application Manager</h2>
 <h3>Application Tree View</h3>
@@ -21,6 +26,7 @@ limitations under the License.
 <hr />
 
 <portlet:actionURL var="searchLink" />
+<portlet:actionURL var="searchSelectLink"/>
 
 <form action="<c:out value="${searchLink}"/>" method="post">
 
@@ -32,7 +38,53 @@ limitations under the License.
 
 <c:if test="${results != null}">
 	<c:forEach var="result" items="${search_results}">
-		<c:out value="${result.title}"/> | <c:out value="${result.description}"/> <br />
+	
+		<%
+			String name = "";
+			ParsedObject po = (ParsedObject)pageContext.findAttribute("result");
+			Map fields = po.getFields();
+			if(fields != null)
+			{
+				Object id = fields.get("ID");
+		
+				if(id != null)
+				{
+					if(id instanceof Collection)
+					{
+						out.write("IT's A CoLLCTION");
+						Collection coll = (Collection)id;
+						name = (String) coll.iterator().next();
+					}
+					else
+					{
+						name = (String)id;
+					}
+				}
+				
+				if(po.getType().equals("portlet"))
+				{
+					Object pa = fields.get("portlet_application");
+					String paName = "";
+					if(pa != null)
+					{
+						if(id instanceof Collection)
+						{
+							out.write("IT's A CoLLCTION");
+							Collection coll = (Collection)pa;
+							paName = (String) coll.iterator().next();
+						}
+						else
+						{
+							paName = (String)pa;
+						}
+					}
+					name = paName + "::" + name;
+				}
+			}
+		%>
+	
+		<a href="<c:out value="${searchSelectLink}"/>?select_node=<%=name%>"><c:out value="${result.title}"/></a> <br />
+		 <%-- | <c:out value="${result.description}"/> <br /> --%>
 	</c:forEach>
 </c:if>
 
