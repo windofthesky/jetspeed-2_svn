@@ -96,12 +96,12 @@ insert into RULE_CRITERION values (55, 'subsite2-role-fallback-home', 2, 'path',
 insert into PRINCIPAL_RULE_ASSOC values ('subsite', 'page', 'subsite-role-fallback-home');
 insert into PRINCIPAL_RULE_ASSOC values ('subsite2', 'page', 'subsite2-role-fallback-home');
 
-INSERT INTO SECURITY_PERMISSION VALUES(50,'org.apache.jetspeed.security.FolderPermission','/__subsite-root','view','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(51,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/-','view','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(52,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(53,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite/-','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(54,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite2','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(55,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite2/-','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
+INSERT INTO SECURITY_PERMISSION VALUES(50,'org.apache.jetspeed.security.FolderPermission','/__subsite-root','view',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO SECURITY_PERMISSION VALUES(51,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/-','view',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO SECURITY_PERMISSION VALUES(52,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite','view, edit',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO SECURITY_PERMISSION VALUES(53,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite/-','view, edit',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO SECURITY_PERMISSION VALUES(54,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite2','view, edit',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO SECURITY_PERMISSION VALUES(55,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/_role/subsite2/-','view, edit',to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'),to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS'));
 INSERT INTO PRINCIPAL_PERMISSION VALUES(50,52);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(50,53);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(51,54);
