@@ -207,7 +207,8 @@ public class JetspeedDeploy implements Deploy
         }
     }
         
-    private Document parseXml(InputStream jin) throws Exception {
+    protected Document parseXml(InputStream jin) throws Exception 
+    {
         // Parse using the local dtds instead of remote dtds. This
         // allows to deploy the application offline
         SAXBuilder saxBuilder = new SAXBuilder();
@@ -227,7 +228,7 @@ public class JetspeedDeploy implements Deploy
         return document;
     }
 
-    private void addFile(String path, InputStream source, JarOutputStream jos) throws IOException 
+    protected void addFile(String path, InputStream source, JarOutputStream jos) throws IOException 
     {
         jos.putNextEntry(new ZipEntry(path));
         try {
@@ -240,7 +241,7 @@ public class JetspeedDeploy implements Deploy
         }
     }
         
-    private void addFile(String path, Document source, JarOutputStream jos) throws IOException {
+    protected void addFile(String path, Document source, JarOutputStream jos) throws IOException {
         if (source != null)
         {
             jos.putNextEntry(new ZipEntry(path));
@@ -253,7 +254,7 @@ public class JetspeedDeploy implements Deploy
         }
     }
         
-    private String getPortletApplicationName(String path)
+    protected String getPortletApplicationName(String path)
     {
         File file = new File(path);
         String name = file.getName();
@@ -267,7 +268,7 @@ public class JetspeedDeploy implements Deploy
         return portletApplicationName;
     }
 
-    private class UncloseableInputStream extends InputStream {
+    protected class UncloseableInputStream extends InputStream {
         private final InputStream in;
 
         public UncloseableInputStream(InputStream in) {

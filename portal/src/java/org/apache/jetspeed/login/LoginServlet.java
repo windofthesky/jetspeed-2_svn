@@ -33,7 +33,7 @@ import javax.servlet.http.HttpSession;
 public class LoginServlet extends HttpServlet
 {
 
-    public final void doGet(HttpServletRequest request,
+    public void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {
         HttpSession session = request.getSession(true);

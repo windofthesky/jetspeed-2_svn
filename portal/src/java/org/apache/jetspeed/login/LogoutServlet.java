@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LogoutServlet extends HttpServlet
 {
 
-    public final void doGet(HttpServletRequest request,
+    public void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {
         request.getSession(true).invalidate();
