@@ -294,6 +294,13 @@ limitations under the License.
  	<j:set var="maven.war.final.name" value="struts-demo.war" />
  	<attainGoal name="jetspeed2:deploy" />
   </goal>
+  
+  <goal name="pam.jsfdeploy">
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/jsf-demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="jsf-demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
 
   <goal name="pam.securitydeploy">
   	<!--
@@ -363,6 +370,12 @@ limitations under the License.
 
   <goal name="pam.strutsundeploy">
  	<j:set var="pam.app.name" value="struts-demo"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+  
+  <goal name="pam.jsfundeploy">
+ 	<j:set var="pam.app.name" value="jsf-demo"/>
  	<j:set var="pam.app.type" value="webapp"/>
  	<attainGoal name="pam.template.undeploy"/>
   </goal>
@@ -447,6 +460,7 @@ limitations under the License.
   	 <attainGoal name="pam.deploy" />
   	 <attainGoal name="pam.pamdeploy" />  	 
      <attainGoal name="pam.strutsdeploy" />
+     <attainGoal name="pam.jsfdeploy" />
      <attainGoal name="pam.securitydeploy" />
      <attainGoal name="pam.phpdeploy" />
      <attainGoal name="pam.perldeploy" />
@@ -614,6 +628,7 @@ limitations under the License.
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/localeselector"/>

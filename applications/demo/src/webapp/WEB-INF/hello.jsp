@@ -38,6 +38,9 @@ limitations under the License.
 <a href="/jetspeed/portal/localeselector">Locale Selector</a>
 </p>
 <p>
+<a href="/jetspeed/portal/jsf-demo">MyFaces Portlet Demo</a>
+</p>
+<p>
 Portlet Mode is <b><%= renderRequest.getPortletMode().toString() %></b> <br/>
 Window State is <b><%= renderRequest.getWindowState().toString() %></b> <br/>
 </p>

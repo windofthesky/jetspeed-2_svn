@@ -288,6 +288,14 @@ limitations under the License.
                banner="Build and Install the Struts Demo application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+               
+     <maven:reactor
+               basedir="${basedir}/applications/jsf-demo"
+               includes="project.xml"
+               goals="war:install"
+               banner="Build and Install the JSF Demo application WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>
      
      <maven:reactor
                basedir="${basedir}/applications/security"

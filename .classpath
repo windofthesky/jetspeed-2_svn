@@ -1,38 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/perl/src/java"/>
-	<classpathentry kind="src" path="components/portlet-factory/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
 	<classpathentry kind="src" path="applications/localeselector/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
-	<classpathentry kind="src" path="components/deploy-tool/src/java"/>
-	<classpathentry kind="src" path="taglibs/treecontrol/src/java"/>
-	<classpathentry kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
-	<classpathentry kind="src" path="components/page-manager/src/java"/>
-	<classpathentry kind="src" path="components/page-manager/src/test"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/perl/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
 	<classpathentry kind="src" path="components/capability/src/java"/>
 	<classpathentry kind="src" path="components/capability/src/test"/>
-	<classpathentry kind="src" path="jetspeed-api/src/java"/>
-	<classpathentry kind="src" path="components/locator/src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/locator/src/test"/>
+	<classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/java"/>
+	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/cm/src/test"/>
+	<classpathentry kind="src" path="components/deploy-tool/src/java"/>
 	<classpathentry kind="src" path="components/file-cache/src/java"/>
 	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/file-cache/src/test"/>
 	<classpathentry kind="src" path="components/id-generator/src/java"/>
 	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/id-generator/src/test"/>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portlet-api/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="portal/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/java"/>
-	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/cm/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/test"/>
+	<classpathentry kind="src" path="components/locator/src/java"/>
+	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/locator/src/test"/>
+	<classpathentry kind="src" path="components/page-manager/src/java"/>
+	<classpathentry kind="src" path="components/page-manager/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/persistence/src/java"/>
 	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="components/persistence/src/test"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="components/portlet-factory/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/rdbms/src/java"/>
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/rdbms/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/registry/src/java"/>
@@ -41,7 +33,18 @@
 	<classpathentry excluding="**/CVS/*|Log4j.properties" kind="src" path="components/prefs/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/security/src/java"/>
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/security/src/test"/>
+	<classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
+	<classpathentry kind="src" path="jetspeed-api/src/java"/>
+	<classpathentry kind="src" path="layout-portlets/src/java"/>
+	<classpathentry excluding="**/CVS*" kind="src" path="portal/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portal/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/struts/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/myfaces/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portlet-api/src/java"/>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="taglibs/treecontrol/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b10.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
@@ -92,8 +95,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/spring/jars/spring-core-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet.jar"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/struts/src/java"/>
-	<classpathentry exported="true" kind="src" path="/jakarta-pluto"/>
+	<classpathentry sourcepath="MYFACES_API_SRC" kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-jsf-api-1.0.7.jar"/>
+	<classpathentry sourcepath="MYFACES_SRC" kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
