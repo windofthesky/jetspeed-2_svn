@@ -115,7 +115,7 @@ public class TestPersistenceService extends JetspeedTest
 
     public void testDefaultPlugin()
     {
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         assertNotNull(plugin);
     }
 
@@ -167,7 +167,7 @@ public class TestPersistenceService extends JetspeedTest
 
     public void testAddingLangaugeToPortlet()
     {
-        PersistencePlugin plugin = service.getPlugin("jetspeed-test");
+        PersistencePlugin plugin = service.getPersistencePlugin("jetspeed-test");
         initTestObject();
         MutablePortletApplication app = getTestObject1();
 
@@ -186,7 +186,7 @@ public class TestPersistenceService extends JetspeedTest
     {
         initTestObject();
 
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
 
         PortletApplicationDefinitionImpl app = getTestObject1();
 
@@ -220,7 +220,7 @@ public class TestPersistenceService extends JetspeedTest
 
         assertNotNull(app);
 
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
 
         plugin.delete(app);
 
@@ -241,7 +241,7 @@ public class TestPersistenceService extends JetspeedTest
     protected void initTestObject()
     {
 
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         MutablePortletApplication app = new PortletApplicationDefinitionImpl();
         app.setName("test adding object");
         app.setVersion("1.0");
@@ -270,7 +270,7 @@ public class TestPersistenceService extends JetspeedTest
 
     protected Language getEnglishLanguage()
     {
-        PersistencePlugin plugin = service.getPlugin("jetspeed-test");
+        PersistencePlugin plugin = service.getPersistencePlugin("jetspeed-test");
         MutableLanguage lang = new LanguageImpl();
         
         lang.setTitle("Portlet Title");
@@ -283,7 +283,7 @@ public class TestPersistenceService extends JetspeedTest
 
     protected PortletApplicationDefinitionImpl getTestObject1()
     {
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("name", "test adding object");
 
@@ -297,7 +297,7 @@ public class TestPersistenceService extends JetspeedTest
 
     protected void destroyTestObject()
     {
-        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("name", "test adding object");
         Collection removeUs =
