@@ -1,94 +1,7 @@
-<!--
- 	- M E T A D A T A   F I E L D
--->
-
-<class-descriptor
-   	  class="org.apache.jetspeed.om.common.impl.GenericMetadataImpl"
-   	  table="PA_METADATA"
-   >
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
- 
-      />
-
-      <collection-descriptor
-         name="fields"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-</class-descriptor>
-
-<!--
- 	- L O C A L I Z E D   F I E L D
--->   
-   <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
-      <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />         
-    </class-descriptor>
-   
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-   	  table="PA_METADATA_FIELDS"
-   >
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-      />
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-   
-      />
-
-      <field-descriptor
-         name="value"
-         column="VALUE"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />
-    </class-descriptor>
 
 <!--
    - P O R T L E T    A P P L I C A T I O N
 -->	
-
-<!--
-  <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl"
-   >
-     <extent-class class-ref="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor" />  
-  </class-descriptor>
--->
-
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.MutablePortletApplication"
-
-   >
-      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl" />         
-   </class-descriptor>
 
  
   <class-descriptor
@@ -104,7 +17,7 @@
          autoincrement="true"
          
       />
-      <!--conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
+
       <field-descriptor
          name="name"
          column="APP_NAME"
@@ -144,7 +57,7 @@
          column="APP_TYPE"
          jdbc-type="INTEGER"       
       />
-
+	 <!--
       <reference-descriptor 
       	  name="metadata" 
       	  class-ref="org.apache.jetspeed.om.common.impl.GenericMetadataImpl" 
@@ -154,28 +67,27 @@
       	  >
          <foreignkey field-ref="metadataId"/>
       </reference-descriptor>
+     -->
      
       <reference-descriptor 
       	  name="webApplication" 
       	  class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl" 
-      	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+      	  otm-dependent="true"  
+
       	  >
          <foreignkey field-ref="webApplicationId"/>
       </reference-descriptor>
-      
+
       <collection-descriptor
          name="portlets"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
-         auto-delete="true"
-      	 auto-update = "true"
-      	 auto-retrieve = "true"
+         class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl" 
+     	 otm-dependent="true"  
 
       >
          <inverse-foreignkey field-ref="appId"/>
       </collection-descriptor>
-       
+
    </class-descriptor>
    
 
@@ -205,42 +117,33 @@
          jdbc-type="VARCHAR"
       />
 
+
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.WebAppDescriptionImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-         
-      >    
-
+         otm-dependent="true"         
+      >
          <inverse-foreignkey field-ref="parentId"/>
-
       </collection-descriptor>
-     
+
     <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.WebAppDisplayNameImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         otm-dependent="true"
+       
       >    
+          
           <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
-     
+
    </class-descriptor>
-
-<!--
-   -  P O R T L E T   D E F I N I T I O N
- -->
-
- 
+   
+   
    <class-descriptor
    	  class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
    	  table="PORTLET_DEFINITION"
 
-   >
-   
+   >   
    
       <field-descriptor
          name="id"
@@ -255,8 +158,7 @@
          name="portletIdentifier"
          column="PORTLET_IDENTIFIER"
          jdbc-type="VARCHAR"       
-      />
-      
+      />      
     
       <field-descriptor
          name="name"
@@ -275,7 +177,6 @@
          jdbc-type="INTEGER"
          
       />      
-      
        <field-descriptor
          name="expirationCache"
          column="EXPIRATION_CACHE"
@@ -287,77 +188,66 @@
          column="PREFERENCE_VALIDATOR"
          jdbc-type="VARCHAR"
       />
-      
-      
-
 
       <reference-descriptor 
       	name="app" 
       	class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl" 
-      	auto-delete="false"
-      	auto-update = "true"
-      	auto-retrieve = "true"
    	 >       	        
          <foreignkey field-ref="appId"/>
       </reference-descriptor>
    
-    
+   
      <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
-         auto-delete="true"
-      	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >    
+         otm-dependent="true"   
+     >    
           <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
-  
-
       <collection-descriptor
-         name="languageSet"
-         element-class-ref="org.apache.jetspeed.om.impl.LanguageImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
+         otm-dependent="true"   
       >
-         <inverse-foreignkey field-ref="portletId"/>
-
-      </collection-descriptor>
-      
-      <collection-descriptor
-         name="contentTypes"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-      >         
-
-         <inverse-foreignkey field-ref="portletId"/>
-      </collection-descriptor>
-      
-
-      	<collection-descriptor
-         name="parameterSet"
-         element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-      >         
-
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
-
+      
+      <collection-descriptor
+         name="parameterSet"
+         element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
+         otm-dependent="true"
+      >
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      
       <collection-descriptor
          name="prefSet"
          element-class-ref="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         otm-dependent="true"
        >         
 
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
       
+      <collection-descriptor
+         name="languageSet"
+         element-class-ref="org.apache.jetspeed.om.impl.LanguageImpl"
+         otm-dependent="true"
+      >
+         <inverse-foreignkey field-ref="portletId"/>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="contentTypes"
+         element-class-ref="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
+       	 otm-dependent="true"
+      >
+         <inverse-foreignkey field-ref="portletId"/>
+      </collection-descriptor>   
+      
+  
+<!-- 
+  
        <collection-descriptor
          name="securityRoleRefSet"
          element-class-ref="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
@@ -370,19 +260,9 @@
          <inverse-foreignkey field-ref="portletId"/>
       </collection-descriptor>
       
-     <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-      >         
-
-         <inverse-foreignkey field-ref="parentId"/>
-
-      </collection-descriptor>
 
 
+  -->
 
    <!--      
       <collection-descriptor
@@ -398,172 +278,7 @@
        -->
    </class-descriptor>
    
-
-
-<!-- 
-   - L A N G U A G E 
--->
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.LanguageImpl"
-   	  table="LANGUAGE"
-   >
-   
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"         
-      />
-      
-      <field-descriptor
-         name="portletId"
-         column="PORTLET_ID"
-         jdbc-type="INTEGER"
-          
-      />
-      
-      
-      <field-descriptor
-         name="title"
-         column="TITLE"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="shortTitle"
-         column="SHORT_TITLE"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="keywords"
-         column="KEYWORDS"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
-      />
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />      
-
-   </class-descriptor>
-
-<!--
-   - C O N T E N T    T Y P E 
- -->
-    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
-
-   >
-      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />              
-   </class-descriptor>
- 
- 
- 
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-   	  table="PORTLET_CONTENT_TYPE"
-   >   
-     <field-descriptor
-         name="contentTypeId"
-         column="CONTENT_TYPE_ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"         
-      />
-      <field-descriptor
-         name="portletId"
-         column="PORTLET_ID"
-         jdbc-type="INTEGER"
-
-      />
-      <field-descriptor
-         name="contentType"
-         column="CONTENT_TYPE"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="portletModes"
-         column="MODES"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoPortletModeFieldConversion"
-      />  
-   </class-descriptor>
-   
-
-
-<!--
-   - P A R A M E T E R
- -->
- <!--
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.ParameterImpl"
-   	  table="PARAMETER"
-   >
-   <extent-class class-ref="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl" />
-   <extent-class class-ref="org.apache.jetspeed.om.common.extended.ServletInitParameterImpl" />
-   
-    
-
-   </class-descriptor>
-   -->
-
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.ServletInitParameterImpl"
-   	  table="PARAMETER"
-   >
-   
-   <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="INTEGER"
-
-      />
-      
-        <field-descriptor
-         name="parameterId"
-         column="PARAMETER_ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"         
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="INTEGER"
-
-      />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-   
-      <field-descriptor
-         name="value"
-         column="PARAMETER_VALUE"
-         jdbc-type="VARCHAR"         
-      />       
-         
-
-   
-   <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      
-      
-      
-    </class-descriptor>
-
-   <class-descriptor
+  <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
    	  table="PARAMETER"
    >
@@ -611,23 +326,15 @@
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.ParameterDescriptionImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+       	 otm-dependent="true"  
       >         
          <inverse-foreignkey field-ref="parentId"/>
 
       </collection-descriptor>      
    
-    </class-descriptor>
-
-<!--
-   - P R E F E R E N C E S
- -->
-
- 
-    <!-- These preferences are the defaults for a PortletDefinition -->
-    <class-descriptor
+  </class-descriptor>
+  
+      <class-descriptor
    	  class="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
    	  table="PORTLET_PREFERENCE"
    >
@@ -668,9 +375,7 @@
       <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         otm-dependent="true"  
 
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
@@ -680,9 +385,7 @@
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+       	 otm-dependent="true"  
 
       >         
 
@@ -733,9 +436,7 @@
       <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         otm-dependent="true"  
 
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
@@ -745,9 +446,7 @@
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
-         auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         otm-dependent="true"  
 
       >         
          <inverse-foreignkey field-ref="parentId"/>
@@ -786,14 +485,234 @@
          jdbc-type="VARCHAR"
       />  
   
+  </class-descriptor>
+  
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.LanguageImpl"
+   	  table="LANGUAGE"
+   >
+   
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_ID"
+         jdbc-type="INTEGER"
+          
+      />
+      
+      
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="keywords"
+         column="KEYWORDS"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />      
+
+   </class-descriptor>
+   
+ 
+  <class-descriptor
+    class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
+   >
+      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />              
+   </class-descriptor>
+ 
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
+   	  table="PORTLET_CONTENT_TYPE"
+   >   
+     <field-descriptor
+         name="contentTypeId"
+         column="CONTENT_TYPE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_ID"
+         jdbc-type="INTEGER"
+
+      />
+      <field-descriptor
+         name="contentType"
+         column="CONTENT_TYPE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="portletModes"
+         column="MODES"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoPortletModeFieldConversion"
+      />  
+   </class-descriptor>
+  
+   
+   
+   
+   
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.WebAppDescriptionImpl"
+   	  table="LOCALIZED_DESCRIPTION"
+   >
+      
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+  
+   
+      />
+      
+      <field-descriptor
+         name="parentId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+
+      />
+        
+      
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />          
+      
+  
     </class-descriptor>
     
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.ParameterDescriptionImpl"
+   	  table="LOCALIZED_DESCRIPTION"
+   >
+      
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
 
+   
+      />
+      
+      <field-descriptor
+         name="parentId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+
+      />
+        
+      
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />          
+      
+  
+    </class-descriptor>
     
     
-<!--
-   - L O C A L I Z E D   D E S C R I P I T I O N
- -->
+    
+    
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.WebAppDisplayNameImpl"
+   	  table="LOCALIZED_DISPLAY_NAME"
+   >
+        
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+         
+      />
+      
+      <field-descriptor
+         name="parentId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+
+      />
+
+      
+       <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="displayName"
+         column="DISPLAY_NAME"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />          
+    
+
+   </class-descriptor>
+   
     <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
    	  table="LOCALIZED_DESCRIPTION"
@@ -839,64 +758,17 @@
   
     </class-descriptor>
     
-       <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.PortletAppDescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
-   >
-      
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-         
-   
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-         
-      />
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
+   	  table="LOCALIZED_DISPLAY_NAME"
+   >    
         
-      
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="description"
-         column="DESCRIPTION"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
-    </class-descriptor>
-    
-       <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.WebAppDescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
-   >
-      
       <field-descriptor
          name="id"
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"
-  
-   
+         autoincrement="true"   
       />
       
       <field-descriptor
@@ -905,17 +777,16 @@
          jdbc-type="INTEGER"
 
       />
-        
       
-      <field-descriptor
+       <field-descriptor
          name="ojbConcreteClass"
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
-         name="description"
-         column="DESCRIPTION"
+         name="displayName"
+         column="DISPLAY_NAME"
          jdbc-type="VARCHAR"
       />   
       
@@ -924,102 +795,11 @@
          column="LOCALE_STRING"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
-    </class-descriptor>
+      />       
     
-       <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.PortletEntityDescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
-   >
-      
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-
+   </class-descriptor>
    
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-
-      />
-        
-      
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="description"
-         column="DESCRIPTION"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
-    </class-descriptor>
-    
-    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.ParameterDescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
-   >
-      
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-
-   
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-
-      />
-        
-      
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="description"
-         column="DESCRIPTION"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
-    </class-descriptor>
-    
-       <class-descriptor
+   <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
    	  table="LOCALIZED_DESCRIPTION"
    >
@@ -1064,146 +844,8 @@
   
     </class-descriptor>
     
-       <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
-   >
-      
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-
-   
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-
-      />
-        
-      
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="description"
-         column="DESCRIPTION"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
-    </class-descriptor>
     
-  
-    
-    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
-   	  table="LOCALIZED_DISPLAY_NAME"
-   >    
-        
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"   
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-
-      />
-      
-       <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="displayName"
-         column="DISPLAY_NAME"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />       
-    
-   </class-descriptor>
-   
-
-    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.WebAppDisplayNameImpl"
-   	  table="LOCALIZED_DISPLAY_NAME"
-   >
-        
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-         
-      />
-      
-      <field-descriptor
-         name="parentId"
-         column="OBJECT_ID"
-         jdbc-type="INTEGER"
-
-      />
-
-      
-       <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-      <field-descriptor
-         name="displayName"
-         column="DISPLAY_NAME"
-         jdbc-type="VARCHAR"
-      />   
-      
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-    
-
-   </class-descriptor>
-
-    
-    
-    
- <!-- 
-   - P O R T L E T  E N T I T Y
- -->
-     <class-descriptor
+   <class-descriptor
    	  class="org.apache.jetspeed.components.portletentity.PortletEntityImpl"
    	  table="PORTLET_ENTITY"
    >
@@ -1234,9 +876,6 @@
      <reference-descriptor 
       	name="portletDefinition" 
       	class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" 
-         auto-delete="false"
-   	     auto-update = "true"
-      	 auto-retrieve = "true"
    	 >       	        
          <foreignkey field-ref="portletId"/>
       </reference-descriptor>
@@ -1244,70 +883,10 @@
       <collection-descriptor
          name="originalPreferences"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
-         auto-delete="true"
-   	     auto-update = "true"
-      	 auto-retrieve = "true"
+         otm-dependent="true"  
 
        >         
          <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-
-  
+      </collection-descriptor>  
   </class-descriptor>
-  
-  <!-- 
-   - S E C U R T I T Y   R O L E   R E F
- -->
-     <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
-   	  table="SECURITY_ROLE_REFERENCE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-         access="anonymous"
-         
-      />
-      
-      <field-descriptor
-         name="portletId"
-         column="PORTLET_DEFINITION_ID"
-         jdbc-type="INTEGER"
-         access="anonymous"
-
-      />
-      
-      <field-descriptor
-         name="name"
-         column="ROLE_NAME"
-         jdbc-type="VARCHAR"         
-      />   
-      
-       <field-descriptor
-         name="link"
-         column="ROLE_LINK"
-         jdbc-type="VARCHAR"         
-      />
-      
-      <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-
-      </collection-descriptor>     
-
-      
-
-  
-  </class-descriptor>
-   
   

@@ -61,6 +61,7 @@ import java.util.Locale;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.om.preference.impl.AbstractPreference;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.pluto.om.common.Description;
@@ -110,6 +111,7 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
         this.entity = entity;
         this.control = control;
         this.store = store;
+        initMutatingPreferences();
 
     }
 
@@ -136,7 +138,8 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
      */
     public PreferenceSet getPreferenceSet()
     {
-        return entity.getPreferenceSet();
+        mutatingPreferencesWrapper.setInnerCollection(mutatingPreferences);
+        return mutatingPreferencesWrapper;
     }
 
     /** 
@@ -276,15 +279,14 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
 
             // PortletEntityAccess.storePortletEntity(this);
             // TODO: this is bad
-            //		  PersistenceStoreContainer pContainer = (PersistenceStoreContainer) PicoBootstrapContainer.getComponentInstance(PersistenceStoreContainer.class);
-            //		  PersistenceStore store = pContainer.getStore("jetspeed");
-            //		  Transaction tx = store.getTransaction();
-            //		  if(!tx.isOpen())
-            //		  {
-            //			  tx.begin();
-            //		  }
-            //		  store.lockForWrite(this);
-            //		  tx.checkpoint();
+
+            Transaction tx = store.getTransaction();
+            if (!tx.isOpen())
+            {
+                tx.begin();
+            }
+            store.lockForWrite(this);
+            tx.checkpoint();
         }
         catch (Exception e)
         {
@@ -309,6 +311,10 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
 
     protected void initMutatingPreferences()
     {
+        if(originalPreferences == null )
+        {
+            originalPreferences = new ArrayList();
+        }
         mutatingPreferences = new ArrayList(originalPreferences.size());
         if (originalPreferences != null)
         {

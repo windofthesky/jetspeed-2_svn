@@ -55,6 +55,7 @@ package org.apache.jetspeed.components.portletregsitry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -214,7 +215,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
 
     private void prepareTransaction(PersistenceStore store)
     {
-        if (!store.getTransaction().isOpen())
+        if (store.getTransaction() == null || !store.getTransaction().isOpen())
         {
             store.getTransaction().begin();
         }
@@ -305,7 +306,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-
+    
         //parse out names
         int split = name.indexOf("::");
         if (split < 1)
@@ -313,17 +314,17 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
             throw new IllegalArgumentException(
                 "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
         }
-
+    
         String appName = name.substring(0, split);
         String portletName = name.substring((split + 2), name.length());
-
+    
         // build filter
         Filter filter = store.newFilter();
         filter.addEqualTo("app.name", appName);
         filter.addEqualTo("name", portletName);
         Object query = store.newQuery(portletDefClass, filter);
         PortletDefinitionComposite pdc = (PortletDefinitionComposite) store.getObjectByQuery(query);
-
+    
         return getStoreableInstance(pdc);
     }
 
@@ -412,8 +413,16 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         prepareTransaction(store);
 
         try
-        {
+        {   
+            Iterator portlets = app.getPortletDefinitionList().iterator();
+            while(portlets.hasNext())
+            {
+                // portlets are getting cascade deleted but
+                // content type and langs asocciated are not
+                store.deletePersistent(portlets.next());
+            }
             store.deletePersistent(app);
+            
             store.getTransaction().checkpoint();
         }
         catch (LockFailedException e)

@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
@@ -79,12 +80,6 @@ import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerAware;
-import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.ojb.broker.query.Criteria;
-import org.apache.ojb.broker.query.Query;
-import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -113,7 +108,7 @@ import org.odmg.DList;
  *          Exp $
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable, PersistenceBrokerAware
+public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
     private int id;
@@ -131,7 +126,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private DisplayNameSetImpl DNListWrapper = new DisplayNameSetImpl();
     private Collection descriptions;
     private DescriptionSetImpl descListWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_PORTLET);
-    private Collection prefSet = null;
+    private Collection prefSet = new ArrayList();
     private PreferenceSetImpl prefListWrapper = new PreferenceSetImpl();
     private Collection contentTypes;
     private ContentTypeSetImpl ctListWrapper = new ContentTypeSetImpl();
@@ -699,118 +694,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         secListWrapper.setInnerCollection(securityRoleRefSet);
         secListWrapper.add(securityRef);
-    }
-    /** 
-     * <p>
-     * afterDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-
-    }
-
-    /** 
-     * <p>
-     * afterInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * afterLookup
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-         // TODO: NASTY HACK ALERT!!!  OJB should be doing this automatically
-        if (app == null)
-        {
-            log.warn("Initial PortletDefintion materialization failed to retreive associated PortletApplicationDefinition.");
-            Criteria c = new Criteria();
-            c.addEqualTo("id", new Long(appId));
-            Query q = QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c);
-            app = (PortletApplicationDefinitionImpl) arg0.getObjectByQuery(q);
-
-        }
-
-    }
-
-    /** 
-     * <p>
-     * afterUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -82,7 +82,7 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  * @since 1.0
  */
-public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable, PersistenceBrokerAware
+public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable
 { 
     /**
      * Unique id of the application.  This serves as the primary key in database
@@ -297,122 +297,6 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void setMetadata(GenericMetadata metadata) {
         this.metadata = metadata;        
-    }
-
-    
-
-    /** 
-     * <p>
-     * afterDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * afterInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * afterLookup
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-		if (webApplication == null)
-		{
-			// log.warn("Initial PortletDefintion materialization failed to retreive associated PortletApplicationDefinition.");
-			// TODO: NASTY HACK ALERT!!!  OJB should be doing this automatically
-			Criteria c = new Criteria();
-			c.addEqualTo("id", new Long(webApplicationId));
-			Query q = QueryFactory.newQuery(WebApplicationDefinitionImpl.class, c);
-			webApplication = (WebApplicationDefinitionImpl) arg0.getObjectByQuery(q);
-
-		}
-
-    }
-
-    /** 
-     * <p>
-     * afterUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** 
-     * <p>
-     * beforeUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        // TODO Auto-generated method stub
-
     }
 
 }
