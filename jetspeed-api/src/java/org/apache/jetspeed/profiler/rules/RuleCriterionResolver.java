@@ -71,6 +71,9 @@ public interface RuleCriterionResolver
     /** look in the request path first, then session */
     public static final String PATH_SESSION = "path.session";
     
+    /** look in user attributes */
+    public static final String USER_ATTRIBUTE = "user.attribute";
+    
     /**
      * Resolver the value for a criterion.
      * 
