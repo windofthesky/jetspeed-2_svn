@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.UserPrincipal;
 
 /**
@@ -61,7 +63,7 @@ import org.apache.jetspeed.security.UserPrincipal;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class UserPrincipalImpl implements UserPrincipal
+public class UserPrincipalImpl implements UserPrincipal, Serializable
 {
     private final String userName;
 

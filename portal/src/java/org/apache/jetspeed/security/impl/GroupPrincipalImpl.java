@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.GroupPrincipal;
 
 /**
@@ -61,7 +63,7 @@ import org.apache.jetspeed.security.GroupPrincipal;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class GroupPrincipalImpl implements GroupPrincipal
+public class GroupPrincipalImpl implements GroupPrincipal, Serializable
 {
     private final String groupName;
 
