@@ -54,7 +54,7 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.util.Iterator;
-
+import java.util.Locale;
 import javax.portlet.PortletMode;
 
 import junit.framework.Test;
@@ -62,7 +62,6 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
@@ -182,7 +181,7 @@ public class TestPortletDescriptor extends JetspeedTest
         assertTrue("Portlet.Expiration invalid: " + portlet.getExpirationCache(), portlet.getExpirationCache().equals("-1"));
 
         // Display Name                
-        DisplayName displayName = portlet.getDisplayName(Jetspeed.getDefaultLocale());
+        DisplayName displayName = portlet.getDisplayName(Locale.ENGLISH);
         assertNotNull("Display Name is null", displayName);
         assertTrue(
             "Portlet.DisplayName invalid: " + displayName.getDisplayName(),
@@ -198,8 +197,8 @@ public class TestPortletDescriptor extends JetspeedTest
             assertTrue("InitParam.Name invalid: " + parameter.getName(), parameter.getName().equals("hello"));
             assertTrue("InitParam.Value invalid: " + parameter.getValue(), parameter.getValue().equals("Hello Portlet"));
             assertTrue(
-                "InitParam.Description invalid: " + parameter.getDescription(Jetspeed.getDefaultLocale()),
-                parameter.getDescription(Jetspeed.getDefaultLocale()).getDescription().equals("test init param"));
+                "InitParam.Description invalid: " + parameter.getDescription(Locale.ENGLISH),
+                parameter.getDescription(Locale.ENGLISH).getDescription().equals("test init param"));
             count++;
         }
         assertTrue("InitParam Count != 1, count = " + count, count == 1);
