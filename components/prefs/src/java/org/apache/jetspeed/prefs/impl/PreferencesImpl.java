@@ -327,7 +327,10 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void flushSpi() throws BackingStoreException
     {
-        // Never used. Not implemented.
+        if(persistenceStore.getTransaction().isOpen())
+        {
+            persistenceStore.getTransaction().commit();
+        }
     }
 
     /**
@@ -573,7 +576,7 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void syncSpi() throws BackingStoreException
     {
-        // Never used. Not implemented.
+        flushSpi();
     }
 
     /**
