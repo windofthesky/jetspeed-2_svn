@@ -127,4 +127,10 @@ Class eaClass = Class.forName("org.apache.jetspeed.components.portletentity.Port
 Class eaImplClass = Class.forName("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl")
 container.registerComponentImplementation(eaClass, eaImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
 
+//
+// Profiler
+//
+container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer))
+
+
 return container
