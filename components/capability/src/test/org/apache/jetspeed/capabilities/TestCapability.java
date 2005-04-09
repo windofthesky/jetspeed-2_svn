@@ -133,7 +133,7 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);                
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("stinking IE for Mac", cm.getClient().getName().equals("iemac"));        
+        assertTrue("IE for Mac " + cm.getClient().getName(), cm.getClient().getName().equals("ie5mac"));        
         capabilityMapReport(cm);
         
         userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)";
