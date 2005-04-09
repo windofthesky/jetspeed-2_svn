@@ -65,6 +65,12 @@ public class PortletApplicationDescriptor
         this.appName = appName;
     }
 
+    public MutablePortletApplication createPortletApplication()
+    throws PortletApplicationException
+    {
+        return createPortletApplication(this.getClass().getClassLoader());
+    }
+    
     /**
      * Maps the content of the portlet application descriptor into
      * a new <code>MutablePortletApplication object</code>

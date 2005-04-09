@@ -261,6 +261,12 @@ public class PortletApplicationWar
         }
     }
 
+    public MutablePortletApplication createPortletApp() 
+    throws PortletApplicationException, IOException
+    {
+        return createPortletApp(this.getClass().getClassLoader());
+    }
+    
     /**
      * 
      * <p>
