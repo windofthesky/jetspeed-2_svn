@@ -25,7 +25,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.pluto.om.common.Language;
@@ -91,6 +90,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      */
     public Language get( Locale locale )
     {
+
         Language fallBack = null;
         Iterator searchItr = innerCollection.iterator();
         while (searchItr.hasNext())
@@ -101,8 +101,11 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
             {
                 if (resources != null)
                 {
-                    return createLanguage(lang.getLocale(), loadResourceBundle(lang.getLocale()), lang.getTitle(), lang
-                            .getShortTitle(), StringUtils.join(lang.getKeywords(), ","), false);
+                    LanguageImpl language = (LanguageImpl)createLanguage(lang.getLocale(), loadResourceBundle(lang.getLocale()),"","","");
+                    language.setTitle(lang.getTitle());
+                    language.setShortTitle(lang.getShortTitle());
+                    language.setKeywords(StringUtils.join(lang.getKeywords(), ","));
+                    return language;
                 }
                 else
                 {
@@ -118,13 +121,24 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
 
         if (fallBack != null && resources != null)
         {
-            fallBack = createLanguage(fallBack.getLocale(), loadResourceBundle(fallBack.getLocale()), fallBack
-                    .getTitle(), fallBack.getShortTitle(), StringUtils.join(fallBack.getKeywords(), ","), true);
+            LanguageImpl language = (LanguageImpl)createLanguage(fallBack.getLocale(), loadResourceBundle(fallBack.getLocale()),"","","");
+            language.setTitle(fallBack.getTitle());
+            language.setShortTitle(fallBack.getShortTitle());
+            language.setKeywords(StringUtils.join(fallBack.getKeywords(), ","));
+            fallBack = language;
         }
 
         if (fallBack == null)
         {
-            fallBack = new LanguageImpl(locale, loadResourceBundle(locale));
+            if(!getDefaultLocale().equals(locale))
+            {
+                Language defaultLang=get(getDefaultLocale());
+                fallBack = new LanguageImpl(locale, loadResourceBundle(locale), defaultLang.getTitle(), defaultLang.getShortTitle(), StringUtils.join(defaultLang.getKeywords(), ","));
+            }
+            else
+            {
+                fallBack = new LanguageImpl(locale, loadResourceBundle(locale), "","","");
+            }
             innerCollection.add(fallBack);
         }
         return fallBack;
@@ -143,22 +157,48 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      */
     public boolean add( Object o )
     {
+        if (o instanceof Language)
+        {
         Language language = (Language) o;
         if (language.getLocale() == null)
         {
-            ((MutableLanguage) o).setLocale(Locale.ENGLISH);
+                ((MutableLanguage) o).setLocale(getDefaultLocale());
         }
 
+            Iterator ite = innerCollection.iterator();
+            while (ite.hasNext())
+            {
+                Language lang = (Language) ite.next();
+                if (lang.getLocale().equals(language.getLocale()))
+                {
+                    innerCollection.remove(lang);
         return innerCollection.add(o);
+    }
+            }
+            return innerCollection.add(o);
+        }
+        return false;
     }
 
     /**
      * @see java.util.Collection#remove(java.lang.Object)
      */
-    public boolean remove( Object o )
+    public boolean remove(Object o)
+    {
+        if (o instanceof Language)
     {
         Language language = (Language) o;
-        return innerCollection.remove(language);
+            Iterator ite = innerCollection.iterator();
+            while (ite.hasNext())
+            {
+                Language lang = (Language) ite.next();
+                if (lang.getLocale().equals(language.getLocale()))
+                {
+                    return innerCollection.remove(lang);
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -197,14 +237,34 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      */
     public void postLoad( Object parameter ) throws Exception
     {
+        String title = "";
+        String shortTitle = "";
+        String keywords = "";
+        Language defaultLang = get(getDefaultLocale());
+        if (defaultLang != null)
+        {
+            title = defaultLang.getTitle();
+            shortTitle = defaultLang.getShortTitle();
+            keywords = StringUtils.join(defaultLang.getKeywords(), ",");
+        }
+
+        ResourceBundle defaultResource = loadResourceBundle(getDefaultLocale());
         Iterator iter = ((Collection) parameter).iterator();
         while (iter.hasNext())
         {
             Locale locale = (Locale) iter.next();
-            Language language = createLanguage(locale, null);
-            remove(language);
+            ResourceBundle resource = loadResourceBundle(locale);
+            if (resource == null)
+            {
+                resource = defaultResource;
+            }
+            Language language = createLanguage(locale, resource, title, shortTitle, keywords);
             add(language);
         }
+
+        // add default Language
+        Language language = createLanguage(getDefaultLocale(), defaultResource, title, shortTitle, keywords);
+        add(language);
     }
 
     protected ResourceBundle loadResourceBundle( Locale locale )
@@ -244,29 +304,6 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     }
 
     /**
-     * Creates Language instance from a default Language
-     * 
-     * @param locale
-     * @param bundle
-     * @return
-     */
-    private Language createLanguage( Locale locale, ResourceBundle bundle )
-    {
-        String title = "";
-        String shortTitle = "";
-        String keywords = "";
-        Language defaultLang = get(getDefaultLocale());
-
-        if (defaultLang != null)
-        {
-            title = defaultLang.getTitle();
-            shortTitle = defaultLang.getShortTitle();
-            keywords = StringUtils.join(defaultLang.getKeywords(), ",");
-        }
-        return createLanguage(locale, bundle, title, shortTitle, keywords, false);
-    }
-
-    /**
      * Creates Language instance.
      * 
      * @param locale
@@ -276,31 +313,8 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * @param keywords
      * @return
      */
-    private Language createLanguage( Locale locale, ResourceBundle bundle, String title, String shortTitle,
-            String keywords, boolean createNow)
+    private Language createLanguage( Locale locale, ResourceBundle bundle, String title, String shortTitle, String keywords)
     {
-        if (!createNow && !locale.equals(getDefaultLocale()))
-        {
-            Language defaultLang = get(getDefaultLocale());
-
-            if (defaultLang != null)
-            {
-                if (title == null || title.length() < 1)
-                {
-                    title = defaultLang.getTitle();
-                }
-
-                if (shortTitle == null || shortTitle.length() < 1)
-                {
-                    shortTitle = defaultLang.getShortTitle();
-                }
-
-                if (keywords == null || keywords.length() < 1)
-                {
-                    keywords = StringUtils.join(defaultLang.getKeywords(), ",");
-                }
-            }
-        }
         LanguageImpl lang = new LanguageImpl(locale, bundle, title, shortTitle, keywords);
         return (Language) lang;
     }

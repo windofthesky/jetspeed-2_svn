@@ -208,14 +208,14 @@ public class PortletApplicationWar
      * @throws IOException
      * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
-    public MutablePortletApplication createPortletApp() throws PortletApplicationException, IOException
+    public MutablePortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
         
         try
         {
             PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
-            portletApp = paDescriptor.createPortletApplication();
+            portletApp = paDescriptor.createPortletApplication(classLoader);
             // validate(portletApplication);
             Reader extMetaDataXml = null;
             try

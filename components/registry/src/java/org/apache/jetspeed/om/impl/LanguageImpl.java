@@ -87,13 +87,20 @@ public class LanguageImpl implements MutableLanguage, Serializable
         defaults.put(JAVAX_PORTLET_KEYWORDS, defaultKeyWords);
         this.resourceBundle = new DefaultsResourceBundle(bundle, defaults);
 
-        this.locale = locale;
+        setLocale(locale);
+        setTitle(getResourceBundle().getString(JAVAX_PORTLET_TITLE));
+        setShortTitle(getResourceBundle().getString(JAVAX_PORTLET_SHORT_TITLE));
+        setKeywords(getResourceBundle().getString(JAVAX_PORTLET_KEYWORDS));
     }
 
     public LanguageImpl( Locale locale, ResourceBundle bundle )
     {
         this.resourceBundle = new DefaultsResourceBundle(bundle, new HashMap());
-        this.locale = locale;
+
+        setLocale(locale);
+        setTitle(getResourceBundle().getString(JAVAX_PORTLET_TITLE));
+        setShortTitle(getResourceBundle().getString(JAVAX_PORTLET_SHORT_TITLE));
+        setKeywords(getResourceBundle().getString(JAVAX_PORTLET_KEYWORDS));
     }
 
     /**

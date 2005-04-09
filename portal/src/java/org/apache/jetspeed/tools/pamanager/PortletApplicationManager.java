@@ -189,7 +189,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	protected MutablePortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		MutablePortletApplication oldPA, boolean local)
+		MutablePortletApplication oldPA, boolean local, ClassLoader paClassLoader)
 		throws RegistryException
 	{
 		if (oldPA != null)
@@ -205,7 +205,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		try
 		{
 			log.info("Loading portlet.xml...." + paName);
-			pa = paWar.createPortletApp();
+			pa = paWar.createPortletApp(paClassLoader);
 
 			if (local)
 			{
@@ -329,7 +329,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			}
 			else
 			{
-				pa = registerPortletApplication(paWar, pa, local);
+				pa = registerPortletApplication(paWar, pa, local, paClassLoader);
 			}
             portletFactory.registerPortletApplication(pa, paClassLoader);
 		}

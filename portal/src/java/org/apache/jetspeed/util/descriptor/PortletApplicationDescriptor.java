@@ -72,7 +72,7 @@ public class PortletApplicationDescriptor
      * @return MutablePortletApplication newly created MutablePortletApplication with
      * all values of the portlet application descriptor mapped into it.
      */
-    public MutablePortletApplication createPortletApplication()
+    public MutablePortletApplication createPortletApplication(ClassLoader classLoader)
         throws PortletApplicationException
     {
         try
@@ -163,8 +163,7 @@ public class PortletApplicationDescriptor
                     portletDef.setPortletIdentifier(portletDef.getName());
                 }
                 
-                //TODO is pd a proper argument?
-                ((Support)obj).postLoad(pd);
+                ((Support)obj).postLoad(classLoader);
             }
             
             return pd;

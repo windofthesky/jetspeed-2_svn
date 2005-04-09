@@ -908,8 +908,16 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             langListWrapper.setResources(resourceBundle);
         }
-        langListWrapper.setClassLoader(getPortletClassLoader());        
+        
+        if (parameter instanceof ClassLoader)
+        {
+            langListWrapper.setClassLoader((ClassLoader) parameter);
         langListWrapper.postLoad(this.supportedLocales);
+    }
+        else
+        {
+            langListWrapper.setClassLoader(getPortletClassLoader());
+        }
     }
     
     public static void setPortletRegistry(PortletRegistry registry)
