@@ -63,37 +63,51 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
     public void testCapability() throws Exception
     {
     }
-    // TODO: FIXME: http://issues.apache.org/jira/browse/JS2-168
-    public void XXXXtestCapability() throws Exception
+    public void xtestCapability() throws Exception
     {
         assertNotNull("capabilities component is null", capabilities);
-
+        int lastOrder = 0;
+        Iterator caps = capabilities.getClients();
+        while (caps.hasNext())
+        {
+            Client client = (Client)caps.next();
+            int evalOrder = client.getEvalOrder();
+            if (lastOrder >= evalOrder)
+            {
+                assertTrue("Client result set is not ordered!", false);
+            }
+            lastOrder = evalOrder;
+        }
+        
         // Find specific client -- testing pattern matching
         String userAgent;
         System.out.println("Testing all supported Clients...");
-
         userAgent = "Opera/7.0";
         System.out.println("Find pattern: " + userAgent);
         CapabilityMap cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("Opera", cm.getClient().getName().equals("opera7"));                
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/4.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("Netscape/Mozilla4", cm.getClient().getName().equals("ns4"));                        
         capabilityMapReport(cm);
 
         userAgent = "MSIE 5.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("MSIE 5", cm.getClient().getName().equals("ie5"));                                
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/5.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("Mozilla 5.0", cm.getClient().getName().equals("mozilla"));                                        
         capabilityMapReport(cm);
 
         userAgent = "Lynx";
@@ -107,6 +121,28 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
+        
+        userAgent = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/125.5.6 (KHTML, like Gecko) Safari/125.12";
+        System.out.println("Find pattern: " + userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);                
+        assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("found Safari", cm.getClient().getName().equals("safari"));
+        capabilityMapReport(cm);
+        
+        userAgent = "Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)";
+        System.out.println("Find pattern: " + userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);                
+        assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("stinking IE for Mac", cm.getClient().getName().equals("iemac"));        
+        capabilityMapReport(cm);
+        
+        userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)";
+        System.out.println("Find pattern: " + userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);                
+        assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("IE 6 Windows", cm.getClient().getName().equals("ie6"));        
+        capabilityMapReport(cm);
+        
 
     }
 

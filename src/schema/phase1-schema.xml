@@ -39,6 +39,7 @@ limitations under the License.
 
     <table name="CLIENT">
         <column name="CLIENT_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="EVAL_ORDER" required="true" type='INTEGER'/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="USER_AGENT_PATTERN" size="128" type="VARCHAR"/>
         <column name="MANUFACTURER" size="80" type="VARCHAR"/>

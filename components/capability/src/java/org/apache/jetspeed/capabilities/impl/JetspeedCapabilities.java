@@ -32,6 +32,7 @@ import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.capabilities.UnableToBuildCapabilityMapException;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
@@ -304,9 +305,9 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     {
         if (null == clients)
         {
-                
-            this.clients = getPersistenceBrokerTemplate().getCollectionByQuery(
-                    QueryFactory.newQuery(clientClass, new Criteria()));
+            QueryByCriteria query = QueryFactory.newQuery(clientClass, new Criteria());
+            query.addOrderByAscending("evalOrder");
+            this.clients = getPersistenceBrokerTemplate().getCollectionByQuery(query);
         }
 
         return this.clients.iterator();

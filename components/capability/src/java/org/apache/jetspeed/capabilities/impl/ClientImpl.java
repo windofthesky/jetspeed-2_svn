@@ -41,6 +41,7 @@ public class ClientImpl implements Client, java.io.Serializable
     private int preferredMimeTypeId;
 
     private int clientId;
+    private int evalOrder = 0;
 
     public ClientImpl()
     {
@@ -246,4 +247,18 @@ public class ClientImpl implements Client, java.io.Serializable
         this.preferredMimeTypeId = mimeTypeId;
     }
 
+    /**
+     * @return Returns the evalOrder.
+     */
+    public int getEvalOrder()
+    {
+        return evalOrder;
+    }
+    /**
+     * @param evalOrder The evalOrder to set.
+     */
+    public void setEvalOrder(int evalOrder)
+    {
+        this.evalOrder = evalOrder;
+    }
 }

@@ -95,6 +95,12 @@ limitations under the License.
          primarykey="true"
          autoincrement="true"         
        />
+
+      <field-descriptor
+         name="evalOrder"
+         column="EVAL_ORDER"
+         jdbc-type="INTEGER"     
+      />
       
         <field-descriptor
          name="name"
