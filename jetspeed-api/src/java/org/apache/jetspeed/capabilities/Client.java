@@ -42,6 +42,10 @@ public interface Client
      */
     public int getClientId();
 
+    public int getEvalOrder();
+    
+    public void setEvalOrder(int evalOrder);
+    
     /**
      * Returns the pattern parameter of this client. The pattern is used
      * to match a client to the user agent used to access the portal. If

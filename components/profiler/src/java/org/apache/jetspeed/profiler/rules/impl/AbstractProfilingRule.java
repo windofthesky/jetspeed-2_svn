@@ -61,6 +61,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
         resolvers.put(RuleCriterionResolver.GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());
         resolvers.put(RuleCriterionResolver.USER_ATTRIBUTE, new UserAttributeResolver());
         resolvers.put(RuleCriterionResolver.NAVIGATION, new NavigationCriterionResolver());
+        resolvers.put(RuleCriterionResolver.USER_AGENT, new UserAgentCriterionResolver());        
     }
     
     protected ProfileLocator getLocatorFromCache(String key)

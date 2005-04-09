@@ -58,6 +58,9 @@ public interface RuleCriterionResolver extends Serializable
     
     /** first check request parameter, then check country code in the request context */                 
     public final static String COUNTRY = "country";
+
+    /** first check request parameter, then user agent in the request context */                 
+    public final static String USER_AGENT = "user.agent";
     
     /** first check request parameter, then check language in the request context */                 
     public final static String LANGUAGE = "language";
