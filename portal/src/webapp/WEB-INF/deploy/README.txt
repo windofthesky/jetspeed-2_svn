@@ -12,4 +12,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-This is were you things to be deployed to Jetspeed (not implemented yet)
+This is the default auto deployment folder where you can put portlet application
+war files and decorator jar (or zip) files to be automatically deployed by Jetspeed.
