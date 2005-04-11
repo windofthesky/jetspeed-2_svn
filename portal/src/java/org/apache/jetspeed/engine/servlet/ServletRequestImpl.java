@@ -456,8 +456,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
   	public String getContextPath() 
   	{
-  			return portletWindow.getPortletEntity().getPortletDefinition()
-  					.getPortletApplicationDefinition()
-  					.getWebApplicationDefinition().getContextRoot();
+       String attr = (String)super.getAttribute("javax.servlet.include.context_path");
+       return (attr != null) ? attr : super.getContextPath();
   	}
 }
