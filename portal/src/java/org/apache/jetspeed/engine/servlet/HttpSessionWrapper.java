@@ -19,7 +19,6 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 
 /**
  * @author Scott T Weaver
@@ -92,14 +91,18 @@ public class HttpSessionWrapper implements HttpSession
     {
         return session.getServletContext();
     }
+    
     /**
+     * @deprecated As of Java(tm) Servlet API 2.1 
+     *  for security reasons, with no replacement.
      * @return
      */
-    public HttpSessionContext getSessionContext()
+    public javax.servlet.http.HttpSessionContext getSessionContext()
     {
         return session.getSessionContext();
     }
     /**
+     * @deprecated @see javax.servlet.http.HttpSession#getValue(String)
      * @param arg0
      * @return
      */
@@ -107,7 +110,9 @@ public class HttpSessionWrapper implements HttpSession
     {
         return session.getValue(arg0);
     }
+    
     /**
+     * @deprecated @see javax.servlet.http.HttpSession#getValueNames(String)
      * @return
      */
     public String[] getValueNames()
@@ -136,6 +141,7 @@ public class HttpSessionWrapper implements HttpSession
         return session.isNew();
     }
     /**
+     * @deprecated @see javax.servlet.http.HttpSession#putValue(String,Object)
      * @param arg0
      * @param arg1
      */
@@ -151,6 +157,7 @@ public class HttpSessionWrapper implements HttpSession
         session.removeAttribute(arg0);
     }
     /**
+     * @deprecated @see javax.servlet.http.HttpSession#removeValue(String)
      * @param arg0
      */
     public void removeValue(String arg0)

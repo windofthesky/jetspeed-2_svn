@@ -112,6 +112,11 @@ public class PortletServletContextImpl implements ServletContext
     {
         return context.getServerInfo();
     }
+    
+    /**
+     * @deprecated Deprecated. As of Java Servlet API 2.1, 
+     * with no direct replacement. 
+     */
     public Servlet getServlet(String arg0) throws ServletException
     {
         return context.getServlet(arg0);
@@ -120,14 +125,29 @@ public class PortletServletContextImpl implements ServletContext
     {
         return context.getServletContextName();
     }
+    
+    /**
+     * @deprecated  As of Java Servlet API 2.0, 
+     * with no replacement.
+     */
     public Enumeration getServletNames()
     {
         return context.getServletNames();
     }
+    
+    /**
+     * @deprecated  As of Java Servlet API 2.0, 
+     * with no replacement.
+     */
     public Enumeration getServlets()
     {
         return context.getServlets();
     }
+    
+    /**
+     * @deprecated As of Java Servlet API 2.1, use 
+     * log(String message, Throwable throwable) instead.
+     */
     public void log(Exception arg0, String arg1)
     {
         context.log(arg0, arg1);
