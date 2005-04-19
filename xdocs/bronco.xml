@@ -203,7 +203,7 @@ The * can be applied to roles, groups, users or permissions to imply ALL.
 Declarative constraints are declared in the <b><i>page.security</i></b> file of the root of a site or subsite.
 Declarative constraints are referenced in pages and folders with the <b><i>security-constraints-ref</i></b> tag.
 Global constraints are also declarative constraints. They are also defined and found in the <b><i>page.security</i></b> file in the root PSML repository.
-The difference with global constraints is ...
+The difference with global constraints is that they implicitly apply to all folders and pages within the scope of the page.security file, (i.e. the site).
 Note that there can be more than one <b><i>page.security</i></b> files in a subsite Jetspeed installation.
 </p>
 <source><![CDATA[
