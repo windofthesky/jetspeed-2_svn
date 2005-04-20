@@ -107,6 +107,8 @@ public class PortletTreeControlTag extends TreeControlTag
                           int level, int width, boolean last)
         throws IOException {
 
+        try
+        {
         HttpServletResponse response =
             (HttpServletResponse) pageContext.getResponse();
         
@@ -132,7 +134,7 @@ public class PortletTreeControlTag extends TreeControlTag
         }
         
         // Render the beginning of this node
-        out.println("  <tr valign=\"middle\">");
+        out.println("<div style=\"display:block; white-space:nowrap; vertical-align: middle; margin:-3px;\">");
 
         // Create the appropriate number of indents
         for (int i = 0; i < level; i++) {
@@ -141,13 +143,13 @@ public class PortletTreeControlTag extends TreeControlTag
             for (int j = 1; j <= levels; j++)
                 parent = parent.getParent();
             if (parent.isLast())
-                out.print("    <td></td>");
+                out.print("<div style=\"display:inline; vertical-align: middle;\">&nbsp;</div>");
             else {
-                out.print("    <td><img src=\"");
+                out.print("<div style=\"display:inline; vertical-align: middle;\"><img src=\"");
                 out.print(images);
                 out.print("/");
                 out.print(IMAGE_LINE_VERTICAL);
-                out.print("\" alt=\"\" border=\"0\"></td>");
+                out.print("\" alt=\"\" border=\"0\" /></div>");
             }
             out.println();
         }
@@ -172,12 +174,12 @@ public class PortletTreeControlTag extends TreeControlTag
 //            ((HttpServletResponse) pageContext.getResponse()).
 //            encodeURL(updateTreeAction);
 
-        out.print("    <td>");
+        out.print("<div style=\"display:inline; vertical-align: middle; padding:0; margin:0;\">");
         
 		//add an anchor so that we can return to this node
         out.print("<a name=\"");
         out.print(node.getName());
-        out.print("\">");
+        out.print("\" />");
         
         if ((action != null) && !node.isLeaf()) {
             out.print("<a href=\"");
@@ -206,10 +208,10 @@ public class PortletTreeControlTag extends TreeControlTag
                 out.print(IMAGE_HANDLE_RIGHT_MIDDLE);
             out.print("\" alt=\"expand node");
         }
-        out.print("\" border=\"0\">");
+        out.print("\" border=\"0\" />");
         if ((action != null) && !node.isLeaf())
             out.print("</a>");
-        out.println("</td>");
+        out.println("</div>");
 
         // Calculate the hyperlink for this node (if any)
         String hyperlink = null;
@@ -234,19 +236,8 @@ public class PortletTreeControlTag extends TreeControlTag
         }
 
         // Render the icon for this node (if any)
-        out.print("    <td colspan=\"");
-        out.print(width - level + 1);
-        out.print("\"");
+        out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: top; padding:0; margin:-2px;\">");
         
-        if(node.getLabel() != null)
-        {
-            //make sure text does not wrap
-            out.print(" style=\"");
-            out.print("white-space:nowrap;");
-            out.print("\"");
-        }
-        
-        out.print(">");
         if (node.getIcon() != null) {
             if (hyperlink != null) {
                 out.print("<a href=\"");
@@ -266,15 +257,18 @@ public class PortletTreeControlTag extends TreeControlTag
                 */
                 out.print(">");
             }
+            out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: middle; padding:0; margin:-2px;\">");
             out.print("<img src=\"");
             out.print(images);
             out.print("/");
             out.print(node.getIcon());
             out.print("\" alt=\"");
-            out.print("\" border=\"0\">");
+            out.print("\" border=\"0\" />");
+            out.print("</div>");
             if (hyperlink != null)
                 out.print("</a>");
         }
+    
 
         // Render the label for this node (if any)
 
@@ -317,7 +311,7 @@ public class PortletTreeControlTag extends TreeControlTag
                 */
                 out.print(">");
             } else if (labelStyle != null) {
-                out.print("<span class=\"");
+                out.print("<div style=\"display:inline; vertical-align: top;\" class=\"");
                 out.print(labelStyle);
                 out.print("\">");
             }
@@ -325,12 +319,12 @@ public class PortletTreeControlTag extends TreeControlTag
             if (hyperlink != null)
                 out.print("</a>");
             else if (labelStyle != null)
-                out.print("</span>");
+                out.print("</div>");
         }
-        out.println("</td>");
+        out.println("</div>");
 
         // Render the end of this node
-        out.println("  </tr>");
+        out.println("</div>");
 
         // Render the children of this node
         if (node.isExpanded()) {
@@ -341,6 +335,11 @@ public class PortletTreeControlTag extends TreeControlTag
                 render(out, children[i], newLevel, width, i == lastIndex);
             }
         }
+      }
+      catch(Exception e)
+      {
+          out.print(e.getLocalizedMessage());
+      }
 
     }
 }

@@ -214,8 +214,7 @@ public class TreeControlTag extends TagSupport
         TreeControl treeControl = getTreeControl();
         JspWriter out = pageContext.getOut();
         try {
-            out.print
-                ("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"");
+            out.print("<div style=\"padding:0; margin:-2px; vertical-align: middle;\" ");
             if (style != null) {
                 out.print(" class=\"");
                 out.print(style);
@@ -225,7 +224,7 @@ public class TreeControlTag extends TagSupport
             int level = 0;
             TreeControlNode node = treeControl.getRoot();
             render(out, node, level, treeControl.getWidth(), true);
-            out.println("</table>");
+            out.println("</div>");
         } catch (IOException e) {
             throw new JspException(e);
         }
@@ -324,7 +323,7 @@ public class TreeControlTag extends TagSupport
         }
         
         // Render the beginning of this node
-        out.println("  <tr valign=\"middle\">");
+        out.println("<div style=\"display:block; white-space:nowrap;\">");
 
         // Create the appropriate number of indents
         for (int i = 0; i < level; i++) {
@@ -333,13 +332,13 @@ public class TreeControlTag extends TagSupport
             for (int j = 1; j <= levels; j++)
                 parent = parent.getParent();
             if (parent.isLast())
-                out.print("    <td></td>");
+                out.print("<div style=\"display:inline;\">&nbsp;</div>");
             else {
-                out.print("    <td><img src=\"");
+                out.print("<div style=\"display:inline;\"><img src=\"");
                 out.print(images);
                 out.print("/");
                 out.print(IMAGE_LINE_VERTICAL);
-                out.print("\" alt=\"\" border=\"0\"></td>");
+                out.print("\" alt=\"\" border=\"0\" /></div>");
             }
             out.println();
         }
@@ -361,12 +360,12 @@ public class TreeControlTag extends TagSupport
             ((HttpServletResponse) pageContext.getResponse()).
             encodeURL(updateTreeAction);
 
-        out.print("    <td>");
+        out.print("<div style=\"display:inline;\">");
         
 //      add an anchor so that we can return to this node
         out.print("<a name=\"");
         out.print(node.getName());
-        out.print("\">");
+        out.print("\" />");
         
         if ((action != null) && !node.isLeaf()) {
             out.print("<a href=\"");
@@ -395,10 +394,10 @@ public class TreeControlTag extends TagSupport
                 out.print(IMAGE_HANDLE_RIGHT_MIDDLE);
             out.print("\" alt=\"expand node");
         }
-        out.print("\" border=\"0\">");
+        out.print("\" border=\"0\" />");
         if ((action != null) && !node.isLeaf())
             out.print("</a>");
-        out.println("</td>");
+        out.println("</div>");
 
         // Calculate the hyperlink for this node (if any)
         String hyperlink = null;
@@ -412,19 +411,8 @@ public class TreeControlTag extends TagSupport
                 encodeURL(node.getAction());
 
         // Render the icon for this node (if any)
-        out.print("    <td colspan=\"");
-        out.print(width - level + 1);
-        out.print("\"");
+        out.print("<div style=\"display:inline; white-space:nowrap;\">");
         
-        if(node.getLabel() != null)
-        {
-            //make sure text does not wrap
-            out.print(" style=\"");
-            out.print("white-space:nowrap;");
-            out.print("\"");
-        }
-        
-        out.print(">");
         if (node.getIcon() != null) {
             if (hyperlink != null) {
                 out.print("<a href=\"");
@@ -447,7 +435,7 @@ public class TreeControlTag extends TagSupport
             out.print("/");
             out.print(node.getIcon());
             out.print("\" alt=\"");
-            out.print("\" border=\"0\">");
+            out.print("\" border=\"0\" />");
             if (hyperlink != null)
                 out.print("</a>");
         }
@@ -455,7 +443,7 @@ public class TreeControlTag extends TagSupport
         // Render the label for this node (if any)
 
         if (node.getLabel() != null) {
-            String labelStyle = null;
+            String labelStyle = node.getCSSClass();
             if (node.isSelected() && (styleSelected != null))
                 labelStyle = styleSelected;
             else if (!node.isSelected() && (styleUnselected != null))
@@ -491,7 +479,7 @@ public class TreeControlTag extends TagSupport
                 out.print("\"");
                 out.print(">");
             } else if (labelStyle != null) {
-                out.print("<span class=\"");
+                out.print("<div style=\"display:inline;\" class=\"");
                 out.print(labelStyle);
                 out.print("\">");
             }
@@ -499,12 +487,12 @@ public class TreeControlTag extends TagSupport
             if (hyperlink != null)
                 out.print("</a>");
             else if (labelStyle != null)
-                out.print("</span>");
+                out.print("</div>");
         }
-        out.println("</td>");
+        out.println("</div>");
 
         // Render the end of this node
-        out.println("  </tr>");
+        out.println("</div>");
 
         // Render the children of this node
         if (node.isExpanded()) {
