@@ -44,19 +44,21 @@ public interface JetspeedActions
     public static final int MASK_EDIT = 0x10;
     public static final int MASK_HELP = 0x20;
     public static final int MASK_SECURE = 0x40;
-        
+    
+    public final WindowState RESTORED = new WindowState("restore");
+    public final WindowState SECURED  = new WindowState("secure");
+    
     static public final String VIEW = PortletMode.VIEW.toString();
     static public final String EDIT = PortletMode.EDIT.toString();
     static public final String HELP = PortletMode.HELP.toString();
-    static public final String RESTORE = "restore";
+    static public final String RESTORE = RESTORED.toString();
     static public final String NORMAL = WindowState.NORMAL.toString();
     static public final String MINIMIZE = WindowState.MINIMIZED.toString();
     static public final String MAXIMIZE = WindowState.MAXIMIZED.toString();
-    static public final String SECURE = "secure";
+    static public final String SECURE = SECURED.toString();
     
     public static final String ACTIONS[] =
     {
             MINIMIZE, MAXIMIZE, RESTORE, VIEW, EDIT, HELP, SECURE
-    };
-    
+    };    
 }
