@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.services.information;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -41,7 +39,6 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private WindowState state = null;
     private boolean action = false;
     private boolean secure = false;
-    private boolean clearParameters = false;
     private Map parameters = null;
 
     private PortalURL url;
@@ -74,9 +71,8 @@ public class PortletURLProviderImpl implements PortletURLProvider
     }
 
     public void clearParameters()
-    {        
-        // url.clearRenderParameters(portletWindow);
-        clearParameters = true;        
+    {
+        // not used, handled by JetspeedNavigationalStateCodec itself
     }
 
     public void setParameters(Map parameters)
@@ -86,25 +82,6 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public String toString()
     {
-        if ( clearParameters )
-        {
-            if (parameters != null)
-            {
-                Iterator names = parameters.keySet().iterator();
-                Map map = new HashMap();
-                while (names.hasNext())
-                {
-                    String name = (String) names.next();
-                    Object value = parameters.get(name);
-                    String[] values = value instanceof String ? new String[] {(String) value } : (String[]) value;
-                    map.put(name,values);
-                }
-            }
-            return url.createPortletURL(portletWindow,parameters,mode,state,action,secure);
-        }
-        else
-        {
-            return url.createPortletURL(portletWindow,mode,state,secure);
-        }
+        return url.createPortletURL(portletWindow,parameters,mode,state,action,secure);
     }
 }
