@@ -212,7 +212,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         targetState.setWindowState(windowState != null ? windowState : currentState != null ? currentState.getWindowState() : null);
 
         // never retain actionRequest parameters nor session stored renderParameters
-        if ( currentState != null && states.getActionWindow() != window && !renderParamsStateFull)
+        if ( currentState != null && !renderParamsStateFull )
         {
             // retain current request parameters if any
             if ( currentState.getParametersMap() != null )
@@ -265,6 +265,8 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     throws UnsupportedEncodingException
     {
         StringBuffer buffer = new StringBuffer();
+        String encodedState;
+        boolean haveState = false;
         
         // skip other states if all non-targeted PortletWindow states are kept in the session
         if ( !navParamsStateFull || !renderParamsStateFull )
@@ -282,16 +284,39 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
                 else
                 {
-                    buffer.append(encodePortletWindowNavigationalState(windowId, pwfns, false, navParamsStateFull, 
-                            renderParamsStateFull));
+                    encodedState = encodePortletWindowNavigationalState(windowId, pwfns, false, navParamsStateFull, 
+                            renderParamsStateFull);
+                    if ( encodedState.length() > 0 )
+                    {
+                        if ( !haveState )
+                        {
+                            haveState = true;
+                        }
+                        else
+                        {
+                            buffer.append(PARAMETER_SEPARATOR);
+                        }
+                        buffer.append(encodedState);
+                    }
                 }
             }
         }
-        buffer.append(encodePortletWindowNavigationalState(targetWindowId, targetState, action, 
-                false, false));
+        encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, action, false, false); 
+        if ( encodedState.length() > 0 )
+        {
+            if ( !haveState )
+            {
+                haveState = true;
+            }
+            else
+            {
+                buffer.append(PARAMETER_SEPARATOR);
+            }
+            buffer.append(encodedState);
+        }
         
         String encodedNavState = null;
-        if ( buffer.length() > 0 )
+        if ( haveState )
         {
             encodedNavState = encodeParameters(buffer.toString(), states.getCharacterEncoding());
         }
@@ -356,7 +381,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 buffer.append(encodeArgument(paramBuffer.toString(),PARAMETER_SEPARATOR));
             }
         }
-        else if ( renderParamsStateFull && state.isClearParameters() )
+        else if ( state.isClearParameters() )
         {
             // Special case: for a targeted PortletWindow for which no parameters are specified 
             // indicate its saved (in the session) request parameters must be cleared instead of copying them when
@@ -364,6 +389,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             // During decoding this CLEAR_PARAMS_KEY will set the clearParameters flag of the PortletWindowRequestNavigationalState.
             buffer.append(PARAMETER_SEPARATOR);
             buffer.append(CLEAR_PARAMS_KEY);            
+            encoded = true;
         }
         return encoded ? buffer.toString() : "";
     }
