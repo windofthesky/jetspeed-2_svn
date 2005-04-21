@@ -18,9 +18,8 @@ package org.apache.jetspeed.velocity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.security.AccessControlException;
-import java.security.AccessController;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +48,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
@@ -59,11 +59,10 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.PortletPermission;
-import org.apache.jetspeed.services.information.PortletURLProviderImpl;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.velocity.context.Context;
 
 /**
@@ -619,11 +618,7 @@ public class JetspeedPowerTool
 
     /**
      * Gets the list of decorator actions for a window. Each window (on each
-     * page) has its own collection of actions associated with it. The creation
-     * of the decorator action list per window will only be called once per
-     * session. This optimization is to avoid the expensive operation of
-     * security checks and action object creation and logic on a per request
-     * basis.
+     * page) has its own collection of actionAccess flags associated with it.
      * 
      * @return A list of actions available to the current window, filtered by
      *              securty access and current state.
@@ -631,105 +626,152 @@ public class JetspeedPowerTool
      */
     public List getDecoratorActions()
     {
+        return getDecoratorActions(false);
+    }
+
+    /**
+     * Gets the list of decorator actions for a page. Each layout fragment on a
+     * page has its own collection of actionAccess flags associated with it.
+     * 
+     * @return A list of actions available to the current window, filtered by
+     *              securty access and current state.
+     * @throws Exception
+     */
+    public List getPageDecoratorActions() throws Exception
+    {
+        return getDecoratorActions(true);
+    }
+
+    protected List getDecoratorActions(boolean layout)
+    {
         try
         {
-
-            String key = getPage().getId() + ":" + this.getCurrentFragment().getId();
-            Map sessionActions = (Map) getRequestContext().getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
-            if (null == sessionActions)
+            String key = getPage().getId();
+            boolean anonymous = !getLoggedOn();
+            PageActionAccess pageActionAccess = null;            
+            
+            synchronized (getRequestContext().getRequest().getSession())
             {
-                sessionActions = new HashMap();
-                getRequestContext().setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
-            }
-            PortletWindowActionState actionState = (PortletWindowActionState) sessionActions.get(key);
-
-            String state = getWindowState().toString();
-            String mode = getPortletMode().toString();
-
-            if (null == actionState)
-            {
-                actionState = new PortletWindowActionState(state, mode);
-                sessionActions.put(key, actionState);
-            }
-            else
-            {
-                // check to see if state or mode has changed
-                if (actionState.getWindowState().equals(state))
+                Map sessionActions = (Map) getRequestContext().getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
+                if ( sessionActions == null )
                 {
-                    if (actionState.getPortletMode().equals(mode))
-                    {
-                        // nothing has changed
-                        return actionState.getActions();
-                    }
-                    else
-                    {
-                        actionState.setPortletMode(mode);
-                    }
+                    sessionActions = new HashMap();
+                    getRequestContext().setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
                 }
                 else
                 {
-                    actionState.setWindowState(state);
+                    pageActionAccess = (PageActionAccess)sessionActions.get(key);
                 }
-                // something has changed, rebuild the list
+                if ( pageActionAccess == null )
+                {
+                    pageActionAccess = new PageActionAccess(anonymous, getPage());
+                    sessionActions.put(key, pageActionAccess);
+                }
+                else
+                {
+                    pageActionAccess.checkReset(getLoggedOn(), getPage());
+                }
             }
-
-            List actions = actionState.getActions();
-            actions.clear();
-
+            
             PortletDefinitionComposite portlet = (PortletDefinitionComposite) getCurrentPortletEntity()
                     .getPortletDefinition();
             if (null == portlet)
             {
-                return actions; // allow nothing
+                return Collections.EMPTY_LIST; // allow nothing
             }
 
+            List actions = new ArrayList();
+
+            PortletMode mode = getPortletMode();
+            WindowState state = getWindowState();
+            
             ContentTypeSet content = portlet.getContentTypeSet();
+            Fragment fragment = getCurrentFragment();
+            String fragmentId = fragment.getId();
+            String portletName = portlet.getUniqueName();
+            PortletWindow window = windowAccess.getPortletWindow(fragment);
+            String resourceBase = getPageBasePath();
 
-            if (state.equals(WindowState.NORMAL.toString()))
+            if ( !layout )
             {
-                createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
-                createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
+                if (state.equals(WindowState.NORMAL))
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
+                    }
+                }
+                else if (state.equals(WindowState.MAXIMIZED))
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
+                    }
+                }
+                else
+                // minimized
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
+                    }
+                }
             }
-            else if (state.equals(WindowState.MAXIMIZED.toString()))
+            
+            if ( !layout || pageActionAccess.isEditAllowed() )
             {
-                createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
-                createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);
-            }
-            else
-            // minimized
-            {
-                createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
-                createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);
+                if (mode.equals(PortletMode.VIEW))
+                {
+                    if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed() && 
+                            pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT, resourceBase));
+                    }
+                    if (content.supportsPortletMode(PortletMode.HELP) && 
+                            pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP, resourceBase));
+                    }
+                }
+                else if (mode.equals(PortletMode.EDIT))
+                {
+                    if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW, resourceBase));
+                    }
+                    if (content.supportsPortletMode(PortletMode.HELP) && 
+                            pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP, resourceBase));
+                    }
+                }
+                else
+                // help
+                {
+                    if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW, resourceBase));
+                    }
+                    if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed() && 
+                            pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
+                    {
+                        actions.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT, resourceBase));
+                    }
+                }
             }
 
-            if (mode.equals(PortletMode.VIEW.toString()))
-            {
-                if (content.supportsPortletMode(PortletMode.EDIT) && checkAccess(Page.EDIT_ACTION))
-                {
-                    createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
-                }
-                if (content.supportsPortletMode(PortletMode.HELP))
-                {
-                    createAction(actions, JetspeedActions.INDEX_HELP, portlet);
-                }
-            }
-            else if (mode.equals(PortletMode.EDIT.toString()))
-            {
-                createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-                if (content.supportsPortletMode(PortletMode.HELP))
-                {
-                    createAction(actions, JetspeedActions.INDEX_HELP, portlet);
-                }
-            }
-            else
-            // help
-            {
-                createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-                if (content.supportsPortletMode(PortletMode.EDIT) && checkAccess(Page.EDIT_ACTION))
-                {
-                    createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
-                }
-            }
             return actions;
         }
         catch (Exception e)
@@ -739,213 +781,35 @@ public class JetspeedPowerTool
         }
     }
 
-    protected boolean checkAccess(String action)
+    protected DecoratorAction createDecoratorAction( String resourceBase, String actionName )
     {
-        boolean access = true;
-        try
-        {
-            getPage().checkAccess(action);
-        }
-        catch (SecurityException se)
-        {
-            access = false;
-        }
-        return access;
+        // TODO: HARD-CODED .gif link
+        String link = getRequestContext().getResponse().encodeURL(resourceBase+"/content/images/"+actionName+".gif");
+        return new DecoratorAction(actionName, actionName, link); 
     }
+    
     /**
-     * Gets the list of decorator actions for a page. Each layout fragment on a
-     * page has its own collection of actions associated with it. The creation
-     * of the layout decorator action list per page will only be called once per
-     * session. This optimization is to avoid the expensive operation of
-     * security checks and action object creation and logic on a per request
-     * basis.
-     * 
-     * @return A list of actions available to the current window, filtered by
-     *              securty access and current state.
-     * @throws Exception
-     */
-    public List getPageDecoratorActions() throws Exception
-    {
-        // check page access
-        boolean readOnlyPageAccess = true;
-        try
-        {
-            getPage().checkAccess(Page.EDIT_ACTION);
-            readOnlyPageAccess = false;
-        }
-        catch (SecurityException se)
-        {
-        }
-
-        // determine cached actions state key
-        String key = "PAGE " + getPage().getId() + ":" + this.getCurrentFragment().getId() + ":"
-                + (readOnlyPageAccess ? Page.VIEW_ACTION : Page.EDIT_ACTION);
-
-        // get cached actions state
-
-        Map sessionActions = (Map) getRequestContext().getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
-        if (null == sessionActions)
-        {
-            sessionActions = new HashMap();
-            getRequestContext().setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
-        }
-        PortletWindowActionState actionState = (PortletWindowActionState) sessionActions.get(key);
-
-        String state = getWindowState().toString();
-        String mode = getPortletMode().toString();
-
-        if (null == actionState)
-        {
-            actionState = new PortletWindowActionState(state, mode);
-            sessionActions.put(key, actionState);
-        }
-        else
-        {
-            if (actionState.getPortletMode().equals(mode))
-            {
-                // nothing has changed
-                return actionState.getActions();
-            }
-            // something has changed, rebuild the list
-            actionState.setPortletMode(mode);
-        }
-
-        List actions = actionState.getActions();
-        actions.clear();
-
-        // if there is no root fragment, return no actions
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) getCurrentPortletEntity()
-                .getPortletDefinition();
-        if (null == portlet)
-        {
-            return actions;
-        }
-
-        // if the page is being read only accessed, return no actions
-        if (readOnlyPageAccess)
-        {
-            return actions;
-        }
-
-        // generate standard page actions depending on
-        // portlet capabilities
-        ContentTypeSet content = portlet.getContentTypeSet();
-        if (mode.equals(PortletMode.VIEW.toString()))
-        {
-            if (content.supportsPortletMode(PortletMode.EDIT))
-            {
-                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
-            }
-            if (content.supportsPortletMode(PortletMode.HELP))
-            {
-                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
-            }
-        }
-        else if (mode.equals(PortletMode.EDIT.toString()))
-        {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-            if (content.supportsPortletMode(PortletMode.HELP))
-            {
-                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
-            }
-        }
-        else
-        // help
-        {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-            if (content.supportsPortletMode(PortletMode.EDIT))
-            {
-                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
-            }
-        }
-        return actions;
-    }
-
-    /**
-     * Determines whether the access request indicated by the specified
-     * permission should be allowed or denied, based on the security policy
-     * currently in effect.
-     * 
-     * @param resource
-     *                  The fully qualified resource name of the portlet
-     *                  (PA::portletName)
-     * @param action
-     *                  The action to perform on this resource (i.e. view, edit, help,
-     *                  max, min...)
-     * @return true if the action is allowed, false if it is not
-     */
-    protected boolean checkPermission( String resource, String action )
-    {
-        try
-        {
-            // TODO: it may be better to check the PagePermission for the outer
-            // most
-            // fragment (i.e. the PSML page)
-            AccessController.checkPermission(new PortletPermission(resource, action));
-        }
-        catch (AccessControlException e)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Creates a Decorator Action link to be added to the list of actions
+     * Creates a Decorator PortletMode Action to be added to the list of actions
      * decorating a portlet.
-     * 
-     * @param actions
-     * @param kind
-     * @param resource
-     * @return
-     * @throws Exception
      */
-    public DecoratorAction createAction( List actions, int actionId, PortletDefinitionComposite portlet )
-            throws Exception
+    protected DecoratorAction createPortletModeAction( PortletWindow window, String actionName, PortletMode mode, String resourceBase )
     {
-        String resource = portlet.getUniqueName();
-        String actionName = JetspeedActions.ACTIONS[actionId];
-        if (checkPermission(resource, actionName)) // TODO:
-                                                                          // should
-                                                                          // be
-                                                                          // !checkPermission
-        {
-            return null;
-        }
-        DecoratorAction action = new DecoratorAction(actionName, actionName, "content/images/" + actionName + ".gif"); // TODO:
-                                                                                                                                                                                       // HARD-CODED
-                                                                                                                                                                                       // .gif
-
-        PortletEntity entity = getCurrentPortletEntity();
-
-        PortletURLProviderImpl url = new PortletURLProviderImpl(getRequestContext(), windowAccess
-                .getPortletWindow(getCurrentFragment()));
-        switch (actionId)
-        {
-            case JetspeedActions.INDEX_MAXIMIZE :
-                url.setWindowState(WindowState.MAXIMIZED);
-                break;
-            case JetspeedActions.INDEX_MINIMIZE :
-                url.setWindowState(WindowState.MINIMIZED);
-                break;
-            case JetspeedActions.INDEX_NORMAL :
-                url.setWindowState(WindowState.NORMAL);
-                break;
-            case JetspeedActions.INDEX_VIEW :
-                url.setPortletMode(PortletMode.VIEW);
-                break;
-            case JetspeedActions.INDEX_EDIT :
-                url.setPortletMode(PortletMode.EDIT);
-                break;
-            case JetspeedActions.INDEX_HELP :
-                url.setPortletMode(PortletMode.HELP);
-                break;
-        }
-
-        action.setAction(url.toString());
-        actions.add(action);
+        DecoratorAction action = createDecoratorAction(resourceBase, actionName);
+        PortalURL portalURL = getRequestContext().getPortalURL(); 
+        action.setAction(portalURL.createPortletURL(window, mode, null, portalURL.isSecure()).toString());
         return action;
+    }
 
+    /**
+     * Creates a Decorator WindowState Action to be added to the list of actions
+     * decorating a portlet.
+     */
+    protected DecoratorAction createWindowStateAction( PortletWindow window, String actionName, WindowState state, String resourceBase )
+    {
+        DecoratorAction action = createDecoratorAction(resourceBase, actionName);
+        PortalURL portalURL = getRequestContext().getPortalURL(); 
+        action.setAction(portalURL.createPortletURL(window, null, state, portalURL.isSecure()).toString());
+        return action;
     }
 
     /**
@@ -1029,6 +893,9 @@ public class JetspeedPowerTool
         return (principal != null);
     }
     
-    
+    public String getPageBasePath()
+    {
+        return getRequestContext().getPortalURL().getPageBasePath();
+    }
     
 }

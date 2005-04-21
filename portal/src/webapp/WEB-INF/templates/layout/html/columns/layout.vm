@@ -76,6 +76,7 @@ limitations under the License.
 <table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
      #set ($sizeIndex = 0)
+     #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
      #foreach($entry in $table)
         #if ($sizes)
           #if ($sizeIndex < $sizes.size())
@@ -108,7 +109,7 @@ limitations under the License.
                          #set($upUrl = $renderResponse.createRenderURL())    
                          $!upUrl.setParameter("moveBy","0,-1")
                          $!upUrl.setParameter("fragmentId","$f.id")
-                         <a href="$upUrl"><img src="content/images/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
+                         <a href="$upUrl"><img src="${layoutImageBase}/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
                    <td>
@@ -120,7 +121,7 @@ limitations under the License.
                          #set($leftUrl = $renderResponse.createRenderURL())    
                          $!leftUrl.setParameter("moveBy","-1,0")
                          $!leftUrl.setParameter("fragmentId","$f.id")    
-                         <a href="$leftUrl"><img src="content/images/movePortletLeft.gif" border="0" title="Move Portlet Left"/></a>
+                         <a href="$leftUrl"><img src="${layoutImageBase}/movePortletLeft.gif" border="0" title="Move Portlet Left"/></a>
                         #end
                    </td>
                    <td align="center" style="font-size:smaller; font-weight:bold" >
@@ -131,7 +132,7 @@ limitations under the License.
                          #set($rightUrl = $renderResponse.createRenderURL())    
                          $!rightUrl.setParameter("moveBy","1,0")
                          $!rightUrl.setParameter("fragmentId","$f.id")
-                         <a href="$rightUrl"><img src="content/images/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
+                         <a href="$rightUrl"><img src="${layoutImageBase}/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
                  </tr>
@@ -143,7 +144,7 @@ limitations under the License.
 					    #set($downUrl = $renderResponse.createRenderURL())	
 			            $!downUrl.setParameter("moveBy","0,1")
 			            $!downUrl.setParameter("fragmentId","$f.id")
-					    <a href="$downUrl"><img src="content/images/movePortletDown.gif" border="0" title="Move Portlet Down"/></a>
+					    <a href="$downUrl"><img src="${layoutImageBase}/movePortletDown.gif" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
 					<td ></td>
