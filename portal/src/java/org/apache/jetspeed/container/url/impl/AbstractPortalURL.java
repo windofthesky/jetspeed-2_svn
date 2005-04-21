@@ -167,6 +167,27 @@ public abstract class AbstractPortalURL implements PortalURL
     {
         return path;
     }    
+
+    public String getPageBasePath()
+    {
+        if ( null == path || (1 == path.length() && '/' == path.charAt(0)) )
+        {
+            return basePath;
+        }
+        else if ( -1 != path.indexOf('/') && !path.endsWith("/") )
+        {
+            return basePath + path.substring(0, path.lastIndexOf('/') );
+        }
+        else
+        {
+            return basePath + path;
+        }
+    }
+    
+    public boolean isSecure()
+    {
+        return secure;
+    }
         
     public NavigationalState getNavigationalState()
     {

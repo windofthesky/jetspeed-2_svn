@@ -58,6 +58,21 @@ public interface PortalURL
     String getPath();
     
     /**
+     * Returns the current Portal Page base path without possible encoded
+     * NavigationalState parameter.
+     * <br>
+     * This path can be used as base for page relative resources which don't need
+     * the NavigationalState.
+     * @return the current Portal Page base path without NavigationalState
+     */
+    String getPageBasePath();
+
+    /**
+     * @return true if the current request is secure
+     */
+    boolean isSecure();
+
+    /**
      * Gets the NavigationalState for access to the current request portal control parameters
      * @return the NavigationalState of the PortalURL
      */
