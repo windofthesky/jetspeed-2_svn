@@ -304,6 +304,43 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityTwoColumns2575">
+    <portlet-name>VelocityTwoColumns2575</portlet-name>
+    <display-name>25/75 Two Columns Layout Using Velocity</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>25%,75%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>TwoColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>VelocityTwoColumns2575NoActions</title>
+      <short-title>VelocityTwoColumns2575NoActions</short-title>
+    </portlet-info>
+</portlet>
+
 <portlet id="FrameLayoutPortlet">
     <portlet-name>FrameLayoutPortlet</portlet-name>
     <display-name>Frame Layout Portlet</display-name>
