@@ -47,7 +47,6 @@ public class PortletMessaging
     }
 
     public static final Object consume(PortletRequest request, String portletTopic, String messageName)
-    throws NotSerializableException
     {
         String key = portletTopic + ":" + messageName;
         Object object = request.getPortletSession().getAttribute(key, PortletSession.APPLICATION_SCOPE);
@@ -57,7 +56,6 @@ public class PortletMessaging
     }
 
     public static final Object receive(PortletRequest request, String portletTopic, String messageName)
-    throws NotSerializableException
     {
         String key = portletTopic + ":" + messageName;
         Object object = request.getPortletSession().getAttribute(key, PortletSession.APPLICATION_SCOPE);
@@ -65,7 +63,6 @@ public class PortletMessaging
     }
     
     public static final void cancel(PortletRequest request, String portletTopic, String messageName)
-    throws NotSerializableException
     {
         String key = portletTopic + ":" + messageName;
         request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);
@@ -86,7 +83,6 @@ public class PortletMessaging
     }
 
     public static final Object consume(PortletRequest request, String messageName)
-    throws NotSerializableException
     {
         String key = messageName;
         Object object = request.getPortletSession().getAttribute(key, PortletSession.PORTLET_SCOPE);
@@ -96,7 +92,6 @@ public class PortletMessaging
     }
 
     public static final Object receive(PortletRequest request, String messageName)
-    throws NotSerializableException
     {
         String key = messageName;
         Object object = request.getPortletSession().getAttribute(key, PortletSession.PORTLET_SCOPE);
@@ -104,7 +99,6 @@ public class PortletMessaging
     }
     
     public static final void cancel(PortletRequest request, String messageName)
-    throws NotSerializableException
     {
         String key = messageName;
         request.getPortletSession().removeAttribute(key, PortletSession.PORTLET_SCOPE);
