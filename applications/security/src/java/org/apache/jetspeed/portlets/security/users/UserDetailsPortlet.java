@@ -33,7 +33,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
@@ -160,14 +159,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         response.setContentType("text/html");
         
-        String userName = (String)
-            request.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                         PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(request, 
+                                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
 
         User user = null;
         if (userName != null)
         {
-            // TODO: don't lookup with every view call
             user = lookupUser(userName);
         }
         
@@ -316,7 +313,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) 
         throws PortletException, IOException
-    {                        
+    {   
         String selectedTab = actionRequest.getParameter(SecurityResources.REQUEST_SELECT_TAB);
         if (selectedTab != null)
         {
@@ -331,6 +328,14 @@ public class UserDetailsPortlet extends GenericServletPortlet
         if (action != null && action.equals("remove.user"))
         {
             removeUser(actionRequest, actionResponse);
+        }
+        else if (action != null && action.equals("add.new.user"))
+        {
+            PortletMessaging.cancel(actionRequest, UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+        }
+        else if (action != null && action.equals("add.user"))
+        {
+            addUser(actionRequest);
         }
         else if (action != null && isUserPortletAction(action))
         {
@@ -400,9 +405,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     public void removeUser(ActionRequest actionRequest, ActionResponse actionResponse) 
     throws PortletException
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                             PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -438,9 +442,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());
 
-        String userName = (String)
-        actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                             PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -499,9 +502,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                 PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -520,10 +522,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void addUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
-        
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -539,9 +539,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     private void removeUserAttributes(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
         List deletes = new LinkedList();
         
         User user = lookupUser(userName);
@@ -580,9 +579,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void removeUserRoles(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -612,10 +610,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void addUserRole(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
-        
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);       
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -638,9 +634,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void removeUserGroups(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -670,10 +665,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void addUserGroup(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
-        
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -777,9 +770,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     private void addUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -807,9 +799,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     private void removeUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
     {
-        String userName = (String)
-            actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
-                                     PortletSession.APPLICATION_SCOPE);
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -843,4 +834,59 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }                                    
         }
     }        
+    
+    private void addUser(ActionRequest actionRequest)
+    {
+        String userName = actionRequest.getParameter("jetspeed.user");
+        String password = actionRequest.getParameter("jetspeed.password");            
+        if (!isEmpty(userName) && !isEmpty(password)) 
+        {
+            try
+            {            
+                userManager.addUser(userName, password);
+                PortletMessaging.publish(actionRequest, UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_REFRESH, "true");
+                
+                
+//                User user = userManager.getUser(userName);
+//                String role = actionRequest.getParameter(ROLES_CONTROL);
+//                if (!isEmpty(role) && user != null) 
+//                {
+//                    roleManager.addRoleToUser(userName, role);
+//                }
+//
+//                String rule = actionRequest.getParameter(RULES_CONTROL);
+//                if (!isEmpty(rule) && user != null) 
+//                {
+//                    Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);                         
+//                    profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
+//                }
+                
+            }
+            catch (Exception se)
+            {
+                try
+                {
+                    PortletMessaging.publish(actionRequest, "user.error", se.getMessage());
+                }
+                catch (Exception e)
+                {
+                }
+            }
+            
+        }
+                    
+        
+        return;
+        
+    }
+    
+    private boolean isEmpty(String s)
+    {
+        if (s == null) return true;
+        
+        if (s.trim().equals("")) return true;
+        
+        return false;
+    }
+    
 }

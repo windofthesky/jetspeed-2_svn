@@ -94,12 +94,12 @@ limitations under the License.
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
 		<name>ViewPage</name>
-			<value>/WEB-INF/security/users/user-browser.jsp</value>
+			<value>/WEB-INF/security/users/user-browser.vm</value>
      </init-param>   
     <portlet-name>UserBrowserPortlet</portlet-name>
     <display-name>User Browser</display-name>
     <description>The User Browser displays a list of users managed in this portal. From here you can add, edit, and users.</description>
-    <portlet-class>org.apache.jetspeed.portlets.security.users.UserBrowserPortlet</portlet-class>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserBrowser</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -114,6 +114,12 @@ limitations under the License.
       <short-title>Users</short-title>
       <keywords>admin,security,users</keywords>
     </portlet-info>
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>10</value>    
+      </preference>                               		    
+    </portlet-preferences>                    
   </portlet>
 
 <portlet id="UserDetailsPortlet">

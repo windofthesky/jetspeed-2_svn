@@ -402,19 +402,90 @@ limitations under the License.
 </c:if>
 <%--End of Profile tab data--%>
 
+<table>
+<tr>
+<td>
+<portlet:actionURL var="addUser" />
+<form action="<c:out value="${addUser}"/>" method="post">
+<input type="hidden" name="portlet_action" value="add.new.user"/>
+<input type="submit" value="Add New User" class="portlet-form-button"/>
+</form>
+</td>
+<td>
 <portlet:actionURL var="removeUser" />
 <form action="<c:out value="${removeUser}"/>" method="post">
 <input type="hidden" name="portlet_action" value="remove.user"/>
-<br/>
 <input type="submit" value="Remove User" class="portlet-form-button"/>
 </form>
-
-<br />
-<br />
-
+</td>
+</tr>
+</table>
 <%--End of User check --%>
 </c:if>
-<br />
 
+<%-- Add New User --%>
+<c:if test="${user == null}">
+
+<h3 class="portlet-section-subheader">Add User</h3>
+<div class="portlet-section-text">
+<portlet:actionURL var="addUser" />
+
+<form action="<c:out value="${addUser}"/>" method="post">
+<input type='hidden' name='portlet_action' value='add.user'/>
+<table>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">New User Name:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="text" name="jetspeed.user" size="30" value="" class="portlet-form-field-label">
+    </td>
+  </tr>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">Password:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-field-label">
+    </td>
+  </tr>
+  
+  <!-- Select Roles -->
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+ 		<select name="jetspeedRoles" class="portlet-form-field-label">		
+			<option value=""/> 		 		
+			<c:forEach var="roleName" items="${jetspeedRoles}">			    
+			    <option value="<c:out value='${roleName}'/>"
+  			    <c:if test="${roleName == 'user'}">selected="true"</c:if>>			    
+				  <c:out value="${roleName}"/>
+			    </option>
+			</c:forEach>
+		</select>      
+    </td>
+  </tr>
+
+  <!-- Select Profiling Rules -->
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+ 		<select name="jetspeedRules" class="portlet-form-field-label">		
+			<option value=""/> 		
+			<c:forEach var="ruleName" items="${jetspeedRules}">
+			    <option value="<c:out value='${ruleName}'/>"
+  			    <c:if test="${ruleName == 'role-fallback'}">selected="true"</c:if>>
+				  <c:out value="${ruleName}"/>
+			    </option>
+			</c:forEach>
+		</select>      
+    </td>
+  </tr>
+  
+</table>
+<br/>
+<input type="submit" value="Add User" class="portlet-form-button"/>
+</form>
+<c:if test="${errorMessage != null}">
+  <li style="color:red"><c:out value="${errorMessage}"/></li>
+</c:if>
+
+</c:if>
 
 
