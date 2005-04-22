@@ -38,6 +38,7 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.profiler.Profiler;
@@ -96,6 +97,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
     
     /** the id of the roles control */
     private static final String ROLES_CONTROL = "jetspeedRoles";
+    
+    /** the id of the rules control */
+    private static final String RULES_CONTROL = "jetspeedRules";
+    
 
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
@@ -160,7 +165,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         response.setContentType("text/html");
         
         String userName = (String)PortletMessaging.receive(request, 
-                                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
 
         User user = null;
         if (userName != null)
@@ -202,7 +207,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 request.setAttribute(VIEW_ROLES, userRoles );
                 
                 // check for refresh on roles list
-                String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.USER_BROWSER, "roles");
+                String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, "roles");
                 List roles = null;
                 if (refreshRoles == null)
                 {        
@@ -248,7 +253,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 request.setAttribute(VIEW_GROUPS, userGroups);
                 
                 // check for refresh on groups list
-                String refreshGroups = (String)PortletMessaging.consume(request, SecurityResources.USER_BROWSER, "groups");
+                String refreshGroups = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, "groups");
                 List groups = null;
                 if (refreshGroups == null)
                 {        
@@ -300,7 +305,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
            
             request.setAttribute(SecurityResources.REQUEST_SELECT_TAB, selectedTab);
         }
-
+        else
+        {
+            renderRoleInformation(request);
+            renderProfileInformation(request);            
+        }
         // check for ErrorMessages
         ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, ERROR_MESSAGES);
         if (errorMessages != null )
@@ -311,6 +320,59 @@ public class UserDetailsPortlet extends GenericServletPortlet
         super.doView(request, response);
     }
 
+    protected void renderRoleInformation(RenderRequest request)
+    throws PortletException
+    {
+        // check for refresh on roles list
+        String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_ROLES);
+        List roles = null;
+        if (refreshRoles == null)
+        {        
+            roles = (List) request.getPortletSession().getAttribute(ROLES_CONTROL);
+        }
+        
+        // build the roles control and provide it to the view
+        try
+        {
+            if (roles == null)
+            {
+                roles = new LinkedList();
+                Iterator fullRoles = roleManager.getRoles("");
+                while (fullRoles.hasNext())
+                {
+                    Role role = (Role)fullRoles.next();
+                    roles.add(role.getPrincipal().getName());
+                }
+                request.getPortletSession().setAttribute(ROLES_CONTROL, roles);
+            }
+        }
+        catch (SecurityException se)
+        {
+            throw new PortletException(se);
+        }        
+        request.setAttribute(ROLES_CONTROL, roles);        
+    }
+    
+    protected void renderProfileInformation(RenderRequest request)
+    {
+        // check for refresh on profiles list
+        String refreshProfiles = (String)PortletMessaging.consume(request, 
+                        SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_PROFILES);
+        Collection rules = null;
+        if (refreshProfiles == null)
+        {        
+            rules = (Collection) request.getPortletSession().getAttribute(RULES_CONTROL);
+        }
+        
+        // build the profiles control and provide it to the view
+        if (rules == null)
+        {
+            rules = profiler.getRules();
+            request.getPortletSession().setAttribute(RULES_CONTROL, rules);
+        }
+        request.setAttribute(RULES_CONTROL, rules);        
+    }
+    
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) 
         throws PortletException, IOException
     {   
@@ -331,7 +393,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         else if (action != null && action.equals("add.new.user"))
         {
-            PortletMessaging.cancel(actionRequest, UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+            PortletMessaging.cancel(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         }
         else if (action != null && action.equals("add.user"))
         {
@@ -406,14 +468,14 @@ public class UserDetailsPortlet extends GenericServletPortlet
     throws PortletException
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
         User user = lookupUser(userName);
         if (user != null)
         {
             try
             {
                 userManager.removeUser(userName);
-                PortletMessaging.publish(actionRequest, "users", "refresh", "all");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
             }
             catch (Exception e)
             {
@@ -443,7 +505,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());
 
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -503,7 +565,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -523,7 +585,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void addUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -540,7 +602,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void removeUserAttributes(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);        
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
         List deletes = new LinkedList();
         
         User user = lookupUser(userName);
@@ -580,7 +642,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void removeUserRoles(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -611,7 +673,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void addUserRole(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);       
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);       
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -635,7 +697,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void removeUserGroups(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -666,7 +728,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void addUserGroup(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -771,7 +833,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void addUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -800,7 +862,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private void removeUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
-                UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_SELECTED);
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         User user = lookupUser(userName);
         if (user != null)
         {
@@ -839,54 +901,35 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = actionRequest.getParameter("jetspeed.user");
         String password = actionRequest.getParameter("jetspeed.password");            
-        if (!isEmpty(userName) && !isEmpty(password)) 
+        if (!SecurityUtil.isEmpty(userName) && !SecurityUtil.isEmpty(password)) 
         {
             try
             {            
                 userManager.addUser(userName, password);
-                PortletMessaging.publish(actionRequest, UserBrowser.TOPIC_USERS, UserBrowser.MESSAGE_REFRESH, "true");
-                
-                
-//                User user = userManager.getUser(userName);
-//                String role = actionRequest.getParameter(ROLES_CONTROL);
-//                if (!isEmpty(role) && user != null) 
-//                {
-//                    roleManager.addRoleToUser(userName, role);
-//                }
-//
-//                String rule = actionRequest.getParameter(RULES_CONTROL);
-//                if (!isEmpty(rule) && user != null) 
-//                {
-//                    Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);                         
-//                    profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
-//                }
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
+                                
+                User user = userManager.getUser(userName);
+                String role = actionRequest.getParameter(ROLES_CONTROL);
+                if (!SecurityUtil.isEmpty(role) && user != null) 
+                {
+                    roleManager.addRoleToUser(userName, role);
+                }
+
+                String rule = actionRequest.getParameter(RULES_CONTROL);
+                if (!SecurityUtil.isEmpty(rule) && user != null) 
+                {
+                    Principal principal = SecurityUtil.getPrincipal(user.getSubject(), UserPrincipal.class);                         
+                    profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
+                }
                 
             }
             catch (Exception se)
             {
-                try
-                {
-                    PortletMessaging.publish(actionRequest, "user.error", se.getMessage());
-                }
-                catch (Exception e)
-                {
-                }
+                ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());                
+                publishErrorMessage(actionRequest, bundle.getString("user.exists"));
             }
-            
         }
-                    
-        
-        return;
-        
     }
     
-    private boolean isEmpty(String s)
-    {
-        if (s == null) return true;
-        
-        if (s.trim().equals("")) return true;
-        
-        return false;
-    }
     
 }

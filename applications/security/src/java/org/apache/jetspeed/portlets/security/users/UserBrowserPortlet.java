@@ -47,7 +47,9 @@ import org.apache.webapp.admin.TreeControlNode;
 
 /**
  * This portlet is a browser over all the portlet applications in the system.
- * 
+ *
+ * @deprecated 
+ * @see UserBrowser.java (new implementation)
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */

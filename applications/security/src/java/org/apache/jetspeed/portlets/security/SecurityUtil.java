@@ -28,12 +28,10 @@ import org.apache.portals.gems.browser.BrowserPortlet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class AbstractSecurityBrowser extends BrowserPortlet
-{
-    public static final String STATUS = "statusMsg";
-    public static final String SELECTED = "selected";
-    
-    public Principal getPrincipal(Subject subject, Class classe)
+public abstract class SecurityUtil extends BrowserPortlet
+{    
+        
+    public static Principal getPrincipal(Subject subject, Class classe)
     {
         Principal principal = null;
         Iterator principals = subject.getPrincipals().iterator();
@@ -49,4 +47,13 @@ public abstract class AbstractSecurityBrowser extends BrowserPortlet
         return principal;
     }
 
+    public static boolean isEmpty(String s)
+    {
+        if (s == null) return true;
+        
+        if (s.trim().equals("")) return true;
+        
+        return false;
+    }
+    
 }

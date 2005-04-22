@@ -42,11 +42,24 @@ public interface SecurityResources
     public final static String REQUEST_SELECT_TAB = "selected_tab";
     public final static String PORTLET_ACTION = "portlet_action";
     
-    // UserDetailsPortlet message topic
-    public final static String USER_BROWSER = "user_browser";
+    // Message Topics
+    public final static String TOPIC_USERS = "users";
+    public final static String TOPIC_GROUPS = "groups";
+    public final static String TOPIC_ROLES = "roles";
+    public final static String TOPIC_PROFILES = "profiles";
 
+    /** Messages **/
+    public static final String MESSAGE_SELECTED = "selected";
+    public static final String MESSAGE_STATUS = "status";
+    public static final String MESSAGE_REFRESH = "refresh";
+    public static final String MESSAGE_REFRESH_PROFILES = "refresh.profiles";
+    public static final String MESSAGE_REFRESH_ROLES = "refresh.roles";
+    public static final String MESSAGE_REFRESH_GROUPS = "refresh.groups";
+    
+    
     /** the selected non-leaf node in the tree view */
     public final static String REQUEST_NODE = "node";
     /** the selected leaf node in the tree view */
     public final static String REQUEST_SELECT_NODE = "select_node";
+       
 }

@@ -426,10 +426,18 @@ limitations under the License.
 <%-- Add New User --%>
 <c:if test="${user == null}">
 
-<h3 class="portlet-section-subheader">Add User</h3>
+<h3 class="portlet-section-header">Add User</h3>
+
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
 <div class="portlet-section-text">
 <portlet:actionURL var="addUser" />
-
 <form action="<c:out value="${addUser}"/>" method="post">
 <input type='hidden' name='portlet_action' value='add.user'/>
 <table>

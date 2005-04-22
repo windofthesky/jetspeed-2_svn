@@ -29,12 +29,13 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.portlets.security.AbstractSecurityBrowser;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.gems.browser.BrowserIterator;
+import org.apache.portals.gems.browser.BrowserPortlet;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.util.StatusMessage;
 import org.apache.portals.messaging.PortletMessaging;
@@ -46,15 +47,14 @@ import org.apache.velocity.context.Context;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class UserBrowser extends AbstractSecurityBrowser
+public class UserBrowser extends BrowserPortlet
 {
-    private UserManager userManager;
-    
-    public static final String TOPIC_USERS = "UserBrowser";
-    public static final String MESSAGE_SELECTED = "selected";
-    public static final String MESSAGE_STATUS = "status";
-    public static final String MESSAGE_REFRESH = "refresh";
-        
+    protected UserManager userManager;
+
+    // view context
+    public static final String STATUS = "statusMsg";
+    public static final String SELECTED = "selected";
+
     public void init(PortletConfig config)
     throws PortletException 
     {
@@ -70,26 +70,26 @@ public class UserBrowser extends AbstractSecurityBrowser
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String selected = (String)PortletMessaging.receive(request, TOPIC_USERS, MESSAGE_SELECTED);
+        String selected = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
         if (selected != null)
         {        
             Context context = this.getContext(request);
             context.put(SELECTED, selected);
         }
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, TOPIC_USERS, MESSAGE_STATUS);
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_STATUS);
         if (msg != null)
         {
             this.getContext(request).put(STATUS, msg);            
         }
-        String refresh = (String)PortletMessaging.consume(request, TOPIC_USERS, MESSAGE_REFRESH); 
+        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH); 
         if (refresh != null)
         {        
             this.clearBrowserIterator(request);
-        }
+        }                
         
         super.doView(request, response);
     }
-    
+        
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {
@@ -98,7 +98,7 @@ public class UserBrowser extends AbstractSecurityBrowser
             String selected = request.getParameter("user");
             if (selected != null)
             {
-                PortletMessaging.publish(request, TOPIC_USERS, MESSAGE_SELECTED, selected);
+                PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, selected);
             }
         }
         super.processAction(request, response);
@@ -124,7 +124,7 @@ public class UserBrowser extends AbstractSecurityBrowser
             while (users.hasNext())
             {
                 User user = (User)users.next();
-                Principal principal = getPrincipal(user.getSubject(),
+                Principal principal = SecurityUtil.getPrincipal(user.getSubject(),
                         UserPrincipal.class);                
                 list.add(principal.getName());
             }            

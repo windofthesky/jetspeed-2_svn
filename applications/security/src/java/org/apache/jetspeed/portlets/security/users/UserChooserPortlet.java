@@ -25,7 +25,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.portlets.security.AbstractSecurityBrowser;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -40,7 +40,7 @@ import org.apache.portals.gems.browser.BrowserPortlet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class UserChooserPortlet extends AbstractSecurityBrowser
+public class UserChooserPortlet extends SecurityUtil
 {
     private UserManager userManager;
     

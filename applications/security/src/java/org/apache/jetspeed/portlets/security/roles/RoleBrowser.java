@@ -154,7 +154,7 @@ public class RoleBrowser extends BrowserPortlet
                         roleManager.removeRole(delete);
                         this.clearBrowserIterator(request);
                         PortletMessaging.cancel(request, "role", "selected");
-                        PortletMessaging.publish(request, SecurityResources.USER_BROWSER, "roles", "refresh");
+                        PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, "roles", "refresh");
                     }
                 }
                 catch (Exception e)
@@ -194,7 +194,7 @@ public class RoleBrowser extends BrowserPortlet
                             roleManager.addRole(roleName);
                             this.clearBrowserIterator(request);
                         }
-                        PortletMessaging.publish(request, SecurityResources.USER_BROWSER, "roles", "refresh");
+                        PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, "roles", "refresh");
                     }
                     catch (Exception e)
                     {
