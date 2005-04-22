@@ -552,9 +552,15 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         Iterator it = iterator.getResultSet().iterator();
         while (it.hasNext())
         {
-            // TODO: this only works on String columns
-            List row = (List)it.next();
-            String item = (String)row.get(column);
+            Object row = it.next();
+            String item = "";
+            if (row instanceof String)
+                item = (String)row;
+            else if (row instanceof List)
+            {
+                // TODO: this only works on String columns                
+                item = (String)((List)row).get(column); 
+            }
             if (item.startsWith(searchString))
             {
                 return index;
