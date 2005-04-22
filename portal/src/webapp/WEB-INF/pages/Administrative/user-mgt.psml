@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>User Management</title>
-  <fragment id="um-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+  <fragment id="um-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="um-3" type="portlet" name="security::UserBrowserPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
