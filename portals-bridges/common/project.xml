@@ -30,7 +30,7 @@ limitations under the License.
   <description>
 	  Apache Portals Bridges common utilties and interfaces
   </description>
-  <shortDescription>Apache Portals Bridges common utilities and interfaces</shortDescription>
+  <shortDescription>Apache Portals Bridges common utilities</shortDescription>
   <repository>
     <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/common</connection>
     <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/common/</url>
