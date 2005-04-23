@@ -96,11 +96,11 @@ function openWindow(pipeline)
     <td class="portlet-section-body" align="left">
       <input type="text" name="portal.principal" size="30" value="$!currentP" class="portlet-form-field-label">
 	 <a href="javascript:openWindow('$userChooser');">
-        <img title="Select a user"
+        <img title="Select a User"
              name="assigneeImage" 
              src="/security/images/user-chooser.gif" hspace=0 height=16 width=16 border=0 align=absmiddle></a>      
 	 <a href="javascript:openWindow('$groupChooser');">
-        <img title="Select a user"
+        <img title="Select a Group"
              name="assigneeImage" 
              src="/security/images/group-chooser.gif" hspace=0 height=16 width=16 border=0 align=absmiddle></a>                   
     </td>      
