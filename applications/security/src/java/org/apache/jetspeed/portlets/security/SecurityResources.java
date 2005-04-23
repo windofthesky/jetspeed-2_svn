@@ -50,8 +50,10 @@ public interface SecurityResources
 
     /** Messages **/
     public static final String MESSAGE_SELECTED = "selected";
+    public static final String MESSAGE_CHANGED = "changed";
     public static final String MESSAGE_STATUS = "status";
     public static final String MESSAGE_REFRESH = "refresh";
+    public static final String MESSAGE_FILTERED = "filtered";    
     public static final String MESSAGE_REFRESH_PROFILES = "refresh.profiles";
     public static final String MESSAGE_REFRESH_ROLES = "refresh.roles";
     public static final String MESSAGE_REFRESH_GROUPS = "refresh.groups";

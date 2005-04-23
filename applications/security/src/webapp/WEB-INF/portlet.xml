@@ -148,6 +148,58 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="GroupDetailsPortlet">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/groups/group-details.vm</value>
+     </init-param>   
+    <portlet-name>GroupDetailsPortlet</portlet-name>
+    <display-name>Group Information</display-name>
+    <description>The Group Details portlet displays a groups details in a tabbed view. From here you can add, edit, and group information.</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupDetails</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-info>
+      <title>Group Detail Information</title>
+      <short-title>Group</short-title>
+      <keywords>admin,security,group</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="RoleDetailsPortlet">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/roles/role-details.vm</value>
+     </init-param>   
+    <portlet-name>RoleDetailsPortlet</portlet-name>
+    <display-name>Role Information</display-name>
+    <description>The Role Details portlet displays a roles details in a tabbed view. From here you can add, edit, and role information.</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleDetails</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-info>
+      <title>Role Detail Information</title>
+      <short-title>Role</short-title>
+      <keywords>admin,security,role</keywords>
+    </portlet-info>
+</portlet>
+
 <portlet id="SSOBrowserPortlet">
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>

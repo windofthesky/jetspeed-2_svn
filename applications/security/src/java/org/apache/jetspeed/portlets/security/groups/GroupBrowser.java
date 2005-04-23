@@ -127,8 +127,8 @@ public class GroupBrowser extends BrowserPortlet
                 Group group = lookupGroup(selected);
                 if (group != null)
                 {
-                    PortletMessaging.publish(request, "group", "selected", selected);
-                    PortletMessaging.publish(request, "group", "change", selected);
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED, selected);
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_CHANGED, selected);
                 }
             }
             String refresh = request.getParameter("group.refresh");

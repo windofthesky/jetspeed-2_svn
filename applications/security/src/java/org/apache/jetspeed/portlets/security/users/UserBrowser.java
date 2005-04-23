@@ -87,6 +87,12 @@ public class UserBrowser extends BrowserPortlet
             this.clearBrowserIterator(request);
         }                
         
+        String filtered = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED);
+        if (filtered != null)
+        {
+            this.getContext(request).put(FILTERED, "on");            
+        }
+        
         super.doView(request, response);
     }
         
@@ -101,20 +107,36 @@ public class UserBrowser extends BrowserPortlet
                 PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, selected);
             }
         }
+        
+        // TODO: if request parameters were working correctly we could replace this with render parameters
+        String filtered = (String)request.getParameter(FILTERED);
+        if (filtered != null)
+        {
+            PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED, "on");            
+        }
+        else
+        {
+            PortletMessaging.cancel(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED);
+        }
+        
         super.processAction(request, response);
             
     }
-
-    
-    
+      
     public void getRows(RenderRequest request, String sql, int windowSize)
+    throws Exception
+    {
+        getRows(request, sql, windowSize, "");
+    }
+
+    public void getRows(RenderRequest request, String sql, int windowSize, String filter)
     throws Exception
     {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
         try
         {
-            Iterator users = userManager.getUsers("");
+            Iterator users = userManager.getUsers(filter);
                         
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
@@ -140,6 +162,7 @@ public class UserBrowser extends BrowserPortlet
             e.printStackTrace();
             throw e;
         }        
+        
     }
     
 }

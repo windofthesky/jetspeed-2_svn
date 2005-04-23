@@ -125,4 +125,12 @@
   	<input type='hidden' name='searchColumn' value='1'/>                      	
     <input class="portlet-form-button" type="submit" value="Search">
 	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
+	<table>
+	<tr>
+    <td nowrap class="portlet-section-alternate" align="right">Filter:&nbsp;&nbsp;&nbsp;</td>
+    <td>	
+	<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">
+	</td>
+	</tr>
+	</table>
 </form>

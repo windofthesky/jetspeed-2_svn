@@ -42,27 +42,29 @@ function openWindow(pipeline)
 #if ($currentSite)
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
   <tr>
-    <td width='12' class="jetdbHeadNoLink"></td>      
+    <td width='12' class="portlet-section-header"></td>      
     #foreach ($column in $title)
 	  #set ($columnLink = $renderResponse.createRenderURL())
 	  $columnLink.setParameter("js_dbcolumn",$column)
-##      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap onClick="window.location.href='$columnLink'">
-      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap>
+      <td align='center' class="portlet-section-header" width="40%" nowrap>
         $column
       </td>
     #end
-    <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
+    <td width='24' class="portlet-section-header">&nbsp;</td>    
     <td class=""></td>        
   </tr>
   #foreach ( $principal in $table )
   <tr>
+    #if ($velocityCount % 2 == 0)
+       #set($rowstyle = "portlet-section-body")
+    #else
+       #set($rowstyle = "portlet-section-alternate")
+    #end    
      #if ($currentP == $principal)
-       #set ($rowstyle = "jetdbLight")
        <td class="$rowstyle" nowrap width='12'>
          <img src="/security/images/selected.gif" width="7" height="12" border="0" vspace="2"/>
        </td>
 	 #else
-      #set ($rowstyle = "jetdbOdd")
        <td class="$rowstyle" nowrap width='12'>
          &nbsp;
        </td>      

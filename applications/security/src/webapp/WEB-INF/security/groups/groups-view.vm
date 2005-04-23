@@ -1,27 +1,4 @@
-#*
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*#
-
-#**
-
-@author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
-@version $Id$
-
-*#
-
-<script language='JavaScript' src='/security/scripts/jetspeed-security.js'></script>
+<script language='JavaScript' src='/idtb/scripts/idtb.js'></script>
 
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
 
@@ -31,66 +8,121 @@ limitations under the License.
 
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
   <tr>
-    <td width='12' class="jetdbHeadNoLink"></td>      
-    #set ($column = $title.get(0))
-	  #set ($columnLink = $renderResponse.createRenderURL())
-	  $columnLink.setParameter("js_dbcolumn",$column)
-##      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap onClick="window.location.href='$columnLink'">
-      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap>
+     <th width='12'></th>
+    #foreach ($column in $title)      
+      <th align='center' class="portlet-section-header" width="100%" nowrap>
         $column
-      </td>
-    <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
-    <td class=""></td>        
+      </th>
+    #end
   </tr>
   #foreach ( $group in $table )
   <tr>
-     #if ($selected == $group)
-       #set ($rowstyle = "jetdbLight")
+    #if ($velocityCount % 2 == 0)
+       #set($rowstyle = "portlet-section-body")
+    #else
+       #set($rowstyle = "portlet-section-alternate")
+    #end  
+	#set ($action = $renderResponse.createActionURL())
+	$action.setParameter("group", $group)           
+	   #if ($selected == $group)
        <td class="$rowstyle" nowrap width='12'>
-         <img src="/security/images/selected.gif" width="7" height="12" border="0" vspace="2"/>
-       </td>
-	 #else
-      #set ($rowstyle = "jetdbOdd")
+         <img src="/security/images/selected.gif" />
+       </td>	 	
+       #else
        <td class="$rowstyle" nowrap width='12'>
          &nbsp;
-       </td>      
-	 #end   	 
-      <td class="$rowstyle" nowrap width="40%">
-        #set ($action = $renderResponse.createActionURL())
-        $action.setParameter('group', $group)
-        <div align="center"><a href='$action'>$group</a></div>
-      </td>	 
-       <td class="$rowstyle" nowrap width='24' align='center'>
-         <a href="javascript:YesNoPopup('Confirm to Delete Group:','Confirm Delete','groupForm','groupDelete','$group','YesNoReturnMethod()');">
-           <img src="/security/images/waste_bin.gif" width="20" height="15" border="0"/>            
-         </a>
-       </td>      
-    <td class="">&nbsp;</td>               
+       </td>             
+       #end
+	  <td class="$rowstyle" nowrap width="100%">
+	    <div align="center"><a href='$action'>$group</a></div>
+	  </td>
    </tr>
   #end
+</table>
+
+<hr/>
+
+<!-- controls -->
+<table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
-    <td width='12' class="jetdbHeadNoLink"></td>      
-      <td align='center' class="jetdbHeadNoLink" width="75%" nowrap>
+    #if ($prev)
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='first' />                    
+            <input class="portlet-form-button" type="submit" value="<<">
+            <input type="hidden" name="start" value="0">
+          </form>
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='prev'/>                    
+            <input class="portlet-form-button" type="submit" value="<">
+            <input type="hidden" name="start" value="$prev">
+          </form>
+        </div>
       </td>
-    <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
-    <td class=""></td>        
+    #end
+    #if ($tableSize > 0)
+      <form action="$renderResponse.createActionURL()" method="post">
+      <td valign="middle" height="30">
+        <div align="center">
+          	<input type='hidden' name='db.browser.action' value='change'/>                    
+            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type="input" readonly size='10' value="of $tableSize" class="portlet-form-field-label">            
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input class="portlet-form-button" type="submit" value="Go">            
+        </div>
+      </td>  
+
+      </form>
+
+      
+    #end    
+    #if ($next)
+      <td valign="middle">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='next'/>          
+            <input class="portlet-form-button" type="submit" value=">">
+            <input type="hidden" name="start" value="$next">
+          </form>
+        </div>
+      </td>
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='last'/>                    
+            <input class="portlet-form-button" type="submit" value=">>">
+            <input type="hidden" name="start" value="$tableSize">
+          </form>
+        </div>
+      </td>  
+    #end
+    #if ($tableSize > 0)
+      <td valign="middle">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='refresh'/>
+            <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="Refresh" />
+          </form>
+        </div>
+      </td>
+    #end
   </tr>
 </table>
-<br/>
-<form name='groupForm' action="$renderResponse.createActionURL()" method="post">
-<table>
-  <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Group Name:&nbsp;</td>
-    <td class="portlet-section-body" align="left">
-      <input type="text" name="group.name" size="40" value="$!selected" class="portlet-form-field-label">
-    </td>
-  </tr>
-</table>
-<br/>
-<input name='groupDelete' type='hidden' value=''/>
-<input name='group.save' type="submit" value="$MESSAGES.getString('security.save')" class="portlet-form-button"/>
-<input name='group.refresh' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.refresh')" />
-<input name='group.new' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.new')" />
-
-</form>	      
-
+<form action="$renderResponse.createActionURL()" method="post">
+  	<input type='hidden' name='db.browser.action' value='search'/>                    
+  	<input type='hidden' name='searchColumn' value='1'/>                      	
+    <input class="portlet-form-button" type="submit" value="Search">
+	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
+</form>

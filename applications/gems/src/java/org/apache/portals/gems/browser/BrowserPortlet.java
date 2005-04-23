@@ -59,6 +59,8 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
     protected static final String FIND = "find";
     protected static final String SEARCH_STRING = "searchString";
     protected static final String SEARCH_COLUMN = "searchColumn";
+    protected static final String FILTERED = "filtered";
+    protected static final String FILTER = "filter";
     
     protected static final String CUSTOMIZE_TEMPLATE = "customizeTemplate";
 
@@ -144,6 +146,11 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
     {
     }
 
+    public void getRows(RenderRequest request, String sql, int windowSize, String filter)
+    throws Exception
+    {
+    }
+    
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
@@ -174,7 +181,11 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 String sql = getQueryString(request, context);
                 // System.out.println("buildNormalContext SQL: "+sql);
                 readUserParameters(request, context);
-                getRows(request, sql, windowSize);
+                String filter = request.getParameter(FILTER);
+                if (filter != null)
+                    getRows(request, sql, windowSize, filter);
+                else                    
+                    getRows(request, sql, windowSize);
                 iterator = getBrowserIterator(request);
                 start = 0;
             } 
@@ -291,20 +302,29 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 if (searchString != null)
                 {                    
                     String searchColumn = request.getParameter(SEARCH_COLUMN);
-                    int index = find(this.getBrowserIterator(request), searchString, searchColumn);
-                    if (index == -1)
+                    String filtered = (String)request.getParameter(FILTERED);                    
+                    if (filtered != null)
                     {
-                        try
-                        {
-                            StatusMessage sm = new StatusMessage("Could not find match for: " + searchString, StatusMessage.ALERT);        
-                            PortletMessaging.publish(request, "DatabaseBrowserPortlet", "action", sm);
-                        }
-                        catch (Exception e)
-                        {}
+                        clearBrowserIterator(request);                        
+                        response.setRenderParameter(FILTER, searchString);
                     }
                     else
                     {
-                        response.setRenderParameter(START, Integer.toString(index));                        
+                        int index = find(this.getBrowserIterator(request), searchString, searchColumn);
+                        if (index == -1)
+                        {
+                            try
+                            {
+                                StatusMessage sm = new StatusMessage("Could not find match for: " + searchString, StatusMessage.ALERT);        
+                                PortletMessaging.publish(request, "DatabaseBrowserPortlet", "action", sm);
+                            }
+                            catch (Exception e)
+                            {}
+                        }
+                        else
+                        {
+                            response.setRenderParameter(START, Integer.toString(index));                        
+                        }
                     }
                 }                
             }
