@@ -65,11 +65,17 @@ public class GroupBrowser extends BrowserPortlet
     public void getRows(RenderRequest request, String sql, int windowSize)
     throws Exception
     {
+        getRows(request, sql, windowSize, "");
+    }
+    
+    public void getRows(RenderRequest request, String sql, int windowSize, String filter)
+    throws Exception
+    {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
         try
         {
-            Iterator groups = groupManager.getGroups("");
+            Iterator groups = groupManager.getGroups(filter);
                         
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
@@ -113,6 +119,13 @@ public class GroupBrowser extends BrowserPortlet
             this.getContext(request).put("statusMsg", msg);            
         }
         
+        String filtered = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_FILTERED);
+        if (filtered != null)
+        {
+            this.getContext(request).put(FILTERED, "on");            
+        }
+        
+        
         super.doView(request, response);
     }
 
@@ -154,7 +167,7 @@ public class GroupBrowser extends BrowserPortlet
                         groupManager.removeGroup(delete);
                         this.clearBrowserIterator(request);
                         PortletMessaging.cancel(request, "group", "selected");
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, "groups", "refresh");
+                        PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, "groups", "refresh");
                     }
                 }
                 catch (Exception e)
@@ -194,7 +207,7 @@ public class GroupBrowser extends BrowserPortlet
                             groupManager.addGroup(groupName);
                             this.clearBrowserIterator(request);
                         }
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, "groups", "refresh");
+                        PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, "groups", "refresh");
                     }
                     catch (Exception e)
                     {
@@ -203,6 +216,18 @@ public class GroupBrowser extends BrowserPortlet
                 }
             }            
         }
+        
+        // TODO: if request parameters were working correctly we could replace this with render parameters
+        String filtered = (String)request.getParameter(FILTERED);
+        if (filtered != null)
+        {
+            PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_FILTERED, "on");            
+        }
+        else
+        {
+            PortletMessaging.cancel(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_FILTERED);
+        }
+        
         super.processAction(request, response);
             
     }
