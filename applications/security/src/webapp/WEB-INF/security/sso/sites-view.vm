@@ -33,11 +33,11 @@ limitations under the License.
   <tr>
     <td width='12' class="portlet-section-header"></td>      
     #set ($column = $title.get(1))
-	  #set ($columnLink = $renderResponse.createRenderURL())
-	  $columnLink.setParameter("js_dbcolumn",$column)
-      <td align='center' class="portlet-section-header" width="40%" nowrap>
-        $column
-      </td>
+	#set ($columnLink = $renderResponse.createRenderURL())
+	$columnLink.setParameter("js_dbcolumn",$column)
+    <td align='center' class="portlet-section-header" width="75%" nowrap>
+      $column
+    </td>
     <td width='24' class="portlet-section-header">&nbsp;</td>    
     <td class=""></td>        
   </tr>
@@ -51,7 +51,7 @@ limitations under the License.
        #set($rowstyle = "portlet-section-alternate")
     #end  
 
-   #if ($selected == $ssoUrl)
+   #if ($ssoItem == $ssoUrl)
    <td class="$rowstyle" nowrap width='12'>
      <img src="/security/images/selected.gif" />
    </td>	 	
@@ -68,19 +68,12 @@ limitations under the License.
       </td>
        <td class="$rowstyle" nowrap width='24' align='center'>
          <a href="javascript:YesNoPopup('Confirm to Delete Site:','Confirm Delete','ssoForm','ssoDelete','$ssoUrl','YesNoReturnMethod()');">
-           <img src="/security/images/waste_bin.gif" width="20" height="30" border="0"/>            
+           <img src="/security/images/waste_bin.gif" width="20" height="14" border="0"/>            
          </a>
        </td>      
     <td class="">&nbsp;</td>               
    </tr>
   #end
-  <tr>
-    <td width='12' class="portlet-section-header"></td>      
-      <td align='center' class="portlet-section-header" width="75%" nowrap>
-      </td>
-    <td width='24' class="portlet-section-header">&nbsp;</td>    
-    <td class=""></td>        
-  </tr>
 </table>
 <br/>
 <form name='ssoForm' action="$renderResponse.createActionURL()" method="post">

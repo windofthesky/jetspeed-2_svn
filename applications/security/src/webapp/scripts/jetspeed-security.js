@@ -36,7 +36,7 @@ function ModalDialogMaintainFocus()
    ModalDialogRemoveWatch();
    ModalDialog.eventhandler = EventHandler;
 
-   var args='width=350,height=125,left=325,top=300,toolbar=0,';
+   var args='width=350,height=175,toolbar=0,';
        args+='location=0,status=0,menubar=0,scrollbars=1,resizable=0';  
 
    ModalDialogWindow=window.open("","",args); 

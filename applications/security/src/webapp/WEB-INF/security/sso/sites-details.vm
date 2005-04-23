@@ -85,17 +85,6 @@ function openWindow(pipeline)
     <td class="">&nbsp;</td>               
    </tr>
   #end
-  <tr>
-    <td width='12' class="jetdbHeadNoLink"></td>      
-    #foreach ($column in $title)
-	  #set ($columnLink = $renderResponse.createRenderURL())
-	  $columnLink.setParameter("js_dbcolumn",$column)
-      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap>
-      </td>
-    #end
-    <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
-    <td class=""></td>        
-  </tr>
 </table>
 <br/>
 <form name='securityform' action="$renderResponse.createActionURL()" method="post">
