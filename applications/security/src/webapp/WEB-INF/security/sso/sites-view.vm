@@ -51,7 +51,7 @@ limitations under the License.
        #set($rowstyle = "portlet-section-alternate")
     #end  
 
-   #if ($ssoItem == $ssoUrl)
+   #if ($ssoName == $currentName)
    <td class="$rowstyle" nowrap width='12'>
      <img src="/security/images/selected.gif" />
    </td>	 	
