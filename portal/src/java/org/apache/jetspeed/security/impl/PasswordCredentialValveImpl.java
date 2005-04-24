@@ -16,7 +16,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -30,9 +29,10 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityHelper;
 
 /**
- * SecurityValve
+ * PasswordCredentialValve
  *
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
@@ -69,72 +69,64 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
     {
         try
         {
-            Subject subject = request.getSubject();
-            Iterator credentialsIter = subject.getPrivateCredentials().iterator();
-            PasswordCredential pwdCredential = null;
-            while ( credentialsIter.hasNext() )
+            if ( request.getRequest().getUserPrincipal() != null )
             {
-                Object credential = credentialsIter.next();
-                if ( credential instanceof PasswordCredential )
+                Subject subject = request.getSubject();
+                PasswordCredential pwdCredential = SecurityHelper.getPasswordCredential(subject);
+                Integer passwordDaysValid = null;
+                
+                // check for an existing password credential
+                if ( pwdCredential != null )
                 {
-                    pwdCredential = (PasswordCredential)credential;
-                    break;
-                }
-            }
-            Integer passwordDaysValid = null;
-            
-            // check for an existing password credential
-            // The only expected subject without a password credential is the anonymous user!
-            if ( pwdCredential != null )
-            {
-                if ( pwdCredential.isUpdateRequired() )
-                {
-                    passwordDaysValid = new Integer(0); // required change
-                }
-                if ( request.getSessionAttribute(CHECKED_KEY) == null  )
-                {
-                    request.setSessionAttribute(CHECKED_KEY,Boolean.TRUE);
-                    if ( pwdCredential.getPreviousAuthenticationDate() != null )
+                    if ( pwdCredential.isUpdateRequired() )
                     {
-                        long expirationTime = pwdCredential.getExpirationDate().getTime();
-                        long lastAuthTime = pwdCredential.getLastAuthenticationDate().getTime();
-                        int lastAuthDaysBeforeExpiration = (int)((expirationTime-lastAuthTime)/(24*60*60*1000));
-                        if (  lastAuthDaysBeforeExpiration < 1 )
+                        passwordDaysValid = new Integer(0); // required change
+                    }
+                    if ( request.getSessionAttribute(CHECKED_KEY) == null  )
+                    {
+                        request.setSessionAttribute(CHECKED_KEY,Boolean.TRUE);
+                        if ( pwdCredential.getPreviousAuthenticationDate() != null )
                         {
-                            passwordDaysValid = new Integer(1);
-                        }
-                        else if (expirationWarningDays.length > 0)
-                        {
-                            long prevAuthTime = Long.MIN_VALUE;
-                            if (pwdCredential.getPreviousAuthenticationDate() != null )
+                            long expirationTime = pwdCredential.getExpirationDate().getTime();
+                            long lastAuthTime = pwdCredential.getLastAuthenticationDate().getTime();
+                            int lastAuthDaysBeforeExpiration = (int)((expirationTime-lastAuthTime)/(24*60*60*1000));
+                            if (  lastAuthDaysBeforeExpiration < 1 )
                             {
-                                prevAuthTime = pwdCredential.getPreviousAuthenticationDate().getTime();
+                                passwordDaysValid = new Integer(1);
                             }
-                            int prevAuthDaysBeforeExpiration = (int)((expirationTime-prevAuthTime)/(24*60*60*1000));
-                            if ( prevAuthDaysBeforeExpiration > lastAuthDaysBeforeExpiration )
+                            else if (expirationWarningDays.length > 0)
                             {
-                                for ( int i = 0; i < expirationWarningDays.length; i++ )
+                                long prevAuthTime = Long.MIN_VALUE;
+                                if (pwdCredential.getPreviousAuthenticationDate() != null )
                                 {
-                                    int daysBefore = expirationWarningDays[i]-1;
-                                    if ( lastAuthDaysBeforeExpiration == daysBefore ||
-                                            (lastAuthDaysBeforeExpiration < daysBefore &&
-                                                    prevAuthDaysBeforeExpiration > daysBefore ) )
+                                    prevAuthTime = pwdCredential.getPreviousAuthenticationDate().getTime();
+                                }
+                                int prevAuthDaysBeforeExpiration = (int)((expirationTime-prevAuthTime)/(24*60*60*1000));
+                                if ( prevAuthDaysBeforeExpiration > lastAuthDaysBeforeExpiration )
+                                {
+                                    for ( int i = 0; i < expirationWarningDays.length; i++ )
                                     {
-                                        passwordDaysValid = new Integer(lastAuthDaysBeforeExpiration+1);
-                                        break;
+                                        int daysBefore = expirationWarningDays[i]-1;
+                                        if ( lastAuthDaysBeforeExpiration == daysBefore ||
+                                                (lastAuthDaysBeforeExpiration < daysBefore &&
+                                                        prevAuthDaysBeforeExpiration > daysBefore ) )
+                                        {
+                                            passwordDaysValid = new Integer(lastAuthDaysBeforeExpiration+1);
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            if ( passwordDaysValid != null )
-            {
-                // enforce the SECURITY_LOCATOR to be used to redirect to a change password portlet page
-                request.setAttribute(PageProfilerValve.PROFILE_LOCATOR_REQUEST_ATTR_KEY,ProfileLocator.SECURITY_LOCATOR);
-                // inform the change password portlet why it is invoked
-                request.setAttribute(PasswordCredential.PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY, passwordDaysValid);
+                if ( passwordDaysValid != null )
+                {
+                    // enforce the SECURITY_LOCATOR to be used to redirect to a change password portlet page
+                    request.setAttribute(PageProfilerValve.PROFILE_LOCATOR_REQUEST_ATTR_KEY,ProfileLocator.SECURITY_LOCATOR);
+                    // inform the change password portlet why it is invoked
+                    request.setAttribute(PasswordCredential.PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY, passwordDaysValid);
+                }
             }
             context.invokeNext(request);
         }
