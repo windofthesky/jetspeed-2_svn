@@ -28,4 +28,11 @@ public final class LoginConstants
     public final static String PASSWORD    = "org.apache.jetspeed.login.password";
     public final static String DESTINATION = "org.apache.jetspeed.login.destination";
     public final static String RETRYCOUNT  = "org.apache.jetspeed.login.retrycount";
+    public final static String ERRORCODE   = "org.apache.jetspeed.login.errorcode";
+    
+    public final static Integer ERROR_UNKNOWN_USER = new Integer(1);
+    public final static Integer ERROR_INVALID_PASSWORD = new Integer(2);
+    public final static Integer ERROR_USER_DISABLED = new Integer(3);
+    public final static Integer ERROR_FINAL_LOGIN_ATTEMPT = new Integer(4);
+    public final static Integer ERROR_CREDENTIAL_DISABLED = new Integer(5);
 }
