@@ -32,17 +32,28 @@ limitations under the License.
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
-    <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
-    <c:if test="${not empty retryCount}">
-      <br>
-      <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
-      <br>
-    </c:if>
+    <c_rt:set var="errorCode" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.ERRORCODE)%>"/>
+    <c:choose>    
+      <c:when test="${not empty errorCode}">
+        <br>
+        <i><fmt:message key="login.label.ErrorCode.${errorCode}"/></i>
+        <br>
+      </c:when>
+      <c:otherwise>
+        <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
+        <c:if test="${not empty retryCount}">
+          <br>
+          <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
+          <br>
+        </c:if>
+      </c:otherwise>
+    </c:choose>   
     <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="/login/proxy"/>'>
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>
-        <td><input type="text" size="30" name="<%=LoginConstants.USERNAME%>"></td>
+        <c_rt:set var="userName" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.USERNAME)%>"/>
+        <td><input type="text" size="30" name="<%=LoginConstants.USERNAME%>" value="<c:out value="${userName}"/>"></td>
       </tr>
       <tr>
         <td><fmt:message key="login.label.Password"/></td>

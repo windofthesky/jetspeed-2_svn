@@ -65,6 +65,21 @@ limitations under the License.
    </constructor-arg>
   </bean> 
   
+  <bean id="loginValidationValve"
+        class="org.apache.jetspeed.security.impl.LoginValidationValveImpl"
+        init-method="initialize"
+  >
+    <!-- maxNumberOfAuthenticationFailures
+         This value should be in sync with the value for
+         org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor
+         (if used) to make sense.
+         Any value < 2 will suppress the LoginConststants.ERROR_FINAL_LOGIN_ATTEMPT
+         error code when one one last attempt is possible before the credential
+         will be disabled on failure.
+    -->
+    <constructor-arg index="0"><value>3</value></constructor-arg>  
+  </bean> 
+  
   <bean id="profilerValve"
         class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl"
         init-method="initialize"
@@ -124,16 +139,17 @@ limitations under the License.
    </constructor-arg>
    <constructor-arg>
     <list>
-    	<ref bean="localizationValve"/>
-    	<ref bean="capabilityValve"/>
+      <ref bean="localizationValve"/>
+      <ref bean="capabilityValve"/>
       <ref bean="portalURLValve"/>
-    	<ref bean="securityValve"/>
+      <ref bean="securityValve"/>
       <ref bean="passwordCredentialValve"/>
-    	<ref bean="profilerValve"/>
-    	<ref bean="containerValve"/>
-    	<ref bean="actionValve"/>
-    	<ref bean="aggregatorValve"/>
-    	<ref bean="cleanUpValve"/>
+      <ref bean="loginValidationValve"/>
+      <ref bean="profilerValve"/>
+      <ref bean="containerValve"/>
+      <ref bean="actionValve"/>
+      <ref bean="aggregatorValve"/>
+      <ref bean="cleanUpValve"/>
     </list>
     </constructor-arg>
   </bean> 
