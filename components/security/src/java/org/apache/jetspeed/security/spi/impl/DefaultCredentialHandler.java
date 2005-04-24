@@ -244,6 +244,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             if ( credential != null && !credential.isExpired() && credential.isEnabled() != enabled )
             {
                 credential.setEnabled(enabled);
+                credential.setAuthenticationFailures(0);
                 internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
