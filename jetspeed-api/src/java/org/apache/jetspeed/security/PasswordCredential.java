@@ -68,4 +68,15 @@ public interface PasswordCredential
      * @return the last time the user logged in 
      */
     Timestamp getLastAuthenticationDate();
+
+    /**
+     * <p>Getter for the current number of authentication failures in a row.</p>
+     * <ul>
+     *   <li>-1: never tried yet</li>
+     *   <li> 0: none, or last attempt was successful</li>
+     *   <li>>0: number of failures</li>
+     * </ul>
+     * @return The number of authentication failures
+     */
+    int getAuthenticationFailures();
 }

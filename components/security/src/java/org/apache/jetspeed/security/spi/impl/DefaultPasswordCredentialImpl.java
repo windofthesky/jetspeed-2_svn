@@ -61,6 +61,9 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     /** The last authentication in date */
     private Timestamp lastAuthenticationDate;
     
+    /** The number of authentication failures */
+    private int authenticationFailures;
+
     /**
      * @param userName
      * @param password
@@ -80,6 +83,7 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
         this.expirationDate = credential.getExpirationDate();
         this.previousAuthenticationDate = credential.getPreviousAuthenticationDate();
         this.lastAuthenticationDate = credential.getLastAuthenticationDate();
+        this.authenticationFailures = credential.getAuthenticationFailures();
     }
     
     /**
@@ -145,6 +149,14 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     public Timestamp getLastAuthenticationDate()
     {
         return lastAuthenticationDate;
+    }
+
+    /** 
+     * @see org.apache.jetspeed.security.PasswordCredential#getAuthenticationFailures()
+     */
+    public int getAuthenticationFailures()
+    {
+        return authenticationFailures;
     }
 
     /**
