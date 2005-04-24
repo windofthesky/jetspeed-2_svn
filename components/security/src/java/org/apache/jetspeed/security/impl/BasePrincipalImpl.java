@@ -115,7 +115,7 @@ public class BasePrincipalImpl implements BasePrincipal
         return name;
     }
 
-    private boolean enabled;
+    private boolean enabled = true;
     
     /** 
      * @see org.apache.jetspeed.security.BasePrincipal#isEnabled()
