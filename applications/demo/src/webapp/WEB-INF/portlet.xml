@@ -43,19 +43,6 @@ limitations under the License.
     </portlet-info>
   </portlet>
   
-  <user-attribute>
-	<description>User Given Name</description>
-	<name>user.name.given</name>
-  </user-attribute>
-  <user-attribute>
-	<description>User Last Name</description>
-	<name>user.name.family</name>
-  </user-attribute>
-  <user-attribute>
-	<description>User eMail</description>
-	<name>user.home-info.online.email</name>
-  </user-attribute>
-  
   <portlet>
     <description>Bookmark Portlet</description>
     <portlet-name>BookmarkPortlet</portlet-name>
