@@ -107,13 +107,13 @@ public class GroupBrowser extends BrowserPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String selected = (String)PortletMessaging.receive(request, "group", "selected");
+        String selected = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);
         if (selected != null)
         {        
             Context context = this.getContext(request);
             context.put("selected", selected);
         }
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "GroupBrowser", "status");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_STATUS);
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
@@ -123,7 +123,12 @@ public class GroupBrowser extends BrowserPortlet
         if (filtered != null)
         {
             this.getContext(request).put(FILTERED, "on");            
-        }
+        }        
+        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_REFRESH); 
+        if (refresh != null)
+        {        
+            this.clearBrowserIterator(request);
+        }                
         
         
         super.doView(request, response);
@@ -144,80 +149,8 @@ public class GroupBrowser extends BrowserPortlet
                     PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_CHANGED, selected);
                 }
             }
-            String refresh = request.getParameter("group.refresh");
-            String save = request.getParameter("group.save");
-            String neue = request.getParameter("group.new");
-            String delete = request.getParameter("groupDelete");
-            
-            if (refresh != null)
-            {
-                this.clearBrowserIterator(request);
-            }
-            else if (neue != null)
-            {
-                PortletMessaging.cancel(request, "group", "selected");
-            }
-            else if (delete != null && (!(isEmpty(delete))))
-            {
-                try
-                {
-                    Group group = lookupGroup(delete);
-                    if (group != null)
-                    {
-                        groupManager.removeGroup(delete);
-                        this.clearBrowserIterator(request);
-                        PortletMessaging.cancel(request, "group", "selected");
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, "groups", "refresh");
-                    }
-                }
-                catch (Exception e)
-                {
-                    publishStatusMessage(request, "GroupBrowser", "status", e, "Could not remove group");
-                }
-            }
-            else if (save != null)
-            {
-                String groupName = request.getParameter("group.name");                
-                if (!(isEmpty(groupName)))
-                {
-                    try
-                    {
-                        Group group = null;
-                        String old = (String)PortletMessaging.receive(request, "group", "selected");
-                        if (old != null)
-                        {
-                            group = lookupGroup(old);
-                        }
-                        else
-                        {
-                            group = lookupGroup(groupName);
-                        }                        
-                        if (group != null)
-                        {
-                            if (old != null && !old.equals(groupName))
-                            {
-                                groupManager.removeGroup(old);
-                                groupManager.addGroup(groupName);                            
-                                this.clearBrowserIterator(request);
-                                PortletMessaging.publish(request, "group", "selected", groupName);
-                            }
-                        }
-                        else
-                        {
-                            groupManager.addGroup(groupName);
-                            this.clearBrowserIterator(request);
-                        }
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, "groups", "refresh");
-                    }
-                    catch (Exception e)
-                    {
-                        publishStatusMessage(request, "GroupBrowser", "status", e, "Could not store group");
-                    }
-                }
-            }            
         }
         
-        // TODO: if request parameters were working correctly we could replace this with render parameters
         String filtered = (String)request.getParameter(FILTERED);
         if (filtered != null)
         {
@@ -242,15 +175,6 @@ public class GroupBrowser extends BrowserPortlet
         {
             return null;
         }
-    }
-    
-    private boolean isEmpty(String s)
-    {
-        if (s == null) return true;
-        
-        if (s.trim().equals("")) return true;
-        
-        return false;
     }
     
 }

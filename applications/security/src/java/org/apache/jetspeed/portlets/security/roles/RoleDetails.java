@@ -12,7 +12,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.portlets.security.groups;
+package org.apache.jetspeed.portlets.security.roles;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -34,7 +34,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
-import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -46,15 +46,15 @@ import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
 /**
- * Group Details
+ * Role Details
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class GroupDetails extends BrowserPortlet
+public class RoleDetails extends BrowserPortlet
 {
     private UserManager userManager;
-    private GroupManager groupManager;
+    private RoleManager roleManager;
         
     public void init(PortletConfig config)
     throws PortletException 
@@ -65,10 +65,10 @@ public class GroupDetails extends BrowserPortlet
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-        groupManager = (GroupManager) getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
-        if (null == groupManager)
+        roleManager = (RoleManager) getPortletContext().getAttribute(SecurityResources.CPS_ROLE_MANAGER_COMPONENT);
+        if (null == roleManager)
         {
-            throw new PortletException("Failed to find the Group Manager on portlet initialization");
+            throw new PortletException("Failed to find the Role Manager on portlet initialization");
         }        
     }
     
@@ -81,12 +81,12 @@ public class GroupDetails extends BrowserPortlet
         {
             List list = new ArrayList();
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Users in Group");
+            resultSetTitleList.add("Users in Role");
             
-            String selectedGroup = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);
-            if (selectedGroup != null)
+            String selectedRole = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
+            if (selectedRole != null)
             {
-                Iterator users = userManager.getUsersInGroup(selectedGroup).iterator();                                    
+                Iterator users = userManager.getUsersInRole(selectedRole).iterator();                                    
                 while (users.hasNext())
                 {
                     User user = (User)users.next();
@@ -99,7 +99,7 @@ public class GroupDetails extends BrowserPortlet
                     list, resultSetTitleList, resultSetTypeList,
                     windowSize);
             setBrowserIterator(request, iterator);
-            iterator.sort("Users in Group");
+            iterator.sort("Users in Role");
         }
         catch (Exception e)
         {
@@ -113,29 +113,29 @@ public class GroupDetails extends BrowserPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String change = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_CHANGED);
+        String change = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_CHANGED);
         if (change != null)
         { 
             this.clearBrowserIterator(request);
         }
         Context context = this.getContext(request);
                 
-        String selectedGroup = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);
-        if (selectedGroup != null)
+        String selectedRole = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
+        if (selectedRole != null)
         {        
-            context.put("group", selectedGroup);
+            context.put("role", selectedRole);
         }        
         
         String userChooser = SecurityUtil.getAbsoluteUrl(request, "/Administrative/choosers/multiusers.psml");        
         context.put("userChooser", userChooser);
         
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS_USERS, SecurityResources.MESSAGE_STATUS);
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES_USERS, SecurityResources.MESSAGE_STATUS);
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
         }
           
-        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS_USERS, SecurityResources.MESSAGE_REFRESH); 
+        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES_USERS, SecurityResources.MESSAGE_REFRESH); 
         if (refresh != null)
         {        
             this.clearBrowserIterator(request);
@@ -150,46 +150,46 @@ public class GroupDetails extends BrowserPortlet
     {
         if (request.getPortletMode() == PortletMode.VIEW)
         {
-            String groupAction = request.getParameter("group.action");
+            String roleAction = request.getParameter("role.action");
             String users = request.getParameter("users");
             
-            System.out.println("group.action = " + groupAction);
+            System.out.println("role.action = " + roleAction);
             System.out.println("users = " + users);
             if (users != null && users.length() > 0)
             {
-                addUsersToGroup(request, users);
+                addUsersToRole(request, users);
             }
-            else if (groupAction != null && groupAction.equals("Add New Group"))
+            else if (roleAction != null && roleAction.equals("Add New Role"))
             {
-                PortletMessaging.cancel(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);                
+                PortletMessaging.cancel(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);                
             }
-            else if (groupAction != null && groupAction.equals("Remove Checked Users"))
+            else if (roleAction != null && roleAction.equals("Remove Checked Users"))
             {
-                removeUsersFromGroup(request);
+                removeUsersFromRole(request);
             }
-            else if (groupAction != null && groupAction.equals("Remove Group"))
+            else if (roleAction != null && roleAction.equals("Remove Role"))
             {
-                removeGroup(request);
+                removeRole(request);
             }
-            else if (groupAction != null && groupAction.equals("Save"))
+            else if (roleAction != null && roleAction.equals("Save"))
             {
-                addGroup(request);
+                addRole(request);
             }
             
         }
         super.processAction(request, response);            
     }
 
-    protected void addGroup(ActionRequest actionRequest)
+    protected void addRole(ActionRequest actionRequest)
     {
-        String group = actionRequest.getParameter("group");
-        if (!SecurityUtil.isEmpty(group)) 
+        String role = actionRequest.getParameter("role");
+        if (!SecurityUtil.isEmpty(role)) 
         {
             try
             {            
-                groupManager.addGroup(group);
+                roleManager.addRole(role);
                 PortletMessaging.publish(actionRequest, 
-                        SecurityResources.TOPIC_GROUPS, 
+                        SecurityResources.TOPIC_ROLES, 
                         SecurityResources.MESSAGE_REFRESH, "true");
             }            
             catch (Exception se)
@@ -200,18 +200,18 @@ public class GroupDetails extends BrowserPortlet
         }
     }
 
-    protected void removeGroup(ActionRequest actionRequest)
+    protected void removeRole(ActionRequest actionRequest)
     {
-        String group = actionRequest.getParameter("group");
-        if (!SecurityUtil.isEmpty(group)) 
+        String role = actionRequest.getParameter("role");
+        if (!SecurityUtil.isEmpty(role)) 
         {
             try
             {            
-                groupManager.removeGroup(group);
+                roleManager.removeRole(role);
                 PortletMessaging.publish(actionRequest, 
-                        SecurityResources.TOPIC_GROUPS, 
+                        SecurityResources.TOPIC_ROLES, 
                         SecurityResources.MESSAGE_REFRESH, "true");
-                PortletMessaging.cancel(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);                                                
+                PortletMessaging.cancel(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);                                                
             }
             catch (Exception se)
             {
@@ -221,10 +221,10 @@ public class GroupDetails extends BrowserPortlet
         }
     }
     
-    protected void addUsersToGroup(ActionRequest request, String users)
+    protected void addUsersToRole(ActionRequest request, String users)
     {
-        String group = request.getParameter("group");
-        if (group != null)
+        String role = request.getParameter("role");
+        if (role != null)
         {
             int count = 0;
             StringTokenizer tokenizer = new StringTokenizer(users, ",");
@@ -236,13 +236,13 @@ public class GroupDetails extends BrowserPortlet
                     if (user.startsWith("box_"))
                     {
                         user = user.substring("box_".length());
-                        groupManager.addUserToGroup(user, group);
+                        roleManager.addRoleToUser(user, role);
                         count++;
                     }
                 }
                 catch (Exception e)
                 {
-                    System.err.println("failed to add user to group: " + user);
+                    System.err.println("failed to add user to role: " + user);
                 }
             }
             if (count > 0)
@@ -250,7 +250,7 @@ public class GroupDetails extends BrowserPortlet
                 try
                 {
                     PortletMessaging.publish(request, 
-                            SecurityResources.TOPIC_GROUPS_USERS, 
+                            SecurityResources.TOPIC_ROLES_USERS, 
                             SecurityResources.MESSAGE_REFRESH, "true");
                 }
                 catch (Exception e)
@@ -259,10 +259,10 @@ public class GroupDetails extends BrowserPortlet
         }
     }
 
-    protected void removeUsersFromGroup(ActionRequest request)
+    protected void removeUsersFromRole(ActionRequest request)
     {
-        String group = request.getParameter("group");
-        if (group != null)
+        String role = request.getParameter("role");
+        if (role != null)
         {
             int count = 0;
             Enumeration e = request.getParameterNames();
@@ -274,12 +274,12 @@ public class GroupDetails extends BrowserPortlet
                     String user = name.substring("box_".length());
                     try
                     {
-                        groupManager.removeUserFromGroup(user, group);                        
+                        roleManager.removeRoleFromUser(user, role);
                         count++;
                     }
                     catch (Exception e1)
                     {
-                        System.err.println("failed to remove user from group: " + user);
+                        System.err.println("failed to remove user from role: " + user);
                     }
                     
                 }
@@ -289,7 +289,7 @@ public class GroupDetails extends BrowserPortlet
                 try
                 {
                     PortletMessaging.publish(request, 
-                            SecurityResources.TOPIC_GROUPS_USERS, 
+                            SecurityResources.TOPIC_ROLES_USERS, 
                             SecurityResources.MESSAGE_REFRESH, "true");
                 }
                 catch (Exception e2)

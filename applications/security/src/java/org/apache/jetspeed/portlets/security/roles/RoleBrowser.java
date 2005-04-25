@@ -107,13 +107,13 @@ public class RoleBrowser extends BrowserPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String selected = (String)PortletMessaging.receive(request, "role", "selected");
+        String selected = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
         if (selected != null)
         {        
             Context context = this.getContext(request);
             context.put("selected", selected);
         }
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "RoleBrowser", "status");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_STATUS);
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
@@ -124,7 +124,13 @@ public class RoleBrowser extends BrowserPortlet
         {
             this.getContext(request).put(FILTERED, "on");            
         }
-        
+
+        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_REFRESH); 
+        if (refresh != null)
+        {        
+            this.clearBrowserIterator(request);
+        }                
+                
         super.doView(request, response);
     }
 
@@ -139,84 +145,12 @@ public class RoleBrowser extends BrowserPortlet
                 Role role = lookupRole(selected);
                 if (role != null)
                 {
-                    PortletMessaging.publish(request, "role", "selected", selected);
-                    PortletMessaging.publish(request, "role", "change", selected);
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED, selected);
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_CHANGED, selected);
                 }
             }
-            String refresh = request.getParameter("role.refresh");
-            String save = request.getParameter("role.save");
-            String neue = request.getParameter("role.new");
-            String delete = request.getParameter("roleDelete");
-            
-            if (refresh != null)
-            {
-                this.clearBrowserIterator(request);
-            }
-            else if (neue != null)
-            {
-                PortletMessaging.cancel(request, "role", "selected");
-            }
-            else if (delete != null && (!(isEmpty(delete))))
-            {
-                try
-                {
-                    Role role = lookupRole(delete);
-                    if (role != null)
-                    {
-                        roleManager.removeRole(delete);
-                        this.clearBrowserIterator(request);
-                        PortletMessaging.cancel(request, "role", "selected");
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, "roles", "refresh");
-                    }
-                }
-                catch (Exception e)
-                {
-                    publishStatusMessage(request, "RoleBrowser", "status", e, "Could not remove role");
-                }
-            }
-            else if (save != null)
-            {
-                String roleName = request.getParameter("role.name");                
-                if (!(isEmpty(roleName)))
-                {
-                    try
-                    {
-                        Role role = null;
-                        String old = (String)PortletMessaging.receive(request, "role", "selected");
-                        if (old != null)
-                        {
-                            role = lookupRole(old);
-                        }
-                        else
-                        {
-                            role = lookupRole(roleName);
-                        }                        
-                        if (role != null)
-                        {
-                            if (old != null && !old.equals(roleName))
-                            {
-                                roleManager.removeRole(old);
-                                roleManager.addRole(roleName);                            
-                                this.clearBrowserIterator(request);
-                                PortletMessaging.publish(request, "role", "selected", roleName);
-                            }
-                        }
-                        else
-                        {
-                            roleManager.addRole(roleName);
-                            this.clearBrowserIterator(request);
-                        }
-                        PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, "roles", "refresh");
-                    }
-                    catch (Exception e)
-                    {
-                        publishStatusMessage(request, "RoleBrowser", "status", e, "Could not store role");
-                    }
-                }
-            }            
         }
-
-        // TODO: if request parameters were working correctly we could replace this with render parameters
+        
         String filtered = (String)request.getParameter(FILTERED);
         if (filtered != null)
         {
@@ -227,7 +161,8 @@ public class RoleBrowser extends BrowserPortlet
             PortletMessaging.cancel(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_FILTERED);
         }
         
-        super.processAction(request, response);            
+        super.processAction(request, response);
+            
     }
 
     private Role lookupRole(String roleName)
@@ -242,13 +177,5 @@ public class RoleBrowser extends BrowserPortlet
         }
     }
     
-    private boolean isEmpty(String s)
-    {
-        if (s == null) return true;
-        
-        if (s.trim().equals("")) return true;
-        
-        return false;
-    }
     
 }
