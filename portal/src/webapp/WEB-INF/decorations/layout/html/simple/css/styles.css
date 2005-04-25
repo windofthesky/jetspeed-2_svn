@@ -319,18 +319,9 @@ body.layout-tigris
 
 .jetdbButton
 {
-    background-color: #CCCCCC;
-    border-style: none;
-    color: Black;
-    display: block;
-    font-weight: normal;
-    padding: 0;
-    font-family : Arial, Helvetica, sans-serif;
-    font-size : 8pt;
-    border-top: 1px solid #FFFFFF;
-    border-left: 1px solid #FFFFFF;
-    border-right: 1px solid #0A0A0A;
-    border-bottom: 1px solid #0A0A0A;
-    width : 65px;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
         
