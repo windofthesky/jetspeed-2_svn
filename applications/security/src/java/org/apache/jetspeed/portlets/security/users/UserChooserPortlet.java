@@ -23,7 +23,6 @@ import java.util.List;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
-import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
@@ -32,7 +31,6 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
-import org.apache.portals.gems.browser.BrowserPortlet;
 
 /**
  * SSOBrowser

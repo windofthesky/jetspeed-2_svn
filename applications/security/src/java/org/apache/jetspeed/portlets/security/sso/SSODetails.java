@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -135,8 +136,8 @@ public class SSODetails extends BrowserPortlet
         }        
         
         // get relative link, TODO: encapsulate Jetspeed links access into component
-        String userChooser = getAbsoluteUrl(request, "/Administrative/choosers/users.psml");
-        String groupChooser = getAbsoluteUrl(request, "/Administrative/choosers/groups.psml");
+        String userChooser = SecurityUtil.getAbsoluteUrl(request, "/Administrative/choosers/users.psml");
+        String groupChooser = SecurityUtil.getAbsoluteUrl(request, "/Administrative/choosers/groups.psml");
         
         context.put("userChooser", userChooser);
         context.put("groupChooser", groupChooser);
@@ -149,18 +150,7 @@ public class SSODetails extends BrowserPortlet
         
         super.doView(request, response);
     }
-    
-    public String getAbsoluteUrl(RenderRequest renderRequest, String relativePath)
-    {
-        RequestContext requestContext = (RequestContext) renderRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        HttpServletRequest request = requestContext.getRequest();
-        StringBuffer path = new StringBuffer();
-        return path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
-                request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
-                relativePath).toString();
-    }
-    
-    
+        
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {

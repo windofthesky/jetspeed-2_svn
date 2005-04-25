@@ -16,7 +16,6 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +31,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
@@ -104,9 +102,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
-
-    /** The Error Messages KEY */
-    public static final String ERROR_MESSAGES = "errorMessages";
     
     private UserManager  userManager;
     private RoleManager  roleManager;
@@ -311,10 +306,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
             renderProfileInformation(request);            
         }
         // check for ErrorMessages
-        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, ERROR_MESSAGES);
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.ERROR_MESSAGES);
         if (errorMessages != null )
         {
-            request.setAttribute(ERROR_MESSAGES,errorMessages);
+            request.setAttribute(SecurityResources.ERROR_MESSAGES, errorMessages);
         }
         
         super.doView(request, response);
@@ -444,26 +439,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
         }
     }
-    
-    private void publishErrorMessage(PortletRequest request, String message)
-    {
-        try
-        {
-            ArrayList errors = (ArrayList)PortletMessaging.receive(request,ERROR_MESSAGES);
-            if ( errors == null )
-            {
-                errors = new ArrayList();
-            }
-            errors.add(message);
-            PortletMessaging.publish(request, ERROR_MESSAGES, errors);
-        }
-        catch (NotSerializableException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }                
-    }
-    
+        
     public void removeUser(ActionRequest actionRequest, ActionResponse actionResponse) 
     throws PortletException
     {
@@ -479,7 +455,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             catch (Exception e)
             {
-                publishErrorMessage(actionRequest,e.getMessage());
+                SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
             }
         }
     }
@@ -545,19 +521,19 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             catch ( InvalidPasswordException ipe )
             {
-                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidPassword"));
+                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidPassword"));
             }
             catch ( InvalidNewPasswordException inpe )
             {
-                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidNewPassword"));
+                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidNewPassword"));
             }
             catch ( PasswordAlreadyUsedException paue )
             {
-                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.passwordAlreadyUsed"));
+                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.passwordAlreadyUsed"));
             }
             catch (SecurityException e)
             {
-                publishErrorMessage(actionRequest,e.getMessage());
+                SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
             }
         }
     }
@@ -661,7 +637,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
-                        publishErrorMessage(actionRequest,e.getMessage());
+                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove user from role: " + userName + ", "  + roleNames[ix] + e);                       
                     }                
@@ -686,7 +662,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
-                    publishErrorMessage(actionRequest,e.getMessage());
+                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to add user to role: " + userName + ", "  + roleName + e);                       
                 }
@@ -716,7 +692,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
-                        publishErrorMessage(actionRequest,e.getMessage());
+                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove user from group: " + userName + ", "  + groupNames[ix] + e);                       
                     }                
@@ -741,7 +717,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
-                    publishErrorMessage(actionRequest,e.getMessage());
+                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to add user to group: " + userName + ", "  + groupName + e);                       
                 }
@@ -850,7 +826,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (Exception e)
                 {
-                    publishErrorMessage(actionRequest,e.getMessage());
+                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to set rule for principal: " + userName + ", "  + locatorName + e);                       
                 }
@@ -888,7 +864,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (Exception e)
                     {
-                        publishErrorMessage(actionRequest,e.getMessage());
+                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove rule for principal: " + userName + ", "  + locatorNames[ix] + e);                       
                     }                
@@ -897,7 +873,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }        
     
-    private void addUser(ActionRequest actionRequest)
+    protected void addUser(ActionRequest actionRequest)
     {
         String userName = actionRequest.getParameter("jetspeed.user");
         String password = actionRequest.getParameter("jetspeed.password");            
@@ -926,7 +902,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             catch (Exception se)
             {
                 ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());                
-                publishErrorMessage(actionRequest, bundle.getString("user.exists"));
+                SecurityUtil.publishErrorMessage(actionRequest, bundle.getString("user.exists"));
             }
         }
     }

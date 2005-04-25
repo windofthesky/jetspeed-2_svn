@@ -14,12 +14,20 @@
 */
 package org.apache.jetspeed.portlets.security;
 
+import java.io.NotSerializableException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.gems.browser.BrowserPortlet;
+import org.apache.portals.messaging.PortletMessaging;
 
 
 /**
@@ -54,6 +62,35 @@ public abstract class SecurityUtil extends BrowserPortlet
         if (s.trim().equals("")) return true;
         
         return false;
+    }
+
+    public static String getAbsoluteUrl(RenderRequest renderRequest, String relativePath)
+    {
+        RequestContext requestContext = (RequestContext) renderRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        HttpServletRequest request = requestContext.getRequest();
+        StringBuffer path = new StringBuffer();
+        return path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
+                request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
+                relativePath).toString();
+    }
+    
+    public static void publishErrorMessage(PortletRequest request, String message)
+    {
+        try
+        {
+            ArrayList errors = (ArrayList)PortletMessaging.receive(request,SecurityResources.ERROR_MESSAGES);
+            if ( errors == null )
+            {
+                errors = new ArrayList();
+            }
+            errors.add(message);
+            PortletMessaging.publish(request, SecurityResources.ERROR_MESSAGES, errors);
+        }
+        catch (NotSerializableException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }                
     }
     
 }

@@ -284,6 +284,38 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="UserMultiChooser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/users/user-multi-chooser.vm</value>
+     </init-param>   
+    <portlet-name>UserMultiChooser</portlet-name>
+    <display-name>Choose Multiple Users</display-name>
+    <description>Multiple User Chooser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>            
+    <portlet-info>
+      <title>Users Select</title>
+      <short-title>Users</short-title>
+      <keywords>admin,security,users</keywords>
+    </portlet-info>
+</portlet>
+
 <portlet id="RoleChooser">
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>

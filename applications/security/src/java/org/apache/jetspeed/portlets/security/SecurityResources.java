@@ -45,7 +45,9 @@ public interface SecurityResources
     // Message Topics
     public final static String TOPIC_USERS = "users";
     public final static String TOPIC_GROUPS = "groups";
+    public final static String TOPIC_GROUPS_USERS = "groups.users";
     public final static String TOPIC_ROLES = "roles";
+    public final static String TOPIC_ROLES_USERS = "roles.users";    
     public final static String TOPIC_PROFILES = "profiles";
 
     /** Messages **/
@@ -64,4 +66,7 @@ public interface SecurityResources
     /** the selected leaf node in the tree view */
     public final static String REQUEST_SELECT_NODE = "select_node";
        
+    /** The Error Messages KEY */
+    public static final String ERROR_MESSAGES = "errorMessages";
+    
 }
