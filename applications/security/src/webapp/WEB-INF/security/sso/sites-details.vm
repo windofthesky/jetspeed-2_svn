@@ -27,7 +27,7 @@ limitations under the License.
 <script>
 function openWindow(pipeline)
 {	
-    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,top=100,left=200,width=100,height=250,scrollbars=yes');
+    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,width=200,height=250,scrollbars=yes');
     vWinUsers.opener = self;
 	vWinUsers.focus();
 }

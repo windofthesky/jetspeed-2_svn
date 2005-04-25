@@ -15,6 +15,7 @@ limitations under the License.
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.portals.bridges.beans.TabBean" %>
 <%@ page import="org.apache.jetspeed.portlets.security.users.UserDetailsPortlet" %>
+<%@ page import="org.apache.jetspeed.portlets.security.SecurityResources" %>
 <%@ page import="org.apache.jetspeed.portlets.security.users.JetspeedUserBean" %>
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
@@ -25,7 +26,7 @@ limitations under the License.
 
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.SecurityResources" />
 
-<c:set var="errorMessagesKey"><%=UserDetailsPortlet.ERROR_MESSAGES%></c:set>
+<c:set var="errorMessagesKey"><%=SecurityResources.ERROR_MESSAGES%></c:set>
 <c:set var="errorMessages" value="${requestScope[errorMessagesKey]}"/>
 
 <portlet:defineObjects/>

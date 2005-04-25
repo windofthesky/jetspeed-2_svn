@@ -21,13 +21,10 @@ limitations under the License.
 
 *#
 
-## set ($pipeline = $renderResponse.createRenderURL())
-## set ($pipeline = "$pipeline?pipeline=portlet-pipeline&entity=$chooser.Id")
-
 <script>
 function openWindow(pipeline)
 {	
-    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,top=100,left=200,width=100,height=250,scrollbars=yes');
+    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,width=200,height=300,scrollbars=yes');
     vWinUsers.opener = self;
 	vWinUsers.focus();
 }
@@ -38,21 +35,85 @@ function openWindow(pipeline)
 #if ($statusMsg)
 #parse ('/WEB-INF/view/status-include.vm')
 #end
+#if ($group)
+#set ($newGroup = "false")
+#else
+#set ($newGroup = "true")
+#end
 
 <form name='groupForm' action="$renderResponse.createActionURL()" method="post">
 <table>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Group Name:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="group.name" size="40" value="$!currentGroup" class="portlet-form-field-label">
+      <input type="text" name='group' size="40" value="$!group" 
+       class="portlet-form-field-label"
+      #if ($newGroup == "false") readonly #end
+      >
     </td>
   </tr>
 </table>
-<input name='groupDelete' type='hidden' value=''/>
-<input name='group.save' type="submit" value="$MESSAGES.getString('security.save')" class="portlet-form-button"/>
-<input name='group.refresh' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.refresh')" />
-<input name='group.new' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.new')" />
 
+#if ($newGroup == "true")
+<input type="submit" name="group.action" value="Save" class="portlet-form-button"/>
+#end
 </form>	      
 
+#if ($newGroup == "false")
+<form name='securityform' action="$renderResponse.createActionURL()" method="post">
+<table cellpadding=0 cellspacing=1 border=0 width='100%' >
+#if ($tableSize > 0)
+  <tr>
+    #foreach ($column in $title)      
+      <th align='center' class="portlet-section-header" nowrap width="260">
+        $column
+      </th>
+     <th class="portlet-section-header" width="10"></th>
+     <th width="100%"/>
+    #end
+  </tr>
+#end  
+  #foreach ( $user in $table )
+  <tr>
+    #if ($velocityCount % 2 == 0)
+       #set($rowstyle = "portlet-section-body")
+    #else
+       #set($rowstyle = "portlet-section-alternate")
+    #end  
+	  <td class="$rowstyle" nowrap width="260">
+	    <div align="center">$user</div>
+	  </td>
+	  <td class="$rowstyle" width="10">
+  	    <input type="checkbox" name="box_$user"/>
+	  </td>
+     <td width="100%"/>	  
+   </tr>
+  #end
+</table>
+
+<table>
+<tr>
+  <td>
+   <input type="submit" name="group.action" value="Add New Group" class="portlet-form-button"  />
+  </td>
+  <td>
+   <input onclick="javascript:openWindow('$userChooser')" type="submit" name="group.action" value="Add Users to Group..." class="portlet-form-button"  />
+  </td>  
+#if ($tableSize > 0)  
+  <td>
+   <input type="submit" name="group.action" value="Remove Checked Users" class="portlet-form-button" />
+  </td>    
+#end
+  <td>
+   <input type="submit" name="group.action" value="Remove Group" class="portlet-form-button" />
+  </td>  
+</tr>
+</table>
+<input type='hidden' name='users'/>
+<input type='hidden' name='group' value='$group'/>
+
+</form>
+
+
+#end
 
