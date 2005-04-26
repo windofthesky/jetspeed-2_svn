@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -56,7 +56,7 @@ public class UserData
                 (UserManager)services.getService("UserManager");
             
             Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
-            UserManager u2 = (UserManager)appMap.get(SecurityResources.CPS_USER_MANAGER_COMPONENT);                        
+            UserManager u2 = (UserManager)appMap.get(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);                        
             System.out.println("u2 == " + u2);
             System.out.println("um == " + userManager);
             if (userManager == null)

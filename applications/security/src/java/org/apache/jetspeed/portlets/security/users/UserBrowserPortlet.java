@@ -32,6 +32,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.security.Role;
@@ -90,18 +91,18 @@ public class UserBrowserPortlet extends GenericServletPortlet
     {
         super.init(config);
         userManager = (UserManager) getPortletContext()
-                .getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+                .getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
         roleManager = (RoleManager) getPortletContext()
-        			.getAttribute(SecurityResources.CPS_ROLE_MANAGER_COMPONENT);
+        			.getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
         if (null == roleManager)
         {
         		throw new PortletException("Failed to find the Role Manager on portlet initialization");
         }
-        profiler = (Profiler)getPortletContext().getAttribute(SecurityResources.CPS_PROFILER_COMPONENT);
+        profiler = (Profiler)getPortletContext().getAttribute(CommonPortletServices.CPS_PROFILER_COMPONENT);
         if (null == profiler)
         {
             throw new PortletException("Failed to find the Profiler on portlet initialization");

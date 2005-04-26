@@ -21,6 +21,7 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityApplicationResources;
 import org.apache.jetspeed.portlets.security.SecurityApplicationUtils;
 import org.apache.jetspeed.security.RoleManager;
@@ -41,7 +42,7 @@ public class RoleMgtPortlet extends FacesPortlet
     {
         super.init(config);
 
-        RoleManager roleMgr = (RoleManager) getPortletContext().getAttribute(SecurityApplicationResources.CPS_ROLE_MANAGER_COMPONENT);
+        RoleManager roleMgr = (RoleManager) getPortletContext().getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
         if (null == roleMgr)
         {
             throw new PortletException("Failed to find the role manager on portlet initialization.");

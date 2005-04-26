@@ -32,6 +32,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.GroupManager;
@@ -60,12 +61,12 @@ public class GroupDetails extends BrowserPortlet
     throws PortletException 
     {
         super.init(config);
-        userManager = (UserManager) getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+        userManager = (UserManager) getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-        groupManager = (GroupManager) getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        groupManager = (GroupManager) getPortletContext().getAttribute(CommonPortletServices.CPS_GROUP_MANAGER_COMPONENT);
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the Group Manager on portlet initialization");

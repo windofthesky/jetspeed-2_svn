@@ -28,12 +28,9 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -64,17 +61,17 @@ public class SSODetails extends BrowserPortlet
     throws PortletException 
     {
         super.init(config);
-        sso = (SSOProvider)getPortletContext().getAttribute(SecurityResources.CPS_SSO_COMPONENT);
+        sso = (SSOProvider)getPortletContext().getAttribute(CommonPortletServices.CPS_SSO_COMPONENT);
         if (null == sso)
         {
             throw new PortletException("Failed to find the SSO Provider on portlet initialization");
         }
-        userManager = (UserManager) getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+        userManager = (UserManager) getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-        groupManager = (GroupManager) getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        groupManager = (GroupManager) getPortletContext().getAttribute(CommonPortletServices.CPS_GROUP_MANAGER_COMPONENT);
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the Group Manager on portlet initialization");

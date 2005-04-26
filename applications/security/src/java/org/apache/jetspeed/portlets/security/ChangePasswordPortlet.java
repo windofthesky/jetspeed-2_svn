@@ -27,6 +27,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +66,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
     throws PortletException 
     {
         super.init(config);
-        manager = (UserManager) getPortletContext().getAttribute(SecurityApplicationResources.CPS_USER_MANAGER_COMPONENT);
+        manager = (UserManager) getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == manager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

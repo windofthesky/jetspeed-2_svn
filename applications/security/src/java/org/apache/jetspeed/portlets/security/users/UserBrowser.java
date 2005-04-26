@@ -29,6 +29,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.User;
@@ -60,7 +61,7 @@ public class UserBrowser extends BrowserPortlet
     {
         super.init(config);
         userManager = (UserManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+            getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

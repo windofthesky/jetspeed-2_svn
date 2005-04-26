@@ -32,6 +32,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.RoleManager;
@@ -60,12 +61,12 @@ public class RoleDetails extends BrowserPortlet
     throws PortletException 
     {
         super.init(config);
-        userManager = (UserManager) getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+        userManager = (UserManager) getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-        roleManager = (RoleManager) getPortletContext().getAttribute(SecurityResources.CPS_ROLE_MANAGER_COMPONENT);
+        roleManager = (RoleManager) getPortletContext().getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
         if (null == roleManager)
         {
             throw new PortletException("Failed to find the Role Manager on portlet initialization");
@@ -153,8 +154,6 @@ public class RoleDetails extends BrowserPortlet
             String roleAction = request.getParameter("role.action");
             String users = request.getParameter("users");
             
-            System.out.println("role.action = " + roleAction);
-            System.out.println("users = " + users);
             if (users != null && users.length() > 0)
             {
                 addUsersToRole(request, users);

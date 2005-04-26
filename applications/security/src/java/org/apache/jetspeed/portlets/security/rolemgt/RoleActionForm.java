@@ -25,7 +25,7 @@ import javax.faces.el.VariableResolver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.portlets.security.SecurityApplicationResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityApplicationUtils;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
@@ -146,7 +146,7 @@ public class RoleActionForm implements Serializable
     {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         Map appMap = (Map) externalContext.getApplicationMap();
-        RoleManager roleMgr = (RoleManager) appMap.get(SecurityApplicationResources.CPS_ROLE_MANAGER_COMPONENT);  
+        RoleManager roleMgr = (RoleManager) appMap.get(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);  
         try
         {
             String roleToAddPath = getRoleName();

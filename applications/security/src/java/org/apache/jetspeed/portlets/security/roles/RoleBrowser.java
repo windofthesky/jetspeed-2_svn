@@ -29,6 +29,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
@@ -55,7 +56,7 @@ public class RoleBrowser extends BrowserPortlet
     {
         super.init(config);
         roleManager = (RoleManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_ROLE_MANAGER_COMPONENT);
+            getPortletContext().getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
         if (null == roleManager)
         {
             throw new PortletException("Failed to find the Role Manager on portlet initialization");

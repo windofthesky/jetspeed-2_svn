@@ -23,13 +23,7 @@ package org.apache.jetspeed.portlets.security;
  * @author <a href="dlestrat@apache.org">David Le Strat</a>
  */
 public class SecurityApplicationResources
-{
-    /** The role manager component. */
-    public final static String CPS_ROLE_MANAGER_COMPONENT = "cps:RoleManager";
-    
-    /** The user manager component. */
-    public static final String CPS_USER_MANAGER_COMPONENT = "cps:UserManager";
-    
+{    
     /** Role tree table binding variable. */
     public static final String ROLE_TREE_TABLE = "roleTreeTable";
 

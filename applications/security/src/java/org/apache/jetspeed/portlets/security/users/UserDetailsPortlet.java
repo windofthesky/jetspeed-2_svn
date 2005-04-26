@@ -38,6 +38,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -129,27 +130,27 @@ public class UserDetailsPortlet extends GenericServletPortlet
     throws PortletException 
     {
         super.init(config);
-        userManager = (UserManager)getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+        userManager = (UserManager)getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-        roleManager = (RoleManager)getPortletContext().getAttribute(SecurityResources.CPS_ROLE_MANAGER_COMPONENT);
+        roleManager = (RoleManager)getPortletContext().getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
         if (null == roleManager)
         {
             throw new PortletException("Failed to find the Role Manager on portlet initialization");
         }
-        groupManager = (GroupManager)getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        groupManager = (GroupManager)getPortletContext().getAttribute(CommonPortletServices.CPS_GROUP_MANAGER_COMPONENT);
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the Group Manager on portlet initialization");
         }
-        profiler = (Profiler)getPortletContext().getAttribute(SecurityResources.CPS_PROFILER_COMPONENT);
+        profiler = (Profiler)getPortletContext().getAttribute(CommonPortletServices.CPS_PROFILER_COMPONENT);
         if (null == profiler)
         {
             throw new PortletException("Failed to find the Profiler on portlet initialization");
         }        
-        registry = (PortletRegistry)getPortletContext().getAttribute(SecurityResources.CPS_REGISTRY_COMPONENT);
+        registry = (PortletRegistry)getPortletContext().getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");

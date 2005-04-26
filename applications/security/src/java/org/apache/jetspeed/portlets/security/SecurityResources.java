@@ -23,16 +23,6 @@ package org.apache.jetspeed.portlets.security;
  */
 public interface SecurityResources
 {
-    public final static String CPS_SEARCH_COMPONENT = "cps:SearchComponent";
-    public final static String CPS_REGISTRY_COMPONENT = "cps:PortletRegistryComponent";
-    public final static String CPS_USER_MANAGER_COMPONENT = "cps:UserManager";
-    public final static String CPS_PAGE_MANAGER_COMPONENT = "cps:PageManager";
-    public final static String CPS_ROLE_MANAGER_COMPONENT = "cps:RoleManager";
-    public final static String CPS_GROUP_MANAGER_COMPONENT = "cps:GroupManager";
-    public final static String CPS_PROFILER_COMPONENT = "cps:Profiler";
-    public final static String CPS_SSO_COMPONENT = "cps:SSO";    
-    public final static String CPS_ENTITY_ACCESS_COMPONENT = "cps:EntityAccessor";
-
     public final static String CURRENT_USER = "current_user";
     public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";
     public final static String REQUEST_SELECT_USER = "select_user";    

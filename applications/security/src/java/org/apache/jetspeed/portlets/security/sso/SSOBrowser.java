@@ -28,6 +28,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
@@ -53,7 +54,7 @@ public class SSOBrowser extends BrowserPortlet
     throws PortletException 
     {
         super.init(config);
-        sso = (SSOProvider)getPortletContext().getAttribute(SecurityResources.CPS_SSO_COMPONENT);
+        sso = (SSOProvider)getPortletContext().getAttribute(CommonPortletServices.CPS_SSO_COMPONENT);
         if (null == sso)
         {
             throw new PortletException("Failed to find the SSO Provider on portlet initialization");

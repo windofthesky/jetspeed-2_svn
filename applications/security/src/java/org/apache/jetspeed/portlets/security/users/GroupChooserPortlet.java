@@ -24,7 +24,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 
-import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.portals.gems.browser.BrowserIterator;
@@ -46,7 +46,7 @@ public class GroupChooserPortlet extends BrowserPortlet
     {
         super.init(config);
         groupManager = (GroupManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+            getPortletContext().getAttribute(CommonPortletServices.CPS_GROUP_MANAGER_COMPONENT);
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

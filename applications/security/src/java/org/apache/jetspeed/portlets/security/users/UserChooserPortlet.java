@@ -24,8 +24,8 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
-import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -47,7 +47,7 @@ public class UserChooserPortlet extends SecurityUtil
     {
         super.init(config);
         userManager = (UserManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+            getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

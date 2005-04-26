@@ -29,6 +29,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
@@ -55,7 +56,7 @@ public class GroupBrowser extends BrowserPortlet
     {
         super.init(config);
         groupManager = (GroupManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+            getPortletContext().getAttribute(CommonPortletServices.CPS_GROUP_MANAGER_COMPONENT);
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the Group Manager on portlet initialization");
