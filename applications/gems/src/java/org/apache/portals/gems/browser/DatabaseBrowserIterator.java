@@ -353,5 +353,10 @@ public class DatabaseBrowserIterator implements BrowserIterator
         }
         return order;
     }
+    
+    public boolean getAscendingOrder()
+    {
+        return ascendingOrder;
+    }
 
 }
