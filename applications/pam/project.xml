@@ -52,6 +52,16 @@ limitations under the License.
         </dependency>
       
         &pluto-deps;
+
+    <dependency>
+        <groupId>portals-gems</groupId>
+        <artifactId>portals-gems</artifactId>
+        <version>&jetspeed-version;</version>
+        <type>jar</type>
+        <properties>
+            <war.bundle>true</war.bundle>
+        </properties>
+    </dependency>
       
         <dependency>
             <groupId>portlet-api</groupId>
