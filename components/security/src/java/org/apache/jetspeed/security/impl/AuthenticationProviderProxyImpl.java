@@ -160,7 +160,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
         if ( provider != null )
         {
-            provider.getUserSecurityHandler().updateUserPrincipal(userPrincipal);
+            provider.getUserSecurityHandler().addUserPrincipal(userPrincipal);
         }
         else
         {
@@ -176,7 +176,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         String providerName = getAuthenticationProvider(userPrincipal.getName());
         if ( providerName == null )
         {
-            updateUserPrincipal(userPrincipal, defaultAuthenticationProvider);
+            addUserPrincipal(userPrincipal, defaultAuthenticationProvider);
         }
         else
         {

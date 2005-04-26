@@ -165,4 +165,11 @@ public interface GroupManager
      */
    Iterator getGroups(String filter) throws SecurityException;
     
+   /**
+    * Enable or disable a group.
+    * @param groupFullPathName The group name full path 
+     *            theGroupName.theGroupChildName).
+    * @param enabled enabled flag for the group
+    */
+   void setGroupEnabled(String groupFullPathName, boolean enabled) throws SecurityException;
 }

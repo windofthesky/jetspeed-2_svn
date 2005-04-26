@@ -386,4 +386,25 @@ public class GroupManagerImpl implements GroupManager
         return groups.iterator();
     }
     
+    /**
+     * @see org.apache.jetspeed.security.GroupManager#setGroupEnabled(java.lang.String, boolean)
+     */
+    public void setGroupEnabled(String groupFullPathName, boolean enabled) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "setGroupEnabled(java.lang.String,boolean)");
+
+        String fullPath = GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName);
+
+        GroupPrincipalImpl groupPrincipal = (GroupPrincipalImpl)groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        if (null == groupPrincipal)
+        {
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
+        }
+        if ( enabled != groupPrincipal.isEnabled() )
+        {
+            groupPrincipal.setEnabled(enabled);
+            groupSecurityHandler.setGroupPrincipal(groupPrincipal);
+        }
+    }
 }

@@ -92,8 +92,14 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         String fullPath = userPrincipal.getFullPath();
-        InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
-        securityAccess.setInternalUserPrincipal(internalUser, false);        
+        if ( null == securityAccess.getInternalUserPrincipal(fullPath, false) )
+        {
+            securityAccess.setInternalUserPrincipal(new InternalUserPrincipalImpl(fullPath), false);        
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(userPrincipal.getName()));
+        }
     }
     
     /**
@@ -102,8 +108,16 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         String fullPath = userPrincipal.getFullPath();
-        InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
-        securityAccess.setInternalUserPrincipal(internalUser, false);        
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(fullPath, false);
+        if ( null != internalUser && internalUser.isEnabled() != userPrincipal.isEnabled() )
+        {
+            internalUser.setEnabled(userPrincipal.isEnabled());
+            securityAccess.setInternalUserPrincipal(internalUser, false);        
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userPrincipal.getName()));
+        }
     }
     
     /**

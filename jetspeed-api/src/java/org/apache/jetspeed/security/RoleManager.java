@@ -158,4 +158,12 @@ public interface RoleManager
      * @return all roles available as {@link Principal} 
      */
     Iterator getRoles(String filter) throws SecurityException;
+    
+    /**
+     * Enable or disable a role.
+     * @param roleFullPathName The role name full path 
+     *                         (e.g. theRoleName.theRoleChildName).
+     * @param enabled enabled flag for the role
+     */
+    void setRoleEnabled(String roleFullPathName, boolean enabled) throws SecurityException;
 }

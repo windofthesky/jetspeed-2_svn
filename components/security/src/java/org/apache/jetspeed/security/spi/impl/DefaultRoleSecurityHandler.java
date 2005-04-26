@@ -72,9 +72,25 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
             throws SecurityException
     {
         String fullPath = rolePrincipal.getFullPath();
-        InternalRolePrincipal internalRole = new InternalRolePrincipalImpl(
-                fullPath);
-        commonQueries.setInternalRolePrincipal(internalRole, false);
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(fullPath);
+        if ( null == internalRole )
+        {
+            internalRole = new InternalRolePrincipalImpl(fullPath);
+            internalRole.setEnabled(rolePrincipal.isEnabled());
+            commonQueries.setInternalRolePrincipal(internalRole, false);
+        }
+        else if ( !internalRole.isMappingOnly() )
+        {
+            if ( internalRole.isEnabled() != rolePrincipal.isEnabled() )
+            {
+                internalRole.setEnabled(rolePrincipal.isEnabled());
+                commonQueries.setInternalRolePrincipal(internalRole, false);
+            }
+        }
+        else
+        {
+            // TODO: should we throw an exception here?
+        }
     }
 
     /**
@@ -112,4 +128,5 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
         }
         return rolePrincipals;
     }
+        
 }

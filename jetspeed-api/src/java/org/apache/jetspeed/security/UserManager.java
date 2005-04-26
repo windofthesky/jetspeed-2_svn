@@ -156,7 +156,7 @@ public interface UserManager
      * Set the update required state of the user password credential.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param updateRequired The update required state.
      * @throws Throws a security exception.
      */
@@ -167,9 +167,16 @@ public interface UserManager
      * Set the enabled state of the user password credential.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param enabled The enabled state.
      * @throws Throws a security exception.
      */
     void setPasswordEnabled(String userName, boolean enabled) throws SecurityException;
+
+    /**
+     * Enable or disable a user.
+     * @param userName The user name
+     * @param enabled enabled flag for the user
+     */
+    void setUserEnabled(String userName, boolean enabled) throws SecurityException;
 }

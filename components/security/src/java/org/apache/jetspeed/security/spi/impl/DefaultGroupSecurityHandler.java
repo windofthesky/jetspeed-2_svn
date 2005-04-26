@@ -72,9 +72,25 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
             throws SecurityException
     {
         String fullPath = groupPrincipal.getFullPath();
-        InternalGroupPrincipal internalGroup = new InternalGroupPrincipalImpl(
-                fullPath);
-        commonQueries.setInternalGroupPrincipal(internalGroup, false);
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(fullPath);
+        if ( null == internalGroup )
+        {
+            internalGroup = new InternalGroupPrincipalImpl(fullPath);
+            internalGroup.setEnabled(groupPrincipal.isEnabled());
+            commonQueries.setInternalGroupPrincipal(internalGroup, false);
+        }
+        else if ( !internalGroup.isMappingOnly() )
+        {
+            if ( internalGroup.isEnabled() != groupPrincipal.isEnabled() )
+            {
+                internalGroup.setEnabled(groupPrincipal.isEnabled());
+                commonQueries.setInternalGroupPrincipal(internalGroup, false);
+            }
+        }
+        else
+        {
+            // TODO: should we throw an exception here?
+        }
     }
 
     /**

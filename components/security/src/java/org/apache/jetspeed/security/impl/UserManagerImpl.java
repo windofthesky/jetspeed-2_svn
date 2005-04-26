@@ -29,7 +29,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.security.SecurityException;
@@ -465,5 +464,33 @@ public class UserManagerImpl implements UserManager
         if (getAnonymousUser().equals(userName)) { throw new SecurityException(
                 SecurityException.ANONYMOUS_USER_PROTECTED.create(userName)); }
         atnProviderProxy.setPasswordUpdateRequired(userName, updateRequired);
+    }
+    
+    
+    /**
+     * @see org.apache.jetspeed.security.UserManager#setUserEnabled(java.lang.String, boolean)
+     */
+    public void setUserEnabled(String userName, boolean enabled) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { userName, }, new String[] { "userName" },
+                "setUserEnabled(java.lang.String, boolean)");
+
+        if (getAnonymousUser().equals(userName))
+        {
+            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED.create(userName));
+        }
+
+        String fullPath = (new UserPrincipalImpl(userName)).getFullPath();
+
+        UserPrincipalImpl userPrincipal = (UserPrincipalImpl)atnProviderProxy.getUserPrincipal(userName);
+        if (null == userPrincipal) 
+        { 
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
+        }
+        if ( enabled != userPrincipal.isEnabled() )
+        {
+            userPrincipal.setEnabled(enabled);
+            atnProviderProxy.updateUserPrincipal(userPrincipal);
+        }
     }
 }

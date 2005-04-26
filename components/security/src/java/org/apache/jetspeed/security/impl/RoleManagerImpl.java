@@ -406,4 +406,25 @@ public class RoleManagerImpl implements RoleManager
         return roles.iterator();
     }
 
+    /** 
+     * @see org.apache.jetspeed.security.RoleManager#setRoleEnabled(java.lang.String, boolean)
+     */
+    public void setRoleEnabled(String roleFullPathName, boolean enabled) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+        "setRoleEnabled(java.lang.String,boolean)");
+
+        String fullPath = RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName);
+
+        RolePrincipalImpl rolePrincipal = (RolePrincipalImpl)roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null == rolePrincipal)
+        {
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+        }
+        if ( enabled != rolePrincipal.isEnabled() )
+        {
+            rolePrincipal.setEnabled(enabled);
+            roleSecurityHandler.setRolePrincipal(rolePrincipal);
+        }
+    }
 }
