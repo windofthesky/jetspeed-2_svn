@@ -34,6 +34,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.FailedToStorePortletDefinitionException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
@@ -82,7 +83,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
     {
         super.init(config);
         context = getPortletContext();
-        registry = (PortletRegistry)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");

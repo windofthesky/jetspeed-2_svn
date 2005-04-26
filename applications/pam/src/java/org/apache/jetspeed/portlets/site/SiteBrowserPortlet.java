@@ -27,6 +27,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -59,7 +60,7 @@ public class SiteBrowserPortlet extends GenericServletPortlet
     {
         super.init(config);
         context = getPortletContext();
-        pageManager = (PageManager) context.getAttribute(PortletApplicationResources.CPS_PAGE_MANAGER_COMPONENT);
+        pageManager = (PageManager) context.getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
         if (null == pageManager) { throw new PortletException(
                 "Failed to find the Page Manager on portlet initialization"); }
     }

@@ -23,7 +23,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -42,7 +42,7 @@ public class UserManagerPortlet extends FacesPortlet {
 	public void init(PortletConfig config) throws PortletException {
 		super.init(config);
 		userManager = (UserManager) getPortletContext().getAttribute(
-				PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
+                CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
 		if (null == userManager) {
 			throw new PortletException(
 					"Failed to find the User Manager on portlet initialization");

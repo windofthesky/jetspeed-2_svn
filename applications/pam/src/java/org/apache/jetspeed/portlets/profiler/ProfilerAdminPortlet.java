@@ -18,7 +18,7 @@ package org.apache.jetspeed.portlets.profiler;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
-import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.portals.bridges.jsf.FacesPortlet;
 
@@ -38,7 +38,7 @@ public class ProfilerAdminPortlet extends FacesPortlet
     {
         super.init(config);
         profiler = (Profiler) getPortletContext().getAttribute(
-                PortletApplicationResources.CPS_PROFILER_COMPONENT);
+                CommonPortletServices.CPS_PROFILER_COMPONENT);
         if (null == profiler)
         {
             throw new PortletException("Failed to find the Profiler on portlet initialization");

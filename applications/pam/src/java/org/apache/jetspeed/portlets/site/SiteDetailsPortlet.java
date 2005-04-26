@@ -27,6 +27,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
@@ -49,7 +50,7 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
     {
         super.init(config);        
         PortletContext context = getPortletContext();
-        pageManager = (PageManager) context.getAttribute(PortletApplicationResources.CPS_PAGE_MANAGER_COMPONENT);
+        pageManager = (PageManager) context.getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
         if (null == pageManager) { throw new PortletException(
                 "Failed to find the Page Manager on portlet initialization"); }
 

@@ -23,7 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
-import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
@@ -96,7 +96,7 @@ public class ProfileCriterionForm implements Serializable
     public void listen(ActionEvent event)
     {        
         Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
-        profiler = (Profiler)appMap.get(PortletApplicationResources.CPS_PROFILER_COMPONENT);
+        profiler = (Profiler)appMap.get(CommonPortletServices.CPS_PROFILER_COMPONENT);
         Map params = (Map)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String selectedRule = (String)params.get("selectedRule");
         

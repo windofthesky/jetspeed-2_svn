@@ -22,7 +22,7 @@ package org.apache.jetspeed;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public final class PortalReservedParameters
+public interface PortalReservedParameters
 {
     public final static String PORTLET = "portlet";
     public final static String PORTLET_ENTITY = "entity";        

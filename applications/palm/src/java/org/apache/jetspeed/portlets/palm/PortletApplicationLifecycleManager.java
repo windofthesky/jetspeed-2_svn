@@ -29,6 +29,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.deployment.DeploymentManager;
@@ -59,10 +60,10 @@ public class PortletApplicationLifecycleManager extends GenericServletPortlet
     {
         super.init(config);
         PortletContext context = getPortletContext();                
-        registry = (PortletRegistry)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
-        portletFactory = (PortletFactory)context.getAttribute(PortletApplicationResources.CPS_PORTLET_FACTORY_COMPONENT);
-        dm = (DeploymentManager)context.getAttribute(PortletApplicationResources.CPS_DEPLOYMENT_MANAGER_COMPONENT);
-        asm = (ApplicationServerManager)context.getAttribute(PortletApplicationResources.CPS_APPLICATION_SERVER_MANAGER_COMPONENT);
+        registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
+        portletFactory = (PortletFactory)context.getAttribute(CommonPortletServices.CPS_PORTLET_FACTORY_COMPONENT);
+        dm = (DeploymentManager)context.getAttribute(CommonPortletServices.CPS_DEPLOYMENT_MANAGER_COMPONENT);
+        asm = (ApplicationServerManager)context.getAttribute(CommonPortletServices.CPS_APPLICATION_SERVER_MANAGER_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");

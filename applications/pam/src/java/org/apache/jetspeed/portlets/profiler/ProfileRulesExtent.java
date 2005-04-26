@@ -22,7 +22,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.profiler.Profiler;
 
 /**
@@ -37,7 +37,7 @@ public class ProfileRulesExtent // implements Serializable
     public Collection getExtent()
     {
         Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
-        Profiler profiler = (Profiler)appMap.get(PortletApplicationResources.CPS_PROFILER_COMPONENT);
+        Profiler profiler = (Profiler)appMap.get(CommonPortletServices.CPS_PROFILER_COMPONENT);
         return profiler.getRules(); // TODO: optimize with cache
     }
 }
