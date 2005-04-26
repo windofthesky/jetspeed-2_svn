@@ -55,6 +55,123 @@ limitations under the License.
 	<%@ include file="/WEB-INF/view/tabs.jsp"%>
 </div>
 
+<%--Beginning of User tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${currentTab.id == 'user'}">
+  <div id="user">	
+  <portlet:actionURL var="edit_user_link" />
+  
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
+	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_link}"/>" method="post">
+		<input type="hidden" name="portlet_action" value="security_user.edit_user"/>
+
+    <table>
+		
+		<c:if test="${not empty requestScope.paUserAttributes}">
+      <c:set var="canUpdate" value="true"/>
+			<tr>
+				<th class="portlet-section-header" colspan="2"><fmt:message key="user.attributes.header"/></th>
+			</tr>
+	  </c:if>
+    <c:forEach var="attr" items="${requestScope.paUserAttributes}">
+			<tr>
+				<td class="portlet-section-alternate">
+          <c:out value="${attr.description}"/>
+				</td>
+				<td class="portlet-section-body">
+				  <c:set var="attrName" value="${attr.name}"/>
+					<input type="text" name="<c:out value="attr_${attr.name}"/>" value="<c:out value="${user.attributes[attrName]}"/>" class="portlet-form-field-label"/>
+				</td>
+				<td colspan="2"></td>
+			</tr>
+    </c:forEach>
+
+    <c:if test='${renderRequest.preferences.map["showPasswordOnUserTab"][0]}'>
+      <c:if test="${canUpdate}">
+        <tr><td colspan="5">&nbsp;</td></tr>
+      </c:if>
+      <c:set var="canUpdate" value="true"/>
+			<tr>
+				<th class="portlet-section-header" colspan="5"><fmt:message key="user.password.header"/></th>
+			</tr>
+      <tr>
+        <td class="portlet-section-alternate" >
+          <fmt:message key="security.credential.value"/>
+        </td>
+        <td class="portlet-section-body" >
+          <input type="password" name="user_cred_value" value="" class="portlet-form-field-label"/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td class="portlet-section-body" >
+          <input type="hidden" name="user_cred_updreq" value="<c:out value="${credential.updateRequired}"/>"/>
+          <input type="checkbox" 
+                 <c:if test="${credential.updateRequired}">checked</c:if>
+                 onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
+           class="portlet-form-field-label" />
+        </td>
+        <td class="portlet-section-body" >
+          <fmt:message key="security.credential.update.required"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="portlet-section-alternate" >
+          <fmt:message key="security.credential.last.logon"/>
+        </td>
+        <td class="portlet-section-body" >
+          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="short" timeStyle="long"/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td class="portlet-section-body" >
+          <input type="hidden" name="user_cred_enabled" value="<c:out value="${credential.enabled}"/>"/>
+          <input type="checkbox" 
+                 <c:if test="${credential.enabled}">checked</c:if>
+                 onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
+           class="portlet-form-field-label" />
+        </td>
+        <td class="portlet-section-body" >
+          <fmt:message key="security.enabled"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="portlet-section-alternate" >
+          <fmt:message key="security.credential.expires"/>
+        </td>
+        <td class="portlet-section-body" >
+          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="short" timeStyle="long"/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td class="portlet-section-body" >
+          <input type="checkbox" disabled <c:if test="${credential.expired}">checked</c:if>/>
+        </td>
+        <td class="portlet-section-body" >
+          <fmt:message key="security.expired"/>
+        </td>
+      </tr>
+    </c:if>		
+    </table>
+    <c:if test="${canUpdate}">
+      <br/>
+      <input type="submit" value="<fmt:message key="security.update"/>" class="portlet-form-button" />
+    </c:if>
+  </form>
+    
+  </div>  
+</c:if>
+<%--End of User tab data--%>
+
 <%--Beginning of User Attributes tab data--%>
 <%--TODO:  switch to c:choose --%>
 <c:if test="${currentTab.id == 'user_attributes'}">
@@ -78,18 +195,18 @@ limitations under the License.
 				<th class="portlet-section-header" ><fmt:message key="security.name"/></th>
 				<th class="portlet-section-header" ><fmt:message key="security.value"/></th>
 			</tr>
-		<c:forEach var="userAttr" items="${user.attributes}">
+		<c:forEach var="entry" items="${user.attributes}">
 			<tr>
 			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
 			
 				<td class="portlet-section-body" >
-					<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
+					<input type="checkbox" name="user_attr_id" value="<c:out value="${entry.key}"/>"/>
 				</td>
 				<td class="portlet-section-body" >
-					<c:out value="${userAttr.name}"/>
+					<c:out value="${entry.key}"/>
 				</td>
 				<td class="portlet-section-body" >
-					<input type="text" name="<c:out value="${userAttr.name}"/>:value" value="<c:out value="${userAttr.value}"/>"/>
+					<input type="text" name="<c:out value="${entry.key}"/>:value" value="<c:out value="${entry.value}"/>"/>
 				</td>
 			</tr>
 		</c:forEach>
@@ -496,5 +613,3 @@ limitations under the License.
 </c:if>
 
 </c:if>
-
-

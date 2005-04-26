@@ -16,9 +16,9 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -36,7 +36,7 @@ import org.apache.jetspeed.security.UserPrincipal;
 public class JetspeedUserBean
 {
     private String principal;    
-    private List attributes = new ArrayList();
+    private Map attributes = new LinkedHashMap();
     
     public JetspeedUserBean(User user)
     {
@@ -48,7 +48,7 @@ public class JetspeedUserBean
             String[] keys = userAttributes.keys();
             for (int ix = 0; ix < keys.length; ix++)
             {
-                attributes.add(new StringAttribute(keys[ix], userAttributes.get(keys[ix], "n/a")));
+                attributes.put(keys[ix], userAttributes.get(keys[ix], null));
             }
         }
         catch (BackingStoreException e)
@@ -90,39 +90,8 @@ public class JetspeedUserBean
     /**
      * @return Returns the attributes.
      */
-    public List getAttributes()
+    public Map getAttributes()
     {
         return attributes;
-    }
-    
-    /**
-     * TODO: support all attributes types (int, double, date, etc..)
-     * @author David Sean Taylor
-     *
-     */
-    public class StringAttribute
-    {
-        private String name;
-        private String value;
-        
-        public StringAttribute(String name, String value)
-        {
-            this.name = name;
-            this.value = value;
-        }
-        /**
-         * @return Returns the name.
-         */
-        public String getName()
-        {
-            return name;
-        }
-        /**
-         * @return Returns the value.
-         */
-        public String getValue()
-        {
-            return value;
-        }
     }
 }

@@ -124,10 +124,15 @@ limitations under the License.
 
 <portlet id="UserDetailsPortlet">
     <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/security/users/user-details.jsp</value>
-     </init-param>   
+      <description>This parameter sets the template used in view mode.</description>
+	  <name>ViewPage</name>
+	  <value>/WEB-INF/security/users/user-details.jsp</value>
+    </init-param>   
+    <init-param>
+      <description>This parameter sets the template used in edit mode.</description>
+      <name>EditPage</name>
+      <value>/WEB-INF/security/users/user-details-edit.jsp</value>
+    </init-param>   
     <portlet-name>UserDetailsPortlet</portlet-name>
     <display-name>User Information</display-name>
     <description>The User Details portlet displays a users details in a tabbed view. From here you can add, edit, and user information.</description>
@@ -137,10 +142,56 @@ limitations under the License.
       <mime-type>text/html</mime-type>
       <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
+<!--       <portlet-mode>HELP</portlet-mode> -->
     </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>
+        <name>showUserTab</name>
+        <value>false</value>
+      </preference>
+      <preference>
+        <name>showAttributesTab</name>
+        <value>true</value>
+      </preference>
+      <preference>
+        <name>showPasswordTab</name>
+        <value>true</value>
+      </preference>
+      <preference>
+        <name>showRoleTab</name>
+        <value>true</value>
+      </preference>
+      <preference>
+        <name>showGroupTab</name>
+        <value>true</value>
+      </preference>
+      <preference>
+        <name>showProfileTab</name>
+        <value>true</value>
+      </preference>
+      <preference>
+        <name>showPasswordOnUserTab</name>
+        <value>false</value>
+      </preference>
+      <preference>
+        <name>showRoleForAddUser</name>
+        <value>true</value>
+      </preference>      
+      <preference>
+        <name>showProfileForAddUser</name>
+        <value>true</value>
+      </preference>      
+      <preference>
+        <name>defaultRole</name>
+        <value>user</value>
+      </preference>
+      <preference>
+        <name>defaultProfile</name>
+        <value>role-fallback</value>
+      </preference>
+    </portlet-preferences>
     <portlet-info>
       <title>User Detail Information</title>
       <short-title>User</short-title>

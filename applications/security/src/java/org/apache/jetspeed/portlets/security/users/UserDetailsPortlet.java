@@ -31,14 +31,20 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.om.common.UserAttribute;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
-import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.security.Group;
@@ -55,6 +61,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.bridges.beans.TabBean;
 import org.apache.portals.bridges.common.GenericServletPortlet;
+import org.apache.portals.bridges.util.PreferencesHelper;
 import org.apache.portals.messaging.PortletMessaging;
 
 /**
@@ -74,8 +81,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String VIEW_CREDENTIAL = "credential"; 
     private final String VIEW_ALL_RULES = "prules";
     private final String VIEW_SELECTED_RULE = "selectedRule";
+    private final String VIEW_PA_USER_ATTRIBUTES = "paUserAttributes";
     
     private final String USER_ACTION_PREFIX = "security_user.";
+    private final String ACTION_EDIT_USER = "edit_user";
     private final String ACTION_UPDATE_ATTRIBUTE = "update_user_attribute";
     private final String ACTION_REMOVE_ATTRIBUTE = "remove_user_attribute";
     private final String ACTION_ADD_ATTRIBUTE = "add_user_attribute";
@@ -87,6 +96,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String ACTION_ADD_RULE = "add_rule";
     private final String ACTION_UPDATE_CREDENTIAL = "update_user_credential";
     
+    private final String TAB_USER = "user";
     private final String TAB_ATTRIBUTES = "user_attributes";
     private final String TAB_ROLE = "user_role";
     private final String TAB_GROUP = "user_group";
@@ -103,13 +113,17 @@ public class UserDetailsPortlet extends GenericServletPortlet
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
     
-    private UserManager  userManager;
-    private RoleManager  roleManager;
+    private UserManager userManager;
+    private RoleManager roleManager;
     private GroupManager groupManager;
-    private Profiler     profiler;
-
-    private LinkedHashMap userTabMap = new LinkedHashMap();
-    private LinkedHashMap anonymousUserTabMap = new LinkedHashMap();
+    private Profiler profiler;
+    private PortletRegistry registry;
+    private String paIdentifier;
+    private Collection paUserAttributes;
+    private boolean initPrefsAndAttr;
+    
+    private LinkedHashMap userTabMap;
+    private LinkedHashMap anonymousUserTabMap;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -134,30 +148,25 @@ public class UserDetailsPortlet extends GenericServletPortlet
         if (null == profiler)
         {
             throw new PortletException("Failed to find the Profiler on portlet initialization");
+        }        
+        registry = (PortletRegistry)getPortletContext().getAttribute(SecurityResources.CPS_REGISTRY_COMPONENT);
+        if (null == registry)
+        {
+            throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
         }
-        
-        TabBean tb1 = new TabBean(TAB_ATTRIBUTES);
-        TabBean tb2 = new TabBean(TAB_ROLE);
-        TabBean tb3 = new TabBean(TAB_GROUP);
-        TabBean tb4 = new TabBean(TAB_PROFILE);
-        TabBean tb5 = new TabBean(TAB_CREDENTIAL);
-        
-        userTabMap.put(tb1.getId(), tb1);
-        userTabMap.put(tb5.getId(), tb5);
-        userTabMap.put(tb2.getId(), tb2);
-        userTabMap.put(tb3.getId(), tb3); 
-        userTabMap.put(tb4.getId(), tb4);
-        
-        anonymousUserTabMap.put(tb1.getId(), tb1);
-        anonymousUserTabMap.put(tb2.getId(), tb2);
-        anonymousUserTabMap.put(tb3.getId(), tb3);
-        anonymousUserTabMap.put(tb4.getId(), tb4);
+        paIdentifier = ((MutablePortletApplication)((JetspeedPortletContext)config.getPortletContext())
+                .getApplication()).getApplicationIdentifier();
     }
     
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
         response.setContentType("text/html");
+
+        if ( !initPrefsAndAttr )
+        {
+            initPrefsAndAttr(request);
+        }
         
         String userName = (String)PortletMessaging.receive(request, 
                                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
@@ -196,7 +205,16 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             JetspeedUserBean bean = new JetspeedUserBean(user);
             request.setAttribute(VIEW_USER, bean);
-            if (selectedTab.getId().equals(TAB_ROLE))
+            
+            if (selectedTab.getId().equals(TAB_USER))
+            {
+                request.setAttribute(VIEW_PA_USER_ATTRIBUTES, paUserAttributes);
+                if ( "true".equals(request.getPreferences().getValue("showPasswordOnUserTab", "false")))
+                {
+                    request.setAttribute(VIEW_CREDENTIAL, getCredential(userName));
+                }
+            }
+            else if (selectedTab.getId().equals(TAB_ROLE))
             {                
                 Collection userRoles = getRoles(userName);
                 request.setAttribute(VIEW_ROLES, userRoles );
@@ -314,6 +332,60 @@ public class UserDetailsPortlet extends GenericServletPortlet
         
         super.doView(request, response);
     }
+    
+    protected void initPrefsAndAttr(PortletRequest request)
+    {
+        initPrefsAndAttr = true;
+        if ( userTabMap == null )
+        {
+            userTabMap = new LinkedHashMap();
+            anonymousUserTabMap = new LinkedHashMap();
+        }
+        else
+        {
+            userTabMap.clear();
+            anonymousUserTabMap.clear();
+        }        
+        
+        TabBean tb;
+        PortletPreferences prefs = request.getPreferences();
+        
+        if ( "true".equals(prefs.getValue("showUserTab", "true")) )
+        {
+            tb = new TabBean(TAB_USER);
+            userTabMap.put(tb.getId(), tb);
+        }
+        if ( "true".equals(prefs.getValue("showAttributesTab", "true")) )
+        {
+            tb = new TabBean(TAB_ATTRIBUTES);
+            userTabMap.put(tb.getId(), tb);
+        }
+        if ( "true".equals(prefs.getValue("showPasswordTab", "true")) )
+        {
+            tb = new TabBean(TAB_CREDENTIAL);
+            userTabMap.put(tb.getId(), tb);
+        }
+        if ( "true".equals(prefs.getValue("showRoleTab", "true")) )
+        {
+            tb = new TabBean(TAB_ROLE);
+            userTabMap.put(tb.getId(), tb);
+            anonymousUserTabMap.put(tb.getId(), tb);
+        }
+        if ( "true".equals(prefs.getValue("showGroupTab", "true")) )
+        {
+            tb = new TabBean(TAB_GROUP);
+            userTabMap.put(tb.getId(), tb);
+            anonymousUserTabMap.put(tb.getId(), tb);
+        }
+        if ( "true".equals(prefs.getValue("showProfileTab", "true")) )
+        {
+            tb = new TabBean(TAB_PROFILE);
+            userTabMap.put(tb.getId(), tb);
+            anonymousUserTabMap.put(tb.getId(), tb);
+        }
+        // refresh PA UserAttributes (kinda hack but can't communicate between PAM and Security PA yet to signal a refresh is needed)
+        paUserAttributes = registry.getPortletApplicationByIdentifier(paIdentifier).getUserAttributes();
+    }
 
     protected void renderRoleInformation(RenderRequest request)
     throws PortletException
@@ -368,9 +440,28 @@ public class UserDetailsPortlet extends GenericServletPortlet
         request.setAttribute(RULES_CONTROL, rules);        
     }
     
+    public void doEdit(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
+    {
+        response.setContentType("text/html");
+        renderRoleInformation(request);
+        renderProfileInformation(request);            
+        super.doEdit(request, response);
+    }
+
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) 
         throws PortletException, IOException
     {   
+        if (actionRequest.getPortletMode() == PortletMode.EDIT)
+        {
+            PortletPreferences prefs = actionRequest.getPreferences();
+            PreferencesHelper.requestParamsToPreferences(actionRequest);
+            prefs.store();
+            actionResponse.setPortletMode(PortletMode.VIEW);
+            initPrefsAndAttr(actionRequest);
+            return;
+        }
+        
         String selectedTab = actionRequest.getParameter(SecurityResources.REQUEST_SELECT_TAB);
         if (selectedTab != null)
         {
@@ -397,7 +488,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
         else if (action != null && isUserPortletAction(action))
         {
             action = getAction(USER_ACTION_PREFIX, action);                
-            if (action.endsWith(ACTION_UPDATE_ATTRIBUTE))
+            if (action.endsWith(ACTION_EDIT_USER))
+            {
+                editUser(actionRequest, actionResponse);
+            }
+            else if (action.endsWith(ACTION_UPDATE_ATTRIBUTE))
             {
                 updateUserAttribute(actionRequest, actionResponse);
             }
@@ -538,6 +633,32 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }
     
+    private void editUser(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)PortletMessaging.receive(actionRequest, 
+                SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            Iterator attrIter = paUserAttributes.iterator();
+            UserAttribute attr;
+            String value;
+            while( attrIter.hasNext() )
+            {
+                attr = (UserAttribute)attrIter.next();
+                value = actionRequest.getParameter("attr_"+attr.getName());
+                if (value != null)
+                {
+                    user.getUserAttributes().put(attr.getName(), value);
+                }
+            }
+        }
+        if ( "true".equals(actionRequest.getPreferences().getValue("showPasswordOnUserTab", "false")))
+        {
+            updateUserCredential(actionRequest, actionResponse);
+        }
+    }
+    
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
@@ -588,29 +709,15 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
             if(userAttrNames != null)
             {
-                JetspeedUserBean bean = new JetspeedUserBean(user);
                 Preferences attributes = user.getUserAttributes();
-                Iterator userAttrIter = bean.getAttributes().iterator();
-                while (userAttrIter.hasNext())
+                for(int ix = 0; ix < userAttrNames.length; ix++)
                 {
-                    StringAttribute userAttr = (StringAttribute) userAttrIter.next();
-                    for(int ix = 0; ix < userAttrNames.length; ix++)
+                    try
                     {
-                        String userAttrName = userAttrNames[ix];
-                        if(userAttr.getName().equals(userAttrName))
-                        {
-                            deletes.add(userAttrName);
-                            break;
-                        }
+                        attributes.remove(userAttrNames[ix]);
                     }
+                    catch (Exception e) {}
                 }
-                Iterator it = deletes.iterator();            
-                while (it.hasNext())
-                {
-                    String attribute = (String)it.next();
-                    attributes.remove(attribute);
-                }
-                
             }            
         }
     }
@@ -883,6 +990,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {            
                 userManager.addUser(userName, password);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
                                 
                 User user = userManager.getUser(userName);
                 String role = actionRequest.getParameter(ROLES_CONTROL);
