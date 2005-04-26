@@ -14,6 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
+<script>
+function openWindow(pipeline)
+{	
+    var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');
+    vWinUsers.opener = self;
+	vWinUsers.focus();
+}
+</script>
+
 #set($table = $jetspeed.columns)
 #set($sizes = $jetspeed.columnSizes)
 
@@ -63,6 +72,12 @@ limitations under the License.
       <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
       <td/>
       #end
+	  #if($editing == true)    		  	  
+	   #set ($chooser = "/jetspeed/portal/Administrative/choosers/portlet-selector.psml")
+	      <td align="right" valign="middle" class="PContent" >
+	      	<a href="javascript:openWindow('$chooser')">Select</a>
+	      <td/>	  
+	  #end      
       </tr>
       </table>
     </td>
@@ -71,6 +86,11 @@ limitations under the License.
   </tr>
 </table>
 #end
+
+<form name='portletform' action="$renderResponse.createActionURL()" method="post">
+<input type='hidden' name='portlets'/>
+<input type='hidden' name='page' value='$myPage'/>
+</form>
 
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >

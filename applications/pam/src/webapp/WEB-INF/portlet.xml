@@ -218,5 +218,37 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="PortletSelector">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/selectors/portlet-selector.vm</value>
+     </init-param>   
+    <portlet-name>PortletSelector</portlet-name>
+    <display-name>Portlet Selector</display-name>
+    <description>Select one or more portlets from the customizer</description>
+    <portlet-class>org.apache.jetspeed.portlets.selector.PortletSelector</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.site.resources.SiteResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>15</value>    
+      </preference>                               		    
+    </portlet-preferences>            
+    <portlet-info>
+      <title>Portlet Selector</title>
+      <short-title>Portlets</short-title>
+      <keywords>portlet,selector,customizer,chooser,add</keywords>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 

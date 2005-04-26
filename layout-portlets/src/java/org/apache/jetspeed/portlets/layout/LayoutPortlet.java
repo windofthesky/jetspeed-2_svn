@@ -16,7 +16,10 @@
 package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
@@ -25,9 +28,14 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.pluto.om.window.PortletWindow;
@@ -38,9 +46,31 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
+    
+    protected PortletRegistry registry;
+    protected PageManager pageManager;
+    protected IdGenerator generator;
+    
     public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
+        
+        registry = (PortletRegistry)getPortletContext().getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
+        if (null == registry)
+        {
+            throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
+        }        
+        pageManager = (PageManager)getPortletContext().getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
+        if (null == pageManager)
+        {
+            throw new PortletException("Failed to find the Page Manager on portlet initialization");
+        }        
+        generator = (IdGenerator)getPortletContext().getAttribute(CommonPortletServices.CPS_ID_GENERATOR_COMPONENT);
+        if (null == generator)
+        {
+            throw new PortletException("Failed to find the ID Generator on portlet initialization");
+        }        
+        
     }
 
     public void doHelp( RenderRequest request, RenderResponse response ) throws PortletException, IOException
@@ -158,7 +188,60 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         request.removeAttribute("layout");
         request.removeAttribute("dispatcher");
     }
+    
+    public void processAction(ActionRequest request, ActionResponse response)
+    throws PortletException, IOException
+    {
+        String page = request.getParameter("page");
+        String portlets = request.getParameter("portlets");
+        if (portlets != null && portlets.length() > 0)
+        {
+            int count = 0;
+            StringTokenizer tokenizer = new StringTokenizer(portlets, ",");            
+            while (tokenizer.hasMoreTokens())
+            {
+                String portlet = tokenizer.nextToken();
+                try
+                {
+                    if (portlet.startsWith("box_"))
+                    {
+                        portlet = portlet.substring("box_".length());                        
+                        addPortletToPage(page, portlet);
+                        count++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.error("failed to add user to role: " + portlet);
+                }
+            }
+            
+        }       
+    }
 
+    protected void addPortletToPage(String pageId, String portletId)
+    {
+        try
+        {
+            Fragment fragment = pageManager.newFragment();
+            fragment.setType(Fragment.PORTLET);
+            fragment.setId(generator.getNextPeid());
+            fragment.setName(portletId);
+            
+            Page page = pageManager.getPage(pageId);
+            // WARNING: under construction
+            // this is prototype and very dependent on a single depth fragment structure            
+            Fragment root = page.getRootFragment();
+            root.getFragments().add(fragment);
+            pageManager.updatePage(page);            
+        }
+        catch (Exception e)
+        {
+            log.error("failed to add portlet " + portletId + " to page: " + pageId);
+        }
+        
+    }
+    
     /**
      * <p>
      * initJetspeedPowerTool
