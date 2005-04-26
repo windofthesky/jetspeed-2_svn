@@ -151,7 +151,7 @@ limitations under the License.
             <version>&portals-bridges-common-version;</version>
             <type>jar</type>
             <properties>
-                <war.bundle>true</war.bundle>
+                <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
