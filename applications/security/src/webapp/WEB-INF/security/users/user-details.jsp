@@ -32,6 +32,7 @@ limitations under the License.
 <portlet:defineObjects/>
 
 <c:set var="user" value="${requestScope.user}" />
+<c:set var="prefs" value="${renderRequest.preferences.map}"/>
 
 <%--Beginning of User check --%>
 <c:if test="${user != null}">
@@ -93,7 +94,7 @@ limitations under the License.
 			</tr>
     </c:forEach>
 
-    <c:if test='${renderRequest.preferences.map["showPasswordOnUserTab"][0]}'>
+    <c:if test='${prefs["showPasswordOnUserTab"][0]}'>
       <c:if test="${canUpdate}">
         <tr><td colspan="5">&nbsp;</td></tr>
       </c:if>
@@ -572,37 +573,54 @@ limitations under the License.
     </td>
   </tr>
   
-  <!-- Select Roles -->
-  <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
-    <td class="portlet-section-body" align="left">
- 		<select name="jetspeedRoles" class="portlet-form-field-label">		
-			<option value=""/> 		 		
-			<c:forEach var="roleName" items="${jetspeedRoles}">			    
-			    <option value="<c:out value='${roleName}'/>"
-  			    <c:if test="${roleName == 'user'}">selected="true"</c:if>>			    
-				  <c:out value="${roleName}"/>
-			    </option>
-			</c:forEach>
-		</select>      
-    </td>
-  </tr>
+  <c:set var="defaultRole" value='${prefs["defaultRole"][0]}'/>
+  <c:set var="defaultProfile" value='${prefs["defaultProfile"][0]}'/>
+  
+  <c:choose>
+    <c:when test='${prefs["showRoleForAddUser"][0]}'>
+      <!-- Select Roles -->
+      <tr colspan="2" align="right">
+        <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
+        <td class="portlet-section-body" align="left">
+     		<select name="jetspeedRoles" class="portlet-form-field-label">		
+    			<option value=""/> 		 		
+    			<c:forEach var="roleName" items="${jetspeedRoles}">			    
+    			    <option value="<c:out value='${roleName}'/>"
+      			    <c:if test="${roleName == defaultRole}">selected="true"</c:if>>			    
+    				  <c:out value="${roleName}"/>
+    			    </option>
+    			</c:forEach>
+    		</select>      
+        </td>
+      </tr>
+    </c:when>
+    <c:otherwise>
+      <input type="hidden" name="jetspeedRoles" value="<c:out value="${defaultRole}"/>">
+    </c:otherwise>
+  </c:choose>
 
-  <!-- Select Profiling Rules -->
-  <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
-    <td class="portlet-section-body" align="left">
- 		<select name="jetspeedRules" class="portlet-form-field-label">		
-			<option value=""/> 		
-			<c:forEach var="ruleName" items="${jetspeedRules}">
-			    <option value="<c:out value='${ruleName}'/>"
-  			    <c:if test="${ruleName == 'role-fallback'}">selected="true"</c:if>>
-				  <c:out value="${ruleName}"/>
-			    </option>
-			</c:forEach>
-		</select>      
-    </td>
-  </tr>
+  <c:choose>
+    <c:when test='${prefs["showProfileForAddUser"][0]}'>
+      <!-- Select Profiling Rules -->
+      <tr colspan="2" align="right">
+        <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
+        <td class="portlet-section-body" align="left">
+     		<select name="jetspeedRules" class="portlet-form-field-label">		
+    			<option value=""/> 		
+    			<c:forEach var="ruleName" items="${jetspeedRules}">
+    			    <option value="<c:out value='${ruleName}'/>"
+      			    <c:if test="${ruleName == defaultProfile}">selected="true"</c:if>>
+    				  <c:out value="${ruleName}"/>
+    			    </option>
+    			</c:forEach>
+    		</select>      
+        </td>
+      </tr>
+    </c:when>
+    <c:otherwise>
+      <input type="hidden" name="jetspeedRules" value="<c:out value="${defaultProfile}"/>">
+    </c:otherwise>
+  </c:choose>
   
 </table>
 <br/>
