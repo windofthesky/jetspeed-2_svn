@@ -73,7 +73,7 @@ function openWindow(pipeline)
       <td/>
       #end
 	  #if($editing == true)    		  	  
-	   #set ($chooser = "/jetspeed/portal/Administrative/choosers/portlet-selector.psml")
+	   #set ($chooser = "${jetspeed.pageBasePath}/Administrative/choosers/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
 	      	<a href="javascript:openWindow('$chooser')">Select</a>
 	      <td/>	  
