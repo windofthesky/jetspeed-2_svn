@@ -193,8 +193,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     throws PortletException, IOException
     {
         String page = request.getParameter("page");
+        String deleteFragmentId = request.getParameter("deleteId");
         String portlets = request.getParameter("portlets");
-        if (portlets != null && portlets.length() > 0)
+        if (deleteFragmentId != null && deleteFragmentId.length() > 0)
+        {
+            removeFragment(page, deleteFragmentId);
+        }
+        else if (portlets != null && portlets.length() > 0)
         {
             int count = 0;
             StringTokenizer tokenizer = new StringTokenizer(portlets, ",");            
@@ -219,6 +224,23 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         }       
     }
 
+    protected void removeFragment(String pageId, String fragmentId)
+    {
+        try
+        {
+            Page page = pageManager.getPage(pageId);
+            Fragment f = page.getFragmentById(fragmentId);
+            Fragment root = page.getRootFragment();
+            root.getFragments().remove(f);
+            pageManager.updatePage(page);
+        }
+        catch (Exception e)
+        {
+            log.error("failed to remove portlet " + fragmentId + " to page: " + pageId);
+        }
+            
+    }
+    
     protected void addPortletToPage(String pageId, String portletId)
     {
         try

@@ -132,8 +132,8 @@ function openWindow(pipeline)
                          <a href="$upUrl"><img src="${layoutImageBase}/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
-                   <td>
-                   </td>
+                   <td/>
+                   <td/>
                  </tr>
                  <tr>
                    <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
@@ -155,6 +155,12 @@ function openWindow(pipeline)
                          <a href="$rightUrl"><img src="${layoutImageBase}/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
+                    <td>
+                         #set($deleter = $renderResponse.createActionURL())    
+                         $deleter.setParameter("deleteId","$f.id")
+                         $deleter.setParameter("page","$myPage")                         
+                         &nbsp;<a href="$deleter"><img src="${layoutImageBase}/close.gif" border="0" title="Remove Portlet"/></a>                    
+                    </td>
                  </tr>
 				 <tr>
 					<td ></td>
@@ -167,7 +173,8 @@ function openWindow(pipeline)
 					    <a href="$downUrl"><img src="${layoutImageBase}/movePortletDown.gif" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
-					<td ></td>
+					<td/>
+					<td/>
 				 </tr>
 			  </table>
 			</div>
