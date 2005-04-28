@@ -14,15 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
-<script>
-function openWindow(pipeline)
-{	
-    var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');
-    vWinUsers.opener = self;
-	vWinUsers.focus();
-}
-</script>
-
 #set($table = $jetspeed.columns)
 #set($sizes = $jetspeed.columnSizes)
 
@@ -34,6 +25,18 @@ function openWindow(pipeline)
 
 #set($actions = $jetspeed.PageDecoratorActions)
 
+#if($jetspeed.portletMode.toString() == "edit")
+  #set($editing = true)    
+  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
+<script>
+function openWindow(pipeline)
+{	
+    var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');
+    vWinUsers.opener = self;
+	vWinUsers.focus();
+}
+</script>  
+#end    
   
  #if($myFragment.getDecorator())
         #set($decorator = $myFragment.getDecorator())
@@ -52,10 +55,6 @@ function openWindow(pipeline)
   #end
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
-#if($jetspeed.portletMode.toString() == "edit")
-  #set($editing = true)    
-  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
-#end    
 
 #if ($actions.size()>0)
 <table  width="100%" cellspacing="0" cellpadding="0" >
