@@ -181,6 +181,16 @@ public class SearchEngineImpl implements SearchEngine
             {
                 doc.add(Field.Text(ParsedObject.FIELDNAME_CLASSNAME, parsedObject.getClassName()));
             }
+            
+            String[] keywordArray = parsedObject.getKeywords();
+            if(keywordArray != null)
+            {
+            	for(int i=0; i<keywordArray.length; ++i)
+            	{
+            		String keyword = keywordArray[i];
+            		doc.add(Field.Keyword(ParsedObject.FIELDNAME_KEYWORDS, keyword));
+            	}
+            }
 
             Map keywords = parsedObject.getKeywordsMap();
             addFieldsToDocument(doc, keywords, KEYWORD);
@@ -463,6 +473,20 @@ public class SearchEngineImpl implements SearchEngine
 		        if (url != null)
 		        {
 		            result.setURL(new URL(url.stringValue()));
+		        }
+		        
+		        Field[] keywords = doc.getFields(ParsedObject.FIELDNAME_KEYWORDS);
+		        if(keywords != null)
+		        {
+		        	String[] keywordArray = new String[keywords.length];
+		        	
+		        	for(int j=0; j<keywords.length; j++)
+		        	{
+		        		Field keyword = keywords[j];
+		        		keywordArray[j] = keyword.stringValue();
+		        	}
+		        	
+		        	result.setKeywords(keywordArray);
 		        }
 		        
 		        resultList.add(i, result);
