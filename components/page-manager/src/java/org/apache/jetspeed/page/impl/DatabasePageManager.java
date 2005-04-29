@@ -27,9 +27,11 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.psml.ContentPageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
@@ -273,5 +275,13 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     public PageSecurity getPageSecurity() throws DocumentNotFoundException
     {
         throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getContentPage(java.lang.String)
+     */
+    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException
+    {
+        return new ContentPageImpl(getPage(path));
     }
 }

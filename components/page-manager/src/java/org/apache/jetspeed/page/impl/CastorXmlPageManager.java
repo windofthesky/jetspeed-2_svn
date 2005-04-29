@@ -45,9 +45,11 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.psml.ContentPageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.AbstractNode;
@@ -145,7 +147,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         String pageContextCacheKey = pageContextCacheKey(pageContext);
         log.debug("computeProfiledPageContext() invoked, cache key = " + pageContextCacheKey + ", (profilingEnabled = " + profilingEnabled + ")");
         CacheablePageContext cachedPageContext = lookupPageContext(pageContextCacheKey);
-        if (cachedPageContext != null)
+        if (cachedPageContext != null )
         {
             // populate returned profiled page context
             populateProfiledPageContext(cachedPageContext, pageContext);
@@ -541,6 +543,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // populate returned profiled page context
         populateProfiledPageContext(cachedPageContext, pageContext);
     }
+
 
     private NodeSetImpl expandAndProfileDocumentSet(Map profileLocators, DocumentSet documentSet, NodeSetImpl expandedNodes, String documentSetNamePrefix, Map documentSetNames, Map documentSetNodeSets, List allProfiledFolders)
     {
@@ -1915,6 +1918,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
         }
         return cacheKeyBuffer.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getContentPage(java.lang.String)
+     */
+    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException
+    {        
+        return new ContentPageImpl(getPage(path));
     } 
 
 }

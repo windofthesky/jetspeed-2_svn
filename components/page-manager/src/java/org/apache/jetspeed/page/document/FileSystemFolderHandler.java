@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 
@@ -500,6 +501,11 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
                 FileCacheEntry folderEntry = fileCache.get(((AbstractNode)doc).getParent().getPath());
                 refresh(folderEntry);
             }
+        }
+        
+        if(entry.getDocument() instanceof Reset)
+        {
+            ((Reset)entry.getDocument()).reset();
         }
 
     }
