@@ -24,6 +24,11 @@ public class ContentPageImpl implements ContentPage
         this.cachedFragments = new HashMap();
     }
 
+    public String toString()
+    {
+        return page.toString();
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getContentFragmentById(java.lang.String)
      */
