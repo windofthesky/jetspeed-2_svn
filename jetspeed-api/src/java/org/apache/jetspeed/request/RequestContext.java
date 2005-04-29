@@ -27,7 +27,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -88,14 +88,14 @@ public interface RequestContext
      *
      * @return Page
      */
-    public Page getPage();
+    public ContentPage getPage();
 
     /**
      * Sets the target page  for this request
      *
      * @param page The target page
      */
-    public void setPage(Page page);
+    public void setPage(ContentPage page);
 
     /**
      * Gets the content dispatcher for this request

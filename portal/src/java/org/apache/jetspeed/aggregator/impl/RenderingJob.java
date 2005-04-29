@@ -16,7 +16,6 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
-import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.window.PortletWindow;
@@ -48,12 +47,12 @@ public class RenderingJob implements Runnable
     private HttpServletResponse response = null;
     
     private PortletContainer container = null;
-    private Fragment fragment = null;
+    private ContentFragment fragment = null;
     private RequestContext requestContext = null;
 
     private PortletContent portletContent;
     
-    public RenderingJob(PortletContainer container, PortletContent portletContent, Fragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
+    public RenderingJob(PortletContainer container, PortletContent portletContent, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
     {
         this.container = container;
         

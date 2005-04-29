@@ -56,7 +56,7 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
@@ -210,17 +210,17 @@ public class JetspeedPowerTool
      * 
      * @return
      */
-    public Fragment getCurrentFragment()
+    public ContentFragment getCurrentFragment()
     {
         checkState();       
-       return (Fragment) renderRequest.getAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE);
+       return (ContentFragment) renderRequest.getAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE);
     }
 
     /**
      * 
      * @param f
      */
-    public void setCurrentFragment( Fragment f )
+    public void setCurrentFragment( ContentFragment f )
     {
         checkState();
         renderRequest.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, f);
@@ -231,7 +231,7 @@ public class JetspeedPowerTool
     {
         checkState();
 
-        Fragment f = (Fragment) getRequestContext().getRequest().getAttribute(LAYOUT_ATTR);
+        ContentFragment f = (ContentFragment) getRequestContext().getRequest().getAttribute(LAYOUT_ATTR);
         renderRequest.setAttribute(LAYOUT_ATTR, f);
     }
 
@@ -239,10 +239,10 @@ public class JetspeedPowerTool
      * 
      * @return
      */
-    public Fragment getCurrentLayout()
+    public ContentFragment getCurrentLayout()
     {
         checkState();
-        return (Fragment) renderRequest.getAttribute(LAYOUT_ATTR);
+        return (ContentFragment) renderRequest.getAttribute(LAYOUT_ATTR);
     }
 
     /**
@@ -302,7 +302,7 @@ public class JetspeedPowerTool
      * @return The PortletEntity represented by the current fragment.
      * @throws Exception
      */
-    public PortletEntity getPortletEntity( Fragment f ) throws Exception
+    public PortletEntity getPortletEntity( ContentFragment f ) throws Exception
     {
         PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
         if (portletEntity == null)
@@ -337,7 +337,7 @@ public class JetspeedPowerTool
      * @return whether or not the Fragment in question should be considered
      *              visible during rendering.
      */
-    public boolean isHidden( Fragment f )
+    public boolean isHidden( ContentFragment f )
     {
         checkState();
         if (f == null)
@@ -452,7 +452,7 @@ public class JetspeedPowerTool
      * @throws Exception
      * @return String path to the decorator.
      */
-    public String  decorateAndInclude( Fragment f ) throws Exception
+    public String  decorateAndInclude( ContentFragment f ) throws Exception
     {
         // makes sure that any previous content has been written to
         // preserve natural HTML rendering order
@@ -504,7 +504,7 @@ public class JetspeedPowerTool
      *                  Portlet fragment to "decorate"
      * @throws Exception
      */
-    protected String decorateAndIncludePortlet( Fragment f ) throws Exception
+    protected String decorateAndIncludePortlet( ContentFragment f ) throws Exception
     {
         // make sure that any previous content has been written to
         // preserve natural HTML rendering order
@@ -602,7 +602,7 @@ public class JetspeedPowerTool
      * @param e
      * @param msg
      */
-    protected void handleError( Exception e, String msg, Fragment fragment )
+    protected void handleError( Exception e, String msg, ContentFragment fragment )
     {
         log.error(msg, e);
 
@@ -686,7 +686,7 @@ public class JetspeedPowerTool
             WindowState state = getWindowState();
             
             ContentTypeSet content = portlet.getContentTypeSet();
-            Fragment fragment = getCurrentFragment();
+            ContentFragment fragment = getCurrentFragment();
             String fragmentId = fragment.getId();
             String portletName = portlet.getUniqueName();
             PortletWindow window = windowAccess.getPortletWindow(fragment);
@@ -822,7 +822,7 @@ public class JetspeedPowerTool
      * @param entity
      * @return
      */
-    public String getTitle( PortletEntity entity, Fragment f )
+    public String getTitle( PortletEntity entity, ContentFragment f )
     {
         String title = null;
 

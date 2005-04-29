@@ -214,36 +214,4 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     public Object clone()
         throws java.lang.CloneNotSupportedException;
     
-    
-    /**
-     * 
-     * <p>
-     * getRenderedContent
-     * </p>
-     *  
-     * @return The raw,undecorated content of this fragment.
-     * @throws java.lang.IllegalStateException if the content has not yet been set.
-     */
-    public String getRenderedContent() throws IllegalStateException;
-    
-    /**
-     * 
-     * <p>
-     * setPortletContent
-     * </p>
-     *
-     * @param portletContent
-     */
-    public void setPortletContent(PortletContent portletContent);
-    
-    /**
-     * 
-     * <p>
-     * overrideRenderedContent
-     * </p>
-     *
-     * @param contnent
-     */
-    public void overrideRenderedContent(String contnent);
-    
 }

@@ -24,6 +24,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -79,7 +80,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @return @throws
      *         PortletEntityNotGeneratedException
      */
-    public MutablePortletEntity generateEntityFromFragment( Fragment fragment, String principal )
+    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment, String principal )
             throws PortletEntityNotGeneratedException
     {
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
@@ -119,7 +120,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @return @throws
      *         PortletEntityNotGeneratedException
      */
-    public MutablePortletEntity generateEntityFromFragment( Fragment fragment )
+    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment )
             throws PortletEntityNotGeneratedException
     {
         return generateEntityFromFragment(fragment, null);

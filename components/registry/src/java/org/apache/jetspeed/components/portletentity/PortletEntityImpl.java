@@ -71,7 +71,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected List originalPreferences;
 
     // protected PrefsPreferenceSetImpl preferenceSet;
-    protected ThreadLocal preferenceSetRef = new ThreadLocal();
+    // protected ThreadLocal preferenceSetRef = new ThreadLocal();
+    protected Map perPrincipalPrefs = new HashMap();
 
     protected Map originalValues;
 
@@ -120,22 +121,23 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public PreferenceSet getPreferenceSet()
     {
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
+        Principal currentUser = getPrincipal();
+        return getPreferenceSet(currentUser);
+    }
+
+    public PreferenceSet getPreferenceSet(Principal principal)
+    {
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(principal);
         try
         {
             if (preferenceSet == null || !dirty)
             {
-                Principal currentUser = getPrincipal();
                 //TODO: need to be setting this from PortletEntityAccessComponent until then it will always be null.                
-                if (currentUser == null)
-                {
-                    currentUser = new PortletEntityUserPrincipal(NO_PRINCIPAL);
-                }
-                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() +"/"+ currentUser.getName() +"/"
+                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() +"/"+ principal.getName() +"/"
                         + PrefsPreference.PORTLET_PREFERENCES_ROOT;
                 Preferences prefNode = Preferences.userRoot().node(prefNodePath);
                 preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-                preferenceSetRef.set(preferenceSet);
+                perPrincipalPrefs.put(principal, preferenceSet);
                 backupValues(preferenceSet);
                 dirty = true;
             }
@@ -147,7 +149,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             ise.initCause(e);
             throw ise;
         }
-
         return preferenceSet;
     }
 
@@ -176,14 +177,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public PortletDefinition getPortletDefinition()
     {
-//        if(portletDefinition == null)
-//        {
-//            Filter filter = store.newFilter();
-//            filter.addEqualTo("app.name", appName);
-//            filter.addEqualTo("name", portletName);
-//            Object query = store.newQuery(PortletDefinitionImpl.class, filter);
-//            this.portletDefinition = (PortletDefinitionComposite) store.getObjectByQuery(query);
-//        }
         return this.portletDefinition;
     }
 
@@ -206,13 +199,18 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public void store() throws IOException
     {
+        store(getPrincipal());
+    }
+    
+    public void store(Principal principal) throws IOException
+    {
         if (pac == null)
         {
             throw new IllegalStateException("You must call PortletEntityImpl.setPorteltEntityDao() before "
                     + "invoking PortletEntityImpl.store().");
         }
 
-        PreferenceSet preferenceSet = (PreferenceSet)preferenceSetRef.get();
+        PreferenceSet preferenceSet = (PreferenceSet)perPrincipalPrefs.get(principal);
         pac.storePreferenceSet(preferenceSet, this);
         dirty = false;
         if (preferenceSet != null)
@@ -231,7 +229,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public void reset() throws IOException
     {
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(getPrincipal());
         try
         {
             if (originalValues != null && preferenceSet != null)
@@ -342,7 +340,13 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public Principal getPrincipal()
     {
-        return (Principal) principalRef.get();
+        Principal principal = (Principal) principalRef.get();
+        if (principal == null)
+        {
+            principal = new PortletEntityUserPrincipal(NO_PRINCIPAL);
+        }
+        
+        return principal;
     }
 
     /**
@@ -387,10 +391,10 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
          */
         public boolean equals( Object obj )
         {
-            if (obj != null && obj instanceof PortletEntityUserPrincipal)
+            if (obj != null && obj instanceof Principal)
             {
-                PortletEntityUserPrincipal p = (PortletEntityUserPrincipal) obj;
-                return name != null && p.name != null && name.equals(p.name);
+                Principal p = (Principal) obj;
+                return name != null && p.getName() != null && name.equals(p.getName());
             }
             else
             {

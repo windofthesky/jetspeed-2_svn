@@ -29,7 +29,7 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
@@ -82,7 +82,7 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow( Fragment fragment, RequestContext requestContext )
+    public void renderNow( ContentFragment fragment, RequestContext requestContext )
     {
 
         HttpServletRequest servletRequest = null;
@@ -117,7 +117,7 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow( Fragment fragment, HttpServletRequest request, HttpServletResponse response )          
+    public void renderNow( ContentFragment fragment, HttpServletRequest request, HttpServletResponse response )          
     {
 
         RequestContext requestContext = (RequestContext) request
@@ -153,7 +153,7 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws UnknownPortletDefinitionException
      * @throws FailedToRetrievePortletWindow
      */
-    public void render( Fragment fragment, RequestContext requestContext )
+    public void render( ContentFragment fragment, RequestContext requestContext )
     {
 
         PortletContainerServices.prepare("jetspeed");
@@ -207,7 +207,7 @@ public class PortletRendererImpl implements PortletRenderer
         return (ContentDispatcherCtrl) request.getContentDispatcher();
     }
 
-    protected PortletWindow getPortletWindow( Fragment fragment ) throws FailedToRetrievePortletWindow
+    protected PortletWindow getPortletWindow( ContentFragment fragment ) throws FailedToRetrievePortletWindow
     {
 
             ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
@@ -224,7 +224,7 @@ public class PortletRendererImpl implements PortletRenderer
 
     }
 
-    protected RenderingJob buildRenderingJob( Fragment fragment, HttpServletRequest request,
+    protected RenderingJob buildRenderingJob( ContentFragment fragment, HttpServletRequest request,
             HttpServletResponse response, RequestContext requestContext ) throws FailedToRetrievePortletWindow,
             FailedToRenderFragmentException
     {

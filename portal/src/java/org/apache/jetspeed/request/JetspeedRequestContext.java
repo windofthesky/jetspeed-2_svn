@@ -38,8 +38,8 @@ import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.pluto.om.common.Language;
@@ -63,7 +63,7 @@ public class JetspeedRequestContext implements RequestContext
     private HttpServletResponse response;
     private ServletConfig config;
     private Map locators;
-    private Page page;
+    private ContentPage page;
     private PortletDefinition portletDefinition;
     private Subject subject;
     private Locale locale;
@@ -137,12 +137,12 @@ public class JetspeedRequestContext implements RequestContext
         this.locators = locators;
     }
 
-    public Page getPage()
+    public ContentPage getPage()
     {
         return this.page;
     }
 
-    public void setPage( Page page )
+    public void setPage( ContentPage page )
     {
         this.page = page;
     }

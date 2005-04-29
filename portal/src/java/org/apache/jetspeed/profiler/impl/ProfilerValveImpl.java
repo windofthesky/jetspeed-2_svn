@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.page.psml.ContentPageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -122,7 +123,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             }
             
             // set request page and profile locator
-            request.setPage(profiledPageContext.getPage());
+            request.setPage(new ContentPageImpl(profiledPageContext.getPage()));
             request.setProfileLocators(profiledPageContext.getLocators());
 
             // return profiled page context in request attribute

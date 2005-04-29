@@ -26,8 +26,8 @@ import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -85,20 +85,20 @@ public class BasicAggregator implements Aggregator
      */
     public void build(RequestContext request) throws JetspeedException
     {
-        Page page = request.getPage();
+        ContentPage page = request.getPage();
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");
         }
 
-        Fragment root = page.getRootFragment();
+        ContentFragment root = page.getRootContentFragment();
         render(portletContainer, root, request);
         
         for (Iterator fit = root.getFragments().iterator(); fit.hasNext();)
         {
-            Fragment fragment = (Fragment)fit.next();
+            ContentFragment fragment = (ContentFragment)fit.next();
             
-            if (fragment.getType().equals(Fragment.LAYOUT))
+            if (fragment.getType().equals(ContentFragment.LAYOUT))
             {
                 // skip layouts for now
                 // continue;
@@ -114,7 +114,7 @@ public class BasicAggregator implements Aggregator
      * @param fragment
      * @param request
      */
-    private void render(PortletContainer container, Fragment fragment, RequestContext request)
+    private void render(PortletContainer container, ContentFragment fragment, RequestContext request)
     {
 
         //

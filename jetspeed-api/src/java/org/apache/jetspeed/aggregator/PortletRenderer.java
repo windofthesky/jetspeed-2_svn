@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -39,7 +40,7 @@ public interface PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, RequestContext request) ;
+    public void renderNow(ContentFragment fragment, RequestContext request) ;
 
     /**
         Render the specified Page fragment.
@@ -47,7 +48,7 @@ public interface PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) ;
+    public void renderNow(ContentFragment fragment, HttpServletRequest request, HttpServletResponse response) ;
 
     /** 
      * 
@@ -55,7 +56,7 @@ public interface PortletRenderer
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
      */
-    public void render(Fragment fragment, RequestContext request);
+    public void render(ContentFragment fragment, RequestContext request);
 
     /**
      * Retrieve the ContentDispatcher for the specified request

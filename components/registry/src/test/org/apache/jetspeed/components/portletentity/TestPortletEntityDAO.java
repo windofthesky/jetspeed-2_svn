@@ -16,6 +16,7 @@
 package org.apache.jetspeed.components.portletentity;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.prefs.Preferences;
@@ -28,6 +29,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -103,7 +105,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(TEST_ENTITY));
         Fragment f1 =(Fragment) mockf1.proxy();
             
-        MutablePortletEntity entity = entityAccess.generateEntityFromFragment(f1);
+        MutablePortletEntity entity = entityAccess.generateEntityFromFragment(new ContentFragmentImpl(f1, new HashMap()));
         PreferenceSetComposite prefs = (PreferenceSetComposite) entity.getPreferenceSet();
         prefs.remove("pref1");
         assertNotNull(prefs);

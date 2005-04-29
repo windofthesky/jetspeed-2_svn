@@ -105,7 +105,7 @@ public class SiteDetailPortlet extends GenericServletPortlet
         {
             try
             {
-                Page page = pageManager.getPage(currentPage);
+                Page page = pageManager.getContentPage(currentPage);
                 request.setAttribute("page", page);
             } catch (PageNotFoundException e)
             {

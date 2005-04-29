@@ -16,6 +16,7 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +27,9 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -54,7 +57,7 @@ public class PortletAggregatorImpl implements PortletAggregator
      */
     public void build(RequestContext context) throws JetspeedException, IOException
     {
-        Fragment fragment = new FragmentImpl(); // TODO: fragment factory
+        ContentFragment fragment = new ContentFragmentImpl(new FragmentImpl(), new HashMap()); // TODO: fragment factory
         fragment.setType(Fragment.PORTLET);
         fragment.setName(context.getRequestParameter(PortalReservedParameters.PORTLET));
         String entity = context.getRequestParameter(PortalReservedParameters.PORTLET_ENTITY);

@@ -29,7 +29,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -56,7 +56,7 @@ public class MockRequestContext implements RequestContext
     private Locale locale;
     private String mediaType;
     private String mimeType;
-    private Page page;
+    private ContentPage page;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Object session;
@@ -192,7 +192,7 @@ public class MockRequestContext implements RequestContext
      * 
      * @see org.apache.jetspeed.request.RequestContext#getPage()
      */
-    public Page getPage()
+    public ContentPage getPage()
     {
         // TODO Auto-generated method stub
         return this.page;
@@ -359,7 +359,7 @@ public class MockRequestContext implements RequestContext
      * 
      * @see org.apache.jetspeed.request.RequestContext#setPage(org.apache.jetspeed.om.page.Page)
      */
-    public void setPage( Page page )
+    public void setPage( ContentPage page )
     {
         this.page = page;
 

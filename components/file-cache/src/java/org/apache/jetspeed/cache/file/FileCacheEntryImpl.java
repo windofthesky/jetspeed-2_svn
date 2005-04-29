@@ -59,7 +59,7 @@ public class FileCacheEntryImpl implements FileCacheEntry
      */
     public File getFile()
     {
-        return this.file;
+        return new File(this.file.getAbsolutePath());
     }
 
     /**

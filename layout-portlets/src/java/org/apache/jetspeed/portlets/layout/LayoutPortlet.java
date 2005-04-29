@@ -250,7 +250,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             fragment.setId(generator.getNextPeid());
             fragment.setName(portletId);
             
-            Page page = pageManager.getPage(pageId);
+            Page page = pageManager.getContentPage(pageId);
             // WARNING: under construction
             // this is prototype and very dependent on a single depth fragment structure            
             Fragment root = page.getRootFragment();

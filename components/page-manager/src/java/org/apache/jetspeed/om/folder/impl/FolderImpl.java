@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -54,7 +55,7 @@ import org.apache.jetspeed.security.FolderPermission;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class FolderImpl extends AbstractNode implements Folder
+public class FolderImpl extends AbstractNode implements Folder, Reset
 {
     public static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
 
@@ -812,5 +813,14 @@ public class FolderImpl extends AbstractNode implements Folder
     public void setHidden( boolean hidden )
     {        
         ((AbstractNode)metadata).setHidden(hidden);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Reset#reset()
+     */
+    public void reset()
+    {
+        allNodes = null;
+        
     }
 }

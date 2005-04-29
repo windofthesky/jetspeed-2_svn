@@ -16,6 +16,7 @@
 package org.apache.jetspeed.window;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.Test;
@@ -26,7 +27,9 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
@@ -77,7 +80,7 @@ public class TestWindows extends TestCase
     public void testWindowAccess() throws Exception
     {
         List windows = new ArrayList();
-        Fragment f1 = (Fragment) fragMock.proxy();
+        ContentFragment f1 = new ContentFragmentImpl((Fragment) fragMock.proxy(), new HashMap());
         MutablePortletEntity entity = (MutablePortletEntity) entityMock.proxy();
         CompositeWindowList windowList = (CompositeWindowList) windowListMock.proxy();
         entityAccessMock.expects(new InvokeAtLeastOnceMatcher()).method("getPortletEntityForFragment")

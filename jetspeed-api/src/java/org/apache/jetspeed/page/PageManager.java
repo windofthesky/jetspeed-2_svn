@@ -21,6 +21,7 @@ import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -95,6 +96,23 @@ public interface PageManager
     * @throws NodeException
     */
     public Page getPage(String id) throws PageNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
+     * ContentPage
+     * </p>
+     *
+     * Returns a PSML document suitable for use in content
+     * rendering, for the given key
+     *
+     * @see ContentPage
+     * @see Fragment
+     * @param locator The locator descriptor of the document to be retrieved.
+     * @throws PageNotFoundException if the page cannot be found
+     * @throws NodeException
+     */
+     public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException;
     
    /**
     * 
@@ -186,4 +204,3 @@ public interface PageManager
     public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
 
 }
-

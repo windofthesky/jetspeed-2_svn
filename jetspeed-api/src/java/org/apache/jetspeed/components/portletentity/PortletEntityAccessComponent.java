@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
@@ -60,7 +61,7 @@ public interface PortletEntityAccessComponent
 	 * @return
 	 * @throws PortletEntityNotGeneratedException
 	 */
-	MutablePortletEntity generateEntityFromFragment(Fragment fragment, String principal) throws PortletEntityNotGeneratedException;
+	MutablePortletEntity generateEntityFromFragment(ContentFragment fragment, String principal) throws PortletEntityNotGeneratedException;
 	
 	/**
 	 * 
@@ -72,7 +73,7 @@ public interface PortletEntityAccessComponent
 	 * @return
 	 * @throws PortletEntityNotGeneratedException
 	 */
-	MutablePortletEntity generateEntityFromFragment(Fragment fragment) throws PortletEntityNotGeneratedException;
+	MutablePortletEntity generateEntityFromFragment(ContentFragment fragment) throws PortletEntityNotGeneratedException;
        
 	/**
 	 * 

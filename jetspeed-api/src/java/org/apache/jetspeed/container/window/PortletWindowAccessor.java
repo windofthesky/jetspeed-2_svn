@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.container.window;
 
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -35,7 +35,7 @@ public interface PortletWindowAccessor
      * @throws FailedToRetrievePortletWindow
      * @throws InconsistentWindowStateException If the window references a non-existsent PortletEntity
      */
-    PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow;
+    PortletWindow getPortletWindow(ContentFragment fragment) throws FailedToRetrievePortletWindow;
     
     /**
      * Get the portlet window for a fragment and given principal
@@ -46,7 +46,7 @@ public interface PortletWindowAccessor
      * @throws FailedToRetrievePortletWindow
      * @throws InconsistentWindowStateException If the window references a non-existsent PortletEntity
      */
-    PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException, FailedToRetrievePortletWindow;
+    PortletWindow getPortletWindow(ContentFragment fragment, String principal) throws FailedToCreateWindowException, FailedToRetrievePortletWindow;
 
     /**
      * Lookup a portlet window in the cache

@@ -47,11 +47,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private String name;
 
-    private InheritableThreadLocal portletContent = new InheritableThreadLocal();
-
     private static final Log log = LogFactory.getLog(FragmentImpl.class);
-
-    private InheritableThreadLocal overridenContent = new InheritableThreadLocal();
 
     public FragmentImpl()
     {
@@ -232,11 +228,6 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         this.properties = props;
     }
 
-    public void setFragments( List fragments )
-    {
-        this.fragments = fragments;
-    }
-
     public Object clone() throws java.lang.CloneNotSupportedException
     {
         Object cloned = super.clone();
@@ -314,86 +305,5 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     {
         this.name = name;
 
-    }
-
-    /**
-     * 
-     * <p>
-     * getRenderedContent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.page.Fragment#getRenderedContent()
-     * @return
-     */
-    public String getRenderedContent()
-    {
-        if(overridenContent.get() != null)
-        {
-            return ((StringBuffer) overridenContent.get()).toString();
-        }
-        
-        PortletContent content = (PortletContent) portletContent.get();
-        if (content != null)
-        {
-            synchronized (content)
-            {
-                if (content.isComplete())
-                {
-                    return content.getContent();
-                }
-                else
-                {
-                    try
-                    {
-                        log.debug("Waiting on content for Fragment " + getId());
-                        content.wait();
-                        return content.getContent();
-                    }
-                    catch (InterruptedException e)
-                    {
-                        return e.getMessage();
-                    }
-                    finally
-                    {
-                        log.debug("Been notified that Faragment " + getId() + " is complete");
-                    }
-                }
-            }
-        }
-        else
-        {
-            throw new IllegalStateException("You cannot invoke getRenderedContent() until the content has been set.");
-        }
-    }
-
-    /**
-     * <p>
-     * setPortletContent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.page.Fragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
-     * @param portletContent
-     */
-    public void setPortletContent( PortletContent portletContent )
-    {
-        this.portletContent.set(portletContent);
-    }
-    /**
-     * <p>
-     * overrideRenderedContent
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.page.Fragment#overrideRenderedContent(java.lang.String)
-     * @param contnent
-     */
-    public void overrideRenderedContent( String content )
-    {        
-        StringBuffer buffer = (StringBuffer)overridenContent.get();
-        if(buffer == null)
-        {
-            buffer = new StringBuffer("Encountered the following problem(s) while attmepting to render portlet fragment: "+getId()+"<br />");
-            overridenContent.set(buffer);
-        }
-        buffer.append(content).append("<br />");
     }
 }

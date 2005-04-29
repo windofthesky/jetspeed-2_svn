@@ -28,7 +28,7 @@ import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -85,9 +85,9 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         return getWindowFromCache(windowId);
     }
     
-    public PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow
+    public PortletWindow getPortletWindow(ContentFragment fragment) throws FailedToRetrievePortletWindow
     {
-        ArgUtil.assertNotNull(Fragment.class, fragment, this, "getPortletWindow(Fragment fragment)");
+        ArgUtil.assertNotNull(ContentFragment.class, fragment, this, "getPortletWindow(Fragment fragment)");
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
         {
@@ -117,7 +117,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
      * @param portletWindow
      * @throws InconsistentWindowStateException
      */
-    protected void validateWindow( Fragment fragment, PortletWindow portletWindow ) throws FailedToRetrievePortletWindow
+    protected void validateWindow( ContentFragment fragment, PortletWindow portletWindow ) throws FailedToRetrievePortletWindow
     {
         // make sure the window has the most up-to-date portlet entity
         PortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
@@ -132,9 +132,9 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         }
     }
 
-    public PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToRetrievePortletWindow, FailedToCreateWindowException
+    public PortletWindow getPortletWindow(ContentFragment fragment, String principal) throws FailedToRetrievePortletWindow, FailedToCreateWindowException
     {
-        ArgUtil.assertNotNull(Fragment.class, fragment, this, "getPortletWindow(Fragment fragment, String principal)");
+        ArgUtil.assertNotNull(ContentFragment.class, fragment, this, "getPortletWindow(Fragment fragment, String principal)");
         ArgUtil.assertNotNull(String.class, principal, this, "getPortletWindow(Fragment fragment, String principal)");
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
@@ -149,12 +149,12 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         return portletWindow;
     }
 
-    private PortletWindow createPortletWindow(Fragment fragment) throws FailedToCreateWindowException
+    private PortletWindow createPortletWindow(ContentFragment fragment) throws FailedToCreateWindowException
     {
         return createPortletWindow(fragment, null);
     }
     
-    private PortletWindow createPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException
+    private PortletWindow createPortletWindow(ContentFragment fragment, String principal) throws FailedToCreateWindowException
     {
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
                 
@@ -210,7 +210,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         windows.remove(window.getId().toString());
     }
     
-    private PortletWindow getWindowFromCache(Fragment fragment)
+    private PortletWindow getWindowFromCache(ContentFragment fragment)
     {
         return (PortletWindow)windows.get(fragment.getId());
     }
