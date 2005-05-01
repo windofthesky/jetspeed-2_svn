@@ -134,7 +134,7 @@ public class PortletTreeControlTag extends TreeControlTag
         }
         
         // Render the beginning of this node
-        out.println("<div style=\"display:block; white-space:nowrap; vertical-align: middle; margin:-3px;\">");
+        out.println("<div style=\"display:block; white-space:nowrap; vertical-align: middle; margin-top:-3px;\">");
 
         // Create the appropriate number of indents
         for (int i = 0; i < level; i++) {
@@ -174,7 +174,7 @@ public class PortletTreeControlTag extends TreeControlTag
 //            ((HttpServletResponse) pageContext.getResponse()).
 //            encodeURL(updateTreeAction);
 
-        out.print("<div style=\"display:inline; vertical-align: middle; padding:0; margin:0;\">");
+        out.print("<div style=\"display:inline; vertical-align: middle; padding:0; margin-top:0px;\">");
         
 		//add an anchor so that we can return to this node
         out.print("<a name=\"");
@@ -236,7 +236,7 @@ public class PortletTreeControlTag extends TreeControlTag
         }
 
         // Render the icon for this node (if any)
-        out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: top; padding:0; margin:-2px;\">");
+        out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: top; padding:0; margin-top:-2px;\">");
         
         if (node.getIcon() != null) {
             if (hyperlink != null) {
@@ -257,7 +257,7 @@ public class PortletTreeControlTag extends TreeControlTag
                 */
                 out.print(">");
             }
-            out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: middle; padding:0; margin:-2px;\">");
+            out.print("<div style=\"display:inline; white-space:nowrap; vertical-align: middle; padding:0; margin-top:-2px;\">");
             out.print("<img src=\"");
             out.print(images);
             out.print("/");
@@ -266,7 +266,7 @@ public class PortletTreeControlTag extends TreeControlTag
             out.print("\" border=\"0\" />");
             out.print("</div>");
             if (hyperlink != null)
-                out.print("</a>");
+                out.print("</a>&nbsp;");
         }
     
 
