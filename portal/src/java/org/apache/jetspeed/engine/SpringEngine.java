@@ -27,6 +27,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * <p>
@@ -105,7 +106,8 @@ public class SpringEngine extends AbstractEngine
             }          
         }
         
-        ComponentManager cm = new SpringComponentManager(configs, null);
+        SpringComponentManager cm = new SpringComponentManager(configs, null);
+        servletConfig.getServletContext().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, cm.getApplicationContext());
         
         return cm;
     }    
