@@ -133,7 +133,11 @@ public class SpringComponentManager implements ComponentManager
     public void stop()
     {
         appContext.close();
-
+    }
+    
+    public ApplicationContext getApplicationContext()
+    {
+        return appContext;
     }
 
 }
