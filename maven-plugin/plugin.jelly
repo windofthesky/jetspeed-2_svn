@@ -147,7 +147,7 @@ limitations under the License.
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-reports" />
      </copy>
      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.ent" tofile="${basedir}/locator.ent" overwrite="true" failonerror="true"/> 
-  	
+     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.path" tofile="${basedir}/locator.path" overwrite="true" failonerror="true"/>   	
   	<j:set var="portal_project_desc_path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml" /> 	
   	 	
   	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
@@ -218,6 +218,7 @@ limitations under the License.
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-dependencies" />            	       	       
      </copy>
      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.ent" tofile="${basedir}/locator.ent" overwrite="true" failonerror="true"/> 
+	 <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.path" tofile="${basedir}/locator.path" overwrite="true" failonerror="true"/> 
   	
 	
     <echo>Copying Jetspeed 2 portal files...</echo>
