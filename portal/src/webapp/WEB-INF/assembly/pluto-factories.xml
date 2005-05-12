@@ -193,5 +193,10 @@
   <bean id="org.apache.pluto.services.log.LogService"
         class="org.apache.jetspeed.container.services.log.PlutoLogService"
   />  
+  
+  <bean id="org.apache.pluto.services.title.DynamicTitleService"  
+	    name="DynamicTitleService"	   
+        class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl" />             
+
 	
 </beans>
