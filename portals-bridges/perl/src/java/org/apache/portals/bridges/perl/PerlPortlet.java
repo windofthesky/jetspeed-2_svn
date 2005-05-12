@@ -126,7 +126,7 @@ public class PerlPortlet extends GenericPortlet {
     RewriterController	rewriteController = null;
     
     /** Default encoding */
-    public String defaultEncoding = "iso-8859-1";
+    public String defaultEncoding = "UTF-8";
     
     
     public void init(PortletConfig config) throws PortletException
@@ -385,7 +385,10 @@ public class PerlPortlet extends GenericPortlet {
 				
 				// Get stdout of process and create a buffered reader
 				InputStream in = proc.getInputStream();
-				BufferedReader perlResult = new BufferedReader(new InputStreamReader(in));
+				InputStreamReader isr = new InputStreamReader(in, "UTF-8");
+				//String enc = isr.getEncoding();
+				//System.out.println("perl-encoding = " + enc);
+				BufferedReader perlResult = new BufferedReader(isr);
 				StringBuffer page = new StringBuffer();
 				
 				//Wait until proc is done
