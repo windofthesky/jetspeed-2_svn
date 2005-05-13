@@ -20,11 +20,10 @@ limitations under the License.
   $Id$
 -->
 <project>
-    <extend>${basedir}/./../project.xml</extend>
+    <extend>${basedir}/../../project.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>palm</artifactId>
     <name>Jetspeed-2 Portlet Application Lifecyle Management</name>
-    <groupId>pam</groupId>
     <description>Jetspeed-2 Portlet Application Lifecyle Management</description>
     <shortDescription>Portlet Application Lifecycle Management</shortDescription>
     <repository>
