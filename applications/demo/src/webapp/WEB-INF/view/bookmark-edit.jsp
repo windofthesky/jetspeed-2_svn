@@ -7,7 +7,7 @@
 	<portlet:param name="add" value="add"/>
 </portlet:actionURL>
 
-<portlet:renderURL portletMode="view" var="myCancel"/>
+<portlet:actionURL portletMode="view" var="myCancel"/>
 
 <jsp:useBean id="addUrl" scope="request" 
  class="java.lang.String" />                        

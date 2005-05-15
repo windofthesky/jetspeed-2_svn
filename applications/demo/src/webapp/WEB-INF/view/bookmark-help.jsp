@@ -3,7 +3,7 @@
 <%@ page import="java.util.*"%>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 
-<portlet:renderURL portletMode="view" var="myCancel"/>
+<portlet:actionURL portletMode="view" var="myCancel"/>
 
 <portlet:defineObjects/>
 <%
