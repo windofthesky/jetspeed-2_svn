@@ -33,7 +33,6 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
@@ -93,7 +92,6 @@ public class PortletRendererImpl implements PortletRenderer
         try
         {
             portletWindow = getPortletWindow(fragment);
-            PortletContainerServices.prepare("jetspeed");           
             ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
             dispatcher = getDispatcher(requestContext, true);
             servletRequest = requestContext.getRequestForWindow(portletWindow);
@@ -128,7 +126,6 @@ public class PortletRendererImpl implements PortletRenderer
         try
         {
             portletWindow = getPortletWindow(fragment);
-            PortletContainerServices.prepare("jetspeed");
             ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
             
             HttpServletRequest servletRequest = requestContext.getRequestForWindow(portletWindow);
@@ -155,9 +152,6 @@ public class PortletRendererImpl implements PortletRenderer
      */
     public void render( ContentFragment fragment, RequestContext requestContext )
     {
-
-        PortletContainerServices.prepare("jetspeed");
-
         PortletWindow portletWindow;
         
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
@@ -230,8 +224,6 @@ public class PortletRendererImpl implements PortletRenderer
     {
         ContentDispatcher dispatcher = null;
         RenderingJob rJob;
-
-        PortletContainerServices.prepare("jetspeed");
 
         PortletWindow portletWindow = getPortletWindow(fragment);
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);

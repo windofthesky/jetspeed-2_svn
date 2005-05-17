@@ -31,7 +31,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
+import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -42,8 +45,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.Enumerator;
-import org.apache.pluto.util.NamespaceMapper;
-import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
  * This request wrappers the servlet request and is used within the container to
@@ -59,7 +60,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
 
     PortletWindow portletWindow = null;
-    private NamespaceMapper nameSpaceMapper = null;
+    private JetspeedNamespaceMapper nameSpaceMapper = null;
     private ServletRequest currentRequest = null;
 
     private Map portletParameters;
@@ -68,7 +69,8 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
-        nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
+        nameSpaceMapper = ((JetspeedNamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
+                org.apache.pluto.util.NamespaceMapper.class)).getJetspeedNamespaceMapper();
         this.portletWindow = window;        
         PortletDefinition portletDef = portletWindow.getPortletEntity().getPortletDefinition();
         if(portletDef != null)
@@ -227,7 +229,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 PortletRequest pr = (PortletRequest) super.getAttribute("javax.portlet.request");
                 if (pr != null)
                 {
-                    value = super.getAttribute(NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(),
+                    value = super.getAttribute(nameSpaceMapper.encode(portletWindow.getId(),
                             name));
                 }
             }

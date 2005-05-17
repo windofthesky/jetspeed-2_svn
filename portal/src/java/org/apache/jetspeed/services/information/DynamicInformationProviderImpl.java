@@ -29,8 +29,9 @@ import javax.portlet.PortletMode;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.ResourceURLProvider;
+import org.apache.pluto.factory.NamespaceMapperFactory;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.util.NamespaceMapperAccess;
+import org.apache.pluto.util.NamespaceMapper;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.state.NavigationalState;
@@ -188,11 +189,13 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
         Map portletParameters = new HashMap();
 
+        NamespaceMapper namespaceMapper = ((NamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
+                org.apache.pluto.util.NamespaceMapper.class)).getNamespaceMapper();
         while (parameters.hasMoreElements())
         {
             String name = (String)parameters.nextElement();
 
-            String portletParameter = NamespaceMapperAccess.getNamespaceMapper().decode(portletWindow.getId(),name);
+            String portletParameter = namespaceMapper.decode(portletWindow.getId(),name);
 
             if (portletParameter!=null) // it is in the portlet's namespace
             {

@@ -3,6 +3,10 @@
 
 <beans> 
   
+  <bean id="JetspeedNamespaceMapper" class="org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperImpl">
+       <constructor-arg index="0"><value>js_</value></constructor-arg>
+  </bean>
+  
   <bean id="LocalPortletInvokerTarget"
         class="org.apache.jetspeed.container.invoker.LocalPortletInvoker" singleton="false"
   />   
@@ -156,8 +160,15 @@
   <bean id="org.apache.pluto.util.NamespaceMapper"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
-       <property name="className"><value>org.apache.pluto.util.impl.NamespaceMapperFactoryImpl</value></property>
+       <property name="className"><value>org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactoryImpl</value></property>
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
+       <property name="props">
+        <map>
+         <entry key="JetspeedNamespaceMapper">
+             <ref bean="JetspeedNamespaceMapper" />
+         </entry>
+        </map>          
+       </property>
   </bean>
   
  

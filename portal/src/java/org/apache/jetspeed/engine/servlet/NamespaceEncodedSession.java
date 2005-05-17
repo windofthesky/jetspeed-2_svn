@@ -21,9 +21,10 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
+import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.util.NamespaceMapper;
-import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
  * @author Scott T Weaver
@@ -32,7 +33,7 @@ import org.apache.pluto.util.NamespaceMapperAccess;
 public class NamespaceEncodedSession extends HttpSessionWrapper
 {
 
-    private NamespaceMapper nameSpaceMapper;
+    private JetspeedNamespaceMapper nameSpaceMapper;
 
     private ObjectID webAppId;
 
@@ -44,7 +45,8 @@ public class NamespaceEncodedSession extends HttpSessionWrapper
     public NamespaceEncodedSession(HttpSession session, ObjectID webAppId)
     {
         super(session);
-        this.nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
+        this.nameSpaceMapper = ((JetspeedNamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
+                org.apache.pluto.util.NamespaceMapper.class)).getJetspeedNamespaceMapper();
         this.webAppId = webAppId;
     }
 
@@ -90,13 +92,13 @@ public class NamespaceEncodedSession extends HttpSessionWrapper
         }
         else
         {
-            return super.getAttribute(NamespaceMapperAccess.getNamespaceMapper().encode(webAppId, name));
+            return super.getAttribute(nameSpaceMapper.encode(webAppId, name));
         }
     }
 
     private boolean skipEncode(String name)
     {
-        return name.startsWith("Pluto_") || name.startsWith("javax.portlet") || name.startsWith("javax.servlet") || name.startsWith("org.apache.jetspeed");
+        return name.startsWith(nameSpaceMapper.getPrefix()) || name.startsWith("javax.portlet") || name.startsWith("javax.servlet") || name.startsWith("org.apache.jetspeed");
     }
 
     /*
