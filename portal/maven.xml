@@ -729,6 +729,7 @@ limitations under the License.
     <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
 	<delete file="${context_dir}/${org.apache.jetspeed.portal.name}.xml"/>
 	<delete file="${context_dir}/security.xml"/>
+	<delete file="${context_dir}/jpetstore.xml"/>
   </goal>
 
 </project>
