@@ -235,7 +235,7 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
-        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);        
+        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);        
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
