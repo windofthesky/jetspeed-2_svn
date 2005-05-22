@@ -340,7 +340,7 @@ public class StrutsPortlet extends GenericPortlet
                         log.error("Include exception", e);
                     errorContext = new StrutsPortletErrorContext();
                     errorContext.setError(e);
-                    req.setAttribute(StrutsPortlet.ERROR_CONTEXT + "_" + portletName, errorContext);
+                    req.setAttribute(StrutsPortlet.ERROR_CONTEXT, errorContext);
                     if (!actionRequest)
                         renderError(res, errorContext);
                 }
