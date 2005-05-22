@@ -102,24 +102,24 @@ limitations under the License.
         <p>
           As request parameters are only available during the <code>ActionRequest</code>, not being able to use a Struts
           for processing these is a serious limitation. Together with no clear inter-portlet application communication
-          support, this is probably one of the biggest omisions from the Portlet Specification.
+          support, this is probably one of the biggest omissions from the Portlet Specification.
         </p>
         <p>
           But, because the Portlet Specification is build upon the Servlet Specification (2.3), the Portlet Container
           implementation (like <a href="http://portals.apache.org/pluto">Pluto</a>) and/or the Portal itself, usually
-          does have direct access to, and also uses the <code>ServletContext</code>, even during the
+          has direct access to, and also uses the <code>ServletContext</code>, even during the
           <code>ActionRequest</code> event.           
         </p>
         <p>
-          It is therefore usually very easy to provide access to the <code>ServletContext</code> although it will
-          require knowledge about the concrete implementation of the Portal and/or the Portlet Container.
+          It is therefore usually quite easy to provide access to the <code>ServletContext</code>, although it will
+          require some knowledge of the Portal and/or the Portlet Container implementation.
         </p>
         <p>
-          The Struts Bridge uses the <code>ServletContextProvider</code> interface from the Portals Bridges Common
-          portals-bridges-common library, to get access to the <code>ServletContext</code> it requires.
+          The Struts Bridge uses the <code>ServletContextProvider</code> interface from the
+          portals-bridges-common library to get access to the required <code>ServletContext</code>.
        </p>
         <p>
-          To be able to use the Struts Bridge, a <code>StrutsPortlet</code> must be provided with a concrete
+          To be able to use the Struts Bridge, a <code>StrutsPortlet</code> must therefore be provided with a concrete
           implementation of the <code>ServletContextProvider</code> interface (through its initialization parameters).
           This implementation class can be supplied together with the Portlet or be provided natively by the Portal as
           the <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> Portal does. 
@@ -138,9 +138,9 @@ limitations under the License.
       <subsection name="Handling ActionRequests">
         <p>
           During an <code>ActionRequest</code> a Portlet (or invoked Servlet) is not allowed to write content to the
-          response. This is only allowed during the <code>RenderRequest</code> event, but then a Portlet doesn't have
-          access anymore to the (input) request parameters which makes it generally useless (and bad practice anyway)
-          for (Struts) Action processing.
+          response. This is only allowed during the <code>RenderRequest</code> event but then a Portlet doesn't have
+          access anymore to the (input) request parameters which makes the RenderRequest generally useless (and bad
+          practice anyway) for (Struts) Action processing.
         </p>
         <p>
           Struts on the other hand only knows one request event and is largely build upon server-side forwarding to a
@@ -149,9 +149,9 @@ limitations under the License.
         <p>
           The Struts Bridge solves this problem by allowing Struts Action processing to occur during the ActionRequest.
           But, as soon as Struts forwards (or includes) to another handler (JSP, Velocity script, <em>or even another
-          Action></em>) it will intercept and freeze the processing.<br/>
+          Action: ActionChaining</em>) it will intercept and freeze the processing.<br/>
           The Struts Bridge will then save the current processing context (like the path to include or forward to) in a
-          separate object, the <code>StrutsRenderContext</code>, and end the ActionRequest.<br/>
+          separate object: the <code>StrutsRenderContext</code>, and end the ActionRequest.<br/>
           Once the RenderRequest is invoked, the Struts Bridge will use the <code>StrutsRenderContext</code> to restore
           the state Struts (and/or an included or forwarded JSP) will expect and continues the processing where it left
           off.
@@ -167,7 +167,7 @@ limitations under the License.
         <p>
           The Portlet Specification expects Portlets to use a true MVC architecture: changing the state of a Portlet is
           expected to be done during ActionRequest only. The RenderRequest, which may occur many times, is expected to
-          to only render the current state of the Portlet.
+          only render the current state of the Portlet.
         </p>
         <p>
           For a proper usage of the Struts Bridge and to conform to the Portlet Specification requirements, the Struts
@@ -181,15 +181,16 @@ limitations under the License.
           When Struts encounters input validation errors, it forwards (back) to the page specified as input for the
           Action. The Struts Bridge handles this situation likewise. When it detects ActionErrors are defined after the
           ActionRequest event, it will reset the Struts Page URL to the one from which the ActionRequest was initiated
-          StrutsRenderContext so subsequent (multiple) RenderRequest events will always render that input page.
+          so subsequent (multiple) RenderRequest events will always render that original page.
         </p>
         <p>
           Note: this will only result the same behavior as when the Struts Application is accessed as Web Application if
           the Action Mapping input attribute indeed points to the originating input page, which normally will be the
-          case.
+          case. <em>The Struts Bridge will not (re)set the Struts Page URL to the Action input attribute value (Struts
+          itself will forward to that url) but to the page from which the ActionRequest was initiated!</em>          
         </p>
         <p>
-          As said, for a proper usage of the Struts Bridge, the Struts application should be configured to use separate
+          As said, for a proper usage of the Struts Bridge the Struts application should be configured to use separate
           Action processing and View processing Actions. The Struts Bridge intercepts the first include or forward 
           initiated from a Struts Action during the ActionRequest. During only the first following RenderRequest it will
           invoke Struts with <em>the same Struts Page URL</em> as for the ActionRequest but intercept before the actual
@@ -198,7 +199,7 @@ limitations under the License.
         </p>
         <p>
           A properly MVC configured Struts application though can (and should) make use of a (client-side) redirect
-          after the Action processing Action by using an ActionForward with redirect="true". The behavior of such an
+          after the Action processing Action by using an ActionForward with redirect="true". The behavior of such a
           Struts Application then truly complies to the requirements for a Portlet. In fact, the reference
           implementation of the Portlet Specification, <a href="http://portals.apache.org/pluto">Pluto</a>, actually
           sends a redirect to the client (browser) after an ActionRequest.
@@ -246,21 +247,21 @@ limitations under the License.
           <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> Portal.)</em>           
         </p>
         <p>
-          With the above example configuration, all request attributes named errors and message are saved after the
-          ActionRequest. The errors object is restored only once, the message object will be restored until the next
-          ActionRequest or when the Struts Page URL is changed. 
+          With the above example configuration, all request attributes named <em>errors</em> and <em>message</em> are
+          saved after the ActionRequest. The <em>errors</em> object is restored only once, the <em>message</em> object
+          will be restored until the next ActionRequest or when the Struts Page URL is changed. 
         </p>
         <p>
           Using the RenderContextAttributes configuration, a Struts Action can still forward (without redirecting) to a
           JSP in a Portlet while passing its required data through the request attributes. Request scoped ActionForms
-          can also safely be used for this as the Struts Bridge will automatically removes them from the session again
+          can also safely be used for this as the Struts Bridge will automatically remove them from the session again
           when they go out of scope!      
         </p>
         <p>
-          Using the single use only configuration (without the keep="true" attribute) allows one to pass on rather large
+          Using the "single use only" configuration (without the keep="true" attribute) allows one to pass on rather large
           objects to the RenderRequest because, even if they are stored in the Session, this will only be for a very
           short period (milliseconds). Of course, with a subsequent RenderRequest these objects won't be available
-          anymore and the specific View Renderer must be defined to handle that situation properly.<br/>
+          anymore and the specific View Renderer must be able to handle that situation properly.<br/>
           Error objects or error messages (other than ActionMessages and ActionErrors which are already automatically
           saved in the StrutsRenderContext) are also reasonable candidates to use like this.
         </p>
@@ -275,14 +276,14 @@ limitations under the License.
           itself.
         </p>
         <p>
-          The problem with resource urls is the fact that the content of a Portlet is only included by the Portal,
+          The problem with resource urls is that the content of a Portlet is only included by the Portal,
           together with possible content of other Portlets shown on the same page. Although the Portlet runs within
           its own context (the same as the web application it is based on), the client (browser) sees only the context
           of the Portal page it is currently pointed at.
         </p>
         <p>
           A Portlet therefore cannot make use of relative src locations for a resource url while this is perfectly valid
-          (mostly usually preferred) in a Web Application. For a client to be able to retrieve a resource, its url
+          (and usually preferred) in a Web Application. For a client to be able to retrieve a resource, its url
           really must include the full context path of the Web Application.
         </p>
         <p>
@@ -291,10 +292,10 @@ limitations under the License.
           Application and also doesn't provide some kind of URLProvider interface like JSF.
         </p>
         <p>
-          Furthermore there are two different PortletURL types: an ActionURL and a RenderURL.
+          Furthermore there are two different PortletURL types: ActionURLs and RenderURLs.
           It is very important to generate the correct type of url for a certain interaction. Forms must *always* use
-          a POST to an ActionURL, but for all generated links it will have to be determined which type of url actually
-          is required. 
+          a POST to an ActionURL, but for generated links it will have to be determined which type of url actually
+          is needed. 
         </p>
         <p>
           To solve these problems, the Struts Bridge provides enhanced versions of the Struts HTML JSP Tags (including
@@ -304,7 +305,7 @@ limitations under the License.
         </p>
         <p>
           For the enhanced Struts HTML JSP Tags (html:form, html:link, html:rewrite, html:image and html:img), four
-          different TLDs are provided: a EL and non-EL variant, and for both a full replacement of the Struts
+          different TLDs are provided: an EL and non-EL variant, and for both a full replacement of the Struts
           supplied struts-html.tld as well as a separate struts-portlet.tld containing only the enhanced Tags definitions.  
         </p>
         <p>
@@ -327,9 +328,9 @@ limitations under the License.
           If non of these attributes is specified (with value "true") these Tags will by default generate a RenderURL.          
         </p>
         <p>
-          But, the default can be changed (only between renderURL and actionURL) using the struts-portlet-config.xml
+          But, the default can be changed (only between renderURL and actionURL) using a struts-portlet-config.xml
           definition. Furthermore, for specific url path (prefixes) you can specify which type of url must be generated
-          (specifying one of the three url type attributes will always override though).
+          (but with one of the three additional boolean url type attributes this can always be overriden).
         </p>
         <p>
           An example struts-portlet-config.xml with portlet url type definitions might look like:
@@ -371,14 +372,14 @@ limitations under the License.
           <source><![CDATA[
             <?xml version="1.0" encoding="UTF-8"?>
             <config>
-              <portlet-url-type/>
+              <portlet-url-type default="action"/>
             </config>]]></source>
             This feature is especially useful for Struts Applications who were configured using an earlier version of
             the Struts Bridge (0.1) which used an ActionURL as default, like the above Struts Mailreader Demo Portlet.
         </p>
         <p>
           The enhanced html:img and html:image Tags, as well as the html:link and html:rewrite Tags, can be used to
-          generate resource urls using relative (not prefixed with a '/') src references. The Tags will then determine
+          generate resource urls using relative (not prefixed with a '/') src references. The Tags will then
           automatically determine the correct url to generate using the current Struts Page URL as defined for this
           RenderRequest.
         </p>
@@ -399,7 +400,7 @@ limitations under the License.
           PortletRequestProcessor, it will be replaced automatically by the Struts Bridge.
         </p>
         <p>
-          The Struts Bridge also supports Tiles to be used through its <code>PortletTilesRequestProcessor</code>. If the
+          The Struts Bridge also supports Tiles to be used with the <code>PortletTilesRequestProcessor</code>. If the
           TilesPlugin is defined (as required to be able to use Tiles in Struts) it will be recognized by the Struts
           Bridge and then the PortletTilesRequestProcessor will be used instead (if not configured already).          
         </p>
@@ -428,7 +429,7 @@ limitations under the License.
           example of such a "dual" mode Struts Application.
         </p>
         <p>
-          Another benefit of such a "dual" mode Struts Application is that it can be fully tested as Web Application, 
+          Another benefit of such a "dual" mode Struts Application is that it can be tested as Web Application 
           which <em>is</em> somewhat easier than testing it as a Portlet.
         </p>
       </subsection>      
