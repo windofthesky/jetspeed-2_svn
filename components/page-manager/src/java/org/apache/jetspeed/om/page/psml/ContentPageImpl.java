@@ -348,5 +348,13 @@ public class ContentPageImpl implements ContentPage
         page.setTitle(title);
     }
     
-    
+    /**
+     * getPage - access wrapped page
+     *
+     * @return wrapped page
+     */
+    public Page getPage()
+    {
+        return page;
+    }
 }

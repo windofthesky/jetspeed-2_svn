@@ -162,6 +162,13 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
             return;
         }
 
+        // unwrap page to be registered
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
+        // register page
         String id = page.getId();
 
         if (id == null)
@@ -180,6 +187,13 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      */
     public void updatePage( Page page ) throws JetspeedException, PageNotUpdatedException
     {
+        // unwrap page to be updated
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
+        // update page
         try
         {
             persistenceStore.getTransaction().begin();
@@ -201,6 +215,13 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      */
     public void removePage( Page page ) throws PageNotRemovedException
     {
+        // unwrap page to be removed
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
+        // remove page
         if (pageCache.containsKey(page.getId()))
         {
             pageCache.remove(pageCache.get(page.getId()));

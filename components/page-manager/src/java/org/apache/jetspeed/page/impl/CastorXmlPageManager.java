@@ -1600,6 +1600,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void registerPage(Page page) throws JetspeedException
     {
+        // unwrap page to be registered
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
         // make sure path and related members are set
         if ((page.getPath() == null) && (page.getId() != null))
         {
@@ -1654,6 +1660,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void updatePage(Page page) throws JetspeedException
     {
+        // unwrap page to be updated
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
         registerPage(page);
     }
 
@@ -1666,6 +1678,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void removePage(Page page) throws JetspeedException
     {
+        // unwrap page to be removed
+        if (page instanceof ContentPageImpl)
+        {
+            page = ((ContentPageImpl)page).getPage();
+        }
+
         // check for edit access
         page.checkAccess(SecuredResource.EDIT_ACTION);
 
