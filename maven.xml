@@ -354,8 +354,8 @@ limitations under the License.
          password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
       <classpath>
-        <path refid="maven.dependency.classpath"/>
         <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+        <path refid="maven.dependency.classpath"/>
       </classpath>
     </sql>
   </goal>
