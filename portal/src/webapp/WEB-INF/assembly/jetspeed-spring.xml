@@ -134,10 +134,9 @@ limitations under the License.
     
   <!-- Portlet Registry DAO-->
   <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
-    	<constructor-arg>
-    		<value>META-INF/registry_repository.xml</value>
-    	</constructor-arg>
-    </bean>
+        <constructor-arg index="0"><value>META-INF/registry_repository.xml</value></constructor-arg>
+        <constructor-arg index="1"><ref bean="portletFactory"/></constructor-arg>
+  </bean>
 		    
 	<bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry"
 		  name="portletRegistry"

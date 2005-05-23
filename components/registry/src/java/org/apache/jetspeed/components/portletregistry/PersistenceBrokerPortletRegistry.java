@@ -22,6 +22,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -61,10 +62,11 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
     /**
      *  
      */
-    public PersistenceBrokerPortletRegistry(String repositoryPath)
+    public PersistenceBrokerPortletRegistry(String repositoryPath, PortletFactory portletFactory)
     {
         super(repositoryPath);
         PortletDefinitionImpl.setPortletRegistry(this);
+        PortletDefinitionImpl.setPortletFactory(portletFactory);
     }
 
     public Language createLanguage( Locale locale, String title, String shortTitle, String description,
