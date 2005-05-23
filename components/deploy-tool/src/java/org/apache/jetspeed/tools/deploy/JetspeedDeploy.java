@@ -56,7 +56,14 @@ public class JetspeedDeploy implements Deploy
             System.exit(1);
             return;
         }
-        new JetspeedDeploy(args[0], args[1], args.length == 3 ? true : false);
+        if ( args.length == 3 )
+        {
+            new JetspeedDeploy(args[1], args[2], true);
+        }
+        else
+        {
+            new JetspeedDeploy(args[0], args[1], false);
+        }
     }
 
     private final byte[] buffer = new byte[4096];
