@@ -1,5 +1,5 @@
 <!ENTITY jetspeed-version "2.0-M3-dev">
-<!ENTITY pluto-version "1.0-svn-169718.jar">
+<!ENTITY pluto-version "1.0-svn-169718">
 <!ENTITY portals-bridges-common-version "0.3-dev">
 <!ENTITY portals-bridges-frameworks-version "0.3-dev">
 <!ENTITY portals-bridges-jsf-version "0.3-dev">
