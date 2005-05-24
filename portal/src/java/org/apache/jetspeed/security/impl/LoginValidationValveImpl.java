@@ -117,7 +117,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
 
     public String toString()
     {
-        return "PasswordCredentialValve";
+        return "LoginValidationValve";
     }
 
 }
