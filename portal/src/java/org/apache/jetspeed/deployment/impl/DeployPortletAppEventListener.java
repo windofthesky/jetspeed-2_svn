@@ -114,7 +114,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             // Check for at least WEB-INF/portlet.xml
             // This will also prevent the src/webapps/WEB-INF/apps/CVS folder
             // to be seen as local app from testcases resulting in an exception
-            if ( ! new File(localApps[i],"META-INF/portlet.xml").exists() )
+            if ( ! new File(localApps[i],"WEB-INF/portlet.xml").exists() )
             {
                 log.warn("Not a local application " + localApps[i].getName());
             }
