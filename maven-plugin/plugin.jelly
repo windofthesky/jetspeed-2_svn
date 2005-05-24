@@ -55,7 +55,7 @@ limitations under the License.
             <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
           </classpath>
             <arg value="-database" />
-            <arg value="${org.apache.jetspeed.plugin.root}/plugin-resources/Production" />
+            <arg value="${org.apache.jetspeed.plugin.production.db}" />
             <arg value="-port" />
             <arg value="9001" />
             <arg value="-silent" />
