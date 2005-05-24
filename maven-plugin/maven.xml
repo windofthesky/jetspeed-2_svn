@@ -76,7 +76,7 @@ limitations under the License.
   	<attainGoal name="plugin:uninstall-now" />
   	<delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="false" />  
   </goal>
-
+  
    <goal name="copyDb">
 	 <copy todir="target/classes/plugin-resources" overwrite="true" failonerror="true">
          <fileset dir="../src/database/hsql" >         	
@@ -86,8 +86,14 @@ limitations under the License.
     </copy>
      
      
+    <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
+     <fileset dir="../target/src/sql" >   
+         <exclude name="**/test-persistence-schema.sql" />            
+         <include name="**/*.sql" />
+     </fileset>          	       	       
+    </copy>
+     
      <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
-         <fileset dir="../target/src/sql" />   
          <fileset dir="../src/sql/" >
          	 <include name="*.sql" />
          </fileset>          	       	       
