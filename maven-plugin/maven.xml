@@ -67,7 +67,7 @@ limitations under the License.
          prereq
     -->    
     <maven:installPlugin file="${maven.build.dir}/${maven.final.name}.jar" cache="true" />
-    <artifact:install artifact="${maven.build.dir}/${maven.final.name}.jar" type="plugin" project="${pom}"/>
+      <artifact:install artifact="${maven.build.dir}/${maven.final.name}.jar" type="plugin" project="${pom}"/>
     <unjar src="${maven.build.dir}/${maven.final.name}.jar" dest="${maven.home.local}/plugins/${maven.final.name}" overwrite="true" />
 
   </goal>
@@ -88,10 +88,28 @@ limitations under the License.
      
      <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
          <fileset dir="../target/src/sql" />   
-         <fileset dir="../src/sql" >
+         <fileset dir="../src/sql/" >
          	 <include name="*.sql" />
          </fileset>          	       	       
      </copy>
+
+     <copy todir="target/classes/plugin-resources/hsql/drop/" overwrite="true" failonerror="true">
+         <fileset dir="../src/sql/hsql/" >
+         	 <include name="drop.sql" />
+         </fileset>          	       	       
+    </copy>         
+
+     <copy todir="target/classes/plugin-resources/mysql/drop/" overwrite="true" failonerror="true">                 
+         <fileset dir="../src/sql/mysql/" >
+         	 <include name="drop.sql" />
+         </fileset>          	     
+    </copy>
+    
+     <copy todir="target/classes/plugin-resources/oracle/drop/" overwrite="true" failonerror="true">                   	       
+         <fileset dir="../src/sql/oracle/" >
+         	 <include name="drop.sql" />
+         </fileset>          	       	                
+    </copy>
 
     <util:file name="${basedir}/../src/sql" var="sqlSrcDir"/>
     <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlSrcDirFile">
