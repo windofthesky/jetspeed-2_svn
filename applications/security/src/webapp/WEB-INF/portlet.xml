@@ -272,9 +272,11 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>VIEW</portlet-mode>
+<!-- not implemented yet
+      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
+-->      
     </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSOResources</resource-bundle>            
@@ -298,9 +300,11 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>VIEW</portlet-mode>
+<!-- not implemented yet
+      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
+-->      
     </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSOResources</resource-bundle>            
