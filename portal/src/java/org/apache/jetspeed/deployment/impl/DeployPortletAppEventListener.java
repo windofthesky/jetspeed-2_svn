@@ -111,15 +111,25 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         });
         for (int i = 0; i < localApps.length; i++)
         {
-            DirectoryHelper paDirHelper = new DirectoryHelper(localApps[i]);
-            try
+            // Check for at least WEB-INF/portlet.xml
+            // This will also prevent the src/webapps/WEB-INF/apps/CVS folder
+            // to be seen as local app from testcases resulting in an exception
+            if ( ! new File(localApps[i],"META-INF/portlet.xml").exists() )
             {
-                pam.startLocalPortletApplication(localApps[i].getName(), paDirHelper,
-                                                 createLocalPAClassLoader(localApps[i]));
+                log.warn("Not a local application " + localApps[i].getName());
             }
-            catch (Exception e)
+            else
             {
-                log.error("Failed to start Local Portlet Application " + localApps[i], e);
+                DirectoryHelper paDirHelper = new DirectoryHelper(localApps[i]);
+                try
+                {
+                    pam.startLocalPortletApplication(localApps[i].getName(), paDirHelper,
+                                                     createLocalPAClassLoader(localApps[i]));
+                }
+                catch (Exception e)
+                {
+                    log.error("Failed to start Local Portlet Application " + localApps[i], e);
+                }
             }
         }
     }
