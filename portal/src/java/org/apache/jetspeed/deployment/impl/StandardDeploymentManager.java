@@ -327,7 +327,17 @@ public class StandardDeploymentManager implements DeploymentManager
          */
         public void run()
         {
-            while (started)
+            // use a double scanningDelay at startup to give the App Server some time to wake up...
+            // see: http://issues.apache.org/jira/browse/JS2-261
+            try
+            {
+                sleep(scanningDelay*2);
+            }
+            catch (InterruptedException e)
+            {
+
+            }
+           while (started)
             {
                 fireDeploymentEvent();
 
