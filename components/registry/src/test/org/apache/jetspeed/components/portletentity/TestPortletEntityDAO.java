@@ -18,18 +18,23 @@ package org.apache.jetspeed.components.portletentity;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.Property;
+//import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -54,6 +59,316 @@ import org.jmock.core.stub.ReturnStub;
 public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 {
 
+    // Dummy ContentFragment wrapper around Fragment as using the real ContentFragmentImpl
+    // would introduce a circular dependency between the registry and page-manager components.
+    // Probably should be replaced by a Mock but I don't know how to setup that quickly
+    // and the whole ContentFragment construction is bound to be replaced soon anyway...
+    
+    private static class ContentFragmentImpl implements Fragment, ContentFragment
+    {
+        private Fragment f;
+        
+        /**
+         * @param f
+         * @param list
+         */
+        public ContentFragmentImpl(Fragment f, HashMap list)
+        {
+            super();
+            this.f = f;
+        }
+        /**
+         * @param p
+         */
+        public void addProperty(Property p)
+        {
+            f.addProperty(p);
+        }
+        /**
+         * @param actions
+         * @throws SecurityException
+         */
+        public void checkAccess(String actions) throws SecurityException
+        {
+            f.checkAccess(actions);
+        }
+        /**
+         * @param actions
+         * @throws SecurityException
+         */
+        public void checkConstraints(String actions) throws SecurityException
+        {
+            f.checkConstraints(actions);
+        }
+        /**
+         * @param actions
+         * @throws SecurityException
+         */
+        public void checkPermissions(String actions) throws SecurityException
+        {
+            f.checkPermissions(actions);
+        }
+        /**
+         * @param layoutName
+         */
+        public void clearProperties(String layoutName)
+        {
+            f.clearProperties(layoutName);
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        public boolean equals(Object obj)
+        {
+            return f.equals(obj);
+        }
+        /**
+         * @return
+         */
+        public boolean getConstraintsEnabled()
+        {
+            return f.getConstraintsEnabled();
+        }
+        /**
+         * @return
+         */
+        public String getDecorator()
+        {
+            return f.getDecorator();
+        }
+        /**
+         * @return
+         */
+        public List getFragments()
+        {
+            return f.getFragments();
+        }
+        /**
+         * @return
+         */
+        public String getId()
+        {
+            return f.getId();
+        }
+        /**
+         * @return
+         */
+        public List getLayoutProperties()
+        {
+            return f.getLayoutProperties();
+        }
+        /**
+         * @return
+         */
+        public String getName()
+        {
+            return f.getName();
+        }
+        /**
+         * @return
+         */
+        public boolean getPermissionsEnabled()
+        {
+            return f.getPermissionsEnabled();
+        }
+        /**
+         * @param layoutName
+         * @return
+         */
+        public List getProperties(String layoutName)
+        {
+            return f.getProperties(layoutName);
+        }
+        /**
+         * @param layout
+         * @param propName
+         * @return
+         */
+        public String getPropertyValue(String layout, String propName)
+        {
+            return f.getPropertyValue(layout, propName);
+        }
+        /**
+         * @return
+         */
+        public SecurityConstraints getSecurityConstraints()
+        {
+            return f.getSecurityConstraints();
+        }
+        /**
+         * @return
+         */
+        public String getShortTitle()
+        {
+            return f.getShortTitle();
+        }
+        /**
+         * @return
+         */
+        public String getSkin()
+        {
+            return f.getSkin();
+        }
+        /**
+         * @return
+         */
+        public String getState()
+        {
+            return f.getState();
+        }
+        /**
+         * @return
+         */
+        public String getTitle()
+        {
+            return f.getTitle();
+        }
+        /**
+         * @return
+         */
+        public String getType()
+        {
+            return f.getType();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        public int hashCode()
+        {
+            return f.hashCode();
+        }
+        /**
+         * @return
+         */
+        public boolean isReference()
+        {
+            return f.isReference();
+        }
+        /**
+         * @param p
+         */
+        public void removeProperty(Property p)
+        {
+            f.removeProperty(p);
+        }
+        /**
+         * @param decoratorName
+         */
+        public void setDecorator(String decoratorName)
+        {
+            f.setDecorator(decoratorName);
+        }
+        /**
+         * @param id
+         */
+        public void setId(String id)
+        {
+            f.setId(id);
+        }
+        /**
+         * @param name
+         */
+        public void setName(String name)
+        {
+            f.setName(name);
+        }
+        /**
+         * @param layout
+         * @param propName
+         * @param value
+         */
+        public void setPropertyValue(String layout, String propName, String value)
+        {
+            f.setPropertyValue(layout, propName, value);
+        }
+        /**
+         * @param constraints
+         */
+        public void setSecurityConstraints(SecurityConstraints constraints)
+        {
+            f.setSecurityConstraints(constraints);
+        }
+        /**
+         * @param title
+         */
+        public void setShortTitle(String title)
+        {
+            f.setShortTitle(title);
+        }
+        /**
+         * @param skinName
+         */
+        public void setSkin(String skinName)
+        {
+            f.setSkin(skinName);
+        }
+        /**
+         * @param state
+         */
+        public void setState(String state)
+        {
+            f.setState(state);
+        }
+        /**
+         * @param title
+         */
+        public void setTitle(String title)
+        {
+            f.setTitle(title);
+        }
+        /**
+         * @param type
+         */
+        public void setType(String type)
+        {
+            f.setType(type);
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        public String toString()
+        {
+            return f.toString();
+        }
+        
+        public Object clone() throws CloneNotSupportedException
+        {
+            return f.clone();
+        }
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.om.page.ContentFragment#getContentFragments()
+         */
+        public List getContentFragments()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.om.page.ContentFragment#getRenderedContent()
+         */
+        public String getRenderedContent() throws IllegalStateException
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.om.page.ContentFragment#overrideRenderedContent(java.lang.String)
+         */
+        public void overrideRenderedContent(String contnent)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.om.page.ContentFragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
+         */
+        public void setPortletContent(PortletContent portletContent)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    }
+    
     private static final String TEST_APP = "EntityTestApp";
     private static final String TEST_PORTLET = "EntityTestPortlet";
     private static final String TEST_ENTITY = "user5/entity-9";
