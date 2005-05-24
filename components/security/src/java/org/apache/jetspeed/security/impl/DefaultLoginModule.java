@@ -14,6 +14,8 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -26,7 +28,11 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.apache.jetspeed.security.LoginModuleProxy;
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * <p>LoginModule implementation that authenticates a user
@@ -117,7 +123,7 @@ public class DefaultLoginModule implements LoginModule
             {
                 // TODO We should get the user profile here and had it in cache so that we do not have to retrieve it again.
                 // TODO Ideally the User should be available from the session.  Need discussion around this.
-                subject.getPrincipals().addAll(ums.getUser(username).getSubject().getPrincipals());
+                commitPrincipals(subject, ums.getUser(username));
 
                 username = null;
                 commitSuccess = true;
@@ -213,4 +219,25 @@ public class DefaultLoginModule implements LoginModule
         }
     }
 
+    
+    protected Principal getUserPrincipal(User user)
+    {
+        return SecurityHelper.getPrincipal(user.getSubject(),UserPrincipal.class);
+    }
+    
+    protected List getUserRoles(User user)
+    {
+        return SecurityHelper.getPrincipals(user.getSubject(),RolePrincipal.class);
+    }
+    
+    /**
+     * Default setup of the logged on Subject Principals for Tomcat
+     * @param subject
+     * @param user
+     */
+    protected void commitPrincipals(Subject subject, User user)
+    {
+        subject.getPrincipals().add(getUserPrincipal(user));
+        subject.getPrincipals().addAll(getUserRoles(user));
+    }
 }
