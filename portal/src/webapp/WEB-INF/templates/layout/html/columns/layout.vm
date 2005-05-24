@@ -74,7 +74,8 @@ function openWindow(pipeline)
 	  #if($editing == true)    		  	  
 	   #set ($chooser = "${jetspeed.pageBasePath}/Administrative/choosers/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
-	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')">Select</a>
+            #set ($imgsrc="${jetspeed.pageBasePath}/content/images/select.gif")
+	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
 	      <td/>	  
 	  #end      
       </tr>
