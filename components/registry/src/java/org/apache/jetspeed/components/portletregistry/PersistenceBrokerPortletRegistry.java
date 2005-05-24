@@ -59,6 +59,12 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
      */
     static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
 
+    // for testing purposes only: no need for the portletFactory then
+    public PersistenceBrokerPortletRegistry(String repositoryPath)
+    {
+        this(repositoryPath,null);
+    }
+    
     /**
      *  
      */
