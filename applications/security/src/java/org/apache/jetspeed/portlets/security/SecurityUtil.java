@@ -69,9 +69,9 @@ public abstract class SecurityUtil extends BrowserPortlet
         RequestContext requestContext = (RequestContext) renderRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         HttpServletRequest request = requestContext.getRequest();
         StringBuffer path = new StringBuffer();
-        return path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
+        return requestContext.getResponse().encodeURL(path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
                 request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
-                relativePath).toString();
+                relativePath).toString());
     }
     
     public static void publishErrorMessage(PortletRequest request, String message)

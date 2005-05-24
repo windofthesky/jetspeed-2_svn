@@ -74,7 +74,7 @@ function openWindow(pipeline)
 	  #if($editing == true)    		  	  
 	   #set ($chooser = "${jetspeed.pageBasePath}/Administrative/choosers/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
-	      	<a href="javascript:openWindow('$chooser')">Select</a>
+	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')">Select</a>
 	      <td/>	  
 	  #end      
       </tr>
@@ -128,7 +128,8 @@ function openWindow(pipeline)
                          #set($upUrl = $renderResponse.createRenderURL())    
                          $!upUrl.setParameter("moveBy","0,-1")
                          $!upUrl.setParameter("fragmentId","$f.id")
-                         <a href="$upUrl"><img src="${layoutImageBase}/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
+                         #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
+                         <a href="$upUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
                    <td/>
@@ -140,7 +141,8 @@ function openWindow(pipeline)
                          #set($leftUrl = $renderResponse.createRenderURL())    
                          $!leftUrl.setParameter("moveBy","-1,0")
                          $!leftUrl.setParameter("fragmentId","$f.id")    
-                         <a href="$leftUrl"><img src="${layoutImageBase}/movePortletLeft.gif" border="0" title="Move Portlet Left"/></a>
+                         #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
+                         <a href="$leftUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
                         #end
                    </td>
                    <td align="center" style="font-size:smaller; font-weight:bold" >
@@ -151,14 +153,16 @@ function openWindow(pipeline)
                          #set($rightUrl = $renderResponse.createRenderURL())    
                          $!rightUrl.setParameter("moveBy","1,0")
                          $!rightUrl.setParameter("fragmentId","$f.id")
-                         <a href="$rightUrl"><img src="${layoutImageBase}/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
+                         #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
+                         <a href="$rightUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
                     <td>
                          #set($deleter = $renderResponse.createActionURL())    
                          $deleter.setParameter("deleteId","$f.id")
                          $deleter.setParameter("page","$myPage")                         
-                         &nbsp;<a href="$deleter"><img src="${layoutImageBase}/close.gif" border="0" title="Remove Portlet"/></a>                    
+                         #set ($imgsrc="$layoutImageBase/close.gif")
+                         &nbsp;<a href="$deleter"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Remove Portlet"/></a>                    
                     </td>
                  </tr>
 				 <tr>
@@ -169,7 +173,8 @@ function openWindow(pipeline)
 					    #set($downUrl = $renderResponse.createRenderURL())	
 			            $!downUrl.setParameter("moveBy","0,1")
 			            $!downUrl.setParameter("fragmentId","$f.id")
-					    <a href="$downUrl"><img src="${layoutImageBase}/movePortletDown.gif" border="0" title="Move Portlet Down"/></a>
+              #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
+					    <a href="$downUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
 					<td/>

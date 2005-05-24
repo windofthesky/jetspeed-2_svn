@@ -38,8 +38,8 @@ public class LoginRedirectorServlet extends HttpServlet
         HttpSession session = request.getSession(true);
         String destination = (String) session
                 .getAttribute(LoginConstants.DESTINATION);
-        if (destination == null)
-            destination = request.getContextPath();
+        if (destination == null || destination.equals(request.getContextPath()))
+            destination = request.getContextPath() + "/";
         else
             session.removeAttribute(LoginConstants.DESTINATION);
 

@@ -116,7 +116,7 @@
   <bean id="javax.portlet.PortletURL"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
-       <property name="className"><value>org.apache.pluto.factory.impl.PortletURLFactoryImpl</value></property>
+       <property name="className"><value>org.apache.jetspeed.container.url.impl.PortletURLFactoryImpl</value></property>
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
   </bean>
   

@@ -784,7 +784,7 @@ public class JetspeedPowerTool
     protected DecoratorAction createDecoratorAction( String resourceBase, String actionName )
     {
         // TODO: HARD-CODED .gif link
-        String link = getRequestContext().getResponse().encodeURL(resourceBase+"/content/images/"+actionName+".gif");
+        String link = renderResponse.encodeURL(resourceBase+"/content/images/"+actionName+".gif");
         return new DecoratorAction(actionName, actionName, link); 
     }
     
@@ -796,7 +796,7 @@ public class JetspeedPowerTool
     {
         DecoratorAction action = createDecoratorAction(resourceBase, actionName);
         PortalURL portalURL = getRequestContext().getPortalURL(); 
-        action.setAction(portalURL.createPortletURL(window, mode, null, portalURL.isSecure()).toString());
+        action.setAction(renderResponse.encodeURL(portalURL.createPortletURL(window, mode, null, portalURL.isSecure()).toString()));
         return action;
     }
 
@@ -808,7 +808,7 @@ public class JetspeedPowerTool
     {
         DecoratorAction action = createDecoratorAction(resourceBase, actionName);
         PortalURL portalURL = getRequestContext().getPortalURL(); 
-        action.setAction(portalURL.createPortletURL(window, null, state, portalURL.isSecure()).toString());
+        action.setAction(renderResponse.encodeURL(portalURL.createPortletURL(window, null, state, portalURL.isSecure()).toString()));
         return action;
     }
 
@@ -877,9 +877,9 @@ public class JetspeedPowerTool
     {
         HttpServletRequest request = getRequestContext().getRequest();
         StringBuffer path = new StringBuffer();
-        return path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
+        return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
                 request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
-                relativePath).toString();
+                relativePath).toString());
     }
 
     public Subject getSubject()
