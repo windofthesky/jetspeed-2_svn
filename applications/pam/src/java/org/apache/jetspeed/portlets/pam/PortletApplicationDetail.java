@@ -352,7 +352,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 {
                     MutablePortletApplication mpa = registry.getPortletApplication(paName);
                     
-                    mpa.addUserAttribute(userAttrName, userAttrDesc);                
+                    mpa.addUserAttribute(userAttrName.trim(), userAttrDesc);                
                     
                     registry.updatePortletApplication(mpa);
                 }
