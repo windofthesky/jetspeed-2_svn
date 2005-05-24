@@ -94,10 +94,10 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         }
     }
 
-    public WindowState getState(PortletWindow window)
+    public WindowState getState(String windowId)
     {
         WindowState windowState = null;
-        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
         if (state != null)
         {
             windowState = state.getWindowState();
@@ -105,15 +105,25 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return windowState != null ? windowState : WindowState.NORMAL;
     }
 
-    public PortletMode getMode(PortletWindow window)
+    public WindowState getState(PortletWindow window)
+    {
+        return getState(window.getId().toString());
+    }
+
+    public PortletMode getMode(String windowId)
     {
         PortletMode portletMode = null;
-        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
         if (state != null)
         {
             portletMode = state.getPortletMode();
         }
         return portletMode != null ? portletMode : PortletMode.VIEW;
+    }
+    
+    public PortletMode getMode(PortletWindow window)
+    {
+        return getMode(window.getId().toString());
     }
 
     public PortletWindow getMaximizedWindow()
@@ -164,5 +174,10 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         return codec.encode(requestStates, window, mode, state, isNavigationalParameterStateFull(), 
                 isRenderParameterStateFull());
-    }    
+    }
+
+    public Iterator getWindowIdIterator()
+    {
+        return requestStates.getWindowIdIterator();
+    }
 }

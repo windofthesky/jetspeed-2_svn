@@ -68,12 +68,28 @@ public interface NavigationalState
     WindowState getState(PortletWindow window);    
     
     /**
+     * Gets the window state for given portlet window id.
+     * 
+     * @param windowId
+     * @return
+     */
+    WindowState getState(String windowId);    
+    
+    /**
      * Gets the portlet mode for the given portlet window.
      * 
      * @param window
      * @return
      */
     PortletMode getMode(PortletWindow window);
+    
+    /**
+     * Gets the portlet mode for the given portlet window id.
+     * 
+     * @param windowId
+     * @return
+     */
+    PortletMode getMode(String windowId);
     
     /**
      * For the current request return the (first) maximized window or
@@ -88,6 +104,16 @@ public interface NavigationalState
     String[] getParameterValues(PortletWindow window, String parameterName);
 
     PortletWindow getPortletWindowOfAction();
+    
+    /**
+     * Returns an iterator of Portlet Window ids of all the Portlet Windows 
+     * within the NavigationalState.
+     * <br/>
+     * Note: for an ActionRequest, this will include the window id of
+     * the PortletWindowOfAction.
+     * @return iterator of portletWindow ids (String)
+     */
+    Iterator getWindowIdIterator();
     
     /**
      * Encodes the Navigational State with overrides for a specific PortletWindow into a string to be embedded within a 
