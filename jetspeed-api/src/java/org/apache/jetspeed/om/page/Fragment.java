@@ -18,8 +18,6 @@ package org.apache.jetspeed.om.page;
 
 import java.util.List;
 
-import org.apache.jetspeed.aggregator.PortletContent;
-
 /**
  * <p>A <code>Fragment</code> is the basic element handled by the aggregation
  * engine to compose the final portal page. It represents a reserved screen

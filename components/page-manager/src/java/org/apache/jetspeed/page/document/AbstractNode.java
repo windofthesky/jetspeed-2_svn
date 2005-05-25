@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.page.document;
 
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.util.ArgUtil;
 
 

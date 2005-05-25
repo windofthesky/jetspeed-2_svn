@@ -23,8 +23,6 @@ package com.ibatis.jpetstore.persistence.iface;
 import com.ibatis.jpetstore.domain.Order;
 import com.ibatis.common.util.PaginatedList;
 
-import java.util.List;
-
 public interface OrderDao {
 
   public PaginatedList getOrdersByUsername(String username);

@@ -24,8 +24,6 @@ import com.ibatis.jpetstore.persistence.iface.OrderDao;
 import com.ibatis.jpetstore.persistence.iface.SequenceDao;
 import com.ibatis.common.util.PaginatedList;
 
-import java.util.List;
-
 /**
  * <p/>
  * Date: Mar 6, 2004 11:22:36 PM

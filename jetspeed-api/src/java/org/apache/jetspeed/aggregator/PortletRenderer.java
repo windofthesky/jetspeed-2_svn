@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
 /**

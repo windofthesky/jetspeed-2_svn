@@ -12,11 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.portlet.Portlet;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -26,23 +21,15 @@ import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredExcept
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
-import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
-import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
-import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
-import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 //import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
-import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**

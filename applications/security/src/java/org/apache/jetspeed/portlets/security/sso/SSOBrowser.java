@@ -29,7 +29,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;

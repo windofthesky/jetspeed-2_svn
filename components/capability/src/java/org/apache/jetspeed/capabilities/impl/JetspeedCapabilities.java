@@ -32,7 +32,6 @@ import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.capabilities.UnableToBuildCapabilityMapException;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.ojb.broker.query.Criteria;
-import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
