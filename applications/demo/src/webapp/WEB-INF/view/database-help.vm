@@ -1,3 +1,4 @@
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
 <p>TODO: arguably the long descriptive strings here shouldn't be localized by resource bundles but by file i.e. database-help_en.vm etc </b>
 
 <h3 class="portlet-section-header">$MESSAGES.getString('label.prefs')</h3>
