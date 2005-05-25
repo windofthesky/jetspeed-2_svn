@@ -875,11 +875,19 @@ public class JetspeedPowerTool
 
     public String getAbsoluteUrl( String relativePath )
     {
-        HttpServletRequest request = getRequestContext().getRequest();
-        StringBuffer path = new StringBuffer();
-        return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
-                request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
-                relativePath).toString());
+        // only rewrite a non-absolute url
+        if ( relativePath != null && relativePath.indexOf("://") == -1)
+        {
+          HttpServletRequest request = getRequestContext().getRequest();
+          StringBuffer path = new StringBuffer();
+          return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
+                  request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
+                  relativePath).toString());
+        }
+        else
+        {
+            return relativePath;
+        }
     }
 
     public Subject getSubject()
