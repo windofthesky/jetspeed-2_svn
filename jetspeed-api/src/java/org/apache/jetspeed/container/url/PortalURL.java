@@ -58,6 +58,15 @@ public interface PortalURL
     String getPath();
     
     /**
+     * Returns the current Portal base path. 
+     * <br>
+     * This path can be used as base for root relative pages and resources which don't need
+     * the NavigationalState.
+     * @return the current Portal base path without NavigationalState
+     */
+    String getBasePath();
+
+    /**
      * Returns the current Portal Page base path without possible encoded
      * NavigationalState parameter.
      * <br>
