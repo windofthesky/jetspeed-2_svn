@@ -901,6 +901,11 @@ public class JetspeedPowerTool
         return (principal != null);
     }
     
+    public String getBasePath()
+    {
+        return getRequestContext().getPortalURL().getBasePath();
+    }
+    
     public String getPageBasePath()
     {
         return getRequestContext().getPortalURL().getPageBasePath();
