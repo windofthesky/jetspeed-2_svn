@@ -116,6 +116,20 @@ With the above example the required autodeployment properties should be set as:
     org.apache.jetspeed.services.autodeployment.password=j2deployer
   </pre>
 </p>
+<subsection name="Tomcat 5.5.9 on Windows">
+<p>
+To have redeployment and undeployment working properly when using Tomcat 5.5.9 on Windows you have to set the global Context
+attribute "antiJARLocking" to true.
+</p>
+<p>
+Thus, in $CATALINA_HOME\conf\context.xml use:
+  <source><![CDATA[
+    <Context antiJARLocking="true">
+    ...
+    </Context>]]>
+  </source>
+</p>
+</subsection>
 </section>
 <section name='4. Building Jetspeed 2'>
 <p>
