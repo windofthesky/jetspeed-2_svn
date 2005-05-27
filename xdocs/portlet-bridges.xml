@@ -17,7 +17,7 @@ limitations under the License.
 <document>
   <properties>
     <title>Jetspeed Portlet Bridges</title>
-    <subtitle>Documentation for Jetspeed-2 Portlet Bridges</subtitle>
+    <subtitle>Documentation for Apache Portals Portlet Bridges</subtitle>
     <authors>
       <person name="David Le Strat" email="dlestrat@apache.org"/>
     </authors>
@@ -25,32 +25,32 @@ limitations under the License.
   <body>
 <section name="Struts Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlet bridge for Struts.  Please visit the <a href="/multiproject/portals-bridges-struts/index.html">J2's Struts Portlet Bridge</a>
+Jetspeed 2 provides a Portlet bridge for Struts.  Please visit the <a href="multiproject/portals-bridges-struts/index.html">Apache Portals Struts Portlet Bridge</a>
 sub project documentation.
 </p>
 <p>
 Jetspeed 2 also contains multiple Struts portlet demo applications:
 <ul>
-	<li>The <a href="/multiproject/struts-demo/index.html">Struts Mailer Demo</a> application</li>
-	<li>The <a href="/multiproject/jpetstore/index.html">iBATIS JPetstore Demo Portlet</a> application</li>
+	<li>The <a href="multiproject/struts-demo/index.html">Struts Mailer Demo</a> application</li>
+	<li>The <a href="multiproject/jpetstore/index.html">iBATIS JPetstore Demo Portlet</a> application</li>
 </ul>
 </p>
 </section>
 <section name="JSF Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlets bridge for JSF.  Please visit the <a href="/multiproject/portals-bridges-jsf/index.html">J2's JSF Portlet Bridge</a>
+Jetspeed 2 provides a Portlets bridge for JSF.  Please visit the <a href="multiproject/portals-bridges-jsf/index.html">Apache Portals JSF Portlet Bridge</a>
 sub project documentation.
 </p>
 <p>
 Jetspeed 2 also contains multiple JSF portlet demo applications based on MyFaces JSF implementation:
 <ul>
-	<li>The <a href="/multiproject/jsf-demo/index.html">JSF Portlet Demo</a> application using J2's JSF Portlet Bridge</li>
-    <li>The <a href="/multiproject/jsf-demo-myfaces/index.html">JSF Portlet Demo</a> application using MyFaces built-in Portlet Bridge</li>
-	<li>The <a href="/multiproject/security/index.html">Role Management (Work In Progress)</a> application</li>
+	<li>The <a href="multiproject/jsf-demo/index.html">JSF Portlet Demo</a> application using Apache Portals JSF Portlet Bridge</li>
+    <li>The <a href="multiproject/jsf-demo-myfaces/index.html">JSF Portlet Demo</a> application using MyFaces built-in Portlet Bridge</li>
+	<li>The <a href="multiproject/security/index.html">Role Management (Work In Progress)</a> application</li>
 </ul>
 </p>
 <p>
-Please find the bridge documentation in the <a href="/multiproject/security/index.html">JSF Portlet Bridge</a> subproject.
+Please find the bridge documentation in the <a href="multiproject/security/index.html">JSF Portlet Bridge</a> subproject.
 </p>
 </section>
 
