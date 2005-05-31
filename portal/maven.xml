@@ -646,6 +646,9 @@ limitations under the License.
       <j:when test="${dbase == 'oracle'}" >
           <j:set var="database.arg.script" value="../src/sql/oracle/populate-userinfo-for-default-psml.sql" />
       </j:when>
+      <j:when test="${dbase == 'hsql'}" >
+          <j:set var="database.arg.script" value="../src/sql/hsql/populate-userinfo-for-default-psml.sql" />
+      </j:when>
       <j:otherwise>
           <j:set var="database.arg.script" value="../src/sql/populate-userinfo-for-default-psml.sql" />
       </j:otherwise>
