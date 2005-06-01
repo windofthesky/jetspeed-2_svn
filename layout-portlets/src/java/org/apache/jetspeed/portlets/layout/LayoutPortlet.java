@@ -276,7 +276,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      */
     protected JetspeedPowerTool getJetspeedPowerTool( RenderRequest request ) throws PortletException
     {
-        JetspeedPowerTool tool = (JetspeedPowerTool) (RequestContext) request.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
+        JetspeedPowerTool tool = (JetspeedPowerTool) request.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
         RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
 
         if (tool == null)
