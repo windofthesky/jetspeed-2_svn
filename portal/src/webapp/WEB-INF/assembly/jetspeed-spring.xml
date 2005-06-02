@@ -29,61 +29,7 @@ limitations under the License.
     <bean id="javax.servlet.ServletConfig"
         class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean"
   />             
-
-
-   
-  <!-- Portlet Services  -->
-  <bean id="PortalServices" 
-  	   class="org.apache.jetspeed.services.JetspeedPortletServices" >
-  	   <constructor-arg>
-  	   	<map>
-  	   	  <entry key="PortletRegistryComponent">
-  	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
-  	   	  </entry>
-  	   	  <entry key="SearchComponent">
-  	   	  	<ref bean="org.apache.jetspeed.search.SearchEngine"/>
-  	   	  </entry>
-  	   	  <entry key="PAM">
-  	   	  	<ref bean="PAM" />
-  	   	  </entry>		  
-  	   	  <entry key="UserManager">
-  	   	    <ref bean="org.apache.jetspeed.security.UserManager"/>
-  	   	  </entry>
-  	   	  <entry key="PageManager">
-  	   	    <ref bean="org.apache.jetspeed.page.PageManager"/>
-  	   	  </entry>
-  	   	  <entry key="RoleManager">
-  	   	    <ref bean="org.apache.jetspeed.security.RoleManager"/>
-  	   	  </entry>
-  	   	  <entry key="GroupManager">
-  	   	    <ref bean="org.apache.jetspeed.security.GroupManager"/>
-  	   	  </entry>  	
-  	   	  <entry key="Profiler">
-  	   	  	<ref bean="org.apache.jetspeed.profiler.Profiler"/>
-  	   	  </entry>   	  
-  	   	  <entry key="SSO">
-  	   	  	<ref bean="org.apache.jetspeed.sso.SSOProvider"/>
-  	   	  </entry>   	  
-  	   	  <entry key="EntityAccessor">
-  	   	  	 <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent'/>
-  	   	  </entry>
-          <!-- ApplicationServerManager currently only supported for Tomcat. Comment out for others like JBoss -->
-          <entry key="ApplicationServerManager">
-            <ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager"/>
-          </entry>
-          <entry key="PortletFactory">
-            <ref bean="portletFactory"/>
-          </entry>
-          <entry key="DeploymentManager">
-            <ref bean="deploymentManager"/>
-          </entry>
-          <entry key='IdGenerator'>
-            <ref bean='IdGenerator'/>
-          </entry>
-  	   	</map>
-  	   </constructor-arg>
-  </bean>
-  
+    
   <!-- Template Locators -->
   <bean id="TemplateLocator" 
   	   class="org.apache.jetspeed.locator.JetspeedTemplateLocator" 
@@ -107,6 +53,12 @@ limitations under the License.
          </list>
   	   </constructor-arg>
   	   <constructor-arg><value>${applicationRoot}</value></constructor-arg>
+  </bean>
+  
+  <!-- Aggregation: Portlet -->
+  <bean id="Powertools" 
+  	   class="org.apache.jetspeed.velocity.JetspeedPowerToolFactory"  >  	   
+  	   <constructor-arg><value>org.apache.jetspeed.velocity.JetspeedPowerToolImpl</value></constructor-arg>
   </bean>
   
   <!-- ID Generator -->
@@ -447,104 +399,7 @@ limitations under the License.
   	   class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl"  >  	   
   	   <constructor-arg  ><ref bean="org.apache.jetspeed.aggregator.PortletRenderer" /></constructor-arg>
   </bean>
-  
-  <!-- Application Server Manager for Tomcat. Comment out for others like JBoss
-  	   Provides hooks into the application server to help us deploy portlet applications
-  	   as web application into that server.  This manager is for Tomcat 5
-  	-->
-
-  <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" 
-  	   class="org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager" 
-  	   init-method="start" destroy-method="stop"
-  >  	   
-       <constructor-arg index="0"><value>${autodeployment.catalina.base}</value></constructor-arg>
-       <constructor-arg index="1"><value>${autodeployment.catalina.engine}</value></constructor-arg>
-  	   <constructor-arg index="2"><value>${autodeployment.server}</value></constructor-arg>
-  	   <constructor-arg index="3"><value>${autodeployment.port}</value></constructor-arg>
-  	   <constructor-arg index="4"><value>${autodeployment.user}</value></constructor-arg>
-  	   <constructor-arg index="5"><value>${autodeployment.password}</value></constructor-arg>
-  </bean>
- 
-  <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory"/>
-  <bean id="PAM" 
-  	   class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager"
-  >  	   
-  	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
-  	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
-  	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/></constructor-arg>
-  	   <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>
-  	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
-   <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
-       <property name="roleManager"><ref bean="org.apache.jetspeed.security.RoleManager"/></property>
-       <property name="autoCreateRoles"><value>true</value></property>
-   -->      
-  </bean>
-
-  <!-- Portlet Application and Decorator deployment event listeners -->
-  <bean id="portletAppDeploymentListener" 
-  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"   	   
-  > 	
-  	   <constructor-arg index="0"><ref bean="PAM"/></constructor-arg>
-  	   <constructor-arg index="1"><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
-       <constructor-arg index="2"><value>${autodeployment.target.dir}</value></constructor-arg>
-       <constructor-arg index="3"><value>${applicationRoot}/WEB-INF/apps</value></constructor-arg>
-       <!-- strip commons-logging and/or log4j jars from war files: for JBoss set this to true -->
-       <constructor-arg index="4"><value>false</value></constructor-arg>
-  </bean>
-  <bean id="decoratorDeploymentRegistry" 
-  	   class="org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl"
-  >  	   
-  </bean>
-  <bean id="decoratorDeploymentListener" 
-  	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener"   	   
-  > 	
-       <constructor-arg ><value>${applicationRoot}/WEB-INF/decorations</value></constructor-arg>
-  </bean>
-
-  <!-- The deployment manager watches a specific staging directory for
-  	   deploying components.  What components get deployed depend of
-  	   DeploymentEventListeners registered to it.
-   -->
-  <bean id="deploymentManager" 
-  	   class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" 
-  	   init-method="start" destroy-method="stop"
-  >  	   
-  	   <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
-       <constructor-arg type="long" ><value>${autodeployment.delay}</value></constructor-arg>
-       <constructor-arg >
-         <list>
-            <ref bean="portletAppDeploymentListener"/>      
-            <ref bean="decoratorDeploymentListener"/>      
-         </list>
-       </constructor-arg>
-  </bean>
-  
-  <!--SEARCH COMPONENT-->
-  <bean id="org.apache.jetspeed.search.HandlerFactory"
-  	class="org.apache.jetspeed.search.handlers.HandlerFactoryImpl"
-  >
-  	<constructor-arg>
-  		<map>
-  			<entry key="java.net.URL"><value>org.apache.jetspeed.search.handlers.URLToDocHandler</value></entry>
-  			<entry key="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"><value>org.apache.jetspeed.search.handlers.pam.PortletApplicationHandler</value></entry>
-  			<entry key="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"><value>org.apache.jetspeed.search.handlers.pam.PortletDefinitionHandler</value></entry>
-  		</map>
-	</constructor-arg>
-  </bean>
-  
-  
-  <bean id="org.apache.jetspeed.search.SearchEngine"
-  	class="org.apache.jetspeed.search.lucene.SearchEngineImpl"
-  >
-  	<constructor-arg index="0"><value>${applicationRoot}/WEB-INF/search_index</value></constructor-arg>
-  	<constructor-arg index="1"><null /></constructor-arg>
-  	<constructor-arg type="boolean"><value>true</value></constructor-arg>
-  	<constructor-arg><ref bean="org.apache.jetspeed.search.HandlerFactory"/></constructor-arg>
-  	
-  </bean>
-
-  
-  
+    
   <!-- Adds jetspeed.properties as our configuration object to support ${...} vars -->
   <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
 
