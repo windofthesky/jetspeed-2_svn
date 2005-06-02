@@ -46,11 +46,13 @@ limitations under the License.
             <name>Jetspeed 2 User List</name>
             <subscribe>jetspeed-user-subscribe@portals.apache.org</subscribe>
             <unsubscribe>jetspeed-user-unsubscribe@portals.apache.org</unsubscribe>
+            <archive>http://mail-archives.apache.org/mod_mbox/portals-jetspeed-user/</archive>
         </mailingList>
         <mailingList>
             <name>Jetspeed 2 Developer List</name>
             <subscribe>jetspeed-dev-subscribe@portals.apache.org</subscribe>
             <unsubscribe>jetspeed-dev-unsubscribe@portals.apache.org</unsubscribe>
+            <archive>http://mail-archives.apache.org/mod_mbox/portals-jetspeed-dev/</archive>
         </mailingList>
     </mailingLists>
     <developers>
@@ -122,6 +124,8 @@ limitations under the License.
             <name>Ate Douma</name>
             <id>ate</id>
             <email>ate@apache.org</email>
+            <timezone>+2</timezone>
+            <organization>iWise B.V.</organization>
             <roles>
                 <role>Java Developer</role>
             </roles>
