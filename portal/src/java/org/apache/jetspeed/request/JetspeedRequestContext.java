@@ -41,7 +41,6 @@ import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ObjectID;
@@ -83,8 +82,7 @@ public class JetspeedRequestContext implements RequestContext
     
     private Fragment rootFragment;
     private Map fragments;
-    private JetspeedPowerTool jpt;
-
+    
     /**
      * Create a new Request Context
      * 
