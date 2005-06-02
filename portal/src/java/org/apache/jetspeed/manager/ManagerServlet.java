@@ -124,7 +124,7 @@ public class ManagerServlet extends HttpServlet
         }
         else if (command.equals("/unregister"))
         {
-            result = undeploy(writer, request.getParameter("pa"));
+            result = unregister(writer, request.getParameter("pa"));
         }
         else if (command.equals("/deploy"))
         {
