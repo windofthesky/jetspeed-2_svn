@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;
+import org.apache.jetspeed.velocity.JetspeedPowerToolFactory;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -50,6 +51,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PortletRegistry registry;
     protected PageManager pageManager;
     protected IdGenerator generator;
+    protected JetspeedPowerToolFactory jptFactory;
     
     public void init( PortletConfig config ) throws PortletException
     {
@@ -69,6 +71,11 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         if (null == generator)
         {
             throw new PortletException("Failed to find the ID Generator on portlet initialization");
+        }        
+        jptFactory = (JetspeedPowerToolFactory)getPortletContext().getAttribute(CommonPortletServices.CPS_JETSPEED_POWERTOOL_FACTORY);
+        if (null == jptFactory)
+        {
+            throw new PortletException("Failed to find the JPT Factory on portlet initialization");
         }        
         
     }
@@ -291,7 +298,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                                     + "the HttpServletRequest.");
                 }
 
-                tool = new JetspeedPowerTool(requestContext);
+                tool = this.jptFactory.getJetspeedPowerTool(requestContext);
                 request.setAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE, tool);
             }
 
