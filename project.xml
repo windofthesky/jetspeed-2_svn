@@ -38,8 +38,9 @@ limitations under the License.
     <siteAddress>portals.apache.org</siteAddress>
     <siteDirectory>/www/portals.apache.org/jetspeed-2-generated</siteDirectory>
     <repository>
-        <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2</connection>
-        <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/</url>
     </repository>
     <mailingLists>
         <mailingList>

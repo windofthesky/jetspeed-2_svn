@@ -33,8 +33,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals JSF Bridge</shortDescription>
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/jsf</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/jsf/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/jsf</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/jsf</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/jsf/</url>
   </repository>
   <developers>
     <developer>

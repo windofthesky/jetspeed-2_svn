@@ -32,8 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Struts Bridge</shortDescription>
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/struts</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/struts/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/struts</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/struts</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/struts/</url>
   </repository>
   <developers>
     <developer>

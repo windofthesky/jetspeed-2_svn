@@ -27,8 +27,9 @@ limitations under the License.
   <shortDescription>PHP Portlets</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/php</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/php/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/php/</url>
   </repository>
 
   <dependencies>

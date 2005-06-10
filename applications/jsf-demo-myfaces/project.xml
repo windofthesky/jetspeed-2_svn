@@ -29,8 +29,9 @@ limitations under the License.
   <shortDescription>JSF Portlet Demo - MyFaces Portlet Support</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/jsf-demo-myfaces</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/jsf-demo-myfaces/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/jsf-demo-myfaces</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/jsf-demo-myfaces</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/jsf-demo-myfaces/</url>
   </repository>
 
   <dependencies>

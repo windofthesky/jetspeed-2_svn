@@ -27,8 +27,9 @@ limitations under the License.
     <description>Jetspeed-2 Portlet Application Lifecyle Management</description>
     <shortDescription>Portlet Application Lifecycle Management</shortDescription>
     <repository>
-        <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/palm</connection>
-        <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/palm/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/palm</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/palm</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/palm/</url>
     </repository>
     <dependencies>
       <dependency>

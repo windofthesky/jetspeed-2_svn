@@ -29,8 +29,9 @@ limitations under the License.
   <shortDescription>JSF Portlet Demo</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/jsf-demo</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/jsf-demo/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/jsf-demo</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/jsf-demo</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/jsf-demo/</url>
   </repository>
 
   <dependencies>

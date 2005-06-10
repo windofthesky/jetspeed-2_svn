@@ -26,8 +26,9 @@ limitations under the License.
 	<description>Jetspeed-2 Language Selector Portlet</description>
 	<shortDescription>Language Selector Portlet</shortDescription>
 	<repository>
-		<connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/rss</connection>
-		<url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/rss/</url>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/rss</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/rss</developerConnection>
+		<url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/rss/</url>
 	</repository>
 	<dependencies>
 		<dependency>

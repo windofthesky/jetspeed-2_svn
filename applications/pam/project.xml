@@ -27,8 +27,9 @@ limitations under the License.
     <description>Jetspeed-2 Portlet Application Manager Default Package</description>
     <shortDescription>Portlet Application Manager</shortDescription>
     <repository>
-        <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/pam</connection>
-        <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/pam/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/pam</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/pam</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/pam/</url>
     </repository>
     <dependencies>
 		<dependency>

@@ -30,8 +30,9 @@ limitations under the License.
   <shortDescription>Portal Aggregation Engine</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portal</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portal/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portal</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portal</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portal/</url>
   </repository>
 
   <dependencies>

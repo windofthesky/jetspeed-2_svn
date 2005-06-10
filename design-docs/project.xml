@@ -31,8 +31,9 @@ limitations under the License.
   <shortDescription>Enterprise Information Portal</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/design-docs</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/design-docs/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/design-docs</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/design-docs</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/design-docs/</url>
   </repository>
 
   <dependencies>

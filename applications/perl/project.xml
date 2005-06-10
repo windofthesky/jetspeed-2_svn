@@ -28,8 +28,9 @@ limitations under the License.
   <shortDescription>perl Portlets</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/perl</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/perl/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/perl</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/perl</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/perl/</url>
   </repository>
 
   <dependencies>

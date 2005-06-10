@@ -28,8 +28,9 @@ limitations under the License.
     <description>Demo Portlets Container</description>
     <shortDescription>Demo Portlets Container</shortDescription>
     <repository>
-        <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/demo</connection>
-        <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/demo/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/demo</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/demo</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/demo/</url>
     </repository>
     <dependencies>
         <dependency>

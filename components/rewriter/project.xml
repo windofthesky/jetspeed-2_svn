@@ -33,8 +33,9 @@ limitations under the License.
   <shortDescription>Rewriter Components</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/rewriter</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/rewriter/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/rewriter</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/rewriter</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/rewriter/</url>
   </repository>
 
   <dependencies>

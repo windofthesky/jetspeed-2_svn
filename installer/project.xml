@@ -30,8 +30,9 @@ limitations under the License.
   <shortDescription> Used for creating a binary installer using IzPack</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portal</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portal/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/installer</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/installer</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/installer/</url>
   </repository>
 
   <dependencies>

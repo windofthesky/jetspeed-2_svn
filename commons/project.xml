@@ -32,8 +32,9 @@ limitations under the License.
   <shortDescription>Common Code for Jetspeed Portal</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/commons</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/commons/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/commons</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/commons</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/commons/</url>
   </repository>
 
   <dependencies>

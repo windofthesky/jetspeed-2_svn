@@ -33,8 +33,9 @@ limitations under the License.
   <shortDescription>Single Sign On SSO Components</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/sso</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/sso/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/sso</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/sso</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/sso/</url>
   </repository>
 
   <dependencies>

@@ -33,8 +33,9 @@ limitations under the License.
   <shortDescription>File Cache</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/jetspeed</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/jetspeed/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/file-cache</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/file-cache</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/file-cache/</url>
   </repository>
 
   <dependencies>

@@ -33,8 +33,9 @@ limitations under the License.
   <shortDescription>Reusable Portlet Gems</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/gems</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/gems/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/gems</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/gems</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/gems/</url>
   </repository>
 
   <dependencies>    		    

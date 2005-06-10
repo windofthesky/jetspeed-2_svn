@@ -32,8 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Bridges Frameworks</shortDescription>
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/frameworks/</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/frameworks/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/frameworks/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/frameworks/</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/frameworks/</url>
   </repository>
   <dependencies>
 	  <dependency>

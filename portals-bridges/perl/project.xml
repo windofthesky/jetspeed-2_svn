@@ -32,8 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Perl Framework Bridge</shortDescription>
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/perl</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/perl/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/perl</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/perl</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/perl/</url>
   </repository>
   <developers>
     <developer>

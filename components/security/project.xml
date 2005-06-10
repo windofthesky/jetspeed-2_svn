@@ -33,8 +33,9 @@ limitations under the License.
   <shortDescription>Security Components</shortDescription>
 
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/security</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/security/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/security</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/security</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/security/</url>
   </repository>
 
   <dependencies>
