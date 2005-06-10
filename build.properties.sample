@@ -1,5 +1,5 @@
 # jetspeed 2 home required for build
-org.apache.jetspeed.project.home = /projects/apache/jakarta-jetspeed-2
+org.apache.jetspeed.project.home = /projects/apache/jetspeed-2
 
 # jetspeed required properties
 org.apache.jetspeed.server.home = /tomcat4

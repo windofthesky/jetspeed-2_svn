@@ -52,7 +52,7 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
   </tr>
   <tr> 
     <td>org.apache.jetspeed.project.home</td>
-    <td>/home/apache/jakarta-jetspeed-2/</td>
+    <td>/home/apache/jetspeed-2/</td>
     <td>The root of your Jetspeed-2 source installation (see example on left).</td>
   </tr>  
   <tr> 
