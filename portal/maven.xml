@@ -721,8 +721,8 @@ limitations under the License.
     <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces"/>
     <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces.war"/>
-    <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
-    <delete file="${org.apache.jetspeed.deploy.war.dir}/PHP.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/php"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
     <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss"/>	
