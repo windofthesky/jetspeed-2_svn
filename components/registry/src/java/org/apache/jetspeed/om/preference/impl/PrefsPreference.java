@@ -51,7 +51,7 @@ public class PrefsPreference implements PreferenceComposite
         this.prefNode = prefNode;
         if(prefNode == null)
         {
-        	throw new IllegalArgumentException("prefNode cannot be null for PrefsPreferences(Preference).");
+            throw new IllegalArgumentException("prefNode cannot be null for PrefsPreferences(Preference).");
         }
                 
         this.name = name;
@@ -117,6 +117,11 @@ public class PrefsPreference implements PreferenceComposite
     {
         return prefValueNode.get(String.valueOf(index), null);
     }
+    
+    public void removeValueAt(int index)
+    {
+        prefValueNode.remove(String.valueOf(index));
+    }
 
     /**
      * <p>
@@ -166,7 +171,7 @@ public class PrefsPreference implements PreferenceComposite
         }
         catch (BackingStoreException e)
         {            
-			String msg = "Preference backing store failed: "+e.toString();
+            String msg = "Preference backing store failed: "+e.toString();
             IllegalStateException ise = new IllegalStateException(msg);
             ise.initCause(e);
             throw ise;
@@ -481,7 +486,7 @@ public class PrefsPreference implements PreferenceComposite
      */
     public void flush() throws BackingStoreException
     {
-    	prefValueNode.flush();
+        prefValueNode.flush();
     }
     /**
      * <p>
@@ -501,10 +506,10 @@ public class PrefsPreference implements PreferenceComposite
             ArrayList descs = new ArrayList(keys.length);
             for(int i=0; i < keys.length; i++)
             {
-            	PreferenceDescriptionImpl desc = new PreferenceDescriptionImpl();
-            	String localeKey = keys[i];
+                PreferenceDescriptionImpl desc = new PreferenceDescriptionImpl();
+                String localeKey = keys[i];
                 desc.setDescription(descNode.get(localeKey, null));
-            	Locale locale = parseLocal(localeKey);
+                Locale locale = parseLocal(localeKey);
                 desc.setLocale(locale);
                 desc.setLanguage(locale.getLanguage());
                 descs.add(desc);
