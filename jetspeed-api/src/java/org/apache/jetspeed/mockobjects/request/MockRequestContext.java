@@ -60,7 +60,6 @@ public class MockRequestContext implements RequestContext
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Object session;
-    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
      */
@@ -486,5 +485,23 @@ public class MockRequestContext implements RequestContext
     {
         // TODO Auto-generated method stub
 
+    }
+    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#popActionFailure(org.apache.pluto.om.window.PortletWindow)
+     */
+    public Throwable popActionFailure(PortletWindow window)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setActionFailure(org.apache.pluto.om.window.PortletWindow, java.lang.Throwable)
+     */
+    public void setActionFailure(PortletWindow window, Throwable actionFailure)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
