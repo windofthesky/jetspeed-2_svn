@@ -39,6 +39,7 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
 
     protected Preferences prefsRootNode;
     protected PreferencesValidator validator;
+    protected PreferenceSetComposite defaults;
 
     /**
      * @param portletEntity
@@ -53,6 +54,12 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
         this.prefsRootNode = prefsRootNode;
 
     }
+    
+    public PrefsPreferenceSetImpl( Preferences prefsRootNode,  PreferenceSetComposite defaults) throws BackingStoreException
+    {
+        this(prefsRootNode);        
+        this.defaults = defaults;
+    }
 
     /**
      * <p>
@@ -66,7 +73,16 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
     {
         try
         {
-            return new HashSet(Arrays.asList(prefsRootNode.childrenNames()));
+            if(defaults != null)
+            {
+                Set names = defaults.getNames();                    
+                names.addAll(new HashSet(Arrays.asList(prefsRootNode.childrenNames())));
+                return names;                
+            }
+            else
+            {
+              return new HashSet(Arrays.asList(prefsRootNode.childrenNames()));
+            }
         }
         catch (BackingStoreException e)
         {
@@ -104,14 +120,17 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
     {
         try
         {
+            Preference pref = null;
             if (prefsRootNode.nodeExists(key))
             {
-                return new PrefsPreference(prefsRootNode.node(key), key);
+                pref = new PrefsPreference(prefsRootNode.node(key), key);
             }
-            else
+            else if(defaults != null)
             {
-                return null;
+                pref = defaults.get(key);
             }
+            
+            return pref;
         }
         catch (IllegalStateException ise)
         {
@@ -244,7 +263,14 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
     {
         try
         {
-            return prefsRootNode.childrenNames().length;
+            int length = prefsRootNode.childrenNames().length;
+            
+            if(defaults != null)
+            {
+                length += defaults.size();
+            }
+                  
+            return length;
         }
         catch (IllegalStateException ise)
         {
@@ -269,7 +295,7 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
      */
     public Iterator iterator()
     {
-		return new PortletPrefsIterator();
+        return new PortletPrefsIterator();
     }
 
     protected class PortletPrefsIterator implements Iterator
@@ -286,6 +312,23 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             {
                 beginSize = size();
                 childrenNames = prefsRootNode.childrenNames();
+                if(defaults != null)
+                {
+                    Iterator itr = defaults.getNames().iterator();
+                    while( itr.hasNext())
+                    {
+                        String name = (String) itr.next();
+                        if(!arrayContains(childrenNames, name))
+                        {
+                            String[] tempArray = new String[childrenNames.length+1];
+                            System.arraycopy(childrenNames, 0, tempArray, 0, childrenNames.length);
+                            tempArray[(tempArray.length-1)] = name;
+                            childrenNames = tempArray;
+                        }                       
+                    }
+                }
+               
+                
                 pointer = 0;
             }
             catch (IllegalStateException ise)
@@ -359,6 +402,19 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             beginSize = size();
 
         }
+    }
+    
+    protected boolean arrayContains(String[] array, String value)
+    {
+        for(int i=0; i<array.length; i++)
+        {
+            if(array[i].equals(value))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
    
 }
