@@ -64,7 +64,7 @@ limitations under the License.
       <item name="Mailing List" href="mail-lists.html"/>
       <item name="Bug Database" href="issue-tracking.html"/>
       <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2"/>
-      <item name="Nightly Build" href="http://www.spikesource.com/spikewatch/index.jsp?show=stat&amp;show-test=true&amp;component=jetspeed&amp;platform=8"/>
+      <item name="Quality Testing" href="quality-testing.html"/>
     </menu>
   </body>
 </project>
