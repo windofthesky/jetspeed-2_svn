@@ -52,7 +52,8 @@ public class PlutoFactoryFactoryBean extends AbstractFactoryBean
      */
     protected Object createInstance() throws Exception
     {        
-        Factory factory = (Factory)  Class.forName(className).newInstance();
+        Factory factory = (Factory)Thread.currentThread()
+            .getContextClassLoader().loadClass(className).newInstance();
         if(props == null)
         {
             props = new HashMap();
