@@ -44,6 +44,7 @@ import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
 
 //standard java stuff
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
@@ -507,14 +508,74 @@ public class WebContentPortlet extends GenericVelocityPortlet
             HttpClient client = new HttpClient();
             GetMethod get = new GetMethod(uri);
             int status = client.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
-            // TODO need to parse HTML meta tag to get charset info
-            return new InputStreamReader(is, get.getResponseCharSet());
+            BufferedInputStream bis = new BufferedInputStream(get.getResponseBodyAsStream());
+            bis.mark(BLOCK_SIZE);
+            String encoding = getContentCharSet(bis);
+            if (encoding == null)
+            {
+                encoding = get.getResponseCharSet();
+            }
+            return new InputStreamReader(bis, encoding);
         }
         catch (IOException e)
         {
             throw new PortletException(e);
         }
     }
-    
+
+    private String getContentCharSet(InputStream is) throws IOException
+    {
+        if (!is.markSupported())
+        {
+            return null;
+        }
+
+        byte[] buf = new byte[BLOCK_SIZE];
+        try
+        {
+            is.read(buf, 0, BLOCK_SIZE);
+            String content = new String(buf, "ISO-8859-1");
+            String lowerCaseContent = content.toLowerCase();
+            int startIndex = lowerCaseContent.indexOf("<head");
+            if (startIndex == -1)
+            {
+                startIndex = 0;
+            }
+            int endIndex = lowerCaseContent.indexOf("</head");
+            if (endIndex == -1)
+            {
+                endIndex = content.length();
+            }
+            content = content.substring(startIndex, endIndex);
+
+            StringTokenizer st = new StringTokenizer(content, "<>");
+            while (st.hasMoreTokens())
+            {
+                String element = st.nextToken();
+                String lowerCaseElement = element.toLowerCase();
+                if (lowerCaseElement.startsWith("meta") && lowerCaseElement.indexOf("content-type") > 0)
+                {
+                    StringTokenizer est = new StringTokenizer(element, " =\"\';");
+                    while (est.hasMoreTokens())
+                    {
+                        if (est.nextToken().equalsIgnoreCase("charset"))
+                        {
+                            if (est.hasMoreTokens())
+                            {
+                                is.reset();
+                                return est.nextToken();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (IOException e)
+        {
+        }
+
+        is.reset();
+
+        return null;
+    }
 }
