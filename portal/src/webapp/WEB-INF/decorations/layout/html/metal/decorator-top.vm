@@ -18,6 +18,7 @@ limitations under the License.
 
 <html>
 <head>
+    <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
     <title>$jetspeed.page.title</title> 
 #set($cssUrls = $renderRequest.getAttribute("cssUrls"))
 #foreach($cssUrl in $cssUrls)
