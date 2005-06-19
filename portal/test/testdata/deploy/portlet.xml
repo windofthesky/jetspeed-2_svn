@@ -17,14 +17,14 @@ limitations under the License.
 <portlet-app id="TestRegistry" version="1.0">
  <portlet id="HelloPortlet">
     <init-param>
-			<description lang="en">test init param</description>
-			<name lang="en">hello</name>
-			<value lang="en">Hello Portlet</value>
+			<description xml:lang="en">test init param</description>
+			<name>hello</name>
+			<value>Hello Portlet</value>
      </init-param>  
     <portlet-name>HelloWorld Portlet</portlet-name>
     <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
-    <display-name lang="en">HelloWorld Portlet Wrapper</display-name>  
-    <description lang="en">This is a desciption of the HelloWorld portlet</description>
+    <display-name xml:lang="en">HelloWorld Portlet Wrapper</display-name>  
+    <description xml:lang="en">This is a desciption of the HelloWorld portlet</description>
     <expiration-cache>-1</expiration-cache>
     <supports id="Minimal support">
       <mime-type>text/html</mime-type>
@@ -51,7 +51,7 @@ limitations under the License.
       </preference>    
     </portlet-preferences>
     <security-role-ref>
-    	<description lang="en">This is the admin role</description>
+    	<description xml:lang="en">This is the admin role</description>
     	<role-name>admin</role-name>
     	<role-link>users/admin</role-link>
     </security-role-ref>

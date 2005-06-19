@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.Description;
 
 /**
@@ -88,7 +89,11 @@ public class DescriptionSetImpl  implements MutableDescriptionSet, Serializable
             }
             // set fall back if we have a Locale that only has
             // language set.
-            if (desc.getLocale().getLanguage().equals(arg0.getLanguage()))
+            else if (desc.getLocale().getLanguage().equals(arg0.getLanguage()))
+            {
+                fallBack = desc;
+            }
+            else if (fallBack == null && desc.getLocale().equals(JetspeedLocale.getDefaultLocale()))
             {
                 fallBack = desc;
             }

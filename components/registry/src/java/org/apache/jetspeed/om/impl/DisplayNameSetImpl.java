@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.DisplayName;
 /**
  * DisplayNameSetImpl
@@ -62,19 +63,22 @@ public class DisplayNameSetImpl  implements MutableDisplayNameSet, Serializable
 
         DisplayName fallBack = null;
         Iterator searchItr = innerCollection.iterator();
-        while(searchItr.hasNext())
+        while (searchItr.hasNext())
         {
-        	DisplayName aDName = (DisplayName) searchItr.next();
-        	if(aDName.getLocale().equals(arg0))
-        	{
-        		return aDName;
-        	}
-        	else if(aDName.getLocale().getLanguage().equals(arg0.getLanguage()))
-        	{
-        		fallBack = aDName;
-        	}
-        	
-        }        
+            DisplayName aDName = (DisplayName) searchItr.next();
+            if (aDName.getLocale().equals(arg0))
+            {
+                return aDName;
+            }
+            else if (aDName.getLocale().getLanguage().equals(arg0.getLanguage()))
+            {
+                fallBack = aDName;
+            }
+            else if (fallBack == null && aDName.getLocale().equals(JetspeedLocale.getDefaultLocale()))
+            {
+                fallBack = aDName;
+            }
+        }
 
         return fallBack;
     }

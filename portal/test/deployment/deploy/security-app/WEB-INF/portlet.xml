@@ -18,8 +18,8 @@ limitations under the License.
  <portlet id="TestPortlet">
     <portlet-name>TestPortlet</portlet-name>
     <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
-    <display-name lang="en">HelloWorld Portlet Wrapper</display-name>
-    <description lang="en">This is a desciption of the HelloWorld portlet</description>
+    <display-name xml:lang="en">HelloWorld Portlet Wrapper</display-name>
+    <description xml:lang="en">This is a desciption of the HelloWorld portlet</description>
     <expiration-cache>-1</expiration-cache>
     <supports id="Minimal support">
       <mime-type>text/html</mime-type>
