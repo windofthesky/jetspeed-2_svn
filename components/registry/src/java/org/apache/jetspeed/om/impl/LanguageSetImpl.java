@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 
@@ -149,7 +150,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      */
     public Locale getDefaultLocale()
     {        
-        return Locale.ENGLISH;
+        return JetspeedLocale.getDefaultLocale();
     }
 
     /**

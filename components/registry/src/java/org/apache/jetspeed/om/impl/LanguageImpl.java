@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.Language;
 
 /**
@@ -70,7 +71,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
     public LanguageImpl()
     {
-        this(Locale.ENGLISH, null, "", "", "");
+        this(JetspeedLocale.getDefaultLocale(), null, "", "", "");
     }
 
     public LanguageImpl( Locale locale, String title )
