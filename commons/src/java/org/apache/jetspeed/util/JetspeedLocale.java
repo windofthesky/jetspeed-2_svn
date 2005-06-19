@@ -31,9 +31,12 @@ import java.util.Locale;
 public class JetspeedLocale
 {
     // TODO We need to get this from the properties
-
-     public static Locale getDefaultLocale()
-     {
-         return Locale.getDefault();
-     }
+    
+    /**
+     * According to PLT.21.8.1, the default locale should be English.
+     */
+    public static Locale getDefaultLocale()
+    {
+        return Locale.ENGLISH;
+    }
 }

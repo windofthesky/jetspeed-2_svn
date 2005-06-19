@@ -103,12 +103,12 @@ public class PortletApplicationDescriptor
             digester.addCallMethod("portlet-app/portlet/supported-locale", "addSupportedLocale", 0);
             
             digester.addObjectCreate("portlet-app/portlet/display-name", PortletDisplayNameImpl.class);
-            digester.addSetProperties("portlet-app/portlet/display-name", "lang", "language");
+            digester.addSetProperties("portlet-app/portlet/display-name", "xml:lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/display-name", "displayName");
             digester.addSetNext("portlet-app/portlet/display-name", "addDisplayName");
 
             digester.addObjectCreate("portlet-app/portlet/description", PortletDescriptionImpl.class);
-            digester.addSetProperties("portlet-app/portlet/description", "lang", "language");
+            digester.addSetProperties("portlet-app/portlet/description", "xml:lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/description", "description");
             digester.addSetNext("portlet-app/portlet/description", "addDescription");
 
@@ -118,7 +118,7 @@ public class PortletApplicationDescriptor
             digester.addSetNext("portlet-app/portlet/init-param", "addInitParameter");
 
             digester.addObjectCreate("portlet-app/portlet/init-param/description", ParameterDescriptionImpl.class);
-            digester.addSetProperties("portlet-app/portlet/init-param/description", "lang", "language");
+            digester.addSetProperties("portlet-app/portlet/init-param/description", "xml:lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/init-param/description", "description");
             digester.addSetNext("portlet-app/portlet/init-param/description", "addDescription");
 
@@ -147,7 +147,7 @@ public class PortletApplicationDescriptor
             digester.addSetNext("portlet-app/portlet/security-role-ref", "addSecurityRoleRef");
 
             digester.addObjectCreate("portlet-app/portlet/security-role-ref/description", SecurityRoleRefDescriptionImpl.class);
-            digester.addSetProperties("portlet-app/portlet/security-role-ref/description", "lang", "language");
+            digester.addSetProperties("portlet-app/portlet/security-role-ref/description", "xml:lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/description", "description");
             digester.addSetNext("portlet-app/portlet/security-role-ref/description", "addDescription");
             
