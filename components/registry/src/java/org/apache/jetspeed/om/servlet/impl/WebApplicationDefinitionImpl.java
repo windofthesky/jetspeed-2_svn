@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.impl.DescriptionSetImpl;
 import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
 import org.apache.jetspeed.om.impl.WebAppDescriptionImpl;
 import org.apache.jetspeed.om.impl.WebAppDisplayNameImpl;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -231,7 +232,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public String getDescription()
     {
-        Description desc = getDescription(Locale.getDefault());
+        Description desc = getDescription(JetspeedLocale.getDefaultLocale());
         if (desc != null)
         {
             return desc.getDescription();
@@ -246,7 +247,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public void setDescription(String desc)
     {
-        addDescription(Locale.getDefault(), desc);
+        addDescription(JetspeedLocale.getDefaultLocale(), desc);
     }
 
     /**

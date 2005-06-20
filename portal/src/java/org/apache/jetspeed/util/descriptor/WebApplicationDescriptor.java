@@ -23,6 +23,7 @@ import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor
@@ -86,7 +87,7 @@ public class WebApplicationDescriptor
 
             wd.setContextRoot(contextRoot);
             //wd.addDescription(locale, displayName);
-            wd.addDescription(Locale.getDefault(), contextRoot);
+            wd.addDescription(JetspeedLocale.getDefaultLocale(), contextRoot);
             return wd;
 
         }

@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 
@@ -177,7 +178,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     public void setDescription(String desc)
     {
         System.out.println("Setting description..." + desc);
-        addDescription(Locale.getDefault(), desc);
+        addDescription(JetspeedLocale.getDefaultLocale(), desc);
         System.out.println("Description Set " + desc);
     }
 
@@ -189,7 +190,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     public String getDescription()
     {
 
-        Description desc = getDescription(Locale.getDefault());
+        Description desc = getDescription(JetspeedLocale.getDefaultLocale());
 
         if (desc != null)
         {

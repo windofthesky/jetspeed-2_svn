@@ -18,6 +18,7 @@ package org.apache.jetspeed.util.ojb;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
@@ -112,7 +113,7 @@ public class LocaleFieldConversion implements FieldConversion
             }
             else
             {
-                return Locale.getDefault();
+                return JetspeedLocale.getDefaultLocale();
             }
         }
         else
