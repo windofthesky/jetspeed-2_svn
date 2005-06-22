@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/rewriter/src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/rewriter/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portlet-api/src/java"/>
-	<classpathentry kind="src" path="jetspeed-api/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
-	<classpathentry kind="src" path="components/capability/src/java"/>
-	<classpathentry kind="src" path="components/capability/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/java"/>
-	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/cm/src/test"/>
-	<classpathentry kind="src" path="components/deploy-tool/src/java"/>
-	<classpathentry kind="src" path="components/file-cache/src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/file-cache/src/test"/>
-	<classpathentry kind="src" path="components/id-generator/src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/id-generator/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/java"/>
-	<classpathentry kind="src" path="components/locator/src/java"/>
-	<classpathentry excluding="**/CVS/*|log4j.properties" kind="src" path="components/locator/src/test"/>
-	<classpathentry kind="src" path="components/page-manager/src/java"/>
-	<classpathentry kind="src" path="components/page-manager/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/persistence/src/java"/>
-	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="components/persistence/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="components/portlet-factory/src/java"/>
-	<classpathentry kind="src" path="components/prefs/src/java"/>
-	<classpathentry excluding="**/CVS/*|Log4j.properties" kind="src" path="components/prefs/src/test"/>
-	<classpathentry excluding="**/CVS/*|META-INF/test-spring.xml" kind="src" path="components/profiler/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/test"/>
-	<classpathentry excluding="**/CVS*|META-INF/transaction.xml" kind="src" path="components/registry/src/java"/>
-	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/registry/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/rdbms/src/java"/>
-	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/rdbms/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/security/src/java"/>
-	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/security/src/test"/>
-	<classpathentry excluding="**/CVS*|META-INF/transaction.xml" kind="src" path="components/sso/src/java"/>
-	<classpathentry kind="src" path="components/sso/src/test"/>
-	<classpathentry kind="src" path="components/web-content/src/java"/>
-	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="components/web-content/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
-	<classpathentry kind="src" path="portals-bridges/frameworks/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/jsf/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/php/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/perl/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/struts/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/velocity/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portal/src/java"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="portal/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
-	<classpathentry kind="src" path="layout-portlets/src/java"/>
-	<classpathentry kind="src" path="taglibs/treecontrol/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/gems/src/java"/>
-	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="applications/jpetstore/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="applications/palm/src/java"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
-	<classpathentry kind="src" path="applications/rss/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/security/src/java"/>
-	<classpathentry kind="src" path="applications/security/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/rewriter/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/rewriter/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portlet-api/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/cm/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/cm/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/deploy-tool/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/file-cache/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/file-cache/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/id-generator/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/id-generator/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/locator/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/locator/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/persistence/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/persistence/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/portlet-factory/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/prefs/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/prefs/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/test-spring.xml" kind="src" path="components/profiler/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/profiler/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/registry/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/registry/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/rdbms/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/rdbms/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/search/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/search/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/security/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/security/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/sso/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/sso/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/common/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/frameworks/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/jsf/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/php/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/perl/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/struts/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/velocity/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portal/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="portal/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="content-server/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="taglibs/treecontrol/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/gems/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="applications/jpetstore/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/jsf-demo/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/palm/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/pam/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/security/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/security/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.7.0.jar"/>
