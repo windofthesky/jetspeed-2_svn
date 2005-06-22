@@ -96,8 +96,8 @@ limitations under the License.
         
     <maven:reactor
        basedir="${basedir}"
-       includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,portals-bridges/*/project.xml"
-       excludes="applications/project.taglibs/project.xml"
+       includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml"
+       excludes="applications/project.xml,taglibs/project.xml,portals-bridges/project.xml"
        goals="clean"
        banner="Cleaning"
        ignoreFailures="true"/>

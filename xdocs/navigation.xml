@@ -48,15 +48,6 @@ limitations under the License.
       <item name="PSML" href="psml.html"/>
       <item name="Site" href="site.html"/>
     </menu>
-    <menu name='Portlet Bridges'>
-      <item name="Overview" href="portlet-bridges.html"/>       
-      <item name="Common Utilities and Interfaces" href="multiproject/portals-bridges-common/index.html"/>       
-      <item name="JSF Bridge" href="multiproject/portals-bridges-jsf/index.html"/>       
-      <item name="Perl Bridge" href="multiproject/portals-bridges-perl/index.html"/>       
-      <item name="PHP Bridge" href="multiproject/portals-bridges-php/index.html"/>       
-      <item name="Struts Bridge" href="multiproject/portals-bridges-struts/index.html"/>       
-      <item name="Velocity Bridge" href="multiproject/portals-bridges-velocity/index.html"/>       
-    </menu>
     <menu name='Components'>
       <item name="Profiler" href="components/profiler.html"/>       
     </menu>
