@@ -20,11 +20,11 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../../project.xml</extend>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-perl</id>
-  <name>Apache Portals Perl Framework Bridge</name>
+  <name>Perl Bridge</name>
   <currentVersion>&portals-bridges-perl-version;</currentVersion>
   <package>org.apache.portals.bridges.perl</package>
   <description>
@@ -32,9 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Perl Framework Bridge</shortDescription>
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/perl</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/perl</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/perl/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/perl</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/perl</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/perl/</url>
   </repository>
   <developers>
     <developer>
@@ -47,15 +47,12 @@ limitations under the License.
     </developer>
   </developers>
   <dependencies>
-  <dependency>
-            <groupId>jetspeed2</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
-            <version>&jetspeed-version;</version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>		
+    <dependency>
+      <groupId>jetspeed2</groupId>
+      <artifactId>jetspeed-rewriter</artifactId>
+      <version>2.0-M3</version>
+      <type>jar</type>
+    </dependency>		
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -81,20 +78,8 @@ limitations under the License.
     <sourceDirectory>src/java</sourceDirectory>
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+
+        &bridges-reports;
+
   </reports>
 </project>

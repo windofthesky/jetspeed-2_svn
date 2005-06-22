@@ -24,8 +24,8 @@ limitations under the License.
   <body>
     <section name="Summary">
       <p>
-        The Struts Bridge allows <a href="http://struts.apache.org">Struts</a> and Struts Tiles applications to be run
-        as <a href="http://www.jcp.org/en/jsr/detail?id=168">JSR-168</a> compliant Portlets.
+        The Struts Bridge allows <a href="http://struts.apache.org" target="_nw">Struts</a> and Struts Tiles applications to be run
+        as <a href="http://www.jcp.org/en/jsr/detail?id=168" target="_nw">JSR-168</a> compliant Portlets.
       </p>
       <p>
         Existing or new Struts Applications can be transparently deployed as Portlet Application or
@@ -51,7 +51,7 @@ limitations under the License.
         easy to do, if not done already.
       </p>
       <p>
-        The Apache Portals <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2 Portal</a> provides this interface
+        The Apache Portals <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2 Portal</a> provides this interface
         natively, as well as example Struts Portlet Applications using the Struts Bridge like a JPetstore Portlet. 
       </p>
     </section>

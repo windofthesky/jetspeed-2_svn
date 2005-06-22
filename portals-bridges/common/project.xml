@@ -20,21 +20,21 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../../project.xml</extend>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-common</id>
-  <name>Apache Portals Bridges common utilities and interfaces</name>
+  <name>Common Utilities and Interfaces</name>
   <currentVersion>&portals-bridges-common-version;</currentVersion>
   <package>org.apache.portals.bridges.common</package>
   <description>
-	  Apache Portals Bridges common utilties and interfaces
+	  Apache Portals Bridges Common Utilties and Interfaces
   </description>
-  <shortDescription>Apache Portals Bridges common utilities</shortDescription>
+  <shortDescription>Apache Portals Bridges Common Utilities and Interfaces</shortDescription>
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/common</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/common</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/common/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/common</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/common</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/common/</url>
   </repository>
   <dependencies>
 	  <dependency>
@@ -52,20 +52,8 @@ limitations under the License.
     <sourceDirectory>src/java</sourceDirectory>
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+
+        &bridges-reports;
+
   </reports>
 </project>

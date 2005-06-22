@@ -20,11 +20,11 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../../project.xml</extend>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-velocity</id>
-  <name>Apache Portals Velocity Bridge</name>
+  <name>Velocity Bridge</name>
   <currentVersion>&portals-bridges-velocity-version;</currentVersion>
   <package>org.apache.portals.bridges.velocity</package>
   <description>
@@ -32,9 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Velocity Bridge</shortDescription>
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/velocity</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/velocity</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/velocity/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/velocity</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/velocity</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/velocity/</url>
   </repository>
   <dependencies>
 	  <dependency>
@@ -80,20 +80,8 @@ limitations under the License.
     </resources>
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+
+        &bridges-reports;
+
   </reports>
 </project>

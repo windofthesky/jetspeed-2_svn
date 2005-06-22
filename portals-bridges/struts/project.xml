@@ -20,11 +20,11 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../../project.xml</extend>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-struts</id>
-  <name>Apache Portals Struts Bridge</name>
+  <name>Struts Bridge</name>
   <currentVersion>&portals-bridges-struts-version;</currentVersion>
   <package>org.apache.portals.bridges.struts</package>
   <description>
@@ -32,9 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Struts Bridge</shortDescription>
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/struts</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/struts</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/struts/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/struts</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/struts</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/struts/</url>
   </repository>
   <developers>
     <developer>
@@ -101,7 +101,7 @@ limitations under the License.
   </build>
   <reports>
 
-        &j2-reports;
+        &bridges-reports;
 
   </reports>
 </project>

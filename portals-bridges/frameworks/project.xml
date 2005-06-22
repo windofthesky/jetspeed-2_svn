@@ -20,11 +20,11 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../../project.xml</extend>
+  <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-frameworks</id>
-  <name>Apache Portals Bridges Frameworks</name>
+  <name>Frameworks</name>
   <currentVersion>&portals-bridges-frameworks-version;</currentVersion>
   <package>org.apache.portals.bridges.frameworks</package>
   <description>
@@ -32,9 +32,9 @@ limitations under the License.
   </description>
   <shortDescription>Apache Portals Bridges Frameworks</shortDescription>
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/frameworks/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/portals-bridges/frameworks/</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portals-bridges/frameworks/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/frameworks/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/frameworks/</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/frameworks/</url>
   </repository>
   <dependencies>
 	  <dependency>
@@ -113,20 +113,8 @@ limitations under the License.
     </resources>
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+
+        &bridges-reports;
+
   </reports>
 </project>

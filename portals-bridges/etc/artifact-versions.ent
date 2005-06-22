@@ -1,0 +1,8 @@
+<!ENTITY portals-bridges-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-common-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-frameworks-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-jsf-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-perl-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-php-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-struts-version "0.4-SNAPSHOT">
+<!ENTITY portals-bridges-velocity-version "0.4-SNAPSHOT">

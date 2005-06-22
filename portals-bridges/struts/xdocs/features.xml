@@ -106,7 +106,7 @@ limitations under the License.
         </p>
         <p>
           But, because the Portlet Specification is build upon the Servlet Specification (2.3), the Portlet Container
-          implementation (like <a href="http://portals.apache.org/pluto">Pluto</a>) and/or the Portal itself, usually
+          implementation (like <a href="http://portals.apache.org/pluto" target="_nw">Pluto</a>) and/or the Portal itself, usually
           has direct access to, and also uses the <code>ServletContext</code>, even during the
           <code>ActionRequest</code> event.           
         </p>
@@ -122,7 +122,7 @@ limitations under the License.
           To be able to use the Struts Bridge, a <code>StrutsPortlet</code> must therefore be provided with a concrete
           implementation of the <code>ServletContextProvider</code> interface (through its initialization parameters).
           This implementation class can be supplied together with the Portlet or be provided natively by the Portal as
-          the <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> Portal does. 
+          the <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a> Portal does. 
         </p>
       </subsection>      
       <subsection name="Portals requiring a more complex interface">
@@ -201,7 +201,7 @@ limitations under the License.
           A properly MVC configured Struts application though can (and should) make use of a (client-side) redirect
           after the Action processing Action by using an ActionForward with redirect="true". The behavior of such a
           Struts Application then truly complies to the requirements for a Portlet. In fact, the reference
-          implementation of the Portlet Specification, <a href="http://portals.apache.org/pluto">Pluto</a>, actually
+          implementation of the Portlet Specification, <a href="http://portals.apache.org/pluto" target="_nw">Pluto</a>, actually
           sends a redirect to the client (browser) after an ActionRequest.
         </p>
         <p>
@@ -244,7 +244,7 @@ limitations under the License.
               </render-context>
             </config>]]></source>
           <em>(This (adapted) example is taken from the JPetstore Portlet example provided with the
-          <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> Portal.)</em>           
+          <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a> Portal.)</em>           
         </p>
         <p>
           With the above example configuration, all request attributes named <em>errors</em> and <em>message</em> are
@@ -357,7 +357,7 @@ limitations under the License.
               </portlet-url-type>
             </config>]]></source>
           <em>(This is the full configuration used for the JPetstore Portlet example provided with the
-          <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> Portal.)</em>           
+          <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a> Portal.)</em>           
         </p>
         <p>
           In the above example the portlet-url-type element contains three different sub elements: action, render and
@@ -367,7 +367,7 @@ limitations under the License.
         <p>
           Not shown in the above example is the optional default="render"|"action" attribute for the portlet-url-type
           element. With it, the default type of portlet-url can be changed from "render" to "action" as is used in the
-          Struts Mailreader Demo Portlet (also provided by the <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a>
+          Struts Mailreader Demo Portlet (also provided by the <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a>
           Portal):
           <source><![CDATA[
             <?xml version="1.0" encoding="UTF-8"?>
@@ -389,7 +389,7 @@ limitations under the License.
           with  
           <source><![CDATA[<html:image src="../images/struts-bridge.gif"/>]]></source>
           A simple change with no technical impact, but it will allow the same JSP to be used for both a Web Application
-          and a Portlet. The JPetstore Portlet example as provided by <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a>
+          and a Portlet. The JPetstore Portlet example as provided by <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a>
           makes full use of this feature.
         </p>
       </subsection>      
@@ -425,7 +425,7 @@ limitations under the License.
           Web Application at the same time!
         </p>
         <p>
-          The JPetstore Portlet example provided by <a href="http://portals.apache.org/jetspeed-2">Jetspeed-2</a> is one
+          The JPetstore Portlet example provided by <a href="http://portals.apache.org/jetspeed-2" target="_nw">Jetspeed-2</a> is one
           example of such a "dual" mode Struts Application.
         </p>
         <p>

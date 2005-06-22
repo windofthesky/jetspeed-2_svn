@@ -20,11 +20,11 @@ limitations under the License.
 
   <body>
     <links>
-      <item name="Portlet Specification" href="http://www.jcp.org/en/jsr/detail?id=168"/>
-      <item name="Jetspeed 2" href="../../index.html"/>
+      <item name="Jetspeed 2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
+      <item name="Bridges Home" href="../../index.html"/>
     </links>
       
-    <menu name="Documentation">
+    <menu name="Struts Bridge">
       <item name="Summary" href="index.html"/>
       <item name="Features" href="features.html"/>
     </menu>      

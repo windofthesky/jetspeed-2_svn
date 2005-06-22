@@ -1,0 +1,11 @@
+<!-- derive root relative locator-path -->
+<!ENTITY % locator-path SYSTEM "file:locator.path">
+
+<!-- Artifact versions -->
+<!ENTITY % artifact-versions-ent '<!ENTITY &#37; artifact-versions SYSTEM "file:%locator-path;etc/artifact-versions.ent"> &#37;artifact-versions;'> %artifact-versions-ent;
+
+<!-- Project dependencies -->
+<!ENTITY % jsf-api-deps-ent '<!ENTITY jsf-api-deps SYSTEM "file:%locator-path;etc/project-dependencies/jsf-api-deps.xml">'> %jsf-api-deps-ent;
+
+<!-- Project reports -->
+<!ENTITY % bridges-reports-ent '<!ENTITY bridges-reports SYSTEM "file:%locator-path;etc/project-reports/bridges-reports.xml">'> %bridges-reports-ent;
