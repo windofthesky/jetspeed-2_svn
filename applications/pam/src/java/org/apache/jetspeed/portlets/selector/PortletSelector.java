@@ -146,7 +146,7 @@ public class PortletSelector extends BrowserPortlet
                 // TODO: security filtering
                 MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
                 String appName = muta.getName();
-                if (appName != null && appName.equals("jetspeed"))
+                if (appName != null && appName.equals("jetspeed-layouts"))
                     continue;
                 
                 list.add(new PortletInfo(appName + "::" + portlet.getName(), portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
