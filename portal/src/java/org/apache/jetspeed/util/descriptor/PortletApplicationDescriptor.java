@@ -86,6 +86,7 @@ public class PortletApplicationDescriptor
             // TODO move config to digester-rules.xml. Example: http://www.onjava.com/pub/a/onjava/2002/10/23/digester.html?page=3
             Digester digester = new Digester();
             digester.setValidating(false);
+            digester.setClassLoader(this.getClass().getClassLoader());
                        
             // digester.addRuleSet(new PortletApplicationRuleSet(appName));
             

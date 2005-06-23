@@ -64,6 +64,7 @@ public class ExtendedPortletMetadata
         try
         {
             Digester digester = new Digester();
+            digester.setClassLoader(this.getClass().getClassLoader());
             digester.setValidating(false);
             digester.setNamespaceAware(true);
             digester.push(portletApp);

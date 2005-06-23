@@ -16,7 +16,6 @@
 package org.apache.jetspeed.util.descriptor;
 
 import java.io.Reader;
-import java.util.Locale;
 
 import org.apache.commons.digester.Digester;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
@@ -69,6 +68,7 @@ public class WebApplicationDescriptor
             // TODO move config to digester-rules.xml. Example:
             // http://www.onjava.com/pub/a/onjava/2002/10/23/digester.html?page=3
             Digester digester = new Digester();
+            digester.setClassLoader(this.getClass().getClassLoader());
             digester.setValidating(false);
   
             digester.register("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN", WebApplicationDescriptor.class
