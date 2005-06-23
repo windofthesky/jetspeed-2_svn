@@ -518,12 +518,21 @@ limitations under the License.
         <j:set var="recreateDB" value="false"/>
         <attainGoal name="doStart"/>
     </goal>
-    
+
    <goal name="dropdrops">
-    <attainGoal name="java:compile"/>
+    <attainGoal name="db.production.properties"/>
+    <attainGoal name="all.dropdrops"/>
+   </goal>
+
+   <goal name="test.dropdrops">
     <attainGoal name="db.test.properties"/>
+    <attainGoal name="all.dropdrops"/>
+   </goal>
+      
+   <goal name="all.dropdrops">
+    <attainGoal name="java:compile"/>
    
-    <attainGoal name="run.dropdrops" />
+    <attainGoal name="run.dropdrops" />               
     <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
     <attainGoal name="run.dropdrops" />
     <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
