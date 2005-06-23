@@ -24,6 +24,7 @@ import java.util.List;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.DefaultLoginModule;
 
 /**
@@ -42,7 +43,7 @@ public class JBossLoginModule extends DefaultLoginModule
             this.name = name;
             this.members.addAll(members);
         }
-        
+
         public boolean addMember(Principal user)
         {
             if ( !isMember(user) )
@@ -72,6 +73,22 @@ public class JBossLoginModule extends DefaultLoginModule
         {
             return name;
         }        
+    }
+    
+    /**
+     * Create a new JBoss login module
+     */
+    public JBossLoginModule () {
+        super ();
+    }
+
+    /**
+     * Create a new JBoss login module that uses the given user manager.
+     * @param userManager
+     * @see DefaultLoginModule(UserManager)
+     */
+    protected JBossLoginModule (UserManager userManager) {
+        super (userManager);
     }
     
     protected void commitPrincipals(Subject subject, User user)

@@ -92,6 +92,18 @@ public class DefaultLoginModule implements LoginModule
     }
 
     /**
+     * Create a new login module that uses the given user manager.
+     * @param userManager the user manager to use
+     */
+    protected DefaultLoginModule (UserManager userManager) {
+        ums = userManager;
+        debug = false;
+        success = false;
+        commitSuccess = false;
+        username = null;
+    }
+    
+    /**
      * @see javax.security.auth.spi.LoginModule#abort()
      */
     public boolean abort() throws LoginException
