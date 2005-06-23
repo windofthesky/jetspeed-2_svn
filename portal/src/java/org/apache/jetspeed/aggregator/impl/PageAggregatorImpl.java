@@ -116,6 +116,10 @@ public class PageAggregatorImpl implements PageAggregator
             // define the lookup order
 
             contentPathes.add(root.getType() + "/" + mediaType + "/" + layoutDecorator);
+            // Start added by jamesliao, 27-05-2005
+            contentPathes.add(ContentFragment.PORTLET + "/" + mediaType + "/" + defaultPortletDecorator);
+            // End
+            
             Iterator defaults = fallBackContentPathes.iterator();
             while (defaults.hasNext())
             {
@@ -127,6 +131,9 @@ public class PageAggregatorImpl implements PageAggregator
         else
         {
             contentPathes.set(0, root.getType() + "/" + mediaType + "/" + layoutDecorator);
+            // Start added by jamesliao, 27-05-2005, override the previous portlet-decorator
+            contentPathes.set(1, ContentFragment.PORTLET + "/" + mediaType + "/" + defaultPortletDecorator);
+            // End
         }
 
         if (layoutDecorator != null)
