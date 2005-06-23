@@ -51,8 +51,8 @@ of the security resources.  Jetspeed 2 provide a modular set of components aims 
 for the portal security components.
 </p>
 <p>
-Leveraging Jetspeed 2 component, architecture, the security services provide a set of loosing coupled components providing
-specilized services:
+Leveraging Jetspeed 2 component, architecture, the security services provide a set of loosely coupled components providing
+specialized services:
 </p>
 <ul>
 <li>
