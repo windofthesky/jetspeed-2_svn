@@ -386,7 +386,7 @@ limitations under the License.
   	   <constructor-arg index="2">
   	   	<list>
   	   		<value>portlet/{mediaType}/jetspeed</value>
-  	   		<value>portlet/{mediaType}</value>
+  <!--	   		<value>portlet/{mediaType}</value> -->
   	   		<value>layout/{mediaType}</value>
   	   		<value>generic/{mediaType}</value>  	   		
   	   		<value>{mediaType}</value>  	   		
