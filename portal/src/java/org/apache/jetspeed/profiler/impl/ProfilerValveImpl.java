@@ -100,8 +100,13 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             
             if ( locators ==  null )
             {
-                // get all locators for the current user
-                locators = profiler.getProfileLocators(request, principal);
+                locators = (Map)request.getSessionAttribute(PROFILE_LOCATORS_PER_PRINCIPAL);
+                if (locators == null)
+                {
+                    // get all locators for the current user
+                    locators = profiler.getProfileLocators(request, principal);
+                    request.setSessionAttribute(PROFILE_LOCATORS_PER_PRINCIPAL, locators);
+                }
             }
 
             if (locators.size() == 0)

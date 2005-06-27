@@ -39,4 +39,5 @@ package org.apache.jetspeed.pipeline.valve;
 public interface PageProfilerValve extends Valve
 {
     String PROFILE_LOCATOR_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.ProfileLocator";
+    String PROFILE_LOCATORS_PER_PRINCIPAL = "org.apache.jetspeed.profiler.ProfileLocatorsPrincipal";
 }
