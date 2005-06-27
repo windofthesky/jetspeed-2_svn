@@ -59,11 +59,13 @@ limitations under the License.
 ##
 ## Portlet Content
 ##
+#if ($jetspeed.errors)
 #set($portletErrors = $jetspeed.errors)
+#end
 #if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <tr>
     <td class="PContent">	
-	#if($portletErrors.size() > 0)
+	#if($portletErrors && $portletErrors.size() > 0)
       The following errors ocurred:<br />
 	  #foreach($errorMsg in $portletErrors)
 	  <p class="portlet-msg-error">$errorMsg</p>
