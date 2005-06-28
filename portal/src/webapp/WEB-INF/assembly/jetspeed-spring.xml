@@ -348,6 +348,8 @@ limitations under the License.
   	   class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
+       <!-- enable window validation -->
+       <constructor-arg type="boolean"><value>false</value></constructor-arg>
   </bean>
   
   <!-- Pluto Portlet Container -->

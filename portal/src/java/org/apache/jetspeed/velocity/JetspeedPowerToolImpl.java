@@ -295,6 +295,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      *                  retreive.
      * @return The PortletEntity represented by the current fragment.
      * @throws Exception
+     * @deprecated Please use WindowAccessor to get entities
      */
     public PortletEntity getPortletEntity( ContentFragment f ) throws Exception
     {

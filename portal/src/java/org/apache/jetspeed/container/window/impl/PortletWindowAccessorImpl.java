@@ -47,12 +47,13 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
    
     private Map windows = new HashMap();
     private PortletEntityAccessComponent entityAccessor;
+    private boolean validateWindows = false;
     
 
-    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor )
+    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, boolean validateWindows)
     {
         this.entityAccessor = entityAccessor;
-
+        this.validateWindows = validateWindows;
     }
 
     public PortletWindow createPortletWindow(PortletEntity entity, String windowId)
@@ -108,7 +109,10 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         }
         else
         {
-            validateWindow(fragment, portletWindow);
+            if (validateWindows)
+            {
+                validateWindow(fragment, portletWindow);
+            }
         }
         
         return portletWindow;
