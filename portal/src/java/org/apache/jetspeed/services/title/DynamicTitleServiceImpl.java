@@ -22,10 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.title.DynamicTitleService;
+
+import com.sun.corba.se.internal.ior.ObjectId;
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
@@ -33,25 +36,10 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
     public void setDynamicTitle(PortletWindow window,
             HttpServletRequest request, String titleArg)
     {
-        String title = getTitleFromPreference(window, request);
-
-        if (title == null || title.length() < 0)
-        {
-            if (titleArg == null || titleArg.length() == 0)
-            {
-                title = getTitleFromPortletDefinition(window, request);
-            }
-            else
-            {
-                title = titleArg;
-            }
-
-        }
-
+        ObjectID id = window.getPortletEntity().getId();        
         request.setAttribute(
                 PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
-                        + "::window.id::" + window.getId(), title);
-
+                        + "::entity.id::" + id.toString(), titleArg);
     }
 
     protected final String getTitleFromPortletDefinition(PortletWindow window,
