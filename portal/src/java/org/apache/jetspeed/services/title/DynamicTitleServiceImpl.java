@@ -28,7 +28,6 @@ import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.title.DynamicTitleService;
 
-import com.sun.corba.se.internal.ior.ObjectId;
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
