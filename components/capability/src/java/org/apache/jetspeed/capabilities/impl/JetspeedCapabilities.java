@@ -126,6 +126,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     {        
         CapabilityMap map = null;
         boolean bClientFound = false;
+        String defaultAgent = null;
 
         if (userAgent == null)
         {
@@ -167,6 +168,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
                     }
 
                     // Use default Client
+                    defaultAgent = userAgent;
                     userAgent = DEFAULT_AGENT;
                 }
             } else
@@ -208,7 +210,8 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
 
                 // Add map to cache
                 capabilityMapCache.put(userAgent, map);
-
+                if (defaultAgent != null)
+                    capabilityMapCache.put(defaultAgent, map);
                 return map;
             }
 
