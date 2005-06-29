@@ -15,7 +15,9 @@
  */
 package org.apache.jetspeed.prefs.impl;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -44,6 +46,84 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBrokerDaoSupport implements PreferencesProvider
 {
 
+    private static class NodeCache implements Serializable
+    {
+        Node node;
+        String fullpath;
+        int type;        
+        boolean childrenLoaded;
+        Collection children;
+
+        public NodeCache(Node node)
+        {
+            this.node = node;
+            this.fullpath = node.getFullPath();
+            this.type = node.getNodeType();
+        }
+        
+        public NodeCache(String fullpath, int type)
+        {
+            this.fullpath = fullpath;
+            this.type     = type;
+        }
+        
+        public boolean isChildrenLoaded()
+        {
+            return childrenLoaded;
+        }
+
+        public void setChildrenLoaded(boolean childrenLoaded)
+        {
+            this.childrenLoaded = childrenLoaded;
+        }
+
+        public String getFullpath()
+        {
+            return fullpath;
+        }
+
+        public Node getNode()
+        {
+            return node;
+        }
+        
+        public void setNode(Node node)
+        {
+            this.node = node;
+        }
+        
+        public int getType()
+        {
+            return type;
+        }
+        
+        public Collection getChildren()
+        {
+            return children;
+        }
+
+        public void setChildren(Collection children)
+        {
+            this.children = children;
+        }
+        
+        public boolean equals(Object obj)
+        {
+            if ( obj != null && obj instanceof NodeCache )
+            {
+                NodeCache other = (NodeCache)obj;
+                return fullpath.equals(other.fullpath) && type == other.type;
+            }
+            return false;
+        }
+        
+        public int hashCode()
+        {
+            return fullpath.hashCode() + type;
+        }
+    }
+    
+    private HashMap nodeMap = new HashMap();
     private boolean enablePropertyManager;
 
     /**
@@ -76,6 +156,13 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      */
     public Node getNode( String fullPath, int nodeType ) throws NodeDoesNotExistException
     {
+        NodeCache key = new NodeCache(fullPath, nodeType);
+        NodeCache hit = (NodeCache)nodeMap.get(key);
+        if ( hit != null )
+        {
+            return hit.getNode();
+        }
+        
         Criteria c = new Criteria();
         c.addEqualTo("fullPath", fullPath);
         c.addEqualTo("nodeType", new Integer(nodeType));
@@ -84,6 +171,8 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         Node nodeObj = (Node) getPersistenceBrokerTemplate().getObjectByQuery(query);
         if (null != nodeObj)
         {
+            key.setNode(nodeObj);           
+            nodeMap.put(key, key);
             return nodeObj;
         }
         else
@@ -152,6 +241,8 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             try
             {
                 getPersistenceBrokerTemplate().store(nodeObj);
+                NodeCache key = new NodeCache(nodeObj);
+                nodeMap.put(key,key);
                 return nodeObj;
             }
             catch (Exception e)
@@ -174,19 +265,40 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      */
     public Collection getChildren( Node parentNode )
     {
+        NodeCache key = new NodeCache(parentNode);
+        NodeCache hit = (NodeCache)nodeMap.get(key);
+        if ( hit == null )
+        {
+            key.setNode(parentNode);
+            nodeMap.put(key,key);
+            hit = key;
+        }
+        if ( hit.isChildrenLoaded() )
+        {
+            return hit.getChildren();
+        }
+        
         Criteria c = new Criteria();
         c.addEqualTo("parentNodeId", new Long(parentNode.getNodeId()));
         Query query = QueryFactory.newQuery(NodeImpl.class, c);
-        return getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        Collection children = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        hit.setChildren(children);
+        // null or not
+        hit.setChildrenLoaded(true);
+        return children;
     }
     
     public void storeNode( Node node )
     {
+       NodeCache key = new NodeCache(node);
+       nodeMap.remove(key);
        getPersistenceBrokerTemplate().store(node);
     }
     
     public void removeNode( Node node )
     {
+        NodeCache key = new NodeCache(node);
+        nodeMap.remove(key);
        getPersistenceBrokerTemplate().delete(node);
     }
 
@@ -202,9 +314,4 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     {
         return this.enablePropertyManager;
     }
-    
-    
-    
-   
-    
 }
