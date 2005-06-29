@@ -72,6 +72,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     private String defaultRule = "j1";
 
     private Map principalRules = new HashMap();
+    private Map rulesPerPrincipal = new HashMap();
 
     public JetspeedProfilerImpl(String repositoryPath)
     {
@@ -300,6 +301,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         pr.setProfilingRule(rule);
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
+        this.rulesPerPrincipal.remove(principal.getName());        
     }
 
     private String makePrincipalRuleKey( String principal, String locator )
@@ -394,7 +396,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
             names[ix] = pr.getLocatorName();
             ix++;
         }
-        return names;
+        return names; 
     }
 
     /*
@@ -404,9 +406,14 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      */
     public Collection getRulesForPrincipal( Principal principal )
     {
+        Collection rules = (Collection)this.rulesPerPrincipal.get(principal.getName());
+        if (rules != null)
+            return rules;
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
-        return getPersistenceBrokerTemplate().getCollectionByQuery(QueryFactory.newQuery(principalRuleClass, c));
+        rules = getPersistenceBrokerTemplate().getCollectionByQuery(QueryFactory.newQuery(principalRuleClass, c));
+        this.rulesPerPrincipal.put(principal.getName(), rules);
+        return rules;
     }
 
     /*
