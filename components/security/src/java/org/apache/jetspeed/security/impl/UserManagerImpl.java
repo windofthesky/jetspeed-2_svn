@@ -59,7 +59,8 @@ public class UserManagerImpl implements UserManager
     private SecurityMappingHandler securityMappingHandler = null;
 
     private String anonymousUser = "guest";
-
+    private User guest = null;
+    
     /**
      * @param securityProvider
      *            The security provider.
@@ -322,6 +323,13 @@ public class UserManagerImpl implements UserManager
         { username}, new String[]
         { "username"}, "getUser(java.lang.String)");
 
+        // optimize guest lookups as they can be excessive
+        if (guest != null && getAnonymousUser().equals(username))
+        {
+            // TODO: need to handle caching issues            
+            return guest;
+        }
+        
         Set principals = new HashSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
@@ -347,7 +355,10 @@ public class UserManagerImpl implements UserManager
         }
         Preferences preferences = Preferences.userRoot().node(fullPath);
         User user = new UserImpl(subject, preferences);
-
+        if (getAnonymousUser().equals(username))
+        {
+            guest = user;
+        }
         return user;
     }
 
