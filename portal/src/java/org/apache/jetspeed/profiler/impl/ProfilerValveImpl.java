@@ -79,13 +79,13 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             if (subject == null)
             {
                 throw new ProfilerException("Missing subject for request: " + request.getPath());
-            }
+            }            
             Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
             if (principal == null)
             {
                 throw new ProfilerException("Missing principal for request: " + request.getPath());
             }
-
+            
             Map locators = null;
             String locatorName = (String)request.getAttribute(PROFILE_LOCATOR_REQUEST_ATTR_KEY);
             if ( locatorName != null )
@@ -100,13 +100,8 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             
             if ( locators ==  null )
             {
-                locators = (Map)request.getSessionAttribute(PROFILE_LOCATORS_PER_PRINCIPAL);
-                if (locators == null)
-                {
-                    // get all locators for the current user
-                    locators = profiler.getProfileLocators(request, principal);
-                    request.setSessionAttribute(PROFILE_LOCATORS_PER_PRINCIPAL, locators);
-                }
+                // get all locators for the current user
+                locators = profiler.getProfileLocators(request, principal);
             }
 
             if (locators.size() == 0)
