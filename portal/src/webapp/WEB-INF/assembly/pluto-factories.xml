@@ -14,7 +14,7 @@
   <bean id="LocalPortletInvokerTargetSource" 
     class="org.springframework.aop.target.CommonsPoolTargetSource">
     <property name="targetBeanName"><value>LocalPortletInvokerTarget</value></property>
-    <property name="maxSize"><value>25</value></property>
+    <property name="maxSize"><value>100</value></property>
   </bean>
 
   <bean id="LocalPortletInvoker" 
@@ -35,7 +35,7 @@
   <bean id="ServletPortletInvokerTargetSource" 
     class="org.springframework.aop.target.CommonsPoolTargetSource">
     <property name="targetBeanName"><value>ServletPortletInvokerTarget</value></property>
-    <property name="maxSize"><value>25</value></property>
+    <property name="maxSize"><value>100</value></property>
   </bean>
 
   <bean id="ServletPortletInvoker" 
