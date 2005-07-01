@@ -368,7 +368,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
             testDb = new File("./test/db/hsql/Registry").getCanonicalPath();           
             
             copyDeployables();
-            windowAccess = new PortletWindowAccessorImpl(entityAccess);  
+            windowAccess = new PortletWindowAccessorImpl(entityAccess, true);  
         }
         catch (Exception e)
         {

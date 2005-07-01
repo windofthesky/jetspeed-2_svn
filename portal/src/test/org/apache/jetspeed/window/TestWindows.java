@@ -74,7 +74,7 @@ public class TestWindows extends TestCase
         fragMock = new Mock(Fragment.class);
         entityMock = new Mock(MutablePortletEntity.class);
         windowListMock = new Mock(CompositeWindowList.class);
-        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy());
+        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), true);
     }
 
     public void testWindowAccess() throws Exception
