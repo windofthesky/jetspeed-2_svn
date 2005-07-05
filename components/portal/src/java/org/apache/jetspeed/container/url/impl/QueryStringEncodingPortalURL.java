@@ -1,0 +1,68 @@
+/*
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.jetspeed.container.url.impl;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.jetspeed.container.state.NavigationalState;
+
+/**
+ * QueryStringEncodingPortalURL encodes the NavigationalState as query parameter
+ * *
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
+ * @version $Id: QueryStringEncodingPortalURL.java 187758 2004-10-17 14:02:38Z ate $
+ */
+public class QueryStringEncodingPortalURL extends AbstractPortalURL
+{
+    public QueryStringEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
+    {
+        super(request, characterEncoding, navState);
+    }
+
+    protected void decodePathAndNavigationalState(HttpServletRequest request)
+    {
+        setEncodedNavigationalState(request.getParameter(getNavigationalStateParameterName()));
+        String path = null;
+        if (request.getPathInfo() != null)
+        {
+            path = request.getPathInfo();
+            int length = path.length();
+            if ( length > 1 && path.endsWith("/") )
+            {
+                path = path.substring(0, length-1);
+            }
+        }
+        setPath(path);
+    }
+    
+    protected String createPortletURL(String encodedNavigationalState, boolean secure)
+    {
+        StringBuffer buffer = new StringBuffer(getBaseURL(secure));
+        buffer.append(getBasePath());
+        if ( getPath() != null )
+        {
+            buffer.append(getPath());
+        }
+        if ( encodedNavigationalState != null )
+        {
+            buffer.append("?");
+            buffer.append(getNavigationalStateParameterName());
+            buffer.append("=");
+            buffer.append(encodedNavigationalState);
+        }
+        return buffer.toString();
+    }    
+}
