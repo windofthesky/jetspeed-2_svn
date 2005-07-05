@@ -24,7 +24,7 @@ limitations under the License.
     <pomVersion>3</pomVersion>
     <artifactId>demo</artifactId>
     <name>Jetspeed-2 Demo Portlet Application</name>
-    <groupId>demo</groupId>
+    <groupId>jetspeed2</groupId>
     <description>Demo Portlets Container</description>
     <shortDescription>Demo Portlets Container</shortDescription>
     <repository>

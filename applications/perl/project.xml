@@ -22,7 +22,7 @@ limitations under the License.
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <artifactId>perl</artifactId>
-  <groupId>perl</groupId>
+  <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 perl Portlet Application</name>
   <description>perl Portlet</description>
   <shortDescription>perl Portlets</shortDescription>
