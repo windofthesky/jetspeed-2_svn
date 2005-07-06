@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+
+  <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
+
+  <title>Subsite Home</title>
+
+  <fragment id="sub-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="sub-1" type="portlet" name="pam::LocaleSelector">
+      <property layout="OneColumn" name="row" value="3" />
+    </fragment>                                
+    <fragment id="sub-2" type="portlet" name="security::LoginPortlet">
+      <property layout="OneColumn" name="row" value="1" />
+    </fragment>                                
+  </fragment>
+
+</page>

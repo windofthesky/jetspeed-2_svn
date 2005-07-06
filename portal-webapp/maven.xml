@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project default="java:jar"
+         xmlns:j="jelly:core"
+         xmlns:define="jelly:define"
+         xmlns:maven="jelly:maven">
+
+  <!-- Target of maven test:single test -->
+<property name='testcase' value='org.apache.jetspeed.engine.TestEngine'/>
+
+
+-->
+
+<!--
+  <goal name="jaxb:portlet"
+        description="Generate java classes from protlet API schema">
+
+      <echo>Processing "Compile portlet.xsd to java classes"</echo>
+
+      <uptodate property="xsdBuild.uptodate"
+        targetfile="./src/java/org/apache/jetspeed/om/portlets/PortletApp.java">
+        <srcfiles dir= "../src/xml" includes="portlets.xsd"/>
+      </uptodate>
+
+     <j:set var="xsdBuild.notRequired" value="${xsdBuild.uptodate}"/>
+    <echo>xsd=[${xsdBuild.notRequired}]</echo>
+
+     <j:if test="${xsdBuild.notRequired == null}">
+      <exec  executable="java" >
+        <arg line="-jar ${maven.home}/repository/jaxb/jars/jaxb-xjc.jar -d ${basedir}/src -p java.org.apache.jetspeed.om.portlets ${basedir}/../src/xml/portlet.xsd"/>
+      </exec>
+    </j:if>
+  </goal>
+
+  <preGoal name="java:compile">
+   <attainGoal name= "jaxb:portlet"/>
+  </preGoal>
+-->
+
+	<goal name="pam.template.deploy">
+		<echo>Deploying App ${pam.app.name}</echo>
+		<j:if test="$pam.app.war}">
+			<echo>Using war ${pam.app.war}</echo>
+		</j:if>
+		
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="deploy"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+	
+			<arg value="-warfilename"/>
+			<arg value="${pam.app.war}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
+			
+			<!--
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+	
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
+	
+	<goal name="pam.template.register">
+		<echo>Performing action ${pam.action} with App ${pam.app.name}</echo>
+		
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="${pam.action}"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+	
+			<arg value="-warfilename"/>
+			<arg value="${pam.app.war}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
+			
+			<!--
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+	
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
+	
+	<goal name="pam.template.undeploy">
+		<echo>Undeploying App ${pam.app.name}</echo>
+		<j:if test="$pam.app.war}">
+			<echo>Using war ${pam.app.war}</echo>
+		</j:if>
+		
+		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="undeploy"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+			
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
+	
+			<!--
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
+
+
+  <goal name="pam.register">
+  	<!--
+  		
+  	<j:set var="pam.action" value="register"/>
+ 	<j:set var="pam.app.name" value="jetspeed"/>
+ 	<j:set var="pam.app.war" value="target/jetspeed.war"/>
+ 	<attainGoal name="pam.template.register"/>
+ 	-->
+ 	<j:set var="maven.build.dir" value="../layout-portlets/target" /> 	
+ 	<j:set var="maven.war.final.name" value="jetspeed-layouts.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.unregister">
+  	<j:set var="pam.action" value="unregister"/>
+ 	<j:set var="pam.app.name" value="jetspeed"/>
+ 	<j:set var="pam.app.war" value="target/jetspeed.war"/>
+ 	<attainGoal name="pam.template.register"/>
+  </goal>
+
+  <goal name="pam.deploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="demo"/>
+ 	<j:set var="pam.app.war" value="../applications/demo/target/demo.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.palmdeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="palm"/>
+ 	<j:set var="pam.app.war" value="../applications/palm/target/palm.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/palm/target" /> 	
+ 	<j:set var="maven.war.final.name" value="palm.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.pamdeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="pam"/>
+ 	<j:set var="pam.app.war" value="../applications/pam/target/pam.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/pam/target" /> 	
+ 	<j:set var="maven.war.final.name" value="pam.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.tsdeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="testsuite"/>
+ 	<j:set var="pam.app.war" value="../../jakarta-pluto/testsuite/target/testsuite.war"/>
+ 	
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	<j:set var="maven.build.dir" value="../../jakarta-pluto/testsuite/target" /> 	
+ 	<j:set var="maven.war.final.name" value="testsuite.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+ 	
+ 	
+  </goal>
+
+  <goal name="pam.strutsdeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="struts-demo"/>
+ 	<j:set var="pam.app.war" value="../applications/struts-demo/target/struts-demo.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/struts-demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="struts-demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+  
+  <goal name="pam.jpetstoredeploy">
+ 	<j:set var="maven.build.dir" value="../applications/jpetstore/target" />
+ 	<j:set var="maven.war.final.name" value="jpetstore.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.jsfdeploy">	
+ 	<j:set var="maven.build.dir" value="../applications/jsf-demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="jsf-demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+  
+  <goal name="pam.jsfmyfacesdeploy">	
+ 	<j:set var="maven.build.dir" value="../applications/jsf-demo-myfaces/target" /> 	
+ 	<j:set var="maven.war.final.name" value="jsf-demo-myfaces.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.securitydeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="security"/>
+ 	<j:set var="pam.app.war" value="../applications/security/target/security.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/security/target" /> 	
+ 	<j:set var="maven.war.final.name" value="security.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+  
+  <goal name="pam.phpdeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="PHP"/>
+ 	<j:set var="pam.app.war" value="../applications/php/target/php.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/php/target" /> 	
+ 	<j:set var="maven.war.final.name" value="php.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+  
+  <goal name="pam.perldeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="perl"/>
+ 	<j:set var="pam.app.war" value="../applications/perl/target/perl.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/perl/target" /> 	
+ 	<j:set var="maven.war.final.name" value="perl.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.rss">
+ 	<j:set var="maven.build.dir" value="../applications/rss/target" /> 	
+ 	<j:set var="maven.war.final.name" value="rss.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
+  <goal name="pam.undeploy">
+ 	<j:set var="pam.app.name" value="demo"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.palmundeploy">
+ 	<j:set var="pam.app.name" value="palm"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.pamundeploy">
+ 	<j:set var="pam.app.name" value="pam"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.tsundeploy">
+ 	<j:set var="pam.app.name" value="testsuite"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.strutsundeploy">
+ 	<j:set var="pam.app.name" value="struts-demo"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+  
+  <goal name="pam.jpetstoreundeploy">
+ 	<j:set var="pam.app.name" value="jpetstore"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.jsfundeploy">
+ 	<j:set var="pam.app.name" value="jsf-demo"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+  
+  <goal name="pam.jsfmyfacesundeploy">
+ 	<j:set var="pam.app.name" value="jsf-demo-myfaces"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.securityundeploy">
+ 	<j:set var="pam.app.name" value="security"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+  
+  <goal name="pam.phpundeploy">
+ 	<j:set var="pam.app.name" value="php"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+  
+  <goal name="pam.perlundeploy">
+ 	<j:set var="pam.app.name" value="perl"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- Deploy to Catalina and Expand                                    -->
+  <!-- ================================================================ -->
+  <goal name="deploy">
+     <echo message="Deploying ${pom.id}, ${pom.name}"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
+      <copy  file="./target/jetspeed.war" tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"/>
+      <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war" dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
+
+      <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+      <j:choose>
+        <j:when test="${catalina_version_major == '5.5'}" >
+          <j:set var="context_file_source" value="jetspeed-tomcat-5.5.xml"/>
+        </j:when>
+        <j:otherwise>
+          <j:set var="context_file_source" value="jetspeed-tomcat-5.xml"/>
+        </j:otherwise>
+      </j:choose>
+      <j:set var="context_file_target" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml"/>
+      <copy file="./src/resources/${context_file_source}" tofile="${context_file_target}" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+        </filterset>
+      </copy>
+      <attainGoal name="catalina:base-shared" />
+      <attainGoal name="catalina:shared" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- Hot Deploy for mundane everyday development under Catalina       -->
+  <!-- ================================================================ -->
+  <goal name="hotdeploy">
+    <echo message="Hot Deploying ${pom.id}, ${pom.name} ${maven.war.src}"/>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
+        <fileset dir="${maven.build.dir}/classes">
+        </fileset>
+    </copy>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/">
+      <fileset dir="./src/webapp">
+         <exclude name="WEB-INF/db/**"/>
+      </fileset>
+    </copy>
+  </goal>
+
+  <preGoal name="hotdeploy">
+   <attainGoal name= "java:compile"/>
+  </preGoal>
+
+  <!-- ================================================================ -->
+  <!-- Does all three deployment steps at once                                                                        -->
+  <!-- ================================================================ -->
+  <goal name="fullDeploy">
+
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+  	 <attainGoal name="pam.deploy" />
+  	 <attainGoal name="pam.palmdeploy" />  	 
+  	 <attainGoal name="pam.pamdeploy" />  	 
+     <attainGoal name="pam.strutsdeploy" />
+     <attainGoal name="pam.jsfdeploy" />
+     <attainGoal name="pam.jsfmyfacesdeploy" />
+     <attainGoal name="pam.securitydeploy" />
+     <attainGoal name="pam.phpdeploy" />
+     <attainGoal name="pam.perldeploy" />
+     <attainGoal name="pam.rss" />
+     <attainGoal name="pam.jpetstoredeploy" />
+
+     <attainGoal name="db.entities" />
+  </goal>
+
+  <goal name="nodbfullDeploy">
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+  	 <attainGoal name="pam.deploy" />
+  	 <attainGoal name="pam.palmdeploy" />  	 
+  	 <attainGoal name="pam.pamdeploy" />  	 
+     <attainGoal name="pam.strutsdeploy" />
+     <attainGoal name="pam.jsfdeploy" />
+     <attainGoal name="pam.jsfmyfacesdeploy" />
+     <attainGoal name="pam.securitydeploy" />
+     <attainGoal name="pam.phpdeploy" />
+     <attainGoal name="pam.perldeploy" />
+     <attainGoal name="pam.rss" />
+     <attainGoal name="pam.jpetstoredeploy" />
+  </goal>
+
+  <goal name='minDeploy'>
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+     <attainGoal name="pam.securitydeploy" />  	     
+     <attainGoal name="db.entities" />     
+  </goal>
+
+  <goal name='nodbMinDeploy'>
+  	 <attainGoal name="remove.wars" />
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+     <attainGoal name="pam.securitydeploy" />  	     
+  </goal>
+
+  <goal name="deployClasses">
+    <attainGoal name="java:compile"/>
+    <attainGoal name="java:jar-resources"/>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
+      <fileset dir="${basedir}/target/classes" />
+    </copy>
+    <!--
+     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}">
+      <fileset dir="${basedir}/src/webapp" />
+    </copy>
+    -->
+  </goal>
+  
+  <goal name="deployJar">
+  	<attainGoal name="jar:install"/>
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/lib"/>
+  </goal>
+  
+
+  <goal name="catalina:base-shared"
+        description="Copy all base jars necessary for common container">
+    <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-&pluto-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-&portals-bridges-common-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+  </goal>
+
+  <goal name="catalina:shared"
+        description="Copy all jars necessary for common container">
+    <copy file="../commons/target/jetspeed-commons-&jetspeed-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../jetspeed-api/target/jetspeed-api-&jetspeed-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- Copy OJB mapping for registry into the portal directory-->
+  <!-- ================================================================ -->
+  <goal name="ojb.registry">
+    <!-- <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/> -->
+    <!--<copy  file="./../services/security/src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>-->
+  </goal>
+
+
+  <goal name="pam.rssdeploy">
+ 	<j:set var="pam.app.name" value="rss"/>
+ 	<j:set var="pam.app.war" value="../applications/rss.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+  </goal>
+
+  <goal name="db.test.properties">
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+  </goal>
+
+  <goal name="db.production.properties">
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE a DB SCRIPT                                              -->
+  <!-- ================================================================ -->
+  <goal name="db.execute">
+    <sql driver="${org.apache.jetspeed.database.driver}"
+         classpathref="maven.dependency.classpath"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
+         src="${database.arg.script}">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+      </classpath>
+    </sql>
+  </goal>
+
+  <goal name="db.entities">
+    <j:set var="dbase" value="${org.apache.jetspeed.production.database.default.name}"/>
+    <attainGoal name="db.production.properties"/>
+    <!--
+    <j:choose>
+	    <j:when test="${dbase == 'mysql'}" >
+        	<j:set var="database.arg.script" value="../src/sql/mysql/populate-entities-for-default-psml.sql" />
+	    </j:when>
+	    <j:otherwise>
+        	<j:set var="database.arg.script" value="../src/sql/populate-entities-for-default-psml.sql" />
+	    </j:otherwise>
+  	</j:choose>
+  	
+    <attainGoal name="db.execute" />
+    -->
+    <j:choose>
+      <j:when test="${dbase == 'mssql'}" >
+          <j:set var="database.arg.script" value="../src/sql/mssql/populate-userinfo-for-default-psml.sql" />
+      </j:when>   
+      <j:when test="${dbase == 'mysql'}" >
+        	<j:set var="database.arg.script" value="../src/sql/mysql/populate-userinfo-for-default-psml.sql" />
+      </j:when>   
+      <j:when test="${dbase == 'oracle'}" >
+          <j:set var="database.arg.script" value="../src/sql/oracle/populate-userinfo-for-default-psml.sql" />
+      </j:when>
+      <j:when test="${dbase == 'hsql'}" >
+          <j:set var="database.arg.script" value="../src/sql/hsql/populate-userinfo-for-default-psml.sql" />
+      </j:when>
+      <j:otherwise>
+          <j:set var="database.arg.script" value="../src/sql/populate-userinfo-for-default-psml.sql" />
+      </j:otherwise>
+    </j:choose>
+    <attainGoal name="db.execute" />
+  </goal>
+
+  <goal name="ojb.set.production.database.platform">
+    <copy todir="${maven.build.dest}" overwrite="true">
+        <fileset dir="../etc/db-ojb"/>
+        <filterset begintoken="@" endtoken="@">
+            <filter token="PLATFORM"
+                value="${org.apache.jetspeed.production.database.ojb.platform}"/>
+        </filterset>
+    </copy>
+  </goal>  
+
+  <preGoal name="jar:jar">
+    <attainGoal name="ojb.set.production.database.platform"/>
+  </preGoal>
+
+  <preGoal name="war:init">  	
+   <attainGoal name= "jar:install"/>
+   <j:set var="maven.test.skip" value="true" />
+   <echo>Testing flag is: ${maven.test.skip} for war:install</echo>
+  </preGoal>
+  
+  <postGoal name="war:install">  	
+   <j:set var="maven.test.skip" value="false" />
+  </postGoal>
+
+  <preGoal name="war:webapp">
+    <attainGoal name="ojb.set.production.database.platform"/>
+  </preGoal>
+
+  <postGoal name="war:webapp">
+    <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}"/>
+        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+      </filterset>
+      <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
+           in a test failure (TestSpringEngine)
+           This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
+      -->
+      <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
+        <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+      </filterset>
+      <filterset begintoken="autodeployment.port" endtoken="8080">
+        <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+      </filterset>
+    </copy>
+  </postGoal>
+  
+  <goal name='remove.wars'>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/palm"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/palm.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/pam.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/security.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/php"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss"/>	
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/rss.war"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war"/>
+    <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+	<delete file="${context_dir}/${org.apache.jetspeed.portal.name}.xml"/>
+	<delete file="${context_dir}/security.xml"/>
+	<delete file="${context_dir}/jpetstore.xml"/>
+  </goal>
+
+</project>

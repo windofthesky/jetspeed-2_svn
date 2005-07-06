@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+
+  <defaults layout-decorator="jetspeed" portlet-decorator="jetspeed"/>
+
+  <title>Subsite2 Bookmarks</title>
+
+  <fragment id="sub2-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="sub2-21" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="OneColumn" name="row" value="0" />
+    </fragment>
+  </fragment>
+
+</page>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <title >Jetspeed Administrative Portlets</title>  
+  <metadata name="title" xml:lang="fr">Jetspeed Portlets Administratif</metadata>
+  <metadata name="title" xml:lang="ja">Jetspeed 管理ポートレット</metadata>
+
+  <document-order>user-mgt.psml</document-order>
+  <document-order>role-mgt.psml</document-order>
+  <document-order>group-mgt.psml</document-order>
+  <document-order>pam.psml</document-order>
+  <document-order>sso-admin.psml</document-order>
+  <document-order>site.psml</document-order>
+  <document-order>palm.psml</document-order>
+  <document-order>profiler.psml</document-order>
+
+  <security-constraints>
+    <security-constraints-ref>manager</security-constraints-ref>
+  </security-constraints>
+</folder>

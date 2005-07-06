@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document-set>
+  <title>[USER] More Pages</title>
+  <profile-locator>docset</profile-locator>
+  <document-path regexp="true">/top-links/more/*.*</document-path>
+</document-set>

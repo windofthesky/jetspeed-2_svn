@@ -1,0 +1,7 @@
+target
+*.log
+.project
+.classpath
+marshalled.psml
+jcoverage.ser
+junit*.properties
