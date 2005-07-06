@@ -31,6 +31,7 @@ import junit.framework.TestSuite;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalTestConstants;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.engine.SpringEngine;
@@ -145,7 +146,7 @@ public class JetspeedTestSuite extends TestSuite
      */
     public String getApplicationRoot()
     {
-        String applicationRoot = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, "./src/webapp");
+        String applicationRoot = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, PortalTestConstants.PORTAL_WEBAPP_PATH);
         return applicationRoot;
     }
 
@@ -155,7 +156,7 @@ public class JetspeedTestSuite extends TestSuite
      */
     public String getPropertiesFile()
     {
-        String jetspeedProperties = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, "./src/webapp") + "/WEB-INF/conf/jetspeed.properties";        
+        String jetspeedProperties = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, PortalTestConstants.PORTAL_WEBAPP_PATH) + "/WEB-INF/conf/jetspeed.properties";        
         return jetspeedProperties;
     }
 

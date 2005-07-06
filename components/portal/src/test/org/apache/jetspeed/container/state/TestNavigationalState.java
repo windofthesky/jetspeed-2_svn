@@ -30,6 +30,7 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalTestConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent;
@@ -64,7 +65,7 @@ import com.mockrunner.mock.web.MockServletContext;
  * @version $Id$
  */
 
-public class TestNavigationalState extends TestCase 
+public class TestNavigationalState extends TestCase
 {
     // needed to be able to Mock PortletWindowListCtrl
     private interface CompositeWindowList extends PortletWindowList, PortletWindowListCtrl{}
@@ -102,11 +103,11 @@ public class TestNavigationalState extends TestCase
         
         // create Engine
         PropertiesConfiguration config = new  PropertiesConfiguration();
-        config.load(new FileInputStream("./src/webapp/WEB-INF/conf/jetspeed.properties"));
+        config.load(new FileInputStream(PortalTestConstants.JETSPEED_PROPERTIES_PATH));
         Mock servletConfigMock = new Mock(ServletConfig.class);
         MockServletConfig msc = new MockServletConfig();
         msc.setServletContext(new MockServletContext());
-        Engine engine = Jetspeed.createEngine(config, "./src/webapp", msc, SpringEngine.class);
+        Engine engine = Jetspeed.createEngine(config, PortalTestConstants.PORTAL_WEBAPP_PATH, msc, SpringEngine.class);
 
         // mock test PortletWindow
         Mock entityMock = new Mock(MutablePortletEntity.class);        
