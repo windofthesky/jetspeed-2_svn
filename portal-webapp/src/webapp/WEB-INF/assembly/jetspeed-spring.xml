@@ -317,15 +317,6 @@ limitations under the License.
 		</property>		
   </bean>
       
-  <!-- User Info -->
-  <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 
-  	   class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl"
-  >
-     <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	     	   
-     <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
-
-  </bean>
-  
   <!--  Navigational State component -->
   <bean id="org.apache.jetspeed.container.state.NavigationalStateComponent" 
   	   class="org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent"
@@ -334,7 +325,7 @@ limitations under the License.
        <constructor-arg index="1"><value>org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL</value></constructor-arg>
        <constructor-arg index="2"><value>org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec</value></constructor-arg>       
   </bean>
-  
+     
   <!-- Request Context -->
    <bean id="org.apache.jetspeed.request.RequestContextComponent" 
   	   class="org.apache.jetspeed.request.JetspeedRequestContextComponent"
