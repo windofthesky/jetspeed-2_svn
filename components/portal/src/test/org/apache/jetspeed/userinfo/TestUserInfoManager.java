@@ -49,7 +49,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 {
 
     /** The user info manager. */
-    private UserInfoManager uim;
+    private UserInfoManager single;
+    /** The Multi Source user info manager */
+    private UserInfoManager multi;
     
     private PortletRegistry portletRegistry;
 
@@ -61,8 +63,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     {
         super.setUp();
         
-        uim = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager"); 
+        single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager"); 
         portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+        multi = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.MultiUserInfoManager");        
     }
 
     /**
@@ -79,8 +82,18 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         return new TestSuite(TestUserInfoManager.class);
     }
 
-    /** Test set user info map. */
-    public void testSetUserInfoMap() throws Exception
+    /** Test set user info map. **/ 
+    public void testSingleSetUserInfoMap() throws Exception
+    {
+        innerTestSetUserInfoMap(single);
+    }
+    
+//    public void testMultiSetUserInfoMap() throws Exception
+//    {
+//        innerTestSetUserInfoMap(multi);
+//    }
+    
+    private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
         MutablePortletApplication app = pad.createPortletApplication();            
