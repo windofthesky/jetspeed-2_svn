@@ -17,6 +17,7 @@ package org.apache.jetspeed.portlets.localeselector;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -29,24 +30,37 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
- * 
+ * This is the portlet to select user's preferred locale.
  * 
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
+ * @version $Id$
  */
 public class LocaleSelectorPortlet extends GenericPortlet
 {
     public static final String PREFERED_LOCALE_SESSION_KEY = "org.apache.jetspeed.prefered.locale";
 
+    private UserManager userManager;
+    
     /* (non-Javadoc)
      * @see javax.portlet.Portlet#init(javax.portlet.PortletConfig)
      */
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
+        userManager = (UserManager)getPortletContext().getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
+        if (null == userManager)
+        {
+            throw new PortletException("Failed to find the User Manager on portlet initialization");
+        }
     }
 
     /* (non-Javadoc)
@@ -78,30 +92,49 @@ public class LocaleSelectorPortlet extends GenericPortlet
 
         if (language != null)
         {
-			String[] localeArray = language.split("[-|_]");
+            String[] localeArray = language.split("[-|_]");
             String country = "";
             String variant = "";
-			for(int i=0; i<localeArray.length; i++)
-			{
-				if(i == 0)
-				{
-					language = localeArray[i];
-				}
-				else if(i == 1)
-				{
-					country = localeArray[i];
-				}
-				else if(i == 2)
-				{
-					variant = localeArray[i];
-				}
-			}
-            
+            for (int i = 0; i < localeArray.length; i++)
+            {
+                if (i == 0)
+                {
+                    language = localeArray[i];
+                }
+                else if (i == 1)
+                {
+                    country = localeArray[i];
+                }
+                else if (i == 2)
+                {
+                    variant = localeArray[i];
+                }
+            }
 
-            // TODO Set the prefered locale to user's persistent storage if not anon user
             Locale preferedLocale = new Locale(language, country, variant);
-            session.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, preferedLocale,PortletSession.APPLICATION_SCOPE);
-            RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+
+            if (request.getRemoteUser() != null)
+            {
+                // Set the prefered locale to user's perferences(persistent storage) if not anon user
+                try
+                {
+                    User user = userManager.getUser(request.getRemoteUser());
+                    // TODO if preferred lang or locale is defined in PLT.D, it's better to use it
+                    Preferences prefs = user.getPreferences();
+                    prefs.put(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, JetspeedLocale
+                            .convertLocaleToString(preferedLocale));
+                }
+                catch (SecurityException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            session.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, preferedLocale,
+                    PortletSession.APPLICATION_SCOPE);
+            RequestContext requestContext = (RequestContext) request
+                    .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             requestContext.setLocale(preferedLocale);
             requestContext.setSessionAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, preferedLocale);
         }

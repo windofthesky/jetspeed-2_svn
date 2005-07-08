@@ -17,20 +17,18 @@
 package org.apache.jetspeed.util;
 
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 /**
  * Class to set and get Locale settings for Jetspeed.
- * 
- * NOTE:    The defaults are read from the system (java.util.Locale) but it should be
- *          enhanced so that it reads it from the properties. 
  *          
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
+ * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
  * @version $Id$
-
  */
 public class JetspeedLocale
 {
-    // TODO We need to get this from the properties
+    private static final String DELIM = ",";
     
     /**
      * According to PLT.21.8.1, the default locale should be English.
@@ -39,4 +37,89 @@ public class JetspeedLocale
     {
         return Locale.ENGLISH;
     }
+
+
+    /**
+     * Converts Locale to String.
+     * 
+     * @param locale
+     * @return
+     */
+    public static String convertLocaleToString(Locale locale)
+    {
+        if (locale == null)
+        {
+            return null;
+        }
+        String country = locale.getCountry();
+        String language = locale.getLanguage();
+        String variant = locale.getVariant();
+        StringBuffer buffer = new StringBuffer(40);
+        if (language != null)
+        {
+            buffer.append(language);
+        }
+        buffer.append(DELIM);
+
+        if (country != null)
+        {
+            buffer.append(country);
+        }
+        buffer.append(DELIM);
+
+        if (variant != null)
+        {
+            buffer.append(variant);
+        }
+
+        return buffer.toString().trim();
+    }
+
+    /**
+     * Converts String to Locale.
+     * 
+     * @param localeString
+     * @return
+     */
+    public static Locale convertStringToLocale(String localeString)
+    {
+        if (localeString == null)
+        {
+            return null;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(localeString, DELIM);
+
+        String language = tokenizer.nextToken().trim();
+        String country = null;
+        String variant = null;
+        if (tokenizer.hasMoreTokens())
+        {
+            country = tokenizer.nextToken().trim();
+        }
+
+        if (tokenizer.hasMoreTokens())
+        {
+            variant = tokenizer.nextToken().trim();
+        }
+
+        if (country != null && language != null && variant != null)
+        {
+            return new Locale(language, country, variant);
+        }
+        else if (country != null && language != null)
+        {
+            return new Locale(language, country);
+        }
+        else if (language != null)
+        {
+            return new Locale(language, ""); // JDK 1.3 compatibility
+        }
+        else
+        {
+            return null;
+        }
+
+    }
+
+
 }

@@ -15,11 +15,16 @@
  */
 package org.apache.jetspeed.localization.impl;
 
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.prefs.Preferences;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.i18n.CurrentLocale;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -27,6 +32,12 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  * LocalizationValveImpl
@@ -86,11 +97,44 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
      */
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
-        // TODO Get the prefered locale from user's persistent storage if not anon user
+        Locale locale = null;
 
-        Locale locale =
-            (Locale) request.getSessionAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
+        // Get the prefered locale from user's preferences(persistent storage) if not anon user
+        Subject subject = request.getSubject();
+        if (null != subject)
+        {
+            Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            if (null != userPrincipal)
+            {
+                log.debug("Got user principal: " + userPrincipal.getName());
+                UserManager userMgr = (UserManager) Jetspeed.getComponentManager().getComponent(UserManager.class);
+                try
+                {
+                    if (!userMgr.getAnonymousUser().equals(userPrincipal.getName())
+                            && userMgr.userExists(userPrincipal.getName()))
+                    {
+                        User user = userMgr.getUser(userPrincipal.getName());
+                        // TODO if preferred lang or locale is defined in PLT.D, it's better to use it
+                        Preferences prefs = user.getPreferences();
+                        String localeString = prefs.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, null);
+                        if (localeString != null)
+                        {
+                            locale = JetspeedLocale.convertStringToLocale(localeString);
+                        }
+                    }
+                }
+                catch (SecurityException e)
+                {
+                    log.warn("Unexpected SecurityException in UserInfoManager", e);
+                }
+            }
+        }
 
+        if (locale == null)
+        {
+            locale = (Locale) request.getSessionAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
+        }
+        
         if ( locale == null && defaultLocale != null )
         {
             locale = defaultLocale;
