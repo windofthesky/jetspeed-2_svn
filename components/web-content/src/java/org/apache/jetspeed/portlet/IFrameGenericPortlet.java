@@ -137,7 +137,6 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         // special case source
         content.append(" ").append("SRC").append("=\"").append(source).append("\"");
 
-        appendAttribute(prefs, content, "SRC");
         appendAttribute(prefs, content, "ALIGN");
         appendAttribute(prefs, content, "CLASS");
         appendAttribute(prefs, content, "FRAMEBORDER");
