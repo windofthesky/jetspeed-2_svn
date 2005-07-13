@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -23,13 +20,7 @@
     xmlns:ant="jelly:ant" xmlns:util="jelly:util">
 
     <preGoal name="java:jar-resources">
-        <copy file="../etc/artifact-versions.ent"
-            tofile="${basedir}/target/classes/plugin-resources/etc/artifact-versions.ent" overwrite="true"
-            failonerror="true" />
-        <copy todir="target/classes/plugin-resources/etc/db-ojb" overwrite="true" failonerror="true">
-            <fileset dir="../etc/db-ojb" />
-        </copy>
-        <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
+         <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
             <fileset dir="../etc/project-dependencies" />
         </copy>
         <copy todir="target/classes/plugin-resources/etc/project-resources" overwrite="true" failonerror="true">
@@ -38,20 +29,25 @@
         <copy todir="target/classes/plugin-resources/etc/project-reports" overwrite="true" failonerror="true">
             <fileset dir="../etc/project-reports" />
         </copy>
-        <copy file="../locator.ent" tofile="${basedir}/target/classes/plugin-resources/locator.ent" overwrite="true"
-            failonerror="true" />
-        <copy file="../locator.path" tofile="${basedir}/target/classes/plugin-resources/locator.path" overwrite="true"
-            failonerror="true" />
+        <!--
+        <attainGoal name="copyDb" />
+        -->
+        <attainGoal name="copyPortlaWebApp" />
+        <copy file="../portal-webapp/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
+            overwrite="true" failonerror="true" />
         <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true"
             failonerror="true">
             <filterset begintoken="@" endtoken="@">
-                <filter token="JETSPEED_VERSION" value="&jetspeed-version;" />
+                <filter token="JETSPEED_VERSION" value="${jetspeed.version}" />
                 <filter token="JETSPEED_GROUPID" value="${pom.groupId}" />
-                <filter token="PLUTO_VERSION" value="&pluto-version;" />
-                <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="&portals-bridges-common-version;" />
+                <filter token="PLUTO_VERSION" value="${pluto.version}" />
+                <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="${portals.bridges.common.version}" />
             </filterset>
         </copy>
+
     </preGoal>
+
+
 
     <goal name="deploy-plugin">
         <attainGoal name="clean" />
@@ -71,8 +67,8 @@
         <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
             <fileset dir="../portal-webapp/src/resources" />
         </copy>
-        <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-&jetspeed-version;.war"
-            tofile="target/classes/plugin-resources/webapp/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true" failonerror="true" />
+        <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version}.war"
+            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true" failonerror="true" />       
         <copy file="../portal-webapp/project.xml.template" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
             overwrite="true" failonerror="true">
             <filterset begintoken="@" endtoken="@">
@@ -83,12 +79,12 @@
             </filterset>
         </copy>
     </goal>
-    
+
     <goal name="deploy-plugin-withoutwebapp">
     	<attainGoal name="clean" />
     	<attainGoal name="core-deploy-plugin" />
     </goal>
-    
+
     <goal name="core-deploy-plugin">
     	<attainGoal name="undeploy-plugin" />
 

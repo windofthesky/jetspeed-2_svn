@@ -755,13 +755,7 @@
             </fileset>
         </copy>
         
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.ent"
-            tofile="${org.apache.jetspeed.genapp.home}/locator.ent" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.path"
-            tofile="${org.apache.jetspeed.genapp.home}/locator.path" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml"
+          <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml"
             tofile="${org.apache.jetspeed.genapp.home}/project.xml" overwrite="true"
             failonerror="true" />
         
