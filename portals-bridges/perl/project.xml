@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -20,68 +17,44 @@
     $Id$
 -->
 <project>
-    <extend>${basedir}/../project.xml</extend>
-    <pomVersion>3</pomVersion>
-    <groupId>portals-bridges</groupId>
-    <artifactId>portals-bridges-perl</artifactId>
-    <name>Perl Bridge</name>
-    <currentVersion>
-        &portals-bridges-perl-version;
-    </currentVersion>
-    <package>org.apache.portals.bridges.perl</package>
-    <description>Apache Portals Perl Framework Bridge</description>
-    <shortDescription>Apache Portals Perl Framework Bridge</shortDescription>
-    <repository>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/perl</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/perl</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/perl/</url>
-    </repository>
-    <developers>
-        <developer>
-            <name>Roger Ruttimann</name>
-            <id>rogerrut</id>
-            <email>rogerrut@apache.org</email>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-    </developers>
-    <dependencies>
-        <dependency>
-            <groupId>jetspeed2</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
-            <version>2.0-M3</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>portlet-api</groupId>
-            <artifactId>portlet-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>servletapi</groupId>
-            <artifactId>servletapi</artifactId>
-            <version>2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>portals-bridges</groupId>
-            <artifactId>portals-bridges-common</artifactId>
-            <version>
-                &portals-bridges-common-version;
-            </version>
-        </dependency>
-    </dependencies>
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-    </build>
-    <reports>
-
-        &bridges-reports;
-
-    </reports>
+  <extend>${basedir}/../project.xml</extend>
+  <pomVersion>3</pomVersion>
+  <id>portals-bridges-perl</id>
+  <name>Perl Bridge</name>
+  <currentVersion>${portals.bridges.perl.version}</currentVersion>
+  <package>org.apache.portals.bridges.perl</package>
+  <description>
+    Apache Portals Perl Framework Bridge
+  </description>
+  <shortDescription>Apache Portals Perl Framework Bridge</shortDescription>
+  <repository>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/bridges/trunk/perl</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/bridges/trunk/perl</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/bridges/trunk/perl/</url>
+  </repository>
+  <developers>
+    <developer>
+      <name>Roger Ruttimann</name>
+      <id>rogerrut</id>
+      <email>rogerrut@apache.org</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <id>jetspeed2:jetspeed-rewriter</id>
+      <version>${jetspeed.version}</version>
+      <type>jar</type>
+    </dependency>		
+    <dependency>
+      <id>commons-logging</id>
+      <version>${commons.logging.version}</version>
+    </dependency>
+    <dependency>
+      <id>portals-bridges:portals-bridges-common</id>
+      <version>${portals.bridges.common.version}</version>
+    </dependency>
+  </dependencies>
 </project>

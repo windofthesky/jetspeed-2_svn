@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,10 +17,11 @@ limitations under the License.
   $Id$
 -->
 <project>
+    <extend>../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <name>Portals Bridges</name>
     <groupId>portals-bridges</groupId>
-    <currentVersion>&portals-bridges-version;</currentVersion>
+    <currentVersion>${portals.bridges.version}</currentVersion>
     <organization>
         <name>Apache Software Foundation</name>
         <url>http://portals.apache.org/</url>
@@ -157,7 +155,17 @@ limitations under the License.
             </roles>
         </developer>
     </developers>
-    <dependencies/>
+    <dependencies>
+        <!-- These apis will be common to all bridges builds -->
+	    <dependency>
+	      <id>portlet-api</id>
+	      <version>${portlet.api.version}</version>
+	    </dependency>
+	     <dependency>
+	      <id>servletapi</id>
+	      <version>${servlet.api.version}</version>
+	    </dependency>
+    </dependencies>
     <build>
         <nagEmailAddress>ate@douma.nu</nagEmailAddress>
         <sourceDirectory>src/java</sourceDirectory>
@@ -166,7 +174,18 @@ limitations under the License.
         <report>maven-dashboard-plugin</report>
         <report>maven-multiproject-plugin</report>
         <report>maven-multichanges-plugin</report>
-        <report>maven-tasklist-plugin</report>
+        <report>maven-jdepend-plugin</report>
+		<report>maven-pmd-plugin</report>
+		<report>maven-changelog-plugin</report>
+		<report>maven-file-activity-plugin</report>
+		<report>maven-developer-activity-plugin</report>
+		<report>maven-license-plugin</report>
+		<report>maven-javadoc-plugin</report>
+		<report>maven-jxr-plugin</report>
+		<report>maven-junit-report-plugin</report>
+		<report>maven-jcoverage-plugin</report>
+		<report>maven-linkcheck-plugin</report>
+		<report>maven-tasklist-plugin</report>
     </reports>
     <properties/>
 </project>
