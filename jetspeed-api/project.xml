@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,10 +17,9 @@ limitations under the License.
   $Id$
 -->
 <project>
-<extend>${basedir}/../project.xml</extend>
+<extend>${basedir}/../project-info.xml</extend>
   <pomVersion>3</pomVersion>
-  <artifactId>jetspeed-api</artifactId>
-  <groupId>jetspeed2</groupId>
+  <id>jetspeed-api</id>
   <name>Jetspeed-2 Core API</name>
   
   <package>org.apache.jetspeed</package>
@@ -37,55 +33,22 @@ limitations under the License.
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/jetspeed-api</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/jetspeed-api/</url>
   </repository>
-
+  
   <dependencies>
-    <dependency>
-      <id>junit</id>
-      <version>3.8.1</version>
-    </dependency>
-      
-      &pluto-deps;
-      
-     <dependency>      
+	<!-- Pluto Container -->
+	<dependency>
+	  <id>pluto</id>
+	  <version>${pluto.version}</version>
+	  <type>jar</type>
+	</dependency>
+	<!-- SUN APIs -->
+    <dependency>      
       <id>portlet-api</id>
-      <version>1.0</version>
-    </dependency>
+      <version>${portlet.api.version}</version>
+    </dependency>	
     <dependency>
       <id>servletapi</id>
-      <version>2.3</version>
-    </dependency>  
-  </dependencies>
-  <build>
-    <sourceDirectory>src/java</sourceDirectory>
-     <resources>
-      <resource>
-        <directory>${basedir}/src/java</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-    <unitTest>
-       <includes>
-        <include>**/Test*.java</include>
-      </includes>
-      <excludes>
-      </excludes>
-      <resources>
-        <resource>
-          <directory>${basedir}/src/test</directory>
-          <excludes>
-          <exclude>**/*.java</exclude>
-          </excludes>
-        </resource>
-      </resources>
-    </unitTest>
-    
-  </build>
-  <reports>
-  
-  	&j2-reports;
-  
-  </reports>  
+      <version>${servlet.api.version}</version>
+    </dependency>    
+  </dependencies> 
 </project>
