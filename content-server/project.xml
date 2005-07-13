@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,10 +17,9 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../project.xml</extend>
+  <extend>${basedir}/../core-build.xml</extend>
   <pomVersion>3</pomVersion>
-  <artifactId>content-server</artifactId>
-  <groupId>jetspeed2</groupId>
+  <id>content-server</id>
   <name>Jetspeed-2 Enterprise Portal Content Server</name>
   <package>org.apache.jetspeed</package>
   <description>
@@ -36,54 +32,5 @@ limitations under the License.
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/content-server</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/content-server/</url>
   </repository>
-
-  <dependencies>
-    <dependency>
-      <id>commons-io</id>
-      <version>0.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-   	  <dependency>
-      <id>commons-lang</id>
-      <version>2.0</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>commons-logging</id>
-      <version>1.0.3</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-      <dependency>
-      <id>servletapi</id>
-      <version>2.3</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties> 
-    </dependency>
-      
-      &pluto-deps;
-      
-  </dependencies>
-
-  <build>
-    <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-    <unitTest>
-      <includes>
-        <include>**/*Test*.java</include>
-      </includes>
-    </unitTest>
-  </build>
-  
-  <reports>
-  
-  	&j2-reports;
-  
-  </reports>  
+ 
 </project>
