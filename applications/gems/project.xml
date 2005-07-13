@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -61,7 +58,7 @@
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
             <version>
-                &portals-bridges-common-version;
+                ${portals.bridges.common.version}
             </version>
             <type>jar</type>
         </dependency>
@@ -69,73 +66,14 @@
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
             <version>
-                &portals-bridges-velocity-version;
+                ${portals.bridges.velocity.version}
             </version>
             <type>jar</type>
         </dependency>
         <dependency>
             <id>velocity</id>
             <version>1.4</version>
-        </dependency>
-
-        <dependency>
-            <id>jetspeed-sso</id>
-            <groupId>jetspeed2</groupId>
-            <version>
-                &jetspeed-version;
-            </version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>jetspeed2:jetspeed-api</id>
-            <version>
-                &jetspeed-version;
-            </version>
-            <properties>
-                <war.bundle>false</war.bundle>
-            </properties>
-        </dependency>
-
-    </dependencies>
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
-        <unitTest>
-            <includes>
-                <include>**/Test*.java</include>
-            </includes>
-
-            <resources>
-                <resource>
-                    <directory>${basedir}/src/test</directory>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
-                </resource>
-                <resource>
-                    <directory>${basedir}/src/java</directory>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
-                </resource>
-            </resources>
-        </unitTest>
-
-        <resources>
-            <resource>
-                <directory>${basedir}/src/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
-
-    </build>
-    <reports>
-
-        &j2-reports;
-
-    </reports>
+        </dependency>  
+  </dependencies>
+  
 </project>

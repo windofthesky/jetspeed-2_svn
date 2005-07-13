@@ -1,173 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
-    Copyright 2004 The Apache Software Foundation
-    
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
-    
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-    
-    $Id$
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id$
 -->
 <project>
-    <extend>${basedir}/../../project.xml</extend>
-    <artifactId>php</artifactId>
-    <groupId>jetspeed2</groupId>
-    <name>Jetspeed-2 PHP Portlet Application</name>
-    <description>PHP Portlet</description>
-    <shortDescription>PHP Portlets</shortDescription>
+  <extend>${basedir}/../../project-info.xml</extend>
+  <artifactId>php</artifactId>
+  <groupId>jetspeed2</groupId>
+  <name>Jetspeed-2 PHP Portlet Application</name>
+  <description>PHP Portlet</description>
+  <shortDescription>PHP Portlets</shortDescription>
 
-    <repository>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php</connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php
-        </developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/php/</url>
-    </repository>
+  <repository>                 
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/php</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/php/</url>
+  </repository>
 
-    <dependencies>
-        <dependency>
-            <id>portals-bridges:portals-bridges-php</id>
-            <version>
-                &portals-bridges-php-version;
-            </version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>portals-bridges:portals-bridges-common</id>
-            <version>
-                &portals-bridges-common-version;
-            </version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>itgroundwork:phpportlet</id>
-            <version>1.0</version>
-            <type>jar</type>
-            <properties>
-                <war.bundle.jar>true</war.bundle.jar>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>portlet-api</id>
-            <groupId>portlet-api</groupId>
-            <version>1.0</version>
-            <properties>
-                <war.bundle>false</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>jstl</id>
-            <version>1.0.6</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-
-        <dependency>
-            <id>servletapi</id>
-            <version>2.3</version>
-            <properties>
-                <war.bundle>false</war.bundle>
-            </properties>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>2.1</version>
-            <url>http://jakarta.apache.org/commons/collections.html</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-digester</groupId>
-            <artifactId>commons-digester</artifactId>
-            <version>1.5</version>
-            <url>http://jakarta.apache.org/commons/digester.html</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.0</version>
-            <url>http://jakarta.apache.org/commons/fileupload/</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.0</version>
-            <url>http://jakarta.apache.org/commons/lang.html</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.1.2</version>
-            <url>http://jakarta.apache.org/commons/validator/</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>log4j</id>
-            <version>1.2.8</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0.3</version>
-            <url>http://jakarta.apache.org/commons/logging.html</url>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-
-    </dependencies>
-
-
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-    </build>
-
-    <reports>
-        <report>maven-jdepend-plugin</report>
-        <report>maven-pmd-plugin</report>
-        <report>maven-changelog-plugin</report>
-        <report>maven-file-activity-plugin</report>
-        <report>maven-developer-activity-plugin</report>
-        <report>maven-license-plugin</report>
-        <report>maven-javadoc-plugin</report>
-        <report>maven-jxr-plugin</report>
-        <report>maven-junit-report-plugin</report>
-        <report>maven-linkcheck-plugin</report>
-        <report>maven-tasklist-plugin</report>
-    </reports>
+  <dependencies>
+  <dependency>
+		<id>portals-bridges:portals-bridges-php</id>
+	    <version>${portals.bridges.php.version}</version>
+	     <type>jar</type>
+	    <properties>
+	    	<war.bundle>true</war.bundle>
+	    </properties>
+	</dependency> 
+	<dependency>
+		<id>portals-bridges:portals-bridges-common</id>
+	    <version>${portals.bridges.common.version}</version>
+	     <type>jar</type>
+	    <properties>
+	    	<war.bundle>true</war.bundle>
+	    </properties>
+	</dependency> 
+    <dependency>
+      <id>itgroundwork:phpportlet</id>
+      <version>1.0</version>
+      <type>jar</type>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>portlet-api</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jstl</id>
+      <version>1.0.6</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties> 
+    </dependency>
+    
+    <dependency>
+      <id>commons-collections</id>
+      <version>2.1</version>
+      <url>http://jakarta.apache.org/commons/collections.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-digester</id>
+      <version>1.5</version>
+      <url>http://jakarta.apache.org/commons/digester.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-fileupload</id>
+      <version>1.0</version>
+      <url>http://jakarta.apache.org/commons/fileupload/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-lang</id>
+      <version>2.0</version>
+      <url>http://jakarta.apache.org/commons/lang.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-validator</id>
+      <version>1.1.2</version>
+      <url>http://jakarta.apache.org/commons/validator/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>log4j</id>
+      <version>1.2.8</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>    
+    <dependency>
+      <id>commons-logging</id>
+      <version>1.0.3</version>
+      <url>http://jakarta.apache.org/commons/logging.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+  </dependencies>
 </project>

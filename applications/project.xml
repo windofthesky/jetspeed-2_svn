@@ -1,5 +1,5 @@
 <project>
-    <extend>${basedir}/../project.xml</extend>
+    <extend>${basedir}/../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>BAD</artifactId>
     <name>This should not be built</name>

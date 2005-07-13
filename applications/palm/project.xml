@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,7 +17,7 @@ limitations under the License.
   $Id$
 -->
 <project>
-    <extend>${basedir}/../../project.xml</extend>
+    <extend>${basedir}/../../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>palm</artifactId>
     <name>Jetspeed-2 Portlet Application Lifecyle Management</name>
@@ -33,8 +30,7 @@ limitations under the License.
     </repository>
     <dependencies>
       <dependency>
-          <groupId>portlet-api</groupId>
-          <artifactId>portlet-api</artifactId>
+          <id>portlet-api</id>
           <version>1.0</version>
           <type>jar</type>
           <properties>
@@ -42,8 +38,7 @@ limitations under the License.
           </properties>
       </dependency>
       <dependency>
-          <groupId>jstl</groupId>
-          <artifactId>jstl</artifactId>
+          <id>jstl</id>
           <version>1.0.6</version>
           <type>jar</type>
           <properties>
@@ -51,8 +46,7 @@ limitations under the License.
           </properties>
       </dependency>
       <dependency>
-          <groupId>taglibs</groupId>
-          <artifactId>standard</artifactId>
+          <id>taglibs:standard</id>
           <version>1.0.6</version>
           <type>jar</type>
           <properties>
@@ -60,8 +54,7 @@ limitations under the License.
           </properties>
       </dependency>
       <dependency>
-          <groupId>servletapi</groupId>
-          <artifactId>servletapi</artifactId>
+          <id>servletapi</id>
           <version>2.3</version>
           <type>jar</type>
           <properties>
@@ -69,27 +62,24 @@ limitations under the License.
           </properties>
       </dependency>
       <dependency>
-          <groupId>jetspeed2</groupId>
-          <artifactId>jetspeed-api</artifactId>
-          <version>&jetspeed-version;</version>
+          <id>jetspeed2:jetspeed-api</id> 
+          <version>${jetspeed.version}</version>
           <type>jar</type>
           <properties>
               <war.bundle>false</war.bundle>
           </properties>
       </dependency>
       <dependency>
-          <groupId>jetspeed2</groupId>
-          <artifactId>jetspeed-commons</artifactId>
-          <version>&jetspeed-version;</version>
+          <id>jetspeed2:jetspeed-commons</id>
+          <version>${jetspeed.version}</version>
           <type>jar</type>
           <properties>
               <war.bundle>false</war.bundle>
           </properties>
       </dependency>
       <dependency>
-        <groupId>portals-gems</groupId>
-        <artifactId>portals-gems</artifactId>
-        <version>&jetspeed-version;</version>
+        <id>portals-gems:portals-gems</id>
+        <version>${jetspeed.version}</version>
         <type>jar</type>
         <properties>
           <war.bundle>true</war.bundle>
@@ -98,17 +88,24 @@ limitations under the License.
       <dependency>
         <groupId>portals-bridges</groupId>
         <artifactId>portals-bridges-common</artifactId>
-        <version>&portals-bridges-common-version;</version>
+        <version>${portals.bridges.common.version}</version>
         <properties>
           <war.bundle>true</war.bundle>
         </properties>
       </dependency>
       
-      &pluto-deps;
+      <!-- Pluto Container -->
+	  <dependency>
+		  <id>pluto</id>
+		  <version>${pluto.version}</version>
+		  <type>jar</type>
+		  <properties>
+		    <war.bundle>false</war.bundle>
+		  </properties>
+	  </dependency>
       
       <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
+          <id>log4j</id>
           <version>1.2.8</version>
           <type>jar</type>
           <properties>
@@ -116,8 +113,7 @@ limitations under the License.
           </properties>
       </dependency>
       <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <id>commons-logging</id>
           <version>1.0.3</version>
           <type>jar</type>
           <url>http://jakarta.apache.org/commons/logging.html</url>
@@ -126,21 +122,5 @@ limitations under the License.
           </properties>
       </dependency>
     </dependencies>
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/java/</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
-    <reports>
-
-        &j2-reports;
-
-    </reports>
-    <properties/>
+    
 </project>

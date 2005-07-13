@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -20,7 +17,7 @@
     $Id$
 -->
 <project>
-    <extend>${basedir}/../../project.xml</extend>
+    <extend>${basedir}/../../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>demo</artifactId>
     <name>Jetspeed-2 Demo Portlet Application</name>
@@ -50,9 +47,8 @@
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-
+            </properties>		  
+		</dependency>		
         <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
@@ -133,9 +129,7 @@
         <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed-commons</artifactId>
-            <version>
-                &jetspeed-version;
-            </version>
+            <version>${jetspeed.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -144,9 +138,7 @@
         <dependency>
             <groupId>portals-gems</groupId>
             <artifactId>portals-gems</artifactId>
-            <version>
-                &jetspeed-version;
-            </version>
+            <version>${jetspeed.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -155,9 +147,7 @@
         <dependency>
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
-            <version>
-                &portals-bridges-common-version;
-            </version>
+            <version>${portals.bridges.common.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -166,9 +156,7 @@
         <dependency>
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
-            <version>
-                &portals-bridges-velocity-version;
-            </version>
+            <version>${portals.bridges.velocity.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -211,19 +199,33 @@
         <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed-web-content</artifactId>
-            <version>
-                &jetspeed-version;
-            </version>
+            <version>${jetspeed.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
         <dependency>
+	        <groupId>jetspeed2</groupId>
+	        <artifactId>jetspeed-components</artifactId>
+      		<version>${jetspeed.version}</version>
+			 <type>jar</type>
+			 <properties>
+			 	<war.bundle>true</war.bundle>
+			 </properties>
+	    </dependency>
+	    <dependency>
+	      <id>castor</id>
+	      <version>0.9.4.3</version>
+	      <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed-components</artifactId>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <type>jar</type>
             <properties>
@@ -240,9 +242,7 @@
         <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed-rewriter</artifactId>
-            <version>
-                &jetspeed-version;
-            </version>
+            <version>${jetspeed.version}</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -258,30 +258,5 @@
             </properties>
         </dependency>
     </dependencies>
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/java/</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-    </build>
-    <reports>
-        <report>maven-jdepend-plugin</report>
-        <report>maven-checkstyle-plugin</report>
-        <report>maven-pmd-plugin</report>
-        <report>maven-changelog-plugin</report>
-        <report>maven-file-activity-plugin</report>
-        <report>maven-developer-activity-plugin</report>
-        <report>maven-license-plugin</report>
-        <report>maven-javadoc-plugin</report>
-        <report>maven-jxr-plugin</report>
-        <report>maven-junit-report-plugin</report>
-        <report>maven-tasklist-plugin</report>
-    </reports>
-    <properties />
+    
 </project>
