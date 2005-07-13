@@ -20,6 +20,7 @@ limitations under the License.
     <subtitle>Welcome to Jetspeed 2</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org"/>
+      <person name="David Le Strat" email="dlestrat@apache.org"/>
     </authors>
   </properties>
   <body>
@@ -110,14 +111,14 @@ If you are going to run the unit tests you will need an additional user called '
 <p>
 Only for the first time you create the database for Oracle, there is an issue with the drop statements.
 To get around this problem, set your properties as above in your $HOME/build.properties, and then 
-run these commands:
+run these commands using the <a href="j2-maven-plugin.html">Jetspeed 2 Maven plugin</a>:
 </p>
 <source test=""><![CDATA[
 
-maven db.scripts.gen
-maven dropdrops
-maven db.create.test (only when running unit tests)
-maven db.create.production
+maven j2:db.scripts.gen
+maven j2:dropdrops
+maven j2:db.create.test (only when running unit tests)
+maven j2:db.create.production
 
 ]]></source>
 </subsection>
