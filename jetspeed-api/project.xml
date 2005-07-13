@@ -22,13 +22,13 @@ limitations under the License.
 <project>
 <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jetspeed-api</id>
+  <artifactId>jetspeed-api</artifactId>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Core API</name>
   
   <package>org.apache.jetspeed</package>
   <description>
-	  Core API for implmeneting Jetspeed
+	  Core API for implemeneting Jetspeed
   </description>
   <shortDescription>Helps locate resources on the file system.</shortDescription>
 

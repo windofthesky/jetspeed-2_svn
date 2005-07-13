@@ -22,7 +22,8 @@ limitations under the License.
 <project>
   <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>content-server</id>
+  <artifactId>content-server</artifactId>
+  <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Enterprise Portal Content Server</name>
   <package>org.apache.jetspeed</package>
   <description>
