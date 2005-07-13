@@ -85,6 +85,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     {
         return this.title;
     }
+
     /**
      * <p>
      * setTitle
@@ -651,5 +652,23 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             }
         }
         return nodes;
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // by default, no action required
+    }
+
+    /**
+     * marshalling - notification that this instance is to
+     *               be saved to the persistent store
+     */
+    public void marshalling()
+    {
+        // by default, no action required
     }
 }

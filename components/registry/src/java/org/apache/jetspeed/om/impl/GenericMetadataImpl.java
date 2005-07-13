@@ -117,7 +117,8 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     public void setFields(Collection fields)
     {
         this.fields = fields;
-        
+        fieldMap.clear();
+
         if(fields != null)
         {    
             Iterator fieldIter = fields.iterator();

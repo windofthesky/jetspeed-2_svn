@@ -85,16 +85,6 @@ public interface Profiler
     ProfileLocator createLocator(RequestContext context);
         
     /**
-      * Creates a new ProfiledPageContext object that references
-      * the specified locator and can be managed by the current
-      * Profiler implementation
-      *
-      * @param locators Map of ProfileLocator objects used to select page
-      * @return A new ProfiledPageContext object
-      */
-    ProfiledPageContext createProfiledPageContext(Map locators);
-        
-    /**
      * For a given principal, lookup the associated profiling rule to that principal name.
      * 
      * @param principal Lookup the profiling rule based on this principal. 

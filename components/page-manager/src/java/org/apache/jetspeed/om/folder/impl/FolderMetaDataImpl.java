@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.jetspeed.om.folder.FolderMetaData;
@@ -36,6 +38,11 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
 {
     private Vector docOrder;
     private String defaultPage;
+
+    /**
+     * menuDefinitions - menu definitions for folder
+     */
+    private List menuDefinitions;
     
     public FolderMetaDataImpl()
     {
@@ -52,7 +59,6 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
      */
     public String getType()
     {
-        
         return DOCUMENT_TYPE;
     }
     /**
@@ -65,7 +71,6 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
      */
     public String getUrl()
     {
-       
         return getParent(false).getPath() + PATH_SEPARATOR + getType();
     }
     /**
@@ -91,7 +96,6 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     public void setDocumentOrder( Vector docIndexes )
     {
         docOrder = docIndexes;
-
     }
     /**
      * @return Returns the defaultPage.
@@ -106,5 +110,67 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     public void setDefaultPage( String defaultPage )
     {
         this.defaultPage = defaultPage;
+    }
+
+    /**
+     * getMenuDefinitions - get list of menu definitions
+     *
+     * @return definition list
+     */
+    public List getMenuDefinitions()
+    {
+        return menuDefinitions;
+    }
+
+    /**
+     * setMenuDefinitions - set list of menu definitions
+     *
+     * @param definitions definition list
+     */
+    public void setMenuDefinitions(List definitions)
+    {
+        menuDefinitions = definitions;
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // propagate unmarshalled notification
+        // to all menu definitions
+        if (menuDefinitions != null)
+        {
+            Iterator menuIter = menuDefinitions.iterator();
+            while (menuIter.hasNext())
+            {
+                ((MenuDefinitionImpl)menuIter.next()).unmarshalled();
+            }
+        }
+    }
+
+    /**
+     * marshalling - notification that this instance is to
+     *               be saved to the persistent store
+     */
+    public void marshalling()
+    {
+        // propagate marshalling notification
+        // to all menu definitions
+        if (menuDefinitions != null)
+        {
+            Iterator menuIter = menuDefinitions.iterator();
+            while (menuIter.hasNext())
+            {
+                ((MenuDefinitionImpl)menuIter.next()).marshalling();
+            }
+        }
+
+        // notify super class implementation
+        super.marshalling();
     }
 }

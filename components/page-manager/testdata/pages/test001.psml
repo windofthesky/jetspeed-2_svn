@@ -40,4 +40,10 @@ limitations under the License.
       <fragment id="pe004" type="portlet" name="CustomerInfo"/>
     </fragment>
   </fragment>
+
+  <menu name="simple">
+    <options>/folder1/folder1</options>
+    <options>/folder1/folder2</options>
+  </menu>
+
 </page>

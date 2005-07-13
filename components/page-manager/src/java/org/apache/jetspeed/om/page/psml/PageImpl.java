@@ -17,8 +17,10 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
+import org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.AbstractNode;
@@ -34,6 +36,11 @@ public class PageImpl extends AbstractNode implements Page
 
     private int hashCode;
 
+    /**
+     * menuDefinitions - menu definitions for page
+     */
+    private List menuDefinitions;
+    
     public PageImpl()
     {
         // empty constructor
@@ -185,21 +192,73 @@ public class PageImpl extends AbstractNode implements Page
     {       
         return DOCUMENT_TYPE;
     }
+
     /**
-     * <p>
-     * getUrl
-     * </p>
-     * Same as invoking <code>AbstractBaseElement.getId()</code> unless url explicitly set.
+     * getMenuDefinitions - get list of menu definitions
      *
-     * @see org.apache.jetspeed.om.page.Document#getUrl()
-     * @return
+     * @return definition list
      */
-    public String getUrl()
+    public List getMenuDefinitions()
     {
-        if (isUrlSet())
-            return super.getUrl();
-        return getId();
+        return menuDefinitions;
     }
 
+    /**
+     * setMenuDefinitions - set list of menu definitions
+     *
+     * @param definitions definition list
+     */
+    public void setMenuDefinitions(List definitions)
+    {
+        menuDefinitions = definitions;
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // propagate unmarshalled notification
+        // to all menu definitions
+        if (menuDefinitions != null)
+        {
+            Iterator menuIter = menuDefinitions.iterator();
+            while (menuIter.hasNext())
+            {
+                ((MenuDefinitionImpl)menuIter.next()).unmarshalled();
+            }
+        }
+
+        // default title of pages to name
+        if (getTitle() == null)
+        {
+            setTitle(getTitleName());
+        }
+    }
+
+    /**
+     * marshalling - notification that this instance is to
+     *               be saved to the persistent store
+     */
+    public void marshalling()
+    {
+        // propagate marshalling notification
+        // to all menu definitions
+        if (menuDefinitions != null)
+        {
+            Iterator menuIter = menuDefinitions.iterator();
+            while (menuIter.hasNext())
+            {
+                ((MenuDefinitionImpl)menuIter.next()).marshalling();
+            }
+        }
+
+        // notify super class implementation
+        super.marshalling();
+    }
 }
 

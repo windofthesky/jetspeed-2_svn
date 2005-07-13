@@ -145,7 +145,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
      */
     public Folder getFolder( String path, boolean fromCache ) throws NodeException, FolderNotFoundException, InvalidFolderException
     {
-        FolderMetaData metadata = null;
         Folder folder = null;
         File folderFile = new File(documentRootDir, path);
         if(!folderFile.exists())
@@ -158,47 +157,57 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             throw new InvalidFolderException(folderFile.getAbsolutePath()+" is not a valid directory.");
         }
         
+        // cleanup trailing separators
+        if (!path.equals(Folder.PATH_SEPARATOR) && path.endsWith(Folder.PATH_SEPARATOR))
+        {
+            path = path.substring(0, path.length()-1);
+        }
 
+        // check cache
         if (fromCache)
         {
             folder = (Folder) fileCache.getDocument(path);
         }
 
+        // get new folder
         if (folder == null)
         {
             try
             {
-                if (path.endsWith(Folder.PATH_SEPARATOR))
-                {
-                    Object obj = metadataDocHandler.getDocument(path + FolderMetaData.DOCUMENT_TYPE);
-                    metadata = (FolderMetaData) obj;
-                }
-                else
-                {
-                    Object obj =(FolderMetaData) metadataDocHandler.getDocument(path + Folder.PATH_SEPARATOR
-                            + FolderMetaData.DOCUMENT_TYPE);
-                    metadata = (FolderMetaData) obj;
-                }
+                // look for metadata
+                FolderMetaData metadata = (FolderMetaData) metadataDocHandler.getDocument(path + Folder.PATH_SEPARATOR + FolderMetaData.DOCUMENT_TYPE);
                 folder = new FolderImpl(path, metadata, handlerFactory, this);
             }
             catch (DocumentNotFoundException e)
             {
+                // no metadata
                 folder = new FolderImpl(path, handlerFactory, this);
             }
 
-            if (!path.equals(Folder.PATH_SEPARATOR) && path.indexOf(Folder.PATH_SEPARATOR_CHAR) > -1)
+            // recursively set parent
+            if (!path.equals(Folder.PATH_SEPARATOR))
             {
-                folder.setParent(getFolder(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR_CHAR))));
+                String parentPath = path;
+                int parentSeparatorIndex = parentPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
+                if (parentSeparatorIndex > 0)
+                {
+                    parentPath = parentPath.substring(0, parentSeparatorIndex);
+                }
+                else
+                {
+                    parentPath = Folder.PATH_SEPARATOR;
+                }
+                folder.setParent(getFolder(parentPath));
             }
-            else if (!path.equals(Folder.PATH_SEPARATOR) && path.indexOf(Folder.PATH_SEPARATOR_CHAR) < 0)
-            {
-                folder.setParent(getFolder(Folder.PATH_SEPARATOR));
-            }
-        }
 
-        if (fromCache)
-        {
-            addToCache(path, folder);
+            // folder unmarshalled
+            ((FolderImpl) folder).unmarshalled();
+
+            // add to cache
+            if (fromCache)
+            {
+                addToCache(path, folder);
+            }
         }
 
         return folder;

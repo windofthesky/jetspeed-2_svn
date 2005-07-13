@@ -16,21 +16,9 @@
 
 package org.apache.jetspeed.page.impl;
 
-//standard java stuff
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
@@ -39,8 +27,6 @@ import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecuredResource;
-import org.apache.jetspeed.om.folder.DocumentSet;
-import org.apache.jetspeed.om.folder.DocumentSetPath;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -52,8 +38,6 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.ContentPageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.AbstractNode;
-import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FolderHandler;
@@ -62,9 +46,6 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfileLocatorProperty;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to
@@ -85,20 +66,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     private FolderHandler folderHandler;
 
-    private boolean profilingEnabled;
-
-    private Map pageContextCache;
-
-    private Map perl5PathRegexpCache;
-
     private FileCache fileCache;
 
     // default configuration values
 
     public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
-                                 FolderHandler folderHandler, FileCache fileCache, int cacheSize,
-                                 boolean profilingEnabled, boolean permissionsEnabled,
-                                 boolean constraintsEnabled ) throws FileNotFoundException
+                                 FolderHandler folderHandler, FileCache fileCache,
+                                 boolean permissionsEnabled, boolean constraintsEnabled ) throws FileNotFoundException
     {
         super(generator, permissionsEnabled, constraintsEnabled);
         handlerFactory.setPermissionsEnabled(permissionsEnabled);
@@ -107,14 +81,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         this.folderHandler = folderHandler;
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
-        this.profilingEnabled = profilingEnabled;
-        initCaches(cacheSize);
     }
 
     public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
-                                 FolderHandler folderHandler, FileCache fileCache, int cacheSize,
-                                 boolean profilingEnabled, boolean permissionsEnabled,
-                                 boolean constraintsEnabled, List modelClasses ) throws FileNotFoundException
+                                 FolderHandler folderHandler, FileCache fileCache,
+                                 boolean permissionsEnabled, boolean constraintsEnabled,
+                                 List modelClasses ) throws FileNotFoundException
     {
         super(generator, permissionsEnabled, constraintsEnabled, modelClasses);
         handlerFactory.setPermissionsEnabled(permissionsEnabled);
@@ -123,1453 +95,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         this.folderHandler = folderHandler;
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
-        this.profilingEnabled = profilingEnabled;
-        initCaches(cacheSize);
-    }
-
-    /**
-     * <p>
-     * Compute profiled page context elements based on named profile
-     * locators associated with a session/principal in supplied
-     * context instance. 
-     * </p>
-     * 
-     * @see org.apache.jetspeed.page.PageManager#getProfiledPageContext(org.apache.jetspeed.page.ProfiledPageContext)
-     * @param pageContext
-     * @throws PageNotFoundException
-     * @throws DocmentException
-     * @throws NodeException
-     */
-    public void computeProfiledPageContext(ProfiledPageContext pageContext)
-        throws PageNotFoundException, DocumentException, NodeException
-    {
-        // construct key and test for page context cache hit
-        String pageContextCacheKey = pageContextCacheKey(pageContext);
-        log.debug("computeProfiledPageContext() invoked, cache key = " + pageContextCacheKey + ", (profilingEnabled = " + profilingEnabled + ")");
-        CacheablePageContext cachedPageContext = lookupPageContext(pageContextCacheKey);
-        if (cachedPageContext != null )
-        {
-            // populate returned profiled page context
-            populateProfiledPageContext(cachedPageContext, pageContext);
-            return;
-        }
-
-        // determine profiled page context using profile locator; get
-        // page profile locator from session/principal profile locators
-        ProfileLocator locator = selectPageProfileLocator(pageContext.getLocators());
-
-        // get request path
-        String requestPath = locator.getRequestPath();
-
-        // get profiled page context initialization parameters
-        Folder folder = null;
-        Page page = null;
-        NodeSet siblingPages = null;
-        Folder parentFolder = null;
-        NodeSet siblingFolders = null;
-        NodeSet rootLinks = null;
-        NodeSet documentSets = null;
-        Map documentSetNames = null;
-        Map documentSetNodeSets = null;
-        List allProfiledFolders = null;
-        if (profilingEnabled)
-        {
-            // profile page request using profile locator
-            Folder [] profiledFolder = new Folder[1];
-            Page [] profiledPage = new Page[1];
-            List profiledFolders = new ArrayList(16);
-            List searchProfiledFolders = new ArrayList(24);
-
-            // generate profile locator folder/page search paths
-            List searchPaths = generateProfilingSearchPaths(requestPath, locator, false);
-
-            // find page in page manager content using search paths
-            boolean profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
-
-            // profile fallback to default root folder to locate folder/page
-            boolean rootFallback = false;
-            if (rootFallback = (! profiled && ! requestPath.equals(Folder.PATH_SEPARATOR)))
-            {
-                // profile default root folder, (ignoring request path)
-                searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, locator, true);
-                profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
-
-                // if profiled successfully at root fallback but failed previous
-                // attempt, profile request path against available alternate profile
-                // locators. This is used only to select a page: all other context
-                // information remains determined from fallback.
-                if (profiled && (pageContext.getLocators().size() > 1))
-                {
-                    // profile to locate request path using alternate locators
-                    Page [] alternateProfiledPage = new Page[1];
-                    Iterator locatorsIter = selectAlternatePageProfileLocators(pageContext.getLocators()).iterator();
-                    while ((alternateProfiledPage[0] == null) && locatorsIter.hasNext())
-                    {
-                        ProfileLocator alternateLocator = (ProfileLocator) locatorsIter.next();
-                        List alternateSearchPaths = generateProfilingSearchPaths(requestPath, alternateLocator, false);
-                        findProfiledPageAndFolders(alternateSearchPaths, alternateProfiledPage);
-                    }
-
-                    // if request path matched, use just profiled page; note: page is
-                    // not used to generate page context, (fallback default root folder
-                    // is used instead); otherwise continue with root default page match
-                    if (alternateProfiledPage[0] != null)
-                    {
-                        log.debug("computeProfiledPageContext(): Using alternate locator match " + alternateProfiledPage[0] + " for " + requestPath);
-                        profiledPage[0] = alternateProfiledPage[0];
-                    }
-                    else
-                    {
-                        log.warn("computeProfiledPageContext(): No alternate locator match: falling back to profiled root default page for " + requestPath);
-                    }
-                }
-                else
-                {
-                    // fallback to root default page
-                    log.warn("computeProfiledPageContext(): Falling back to profiled root default page for " + requestPath);
-                }
-            }
-
-            // profiled folder and page
-            if (profiled)
-            {
-                folder = (Folder) setProfiledNodePathAndUrl((AbstractNode) profiledFolder[0]);
-                page = (Page) setProfiledNodePathAndUrl((AbstractNode) profiledPage[0]);
-            }
-
-            // profile page context if page and folder found
-            if ((page != null) && (folder != null))
-            {
-                // add profiled folders to all profiled folders list
-                allProfiledFolders = new ArrayList(24);
-                Iterator foldersIter = profiledFolders.iterator();
-                while (foldersIter.hasNext())
-                {
-                    FolderImpl profiledPageFolder = (FolderImpl) foldersIter.next();
-                    if (!profiledPageFolder.isHidden())
-                    {
-                        allProfiledFolders.add(setProfiledNodePathAndUrl(profiledPageFolder));
-                    }
-                }
-
-                // profile general document/folder order
-                List documentOrder = null;
-                foldersIter = searchProfiledFolders.iterator();
-                while ((documentOrder == null) && foldersIter.hasNext())
-                {
-                    FolderImpl profiledPageFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
-                    if ((profiledPageFolder.getMetaData() != null) && (profiledPageFolder.getMetaData().getDocumentOrder() != null) &&
-                        ! profiledPageFolder.getMetaData().getDocumentOrder().isEmpty())
-                    {
-                        documentOrder = profiledPageFolder.getMetaData().getDocumentOrder();
-                    }
-                }
-                Comparator documentComparator = new DocumentOrderComparator(documentOrder);
-
-                // profile sibling pages by aggregating all siblings in profiled folders
-                // using profiled general document order, (do not filter unordered siblings);
-                // force profiled page to exist as sibling to support pages profiled using
-                // alternate locators that may not select page in profiled folder: the
-                // profiled page must appear in the sibling pages collection.
-                siblingPages = new NodeSetImpl(null, documentComparator);
-                siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingPages, (AbstractNode) page);
-                foldersIter = profiledFolders.iterator();
-                while (foldersIter.hasNext())
-                {
-                    FolderImpl aggregatePagesFolder = (FolderImpl) foldersIter.next();
-                    NodeSet aggregatePages = aggregatePagesFolder.getPages(false);
-                    Iterator aggregatePagesIter = aggregatePages.iterator();
-                    while (aggregatePagesIter.hasNext())
-                    {
-                        AbstractNode siblingPageNode = (AbstractNode)aggregatePagesIter.next();
-                        if (!siblingPageNode.isHidden())
-                        {
-                            siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl)siblingPages, setProfiledNodePathAndUrl(siblingPageNode));
-                        }
-                    }
-                }
-
-                // profile parent folder using profiled parent
-                if ((((AbstractNode)folder).getParent(false) != null) &&
-                    !((AbstractNode)folder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
-                {
-                    AbstractNode parentFolderNode = (AbstractNode)((AbstractNode)folder).getParent(false);
-                    if (!parentFolderNode.isHidden())
-                    {
-                        parentFolder = (Folder)setProfiledNodePathAndUrl(parentFolderNode);
-                        allProfiledFolders.add(parentFolder);
-                    }
-                }
-
-                // profile sibling folders by aggregating all siblings in profiled folders
-                // using profiled general document order, (do not filter unordered siblings)
-                siblingFolders = new NodeSetImpl(null, documentComparator);
-                foldersIter = profiledFolders.iterator();
-                while (foldersIter.hasNext())
-                {
-                    FolderImpl aggregateFoldersFolder = (FolderImpl) foldersIter.next();
-                    NodeSet aggregateFolders = aggregateFoldersFolder.getFolders(false).exclusiveSubset("^.*/" + PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX + "[^/]*$").exclusiveSubset("^.*/" + PROFILE_PROPERTY_FOLDER_PREFIX + "[^/]*$");
-                    Iterator aggregateFoldersIter = aggregateFolders.iterator();
-                    while (aggregateFoldersIter.hasNext())
-                    {
-                        AbstractNode siblingFolderNode = (AbstractNode)aggregateFoldersIter.next();
-                        if (!siblingFolderNode.isHidden())
-                        {
-                            siblingFolders = addUniqueOrDescribedUrlNode((NodeSetImpl)siblingFolders, setProfiledNodePathAndUrl(siblingFolderNode));
-                            allProfiledFolders.add(siblingFolderNode);
-                        }
-                    }
-                }
-
-                // profile document sets by aggregating all document set documents by document
-                // set name in all profiled folders for page
-                Map aggregateDocumentSets = new HashMap(12);
-                foldersIter = searchProfiledFolders.iterator();
-                while (foldersIter.hasNext())
-                {
-                    FolderImpl aggregateFolder = (FolderImpl) foldersIter.next();
-                    NodeSet aggregateFolderDocumentSets = aggregateFolder.getDocumentSets(false);
-                    Iterator aggregateFolderDocumentSetsIter = aggregateFolderDocumentSets.iterator();
-                    while (aggregateFolderDocumentSetsIter.hasNext())
-                    {
-                        AbstractNode documentSetNode = (AbstractNode)setProfiledNodePathAndUrl((AbstractNode)aggregateFolderDocumentSetsIter.next());
-                        if (!documentSetNode.isHidden())
-                        {
-                            String documentSetProfiledPath = documentSetNode.getProfiledPath();
-                            if (!aggregateDocumentSets.containsKey(documentSetProfiledPath))
-                            {
-                                aggregateDocumentSets.put(documentSetProfiledPath, documentSetNode);
-                            }
-                        }
-                    }
-                }
-                
-                // generate profiled document sets from aggregated document set documents
-                if (! aggregateDocumentSets.isEmpty())
-                {
-                    // profiled document sets to be returned
-                    documentSets = new NodeSetImpl(null, documentComparator);
-                    documentSetNames = new HashMap(aggregateDocumentSets.size() * 2);
-                    documentSetNodeSets = new HashMap(aggregateDocumentSets.size() * 2);
-                    
-                    // profile each aggregated document set
-                    Iterator documentSetsIter = aggregateDocumentSets.values().iterator();
-                    while (documentSetsIter.hasNext())
-                    {
-                        // expand and profile each document set
-                        DocumentSet documentSet = (DocumentSet) documentSetsIter.next();
-                        NodeSetImpl documentSetNodes = expandAndProfileDocumentSet(pageContext.getLocators(), documentSet, null, "", documentSetNames, documentSetNodeSets, allProfiledFolders);
-                        if (documentSetNodes != null)
-                        {
-                            documentSets.add(documentSet);
-                        }
-                    }
-                }
-
-                // profile root links by aggregating all links in profiled root folders
-                if (! rootFallback && ! requestPath.equals(Folder.PATH_SEPARATOR))
-                {
-                    // profile root folders if required
-                    searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, locator, true);
-                    profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
-                }
-                if (profiled)
-                {
-                    // profile root link document order folder meta data
-                    List linkDocumentOrder = null;
-                    foldersIter = profiledFolders.iterator();
-                    while ((linkDocumentOrder == null) && foldersIter.hasNext())
-                    {
-                        FolderImpl profiledRootFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
-                        if (((AbstractNode) profiledRootFolder).getProfiledPath().equals(Folder.PATH_SEPARATOR) && 
-                            (profiledRootFolder.getMetaData() != null) && (profiledRootFolder.getMetaData().getDocumentOrder() != null) &&
-                            ! profiledRootFolder.getMetaData().getDocumentOrder().isEmpty())
-                        {
-                            linkDocumentOrder = profiledRootFolder.getMetaData().getDocumentOrder();
-                        }
-                    }
-                    Comparator linkDocumentComparator = new DocumentOrderComparator(linkDocumentOrder);
-
-                    // profile root links using profiled document order
-                    rootLinks = new NodeSetImpl(null, linkDocumentComparator);
-                    foldersIter = profiledFolders.iterator();
-                    while (foldersIter.hasNext())
-                    {
-                        FolderImpl aggregateLinksFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
-                        if (aggregateLinksFolder.getProfiledPath().equals(Folder.PATH_SEPARATOR))
-                        {
-                            NodeSet aggregateLinks = aggregateLinksFolder.getLinks(false);
-                            Iterator aggregateLinksIter = aggregateLinks.iterator();
-                            while (aggregateLinksIter.hasNext())
-                            {
-                                AbstractNode rootLinkNode = (AbstractNode)aggregateLinksIter.next();
-                                if (!rootLinkNode.isHidden())
-                                {
-                                    rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl)rootLinks, setProfiledNodePathAndUrl(rootLinkNode));
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // return empty root links
-                    rootLinks = new NodeSetImpl(null);
-                }
-            }
-            else
-            {
-                log.error("computeProfiledPageContext(): Failed to find profiled page and/or folder for " + requestPath + " at " + locator);
-                throw new PageNotFoundException(requestPath + " at " + locator);
-            }
-        }
-        else
-        {
-            // return request folder and page
-
-            // managed folder and page
-            try
-            {
-                // retrieve managed folder and page from request
-                String folderPath = requestPath;
-                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith(Folder.PATH_SEPARATOR))
-                {
-                    int lastSlashIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-                    if (lastSlashIndex > 0)
-                    {
-                        folderPath = folderPath.substring(0, lastSlashIndex);
-                    }
-                    else
-                    {
-                        folderPath = Folder.PATH_SEPARATOR;
-                    }
-                }
-                folder = folderHandler.getFolder(folderPath);
-                String pagePath = requestPath;
-                if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
-                {
-                    pagePath = folder.getDefaultPage(true);
-                }
-                page = ((FolderImpl)folder).getPage(pagePath, false);
-            }
-            catch (NodeException ne)
-            {
-            }
-            if (page == null)
-            {
-                // fallback to default page for root folder
-                log.warn("computeProfiledPageContext(): Falling back to managed root default page for " + requestPath);
-                try
-                {
-                    folder = folderHandler.getFolder(Folder.PATH_SEPARATOR);
-                    String pagePath = folder.getDefaultPage(true);
-                    page = ((FolderImpl)folder).getPage(pagePath, false);
-                }
-                catch (NodeException ne)
-                {
-                }
-            }
-
-            // managed page context
-            if (page != null)
-            {
-                // return folders and pages relative to requested page
-                siblingPages = ((FolderImpl)folder).getPages(false);
-                parentFolder = (Folder) ((AbstractNode)folder).getParent(false);
-                siblingFolders = ((FolderImpl)folder).getFolders(false);
-                try
-                {
-                    Folder rootFolder = folderHandler.getFolder(Folder.PATH_SEPARATOR);
-                    rootLinks = ((FolderImpl)rootFolder).getLinks(false);
-                }
-                catch (NodeException ne)
-                {
-                }
-                try
-                {
-                    // get default document set order from folder
-                    Comparator documentComparator = ((NodeSetImpl)((FolderImpl)folder).getAllNodes()).getComparator();
-
-                    // aggregate and expand document sets from page to root folder;
-                    documentSets = new NodeSetImpl(null, documentComparator);
-                    documentSetNames = new HashMap(8);
-                    documentSetNodeSets = new HashMap(8);
-                    Set uniqueDocumentSetPaths = new HashSet(8);
-                    FolderImpl aggregateFolder = (FolderImpl)folder;
-                    do
-                    {
-                        // aggregate uniquely named and expand folder document sets
-                        Iterator documentSetsIter = aggregateFolder.getDocumentSets(false).iterator();
-                        while (documentSetsIter.hasNext())
-                        {
-                            DocumentSet documentSet = (DocumentSet) documentSetsIter.next();
-                            String documentSetPath = documentSet.getPath();
-
-                            // aggregate document sets
-                            if (! uniqueDocumentSetPaths.contains(documentSetPath))
-                            {
-                                uniqueDocumentSetPaths.add(documentSetPath);
-
-                                // expand document set using default document set order
-                                NodeSetImpl documentSetNodes = new NodeSetImpl(null, documentComparator);
-                                documentSetNodes = expandDocumentSet(documentSet, documentSetNodes, "", documentSetNames, documentSetNodeSets);
-                                if (documentSetNodes != null)
-                                {
-                                    documentSets.add(documentSet);
-                                }
-                            }
-                        }
-
-                        // aggregate document sets in parent
-                        aggregateFolder = (FolderImpl) ((AbstractNode)aggregateFolder).getParent(false);
-                    }
-                    while (aggregateFolder != null);
-                }
-                catch (NodeException ne)
-                {
-                }
-            }
-            else
-            {
-                log.error("computeProfiledPageContext(): Failed to find managed page for " + requestPath);
-                throw new PageNotFoundException(requestPath);
-            }
-        }
-
-        // cache profiled page context result
-        cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets, allProfiledFolders);
-        cachePageContext(pageContextCacheKey, cachedPageContext);
-
-        // populate returned profiled page context
-        populateProfiledPageContext(cachedPageContext, pageContext);
-    }
-
-
-    private NodeSetImpl expandAndProfileDocumentSet(Map profileLocators, DocumentSet documentSet, NodeSetImpl expandedNodes, String documentSetNamePrefix, Map documentSetNames, Map documentSetNodeSets, List allProfiledFolders)
-    {
-        // expand and profile document set using document set or default
-        // navigation profile locator
-        ProfileLocator navigationLocator = selectNavigationProfileLocator(documentSet.getProfileLocatorName(), profileLocators);
-        if (navigationLocator == null)
-        {
-            log.warn("expandAndProfileDocumentSet(): Navigation profile locator " + documentSet.getProfileLocatorName() + " unavailable for document set " + documentSet.getPath() + ", ignored." );
-            return null;
-        }
-
-        // generate search paths for profile locator from root
-        List searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, navigationLocator, true);
-        if (log.isDebugEnabled())
-        {
-            Iterator pathsIter = searchPaths.iterator();
-            while (pathsIter.hasNext())
-            {
-                log.debug("expandAndProfileDocumentSet(), searchPath = " + pathsIter.next());
-            }
-        }
-
-        // prepare expanded nodes set with profiled document/folder ordering
-        if (expandedNodes == null)
-        {
-            // get document/folder ordering
-            List documentOrder = null;
-
-            // if document set is composed of a single path and might match
-            // more than one document, attempt to use path to determine
-            // document ordering if it is not root relative
-            List documentPaths = documentSet.getDefaultedDocumentPaths();
-            if (documentPaths.size() == 1)
-            {
-                DocumentSetPath documentSetPath = (DocumentSetPath) documentPaths.get(0);
-                if (documentSetPath.isRegexp())
-                {
-                    // enforce assumption that document set paths are absolute
-                    // and extract folder
-                    String documentFolderPath = forceAbsoluteDocumentSetPath(documentSetPath.getPath());
-                    int lastSlashIndex = documentFolderPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-                    if (lastSlashIndex > 2)
-                    {
-                        // non-root document path
-                        documentFolderPath = documentFolderPath.substring(0, lastSlashIndex);
-                        
-                        // iterate over search paths formed with document path
-                        Iterator pathsIter = searchPaths.iterator();
-                        while ((documentOrder == null) && pathsIter.hasNext())
-                        {
-                            // search folder path
-                            String folderPath = (String) pathsIter.next();
-                            if (folderPath.endsWith(Folder.PATH_SEPARATOR))
-                            {
-                                folderPath = folderPath.substring(0, folderPath.length()-1) + documentFolderPath;
-                            }
-                            else
-                            {
-                                folderPath = folderPath + documentFolderPath;
-                            }
-                            
-                            // check folder for document order
-                            try
-                            {
-                                FolderImpl folder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) folderHandler.getFolder(folderPath));
-                                if ((folder.getMetaData() != null) && (folder.getMetaData().getDocumentOrder() != null) &&
-                                    ! folder.getMetaData().getDocumentOrder().isEmpty())
-                                {
-                                    documentOrder = folder.getMetaData().getDocumentOrder();
-                                }                
-                            }
-                            catch (NodeException ne)
-                            {
-                            }
-                        }
-                    }
-                }
-            }
-
-            // fallback to root search paths to determine document ordering
-            if (documentOrder == null)
-            {
-                Iterator pathsIter = searchPaths.iterator();
-                while ((documentOrder == null) && pathsIter.hasNext())
-                {
-                    // root search folder path
-                    String folderPath = (String) pathsIter.next();
-                    if (folderPath.endsWith(Folder.PATH_SEPARATOR) && (folderPath.length() > 1))
-                    {
-                        folderPath = folderPath.substring(0, folderPath.length()-1);
-                    }
-
-                    // check folder for document order
-                    try
-                    {
-                        FolderImpl folder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) folderHandler.getFolder(folderPath));
-                        if ((folder.getMetaData() != null) && (folder.getMetaData().getDocumentOrder() != null) &&
-                            ! folder.getMetaData().getDocumentOrder().isEmpty())
-                        {
-                            documentOrder = folder.getMetaData().getDocumentOrder();
-                        }
-                    }
-                    catch (NodeException ne)
-                    {
-                    }
-                }
-            }
-
-            // create ordered node set
-            Comparator documentComparator = new DocumentOrderComparator(documentOrder);
-            expandedNodes = new NodeSetImpl(null, documentComparator);
-        }
-
-        // save doucument set name, (limits recursive expansion)
-        String name = documentSetNamePrefix + documentSet.getUrl();
-        documentSetNames.put(documentSet, name);
-
-        // profile each document path using profile locator search paths
-        Iterator documentSetPathsIter = documentSet.getDefaultedDocumentPaths().iterator();
-        while (documentSetPathsIter.hasNext())
-        {
-            DocumentSetPath documentSetPath = (DocumentSetPath) documentSetPathsIter.next();
-
-            // enforce assumption that document set paths are absolute
-            String path = forceAbsoluteDocumentSetPath(documentSetPath.getPath());
-            log.debug("expandAndProfileDocumentSet(), document set path = " + path);
-
-            // convert regexp paths to java/perl5 form
-            boolean regexp = documentSetPath.isRegexp();
-            if (regexp)
-            {
-                path = pathToPerl5Regexp(path);
-            }
-
-            // get matching document/folder node or nodes along search paths
-            // and add to expanded set if unique
-            Iterator pathsIter = searchPaths.iterator();
-            while (pathsIter.hasNext())
-            {
-                String searchPath = (String) pathsIter.next();
-
-                // prefix document set path with search path
-                if (searchPath.endsWith(Folder.PATH_SEPARATOR))
-                {
-                    searchPath += path.substring(1);
-                }
-                else
-                {
-                    searchPath += path;
-                }
-
-                // get matching document set path nodes and add to unique
-                // document set nodes
-                try
-                {
-                    Iterator pathNodesIter = filterDocumentSet(folderHandler.getNodes(searchPath, regexp, null)).iterator();
-                    while (pathNodesIter.hasNext())
-                    {
-                        AbstractNode pathNode = setProfiledNodePathAndUrl((AbstractNode) pathNodesIter.next());
-                        if (!pathNode.isHidden())
-                        {
-                            if (!(pathNode instanceof DocumentSet))
-                            {
-                                // add expanded document
-                                expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, pathNode);
-                                if ((pathNode instanceof Folder) && !allProfiledFolders.contains(pathNode))
-                                {
-                                    allProfiledFolders.add(pathNode);
-                                }
-                            }
-                            else if (!documentSetNames.containsKey(pathNode))
-                            {
-                                // expand unique nested document set
-                                if (expandAndProfileDocumentSet(profileLocators, (DocumentSet)pathNode, null, name, documentSetNames, documentSetNodeSets, allProfiledFolders) != null)
-                                {
-                                    // add expanded document set
-                                    expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, pathNode);
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (NodeException ne)
-                {
-                }
-            }
-        }
-
-        // save and return expanded nodes
-        documentSetNodeSets.put(documentSet, expandedNodes);
-        return expandedNodes;
-    }
-
-    private List generateProfilingSearchPaths(String requestPath, ProfileLocator locator, boolean forceRequestPath)
-    {
-        // set locator page path default
-        boolean pagePathSet = false;
-        String pagePath = requestPath;
-
-        // generate profile locator folder/page paths
-        List orderedLocatorPaths = new ArrayList(16);
-        List locatorPathsSet = new ArrayList(16);
-        Iterator locatorIter = locator.iterator();
-        while (locatorIter.hasNext())
-        {
-            // get fallback locator properties
-            ProfileLocatorProperty [] locatorProperties = (ProfileLocatorProperty []) locatorIter.next();
-            log.debug("generateProfilingSearchPaths(), locatorPath = " + locator.getLocatorPath(locatorProperties));
-
-            // get folder and page locator path elements
-            String locatorPathRoot = Folder.PATH_SEPARATOR;
-            int locatorPathDepth = 0;
-            List locatorPaths = new ArrayList(16);
-            locatorPaths.add(new StringBuffer(locatorPathRoot));
-            int lastLocatorPathsCount = 0;
-            String lastLocatorPropertyName = null;
-            int lastLocatorPropertyValueCount = 0;
-            int lastLocatorPropertyValueLength = 0;
-            for (int i = 0; (i < locatorProperties.length); i++)
-            {
-                if (locatorProperties[i].isNavigation())
-                {
-                    // reset search paths to navigation root path, (reset
-                    // only navigation supported), skip null navigation values
-                    if (locatorProperties[i].getValue() != null)
-                    {
-                        // assume navigation value must be a root prefix
-                        // and contains proper path prefix for each subsite
-                        // path folder name
-                        locatorPathRoot = locatorProperties[i].getValue();
-                        if (!locatorPathRoot.startsWith(Folder.PATH_SEPARATOR))
-                        {
-                            locatorPathRoot = Folder.PATH_SEPARATOR + locatorPathRoot; 
-                        }
-                        if (!locatorPathRoot.endsWith(Folder.PATH_SEPARATOR))
-                        {
-                            locatorPathRoot += Folder.PATH_SEPARATOR; 
-                        }
-                        if (!locatorPathRoot.equals(Folder.PATH_SEPARATOR))
-                        {
-                            int folderIndex = 1;
-                            do
-                            {
-                                if (!locatorPathRoot.regionMatches(folderIndex, PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX, 0, PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX.length()))
-                                {
-                                    locatorPathRoot = locatorPathRoot.substring(0, folderIndex) + PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX + locatorPathRoot.substring(folderIndex);
-                                }
-                                folderIndex = locatorPathRoot.indexOf(Folder.PATH_SEPARATOR, folderIndex) + 1;
-                            }
-                            while ((folderIndex != -1) && (folderIndex != locatorPathRoot.length()));
-                        }
-
-                        // reset locator paths using new prefix
-                        locatorPathDepth = 0;
-                        locatorPaths.clear();
-                        locatorPaths.add(new StringBuffer(locatorPathRoot));
-                        lastLocatorPathsCount = 0;
-                        lastLocatorPropertyName = null;
-                        lastLocatorPropertyValueCount = 0;
-                        lastLocatorPropertyValueLength = 0;
-                    }
-                    else
-                    {
-                        // make sure trailing null valued property is ignored
-                        // and previous value is removed from profiler iterator
-                        lastLocatorPropertyValueCount++;
-                    }
-                }
-                else if (locatorProperties[i].isControl())
-                {
-                    // skip null control values
-                    if (locatorProperties[i].getValue() != null)
-                    {
-                        // fold control names and values to lower case
-                        String locatorPropertyName = locatorProperties[i].getName().toLowerCase();
-                        String locatorPropertyValue = locatorProperties[i].getValue().toLowerCase();
-
-                        // detect duplicate control names which indicates multiple
-                        // values: must duplicate locator paths for each value; different
-                        // control values are simply appended to all locator paths
-                        if (locatorPropertyName.equals(lastLocatorPropertyName))
-                        {
-                            // duplicate last locator paths set, stripping last matching
-                            // control value from each, appending new value, and adding new
-                            // valued set to collection of locatorPaths
-                            ArrayList multipleValueLocatorPaths = new ArrayList(lastLocatorPathsCount);
-                            Iterator locatorPathsIter = locatorPaths.iterator();
-                            for (int count = 0; (locatorPathsIter.hasNext() && (count < lastLocatorPathsCount)); count++)
-                            {
-                                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
-                                StringBuffer multipleValueLocatorPath = new StringBuffer(locatorPath.toString());
-                                multipleValueLocatorPath.setLength(multipleValueLocatorPath.length() - lastLocatorPropertyValueLength - 1);
-                                multipleValueLocatorPath.append(locatorPropertyValue);
-                                multipleValueLocatorPath.append(Folder.PATH_SEPARATOR_CHAR);
-                                multipleValueLocatorPaths.add(multipleValueLocatorPath);
-                            }
-                            locatorPaths.addAll(multipleValueLocatorPaths);
-                            lastLocatorPropertyValueCount++;
-                        }
-                        else
-                        {
-                            // construct locator path folders with control properties
-                            Iterator locatorPathsIter = locatorPaths.iterator();
-                            while (locatorPathsIter.hasNext())
-                            {
-                                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
-                                locatorPath.append(PROFILE_PROPERTY_FOLDER_PREFIX);
-                                locatorPath.append(locatorPropertyName);
-                                locatorPath.append(Folder.PATH_SEPARATOR_CHAR);
-                                locatorPath.append(locatorPropertyValue);
-                                locatorPath.append(Folder.PATH_SEPARATOR_CHAR);
-                            }
-
-                            // reset last locator property vars
-                            locatorPathDepth++;
-                            lastLocatorPathsCount = locatorPaths.size();
-                            lastLocatorPropertyName = locatorPropertyName;
-                            lastLocatorPropertyValueCount = 1;
-                            lastLocatorPropertyValueLength = locatorPropertyValue.length();
-                        }
-                    }
-                    else
-                    {
-                        // make sure trailing null valued property is ignored
-                        // and previous value is removed from profiler iterator
-                        lastLocatorPropertyValueCount++;
-                    }
-                }
-                else
-                {
-                    // set locator page path if not forcing the specified request
-                    // path; properties that are not controls or navigations are
-                    // assumed to be override absolute request paths or page names
-                    // to be applied relative to the request path
-                    if (!forceRequestPath && !pagePathSet && (locatorProperties[i].getValue() != null))
-                    {
-                        pagePath = constructAbsolutePagePath(requestPath, locatorProperties[i].getValue());
-                        pagePathSet = true;
-                    }
-
-                    // make sure trailing request path property is ignored
-                    // and previous value is removed from profiler iterator
-                    lastLocatorPropertyValueCount++;
-                }
-            }
-
-            // append any generated paths to locator path set
-            if (locatorPathDepth > 0)
-            {
-                locatorPathsSet.addAll(locatorPaths);
-            }
-
-            // if end of locator path set, append locator path root to locator path
-            // set, (locator path roots are not returned by profile iterator), and
-            // insert set into ordered locator paths
-            if (locatorPathDepth <= 1)
-            {
-                // add locator path root to set
-                locatorPathsSet.add(new StringBuffer(locatorPathRoot));
-
-                // add set to ordered and unique locator paths
-                ListIterator locatorPathsIter = locatorPathsSet.listIterator(locatorPathsSet.size());
-                while (locatorPathsIter.hasPrevious())
-                {
-                    String locatorPath = locatorPathsIter.previous().toString();
-                    if (! orderedLocatorPaths.contains(locatorPath))
-                    {
-                        orderedLocatorPaths.add(0, locatorPath);
-                    }
-                }
-                locatorPathsSet.clear();
-            }
-
-            // skip multiple last property values, (because profile
-            // iterator is not multiple value aware), or because last
-            // property does not constitute a valid or control property
-            for (int skip = lastLocatorPropertyValueCount; ((skip > 1) && (locatorIter.hasNext())); skip--)
-            {
-                locatorIter.next();
-            }
-        }
-
-        // append page path to returned ordered locator path if required
-        if (pagePath != null)
-        {
-            // trim leading path separator from page path
-            if (pagePath.startsWith(Folder.PATH_SEPARATOR))
-            {
-                pagePath = pagePath.substring(1);
-            }
-
-            // append page path to locator paths
-            ListIterator locatorPathsIter = orderedLocatorPaths.listIterator();
-            while (locatorPathsIter.hasNext())
-            {
-                String locatorPath = (String) locatorPathsIter.next();
-                locatorPathsIter.set(locatorPath + pagePath);
-            }
-        }
-
-        // return ordered locator search paths
-        return orderedLocatorPaths;
-    }
-
-    private String constructAbsolutePagePath(String requestPath, String pagePath)
-    {
-        // absolute pagePaths always override request path
-        if ((pagePath == null) || ! pagePath.startsWith(Folder.PATH_SEPARATOR))
-        {
-            // page names and relative paths are assumed relative to
-            // request path and that any page paths with no url
-            // separator should have the page extension appended;            
-            // get default page if page path null
-            if (pagePath == null)
-            {
-                pagePath = "";
-            }
-            else if ((pagePath.indexOf(Folder.PATH_SEPARATOR) == -1) && ! pagePath.endsWith(Page.DOCUMENT_TYPE))
-            {
-                pagePath = pagePath + Page.DOCUMENT_TYPE;
-            }
-            
-            // remove default page and let folder perform defaulting
-            // if request path is probably referencing a folder, (i.e.
-            // not a page); otherwise, do not override any page request
-            if (pagePath.equals(FolderImpl.FALLBACK_DEFAULT_PAGE))
-            {
-                pagePath = "";
-            }
-
-            // append to request path if page path is specified
-            // or if request path is probably referencing a folder, (i.e.
-            // not a page); the empty page path here forces a folder path
-            // to be created with a trailing slash... the folder then will
-            // choose its default page name according to its own rules.
-            boolean defaultPage = pagePath.equals("");
-            boolean rootFolderRequest = requestPath.equals(Folder.PATH_SEPARATOR);
-            boolean folderRequest = (!requestPath.endsWith(Page.DOCUMENT_TYPE));
-            if (!defaultPage || folderRequest)
-            {
-                // append page path to request path
-                int lastSlashIndex = requestPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-                if (lastSlashIndex > 0)
-                {
-                    // append page to request path base path
-                    pagePath = requestPath.substring(0, lastSlashIndex) + Folder.PATH_SEPARATOR + pagePath;
-                }
-                else if (!rootFolderRequest && folderRequest)
-                {
-                    // append page to request path root folder
-                    pagePath = requestPath + Folder.PATH_SEPARATOR + pagePath;
-                }
-                else
-                {
-                    // use root folder page
-                    pagePath = Folder.PATH_SEPARATOR + pagePath;
-                }
-            }
-            else
-            {
-                // default page path to request path
-                pagePath = requestPath;
-            }
-        }
-
-        return pagePath;
-    }
-
-    private boolean findProfiledPageAndFolders(List pageSearchPaths, Page [] page)
-    {
-        return findProfiledPageAndFolders(pageSearchPaths, page, null, null, null);
-    }
-
-    private boolean findProfiledPageAndFolders(List pageSearchPaths, Page [] page, Folder [] folder, List folders, List searchFolders)
-    {
-        // reset profiled results
-        page[0] = null;
-        if (folder != null)
-        {
-            folder[0] = null;
-        }
-        if (folders != null)
-        {
-            folders.clear();
-        }
-        if (searchFolders != null)
-        {
-            searchFolders.clear();
-        }
-
-        // iterate through search paths looking for page in page manager content
-        int numSearchFoldersFound = 0;
-        Folder lastSearchFolderFound = null;
-        String lastSearchFolderFoundPath = null;
-        Iterator pathsIter = pageSearchPaths.iterator();
-        while (pathsIter.hasNext())
-        {
-            String searchRequestPath = (String) pathsIter.next();
-            
-            log.debug("findProfiledPageAndFolders(), searchPath = " + searchRequestPath);
-            
-            // search for matching folder and/or page in search path
-            String folderPath = searchRequestPath;
-            Folder searchFolder = null;
-            Page searchPage = null;
-            try
-            {
-                // match folder
-                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith(Folder.PATH_SEPARATOR))
-                {
-                    int lastSlashIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-                    if (lastSlashIndex > 0)
-                    {
-                        folderPath = folderPath.substring(0, lastSlashIndex);
-                    }
-                    else
-                    {
-                        folderPath = Folder.PATH_SEPARATOR;
-                    }
-                }
-                searchFolder = folderHandler.getFolder(folderPath);
-
-                // match page if not previously matched
-                if (page[0] == null)
-                {
-                    String pagePath = searchRequestPath;
-                    if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
-                    {
-                        // only allow aggressive default page defaulting if
-                        // trying to find page as last resort in root directory;
-                        // otherwise, return only fallback page or explicitly
-                        // specified default page name
-                        boolean allowDefaulting = folderPath.equals( Folder.PATH_SEPARATOR );
-                        pagePath = searchFolder.getDefaultPage(allowDefaulting);
-                        
-                        // if page path not fallback default page, profile again
-                        // to make sure the default page is not overridden, note
-                        // that the fallback page has already been profiled since
-                        // it would have been matched previously and that no
-                        // override is possible in first maching folder.
-                        if ((pagePath != null) && ! pagePath.equals(FolderImpl.FALLBACK_DEFAULT_PAGE) && (numSearchFoldersFound > 0))
-                        {
-                            // append default page to search paths
-                            ListIterator pageSearchPathsIter = pageSearchPaths.listIterator();
-                            while (pageSearchPathsIter.hasNext())
-                            {
-                                String pageSearchPath = (String) pageSearchPathsIter.next();
-                                if (pageSearchPath.endsWith( Folder.PATH_SEPARATOR ))
-                                {
-                                    pageSearchPathsIter.set(pageSearchPath + pagePath);
-                                }
-                                else
-                                {
-                                    pageSearchPathsIter.set(pageSearchPath + Folder.PATH_SEPARATOR + pagePath);
-                                }
-                            }
-
-                            // profile default page
-                            log.debug("findProfiledPageAndFolders(): invoking again with default page: " + pagePath);
-                            return findProfiledPageAndFolders(pageSearchPaths, page, folder, folders, searchFolders);
-                        }
-                    }
-
-                    // access matched page
-                    if (pagePath != null)
-                    {
-                        searchPage = ((FolderImpl)searchFolder).getPage(pagePath, false);
-                    }
-                }
-
-                // track found search folders
-                numSearchFoldersFound++;
-                lastSearchFolderFound = searchFolder;
-                lastSearchFolderFoundPath = searchRequestPath;
-            }
-            catch (NodeException ne)
-            {
-            }
-            if (searchFolder != null)
-            {
-                log.debug("findProfiledPageAndFolders(), matched searchFolder = " + searchFolder);
-            }
-            if (searchPage != null)
-            {
-                log.debug("findProfiledPageAndFolders(), matched searchPage = " + searchPage);
-            }
-            
-            // return matching page and related folders
-            if ((page[0] == null) && (searchPage != null))
-            {
-                // matched profiled folder/page
-                page[0] = searchPage;
-                if (folder != null)
-                {
-                    folder[0] = searchFolder;
-                }
-                
-                log.debug("findProfiledPageAndFolders(), using matched searchFolder = " + searchFolder);
-                log.debug("findProfiledPageAndFolders(), using matched searchPage = " + searchPage);
-            }
-
-            // return profiled folders and search profiled folders; the search
-            // profiled folders are used to find other profiled documents, (i.e
-            // document sets).
-            if ((folders != null) && (searchFolders != null))
-            {
-                if (searchFolder != null)
-                {
-                    // profiled folder
-                    folders.add(searchFolder);
-                    
-                    // search parent profiled folders, (excluding profile property folders
-                    // and including only first profile navigation folder found)
-                    if (!searchFolder.getName().startsWith(PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX))
-                    {
-                        do
-                        {
-                            searchFolders.add(searchFolder);
-                            searchFolder = (Folder) ((AbstractNode)searchFolder).getParent(false);
-                        }
-                        while ((searchFolder != null) &&
-                               !searchFolder.getName().startsWith(PROFILE_PROPERTY_FOLDER_PREFIX) &&
-                               !searchFolder.getName().startsWith(PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX));
-                    }
-                    if ((searchFolder != null) && searchFolder.getName().startsWith(PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX))
-                    {
-                        searchFolders.add(searchFolder);
-                    }
-                }
-                else
-                {
-                    // add parents of missing profiled folders to search profiled
-                    // folders if they exist
-                    String searchFolderName = null;
-                    do
-                    {
-                        // find parent path or folder
-                        if (searchFolder == null)
-                        {
-                            // get parent folder path
-                            int separatorIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR);
-                            if (separatorIndex > 0)
-                            {
-                                folderPath = folderPath.substring(0, separatorIndex);
-                            }
-                            else
-                            {
-                                folderPath = Folder.PATH_SEPARATOR;
-                            }
-                            
-                            // get folder if it exists and folder name
-                            try
-                            {
-                                searchFolder = folderHandler.getFolder(folderPath);
-                                searchFolderName = searchFolder.getName();
-                            }
-                            catch (NodeException ne)
-                            {
-                                separatorIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR);
-                                if (separatorIndex > 0)
-                                {
-                                    searchFolderName = folderPath.substring(separatorIndex+1);
-                                }
-                                else
-                                {
-                                    searchFolderName = Folder.PATH_SEPARATOR;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // get folder as parent of search folder
-                            searchFolder = (Folder) ((AbstractNode)searchFolder).getParent(false);
-                            if (searchFolder != null)
-                            {
-                                searchFolderName = searchFolder.getName();
-                            }
-                        }
-                        
-                        // add to search profiled folders if it exists, (excluding
-                        // profile property folders and including only first profile
-                        // navigation folder found)
-                        if ((searchFolder != null) &&
-                            (searchFolderName.startsWith(PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX) ||
-                             !searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX)))
-                        {
-                            searchFolders.add(searchFolder);
-                        }
-                    }
-                    while (!searchFolderName.equals(Folder.PATH_SEPARATOR) &&
-                           !searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX) &&
-                           !searchFolderName.startsWith(PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX));
-                }
-            }
-        }
-
-        // if no page or folder found, attempt aggressive default
-        // page defaulting if only one search path found and no explict
-        // page requested: page selected cannot be ambiguous and using
-        // any non root folder default is valid and better than a root
-        // fallback default page.
-        if ((page[0] == null) && (numSearchFoldersFound == 1) && ! lastSearchFolderFound.getPath().equals( Folder.PATH_SEPARATOR ) &&
-            (! lastSearchFolderFoundPath.endsWith(Page.DOCUMENT_TYPE)))
-        {
-            // single search folder found: allow aggressive defaulting
-            String defaultPagePath = lastSearchFolderFound.getDefaultPage(true);
-
-            // use single search folder default page if found
-            Page lastSearchFolderFoundPage = null;
-            try
-            {
-                lastSearchFolderFoundPage = ((FolderImpl)lastSearchFolderFound).getPage(defaultPagePath, false);
-            }
-            catch (NodeException ne)
-            {
-            }
-            if (lastSearchFolderFoundPage != null)
-            {
-                page[0] = lastSearchFolderFoundPage;
-                if (folder != null)
-                {
-                    folder[0] = lastSearchFolderFound;
-                }
-                
-                log.debug("findProfiledPageAndFolders(), using matched default searchFolder = " + lastSearchFolderFound);
-                log.debug("findProfiledPageAndFolders(), using matched default searchPage = " + lastSearchFolderFoundPage);
-            }
-        }
-
-        // return true if profiled page found
-        return (page[0] != null);
-    }
-
-    private AbstractNode setProfiledNodePathAndUrl(AbstractNode profiledNode)
-    {
-        // explicitly override profiled node paths, urls, and titles to
-        // hide real ids and paths that contain artifacts of profiled
-        // content in file system
-        if (profiledNode.getProfiledPath() == null)
-        {
-            String profiledPath = stripProfiledPath(profiledNode.getPath());
-            if (profiledPath.startsWith(Folder.PATH_SEPARATOR))
-            {
-                profiledNode.setProfiledPath(profiledPath);
-                if (! profiledNode.isUrlSet())
-                {
-                    profiledNode.setUrl(profiledPath);
-                }
-                if (profiledNode.getPath().equals(profiledNode.getTitle()))
-                {
-                    profiledNode.setTitle(profiledPath);
-                }
-            }
-        }
-        return profiledNode;
-    }
-
-    private String stripProfiledPath(String path)
-    {
-        // strip profiled property pairs folder path from profiled path
-        if (path != null)
-        {
-            // find last property pair or subsite folders in path
-            int pairPathIndex = path.lastIndexOf(Folder.PATH_SEPARATOR + PROFILE_PROPERTY_FOLDER_PREFIX);
-            int subsitePathIndex = path.lastIndexOf(Folder.PATH_SEPARATOR + PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX);
-            if (pairPathIndex > subsitePathIndex)
-            {
-                // advance past property pair folders to base path
-                int contentPathIndex = path.indexOf(Folder.PATH_SEPARATOR, pairPathIndex+1);
-                if (contentPathIndex != -1)
-                {
-                    contentPathIndex = path.indexOf(Folder.PATH_SEPARATOR, contentPathIndex+1);
-                    // strip property pairs from base path
-                    if (contentPathIndex != -1)
-                    {
-                        path = path.substring(contentPathIndex);
-                    }
-                    else
-                    {
-                        path = Folder.PATH_SEPARATOR;
-                    }
-                }
-            }
-            else if (subsitePathIndex >= pairPathIndex)
-            {
-                // advance past subsite folder to base path and strip from base path
-                int contentPathIndex = path.indexOf(Folder.PATH_SEPARATOR, subsitePathIndex+1);
-                if (contentPathIndex != -1)
-                {
-                    path = path.substring(contentPathIndex);
-                }
-                else
-                {
-                    path = Folder.PATH_SEPARATOR;
-                }
-            }
-        }
-        return path;
-    }
-
-    private NodeSetImpl addUniqueOrDescribedUrlNode(NodeSetImpl set, AbstractNode node)
-    {
-        // add node to node set only if profiled path set
-        if (node.getProfiledPath() == null)
-            return set;
-
-        // add node to node set if has a unique profiled path
-        // or has metadata and entry in set does not; returns
-        // new set if replace required
-        Iterator setIter = set.iterator();
-        while (setIter.hasNext())
-        {
-            AbstractNode setNode = (AbstractNode) setIter.next();
-            if (node.getProfiledPath().equals(setNode.getProfiledPath()))
-            {
-                // replace placeholder with described node
-                if ((node.getMetadata() != null) && (setNode.getMetadata() == null))
-                {
-                    // cannot remove from NodeSet: copy to replace setNode and return new set
-                    NodeSetImpl newSet = new NodeSetImpl(null, set.getComparator());
-                    Iterator copyIter = set.iterator();
-                    while (copyIter.hasNext())
-                    {
-                        Node copyNode = (Node) copyIter.next();
-                        if (copyNode != setNode)
-                        {
-                            newSet.add(copyNode);
-                        }
-                        else
-                        {
-                            newSet.add(node);
-                        }
-                    }
-                    return newSet;
-                }
-                
-                // skip duplicate node
-                return set;
-            }
-        }
-
-        // add unique node
-        set.add(node);
-        return set;
-    }
-
-    private static class DocumentOrderComparator implements Comparator
-    {
-        private List order;
-
-        public DocumentOrderComparator(List documentOrderList)
-        {
-            this.order = documentOrderList;
-        }
-
-        public int compare(Object rootLink1, Object rootLink2)
-        {
-            // compare names of links against order or each other by default
-            String name1 = rootLink1.toString();
-            int nameIndex1 = name1.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-            if (nameIndex1 != -1)
-            {
-                name1 = name1.substring(nameIndex1 + 1);
-            }
-            String name2 = rootLink2.toString();
-            int nameIndex2 = name2.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
-            if (nameIndex2 != -1)
-            {
-                name2 = name2.substring(nameIndex2 + 1);
-            }
-            if (order != null)
-            {
-                // compare names against order
-                int index1 = order.indexOf(name1);
-                int index2 = order.indexOf(name2);
-                if ((index1 != -1) || (index2 != -1))
-                {
-                    if ((index1 == -1) && (index2 != -1))
-                    {
-                        return 1;
-                    }
-                    if ((index1 != -1) && (index2 == -1))
-                    {
-                        return -1;
-                    }
-                    return index1-index2;
-                }
-            }
-            // compare names against each other
-            return name1.compareTo(name2);
-        }
-    }
-
-    private NodeSetImpl expandDocumentSet(DocumentSet documentSet, NodeSetImpl expandedNodes, String documentSetNamePrefix, Map documentSetNames, Map documentSetNodeSets)
-    {
-        // ignore document sets with profiling locator specified
-        if (documentSet.getProfileLocatorName() != null)
-        {
-            log.warn("expandDocumentSet(), profiling locator " + documentSet.getProfileLocatorName() + " ignored, ignoring document set path = " + documentSet.getPath());
-            return null;
-        }
-
-        // prepare expanded nodes set
-        if (expandedNodes == null)
-        {
-            expandedNodes = new NodeSetImpl(null);        
-        }
-
-        // save doucument set name, (limits recursive expansion)
-        String name = documentSetNamePrefix + documentSet.getUrl();
-        documentSetNames.put(documentSet, name);
-
-        // expand document set against managed repository only without
-        // profiling; ignores document set profiling rules as well
-        Iterator documentSetPathsIter = documentSet.getDefaultedDocumentPaths().iterator();
-        while (documentSetPathsIter.hasNext())
-        {
-            DocumentSetPath documentSetPath = (DocumentSetPath) documentSetPathsIter.next();
-
-            // enforce assumption that document set paths are absolute
-            String path = forceAbsoluteDocumentSetPath(documentSetPath.getPath());
-            log.debug("expandDocumentSet(), document set path = " + path);
-
-            // convert regexp paths to java/perl5 form
-            boolean regexp = documentSetPath.isRegexp();
-            if (regexp)
-            {
-                path = pathToPerl5Regexp(path);
-            }
-
-            // get filtered document/folder node or nodes and add to expanded set
-            try
-            {
-                Iterator pathNodesIter = filterDocumentSet(folderHandler.getNodes(path, regexp, null)).iterator();
-                while (pathNodesIter.hasNext())
-                {
-                    AbstractNode pathNode = (AbstractNode) pathNodesIter.next();
-                    if (!(pathNode instanceof DocumentSet))
-                    {
-                        // add expanded document
-                        expandedNodes.add(pathNode);
-                    }
-                    else if (!documentSetNames.containsKey(pathNode))
-                    {
-                        // expand unique nested document set
-                        NodeSetImpl nodes = new NodeSetImpl(null, expandedNodes.getComparator());
-                        if (expandDocumentSet((DocumentSet)pathNode, nodes, name, documentSetNames, documentSetNodeSets) != null)
-                        {
-                            // add expanded document set
-                            expandedNodes.add(pathNode);
-                        }
-                    }
-                }
-            }
-            catch (NodeException ne)
-            {
-            }
-        }
-
-        // save and return expanded nodes
-        documentSetNodeSets.put(documentSet, expandedNodes);
-        return expandedNodes;
-    }
-
-    private String forceAbsoluteDocumentSetPath(String path)
-    {
-        // force relative paths to be root absolute
-        if (path == null)
-        {
-            path = Folder.PATH_SEPARATOR;
-        }
-        else if (! path.startsWith(Folder.PATH_SEPARATOR))
-        {
-            path = Folder.PATH_SEPARATOR + path;
-        }
-        return path;
-    }
-
-    private synchronized String pathToPerl5Regexp(String path)
-    {
-        // convert conventional path expressions to java/perl5 form and cache
-        String perl5Path = lookupPerl5Regexp(path);
-        if (perl5Path == null)
-        {
-            perl5Path = path.replaceAll("\\.", "\\\\.");
-            perl5Path = perl5Path.replaceAll("\\?", ".");
-            perl5Path = perl5Path.replaceAll("\\*", ".*");
-            cachePerl5Regexp(path, perl5Path);
-        }
-        return perl5Path;
-    }
-
-    private NodeSet filterDocumentSet(NodeSet set)
-    {
-        // return empty node set
-        if (set.isEmpty())
-        {
-            return set;
-        }
-
-        // determine if filtering required before creating new node set
-        boolean filterRequired = false;
-        Iterator setIter = set.iterator();
-        while (!filterRequired && setIter.hasNext())
-        {
-            AbstractNode node = (AbstractNode) setIter.next();
-            filterRequired = (! (node instanceof Page) && ! (node instanceof Folder) && ! (node instanceof Link) && ! (node instanceof DocumentSet));
-        }
-        if (! filterRequired)
-        {
-            return set;
-        }
-
-        // filter expanded document set for pages, folders, links, and document sets
-        NodeSet filteredSet = new NodeSetImpl(null);        
-        setIter = set.iterator();
-        while (setIter.hasNext())
-        {
-            AbstractNode node = (AbstractNode) setIter.next();
-            if ((node instanceof Page) || (node instanceof Folder) || (node instanceof Link) || (node instanceof DocumentSet))
-            {
-                filteredSet.add(node);
-            }
-        }
-        return filteredSet;
     }
 
     /**
@@ -1607,6 +132,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
 
         // make sure path and related members are set
+        boolean newPageRegistered = false;
         if ((page.getPath() == null) && (page.getId() != null))
         {
             String path = page.getId();
@@ -1620,6 +146,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
             page.setId(path);
             page.setPath(path);
+            newPageRegistered = true;
         }
         if (page.getPath() != null)
         {
@@ -1634,7 +161,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             log.error("Page paths and ids must be set!");
             return;
         }
-        setProfiledNodePathAndUrl((AbstractNode)page);
 
         // check for edit access
         page.checkAccess(SecuredResource.EDIT_ACTION);
@@ -1649,6 +175,16 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             folder.getAllNodes().add(page);
         }
         page.setParent(folder);
+
+        // notify page manager listeners
+        if (newPageRegistered)
+        {
+            notifyNewNode(page);
+        }
+        else
+        {
+            notifyUpdatedNode(page);
+        }
     }
 
     /**
@@ -1694,6 +230,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         FolderImpl folder = getNodeFolder(page.getPath());
         ((NodeSetImpl)folder.getAllNodes()).remove(page);
         page.setParent(null);
+
+        // notify page manager listeners
+        notifyRemovedNode(page);
     }
 
     /**
@@ -1718,31 +257,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     /**
      * <p>
-     * getDocumentSet
-     * </p>
-     * 
-     * @see org.apache.jetspeed.page.PageManager#getDocumentSet(java.lang.String)
-     * @param path
-     * @return document set
-     * @throws DocumentNotFoundException
-     * @throws UnsupportedDocumentTypeException
-     * @throws NodeException
-     * @throws FolderNotFoundException
-     */
-    public DocumentSet getDocumentSet(String path) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
-    {
-        // get document set via folder, (access checked in Folder.getDocumentSet())
-        FolderImpl folder = getNodeFolder(path);
-        return folder.getDocumentSet(getNodeName(path));
-    }
-
-    /**
-     * <p>
      * getPageSecurity
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
-     * @return
+     * @return page security instance
      * @throws DocumentNotFoundException
      * @throws UnsupportedDocumentTypeException
      * @throws NodeException
@@ -1762,20 +281,29 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * 
      * @see org.apache.jetspeed.page.PageManager#getFolder(java.lang.String)
      * @param folderPath
-     * @return @throws
-     *         DocumentException
+     * @return folder instance
      * @throws FolderNotFoundException
      * @throws NodeException
      * @throws InvalidFolderException
-     * @throws IOException
      */
     public Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException
     {
-        // get folder, (always allow access to facilitate
-        // navigation to potentially accessible pages)
-        return folderHandler.getFolder(folderPath);
+        // get folder and check access before returning
+        Folder folder = folderHandler.getFolder(folderPath);
+        folder.checkAccess(SecuredResource.VIEW_ACTION);
+        return folder;
     }
 
+    /**
+     * <p>
+     * getNodeFolder - get folder implementation associated with specifed path
+     * </p>
+     * 
+     * @param nodePath
+     * @return folder impl instance
+     * @throws NodeException
+     * @throws InvalidFolderException
+     */
     private FolderImpl getNodeFolder(String nodePath) throws NodeException, InvalidFolderException
     {
         int folderIndex = nodePath.lastIndexOf(Folder.PATH_SEPARATOR);
@@ -1786,6 +314,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return (FolderImpl) folderHandler.getFolder(Folder.PATH_SEPARATOR);
     }
 
+    /**
+     * <p>
+     * getNodeFolder - get name of node from specified path
+     * </p>
+     * 
+     * @param nodePath
+     * @return name of node
+     */
     private String getNodeName(String nodePath)
     {
         int folderIndex = nodePath.lastIndexOf(Folder.PATH_SEPARATOR);
@@ -1807,11 +343,21 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void refresh( FileCacheEntry entry ) throws Exception
     {
-        // file cache managed component refreshed: clear cached page
-        // contexts. TODO: manage cache by last accessed time and/or
-        // explicit dependencies: requires underlying FileCache to
-        // have last access times tracked.
-        evictAllPageContextCache();
+        // file cache managed component refreshed:
+        // notify page manager listeners
+        Node refreshedNode = null;
+        if (entry.getDocument() instanceof Node)
+        {
+            refreshedNode = (Node)entry.getDocument();
+        }
+        if (entry.getFile().exists())
+        {
+            notifyUpdatedNode(refreshedNode);
+        }
+        else
+        {
+            notifyRemovedNode(refreshedNode);
+        }
     }
 
     /**
@@ -1825,117 +371,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void evict( FileCacheEntry entry ) throws Exception
     {
-        // file cache managed component refreshed: clear cached page
-        // contexts. TODO: manage cache by last accessed time and/or
-        // explicit dependencies: requires underlying FileCache to
-        // have last access times tracked.
-        evictAllPageContextCache();
-    }
-
-    private void initCaches( int cacheSize )
-    {
-        if (cacheSize > 0)
-        {
-            // use LRU maps to limit cache size
-            this.pageContextCache = new LRUMap(cacheSize);
-            this.perl5PathRegexpCache = new LRUMap(cacheSize*2);
-        }
-        else
-        {
-            // use unlimited cache size
-            this.pageContextCache = new HashMap();
-            this.perl5PathRegexpCache = new HashMap();
-        }
-    }
-
-    private void cachePageContext(String pageContextCacheKey, CacheablePageContext pageContext)
-    {
-        // lock and cache page context using entry object to track create timestamp
-        synchronized ( pageContextCache )
-        {
-            pageContextCache.put(pageContextCacheKey, pageContext);
-        }
-        log.debug("cacheProfiledPageContext() cached, cache key = " + pageContextCacheKey);
-    }
-
-    private CacheablePageContext lookupPageContext(String pageContextCacheKey)
-    {
-        // lock and lookup entry object and return page context
-        CacheablePageContext pageContext = null;
-        synchronized ( pageContextCache )
-        {
-            pageContext = (CacheablePageContext) pageContextCache.get(pageContextCacheKey); 
-        }
-        if (pageContext != null)
-        {
-            log.debug("lookupProfiledPageContext() cache hit, cache key = " + pageContextCacheKey);
-        }
-        return pageContext;
-    }
-
-    private void evictAllPageContextCache()
-    {
-        // evict all cached page contexts. TODO: manage cache by last
-        // accessed time and/or explicit dependencies: requires
-        // underlying FileCache to have last access times tracked.
-        synchronized ( pageContextCache )
-        {
-            pageContextCache.clear();
-        }        
-        log.debug("evictAllProfiledPageContext() invoked, all page contexts evicted from cache");
-    }
-
-    private void cachePerl5Regexp(String regexpKey, String regexp)
-    {
-        // lock and cache regexp
-        synchronized ( perl5PathRegexpCache )
-        {
-            perl5PathRegexpCache.put(regexpKey, regexp);
-        }
-    }
-
-    private String lookupPerl5Regexp(String regexpKey)
-    {
-        // lock and lookup regexp
-        synchronized ( perl5PathRegexpCache )
-        {
-            return (String) perl5PathRegexpCache.get(regexpKey);
-        }
-    }
-
-    private String pageContextCacheKey(ProfiledPageContext pageContext)
-    {
-        // compute key from sorted profile locator strings
-        StringBuffer cacheKeyBuffer = new StringBuffer();
-        if (pageContext.getLocators() != null)
-        {
-            // get page context locators extent and sort by locator name
-            List locators = new ArrayList(pageContext.getLocators().entrySet());
-            Comparator locatorComparator = new Comparator()
-                {
-                    public int compare(Object locator1, Object locator2)
-                    {
-                        // compare locator names
-                        return ((String) ((Map.Entry) locator1).getKey()).compareTo((String) ((Map.Entry) locator1).getKey());
-                    }
-                } ;
-            Collections.sort(locators, locatorComparator);
-
-            // construct key using locator names and locators
-            Iterator locatorIter = locators.iterator();
-            while (locatorIter.hasNext())
-            {
-                Map.Entry locator = (Map.Entry) locatorIter.next();
-                if (cacheKeyBuffer.length() > 0)
-                {
-                    cacheKeyBuffer.append(',');
-                }
-                cacheKeyBuffer.append(locator.getKey());
-                cacheKeyBuffer.append(ProfileLocator.PATH_SEPARATOR);
-                cacheKeyBuffer.append(locator.getValue());
-            }
-        }
-        return cacheKeyBuffer.toString();
+        // file cache managed component evicted:
+        // no notifications required since eviction
+        // is normal cache operation and does not
+        // indicate a change in the nodes managed by
+        // this page manager
     }
 
     /* (non-Javadoc)

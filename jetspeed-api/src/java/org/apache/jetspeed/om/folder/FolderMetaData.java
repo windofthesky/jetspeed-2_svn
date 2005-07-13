@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.jetspeed.om.page.Document;
@@ -42,4 +43,17 @@ public interface FolderMetaData extends Document
     
     void setDefaultPage(String defaultPage);
 
+    /**
+     * getMenuDefinitions - get list of menu definitions
+     *
+     * @return definition list
+     */
+    List getMenuDefinitions();
+
+    /**
+     * setMenuDefinitions - set list of menu definitions
+     *
+     * @param definitions definition list
+     */
+    void setMenuDefinitions(List definitions);    
 }

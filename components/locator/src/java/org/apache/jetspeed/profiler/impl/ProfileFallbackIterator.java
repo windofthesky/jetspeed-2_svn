@@ -75,9 +75,6 @@ public class ProfileFallbackIterator implements Iterator
             hasNext = true;
         }
         
-        ProfileLocatorPropertyImpl element = (ProfileLocatorPropertyImpl)elements.get(last);
-        state = element.getFallbackType();
-                
         return hasNext;
     }
     
@@ -90,11 +87,21 @@ public class ProfileFallbackIterator implements Iterator
 
         if (last >= 0)
         {
+            // generate properties list to return
             List elements = locator.getElements();
             properties = new ProfileLocatorProperty[last+1];
+            ProfileLocatorProperty lastElement = null;
             Iterator it = elements.listIterator();
             for (int count = 0; (count <= last) && it.hasNext(); count++)
-                properties[count] = (ProfileLocatorProperty)it.next();
+            {
+                lastElement = (ProfileLocatorProperty)it.next();
+                properties[count] = lastElement;
+            }
+
+            // modify iterator state based on fallback type;
+            // performed here to prevent multiple calls to
+            // hasNext() from changing iterator state
+            state = lastElement.getFallbackType();
             last--;
         }
 

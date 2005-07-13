@@ -381,9 +381,9 @@ insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j1' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
-insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'docset', 'role-group' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'menu', 'role-group' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'page', 'j1' );
-insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'docset', 'role-group' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'menu', 'role-group' );
 
 -- test data for db browser
 insert into CLUBS values ('AC Milan', 'Italy', 'Milan', 'San Siro', 85700, 1926, '105x68m', '');

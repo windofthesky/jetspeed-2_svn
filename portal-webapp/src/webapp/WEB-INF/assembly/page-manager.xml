@@ -17,17 +17,15 @@ limitations under the License.
 -->
 <beans>
 
-  <!-- Profiler DAO-->
+  <!-- Profiler -->  
   <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
        <constructor-arg index="0"><value>META-INF/profiler-ojb.xml</value></constructor-arg>
        <constructor-arg index="1"><value>j1</value></constructor-arg>
-    </bean>
+  </bean>
   
-  <!-- Profiler -->  
   <bean id="org.apache.jetspeed.profiler.Profiler" 
         name="profiler"
-        parent="baseTransactionProxy"        
-  >        
+        parent="baseTransactionProxy">        
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.profiler.Profiler</value>
         </property>
@@ -44,6 +42,7 @@ limitations under the License.
         </property>            
   </bean>
     
+  <!-- PageManager -->
   <bean id="PsmlDocumentHandler"      
        class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
@@ -58,15 +57,6 @@ limitations under the License.
        <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>.link</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.Link</value></constructor-arg>       
-       <constructor-arg index="3" ><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>
-       <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
-  </bean>
-  
-  <bean id="DocumentSetDocumentHandler"        
-       class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
-       <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
-       <constructor-arg index="1"><value>.ds</value></constructor-arg>
-       <constructor-arg index="2" ><value>org.apache.jetspeed.om.folder.DocumentSet</value></constructor-arg>      
        <constructor-arg index="3" ><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
@@ -99,9 +89,6 @@ limitations under the License.
           <entry key=".link">
             <ref bean="LinkDocumentHandler" />
           </entry>  
-          <entry key=".ds">
-            <ref bean="DocumentSetDocumentHandler" />
-          </entry>  
           <entry key="folder.metadata">
             <ref bean="FolderMetaDataDocumentHandler" />
           </entry>        
@@ -119,8 +106,6 @@ limitations under the License.
        <constructor-arg index="2"><ref bean="PageFileCache"/></constructor-arg>        
   </bean>
     
-    
-  <!-- PageManager -->
   <bean id="org.apache.jetspeed.page.PageManager" 
        name="pageManager"
        class="org.apache.jetspeed.page.impl.CastorXmlPageManager">         
@@ -128,14 +113,17 @@ limitations under the License.
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>
        <constructor-arg index="3"><ref bean="PageFileCache"/></constructor-arg>        
-       <!-- size of profiled page context LRU cache, default=100 -->
-       <constructor-arg index="4"><value>100</value></constructor-arg>
-       <!-- profiling enabled flag, default=true -->
-       <constructor-arg index="5"><value>true</value></constructor-arg>
        <!-- permissions security enabled flag, default=false -->
-       <constructor-arg index="6"><value>false</value></constructor-arg>
+       <constructor-arg index="4"><value>false</value></constructor-arg>
        <!-- constraints security enabled flag, default=true -->
-       <constructor-arg index="7"><value>true</value></constructor-arg>
+       <constructor-arg index="5"><value>true</value></constructor-arg>
+  </bean>
+
+  <!-- PortalSite -->
+  <bean id="org.apache.jetspeed.portalsite.PortalSite" 
+       name="portalSite"
+       class="org.apache.jetspeed.portalsite.impl.PortalSiteImpl">         
+       <constructor-arg index="0"><ref bean="pageManager"/></constructor-arg>
   </bean>
 
 </beans>

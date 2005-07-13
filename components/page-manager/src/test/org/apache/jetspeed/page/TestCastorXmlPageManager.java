@@ -18,6 +18,7 @@ package org.apache.jetspeed.page;
 // Java imports
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -31,9 +32,13 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
@@ -67,39 +72,36 @@ public class TestCastorXmlPageManager extends TestCase
      * 
      * @see junit.framework.TestCase#setUp()
      */
-protected void setUp() throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
         dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
-        FileFilter noCVS = new FileFilter() {
+        FileFilter noCVSorSVNorBackups = new FileFilter() {
 
             public boolean accept( File pathname )
             {
-                return !pathname.getName().equals("CVS");                
+                return !pathname.getName().equals("CVS") && !pathname.getName().equals(".svn") && !pathname.getName().endsWith("~");
             }
             
         };
-        dirHelper.copyFrom(new File("testdata/pages"), noCVS);
+        dirHelper.copyFrom(new File("testdata/pages"), noCVSorSVNorBackups);
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
-        
         
         DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
         DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
         DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
-        DocumentHandler documentSetHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", DocumentSet.DOCUMENT_TYPE, DocumentSet.class, "target/testdata/pages", cache);
         DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", PageSecurity.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
         
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
         handlerFactory.registerDocumentHandler(psmlHandler);
         handlerFactory.registerDocumentHandler(linkHandler);
         handlerFactory.registerDocumentHandler(folderMetaDataHandler);        
-        handlerFactory.registerDocumentHandler(documentSetHandler);        
         handlerFactory.registerDocumentHandler(pageSecurityHandler);        
         
         FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
         
-        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, -1, false, false, false);
+        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, false, false);
         
         
     }
@@ -266,7 +268,7 @@ protected void setUp() throws Exception
         }
         catch (Exception e)
         {
-            String errmsg = "Exception in page registratio: " + e.toString();
+            String errmsg = "Exception in page registration: " + e.toString();
             e.printStackTrace();
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
@@ -304,34 +306,6 @@ protected void setUp() throws Exception
 
         page = pageManager.getPage(this.testId);
         assertTrue(page.getTitle().equals("Updated Title"));
-    }
-
-    public void testRemovePage() throws Exception
-    {
-        Page page = pageManager.getPage(this.testId);
-
-        try
-        {
-            pageManager.removePage(page);
-        }
-        catch (Exception e)
-        {
-            String errmsg = "Exception in page remove: " + e.toString();
-            e.printStackTrace();
-            System.err.println(errmsg);
-            assertNotNull(errmsg, null);
-        }
-
-        boolean exceptionFound = false;
-        try
-        {
-            page = pageManager.getPage(this.testId);
-        }
-        catch (PageNotFoundException pnfe)
-        {
-            exceptionFound = true;
-        }
-        assertTrue(exceptionFound);
     }
 
     public void testFolders() throws Exception
@@ -383,14 +357,12 @@ protected void setUp() throws Exception
         assertNull(folder3.getAll().exclusiveSubset("Jetspeed2\\.link").get("Jetspeed2.link"));
         assertNull(folder3.getAll().inclusiveSubset("apache\\.link").get("Jetspeed2.link"));
         assertNotNull(folder3.getAll().inclusiveSubset("apache\\.link").get("apache.link"));
-        
-
     }
 
     public void testFolderMetaData() throws Exception
     {
         Folder folder1French = pageManager.getFolder("/folder1");        
-;
+
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRENCH));
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRANCE));
 
@@ -405,9 +377,17 @@ protected void setUp() throws Exception
         
         // Test folder with no metadata assigned
         Folder rootFolder = pageManager.getFolder("/");
-
-        assertEquals("/", rootFolder.getTitle());
         assertEquals(rootFolder.getTitle(), rootFolder.getTitle(Locale.FRENCH));
+    }
+
+    public void testDefaultTitles() throws Exception
+    {
+        Page defaultPage = pageManager.getPage("/folder1/folder2/default-page.psml");
+        assertNotNull(defaultPage);
+        assertEquals("Default Page", defaultPage.getTitle());
+
+        Folder rootFolder = pageManager.getFolder("/");
+        assertEquals("Top", rootFolder.getTitle());
     }
 
     public void testPageMetaData() throws Exception
@@ -435,6 +415,179 @@ protected void setUp() throws Exception
         assertNotNull(folder.getLinks());
         assertEquals(folder.getLinks().size(), 1);
         assertEquals("http://portals.apache.org", ((Document) folder.getLinks().iterator().next()).getUrl());
-       
+    }
+
+    public void testMenuDefinitions() throws Exception
+    {
+        // test folder resident menu definitions
+        Folder folder = pageManager.getFolder("/");
+        assertNotNull(folder);
+        List menus = folder.getMenuDefinitions();
+        assertNotNull(menus);
+        assertEquals(5, menus.size());
+
+        MenuDefinition simpleMenu = (MenuDefinition)menus.get(0);
+        assertNotNull(simpleMenu);
+        assertEquals("simple", simpleMenu.getName());
+        assertNotNull(simpleMenu.getMenuElements());
+        assertEquals(1, simpleMenu.getMenuElements().size());
+        assertTrue(simpleMenu.getMenuElements().get(0) instanceof MenuOptionsDefinition);
+        assertEquals("/test001.psml,/folder1/folder2", ((MenuOptionsDefinition)simpleMenu.getMenuElements().get(0)).getOptions());
+
+        MenuDefinition top2LevelsMenu = (MenuDefinition)menus.get(1);
+        assertNotNull(top2LevelsMenu);
+        assertEquals("top-2-levels", top2LevelsMenu.getName());
+        assertNull(top2LevelsMenu.getMenuElements());
+        assertEquals("/", top2LevelsMenu.getOptions());
+        assertEquals(2, top2LevelsMenu.getDepth());
+        assertEquals("dhtml-pull-down", top2LevelsMenu.getSkin());
+
+        MenuDefinition topRolePagesMenu = (MenuDefinition)menus.get(2);
+        assertNotNull(topRolePagesMenu);
+        assertEquals("top-role-pages", topRolePagesMenu.getName());
+        assertTrue(topRolePagesMenu.isRegexp());
+        assertEquals("roles", topRolePagesMenu.getProfile());
+        assertEquals("*.psml,*.link", topRolePagesMenu.getOrder());
+
+        MenuDefinition breadCrumbsMenu = (MenuDefinition)menus.get(3);
+        assertNotNull(breadCrumbsMenu);
+        assertEquals("bread-crumbs", breadCrumbsMenu.getName());
+        assertTrue(breadCrumbsMenu.isPaths());
+
+        MenuDefinition topCustomMenu = (MenuDefinition)menus.get(4);
+        assertNotNull(topCustomMenu);
+        assertEquals("top-custom", topCustomMenu.getName());
+        assertEquals("Top Menu", topCustomMenu.getTitle());
+        assertEquals("Top", topCustomMenu.getShortTitle());
+        assertEquals("Haut", topCustomMenu.getTitle(Locale.FRENCH));
+        assertEquals("H", topCustomMenu.getShortTitle(Locale.FRENCH));
+        assertNotNull(topCustomMenu.getMenuElements());
+        assertEquals(5, topCustomMenu.getMenuElements().size());
+        assertTrue(topCustomMenu.getMenuElements().get(0) instanceof MenuOptionsDefinition);
+        assertTrue(((MenuOptionsDefinition)topCustomMenu.getMenuElements().get(0)).isRegexp());
+        assertEquals("groups", ((MenuOptionsDefinition)topCustomMenu.getMenuElements().get(0)).getProfile());
+        assertTrue(topCustomMenu.getMenuElements().get(1) instanceof MenuDefinition);
+        assertTrue(topCustomMenu.getMenuElements().get(2) instanceof MenuExcludeDefinition);
+        assertEquals("top-role-pages", ((MenuExcludeDefinition)topCustomMenu.getMenuElements().get(2)).getName());
+        assertTrue(topCustomMenu.getMenuElements().get(3) instanceof MenuSeparatorDefinition);
+        assertEquals("More Top Pages", ((MenuSeparatorDefinition)topCustomMenu.getMenuElements().get(3)).getText());
+        assertTrue(topCustomMenu.getMenuElements().get(4) instanceof MenuIncludeDefinition);
+        assertEquals("simple", ((MenuIncludeDefinition)topCustomMenu.getMenuElements().get(4)).getName());
+        assertTrue(((MenuIncludeDefinition)topCustomMenu.getMenuElements().get(4)).isNest());
+
+        MenuDefinition topCustomNestedMenu = (MenuDefinition)topCustomMenu.getMenuElements().get(1);
+        assertEquals("/", topCustomNestedMenu.getOptions());
+        assertEquals("page", topCustomNestedMenu.getProfile());
+        assertEquals(5, topCustomNestedMenu.getMenuElements().size());
+        assertTrue(topCustomNestedMenu.getMenuElements().get(0) instanceof MenuSeparatorDefinition);
+        assertEquals("Top Pages", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(0)).getText());
+        assertEquals("Ye Olde Top Pages", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(0)).getText(Locale.ENGLISH));
+        assertEquals("Select from Top Pages menu...", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(0)).getTitle());
+        assertEquals("Haut", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(0)).getTitle(Locale.FRENCH));
+        assertTrue(topCustomNestedMenu.getMenuElements().get(1) instanceof MenuOptionsDefinition);
+        assertTrue(topCustomNestedMenu.getMenuElements().get(2) instanceof MenuSeparatorDefinition);
+        assertEquals("bold", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(2)).getSkin());
+        assertEquals("Custom Pages", ((MenuSeparatorDefinition)topCustomNestedMenu.getMenuElements().get(2)).getTitle());
+        assertTrue(topCustomNestedMenu.getMenuElements().get(3) instanceof MenuOptionsDefinition);
+        assertEquals(1, ((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(3)).getDepth());
+        assertEquals("*.psml", ((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(3)).getOrder());
+        assertTrue(topCustomNestedMenu.getMenuElements().get(4) instanceof MenuOptionsDefinition);
+        assertTrue(((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(4)).isPaths());
+        assertEquals("*", ((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(4)).getProfile());
+        assertEquals("links", ((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(4)).getSkin());
+        assertEquals("@", ((MenuOptionsDefinition)topCustomNestedMenu.getMenuElements().get(4)).getOptions());
+
+        // test page resident menu definitions
+        Page page = pageManager.getPage("/test001.psml");
+        assertNotNull(page);
+        menus = page.getMenuDefinitions();
+        assertNotNull(menus);
+        assertEquals(1, menus.size());
+
+        simpleMenu = (MenuDefinition)menus.get(0);
+        assertNotNull(simpleMenu);
+        assertEquals("simple", simpleMenu.getName());
+        assertNotNull(simpleMenu.getMenuElements());
+        assertEquals(2, simpleMenu.getMenuElements().size());
+
+        // test writing page menu definitions
+        page = pageManager.getPage(this.testId);
+        page.setMenuDefinitions(new ArrayList());
+        MenuDefinition newMenu = pageManager.newMenuDefinition();
+        newMenu.setName("updated-menu");
+        newMenu.setSkin("tabs");
+        newMenu.setMenuElements(new ArrayList());
+        MenuSeparatorDefinition newSeparator = pageManager.newMenuSeparatorDefinition();
+        newSeparator.setText("-- Updated Menu --");
+        newMenu.getMenuElements().add(newSeparator);
+        MenuOptionsDefinition newOptions0 = pageManager.newMenuOptionsDefinition();
+        newOptions0.setOptions("/*.psml");
+        newOptions0.setRegexp(true);
+        newMenu.getMenuElements().add(newOptions0);
+        MenuOptionsDefinition newOptions1 = pageManager.newMenuOptionsDefinition();
+        newOptions1.setOptions("/folder0");
+        newMenu.getMenuElements().add(newOptions1);
+        MenuDefinition newNestedMenu = pageManager.newMenuDefinition();
+        newNestedMenu.setOptions("/*/");
+        newNestedMenu.setRegexp(true);
+        newMenu.getMenuElements().add(newNestedMenu);
+        MenuExcludeDefinition newExcludeMenu = pageManager.newMenuExcludeDefinition();
+        newExcludeMenu.setName("exclude-menu");
+        newMenu.getMenuElements().add(newExcludeMenu);
+        MenuIncludeDefinition newIncludeMenu = pageManager.newMenuIncludeDefinition();
+        newIncludeMenu.setName("include-menu");
+        newIncludeMenu.setNest(true);
+        newMenu.getMenuElements().add(newIncludeMenu);
+        page.getMenuDefinitions().add(newMenu);
+        try
+        {
+            pageManager.updatePage(page);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        page = pageManager.getPage(this.testId);
+        assertNotNull(page.getMenuDefinitions());
+        assertEquals(1, page.getMenuDefinitions().size());
+        assertNotNull(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements());
+        assertEquals(6,((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().size());
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(0) instanceof MenuSeparatorDefinition);
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(1) instanceof MenuOptionsDefinition);
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(2) instanceof MenuOptionsDefinition);
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(3) instanceof MenuDefinition);
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(4) instanceof MenuExcludeDefinition);
+        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(5) instanceof MenuIncludeDefinition);
+    }
+
+    public void testRemovePage() throws Exception
+    {
+        Page page = pageManager.getPage(this.testId);
+
+        try
+        {
+            pageManager.removePage(page);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        boolean exceptionFound = false;
+        try
+        {
+            page = pageManager.getPage(this.testId);
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
     }
 }

@@ -13,6 +13,16 @@
   <document-order>palm.psml</document-order>
   <document-order>profiler.psml</document-order>
 
+  <menu name="page-navigations">
+    <separator>Users Admin Pages</separator>
+    <options>/Administrative/user-mgt.psml</options>
+    <options>/Administrative/users-jsf.psml</options>
+    <separator>Profiled Pages</separator>
+    <options regexp="true">/p[0-9][0-9][0-9].psml</options>
+    <separator>Non Java Pages</separator>
+    <options>/non-java</options>
+  </menu>
+
   <security-constraints>
     <security-constraints-ref>manager</security-constraints-ref>
   </security-constraints>

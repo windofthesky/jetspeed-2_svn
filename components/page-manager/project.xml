@@ -90,18 +90,6 @@
                 &jetspeed-version;
             </version>
         </dependency>
-        <dependency>
-            <id>jetspeed2:jetspeed-locator</id>
-            <version>
-                &jetspeed-version;
-            </version>
-        </dependency>
-        <dependency>
-            <id>jetspeed2:jetspeed-profiler</id>
-            <version>
-                &jetspeed-version;
-            </version>
-        </dependency>
         <!-- Testing only -->
         <dependency>
             <id>jetspeed2:jetspeed-rdbms</id>

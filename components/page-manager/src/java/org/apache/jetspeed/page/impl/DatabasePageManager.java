@@ -25,7 +25,6 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
@@ -40,8 +39,6 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
-import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
  * DatabasePageManagerService
@@ -75,38 +72,6 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         super(generator, false, false);
         this.persistenceStore = persistenceStore;
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.services.page.PageManager#computeProfiledPageContext(org.apache.jetspeed.profiler.ProfiledPageContext)
-     */
-    public void computeProfiledPageContext(ProfiledPageContext pageContext)
-        throws PageNotFoundException, DocumentException, NodeException
-    {
-        // get page profile locator from session/principal profile locators
-        ProfileLocator locator = selectPageProfileLocator(pageContext.getLocators());
-
-        // profiling not implemented, return raw managed page context;
-        // document sets not supported
-        Page page = getPage(locator.getValue("page"));
-        Folder folder = (Folder) page.getParent();
-        NodeSet siblingPages = folder.getPages();
-        Folder parentFolder = (Folder) folder.getParent();
-        NodeSet siblingFolders = folder.getFolders();
-        Folder rootFolder = folder;
-        while (rootFolder.getParent() != null)
-            rootFolder = (Folder) rootFolder.getParent();
-        NodeSet rootLinks = rootFolder.getLinks();
-        NodeSet documentSets = null;
-        Map documentSetNames = null;
-        Map documentSetNodeSets = null;
-        List allProfiledFolders = null;
-
-        // populate profiled page context instance and return
-        CacheablePageContext cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets, allProfiledFolders);
-        populateProfiledPageContext(cachedPageContext, pageContext);
     }
 
     /*
@@ -265,21 +230,6 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      *         DocumentNotFoundException
      */
     public Link getLink( String name ) throws DocumentNotFoundException
-    {
-        throw new UnsupportedOperationException("Not supported by DB impl yet");
-    }
-
-    /**
-     * <p>
-     * getDocumentSet
-     * </p>
-     * 
-     * @see org.apache.jetspeed.page.PageManager#getDocumentSet(java.lang.String)
-     * @param name
-     * @return @throws
-     *         DocumentNotFoundException
-     */
-    public DocumentSet getDocumentSet( String name ) throws DocumentNotFoundException
     {
         throw new UnsupportedOperationException("Not supported by DB impl yet");
     }

@@ -17,10 +17,14 @@
 package org.apache.jetspeed.page;
 
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
@@ -31,7 +35,6 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 
 /**
  * This service is responsible for loading and saving Pages into
@@ -83,6 +86,41 @@ public interface PageManager
      */
     public Property newProperty();
 
+    /**
+     * newMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object
+     */
+    public MenuDefinition newMenuDefinition();
+
+    /**
+     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition();
+
+    /**
+     * newMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition();
+
+    /**
+     * newMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition();
+
+    /**
+     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition();
+
    /**
     * 
     * <p>
@@ -131,20 +169,6 @@ public interface PageManager
    /**
     * 
     * <p>
-    * getDocumentSet
-    * </p>
-    *
-    * Returns a DocumentSet document for the given path
-    *
-    * @param name The path of the document to be retrieved.
-    * @throws PageNotFoundException if the page cannot be found
-    * @throws NodeException
-    */
-    public DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
-    
-   /**
-    * 
-    * <p>
     * getPageSecurity
     * </p>
     *
@@ -171,20 +195,6 @@ public interface PageManager
      */
     Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
 
-    /**
-     * <p>
-     * Compute profiled page context elements based on named profile
-     * locators associated with a session/principal in supplied
-     * context instance.
-     * </p>
-     *
-     * @param page
-     * @throws PageNotFoundException if the page cannot be found.
-     * @throws DocumentException
-     * @throws NodeException
-     */
-    public void computeProfiledPageContext(ProfiledPageContext pageContext) throws PageNotFoundException, DocumentException, NodeException;
-
     /** Store the page on disk
      *
      * @param page The page to be stored.
@@ -203,4 +213,17 @@ public interface PageManager
      */
     public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
 
+    /**
+     * addListener - add page manager event listener
+     *
+     * @param listener page manager event listener
+     */
+    public void addListener(PageManagerEventListener listener);
+
+    /**
+     * removeListener - remove page manager event listener
+     *
+     * @param listener page manager event listener
+     */
+    public void removeListener(PageManagerEventListener listener);
 }

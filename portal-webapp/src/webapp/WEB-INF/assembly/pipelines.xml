@@ -88,6 +88,9 @@ limitations under the License.
    	<ref bean="org.apache.jetspeed.profiler.Profiler" />
    </constructor-arg>
    <constructor-arg>
+   	<ref bean="org.apache.jetspeed.portalsite.PortalSite" />
+   </constructor-arg>
+   <constructor-arg>
    	<ref bean="org.apache.jetspeed.page.PageManager" />
    </constructor-arg>
   </bean> 

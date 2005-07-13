@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document-set>
-  <title>Non Java Pages</title>
-
-  <security-constraints>
-    <security-constraints-ref>users</security-constraints-ref>
-  </security-constraints>
-</document-set>

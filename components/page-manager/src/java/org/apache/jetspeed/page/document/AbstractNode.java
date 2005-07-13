@@ -15,13 +15,9 @@
  */
 package org.apache.jetspeed.page.document;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
@@ -31,7 +27,6 @@ import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.util.ArgUtil;
 
 
 /**
@@ -48,9 +43,7 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public abstract class AbstractNode extends AbstractBaseElement implements Node
 {
-    private Collection metadataFields = null;
-    private Map localizedTitles;
-    private Map localizedShortTitles;
+    private PageMetadataImpl metadata;
     private Node parent;
     private String path;
     private String url;
@@ -61,41 +54,64 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     {
     }
 
+    /**
+     * getMetadata - get/construct metadata
+     *
+     * @return metadata
+     */
     public GenericMetadata getMetadata()
     {
-        if (metadataFields == null)
-        {
-            metadataFields = new ArrayList();
-        }
-
-        GenericMetadata metadata = new PageMetadataImpl();
-        metadata.setFields(metadataFields);
-        return metadata;
-    }
-
-    public void setMetadata( GenericMetadata metadata )
-    {
-        this.metadataFields = metadata.getFields();
+        return getPageMetadata();
     }
 
     /**
-     * This should only be used during castor marshalling
-     * 
-     * @see org.apache.jetspeed.om.page.Page#getMetadataFields()
+     * setMetadata - set metadata fields
+     *
+     * @param metadata metadata
+     */
+    public void setMetadata(GenericMetadata metadata)
+    {
+        getPageMetadata().setFields(metadata.getFields());
+    }
+
+    /**
+     * getMetadataFields - get metadata fields collection for
+     *                     marshalling/unmarshalling
+     *
+     * @return metadata fields collection
      */
     public Collection getMetadataFields()
     {
-        return metadataFields;
+        // return metadata fields collection that
+        // may in fact be side effected on unmarshall
+        return getPageMetadata().getFields();
     }
 
     /**
-     * This should only be used during castor unmarshalling
-     * 
-     * @see org.apache.jetspeed.om.page.Page#setMetadataFields(java.util.Collection)
+     * setMetadataFields - set metadata fields collection
+     *
+     * @param metadataFields metadata fields collection
      */
-    public void setMetadataFields( Collection metadataFields )
+    public void setMetadataFields(Collection metadataFields)
     {
-        this.metadataFields = metadataFields;
+        // set metadata fields collection that
+        // may in fact be side effected after
+        // invocation on unmarshall
+        getPageMetadata().setFields(metadataFields);
+    }
+
+    /**
+     * getPageMetadata - get/construct page metadata instance
+     *
+     * @return metadata instance
+     */
+    private PageMetadataImpl getPageMetadata()
+    {
+        if (metadata == null)
+        {
+            metadata = new PageMetadataImpl();
+        }
+        return metadata;
     }
 
     /**
@@ -107,39 +123,15 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * @param locale
      * @return
      */
-    public String getTitle( Locale locale )
+    public String getTitle(Locale locale)
     {
-        ArgUtil.assertNotNull(Locale.class, locale, this, "getTile(Locale)");
-        if (localizedTitles == null && metadataFields != null)
+        // get title from metadata or use default title
+        String title = getPageMetadata().getText("title", locale);
+        if (title == null)
         {
-            this.localizedTitles = new HashMap(metadataFields.size());
-            Iterator fieldsItr = metadataFields.iterator();
-            while (fieldsItr.hasNext())
-            {
-                LocalizedField field = (LocalizedField) fieldsItr.next();
-                if (field.getName().equals("title"))
-                {
-                    localizedTitles.put(field.getLocale(), field);
-                }
-            }
+            title = getTitle();
         }
-        
-        Locale languageOnly = new Locale(locale.getLanguage());
-        if (localizedTitles != null
-            && (localizedTitles.containsKey(locale) 
-                || localizedTitles.containsKey(languageOnly)))
-        {
-            if(localizedTitles.containsKey(locale) )
-            {
-                return ((LocalizedField) localizedTitles.get(locale)).getValue().trim();
-            }
-            else if(localizedTitles.containsKey(languageOnly))
-            {
-                return ((LocalizedField) localizedTitles.get(languageOnly)).getValue().trim();
-            }
-        }
-
-        return getTitle();
+        return title;
     }
 
     /**
@@ -153,44 +145,22 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public String getShortTitle( Locale locale )
     {
-        ArgUtil.assertNotNull(Locale.class, locale, this, "getShortTitle(Locale)");
-        if (localizedShortTitles == null && metadataFields != null)
+        // get short title from metadata or use title from metadata,
+        // default short title, or default title
+        String shortTitle = getPageMetadata().getText("short-title", locale);
+        if (shortTitle == null)
         {
-            this.localizedShortTitles = new HashMap(metadataFields.size());
-            Iterator fieldsItr = metadataFields.iterator();
-            while (fieldsItr.hasNext())
+            shortTitle = getPageMetadata().getText("title", locale);
+            if (shortTitle == null)
             {
-                LocalizedField field = (LocalizedField) fieldsItr.next();
-                if (field.getName().equals("short-title"))
+                shortTitle = getShortTitle();
+                if (shortTitle == null)
                 {
-                    localizedShortTitles.put(field.getLocale(), field);
+                    shortTitle = getTitle();
                 }
             }
         }
-
-        Locale languageOnly = new Locale(locale.getLanguage());
-        if (localizedShortTitles != null
-            && (localizedShortTitles.containsKey(locale) 
-                || localizedShortTitles.containsKey(languageOnly)))
-        {
-            if(localizedShortTitles.containsKey(locale) )
-            {
-                return ((LocalizedField) localizedShortTitles.get(locale)).getValue().trim();
-            }
-            else if(localizedShortTitles.containsKey(languageOnly))
-            {
-                return ((LocalizedField) localizedShortTitles.get(languageOnly)).getValue().trim();
-            }
-        }
-
-        // default to localized title, default short title, or default
-        // title if not specified
-        String title = getTitle(locale);
-        if (title == getTitle())
-        {
-            title = getShortTitle();
-        }
-        return title;
+        return shortTitle;
     }
 
     /**
@@ -223,7 +193,9 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public Node getParent()
     {
-        // by default disable access checks to facilitate navigation
+        // by default disable access checks since it is assumed
+        // that by accessing this node, access to parent must
+        // also be granted
         return getParent(false);
     }
 
@@ -250,25 +222,56 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public String getName()
     {
-        String path = getPath();
-        String parentName = "";
-        if(getParent(false) != null)
+        // simply strip path to determine name
+        String name = getPath();
+        if ((name != null) && !name.equals(PATH_SEPARATOR))
         {
-            parentName = getParent(false).getPath();
-            if (! parentName.endsWith(PATH_SEPARATOR))
+            if (name.endsWith(PATH_SEPARATOR))
             {
-                parentName += PATH_SEPARATOR;
+                name = name.substring(0, name.length()-1);
             }
+            name = name.substring(name.lastIndexOf(PATH_SEPARATOR)+1);
         }
-        
-        if (path.startsWith(parentName))
+        return name;
+    }
+
+    /**
+     * getTitleName - get name for use as default titles
+     *
+     * @return title name
+     */
+    public String getTitleName()
+    {
+        String titleName = getName();
+        if (titleName != null)
         {
-            return path.substring(parentName.length());
+            // transform file system name to title
+            if (titleName.endsWith(getType()))
+            {
+                titleName = titleName.substring(0, titleName.length()-getType().length());
+            }
+            else if (titleName.equals(PATH_SEPARATOR))
+            {
+                titleName = "top";
+            }
+            titleName = titleName.replace('_', ' ');
+            titleName = titleName.replace('-', ' ');
+            int wordIndex = -1;
+            do
+            {
+                if (!Character.isTitleCase(titleName.charAt(wordIndex+1)))
+                {
+                    StringBuffer makeTitle = new StringBuffer();
+                    makeTitle.append(titleName.substring(0, wordIndex+1));
+                    makeTitle.append(Character.toTitleCase(titleName.charAt(wordIndex+1)));
+                    makeTitle.append(titleName.substring(wordIndex+2));
+                    titleName = makeTitle.toString();
+                }
+                wordIndex = titleName.indexOf(' ', wordIndex+1);
+            }
+            while (wordIndex != -1);
         }
-        else
-        {
-            return path;
-        }
+        return titleName;
     }
 
     /**
@@ -280,12 +283,17 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     }
     
     /**
+     * <p>
+     * setPath
+     * </p>
+     *
      * @param path The path to set.
      */
     public void setPath( String path )
     {
         this.path = path;
     }
+
     /**
      * <p>
      * getUrl
@@ -297,24 +305,25 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public String getUrl()
     {
-        if (isUrlSet())
+        if (url != null)
+        {
             return url;
+        }
         return getPath();
     }
+
     /**
+     * <p>
+     * setUrl
+     * </p>
+     *
      * @param url The url to set.
      */
-    public void setUrl(String url)
+    public void setUrl( String url )
     {
         this.url = url;
     }
-    /**
-     * @return Flag indicating whether url is set.
-     */
-    public boolean isUrlSet()
-    {
-        return (url != null);
-    }
+
     /**
      * <p>
      * isHidden
@@ -365,7 +374,6 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
-String debug=""; Iterator i = actions.iterator(); while(i.hasNext())debug+=(String)i.next()+" ";
         // check constraints in node hierarchy
         if (checkNodeOnly)
         {
@@ -453,5 +461,24 @@ String debug=""; Iterator i = actions.iterator(); while(i.hasNext())debug+=(Stri
     public String getPhysicalPermissionPath()
     {
         return path;
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // force metadata update after unmarshalled since
+        // metadata collection can be side effected by
+        // unmarshalling colection accessors
+        Collection metadataFields = getMetadataFields();
+        if (metadataFields != null)
+        {
+            setMetadataFields(metadataFields);
+        }
     }
 }

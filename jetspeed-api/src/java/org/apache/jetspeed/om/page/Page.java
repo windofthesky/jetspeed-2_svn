@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.page;
 
+import java.util.List;
 
 /**
  * This interface represents a complete page document used by Jetspeed
@@ -26,7 +27,6 @@ public interface Page extends Document, java.io.Serializable, Cloneable
 {
     String DOCUMENT_TYPE = ".psml";
     
-
     /**
      * Returns the name of the default skin that applies to this
      * page. This name should reference an entry in the Skin
@@ -34,7 +34,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      *
      * @return the page default skin name
      */
-    public String getDefaultSkin();
+    String getDefaultSkin();
 
     /**
      * Modifies the default skin for this page.
@@ -45,7 +45,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      *
      * @param skinName the name of the new skin for the page
      */
-    public void setDefaultSkin(String skinName);
+    void setDefaultSkin(String skinName);
 
     /**
      * Returns the name of the default decorator that applies in this page
@@ -54,7 +54,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @param fragmentType the type of fragment considered
      * @return the decorator name for the selected type
      */
-    public String getDefaultDecorator(String fragmentType);
+    String getDefaultDecorator(String fragmentType);
 
     /**
      * Modifies the default decorator for the specified fragment type.
@@ -62,7 +62,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @param decoratorName the name of the new decorator for the type
      * @param fragmentType the type of fragment considered
      */
-    public void setDefaultDecorator(String decoratorName, String fragmentType);
+    void setDefaultDecorator(String decoratorName, String fragmentType);
 
     /**
      * Retrieves the top level fragment of this page. This Fragment should
@@ -70,7 +70,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      *
      * @return the base Fragment object for this page.
      */
-    public Fragment getRootFragment();
+    Fragment getRootFragment();
 
     /**
      * Sets the top level fragment of this page. This Fragment should
@@ -78,7 +78,7 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      *
      * @return the base Fragment object for this page.
      */    
-    public void setRootFragment(Fragment fragment);
+    void setRootFragment(Fragment fragment);
 
     /**
      * Retrieves the fragment contained within this page, with the
@@ -87,12 +87,25 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @param id the fragment id to look for
      * @return the found Fragment object or null if not found
      */
-    public Fragment getFragmentById(String id);
+    Fragment getFragmentById(String id);
 
     /**
      * Create a clone of this object
      */
-    public Object clone()
-        throws java.lang.CloneNotSupportedException;
+    Object clone() throws java.lang.CloneNotSupportedException;
+
+    /**
+     * getMenuDefinitions - get list of menu definitions
+     *
+     * @return definition list
+     */
+    List getMenuDefinitions();
+
+    /**
+     * setMenuDefinitions - set list of menu definitions
+     *
+     * @param definitions definition list
+     */
+    void setMenuDefinitions(List definitions);    
 }
 

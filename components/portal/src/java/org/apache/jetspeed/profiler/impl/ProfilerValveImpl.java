@@ -33,8 +33,10 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.portalsite.PortalSite;
+import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
@@ -51,19 +53,50 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
 {
     protected Log log = LogFactory.getLog(ProfilerValveImpl.class);   
 
+    /**
+     * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - session portal site context attribute key
+     */
+    public static final String PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteSessionContext";
+
+    /**
+     * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - request portal site context attribute key
+     */
+    public static final String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteRequestContext";
+
+    /**
+     * PROFILED_PAGE_CONTEXT_ATTR_KEY - legacy request portal site context attribute key
+     */
     public static final String PROFILED_PAGE_CONTEXT_ATTR_KEY = "org.apache.jetspeed.profiledPageContext";
 
+    /**
+     * profiler - profiler component
+     */
     private Profiler profiler;
+
+    /**
+     * portalSite - portal site component
+     */
+    private PortalSite portalSite;
+
+    /**
+     * pageManager - page manager component
+     */
     private PageManager pageManager;
    
-
-    public ProfilerValveImpl( Profiler profiler, PageManager pageManager )
+    /**
+     * ProfilerValveImpl - constructor
+     *
+     * @param profiler profiler component reference
+     * @param portalSite portal site component reference
+     * @param pageManager page manager component reference
+     */
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager )
     {
         this.profiler = profiler;
+        this.portalSite = portalSite;
         this.pageManager = pageManager;
     }
-    
- 
+     
     /*
      * (non-Javadoc)
      * 
@@ -86,6 +119,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 throw new ProfilerException("Missing principal for request: " + request.getPath());
             }
             
+            // get request specific profile locators if required
             Map locators = null;
             String locatorName = (String)request.getAttribute(PROFILE_LOCATOR_REQUEST_ATTR_KEY);
             if ( locatorName != null )
@@ -97,38 +131,49 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                     locators.put(ProfileLocator.PAGE_LOCATOR, locator);
                 }
             }
-            
-            if ( locators ==  null )
+
+            // get specified or default locators for the current user,
+            // falling back to global defaults and, if necessary, explicity
+            // fallback to 'page' profile locators
+            if ( locators == null )
             {
-                // get all locators for the current user
                 locators = profiler.getProfileLocators(request, principal);
             }
-
             if (locators.size() == 0)
             {
                 locators = profiler.getDefaultProfileLocators(request);                
             }
-            
             if (locators.size() == 0)
             {
                 locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
             }
             
-            // get profiled page context using the profiler and page manager
-            ProfiledPageContext profiledPageContext = profiler.createProfiledPageContext(locators);
-            pageManager.computeProfiledPageContext(profiledPageContext);
-            if (profiledPageContext.getPage() == null)
+            // get profiled page using the profiler, page manager,
+            // and portal site components
+            if (locators != null)
             {
-                throw new NodeNotFoundException("Unable to profile request: " + request.getPath());
-            }
-            
-            // set request page and profile locator
-            request.setPage(new ContentPageImpl(profiledPageContext.getPage()));
-            request.setProfileLocators(profiledPageContext.getLocators());
+                // get or create portalsite session context
+                PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
+                if (sessionContext == null)
+                {
+                    sessionContext = portalSite.newSessionContext();
+                    request.setSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY, sessionContext);
+                }
 
-            // return profiled page context in request attribute
-            HttpServletRequest httpRequest = request.getRequest();
-            httpRequest.setAttribute(PROFILED_PAGE_CONTEXT_ATTR_KEY, profiledPageContext);
+                // construct and save a new portalsite request context
+                // using session context and locators map
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+                request.setAttribute(PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY, requestContext);
+
+                // additionally save request context under legacy key
+                // to support existing decorator access
+                request.setAttribute(PROFILED_PAGE_CONTEXT_ATTR_KEY, requestContext);
+
+                // get profiled page from portalsite request context
+                // and save profile locators map
+                request.setPage(new ContentPageImpl(requestContext.getManagedPage()));
+                request.setProfileLocators(requestContext.getLocators());
+            }
 
             // continue
             context.invokeNext(request);

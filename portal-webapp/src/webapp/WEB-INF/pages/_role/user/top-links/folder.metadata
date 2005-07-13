@@ -4,6 +4,5 @@
   <document-order>apache_portals.link</document-order>
   <document-order>apache_tomcat.link</document-order>
   <document-order>apache_velocity.link</document-order>
-  <document-order>more-pages.ds</document-order>
   <document-order>apache_commons.link</document-order>
 </folder>

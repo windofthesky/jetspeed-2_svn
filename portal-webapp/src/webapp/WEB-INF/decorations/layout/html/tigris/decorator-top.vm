@@ -38,7 +38,6 @@ limitations under the License.
 
 #set($myF = $jetspeed.currentFragment)
 #set($site = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
-#set($parentFolder = $site.parentFolder)
 
 <!--  BEGIN: layout/html/tigris/decorator.vm -->
 
@@ -60,68 +59,40 @@ limitations under the License.
       </div>
 <!-- Top Tabs -->
       <div class="tabs">
-#includeTabsNavigation($site.siblingPages $LEFT_TO_RIGHT)
+#set($pagesStandardMenu = $site.getMenu("pages"))
+#if(!$pagesStandardMenu.empty)
+#includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
+#end
       </div>
       <div id="breadcrumbs">
-#if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">Back to $parentFolder.getShortTitle($preferedLocale)</a>
-#end
+#* standard back breadcrumb *#
+##set($backStandardMenu = $site.getMenu("back"))
+##if(!$backStandardMenu.empty)
+##includeLinksNavigation($backStandardMenu $LEFT_TO_RIGHT $TITLE_FIRST "" "")
+#* standard breadcrumbs *#
+#set($breadcrumbsStandardMenu = $site.getMenu("breadcrumbs"))
+#if(!$breadcrumbsStandardMenu.empty)
+#includeLinksNavigation($breadcrumbsStandardMenu $LEFT_TO_RIGHT "" $BREADCRUMBS_STYLE "")
+#else
         &nbsp;
+#end
       </div>
       <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
         <tr>
-#set($hasFoldersAndPages = ($site.siblingFolders && !$site.siblingFolders.isEmpty()) || ($site.documentSetNames && !$site.documentSetNames.isEmpty()))
-#set($hasAdditionaLinks = $site.rootLinks && !$site.rootLinks.isEmpty())
-#if($hasFoldersAndPages || $hasAdditionaLinks)
+#set($navigationsStandardMenu = $site.getMenu("navigations"))
+#if(!$navigationsStandardMenu.empty)
           <td valign="top" id="leftcol" width="20%">
             <div id="navcolumn">
 
 <!-- Navigation Column -->
-<table cellpadding="0" cellspacing="4" border="0" width="100%">
-#if($hasFoldersAndPages)
-  <tr>
-    <td>
-      <div class="toolgroup">    
-        <div class="label">
-          Folders and Pages
-        </div>
-        <div class="body">
-#includeFoldersNavigation($site.siblingFolders $TOP_TO_BOTTOM)
-
-#foreach($docSetName in $site.documentSetNames)
-  #set($docSet = $site.getDocumentSet($docSetName))
-  #set($docSetNodes = $site.getDocumentSetNodes($docSetName))
-          <div>
-            <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
-            ${docSet.getShortTitle($preferedLocale)}
-            </div>
-          </div>
-#includeNestedLinksWithIconNavigation($docSetNodes $docSet.url $TOP_TO_BOTTOM)
-#end
-        </div>
-      </div>
-    </td>
-  </tr>
-#end
-#if($hasAdditionaLinks)
-  <tr>
-    <td>  
-      <div class="toolgroup">
-        <div class="label">
-          Additional Links
-        </div>
-        <div class="body">
-#includeLinksWithIconNavigation($site.rootLinks $TOP_TO_BOTTOM)
-        </div>
-      </div>
-    </td>
-  </tr>
-#end
-</table>
+              <table cellpadding="0" cellspacing="4" border="0" width="100%">
+#includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
+              </table>
 
             </div>
           </td>
 #end
+
           <td nowrap valign="top">
   
 ## $jetspeed.include($jetspeed.currentFragment)

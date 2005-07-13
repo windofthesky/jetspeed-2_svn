@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.folder.impl;
 import java.security.AccessController;
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -25,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.AbstractNode;
 import org.apache.jetspeed.page.document.DocumentException;
@@ -57,9 +58,6 @@ import org.apache.jetspeed.security.FolderPermission;
  */
 public class FolderImpl extends AbstractNode implements Folder, Reset
 {
-    public static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
-
-    private static final String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
     private final static String FOLDER_PERMISSION_WILD_CHAR = new String(new char[]{FolderPermission.WILD_CHAR});
     
     private String defaultTheme;
@@ -67,6 +65,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     private File directory;
     private FolderMetaData metadata;
     private FolderHandler folderHandler;
+    private int reservedType = RESERVED_FOLDER_NONE;
     
     private static final Log log = LogFactory.getLog(FolderImpl.class);
 
@@ -77,23 +76,24 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         this.metadata.setParent(this);
         this.folderHandler = folderHandler;
         setId(path);
+        setPath(path);
+        setReservedType();
         setHandlerFactory(handlerFactory);
         setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
         setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
-        setPath(path);
     }
 
     public FolderImpl( String path, DocumentHandlerFactory handlerFactory, FolderHandler folderHandler )
     {
         this.metadata = new FolderMetaDataImpl();
-        this.metadata.setTitle(path);
         this.metadata.setParent(this);
         this.folderHandler = folderHandler;
         setId(path);
+        setPath(path);
+        setReservedType();
         setHandlerFactory(handlerFactory);
         setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
         setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
-        setPath(path);
     }
 
     /*
@@ -108,7 +108,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             String defaultPage = metadata.getDefaultPage();
             if(defaultPage == null)
             {
-                defaultPage = FALLBACK_DEFAULT_PAGE;
+                defaultPage = Folder.FALLBACK_DEFAULT_PAGE;
             }
             return getPage(defaultPage, false).getName();
         }
@@ -125,12 +125,12 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                     }
                     else
                     {
-                        return PAGE_NOT_FOUND_PAGE;
+                        return Folder.PAGE_NOT_FOUND_PAGE;
                     }
                 }
                 catch (NodeException e1)
                 {
-                    return PAGE_NOT_FOUND_PAGE;
+                    return Folder.PAGE_NOT_FOUND_PAGE;
                 }
             }
         }
@@ -197,8 +197,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      */
     public NodeSet getFolders() throws FolderNotFoundException, DocumentException
     {
-        // by default disable access checks to facilitate navigation
-        return getFolders(false);
+        // by default enable access checks
+        return getFolders(true);
     }
 
     /**
@@ -236,8 +236,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      */
     public Folder getFolder(String name) throws FolderNotFoundException, DocumentException
     {
-        // by default disable access checks to facilitate navigation
-        return getFolder(name, false);
+        // by default enable access checks
+        return getFolder(name, true);
     }
 
     /**
@@ -386,78 +386,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
 
     /**
      * <p>
-     * getDocumentSets
-     * </p>
-     * 
-     * @param checkAccess flag
-     * @return documentSets node set
-     * @throws NodeException
-     */
-    public NodeSet getDocumentSets(boolean checkAccess) throws NodeException
-    {
-        // get list of all documentSets
-        NodeSet documentSets = getAllNodes().subset(DocumentSet.DOCUMENT_TYPE);
-
-        // filter node set by access
-        if (checkAccess)
-        {
-            documentSets = checkAccess(documentSets, SecuredResource.VIEW_ACTION);
-        }
-        return documentSets;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getDocumentSets()
-     */
-    public NodeSet getDocumentSets() throws NodeException
-    {
-        // by default enable access checks
-        return getDocumentSets(true);
-    }
-
-    /**
-     * <p>
-     * getDocumentSet
-     * </p>
-     * 
-     * @param name
-     * @param checkAccess flag
-     * @return document set
-     * @throws DocumentNotFoundException
-     * @throws NodeException
-     */
-    public DocumentSet getDocumentSet(String name, boolean checkAccess) throws DocumentNotFoundException, NodeException
-    {
-        // get documentSet
-        DocumentSet documentSet = (DocumentSet) getAllNodes().subset(DocumentSet.DOCUMENT_TYPE).get(name);
-        if (documentSet == null)
-        {
-            throw new DocumentNotFoundException("Jetspeed PSML document set not found: " + name);
-        }
-
-        // check access
-        if (checkAccess)
-        {
-            documentSet.checkAccess(SecuredResource.VIEW_ACTION);
-        }
-        return documentSet;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getDocumentSet(java.lang.String)
-     */
-    public DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, NodeException
-    {
-        // by default enable access checks
-        return getDocumentSet(name, true);
-    }
-
-    /**
-     * <p>
      * getPageSecurity
      * </p>
      * 
@@ -502,9 +430,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      */
     public NodeSet getAll() throws FolderNotFoundException, DocumentException
     {
-        // return secure set of all nodes: disable access checks on
-        // folders to facilitate navigation, but enforce on documents
-        // while creating filtered nodes
+        // return secure set of all nodes: enforce access checks
+        // on folders and documents while creating filtered nodes
         NodeSet nodes = getAllNodes();
         NodeSet filteredNodes = null;
         Iterator checkAccessIter = nodes.iterator();
@@ -628,13 +555,13 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
 
     /**
      * <p>
-     * getMetaData
+     * getFolderMetaData
      * </p>
      * 
-     * @see org.apache.jetspeed.om.folder.Folder#getMetaData()
+     * @see org.apache.jetspeed.om.folder.Folder#getFolderMetaData()
      * @return
      */
-    public FolderMetaData getMetaData()
+    public FolderMetaData getFolderMetaData()
     {
         return metadata;
     }
@@ -823,4 +750,84 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         allNodes = null;
         
     }
+
+    /**
+     * getMenuDefinitions - get list of menu definitions
+     *
+     * @return definition list
+     */
+    public List getMenuDefinitions()
+    {
+        return metadata.getMenuDefinitions();
+    }
+
+    /**
+     * setMenuDefinitions - set list of menu definitions
+     *
+     * @param definitions definition list
+     */
+    public void setMenuDefinitions(List definitions)
+    {
+        metadata.setMenuDefinitions(definitions);
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // default title of pages to name
+        if (getTitle() == null)
+        {
+            setTitle(getTitleName());
+        }
+    }
+    
+    public boolean isReserved()
+    {
+        return (reservedType > RESERVED_FOLDER_NONE);
+    }
+    
+    public int getReservedType()
+    {
+        return reservedType;
+    }
+    
+    private static final String RESERVED_FOLDER_PREFIX = "_";
+    private static final String RESERVED_USER_FOLDER_NAME = "_user";
+    private static final String RESERVED_ROLE_FOLDER_NAME = "_role";
+    private static final String RESERVED_GROUP_FOLDER_NAME = "_group";
+    private static final String RESERVED_SUBSITES_FOLDER_NAME = "__subsite-root";
+    private static final String RESERVED_MEDIATYPE_FOLDER_NAME = "_mediatype";
+    private static final String RESERVED_LANGUAGE_FOLDER_NAME = "_language";
+    private static final String RESERVED_COUNTRY_FOLDER_NAME = "_country";
+    
+    private void setReservedType()
+    {
+        String name = getName();
+        if (name != null && name.startsWith(RESERVED_FOLDER_PREFIX))            
+        {
+            if (name.equals(RESERVED_USER_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_USERS;
+            else if (name.equals(RESERVED_ROLE_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_ROLES;
+            else if (name.equals(RESERVED_GROUP_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_GROUPS;
+            else if (name.equals(RESERVED_SUBSITES_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_SUBSITES;
+            else if (name.equals(RESERVED_MEDIATYPE_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_MEDIATYPE;
+            else if (name.equals(RESERVED_LANGUAGE_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_LANGUAGE;
+            else if (name.equals(RESERVED_COUNTRY_FOLDER_NAME))
+                reservedType = RESERVED_FOLDER_COUNTRY;
+            else
+                reservedType = RESERVED_FOLDER_OTHER;            
+        }
+    }
+    
 }

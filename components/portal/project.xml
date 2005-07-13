@@ -159,6 +159,12 @@
             </version>
         </dependency>
         <dependency>
+            <id>jetspeed2:jetspeed-portal-site</id>
+            <version>
+                &jetspeed-version;
+            </version>
+        </dependency>
+        <dependency>
             <id>jetspeed2:jetspeed-portlet-factory</id>
             <version>
                 &jetspeed-version;

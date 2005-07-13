@@ -65,14 +65,6 @@ public class LinkImpl extends AbstractNode implements Link
     }
 
     /**
-     * @return Flag indicating whether url is set.
-     */
-    public boolean isUrlSet()
-    {
-        return true;
-    }
-
-    /**
      * <p>
      * grantViewActionAccess
      * </p>
@@ -86,5 +78,21 @@ public class LinkImpl extends AbstractNode implements Link
         // should always be viewable, (subject to folder access)
         String hrefUrl = getUrl();
         return ((hrefUrl != null) && (hrefUrl.startsWith("http://") || hrefUrl.startsWith("https://")));
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // default title of pages to name
+        if (getTitle() == null)
+        {
+            setTitle(getTitleName());
+        }
     }
 }

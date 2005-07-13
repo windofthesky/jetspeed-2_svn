@@ -20,7 +20,6 @@ limitations under the License.
      layout-decorator="clear"
      portlet-decorator="box-titled"
   />
-  <title>My First PSML Page</title>
   <fragment id="f001" type="layout" name="TwoColumns">
     <fragment id="pe001" type="portlet" name="HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />

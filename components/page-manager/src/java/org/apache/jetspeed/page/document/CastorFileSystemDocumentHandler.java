@@ -17,13 +17,14 @@ package org.apache.jetspeed.page.document;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +40,18 @@ import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.EventProducer;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.AttributeList;
+import org.xml.sax.DocumentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderAdapter;
 
 /**
  * <p>
@@ -58,7 +65,7 @@ import org.xml.sax.SAXException;
  * @version $Id$
  *  
  */
-public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCacheEventListener
+public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page.document.DocumentHandler, FileCacheEventListener
 {
 
     private final static Log log = LogFactory.getLog(CastorFileSystemDocumentHandler.class);
@@ -159,6 +166,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         documentImpl.setHandlerFactory(handlerFactory);
         documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
         documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        documentImpl.marshalling();
         
         // marshal page to disk
         String fileName = path;        
@@ -171,9 +179,77 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
 
         try
         {
+            // marshal: use SAX I handler to filter document XML for
+            // page and folder menu definition menu elements ordered
+            // polymorphic collection to strip artifical <menu-element>
+            // tags enabling Castor XML binding; see META-INF/page-mapping.xml
             writer = new FileWriter(f);
             Serializer serializer = new XMLSerializer(writer, this.format);
-            Marshaller marshaller = new Marshaller(serializer.asDocumentHandler());
+            final DocumentHandler handler = serializer.asDocumentHandler();
+            Marshaller marshaller = new Marshaller(new DocumentHandler()
+                {
+                    private int menuDepth = 0;
+
+                    public void characters(char[] ch, int start, int length) throws SAXException
+                    {
+                        handler.characters(ch, start, length);
+                    }
+
+                    public void endDocument() throws SAXException
+                    {
+                        handler.endDocument();
+                    }
+                    
+                    public void endElement(String name) throws SAXException
+                    {
+                        // track menu depth
+                        if (name.equals("menu"))
+                        {
+                            menuDepth--;
+                        }
+
+                        // filter menu-element noded within menu definition
+                        if ((menuDepth == 0) || !name.equals("menu-element"))
+                        {
+                            handler.endElement(name);
+                        }
+                    }
+                    
+                    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
+                    {
+                        handler.ignorableWhitespace(ch, start, length);
+                    }
+                    
+                    public void processingInstruction(String target, String data) throws SAXException
+                    {
+                        handler.processingInstruction(target, data);
+                    }
+                    
+                    public void setDocumentLocator(Locator locator)
+                    {
+                        handler.setDocumentLocator(locator);
+                    }
+                    
+                    public void startDocument() throws SAXException
+                    {
+                        handler.startDocument();
+                    }
+                    
+                    public void startElement(String name, AttributeList atts) throws SAXException
+                    {
+                        // filter menu-element noded within menu definition
+                        if ((menuDepth == 0) || !name.equals("menu-element"))
+                        {
+                            handler.startElement(name, atts);
+                        }
+
+                        // track menu depth
+                        if (name.equals("menu"))
+                        {
+                            menuDepth++;
+                        }
+                    }
+                });
             marshaller.setMapping(this.mapping);
             marshaller.marshal(document);
         }
@@ -265,19 +341,123 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
 
         try
         {
-            DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = dbfactory.newDocumentBuilder();
-
-            org.w3c.dom.Document d = builder.parse(f);
-
+            // unmarshal: use SAX I parser to read document XML, filtering
+            // for page and folder menu definition menu elements ordered
+            // polymorphic collection to insert artifical <menu-element>
+            // tags enabling Castor XML binding; see META-INF/page-mapping.xml
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parser = factory.newSAXParser();
+            XMLReader reader = parser.getXMLReader();
+            final XMLReaderAdapter readerAdapter = new XMLReaderAdapter(reader);
+            final InputSource readerInput = new InputSource(new FileReader(f));
             Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-            document = (Document) unmarshaller.unmarshal((org.w3c.dom.Node) d);
+            document = (Document) unmarshaller.unmarshal(new EventProducer()
+                {
+                    public void setDocumentHandler(final DocumentHandler handler)
+                    {
+                        readerAdapter.setDocumentHandler(new DocumentHandler()
+                            {
+                                private int menuDepth = 0;
+
+                                public void characters(char[] ch, int start, int length) throws SAXException
+                                {
+                                    handler.characters(ch, start, length);
+                                }
+
+                                public void endDocument() throws SAXException
+                                {
+                                    handler.endDocument();
+                                }
+
+                                public void endElement(String name) throws SAXException
+                                {
+                                    // always include all elements
+                                    handler.endElement(name);
+
+                                    // track menu depth and insert menu-element nodes
+                                    // to encapsulate menu elements to support collection
+                                    // polymorphism in Castor
+                                    if (name.equals("menu"))
+                                    {
+                                        menuDepth--;
+                                        if (menuDepth > 0)
+                                        {
+                                            handler.endElement("menu-element");
+                                        }
+                                    }
+                                    else if ((menuDepth > 0) &&
+                                             (name.equals("options") || name.equals("separator") ||
+                                              name.equals("include") || name.equals("exclude")))
+                                    {
+                                        handler.endElement("menu-element");
+                                    }
+                                }
+
+                                public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
+                                {
+                                    handler.ignorableWhitespace(ch, start, length);
+                                }
+
+                                public void processingInstruction(String target, String data) throws SAXException
+                                {
+                                    handler.processingInstruction(target, data);
+                                }
+
+                                public void setDocumentLocator(Locator locator)
+                                {
+                                    handler.setDocumentLocator(locator);
+                                }
+
+                                public void startDocument() throws SAXException
+                                {
+                                    handler.startDocument();
+                                }
+
+                                public void startElement(String name, AttributeList atts) throws SAXException
+                                {
+                                    // track menu depth and insert menu-element nodes
+                                    // to encapsulate menu elements to support collection
+                                    // polymorphism in Castor
+                                    if (name.equals("menu"))
+                                    {
+                                        if (menuDepth > 0)
+                                        {
+                                            handler.startElement("menu-element", null);
+                                        }
+                                        menuDepth++;
+                                    }
+                                    else if ((menuDepth > 0) &&
+                                             (name.equals("options") || name.equals("separator") ||
+                                              name.equals("include") || name.equals("exclude")))
+                                    {
+                                        handler.startElement("menu-element", null);
+                                    }
+
+                                    // always include all elements
+                                    handler.startElement(name, atts);
+                                }
+                            });
+                    }
+                    public void start() throws SAXException
+                    {
+                        try
+                        {
+                            readerAdapter.parse(readerInput);
+                        }
+                        catch (IOException ioe)
+                        {
+                            throw new SAXException(ioe);
+                        }
+                    }
+                });
+
             document.setId(path);
             document.setPath(path);
             AbstractBaseElement documentImpl = (AbstractBaseElement)document;
             documentImpl.setHandlerFactory(handlerFactory);
             documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
             documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+            documentImpl.unmarshalled();
         }
         catch (IOException e)
         {

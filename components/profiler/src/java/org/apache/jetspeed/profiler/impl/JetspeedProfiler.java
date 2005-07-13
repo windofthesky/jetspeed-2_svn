@@ -31,7 +31,6 @@ import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
@@ -56,8 +55,6 @@ public class JetspeedProfiler implements Profiler
 
     /** The default locator class implementation */
     private Class locatorClass = JetspeedProfileLocator.class;
-    /** The default profiled page context class implementation */
-    private Class profiledPageContextClass = JetspeedProfiledPageContext.class;
     /** The default principalRule association class implementation */
     private Class principalRuleClass = PrincipalRuleImpl.class;
     /** The base (abstract) profilingRule class implementation */
@@ -111,10 +108,6 @@ public class JetspeedProfiler implements Profiler
         if ((modelName = properties.getProperty("locator.impl")) != null)
         {
             locatorClass = Class.forName(modelName);
-        }
-        if ((modelName = properties.getProperty("profiledPageContext.impl")) != null)
-        {
-            profiledPageContextClass = Class.forName(modelName);
         }
         if ((modelName = properties.getProperty("principalRule.impl")) != null)
         {
@@ -298,26 +291,6 @@ public class JetspeedProfiler implements Profiler
         catch (Exception e)
         {
             log.error("Failed to create locator for " + locatorClass);
-        }
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(java.util.Map)
-     */
-    public ProfiledPageContext createProfiledPageContext(Map locators)
-    {
-        try
-        {
-            ProfiledPageContext pageContext = (ProfiledPageContext) profiledPageContextClass.newInstance();
-            pageContext.init(this, locators);
-            return pageContext;
-        }
-        catch (Exception e)
-        {
-            log.error("Failed to create profiled page context for " + profiledPageContextClass);
         }
         return null;
     }

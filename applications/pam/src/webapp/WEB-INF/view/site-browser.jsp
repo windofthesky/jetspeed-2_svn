@@ -40,7 +40,7 @@ limitations under the License.
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>
 
-<pam:tree tree="j2_tree" images="/pam/images" scope="portlet_request"
+<pam:tree tree="site-tree" images="/pam/images/tree" scope="portlet_request"
           action="<%= nodeLink %>"
           style="tree-control"
           styleSelected="portlet-section-alternate"          

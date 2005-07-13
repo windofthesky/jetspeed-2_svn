@@ -2,6 +2,7 @@ package org.apache.jetspeed.om.page.psml;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
@@ -131,6 +132,22 @@ public class ContentPageImpl implements ContentPage
     {
         
         page.setRootFragment(fragment);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#getMenuDefinitions()
+     */
+    public List getMenuDefinitions()
+    {
+        return page.getMenuDefinitions();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#setMenuDefinitions(java.util.List)
+     */
+    public void setMenuDefinitions(List definitions)
+    {
+        page.setMenuDefinitions(definitions);
     }
 
     /* (non-Javadoc)
