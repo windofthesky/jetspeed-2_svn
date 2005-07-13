@@ -1,0 +1,644 @@
+<?xml version="1.0"?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Maven Plugin</title>
+        <subtitle>Documentation for Using Jetspeed 2 Maven Plugin</subtitle>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Plugin Overview">
+            <p>
+                Adding functionality to Maven is done through the Maven plugin mechanism. Maven comes shipped with
+                numerous plugins and provides an extensible framework for writing custom plugins. Details on custom Maven
+                plugins can be found in the
+                <a href="http://maven.apache.org/using/developing-plugins.html">Writing a Plugin</a>
+                section of Maven's web site.
+            </p>
+            <p>
+                Jetspeed 2 has developed a custom Maven plugin that centralizes most common build goals required to
+                build a Jetspeed 2 based portal application. This provides many benefits:
+            </p>
+            <ul>
+                <li>
+                    Better reusability of common build goals. Developers creating a new portal application can
+                    leverage the Jetspeed 2 Maven plugin for common build operations.
+                </li>
+                <li>
+                    The ability to quickly get started with a portal application. A new target j2:genapp.portal
+                    creates a shell portal application. The developer of the new application can reuse the Jetspeed 2
+                    Maven plugin goals for common build operations for quickStart, portlet deployment, etc.
+                </li>
+                <li>
+                    Preparation for future migration to M2. With M2, custom goals are encapsulated in plugins,
+                    maven.xml is deprecated. By centralizing most of the Jetspeed 2 build goals to the Jetspeed 2 Maven
+                    plugin, migration to M2 should be much easier.
+                </li>
+            </ul>
+        </section>
+        <section name="Plugin Goals">
+        	<subsection name="Goals for Generating a New Portal Application">
+        		<p>Goals for quickly getting started with a new portal application.</p>
+        		<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                 	<tr>
+                        <td>j2:genapp.portal</td>
+                        <td>
+                            Generates a new portal application. See <a href="getting-started.html">Getting Started -> 
+                            6. Creating a new Portal Application</a> for detail instructions on how to use this goal.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Getting Started Goals">
+            	<p>Goals for getting started with running the portal application.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                 	<tr>
+                        <td>j2:doStart</td>
+                        <td>
+                            Provides a generic goal for deploying the portal application and setting up the required
+                            dependencies (shared libraries, context sharing, etc.).  Using this goal requires to
+                            specify <i>deployType</i> as a property for the type of deployment to perform.  
+                            The default value is <i>j2:fullDeploy</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:quickStart</td>
+                        <td>
+                            Run <i>j2:doStart</i> with <i>j2:fullDeploy</i>. Also recreates the database. <i>j2:quickStart</i>
+                            should be run in the same directory as the directory contains the <i>project.xml</i> file for your
+                            portal project.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:nodbQuickStart</td>
+                        <td>
+                            Run <i>j2:doStart</i> with <i>j2:fullDeploy</i> without recreating the database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:minStart</td>
+                        <td>
+                            Run <i>j2:doStart</i> with <i>j2:minDeploy</i>. Also recreates the database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:nodbMinStart</td>
+                        <td>
+                            Run <i>j2:doStart</i> with <i>j2:minDeploy</i> without recreating the database.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Portal Deployment Goals">
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                 	<tr>
+                        <td>j2:copy.shared.deps</td>
+                        <td>
+                            Copies the portal shared dependencies to the Tomcat shared directory.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:catalina.base.shared</td>
+                        <td>
+                            Copies all base jars necessary for the common portlet container.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:catalina.shared</td>
+                        <td>
+                            Copies all jars necessary for common container
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:portal.deploy</td>
+                        <td>
+                            Deploys the portal application only and its dependencies to the application server.  This
+                            target only supports Tomcat.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:portal.install</td>
+                        <td>
+                            Builds and install the portal application in the maven local repository.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:fullDeploy</td>
+                        <td>
+                            Deploys the portal and all the Jetspeed portlet to the application server.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:nodbfullDeploy</td>
+                        <td>
+                            Deploys the portal and all the Jetspeed portlet to the application server.  The database
+                            PSML dependencies are not recreated.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:minDeploy</td>
+                        <td>
+                            Deploys the portal and a minimal core set of Jetspeed portlets (layout and security portlets).
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:minDeploy</td>
+                        <td>
+                            Deploys the portal and a minimal core set of Jetspeed portlets (layout and security portlets).
+                            The database PSML dependencies are not recreated.
+                        </td>
+                    </tr>
+              	</table>
+            </subsection>
+            <subsection name="Portal Clean Up Goals">
+            	<p>Goals cleaning up after portal deployment.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                 	<tr>
+                        <td>j2:remove.wars</td>
+                        <td>
+                            Removes all entities (portlets, portal, configuration files) deployed to the application server.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Portlets Deployment Goals">
+            	<p>Goals for deploying or undeploying Jetspeed portlets.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                 	<tr>
+                        <td>j2:pam.layoutdeploy</td>
+                        <td>
+                            Deploys Jetspeed layout portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.layoutundeploy</td>
+                        <td>
+                            Undeploys Jetspeed layout portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.palmdeploy</td>
+                        <td>
+                            Deploys Jetspeed portlet application lifecycle management portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.unpalmdeploy</td>
+                        <td>
+                            Undeploys Jetspeed portlet application lifecycle management portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.pamdeploy</td>
+                        <td>
+                            Deploys Jetspeed portlet application management portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.unpamdeploy</td>
+                        <td>
+                            Undeploys Jetspeed portlet application management portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.tsdeploy</td>
+                        <td>
+                            Deploys Pluto Test Suite portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.tsundeploy</td>
+                        <td>
+                            Undeploys Pluto Test Suite portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.strutsdeploy</td>
+                        <td>
+                            Deploys the struts demo application portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.strutsundeploy</td>
+                        <td>
+                            Undeploys the struts demo application portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jpetstoredeploy</td>
+                        <td>
+                            Deploys the iBatis petstore demo application portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jpetstoreundeploy</td>
+                        <td>
+                            Undeploys the iBatis petstore demo application portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jsfdeploy</td>
+                        <td>
+                            Deploys the JSF demo application portlet which uses Jetspeed generic JSF portlet bridge.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jsfundeploy</td>
+                        <td>
+                            Undeploys the JSF demo application portlet which uses Jetspeed generic JSF portlet bridge.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jsfmyfacesdeploy</td>
+                        <td>
+                            Deploys the JSF demo application portlet which uses MyFaces native JSF portlet bridge.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.jsfmyfacesundeploy</td>
+                        <td>
+                            Undeploys the JSF demo application portlet which uses MyFaces native JSF portlet bridge.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.securitydeploy</td>
+                        <td>
+                            Deploys the Jetspeed security administration portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.securityundeploy</td>
+                        <td>
+                            Undeploys the Jetspeed security administration portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.phpdeploy</td>
+                        <td>
+                            Deploys the Jetspeed PHP bridge demo portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.perldeploy</td>
+                        <td>
+                            Undeploys the Jetspeed Perl bridge demo portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.perlundeploy</td>
+                        <td>
+                            Undeploys the Jetspeed Perl bridge demo portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.rssdeploy</td>
+                        <td>
+                            Undeploys the RSS feed demo portlet.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:pam.rssundeploy</td>
+                        <td>
+                            Undeploys the RSS feed demo portlet.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Settings Goals">
+                <p>Generics set of goals to validate the portal application settings.</p>
+                <table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:check.required.properties</td>
+                        <td>
+                            Checks if the portal required properties have been properly set. See the
+                            <a href="getting-started.html">Getting Starting</a>
+                            section of the documentation for information about how to set up those properties. The
+                            properties checked are:
+                            <ul>
+                                <li>org.apache.jetspeed.portal.name: The name of the portal application. For now, it is
+                                recommended to use <quote>jetspeed</quote>.  Issues may arise with a different portal
+                                name, this has not been yet tested.</li>
+                                <li>
+                                    org.apache.jetspeed.server.home: The root of your Jetspeed-2 source installation.
+                                </li>
+                                <li>
+                                    org.apache.jetspeed.catalina.version.major: Are you using Tomcat 5.0.x (use: 5) or
+                                    5.5.x? (use: 5.5)
+                                </li>
+                                <li>
+                                    org.apache.jetspeed.server.shared: The location of the shared jars in your Tomcat
+                                    installation.
+                                </li>
+                                <li>
+                                    org.apache.jetspeed.deploy.war.dir: The location to deploy web application in
+                                    Tomcat.
+                                </li>
+                                <li>
+                                    org.apache.jetspeed.services.autodeployment.user: A Tomcat user with the manager
+                                    role.
+                                </li>
+                                <li>
+                                    org.apache.jetspeed.services.autodeployment.password: The password of the Tomcat
+                                    manager user.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Generic Jetspeed Deployment Goals">
+                <p>General purpose goals for deploying Jetspeed portlets to the portal.  This provides a reusable 
+                goal for deploying Jetspeed portlets.</p>
+                <table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:deploy</td>
+                        <td>
+                            Deploys the portlet identified by ${maven.war.final.name} to the deployed portal.  Portlets
+                            to be deployed are searched for in the Jetspeed2 maven repository.  When searching portlets in
+                            the repository, this goal searches for the portlet given the Jetspeed version number configured
+                            in the plugin.  The name of the file searched in the repository follows the convention 
+                            ${maven.war.final.name}-${jetspeed.version}.war and is deployed as ${maven.war.final.name}.war.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:undeploy</td>
+                        <td>
+                            Undeploys the portlet identified by ${maven.war.final.name} to the deployed portal.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Database Management Goals">
+            	<p>Generic set of goals for managing Jetspeed embedded HSQL database.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:start.production.server</td>
+                        <td>
+                            Starts the production database for running Jetspeed 2. The production database should be used
+                            when running Jetspeed as an application deployed in Tomcat.  By default, Jetspeed 2 uses the HSQL
+                            database that is embedded within the Jetspeed 2 Maven Plugin.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:start.test.server</td>
+                        <td>
+                            Starts the test database for running Jetspeed 2. The test database should be used when working
+                            with Jetspeed source code.  All unit tests get run against the test database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:start.hsql</td>
+                        <td>
+                            Generic goal for starting an HSQL server.  Both j2:start.production.server and j2:start.test.server
+                            leverage this goal to start the production or test databases.  In order to use this goal, 2 parameters
+                            should be set:
+                            <ul>
+                            	<li>maven.start.hsql.message: The message to display when starting the database engine. For 
+                            	instance:
+                            	<pre>
+                            	<![CDATA[
+ <j:set var="maven.start.hsql.message" value="Testing Database" />]]>
+                            	</pre></li>
+                            	<li>org.apache.jetspeed.plugin.hsql.db: The location of the HSQL database to start. For instance:
+                            	<pre>
+                            	<![CDATA[
+<j:set var="org.apache.jetspeed.plugin.hsql.db" 
+       value="${dir}/plugin-resources/database/hsql/Test" />]]>
+	                           	</pre></li>
+	                         </ul>                          	
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.execute</td>
+                        <td>
+                            Utility goal for executing a database SQL script.  In order to use this goal, the following
+                            properties should be set. The maven plugin provides default value for all properties but
+                            database.arg.script:
+                            <ul>
+                            	<li>org.apache.jetspeed.database.driver: The name of the driver being used. The default
+                            	value is <i>org.hsqldb.jdbcDriver</i></li>
+                            	<li>org.apache.jetspeed.database.url: The url for JDBC connections to connect to. The default
+                            	value is <i>jdbc:hsqldb:hsql://127.0.0.1:9001</i></li>
+                            	<li>org.apache.jetspeed.database.user: The database user to connect with. The default
+                            	value is <i>sa</i></li>
+                            	<li>org.apache.jetspeed.database.password: The database password to connect with. The default
+                            	value is empty.</li>
+                            	<li>database.arg.script: The path of the script to execute. For instance on Windows:
+                            	<i>C:/sql/hsql/populate-userinfo-for-default-psml.sql</i></li>
+                            </ul> 
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Database Scripts Generation Goals">
+            	<p>Goals used for generating the database scripts for the various databases supported by Jetspeed 2.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:db.scripts.gen</td>
+                        <td>
+                            Leverages Torque to generate the database scripts for the supported databases.  The generated
+                            script are stored in the cache directory of the maven plugin. It leverages XML schema definitions
+                            to generate the SQL scripts for a given database target.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Database Creation Goals">
+            	<p>Goals used for creating Jetspeed 2 database.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:db.test.properties</td>
+                        <td>
+                            Tests that the properties required for creating the test database have been set.
+                            Makes sure that the following properties are set for the test environment:
+                            <ul>
+                            	<li>org.apache.jetspeed.database.default.name: The database name.</li>
+                            	<li>org.apache.jetspeed.database.url: The database connection url.</li>
+                            	<li>org.apache.jetspeed.database.driver: The JDBC driver.</li>
+                            	<li>org.apache.jetspeed.database.user: The database connection user name.</li>
+                            	<li>org.apache.jetspeed.database.password: The database connection password.</li>
+                            	<li>org.apache.jetspeed.jdbc.drivers.path: The JDBC driver path if applicable.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.production.properties</td>
+                        <td>
+                            Tests that the properties required for creating the production database have been set.
+                            Same as <i>j2:db.test.properties</i>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.create.test</td>
+                        <td>
+                            Creates the test database.  Prior to running this goal, the test database should be started with
+                            <i>j2:start.test.server</i>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.create.production</td>
+                        <td>
+                            Creates the production database.  Prior to running this goal, the production database should be started with
+                            <i>j2:start.production.server</i>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.create</td>
+                        <td>
+                            Generic target for creating a database and executing all the SQL scripts required to
+                            initialize Jetspeed 2.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.entities</td>
+                        <td>
+                            Populates the users information for the default PSML configuration configured with Jetspeed 2.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.recreate</td>
+                        <td>
+                            Recreates the production database.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="Goals for Dropping the Database">
+            	<p>Set of goals for dropping the Jetspeed database.</p>
+            	<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:db.drop.test</td>
+                        <td>
+                            Drops the test database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.drop.production</td>
+                        <td>
+                            Drops the production database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.drop</td>
+                        <td>
+                            Generic goal for dropping a given Jetspeed database target.  The database connection information
+                            should be set to target the correct database.  For instance, <i>j2:db.drop.test</i> invokes 
+                            <i>j2:db.test.properties</i> to set the test database connection properties prior to invoking
+                            <i>j2:db.drop</i>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.drop2</td>
+                        <td>
+                            Drops the core portal tables.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:db.drop.oracle</td>
+                        <td>
+                            Drops the core portal tables for an oracle database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:dropdrops</td>
+                        <td>
+                            Work around goal to address an Oracle issue when trying to drop the database tables for the
+                            production database.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:test.dropdrops</td>
+                        <td>
+                            Work around goal to address an Oracle issue when trying to drop the database tables for the
+                            test database.
+                        </td>
+                    </tr>
+              	</table>
+            </subsection>
+           	<subsection name="Jetspeed Components Deployment Goals">
+           		<p>Generic set of goals for redeploying a specific Jetspeed component.</p>
+           		<table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>j2:jar.deploy</td>
+                        <td>
+                            Deploys a Jetspeed core component from the local maven repository to the deployment
+                            directory.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>j2:jar.deploy.shared</td>
+                        <td>
+                            Deploys a Jetspeed core component shared library from the local maven repository 
+                            to the Tomcat shared library directory.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+        </section>
+    </body>
+</document>
+

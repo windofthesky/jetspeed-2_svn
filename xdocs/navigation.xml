@@ -30,6 +30,7 @@ limitations under the License.
       <item name="Localization" href="l10n-guide.html"/>
       <item name="User Attributes" href="user-attributes.html"/>
       <item name="Sub Projects" href="projects-overview.html"/>
+      <item name="Jetspeed 2 Maven Plugin" href="j2-maven-plugin.html"/>
     </menu>
     <menu name='Security'>        
       <item name="Security Overview" href="multiproject/jetspeed-security/index.html"/>       
