@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,7 +17,7 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/../project.xml</extend>
+  <extend>${basedir}/../project-info.xml</extend>
   <pomVersion>3</pomVersion>
   <artifactId>jetspeed2-taglibs</artifactId>
   <name>Jetspeed 2 TagLibs</name>
@@ -74,16 +71,5 @@ limitations under the License.
     </developer>
 
   </developers>
-
-  <dependencies>
-  </dependencies>
-
-  <build>
-    <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-    <sourceDirectory>src/java</sourceDirectory>
-  </build>
-  <reports>
-    <report>maven-tasklist-plugin</report>
-  </reports>
 
 </project>

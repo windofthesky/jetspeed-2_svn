@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -20,13 +17,10 @@ limitations under the License.
   $Id$
 -->
 <project>
-<extend>${basedir}/../../project.xml</extend>
+<extend>${basedir}/../../project-info.xml</extend>
   <pomVersion>3</pomVersion>
   <artifactId>jetspeed2-taglib-treecontrol</artifactId>
   <name>Jetspeed 2 TreeControl TagLib</name>
-  <groupId>jetspeed2</groupId>
-  
-
   <organization>
     <name>Apache Software Foundation</name>
     <url>http://portals.apache.org/</url>
@@ -62,8 +56,7 @@ limitations under the License.
     </mailingList>
   </mailingLists>
 
-  <developers>
-   
+  <developers>   
     <developer>
       <name>Jeremy Ford</name>
       <id>jford</id>
@@ -72,46 +65,23 @@ limitations under the License.
         <role>Java Developer</role>
       </roles>
     </developer>
-
   </developers>
 
   <dependencies>
     <dependency>
       <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
       <id>portlet-api</id>
-      <version>1.0</version>
+      <version>${portlet.api.version}</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>servletapi</id>
-      <version>2.3</version>
+      <version>${servlet.api.version}</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
   </dependencies>
-
-  <build>
-    <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-    <sourceDirectory>src/java</sourceDirectory>
-  </build>
-  <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
-  </reports>  
 </project>
