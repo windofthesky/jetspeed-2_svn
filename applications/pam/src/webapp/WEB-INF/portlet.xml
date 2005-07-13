@@ -114,7 +114,7 @@ limitations under the License.
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
 		<name>ViewPage</name>
-			<value>/WEB-INF/view/site-browser.jsp</value>
+			<value>/WEB-INF/view/site/site-browser.jsp</value>
      </init-param>   
     <portlet-name>PortalSiteBrowser</portlet-name>
     <display-name>Portal Site Browser</display-name>
