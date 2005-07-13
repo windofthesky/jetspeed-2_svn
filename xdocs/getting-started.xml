@@ -285,7 +285,7 @@ maven j2:genapp.portal]]>
                 </source>
             </p>
             <p>
-            	3. Go to the directory where you just created your new portal application and execute:
+            	4. Go to the directory where you just created your new portal application and execute:
             	<source>
                 <![CDATA[
 maven j2:portal.install
