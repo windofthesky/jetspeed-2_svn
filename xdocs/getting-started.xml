@@ -164,7 +164,7 @@ org.apache.jetspeed.services.autodeployment.password=j2deployer
         </section>
         <section name='4. Building Jetspeed 2'>
             <p>
-                Build the portal and all components for Jetspeed-2. If build Jetspeed 2 for the first time, the Jetspeed
+                Build the portal and all components for Jetspeed-2. If you are building Jetspeed 2 for the first time, the Jetspeed
                 2 maven plugin is most likely not set up. Run:
             </p>
             <source test="">
@@ -191,7 +191,7 @@ maven allClean allBuild
                     1. If you are using the Hypersonic SQL database, start the production Hypersonic database by typing
                     <br />
                     <br />
-                    <b>maven start.production.server</b>
+                    <b>maven j2:start.production.server</b>
                     <br />
                     <br />
                 </li>
