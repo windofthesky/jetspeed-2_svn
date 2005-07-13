@@ -37,9 +37,57 @@ public class FolderProxyBean
 {
     private transient PageManager pageManager = null;
     private transient Folder folder;
-    private String title;
     private String lookupKey;
     private boolean isNew = true;
+
+    private String title;
+    private String shortTitle;
+    private String defaultPage;
+    private String theme;
+    private String resourceType;
+    
+    /**
+     * @return Returns the defaultPage.
+     */
+    public String getDefaultPage()
+    {
+        return defaultPage;
+    }
+    /**
+     * @param defaultPage The defaultPage to set.
+     */
+    public void setDefaultPage(String defaultPage)
+    {
+        this.defaultPage = defaultPage;
+    }
+    /**
+     * @return Returns the resourceType.
+     */
+    public String getResourceType()
+    {
+        return resourceType;
+    }
+    /**
+     * @param resourceType The resourceType to set.
+     */
+    public void setResourceType(String resourceType)
+    {
+        this.resourceType = resourceType;
+    }
+    /**
+     * @return Returns the shortTitle.
+     */
+    public String getShortTitle()
+    {
+        return shortTitle;
+    }
+    /**
+     * @param shortTitle The shortTitle to set.
+     */
+    public void setShortTitle(String shortTitle)
+    {
+        this.shortTitle = shortTitle;
+    }
     
     public FolderProxyBean()
     {        
@@ -53,6 +101,13 @@ public class FolderProxyBean
         }
     }
     
+    public void update(Folder folder)
+    {
+        folder.setTitle(this.getTitle());
+        folder.setDefaultPage(this.getDefaultPage());
+        folder.setShortTitle(this.getShortTitle());
+    }
+    
     public boolean lookup(String key)
     {
         boolean result = true;
@@ -61,7 +116,9 @@ public class FolderProxyBean
             if (pageManager != null)
             {
                 this.folder = pageManager.getFolder(key);    
-                setTitle(folder.getTitle());
+                setTitle(folder.getTitle());                
+                setShortTitle(folder.getShortTitle());
+                setDefaultPage(folder.getDefaultPage(true));
                 isNew = false;
             }
         }

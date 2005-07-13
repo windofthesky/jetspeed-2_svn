@@ -28,7 +28,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
 import org.apache.portals.messaging.PortletMessaging;
@@ -68,7 +72,7 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.CURRENT_FOLDER);
         String currentPage = (String) PortletMessaging.consume(request,
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.CURRENT_PAGE);
-
+        
         if (currentFolder != null)
         {
             request.setAttribute("site.folder.key", currentFolder);
@@ -77,11 +81,24 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
 
     }
 
-    public String processSaveAction(ActionRequest request, ActionResponse response) throws PortletException,
-            IOException
+    public String processSaveFolderAction(ActionRequest request, ActionResponse response, Object bean) 
+    throws PortletException,
+           IOException
     {
         System.out.println("Processing SAVE action.");
-        return "stocks-help:success";
+        FolderProxyBean proxy = (FolderProxyBean)bean;
+        String key = proxy.getLookupKey();
+        try
+        {
+            Folder folder = pageManager.getFolder(key);
+            proxy.update(folder);
+            //pageManager.updateFolder(folder);
+        }
+        catch (JetspeedException e)
+        {
+            
+        }
+        return "folder-view:success";
     }
 
 }
