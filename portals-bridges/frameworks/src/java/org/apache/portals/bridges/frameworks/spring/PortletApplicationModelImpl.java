@@ -243,6 +243,7 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
                     requiresExternalSupport = true;
                 }
                 modelBean = new ModelBeanImpl(beanName, ModelBean.POJO, lookup, requiresExternalSupport);
+                modelBeanMap.put(beanName, modelBean);
             }
         }
         else

@@ -557,6 +557,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         if (key != null)
         {
             bean = model.lookupBean(mb, key);
+            if (bean != null)
+                putBeanInSession(request, mb, bean);
         }
         else
         {
