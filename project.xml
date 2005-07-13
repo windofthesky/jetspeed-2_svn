@@ -171,11 +171,13 @@ limitations under the License.
         <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
         <sourceDirectory>src/java</sourceDirectory>
     </build>
+    <!-- 
     <reports>
         <report>maven-dashboard-plugin</report>
         <report>maven-multiproject-plugin</report>
         <report>maven-multichanges-plugin</report>
         <report>maven-tasklist-plugin</report>
     </reports>
+    -->
     <properties/>
 </project>

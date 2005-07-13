@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/.svn/*" kind="src" path="src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portlet-api/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/java"/>
@@ -41,6 +40,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/sso/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/common/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/frameworks/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/jsf/src/java"/>

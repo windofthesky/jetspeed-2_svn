@@ -95,10 +95,14 @@
             banner="Cleaning" ignoreFailures="true" />
     </goal>
 
+    <!-- 
+    Currently fails
     <goal name="allSite" description="Build the site for the master project and all subprojects">
-        <maven:reactor basedir="${basedir}" includes="site/project.xml" excludes="portlet-api/project.xml"
-            goals="allSite" banner="Building Site" postProcessing="false" ignoreFailures="false" />
+    	<maven:reactor basedir="${basedir}" includes="maven-plugin/project.xml" goals="site"
+    		banner="Building Site" postProcessing="false" ignoreFailures="false" />
+    	<attainGoal name="multiproject:site" />
     </goal>
+    -->
 
     <goal name="jetspeed2:jar:install">
         <maven:reactor basedir="${basedir}" includes="${jar.includes}" excludes="${jar.excludes}" goals="jar:install"
@@ -107,18 +111,23 @@
 
     <goal name="jetspeed2:war:install">
         <maven:reactor basedir="${basedir}"
-            includes="portal-webapp/project.xml,applications/**/project.xml,layout-portlets/project.xml"
+            includes="applications/**/project.xml,layout-portlets/project.xml"
             excludes="applications/project.xml" goals="war:install" banner="Build and Install all Jetspeed 2 wars"
             postProcessing="false" ignoreFailures="false" />
     </goal>
 
-
+    <goal name="initMavenPlugin">
+    	<!-- build jetspeed 2 plugin core -->
+		<maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin-withoutwebapp"
+            banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />
+    </goal>
+    
     <goal name="allBuild" description="Build all jars and war">
-
-        <attainGoal name="check.required.properties" />
-        <attainGoal name="db.scripts.gen" />
+            
+        <attainGoal name="j2:check.required.properties" />
+        <attainGoal name="j2:db.scripts.gen" />
         <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
-            <attainGoal name="db.create.test" />
+            <attainGoal name="j2:db.create.test" />
         </j:if>
 
         <!-- Build jars files-->
@@ -126,347 +135,27 @@
 
         <!-- Build war files -->
         <attainGoal name="jetspeed2:war:install" />
+        
+        <maven:reactor basedir="${basedir}/portal-webapp" includes="project.xml" goals="j2:portal.install"
+            banner="Build and deploy the Jetspeed 2 Portal Engine" postProcessing="false" ignoreFailures="false" />
 
-        <!-- build jetspeed 2 plugin -->
+        <!-- build jetspeed 2 plugin with webapp -->
         <maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin"
             banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />
-
     </goal>
-
-    <goal name="copy.shared.deps">
-        <maven:reactor basedir="${basedir}" includes="portal-webapp/project.xml" goals="catalina:base-shared"
-            banner="Deploys misc. jars shared/lib  to Tomcat" postProcessing="false" ignoreFailures="false" />
-
-        <maven:reactor basedir="${basedir}" includes="portal-webapp/project.xml" goals="catalina:shared"
-            banner="Deploys container jars to shared/lib to Tomcat" postProcessing="false" ignoreFailures="false" />
-    </goal>
-
 
     <goal name="show.maven.props">
         <echo message="maven.home.local = ${maven.home.local}" />
         <echo message="maven.repo.local = ${maven.repo.local}" />
     </goal>
 
-    <goal name="start.production.server">
-        <echo message="====================================" />
-        <echo message="  Production/Deployment Database    " />
-        <echo message="====================================" />
-        <java classname="org.hsqldb.Server" fork="yes">
-            <classpath>
-                <path refid="maven.dependency.classpath" />
-                <pathelement path="${maven.build.dest}" />
-            </classpath>
-            <arg value="-database" />
-            <arg value="./src/database/hsql/Production" />
-            <arg value="-port" />
-            <arg value="9001" />
-            <arg value="-silent" />
-            <arg value="true" />
-            <arg value="-trace" />
-            <arg value="false" />
-        </java>
-    </goal>
-
-    <goal name="start.test.server">
-        <echo message="====================================" />
-        <echo message="        Testing Database            " />
-        <echo message="====================================" />
-        <java classname="org.hsqldb.Server" fork="yes">
-            <classpath>
-                <path refid="maven.dependency.classpath" />
-                <pathelement path="${maven.build.dest}" />
-            </classpath>
-            <arg value="-database" />
-            <arg value="./src/database/hsql/Test" />
-            <arg value="-port" />
-            <arg value="9001" />
-            <arg value="-silent" />
-            <arg value="true" />
-            <arg value="-trace" />
-            <arg value="false" />
-        </java>
-    </goal>
-
-    <goal name="db.scripts.gen" prereqs="torque:init" description="Build SQL scripts using Torque generator">
-
-        <echo message="Generating SQL schema creation scripts for HSQLDB" />
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${maven.build.src}/sql/hsql" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${maven.build.src}/sql/hsql/sqldb.map" targetDatabase="hypersonic" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-
-        <echo message="Generating SQL schema creation scripts for MySQL" />
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${maven.build.src}/sql/mysql" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${maven.build.src}/sql/mysql/sqldb.map" targetDatabase="mysql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-
-        <echo message="Generating SQL schema creation scripts for Oracle" />
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${maven.build.src}/sql/oracle" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${maven.build.src}/sql/oracle/sqldb.map" targetDatabase="oracle" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-
-        <echo message="Generating SQL schema creation scripts for MS SQL" />
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${maven.build.src}/sql/mssql" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${maven.build.src}/sql/mssql/sqldb.map" targetDatabase="mssql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-
-        <echo message="Generating SQL schema creation scripts for Postgres" />
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${maven.build.src}/sql/postgres" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${maven.build.src}/sql/postgres/sqldb.map" targetDatabase="postgresql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-
-    </goal>
-
-    <goal name="db.test.properties">
-        <j:set var="org.apache.jetspeed.database.default.name"
-            value="${org.apache.jetspeed.test.database.default.name}" />
-        <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}" />
-        <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}" />
-        <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}" />
-        <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}" />
-        <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}" />
-    </goal>
-
-    <goal name="db.production.properties">
-        <j:set var="org.apache.jetspeed.database.default.name"
-            value="${org.apache.jetspeed.production.database.default.name}" />
-        <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}" />
-        <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}" />
-        <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}" />
-        <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}" />
-        <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}" />
-    </goal>
-
-    <!-- ================================================================ -->
-    <!-- EXECUTE a DB SCRIPT                                              -->
-    <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-    <!-- ================================================================ -->
-    <goal name="db.execute">
-        <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
-            userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
-            src="${database.arg.script}">
-            <classpath>
-                <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}" />
-                <path refid="maven.dependency.classpath" />
-            </classpath>
-        </sql>
-    </goal>
-
-    <!-- ================================================================ -->
-    <!-- EXECUTE CREATE DB SQL SCRIPTS                                    -->
-    <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-    <!-- ================================================================ -->
-    <goal name="db.create.test">
-        <attainGoal name="db.test.properties" />
-        <attainGoal name="db.drop2" />
-        <attainGoal name="db.create" />
-    </goal>
-
-    <goal name="db.create.production">
-        <attainGoal name="db.production.properties" />
-        <attainGoal name="db.drop2" />
-        <attainGoal name="db.create" />
-    </goal>
-
-    <goal name="db.create">
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script" value="./src/sql/populate-db-default.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
-        <attainGoal name="db.execute" />
-    </goal>
-
-    <!-- ================================================================ -->
-    <!-- EXECUTE DROP DB SQL SCRIPTS                                      -->
-    <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-    <!-- ================================================================ -->
-    <goal name="db.drop.test">
-        <attainGoal name="db.test.properties" />
-        <attainGoal name="db.drop" />
-    </goal>
-
-    <goal name="db.drop.production">
-        <attainGoal name="db.production.properties" />
-        <attainGoal name="db.drop" />
-    </goal>
-
-    <goal name="db.drop">
-        <j:set var="database.arg.script" value="./src/sql/${org.apache.jetspeed.database.default.name}/drop-db.sql" />
-        <attainGoal name="db.execute" />
-        <j:set var="database.arg.script"
-            value="./src/sql/${org.apache.jetspeed.database.default.name}/registry-drop-db.sql" />
-        <attainGoal name="db.execute" />
-    </goal>
-
-    <goal name="db.drop2">
-        <j:set var='nodots' value="${org.apache.jetspeed.database.default.name}" />
-        <j:choose>
-            <j:when test="${nodots == 'mysql'}">
-                <j:set var="database.arg.script" value="./src/sql/mysql/drop.sql" />
-                <attainGoal name="db.execute" />
-            </j:when>
-        </j:choose>
-        <j:choose>
-            <j:when test="${nodots == 'hsql'}">
-                <j:set var="database.arg.script" value="./src/sql/hsql/drop.sql" />
-                <attainGoal name="db.execute" />
-            </j:when>
-        </j:choose>
-        <j:choose>
-            <j:when test="${nodots == 'oracle'}">
-                <!--          <attainGoal name="dropdrops" />		  -->
-            </j:when>
-        </j:choose>
-    </goal>
-
-    <goal name="db.drop.oracle">
-        <attainGoal name="db.production.properties" />
-        <j:set var="database.arg.script" value="./src/sql/oracle/drop.sql" />
-        <attainGoal name="db.execute" />
-    </goal>
-    <!-- ================================================================ -->
-    <!-- EXECUTE RECREATE DB SQL SCRIPTS                                  -->
-    <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-    <!-- ================================================================ -->
-    <goal name="db.recreate">
-        <attainGoal name="db.create.production" />
-    </goal>
-
-    <goal name="doStart">
-        <maven:property name="deployType" defaultValue="fullDeploy" />
-        <maven:property name="recreateDB" defaultValue="true" />
-
-        <j:if test="${recreateDB}">
-            <attainGoal name="db.recreate" />
-        </j:if>
-
-        <maven:reactor basedir="${basedir}" includes="portal-webapp/project.xml" goals="remove.wars"
-            banner="Remove war files, make sure to shutdown server first" postProcessing="false" ignoreFailures="false" />
-
-        <!-- Dependency copying -->
-        <attainGoal name="copy.shared.deps" />
-
-        <maven:reactor basedir="${basedir}" includes="portal-webapp/project.xml" goals="${deployType}"
-            banner="Deploying basic Jetspeed portal suite" postProcessing="false" ignoreFailures="false" />
-    </goal>
-
-    <goal name="quickStart" description="Creates the production DB and calls portal/maven fullDeploy">
-        <j:set var="deployType" value="fullDeploy" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="nodbQuickStart" description="Don't create a new production DB but call portal/maven fullDeploy">
-        <j:set var="deployType" value="nodbfullDeploy" />
-        <j:set var="recreateDB" value="false" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="minStart" description="Creates the production DB and calls portal/maven minDeploy">
-        <j:set var="deployType" value="minDeploy" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="nodbMinStart" description="Don't create a new production DB but call portal/maven minDeploy">
-        <j:set var="deployType" value="nodbMinDeploy" />
-        <j:set var="recreateDB" value="false" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="basicStart" description="Creates the production DB and calls portal/maven basicDeploy">
-        <j:set var="deployType" value="minDeploy" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="nodbBasicStart" description="Don't create a new production DB but call portal/maven nodbBasicDeploy">
-        <j:set var="deployType" value="nodbBasicDeploy" />
-        <j:set var="recreateDB" value="false" />
-        <attainGoal name="doStart" />
-    </goal>
-
-    <goal name="dropdrops">
-        <attainGoal name="db.production.properties" />
-        <attainGoal name="all.dropdrops" />
-    </goal>
-
-    <goal name="test.dropdrops">
-        <attainGoal name="db.test.properties" />
-        <attainGoal name="all.dropdrops" />
-    </goal>
-
-    <goal name="all.dropdrops">
-        <attainGoal name="java:compile" />
-
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-        <j:set var="dropstable"
-            value="./target/src/sql/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
-        <attainGoal name="run.dropdrops" />
-    </goal>
-
-    <goal name="run.dropdrops">
-        <java classname="org.apache.jetspeed.dbutil.ScriptUtil" fork="yes">
-            <classpath>
-                <path refid="maven.dependency.classpath" />
-                <pathelement path="${maven.build.dest}" />
-            </classpath>
-            <arg value="-drops" />
-            <arg value="${dropstable}" />
-        </java>
-    </goal>
-
-    <!-- this will be inherited into all sub-projects to assists in
-        setting jdbc test connecitons-->
+	<!-- ================================================ -->
+	<!-- ============== UNIT TESTS SUPPORT ============== -->
+	<!-- ================================================ -->
+    <!-- This will be inherited into all sub-projects to assists in
+         setting jdbc test connecitons -->
+    <!-- ================================================ -->
+    
     <preGoal name="test:test">
         <attainGoal name="dbSetup" />
     </preGoal>
@@ -509,27 +198,6 @@
 
         <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}" />
         <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path" />
-    </goal>
-
-    <goal name="check.required.properties" description="Check if the required properties are defined">
-        <fail
-            message="Required property org.apache.jetspeed.server.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.server.home" />
-        <fail
-            message="Required property org.apache.jetspeed.catalina.version.major undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.catalina.version.major" />
-        <fail
-            message="Required property org.apache.jetspeed.server.shared undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.server.shared" />
-        <fail
-            message="Required property org.apache.jetspeed.deploy.war.dir undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.deploy.war.dir" />
-        <fail
-            message="Required property org.apache.jetspeed.services.autodeployment.user undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.services.autodeployment.user" />
-        <fail
-            message="Required property org.apache.jetspeed.services.autodeployment.password undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.services.autodeployment.password" />
     </goal>
 
 </project>

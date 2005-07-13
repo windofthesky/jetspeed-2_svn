@@ -13,6 +13,7 @@
 <!ENTITY % jmock-deps-ent '<!ENTITY jmock-deps SYSTEM "file:%locator-path;etc/project-dependencies/jmock-deps.xml">'> %jmock-deps-ent;
 <!ENTITY % commons-config-dep-ent '<!ENTITY commons-config-dep SYSTEM "file:%locator-path;etc/project-dependencies/commons-config-dep.xml">'> %commons-config-dep-ent;
 <!ENTITY % pluto-deps-ent '<!ENTITY pluto-deps SYSTEM "file:%locator-path;etc/project-dependencies/pluto-deps.xml">'> %pluto-deps-ent;
+<!ENTITY % portal-webapp-deps-ent '<!ENTITY portal-webapp-deps SYSTEM "file:%locator-path;etc/project-dependencies/portal-webapp-deps.xml">'> %portal-webapp-deps-ent;
 
 <!-- Project resources -->
 <!ENTITY % db-ojb-resources-ent '<!ENTITY db-ojb-resources SYSTEM "file:%locator-path;etc/project-resources/db-ojb-resources.xml">'> %db-ojb-resources-ent;
