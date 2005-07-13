@@ -1,5 +1,4 @@
-/*
- * Copyright 2000-2001,2004 The Apache Software Foundation.
+/* Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.services.title.DynamicTitleService;
-
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
@@ -35,10 +31,32 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
     public void setDynamicTitle(PortletWindow window,
             HttpServletRequest request, String titleArg)
     {
-        ObjectID id = window.getPortletEntity().getId();        
+        String title = getTitleFromPreference(window, request);
+
+        if (title == null || title.length() < 0)
+        {
+            if (titleArg == null || titleArg.length() == 0)
+            {
+                title = getTitleFromPortletDefinition(window, request);
+            }
+            else
+            {
+                title = titleArg;
+            }
+
+        }
+
         request.setAttribute(
                 PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
-                        + "::entity.id::" + id.toString(), titleArg);
+                        + "::window.id::" + window.getId(), title);
+
+    }
+    
+    public String getDynamicTitle(PortletWindow window,
+            HttpServletRequest request)
+    {
+        return (String)request.getAttribute(PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
+                        + "::window.id::" + window.getId());
     }
 
     protected final String getTitleFromPortletDefinition(PortletWindow window,

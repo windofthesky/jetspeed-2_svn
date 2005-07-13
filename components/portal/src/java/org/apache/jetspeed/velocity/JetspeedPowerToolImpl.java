@@ -1,5 +1,4 @@
-/*
- * Copyright 2000-2004 The Apache Software Foundation.
+/* Copyright 2000-2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +58,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
@@ -117,11 +117,13 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
 
     protected RequestContext requestContext;
     protected Context velocityContext;
+    private DynamicTitleService titleService;
     
-    public JetspeedPowerToolImpl( RequestContext requestContext ) throws Exception
+    public JetspeedPowerToolImpl( RequestContext requestContext, DynamicTitleService titleService ) throws Exception
     {
         HttpServletRequest request = requestContext.getRequest();
         this.requestContext = requestContext;
+        this.titleService = titleService;
         windowAccess = (PortletWindowAccessor) getComponent(PortletWindowAccessor.class.getName());
         entityAccess = (PortletEntityAccessComponent) getComponent(PortletEntityAccessComponent.class.getName());
         renderRequest = (RenderRequest) request.getAttribute(RENDER_REQUEST_ATTR);
@@ -295,7 +297,6 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      *                  retreive.
      * @return The PortletEntity represented by the current fragment.
      * @throws Exception
-     * @deprecated Please use WindowAccessor to get entities
      */
     public PortletEntity getPortletEntity( ContentFragment f ) throws Exception
     {
@@ -821,14 +822,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     {
         String title = null;
 
-        String override = (String)getRequestContext().getRequest().getAttribute(
-                PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
-                        + "::entity.id::" + entity.getId());
-        if (override != null && !override.equals(""))
-        {
-            title = override;
-        }
-        else if (f != null)
+        if (f != null)
         {
             title = f.getTitle();
         }
@@ -852,22 +846,17 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      * @return
      */
     public String getTitle( PortletEntity entity )
-    {
-        String title = null;
-        if (entity != null && entity.getPortletDefinition() != null)
+    {       
+        try
         {
-            title = getRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+            return titleService.getDynamicTitle(windowAccess.getPortletWindow(getCurrentFragment()), getRequestContext().getRequest());
         }
-        
-        if (title == null && entity.getPortletDefinition() != null)
+        catch (Exception e)
         {
-            title = entity.getPortletDefinition().getName();
+           log.error("Unable to reteive portlet title: "+e.getMessage(), e);
+           return "Title Error: "+e.getMessage();
         }
-        else if (title == null)
-        {
-            title = "Invalid portlet entity "+entity.getId();
-        }
-        return title;
+      
     }
 
     public Object getComponent( String name )

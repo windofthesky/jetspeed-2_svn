@@ -1,5 +1,4 @@
-/*
- * Copyright 2000-2004 The Apache Software Foundation.
+/* Copyright 2000-2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +20,7 @@ import javax.portlet.PortletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.title.DynamicTitleService;
 
 public class JetspeedPowerToolFactory
 {
@@ -29,15 +29,18 @@ public class JetspeedPowerToolFactory
     private Class jptClass;
     private Constructor constructor;
     private String jptClassName;
+
+    private DynamicTitleService titleService;
     
-    public JetspeedPowerToolFactory(String jptClassName)
+    public JetspeedPowerToolFactory(String jptClassName, DynamicTitleService titleService)
     throws ClassNotFoundException, NoSuchMethodException
     {
         this.jptClassName = jptClassName;
         jptClass = Thread.currentThread().getContextClassLoader().loadClass(jptClassName);
         constructor =
             jptClass.getConstructor(
-                new Class[] {RequestContext.class});        
+                new Class[] {RequestContext.class, DynamicTitleService.class});        
+        this.titleService = titleService;
     }
     
     public JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext)
@@ -45,7 +48,7 @@ public class JetspeedPowerToolFactory
     {
         try
         {
-            Object[] initArgs = { requestContext };
+            Object[] initArgs = { requestContext, this.titleService };
             return (JetspeedPowerTool)constructor.newInstance(initArgs);
         }
         catch (Exception e)
@@ -55,3 +58,4 @@ public class JetspeedPowerToolFactory
         }
     }
 }
+
