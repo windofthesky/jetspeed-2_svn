@@ -824,7 +824,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         String override = (String)getRequestContext().getRequest().getAttribute(
                 PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
                         + "::entity.id::" + entity.getId());
-        if (override != null)
+        if (override != null && !override.equals(""))
         {
             title = override;
         }
