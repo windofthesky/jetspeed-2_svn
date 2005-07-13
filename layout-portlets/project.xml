@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -20,9 +17,8 @@
     $Id$
 -->
 <project>
-    <extend>${basedir}/../project.xml</extend>
-    <artifactId>jetspeed-layouts</artifactId>
-    <groupId>jetspeed2</groupId>
+    <extend>${basedir}/../project-info.xml</extend>
+    <id>jetspeed-layouts</id>
     <name>Jetspeed-2 Layout Portlets</name>
     <description>Layout Portlets</description>
     <shortDescription>Layouts.</shortDescription>
@@ -38,21 +34,26 @@
     <dependencies>
         <dependency>
             <id>portlet-api</id>
-            <version>1.0</version>
+            <version>${portlet.api.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
-
-        &pluto-deps;
-
         <dependency>
             <id>servletapi</id>
-            <version>2.3</version>
+            <version>${servlet.api.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
+		<dependency>
+		  <id>pluto</id>
+		  <version>${pluto.version}</version>
+		  <type>jar</type>
+		  <properties>
+		    <war.bundle>false</war.bundle>
+		  </properties>
+		</dependency>
         <dependency>
             <id>velocity</id>
             <version>1.4-rc1</version>
@@ -61,16 +62,9 @@
             </properties>
         </dependency>
         <dependency>
-            <id>servletapi</id>
-            <version>2.3</version>
-            <properties>
-                <war.bundle>false</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
             <id>jetspeed2:jetspeed-commons</id>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -79,7 +73,7 @@
         <dependency>
             <id>jetspeed2:jetspeed-api</id>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -88,7 +82,7 @@
         <dependency>
             <id>jetspeed2:jetspeed-cm</id>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -97,7 +91,7 @@
         <dependency>
             <id>jetspeed2:jetspeed-registry</id>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -106,7 +100,7 @@
         <dependency>
             <id>jetspeed2:jetspeed-portal</id>
             <version>
-                &jetspeed-version;
+                ${jetspeed.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -116,7 +110,7 @@
             <id>portals-bridges-common</id>
             <groupId>portals-bridges</groupId>
             <version>
-                &portals-bridges-common-version;
+                ${portals.bridges.common.version}
             </version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -126,23 +120,19 @@
             <id>portals-bridges-velocity</id>
             <groupId>portals-bridges</groupId>
             <version>
-                &portals-bridges-velocity-version;
+                ${portals.bridges.velocity.version}
             </version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-
+        <dependency>
+            <id>commons-logging</id>
+            <version>${commons.logging.version}</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>${commons.logging.include}</war.bundle>
+            </properties>
+        </dependency>
     </dependencies>
-
-
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-    </build>
-
-    <reports>
-
-        &j2-reports;
-
-    </reports>
 </project>
