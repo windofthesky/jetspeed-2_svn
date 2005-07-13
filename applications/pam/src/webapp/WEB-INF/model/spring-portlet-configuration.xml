@@ -27,6 +27,19 @@
   	   	  <entry key="add-subfolder">
   	   	  	<value>/WEB-INF/view/site/add-subfolder.vm</value>
   	   	  </entry>
+  	   	  <entry key="add-link">
+  	   	  	<value>/WEB-INF/view/site/add-link.vm</value>
+  	   	  </entry>
+  	   	  <entry key="doc-order">
+  	   	  	<value>/WEB-INF/view/site/doc-order.vm</value>
+  	   	  </entry>
+  	   	  <entry key="menus">
+  	   	  	<value>/WEB-INF/view/site/menus.vm</value>
+  	   	  </entry>
+  	   	  <entry key="security">
+  	   	  	<value>/WEB-INF/view/site/security.vm</value>
+  	   	  </entry>
+          
   	   	  <entry key="site-help">
   	   	  	<value>/WEB-INF/view/site/site-help.vm</value>
   	   	  </entry>
@@ -72,6 +85,9 @@
        <description>Maps logical forward names to views</description>
   	   <constructor-arg>
   	   	<map>
+  	   	  <entry key="folder-view:success">
+  	   	  	<value>folder-view,mode:view</value>
+  	   	  </entry>            
   	   	</map>  	   	
   	   </constructor-arg>    	
     </bean>    
