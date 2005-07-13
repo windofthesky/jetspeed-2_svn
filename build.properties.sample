@@ -9,6 +9,13 @@ org.apache.jetspeed.deploy.war.dir = ${org.apache.jetspeed.server.home}/webapps
 org.apache.jetspeed.services.autodeployment.user = j2deployer
 org.apache.jetspeed.services.autodeployment.password = j2deployer
 
+org.apache.jetspeed.portal.name=jetspeed
+
+org.apache.jetspeed.genapp.home= /tools/workspace/testportal
+org.apache.jetspeed.genapp.groupId=testportal
+org.apache.jetspeed.genapp.name=My Test Portal
+org.apache.jetspeed.genapp.currentVersion=1.0
+
 # jetspeed db build properties example for Hsqldb
 # Override the database connection and driverproperties in your ${USER_HOME}/build.properties appropriately
 # See:
