@@ -1,94 +1,188 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
-<project default="build.installer"
-         xmlns:j="jelly:core"
-         xmlns:define="jelly:define"
-         xmlns:maven="jelly:maven"         
-         xmlns:ant="jelly:ant">
-         
- <goal name="build.installer" prereqs="define.izpack">
-   <copy todir="${install.src}/"  >
-  	    <fileset dir="${basedir}/src"/>
-   </copy>
-   
-   <!-- Copy ant -->
-   <copy todir="${install.src}/ant/bin" >
-		<fileset dir="${ant.home}/bin"/>
-   </copy>
-   
-   <copy todir="${install.src}/ant/lib" file="${ant.home}/lib/ant.jar"  />
-   
-   <!-- Copy our SQL -->
-  	<copy todir="${install.src}/sql"  >
-  	  <fileset dir="${basedir}/../target/src/sql"/>
-  	</copy>
-  	
-  	<!-- Copy tomcat -->
-  	<copy todir="${install.src}/tomcat"  file="${tomcat.dist}" />
-  	
-  	<!-- Copy core -->
-  	<copy todir="${install.src}/jetspeed"  >
-  	   <fileset dir="${basedir}/../portal/target/jetspeed" />
-  	</copy>  
-  	
-  	<!-- Copy jetspeed.xml -->
-  	<copy todir="${install.src}/resources" file="${basedir}/../portal/src/resources/jetspeed.xml" />
-  	
-  	<!-- Copy OJB stuff -->
-  	<copy file="${basedir}/../etc/db-ojb/repository_database.xml" todir="${install.src}/resources" overwrite="true" />   
-  	
-  	<!-- Copy Properties -->
-  	<copy file="${basedir}/../portal/src/webapp/WEB-INF/conf/jetspeed.properties" todir="${install.src}/resources" overwrite="true" />
-  	
-  	<!-- Stuff that goes in shared/lib -->
-  	<copy file="${maven.repo.local}/pluto/jars/pluto-&pluto-version;.jar" todir="${install.src}/resources"/>
-    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-&portals-bridges-jsf-version;.jar" todir="${install.src}/resources"/>
-    <copy file="../commons/target/jetspeed-commons-&jetspeed-version;.jar" todir="${install.src}/resources"/>
-    <copy file="../jetspeed-api/target/jetspeed-api-&jetspeed-version;.jar" todir="${install.src}/resources"/>
-    <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${install.src}/resources"/>
+    Copyright 2004 The Apache Software Foundation
     
-    <!--portlet apps -->
-    <copy file="../layout-portlets/target/jetspeed-layouts.war" todir="${install.src}/resources"/>
-    <copy file="../applications/demo/target/demo.war" todir="${install.src}/resources"/>
-    <copy file="../applications/pam/target/pam.war" todir="${install.src}/resources"/>
-    <copy file="../applications/jsf-demo/target/jsf-demo.war" todir="${install.src}/resources"/>
-    <copy file="../applications/security/target/security.war" todir="${install.src}/resources"/>
-    <copy file="../applications/php/target/php.war" todir="${install.src}/resources"/>
-    <copy file="../applications/perl/target/perl.war" todir="${install.src}/resources"/>
-    <copy file="../applications/rss/target/rss.war" todir="${install.src}/resources"/>
-     	
-  	
-  	
-  	<izpack input="${install.src}/install.xml"
-  	        output="${basedir}/target/j2-install.jar"
-  	        installerType="standard"
-  	        basedir="${install.src}"
-  	        izPackDir="${izpack.home}/"/>
- </goal>
- 
- <goal name="define.izpack" >
-   <ant:taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask">
-     <ant:classpath> 
-        <ant:path refid="maven.dependency.classpath"/>
-     </ant:classpath>
-    </ant:taskdef>
- </goal>
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    
+    $Id$
+-->
+<project default="java:jar" xmlns:j="jelly:core" xmlns:maven="jelly:maven" xmlns:artifact="artifact"
+    xmlns:ant="jelly:ant" xmlns:util="jelly:util">
+
+    <preGoal name="java:jar-resources">
+        <copy file="../etc/artifact-versions.ent"
+            tofile="${basedir}/target/classes/plugin-resources/etc/artifact-versions.ent" overwrite="true"
+            failonerror="true" />
+        <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
+            <fileset dir="../etc/project-dependencies" />
+        </copy>
+        <copy todir="target/classes/plugin-resources/etc/project-resources" overwrite="true" failonerror="true">
+            <fileset dir="../etc/project-resources" />
+        </copy>
+        <copy todir="target/classes/plugin-resources/etc/project-reports" overwrite="true" failonerror="true">
+            <fileset dir="../etc/project-reports" />
+        </copy>
+        <attainGoal name="copyDb" />
+        <attainGoal name="copyPortlaWebApp" />
+        <copy file="../portal-webapp/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
+            overwrite="true" failonerror="true" />
+        <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true"
+            failonerror="true">
+            <filterset begintoken="@" endtoken="@">
+                <filter token="JETSPEED_VERSION" value="${jetspeed.version};" />
+            </filterset>
+        </copy>
+
+    </preGoal>
+
+
+
+    <goal name="deploy-plugin">
+        <attainGoal name="undeploy-plugin" />
+
+        <!-- install will do the uninstall if needed for us -->
+        <attainGoal name="plugin:install" />
+        <!-- get the plugin available now (like with plugin:install-now, but which doesn't install).
+            Bug: If a new version of the plugin is deployed while an older version is available
+            maven gets very confused... Haven't found a workaround for that.
+        -->
+
+        <!-- deploy the plugin to the local repository directly: 
+            using the plugin:repository-install goal would lead to another build of the jar as all plugin goals do that as 
+            prereq
+        -->
+        <maven:installPlugin file="${maven.build.dir}/${maven.final.name}.jar" cache="true" />
+        <artifact:install artifact="${maven.build.dir}/${maven.final.name}.jar" type="plugin" project="${pom}" />
+        <unjar src="${maven.build.dir}/${maven.final.name}.jar" dest="${maven.home.local}/plugins/${maven.final.name}"
+            overwrite="true" />
+
+    </goal>
+
+    <goal name="undeploy-plugin">
+        <attainGoal name="plugin:uninstall-now" />
+        <delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="false" />
+    </goal>
+
+    <goal name="copyDb">
+        <copy todir="target/classes/plugin-resources" overwrite="true" failonerror="true">
+            <fileset dir="../src/database/hsql">
+                <include name="Empty.script" />
+                <include name="Production.properties" />
+            </fileset>
+        </copy>
+
+
+        <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
+            <fileset dir="../target/src/sql">
+                <exclude name="**/test-persistence-schema.sql" />
+                <include name="**/*.sql" />
+            </fileset>
+        </copy>
+
+        <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
+            <fileset dir="../src/sql/">
+                <include name="*.sql" />
+            </fileset>
+        </copy>
+
+        <copy todir="target/classes/plugin-resources/hsql/drop/" overwrite="true" failonerror="true">
+            <fileset dir="../src/sql/hsql/">
+                <include name="drop.sql" />
+            </fileset>
+        </copy>
+
+        <copy todir="target/classes/plugin-resources/mysql/drop/" overwrite="true" failonerror="true">
+            <fileset dir="../src/sql/mysql/">
+                <include name="drop.sql" />
+            </fileset>
+        </copy>
+
+        <copy todir="target/classes/plugin-resources/oracle/drop/" overwrite="true" failonerror="true">
+            <fileset dir="../src/sql/oracle/">
+                <include name="drop.sql" />
+            </fileset>
+        </copy>
+
+        <util:file name="${basedir}/../src/sql" var="sqlSrcDir" />
+        <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlSrcDirFile">
+            <util:file name="${basedir}/../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql"
+                var="dbSpecificPopulateScript" />
+            <j:if test="${dbSpecificPopulateScript.exists()}">
+                <copy file="${dbSpecificPopulateScript.absolutePath}"
+                    toDir="target/classes/plugin-resources/${sqlSrcDirFile.name}/populate" />
+            </j:if>
+        </j:forEach>
+
+        <!--
+            <move file="${basedir}/target/classes/plugin-resources/Empty.script" tofile="${basedir}/target/classes/plugin-resources/Production.script" overwrite="true"/>
+            <echo>Initializing HSQL Production.script with basic portal info.......</echo>
+            <j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:target/classes/plugin-resources/Production"/>
+            <j:set var="org.apache.jetspeed.database.driver" value="org.hsqldb.jdbcDriver"/>
+            <j:set var="org.apache.jetspeed.database.user" value="sa"/>
+            <j:set var="org.apache.jetspeed.database.password" value=""/>
+            <j:set var="org.apache.jetspeed.database.default.name" value="hsql" />
+            <attainGoal name="db.create" />	 
+        -->
+    </goal>
+
+    <goal name="copyPortlaWebApp">
+        <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
+            <fileset dir="../portal-webapp/src/webapp">
+                <exclude name="**/WEB-INF/pages/*" />
+            </fileset>
+        </copy>
+        <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
+            <fileset dir="../portal-webapp/src/resources" />
+        </copy>
+        <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version};.war"
+            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true" failonerror="true" />
+    </goal>
+
+    <goal name="db.execute">
+        <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
+            userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
+            src="${database.arg.script}">
+            <classpath>
+                <path refid="maven.dependency.classpath" />
+                <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}" />
+            </classpath>
+        </sql>
+    </goal>
+
+    <goal name="db.create">
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script"
+            value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
+        <attainGoal name="db.execute" />
+        <j:set var="database.arg.script" value="./target/classes/plugin-resources/populate-db-default.sql" />
+        <attainGoal name="db.execute" />
+    </goal>
+
+
 
 </project>
+
