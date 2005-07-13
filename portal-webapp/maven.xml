@@ -17,25 +17,4 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define" xmlns:maven="jelly:maven">
-
-    <!-- ================================================================ -->
-    <!-- Hot Deploy for mundane everyday development under Catalina       -->
-    <!-- ================================================================ -->
-    <goal name="hotdeploy">
-        <echo message="Hot Deploying ${pom.id}, ${pom.name} ${maven.war.src}" />
-        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
-            <fileset dir="${maven.build.dir}/classes"></fileset>
-        </copy>
-        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/">
-            <fileset dir="./src/webapp">
-                <exclude name="WEB-INF/db/**" />
-            </fileset>
-        </copy>
-    </goal>
-
-    <preGoal name="hotdeploy">
-        <attainGoal name="java:compile" />
-    </preGoal>
-
-</project>
+<project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define" xmlns:maven="jelly:maven" />

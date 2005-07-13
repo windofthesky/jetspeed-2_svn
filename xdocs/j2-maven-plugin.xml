@@ -151,6 +151,13 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>j2:portal.hotdeploy</td>
+                        <td>
+                            Hot deploys the portal application webapp content to the deployment directory on the application
+                            server.
+                        </td>
+                    </tr>
+                    <tr>
                         <td>j2:fullDeploy</td>
                         <td>
                             Deploys the portal and all the Jetspeed portlet to the application server.

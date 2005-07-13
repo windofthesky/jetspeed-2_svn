@@ -597,6 +597,18 @@
         <attainGoal name="war:install" />
     </goal>
     
+    <goal name="j2:portal.hotdeploy">
+        <echo message="Hot Deploying ${pom.artifactId}, ${pom.name}" />
+        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes" overwrite="true">
+            <fileset dir="${maven.build.dir}/classes"></fileset>
+        </copy>
+        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/" overwrite="true" verbose="true">
+            <fileset dir="${maven.src.dir}/webapp">
+                <exclude name="WEB-INF/db/**" />
+            </fileset>
+        </copy>
+    </goal>
+    
     <goal name="j2:fullDeploy">
         <attainGoal name="j2:portal.deploy" />
         <attainGoal name="j2:pam.layoutdeploy" />
