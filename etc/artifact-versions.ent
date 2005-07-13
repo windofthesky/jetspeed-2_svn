@@ -1,9 +1,0 @@
-<!ENTITY jetspeed-version "2.0-M4-SNAPSHOT">
-<!ENTITY pluto-version "1.0-svn-201864">
-<!ENTITY portals-bridges-common-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-frameworks-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-jsf-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-perl-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-php-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-struts-version "0.4-SNAPSHOT">
-<!ENTITY portals-bridges-velocity-version "0.4-SNAPSHOT">
