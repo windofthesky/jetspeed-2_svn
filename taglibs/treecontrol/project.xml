@@ -22,7 +22,7 @@ limitations under the License.
 <project>
 <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jetspeed2-taglib-treecontrol</id>
+  <artifactId>jetspeed2-taglib-treecontrol</artifactId>
   <name>Jetspeed 2 TreeControl TagLib</name>
   <groupId>jetspeed2</groupId>
   

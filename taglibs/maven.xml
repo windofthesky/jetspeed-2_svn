@@ -18,12 +18,6 @@ limitations under the License.
          xmlns:j="jelly:core" 
          xmlns:define="jelly:define"
          xmlns:maven="jelly:maven">
-
-  <goal name="deployJar">
-  	<attainGoal name="jar:install"/>
-
-  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${org.apache.jetspeed.server.shared}"/>
-  </goal>
   
   <goal name="allBuild">
   	<maven:reactor

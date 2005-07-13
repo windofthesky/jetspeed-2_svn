@@ -22,7 +22,7 @@ limitations under the License.
 <project>
   <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jetspeed2-taglibs</id>
+  <artifactId>jetspeed2-taglibs</artifactId>
   <name>Jetspeed 2 TagLibs</name>
   <groupId>jetspeed2</groupId>
   
