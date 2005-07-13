@@ -56,9 +56,11 @@ limitations under the License.
   </bean>
   
   <!-- Aggregation: Portlet -->
+    <!-- Aggregation: Portlet -->
   <bean id="Powertools" 
   	   class="org.apache.jetspeed.velocity.JetspeedPowerToolFactory"  >  	   
   	   <constructor-arg><value>org.apache.jetspeed.velocity.JetspeedPowerToolImpl</value></constructor-arg>
+	   <constructor-arg><ref bean="DynamicTitleService" /></constructor-arg>
   </bean>
   
   <!-- ID Generator -->
