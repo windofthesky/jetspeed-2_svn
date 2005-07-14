@@ -123,7 +123,10 @@
             sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/generated/sqldb.map" targetDatabase="hypersonic" useClasspath="true">
             <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
                 excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
+        </torque-sql>        
+        <attainGoal name="j2:process.sql.script.override" >'
+          <j:set var="org.apache.jetspeed.target.rdbms" value="hsql" />
+        </attainGoal>
 
         <echo message="Generating SQL schema creation scripts for MySQL" />
         <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated" failonerror="false" />
@@ -134,7 +137,10 @@
             sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated/sqldb.map" targetDatabase="mysql" useClasspath="true">
             <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
                 excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
+        </torque-sql>        
+        <attainGoal name="j2:process.sql.script.override" >
+         <j:set var="org.apache.jetspeed.target.rdbms" value="mysql" />
+        </attainGoal>
 
         <echo message="Generating SQL schema creation scripts for Oracle" />
         <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/generated" failonerror="false" />
@@ -146,6 +152,10 @@
             <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
                 excludes="${torque.schema.sql.excludes}" />
         </torque-sql>
+        
+        <attainGoal name="j2:process.sql.script.override" >
+          <j:set var="org.apache.jetspeed.target.rdbms" value="oracle" />
+        </attainGoal>
 
         <echo message="Generating SQL schema creation scripts for MS SQL" />
         <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/generated" failonerror="false" />
@@ -157,6 +167,10 @@
             <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
                 excludes="${torque.schema.sql.excludes}" />
         </torque-sql>
+        
+        <attainGoal name="j2:process.sql.script.override" >
+          <j:set var="org.apache.jetspeed.target.rdbms" value="mssql" />
+       </attainGoal>
 
         <echo message="Generating SQL schema creation scripts for Postgres" />
         <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/postgres/generated" failonerror="false" />
@@ -168,6 +182,25 @@
             <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
                 excludes="${torque.schema.sql.excludes}" />
         </torque-sql>
+        
+        <attainGoal name="j2:process.sql.script.override" >
+          <j:set var="org.apache.jetspeed.target.rdbms" value="postgres" />
+        </attainGoal>
+    </goal>
+    
+    <goal name="j2:process.sql.script.override" >
+      
+      <fail
+            message="org.apache.jetspeed.target.rdbms must be set before executing the j2:process.sql.script.overrid goal."
+            unless="org.apache.jetspeed.target.rdbms" />
+      <!-- Allow specific DB scripts to override the Torque-generated ones -->
+      <echo>Checking SQL script overrides for ${org.apache.jetspeed.database.default.name}</echo>
+      <echo>${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}/generated</echo>
+      <copy todir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}/generated" overwrite="true"  verbose="true" failonerror="false" flatten="true">
+        <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}">
+            <include name="**/override/*.sql" />
+        </fileset>
+      </copy>        
     </goal>
     
     <!-- ============================================= -->
@@ -230,6 +263,7 @@
         <j:set var="database.arg.script"
             value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/test-persistence-schema.sql" />
         <attainGoal name="j2:db.execute" />
+           
     </goal>
     
     <goal name="j2:db.entities" prereqs="j2:db.scripts.gen">
