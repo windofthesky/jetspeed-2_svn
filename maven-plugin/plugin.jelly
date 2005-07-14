@@ -748,6 +748,9 @@
             <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />
         </copy>
         
+        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.properties"
+            tofile="${org.apache.jetspeed.genapp.home}/project.properties" overwrite="true"
+            failonerror="true" />
         <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/full-portal.xml"
             tofile="${org.apache.jetspeed.genapp.home}/full-portal.xml" overwrite="true"
             failonerror="true" />

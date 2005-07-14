@@ -22,7 +22,12 @@ Project file used for j2:genapp.portal and embedded in the Jetspeed plugin.
 
 <project>
     <extend>full-portal.xml</extend>
-    
+    <pomVersion>3</pomVersion>
+    <groupId>@GENAPP_GROUPID@</groupId>
+    <artifactId>@GENAPP_ARTIFACTID@</artifactId>
+    <name>@GENAPP_NAME@</name>
+    <currentVersion>@GENAPP_CURRENT_VERSION@</currentVersion>
+	
     <dependencies>
         <dependency>
             <groupId>hsqldb</groupId>
@@ -39,6 +44,13 @@ Project file used for j2:genapp.portal and embedded in the Jetspeed plugin.
             <version>3.2</version>
             <type>plugin</type>
             <properties/>
+        </dependency>
+        <dependency>
+            <id>jetspeed2:jetspeed-portal</id>
+            <version>${jetspeed.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
     </dependencies>
 </project>

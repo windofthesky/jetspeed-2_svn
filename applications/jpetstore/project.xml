@@ -19,7 +19,7 @@
 <project>
   <extend>${basedir}/../../project-info.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jpetstore</id>
+  <artifactId>jpetstore</artifactId>
   <name>iBATIS JPetstore Demo Portlet</name>
 
     <package>com.ibatis.jpetstore</package>

@@ -112,6 +112,11 @@
                     <td>your-tomcat-manager-user-password</td>
                     <td>The password of the Tomcat manager user.</td>
                 </tr>
+                <tr>
+                    <td>jetspeed.version</td>
+                    <td>2.0-M4-SNAPSHOT</td>
+                    <td>The jetspeed version.  Required to resolve Jetspeed build dependencies.</td>
+                </tr>
             </table>
             <p>
                 To develop or deploy Jetspeed with another database (not the default HSQL), see the property

@@ -10,6 +10,7 @@ org.apache.jetspeed.services.autodeployment.user = j2deployer
 org.apache.jetspeed.services.autodeployment.password = j2deployer
 
 org.apache.jetspeed.portal.name=jetspeed
+jetspeed.version=2.0-M4-SNAPSHOT
 
 # j2:portal.genapp properties
 org.apache.jetspeed.genapp.home= /tools/workspace/testportal

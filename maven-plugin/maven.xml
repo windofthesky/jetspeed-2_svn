@@ -20,7 +20,9 @@
     xmlns:ant="jelly:ant" xmlns:util="jelly:util">
 
     <preGoal name="java:jar-resources">
-    	<attainGoal name="copyPortlaWebApp" />
+        <copy todir="target/classes/plugin-resources/etc/db-ojb" overwrite="true" failonerror="true">
+            <fileset dir="../etc/db-ojb" />
+        </copy>
         <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true"
             failonerror="true">
             <filterset begintoken="@" endtoken="@">
@@ -35,8 +37,8 @@
 
     <goal name="deploy-plugin">
         <attainGoal name="clean" />
-        <attainGoal name="copyPortlaWebApp" />
-    	<attainGoal name="core-deploy-plugin" />
+        <attainGoal name="copyPortalWebApp" />
+        <attainGoal name="core-deploy-plugin" />
     </goal>
 
     <goal name="undeploy-plugin">
@@ -44,7 +46,7 @@
         <delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="false" />
     </goal>
 
-    <goal name="copyPortlaWebApp">
+    <goal name="copyPortalWebApp">
         <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
             <fileset dir="../portal-webapp/src/webapp" />
         </copy>
@@ -52,17 +54,16 @@
             <fileset dir="../portal-webapp/src/resources" />
         </copy>
         <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version}.war"
-            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true" failonerror="true" />       
-        <copy file="../full-portal.xml"
-            tofile="target/classes/plugin-resources/full-portal.xml" overwrite="true"
+            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true"
             failonerror="true" />
-        <copy file="../core-build.xml"
-            tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
+        <copy file="../full-portal.xml" tofile="target/classes/plugin-resources/full-portal.xml" overwrite="true"
             failonerror="true" />
-        <copy file="../portal-webapp/portal-project.xml" tofile="${basedir}/target/classes/plugin-resources/portal-project.xml"
-            overwrite="true" failonerror="true" />
-        <copy file="../portal-webapp/portal-project-info.xml" tofile="${basedir}/target/classes/plugin-resources/project-info.xml"
-            overwrite="true" failonerror="true">
+        <copy file="../core-build.xml" tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
+            failonerror="true" />
+        <copy file="../portal-webapp/portal-project-info.xml"
+            tofile="${basedir}/target/classes/plugin-resources/project-info.xml" overwrite="true" failonerror="true" />
+        <copy file="../portal-webapp/portal-project.xml"
+            tofile="${basedir}/target/classes/plugin-resources/portal-project.xml" overwrite="true" failonerror="true">
             <filterset begintoken="@" endtoken="@">
                 <filter token="GENAPP_GROUPID" value="${org.apache.jetspeed.genapp.groupId}" />
                 <filter token="GENAPP_ARTIFACTID" value="${org.apache.jetspeed.portal.name}" />
@@ -70,29 +71,84 @@
                 <filter token="GENAPP_CURRENT_VERSION" value="${org.apache.jetspeed.genapp.currentVersion}" />
             </filterset>
         </copy>
-        <echoproperties destfile="${basedir}/target/classes/plugin-resources/project.properties" failonerror="true">
-    		<propertyset>
-			    <!-- <propertyref refid="jetspeed.version"/>
-			    <propertyref refid="pluto.version"/>
-			    <propertyref refid="portlet.api.version"/>
-			    <propertyref refid="servlet.api.version"/>
-			    <propertyref refid="myfaces.version"/>
-			    <propertyref refid="spring.version"/>-->
-			    <propertyref prefix="portals.bridges."/>
-			    <!-- <propertyref refid="commons.logging.version"/>-->
-		    </propertyset>
-		</echoproperties>
+        <!-- Hack. The project properties that need to be passed to the plugin. echoproperties only works
+        with Ant 1.6 and above. -->
+        <loadproperties srcFile="../project.properties"/>
+        <echo file="${basedir}/target/classes/plugin-resources/project.properties" append="false">
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+jetspeed.version=${jetspeed.version}
+pluto.version=${pluto.version}
+portlet.api.version=${portlet.api.version}
+servlet.api.version=${servlet.api.version}
+myfaces.version=${myfaces.version}
+spring.version=${spring.version}
+portals.bridges.common.version=${portals.bridges.common.version}
+portals.bridges.frameworks.version=${portals.bridges.frameworks.version}
+portals.bridges.jsf.version=${portals.bridges.jsf.version}
+portals.bridges.perl.version=${portals.bridges.perl.version}
+portals.bridges.php.version=${portals.bridges.php.version}
+portals.bridges.struts.version=${portals.bridges.struts.version}
+portals.bridges.velocity.version=${portals.bridges.velocity.version}
+commons.logging.version=${commons.logging.version} 
+log4j.version=${log4j.version}
+
+# Whether or not to include log4j in war files
+commons.logging.include=${commons.logging.include}
+# Whether or not to include log4j in war files.  Your container may already have this.
+log4j.include=${log4j.include}
+
+# ---------------------------------------------------------------------------
+# Torque settings
+# ---------------------------------------------------------------------------
+torque.project=${torque.project}
+torque.schema.sql.includes=${torque.schema.sql.includes}
+torque.schema.sql.excludes=${torque.schema.sql.excludes}
+torque.schema.dir=${torque.schema.dir}
+torque.idTableXMLFile=${torque.idTableXMLFile}
+torque.template.sql=${torque.template.sql}
+
+# ---------------------------------------------------------------------------
+# Database Properties
+# ---------------------------------------------------------------------------
+
+# Default production server settings.
+org.apache.jetspeed.production.database.url=${org.apache.jetspeed.production.database.url}
+org.apache.jetspeed.production.database.driver=${org.apache.jetspeed.production.database.driver}
+org.apache.jetspeed.production.database.user=${org.apache.jetspeed.production.database.user}
+org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}
+
+org.apache.jetspeed.production.jdbc.drivers.path=${org.apache.jetspeed.production.jdbc.drivers.path}
+org.apache.jetspeed.production.database.default.name=${org.apache.jetspeed.production.database.default.name}
+
+# Override this to put your database elsewhere than the plugin repo
+org.apache.jetspeed.plugin.hsql.db=${org.apache.jetspeed.plugin.hsql.db}
+
+# Default database server settings.
+org.apache.jetspeed.database.url=${org.apache.jetspeed.database.url}
+org.apache.jetspeed.database.driver=${org.apache.jetspeed.database.driver}
+org.apache.jetspeed.database.user=${org.apache.jetspeed.database.user}
+org.apache.jetspeed.database.password=${org.apache.jetspeed.database.password}
+
+org.apache.jetspeed.jdbc.drivers.path=${org.apache.jetspeed.jdbc.drivers.path}
+org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}
+
+# The database to use with OJB. Substitution value for repository_database.xml jdbc-connection-descriptor 
+# platform attribute.
+org.apache.jetspeed.production.database.ojb.platform=${org.apache.jetspeed.production.database.ojb.platform}
+     </echo>
     </goal>
 
     <goal name="deploy-plugin-withoutwebapp">
-    	<attainGoal name="clean" />
-    	<attainGoal name="core-deploy-plugin" />
+        <attainGoal name="clean" />
+        <attainGoal name="core-deploy-plugin" />
     </goal>
 
     <goal name="core-deploy-plugin">
-    	<attainGoal name="undeploy-plugin" />
+        <attainGoal name="undeploy-plugin" />
 
-		<!-- install will do the uninstall if needed for us -->
+        <!-- install will do the uninstall if needed for us -->
         <attainGoal name="plugin:install" />
         <!-- get the plugin available now (like with plugin:install-now, but which doesn't install).
             Bug: If a new version of the plugin is deployed while an older version is available

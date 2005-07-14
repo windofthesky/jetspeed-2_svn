@@ -17,10 +17,12 @@
     $Id$
 -->
 <project>
-    <extend>${basedir}/../project-info.xml</extend>
+	<extends>${basedir}/../project-info.xml</extends>
     <pomVersion>3</pomVersion>
     <id>maven-jetspeed2-plugin</id>
+    <groupId>jetspeed2</groupId>
     <name>Jetspeed 2 Maven Plugin</name>
+    <currentVersion>${jetspeed.version}</currentVersion>
     <description>Plugin for assisting with portlet development</description>
     <shortDescription>Portlet Development Plugin</shortDescription>
 
@@ -39,6 +41,19 @@
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
+        </dependency>
+        <dependency>
+            <groupId>maven-plugins</groupId>
+            <artifactId>maven-torque-plugin</artifactId>
+            <version>3.2</version>
+            <type>plugin</type>
+            <properties/>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.3</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <build>

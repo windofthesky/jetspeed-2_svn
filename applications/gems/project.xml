@@ -48,15 +48,14 @@
             <id>commons-dbcp</id>
             <version>1.2.1</version>
         </dependency>
-    <dependency>
-      <id>commons-logging</id>
-      <version>${commons.logging.version}</version>
-      <url>http://jakarta.apache.org/commons/logging.html</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>    
-        
+        <dependency>
+            <id>commons-logging</id>
+            <version>${commons.logging.version}</version>
+            <url>http://jakarta.apache.org/commons/logging.html</url>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
         <dependency>
             <groupId>portlet-api</groupId>
             <artifactId>portlet-api</artifactId>
@@ -66,29 +65,25 @@
         <dependency>
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
-            <version>
-                ${portals.bridges.common.version}
-            </version>
+            <version>${portals.bridges.common.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>portals-bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
-            <version>
-                ${portals.bridges.velocity.version}
-            </version>
+            <version>${portals.bridges.velocity.version}</version>
             <type>jar</type>
         </dependency>
-  	<dependency>
-      <groupId>jetspeed2</groupId>
-      <artifactId>jetspeed-api</artifactId>
-      <version>${jetspeed.version}</version>
-      <type>jar</type>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-	</dependency>
-          <dependency>
+        <dependency>
+            <groupId>jetspeed2</groupId>
+            <artifactId>jetspeed-api</artifactId>
+            <version>${jetspeed.version}</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed-sso</artifactId>
             <version>${jetspeed.version}</version>
@@ -97,11 +92,11 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-        
+
         <dependency>
             <id>velocity</id>
             <version>1.4</version>
-        </dependency>  
-  </dependencies>
-  
+        </dependency>
+    </dependencies>
+
 </project>
