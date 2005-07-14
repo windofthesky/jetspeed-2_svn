@@ -17,7 +17,7 @@
     $Id$
 -->
 <project>
-    <extend>${basedir}/../../project.xml</extend>
+    <extend>${basedir}/../../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>portals-gems</artifactId>
     <groupId>portals-gems</groupId>
@@ -48,6 +48,15 @@
             <id>commons-dbcp</id>
             <version>1.2.1</version>
         </dependency>
+    <dependency>
+      <id>commons-logging</id>
+      <version>${commons.logging.version}</version>
+      <url>http://jakarta.apache.org/commons/logging.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>    
+        
         <dependency>
             <groupId>portlet-api</groupId>
             <artifactId>portlet-api</artifactId>
@@ -70,6 +79,25 @@
             </version>
             <type>jar</type>
         </dependency>
+  	<dependency>
+      <groupId>jetspeed2</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <version>${jetspeed.version}</version>
+      <type>jar</type>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+	</dependency>
+          <dependency>
+            <groupId>jetspeed2</groupId>
+            <artifactId>jetspeed-sso</artifactId>
+            <version>${jetspeed.version}</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        
         <dependency>
             <id>velocity</id>
             <version>1.4</version>
