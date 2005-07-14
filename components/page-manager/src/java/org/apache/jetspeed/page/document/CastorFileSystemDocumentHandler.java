@@ -550,6 +550,9 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         File file = new File(this.documentRootDir, fileName);
         file.delete();
+
+        // remove from cache
+        fileCache.remove(path);
     }
 
     /**

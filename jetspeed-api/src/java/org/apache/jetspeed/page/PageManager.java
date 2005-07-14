@@ -70,7 +70,21 @@ public interface PageManager
      *
      * @return a newly created Page object
      */
-    public Page newPage();
+    public Page newPage(String path);
+
+    /**
+     * Create a new empty Folder instance
+     *
+     * @return a newly created Folder object
+     */
+    public Folder newFolder(String path);
+
+    /**
+     * Creates a new empty Link instance
+     *
+     * @return a newly created Link object
+     */
+    public Link newLink(String path);
 
     /**
      * Creates a new empty Fragment instance
@@ -195,12 +209,6 @@ public interface PageManager
      */
     Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
 
-    /** Store the page on disk
-     *
-     * @param page The page to be stored.
-     */
-    public void registerPage(Page page) throws JetspeedException;
-
     /** Update a page in persistent storage
      *
      * @param page The page to be updated.
@@ -212,6 +220,30 @@ public interface PageManager
      * @param page The page to be removed.
      */
     public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
+
+    /** Update a folder in persistent storage
+     *
+     * @param folder The folder to be updated.
+     */
+    public void updateFolder(Folder folder) throws JetspeedException, FolderNotUpdatedException;
+
+    /** Remove a folder.
+     *
+     * @param page The folder to be removed.
+     */
+    public void removeFolder(Folder folder) throws JetspeedException, FolderNotRemovedException;
+
+    /** Update a link in persistent storage
+     *
+     * @param link The link to be updated.
+     */
+    public void updateLink(Link link) throws JetspeedException, LinkNotUpdatedException;
+
+    /** Remove a link.
+     *
+     * @param page The link to be removed.
+     */
+    public void removeLink(Link link) throws JetspeedException, LinkNotRemovedException;
 
     /**
      * addListener - add page manager event listener

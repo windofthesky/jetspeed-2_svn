@@ -96,6 +96,13 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
     }
 
+    public FolderImpl()
+    {
+        this.metadata = new FolderMetaDataImpl();
+        this.metadata.setParent(this);
+        setReservedType();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -485,7 +492,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      */
     public NodeSet getAllNodes() throws FolderNotFoundException, DocumentException
     {
-        if(allNodes == null)
+        if((allNodes == null) && (folderHandler != null))
         {            
             if(metadata.getDocumentOrder() != null)
             {
@@ -503,8 +510,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                 allNodes = new NodeSetImpl(getPath());
             }
             
-            //DocumentHandler docHandler = getHandlerFactory().getDocumentHandler(documentType);
-
             String[] nodeNames = folderHandler.listAll(getPath());
             for (int i = 0; i < nodeNames.length; i++)
             {
@@ -565,6 +570,19 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     {
         return metadata;
     }
+
+    /**
+     * <p>
+     * setFolderHandler
+     * </p>
+     *
+     * @param handler folder handler
+     */
+    public void setFolderHandler(FolderHandler handler)
+    {
+        this.folderHandler = handler;
+    }
+
     /**
      * <p>
      * getMetadata

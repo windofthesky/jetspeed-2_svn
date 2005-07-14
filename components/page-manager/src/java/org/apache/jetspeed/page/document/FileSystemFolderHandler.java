@@ -215,6 +215,129 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
     /**
      * <p>
+     * updateFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.FolderHandler#updateFolder(org.apache.jetspeed.om.folder.Folder)
+     * @param folder
+     * @throws FailedToUpdateFolderException
+     */
+    public void updateFolder(Folder folder) throws FailedToUpdateFolderException
+    {
+        // sanity checks
+        if (folder == null)
+        {
+            log.warn("Recieved null Folder to update");
+            return;
+        }
+        String path = folder.getPath();
+        if (path == null)
+        {
+            path = folder.getId();
+            if (path == null)
+            {
+                log.warn("Recieved Folder with null path/id to update");
+                return;
+            }
+            folder.setPath(path);
+        }
+
+        // setup folder implementation
+        FolderImpl folderImpl = (FolderImpl)folder;
+        folderImpl.setFolderHandler(this);
+        folderImpl.setHandlerFactory(handlerFactory);
+        folderImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        folderImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        folderImpl.marshalling();
+
+        // create underlying folder if it does not exist
+        File folderFile = new File(documentRootDir, path);
+        if ((folderFile.exists() && !folderFile.isDirectory()) || (!folderFile.exists() && !folderFile.mkdir()))
+        {
+            throw new FailedToUpdateFolderException(folderFile.getAbsolutePath()+" does not exist and cannot be created.");
+        }
+
+        // update metadata
+        try
+        {
+            FolderMetaData metadata = folder.getFolderMetaData();
+            metadata.setPath(path + Folder.PATH_SEPARATOR + FolderMetaData.DOCUMENT_TYPE);
+            metadata.setId(metadata.getPath());
+            metadataDocHandler.updateDocument(metadata);
+        }
+        catch (Exception e)
+        {
+            throw new FailedToUpdateFolderException(folderFile.getAbsolutePath()+" failed to update folder.metadata", e);
+        }
+
+        // add to cache
+        addToCache(path, folder);
+    }
+
+    /**
+     * <p>
+     * removeFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.FolderHandler#removeFolder(org.apache.jetspeed.om.folder.Folder)
+     * @param folder
+     * @throws FailedToDeleteFolderException
+     */
+    public void removeFolder(Folder folder) throws FailedToDeleteFolderException
+    {
+        // sanity checks
+        if (folder == null)
+        {
+            log.warn("Recieved null Folder to remove");
+            return;
+        }
+        String path = folder.getPath();
+        if (path == null)
+        {
+            path = folder.getId();
+            if (path == null)
+            {
+                log.warn("Recieved Folder with null path/id to remove");
+                return;
+            }
+            folder.setPath(path);
+        }
+
+        // remove underlying folder if it exists and is empty,
+        // (other than metadata document)
+        File folderFile = new File(this.documentRootDir, path);
+        File metadataFile = null;
+        if ((folder.getFolderMetaData() != null) && (folder.getFolderMetaData().getPath() != null))
+        {
+            metadataFile = new File(this.documentRootDir, folder.getFolderMetaData().getPath());
+        }
+        if (folderFile.exists() && folderFile.isDirectory())
+        {
+            // test to make sure folder empty
+            File [] folderContents = folderFile.listFiles();
+            if ((folderContents.length > 0) &&
+                ((folderContents.length > 1) || (metadataFile == null) || !folderContents[0].getName().equals(metadataFile.getName())))
+            {
+                throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder not empty.");
+            }
+
+            // delete folder and metadata
+            if ((metadataFile != null) && metadataFile.exists() && !metadataFile.delete())
+            {
+                throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder metadata cannot be deleted.");
+            }
+            if (!folderFile.delete())
+            {
+                throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder cannot be deleted.");
+            }
+        }
+
+        // remove from cache
+        fileCache.remove(path);
+    }
+
+    /**
+     * <p>
      * getFolders
      * </p>
      * 

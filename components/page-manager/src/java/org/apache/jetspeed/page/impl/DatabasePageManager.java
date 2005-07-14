@@ -105,29 +105,18 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
+     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public List listPages()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
-     */
-    public void registerPage( Page page ) throws JetspeedException
+    public void updatePage( Page page ) throws JetspeedException, PageNotUpdatedException
     {
         // sanity checks
         if (page == null)
         {
-            log.warn("Recieved null page to register");
+            log.warn("Recieved null page to update");
             return;
         }
 
-        // unwrap page to be registered
+        // unwrap page to be updated
         if (page instanceof ContentPageImpl)
         {
             page = ((ContentPageImpl)page).getPage();
@@ -135,27 +124,11 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
 
         // register page
         String id = page.getId();
-
         if (id == null)
         {
             page.setId(generator.getNextPeid());
             id = page.getId();
             log.warn("Page with no Id, created new Id : " + id);
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
-     */
-    public void updatePage( Page page ) throws JetspeedException, PageNotUpdatedException
-    {
-        // unwrap page to be updated
-        if (page instanceof ContentPageImpl)
-        {
-            page = ((ContentPageImpl)page).getPage();
         }
 
         // update page
@@ -221,6 +194,30 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
 
     /**
      * <p>
+     * updateFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateFolder(org.apache.jetspeed.om.folder.Folder)
+     */
+    public void updateFolder(Folder folder) throws JetspeedException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * removeFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeFolder(org.apache.jetspeed.om.folder.Folder)
+     */
+    public void removeFolder(Folder folder) throws JetspeedException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
      * getLink
      * </p>
      * 
@@ -230,6 +227,30 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      *         DocumentNotFoundException
      */
     public Link getLink( String name ) throws DocumentNotFoundException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * updateLink
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateLink(org.apache.jetspeed.om.page.Link)
+     */
+    public void updateLink(Link link) throws JetspeedException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * removeLink
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeLink(org.apache.jetspeed.om.page.Link)
+     */
+    public void removeLink(Link link) throws JetspeedException
     {
         throw new UnsupportedOperationException("Not supported by DB impl yet");
     }

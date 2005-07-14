@@ -13,37 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page;
-
+package org.apache.jetspeed.page.document;
 
 
 /**
  * <p>
- * Link
+ * FailedToDeleteFolderException
  * </p>
  * <p>
  *
  * </p>
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  *
  */
-public interface Link extends Document
+public class FailedToDeleteFolderException extends NodeException
 {
-    String DOCUMENT_TYPE = ".link";
-    
-    /**
-     * @param url The url to set.
-     */
-    void setUrl( String url );
 
     /**
-     * @return Returns the target.
+     * 
      */
-    String getTarget();
+    public FailedToDeleteFolderException()
+    {
+        super();
+    }
 
     /**
-     * @param target The target to set.
+     * @param message
      */
-    void setTarget( String target );
+    public FailedToDeleteFolderException( String message )
+    {
+        super(message);
+    }
+
+    /**
+     * @param nested
+     */
+    public FailedToDeleteFolderException( Throwable nested )
+    {
+        super(nested);
+    }
+
+    /**
+     * @param msg
+     * @param nested
+     */
+    public FailedToDeleteFolderException( String msg, Throwable nested )
+    {
+        super(msg, nested);
+    }
+
 }

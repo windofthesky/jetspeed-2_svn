@@ -51,6 +51,31 @@ public interface FolderHandler
      */
     Folder getFolder(String path) throws FolderNotFoundException, InvalidFolderException, NodeException;
     
+    /**
+     * 
+     * <p>
+     * updateFolder
+     * </p>
+     * <p>
+     *  Updates the folder specified with the <code>folder</code> argument.
+     * </p>
+     *
+     * @param folder folder to update
+     */
+    void updateFolder(Folder folder) throws FailedToUpdateFolderException;
+    
+    /**
+     * 
+     * <p>
+     * removeFolder
+     * </p>
+     * <p>
+     *  Removes the folder specified with the <code>folder</code> argument.
+     * </p>
+     *
+     * @param folder folder to update
+     */
+    void removeFolder(Folder folder) throws FailedToDeleteFolderException;
     
     /**
      * 

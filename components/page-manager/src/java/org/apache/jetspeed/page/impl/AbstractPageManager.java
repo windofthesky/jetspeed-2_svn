@@ -23,20 +23,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.MenuExcludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.MenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
+import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.page.PageManager;
@@ -56,6 +60,8 @@ public abstract class AbstractPageManager
     
     protected Class fragmentClass = FragmentImpl.class;
     protected Class pageClass = PageImpl.class;
+    protected Class folderClass = FolderImpl.class;
+    protected Class linkClass = LinkImpl.class;
     protected Class propertyClass = PropertyImpl.class;
     protected Class menuDefinitionClass = MenuDefinitionImpl.class;
     protected Class menuExcludeDefinitionClass = MenuExcludeDefinitionImpl.class;
@@ -124,16 +130,25 @@ public abstract class AbstractPageManager
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newPage()
+     * @see org.apache.jetspeed.page.PageManager#newPage(java.lang.String)
      */
-    public Page newPage()
+    public Page newPage(String path)
     {
         Page page = null;
         try
         {
-            // factory create the page
+            // factory create the page and set id/path
             page = (Page)createObject(this.pageClass);            
-            page.setId(generator.getNextPeid());
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            if (!path.endsWith(Page.DOCUMENT_TYPE))
+            {
+                path += Page.DOCUMENT_TYPE;
+            }
+            page.setPath(path);
+            page.setId(path);
             
             // create the default fragment
             Fragment fragment = (Fragment)createObject(this.fragmentClass);
@@ -147,6 +162,60 @@ public abstract class AbstractPageManager
             log.error(message, e);
         }
         return page;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFolder(java.lang.String)
+     */
+    public Folder newFolder(String path)
+    {
+        Folder folder = null;
+        try
+        {
+            // factory create the folder and set id/path
+            folder = (Folder)createObject(this.folderClass);            
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            folder.setPath(path);
+            folder.setId(path);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create link object for " + this.linkClass;
+            log.error(message, e);
+        }
+        return folder;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newLink(java.lang.String)
+     */
+    public Link newLink(String path)
+    {
+        Link link = null;
+        try
+        {
+            // factory create the page and set id/path
+            link = (Link)createObject(this.linkClass);            
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            if (!path.endsWith(Link.DOCUMENT_TYPE))
+            {
+                path += Link.DOCUMENT_TYPE;
+            }
+            link.setPath(path);
+            link.setId(path);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create link object for " + this.linkClass;
+            log.error(message, e);
+        }
+        return link;        
     }
     
     /* (non-Javadoc)

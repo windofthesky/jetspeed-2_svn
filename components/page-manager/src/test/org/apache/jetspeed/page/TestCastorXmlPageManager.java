@@ -34,6 +34,7 @@ import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -49,6 +50,8 @@ import org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteFolderException;
 import org.apache.jetspeed.page.document.FileSystemFolderHandler;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.impl.CastorXmlPageManager;
@@ -63,7 +66,13 @@ import org.apache.jetspeed.util.DirectoryHelper;
  */
 public class TestCastorXmlPageManager extends TestCase
 {
-    private String testId = "/test002.psml";
+    private String testPage002 = "/test002.psml";
+    private String testPage003 = "/test003.psml";
+    private String testPage004 = "/folder2/test004.psml";
+    private String testFolder2 = "/folder2";
+    private String testFolder3 = "/folder3";
+    private String testLink002 = "/test002.link";
+    private String testLink003 = "/test003.link";
     protected CastorXmlPageManager pageManager;
     protected DirectoryHelper dirHelper;
 
@@ -154,9 +163,11 @@ public class TestCastorXmlPageManager extends TestCase
 
     public void testNewPage()
     {
-        Page testpage = pageManager.newPage();
+        Page testpage = pageManager.newPage(this.testPage003);
         assertNotNull(testpage);
         assertNotNull(testpage.getId());
+        assertNotNull(testpage.getPath());
+        assertEquals(testpage.getId(), testpage.getPath());
         assertNotNull(testpage.getRootFragment());
         assertNotNull(testpage.getRootFragment().getId());
     }
@@ -172,6 +183,24 @@ public class TestCastorXmlPageManager extends TestCase
     public void testNewProperty()
     {
         // TODO: Fix Property manipulation API, too clumsy right now
+    }
+
+    public void testNewFolder()
+    {
+        Folder testfolder = pageManager.newFolder(this.testFolder3);
+        assertNotNull(testfolder);
+        assertNotNull(testfolder.getId());
+        assertNotNull(testfolder.getPath());
+        assertEquals(testfolder.getId(), testfolder.getPath());
+    }
+
+    public void testNewLink()
+    {
+        Link testlink = pageManager.newLink(this.testLink003);
+        assertNotNull(testlink);
+        assertNotNull(testlink.getId());
+        assertNotNull(testlink.getPath());
+        assertEquals(testlink.getId(), testlink.getPath());
     }
 
     public void testGetPage() throws Exception
@@ -237,13 +266,12 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(f.getFragments().size() == 2);
     }
 
-    public void testRegisterPage() throws Exception
+    public void testCreatePage() throws Exception
     {
-        Page page = pageManager.newPage();
-        System.out.println("Retrieved test_id in register " + this.testId);
-        page.setId(this.testId);
+        Page page = pageManager.newPage(this.testPage002);
+        System.out.println("Retrieved test_id in create " + this.testPage002);
         page.setDefaultSkin("myskin");
-        page.setTitle("Registered Page");
+        page.setTitle("Created Page");
 
         Fragment root = page.getRootFragment();
         root.setName("TestLayout");
@@ -264,20 +292,20 @@ public class TestCastorXmlPageManager extends TestCase
 
         try
         {
-            pageManager.registerPage(page);
+            pageManager.updatePage(page);
         }
         catch (Exception e)
         {
-            String errmsg = "Exception in page registration: " + e.toString();
+            String errmsg = "Exception in page update: " + e.toString();
             e.printStackTrace();
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
         }
 
-        page = pageManager.getPage(this.testId);
+        page = pageManager.getPage(this.testPage002);
         assertNotNull(page);
-        assertTrue(page.getId().equals(this.testId));
-        assertTrue(page.getTitle().equals("Registered Page"));
+        assertTrue(page.getId().equals(this.testPage002));
+        assertTrue(page.getTitle().equals("Created Page"));
         assertNotNull(page.getRootFragment());
         assertTrue(page.getRootFragment().getName().equals("TestLayout"));
         assertTrue(page.getRootFragment().getFragments().size() == 1);
@@ -287,9 +315,58 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(((Property) f.getProperties("TestLayout").get(0)).getValue().equals("0"));
     }
 
+    public void testCreateFolder() throws Exception
+    {
+        Folder folder = pageManager.newFolder(this.testFolder2);
+        System.out.println("Retrieved test_id in create " + this.testFolder2);
+        folder.setTitle("Created Folder");
+
+        try
+        {
+            pageManager.updateFolder(folder);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in folder update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        folder = pageManager.getFolder(this.testFolder2);
+        assertNotNull(folder);
+        assertTrue(folder.getId().equals(this.testFolder2));
+        assertTrue(folder.getTitle().equals("Created Folder"));
+    }
+
+    public void testCreateLink() throws Exception
+    {
+        Link link = pageManager.newLink(this.testLink002);
+        System.out.println("Retrieved test_id in create " + this.testLink002);
+        link.setTitle("Created Link");
+        link.setUrl("http://www.created.link.com/");
+
+        try
+        {
+            pageManager.updateLink(link);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in link update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        link = pageManager.getLink(this.testLink002);
+        assertNotNull(link);
+        assertTrue(link.getId().equals(this.testLink002));
+        assertTrue(link.getTitle().equals("Created Link"));
+    }
+
     public void testUpdatePage() throws Exception
     {
-        Page page = pageManager.getPage(this.testId);
+        Page page = pageManager.getPage(this.testPage002);
         page.setTitle("Updated Title");
 
         try
@@ -304,8 +381,68 @@ public class TestCastorXmlPageManager extends TestCase
             assertNotNull(errmsg, null);
         }
 
-        page = pageManager.getPage(this.testId);
+        page = pageManager.getPage(this.testPage002);
         assertTrue(page.getTitle().equals("Updated Title"));
+    }
+
+    public void testUpdateFolder() throws Exception
+    {
+        Folder folder = pageManager.getFolder(this.testFolder2);
+        folder.setTitle("Updated Title");
+
+        try
+        {
+            pageManager.updateFolder(folder);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in folder update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        folder = pageManager.getFolder(this.testFolder2);
+        assertTrue(folder.getTitle().equals("Updated Title"));
+
+        Page page = pageManager.newPage(this.testPage004);
+        page.setTitle("Folder Page");
+
+        try
+        {
+            pageManager.updatePage(page);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        assertEquals(1, folder.getPages().size());
+        assertNotNull(folder.getPages().get(this.testPage004));
+    }
+
+    public void testUpdateLink() throws Exception
+    {
+        Link link = pageManager.getLink(this.testLink002);
+        link.setTitle("Updated Title");
+
+        try
+        {
+            pageManager.updateLink(link);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in link update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        link = pageManager.getLink(this.testLink002);
+        assertTrue(link.getTitle().equals("Updated Title"));
     }
 
     public void testFolders() throws Exception
@@ -413,8 +550,8 @@ public class TestCastorXmlPageManager extends TestCase
         Folder folder = pageManager.getFolder("/");
         assertNotNull(folder);
         assertNotNull(folder.getLinks());
-        assertEquals(folder.getLinks().size(), 1);
-        assertEquals("http://portals.apache.org", ((Document) folder.getLinks().iterator().next()).getUrl());
+        assertEquals(2,folder.getLinks().size());
+        assertEquals("http://portals.apache.org", ((Document) folder.getLinks().get("/apache_portals.link")).getUrl());
     }
 
     public void testMenuDefinitions() throws Exception
@@ -511,7 +648,7 @@ public class TestCastorXmlPageManager extends TestCase
         assertEquals(2, simpleMenu.getMenuElements().size());
 
         // test writing page menu definitions
-        page = pageManager.getPage(this.testId);
+        page = pageManager.getPage(this.testPage002);
         page.setMenuDefinitions(new ArrayList());
         MenuDefinition newMenu = pageManager.newMenuDefinition();
         newMenu.setName("updated-menu");
@@ -550,7 +687,7 @@ public class TestCastorXmlPageManager extends TestCase
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
         }
-        page = pageManager.getPage(this.testId);
+        page = pageManager.getPage(this.testPage002);
         assertNotNull(page.getMenuDefinitions());
         assertEquals(1, page.getMenuDefinitions().size());
         assertNotNull(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements());
@@ -561,11 +698,38 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(3) instanceof MenuDefinition);
         assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(4) instanceof MenuExcludeDefinition);
         assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(5) instanceof MenuIncludeDefinition);
+
+        // test writing folder menu definitions
+        folder = pageManager.getFolder(this.testFolder2);
+        folder.setMenuDefinitions(new ArrayList());
+        newMenu = pageManager.newMenuDefinition();
+        newMenu.setName("updated-menu");
+        newMenu.setSkin("bread-crumbs");
+        newMenu.setOptions("./");
+        newMenu.setPaths(true);
+        folder.getMenuDefinitions().add(newMenu);
+        try
+        {
+            pageManager.updateFolder(folder);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in folder update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        folder = pageManager.getFolder(this.testFolder2);
+        assertNotNull(folder.getMenuDefinitions());
+        assertEquals(1, folder.getMenuDefinitions().size());
+        assertEquals("updated-menu", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getName());
+        assertEquals("bread-crumbs", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getSkin());
+        assertEquals("./", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getOptions());
     }
 
     public void testRemovePage() throws Exception
     {
-        Page page = pageManager.getPage(this.testId);
+        Page page = pageManager.getPage(this.testPage002);
 
         try
         {
@@ -582,9 +746,89 @@ public class TestCastorXmlPageManager extends TestCase
         boolean exceptionFound = false;
         try
         {
-            page = pageManager.getPage(this.testId);
+            page = pageManager.getPage(this.testPage002);
         }
-        catch (PageNotFoundException pnfe)
+        catch (DocumentNotFoundException dnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+    }
+
+    public void testRemoveFolder() throws Exception
+    {
+        Folder folder = pageManager.getFolder(this.testFolder2);
+
+        boolean exceptionFound = false;
+        try
+        {
+            pageManager.removeFolder(folder);
+        }
+        catch (FailedToDeleteFolderException ftdfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+
+        Page page = pageManager.getPage(this.testPage004);
+        try
+        {
+            pageManager.removePage(page);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        try
+        {
+            pageManager.removeFolder(folder);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in folder remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        exceptionFound = false;
+        try
+        {
+            folder = pageManager.getFolder(this.testFolder2);
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+    }
+
+    public void testRemoveLink() throws Exception
+    {
+        Link link = pageManager.getLink(this.testLink002);
+
+        try
+        {
+            pageManager.removeLink(link);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in link remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        boolean exceptionFound = false;
+        try
+        {
+            link = pageManager.getLink(this.testLink002);
+        }
+        catch (DocumentNotFoundException dnfe)
         {
             exceptionFound = true;
         }

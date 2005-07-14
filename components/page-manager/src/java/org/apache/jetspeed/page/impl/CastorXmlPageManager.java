@@ -36,6 +36,8 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.ContentPageImpl;
+import org.apache.jetspeed.om.page.psml.LinkImpl;
+import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -118,12 +120,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     /**
      * <p>
-     * registerPage
+     * updatePage
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
+     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void registerPage(Page page) throws JetspeedException
+    public void updatePage(Page page) throws JetspeedException
     {
         // unwrap page to be registered
         if (page instanceof ContentPageImpl)
@@ -132,22 +134,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
 
         // make sure path and related members are set
-        boolean newPageRegistered = false;
-        if ((page.getPath() == null) && (page.getId() != null))
-        {
-            String path = page.getId();
-            if (!path.startsWith(Folder.PATH_SEPARATOR))
-            {
-                path = Folder.PATH_SEPARATOR + path;
-            }
-            if (!path.endsWith(Page.DOCUMENT_TYPE))
-            {
-                path += Page.DOCUMENT_TYPE;
-            }
-            page.setId(path);
-            page.setPath(path);
-            newPageRegistered = true;
-        }
         if (page.getPath() != null)
         {
             if (!page.getPath().equals(page.getId()))
@@ -162,22 +148,35 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             return;
         }
 
+        // set parent
+        boolean newPage = false;
+        FolderImpl parentFolder = getNodeFolder(page.getPath());
+        if (page.getParent() == null)
+        {
+            page.setParent(parentFolder);
+            newPage = true;
+        }
+
+        // enable permissions/constraints
+        PageImpl pageImpl = (PageImpl)page;
+        pageImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        pageImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+
         // check for edit access
         page.checkAccess(SecuredResource.EDIT_ACTION);
 
-        // register page
+        // update page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
 
         // update folder
-        FolderImpl folder = getNodeFolder(page.getPath());
-        if (!folder.getAllNodes().contains(page))
+        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(page))
         {
-            folder.getAllNodes().add(page);
+            parentFolder.getAllNodes().add(page);
+            newPage = true;
         }
-        page.setParent(folder);
 
         // notify page manager listeners
-        if (newPageRegistered)
+        if (newPage)
         {
             notifyNewNode(page);
         }
@@ -185,24 +184,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         {
             notifyUpdatedNode(page);
         }
-    }
-
-    /**
-     * <p>
-     * updatePage
-     * </p>
-     * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
-     */
-    public void updatePage(Page page) throws JetspeedException
-    {
-        // unwrap page to be updated
-        if (page instanceof ContentPageImpl)
-        {
-            page = ((ContentPageImpl)page).getPage();
-        }
-
-        registerPage(page);
     }
 
     /**
@@ -257,6 +238,92 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     /**
      * <p>
+     * updateLink
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateLink(org.apache.jetspeed.om.page.Link)
+     */
+    public void updateLink(Link link) throws JetspeedException
+    {
+        // make sure path and related members are set
+        if (link.getPath() != null)
+        {
+            if (!link.getPath().equals(link.getId()))
+            {
+                log.error("Link paths and ids must match!");
+                return;
+            }
+        }
+        else
+        {
+            log.error("Link paths and ids must be set!");
+            return;
+        }
+
+        // set parent
+        boolean newLink = false;
+        FolderImpl parentFolder = getNodeFolder(link.getPath());
+        if (link.getParent() == null)
+        {
+            link.setParent(parentFolder);
+            newLink = true;
+        }
+
+        // enable permissions/constraints
+        LinkImpl linkImpl = (LinkImpl)link;
+        linkImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        linkImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+
+        // check for edit access
+        link.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // update link
+        handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).updateDocument(link);
+
+        // update folder
+        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(link))
+        {
+            parentFolder.getAllNodes().add(link);
+            newLink = true;
+        }
+
+        // notify page manager listeners
+        if (newLink)
+        {
+            notifyNewNode(link);
+        }
+        else
+        {
+            notifyUpdatedNode(link);
+        }
+    }
+
+    /**
+     * <p>
+     * removeLink
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeLink(org.apache.jetspeed.om.page.Link)
+     */
+    public void removeLink(Link link) throws JetspeedException
+    {
+        // check for edit access
+        link.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // remove link
+        handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).removeDocument(link);
+
+        // update folder
+        FolderImpl folder = getNodeFolder(link.getPath());
+        ((NodeSetImpl)folder.getAllNodes()).remove(link);
+        link.setParent(null);
+
+        // notify page manager listeners
+        notifyRemovedNode(link);
+    }
+
+    /**
+     * <p>
      * getPageSecurity
      * </p>
      * 
@@ -292,6 +359,92 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         Folder folder = folderHandler.getFolder(folderPath);
         folder.checkAccess(SecuredResource.VIEW_ACTION);
         return folder;
+    }
+
+    /**
+     * <p>
+     * updateFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateFolder(org.apache.jetspeed.om.folder.Folder)
+     */
+    public void updateFolder(Folder folder) throws JetspeedException
+    {
+        // make sure path and related members are set
+        if (folder.getPath() != null)
+        {
+            if (!folder.getPath().equals(folder.getId()))
+            {
+                log.error("Folder paths and ids must match!");
+                return;
+            }
+        }
+        else
+        {
+            log.error("Folder paths and ids must be set!");
+            return;
+        }
+
+        // set parent
+        boolean newFolder = false;
+        FolderImpl parentFolder = getNodeFolder(folder.getPath());
+        if (folder.getParent() == null)
+        {
+            folder.setParent(parentFolder);
+            newFolder = true;
+        }
+
+        // enable permissions/constraints
+        FolderImpl folderImpl = (FolderImpl)folder;
+        folderImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        folderImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+
+        // check for edit access
+        folder.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // update folder
+        folderHandler.updateFolder(folder);
+
+        // update parent folder
+        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(folder))
+        {
+            parentFolder.getAllNodes().add(folder);
+            newFolder = true;
+        }
+
+        // notify page manager listeners
+        if (newFolder)
+        {
+            notifyNewNode(folder);
+        }
+        else
+        {
+            notifyUpdatedNode(folder);
+        }
+    }
+
+    /**
+     * <p>
+     * removeFolder
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeFolder(org.apache.jetspeed.om.folder.Folder)
+     */
+    public void removeFolder(Folder folder) throws JetspeedException
+    {
+        // check for edit access
+        folder.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // remove folder
+        folderHandler.removeFolder(folder);
+
+        // update parent folder
+        FolderImpl parentFolder = getNodeFolder(folder.getPath());
+        ((NodeSetImpl)parentFolder.getAllNodes()).remove(folder);
+        folder.setParent(null);
+
+        // notify page manager listeners
+        notifyRemovedNode(folder);
     }
 
     /**
