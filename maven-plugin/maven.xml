@@ -98,6 +98,10 @@ log4j.version=${log4j.version}
 commons.logging.include=${commons.logging.include}
 # Whether or not to include log4j in war files.  Your container may already have this.
 log4j.include=${log4j.include}
+# Whether or not to include JTP api in war files.  Your container may already have this.
+jta.include=${jta.include}
+# You only need HSQL if you do not supply your own database
+hsql.include=${hsql.include}
 
 # ---------------------------------------------------------------------------
 # Torque settings
