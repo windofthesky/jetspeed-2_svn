@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
-]>
 <!--
     Copyright 2004 The Apache Software Foundation
     
@@ -19,25 +16,30 @@
     
     $Id: project.xml 209405 2005-07-06 03:30:40Z dlestrat $
 -->
+<!--
+Project file used for j2:genapp.portal and embedded in the Jetspeed plugin.
+-->
+
 <project>
-    <pomVersion>3</pomVersion>
-    <groupId>@GENAPP_GROUPID@</groupId>
-    <artifactId>@GENAPP_ARTIFACTID@</artifactId>
-    <name>@GENAPP_NAME@</name>
-    <currentVersion>@GENAPP_CURRENT_VERSION@</currentVersion>
-    <description>Portlet content is aggregated into one page by this engine.</description>
-    <shortDescription>Portal Aggregation Engine</shortDescription>
-
-    <repository />
-
-    &portal-webapp-deps;
-
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-        <unitTest />
-        <resources />
-    </build>
-    <reports />
+    <extend>full-portal.xml</extend>
+    
+    <dependencies>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.7.1</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>maven-plugins</groupId>
+            <artifactId>maven-torque-plugin</artifactId>
+            <version>3.2</version>
+            <type>plugin</type>
+            <properties/>
+        </dependency>
+    </dependencies>
 </project>
 

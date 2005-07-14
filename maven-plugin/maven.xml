@@ -20,27 +20,7 @@
     xmlns:ant="jelly:ant" xmlns:util="jelly:util">
 
     <preGoal name="java:jar-resources">
-        <!--
-         <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
-            <fileset dir="../etc/project-dependencies" />
-        </copy>
-        <copy todir="target/classes/plugin-resources/etc/project-resources" overwrite="true" failonerror="true">
-            <fileset dir="../etc/project-resources" />
-        </copy>
-        <copy todir="target/classes/plugin-resources/etc/project-reports" overwrite="true" failonerror="true">
-            <fileset dir="../etc/project-reports" />
-        </copy>
-        -->
-        <!--
-        <attainGoal name="copyDb" />
-        -->
-        <copy todir="target/classes/plugin-resources/etc/db-ojb" overwrite="true" failonerror="true">
-            <fileset dir="../etc/db-ojb" />
-        </copy>
-        
-        <attainGoal name="copyPortlaWebApp" />
-        <copy file="../portal-webapp/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
-            overwrite="true" failonerror="true" />
+    	<attainGoal name="copyPortlaWebApp" />
         <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true"
             failonerror="true">
             <filterset begintoken="@" endtoken="@">
@@ -52,8 +32,6 @@
         </copy>
 
     </preGoal>
-
-
 
     <goal name="deploy-plugin">
         <attainGoal name="clean" />
@@ -75,7 +53,15 @@
         </copy>
         <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version}.war"
             tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true" failonerror="true" />       
-        <copy file="../portal-webapp/project.xml.template" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
+        <copy file="../full-portal.xml"
+            tofile="target/classes/plugin-resources/full-portal.xml" overwrite="true"
+            failonerror="true" />
+        <copy file="../core-build.xml"
+            tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
+            failonerror="true" />
+        <copy file="../portal-webapp/portal-project.xml" tofile="${basedir}/target/classes/plugin-resources/portal-project.xml"
+            overwrite="true" failonerror="true" />
+        <copy file="../portal-webapp/portal-project-info.xml" tofile="${basedir}/target/classes/plugin-resources/project-info.xml"
             overwrite="true" failonerror="true">
             <filterset begintoken="@" endtoken="@">
                 <filter token="GENAPP_GROUPID" value="${org.apache.jetspeed.genapp.groupId}" />
@@ -84,6 +70,18 @@
                 <filter token="GENAPP_CURRENT_VERSION" value="${org.apache.jetspeed.genapp.currentVersion}" />
             </filterset>
         </copy>
+        <echoproperties destfile="${basedir}/target/classes/plugin-resources/project.properties" failonerror="true">
+    		<propertyset>
+			    <!-- <propertyref refid="jetspeed.version"/>
+			    <propertyref refid="pluto.version"/>
+			    <propertyref refid="portlet.api.version"/>
+			    <propertyref refid="servlet.api.version"/>
+			    <propertyref refid="myfaces.version"/>
+			    <propertyref refid="spring.version"/>-->
+			    <propertyref prefix="portals.bridges."/>
+			    <!-- <propertyref refid="commons.logging.version"/>-->
+		    </propertyset>
+		</echoproperties>
     </goal>
 
     <goal name="deploy-plugin-withoutwebapp">

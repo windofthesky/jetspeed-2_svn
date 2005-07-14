@@ -17,8 +17,6 @@
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/locator/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/test"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/persistence/src/java"/>
-	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/persistence/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/portal/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/portal/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/portlet-factory/src/java"/>

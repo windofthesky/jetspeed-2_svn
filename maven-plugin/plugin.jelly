@@ -747,15 +747,18 @@
     	<copy todir="${org.apache.jetspeed.genapp.home}/src/webapp" overwrite="true" failonerror="true">
             <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />
         </copy>
-        <mkdir dir="${org.apache.jetspeed.genapp.home}/etc"/>
-        <copy todir="${org.apache.jetspeed.genapp.home}/etc" overwrite="true" failonerror="true">
-            <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc" >
-            	<exclude name="db-ojb/**"/>
-            	<exclude name="project-reports/**"/>
-            </fileset>
-        </copy>
         
-          <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml"
+        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/full-portal.xml"
+            tofile="${org.apache.jetspeed.genapp.home}/full-portal.xml" overwrite="true"
+            failonerror="true" />
+        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
+            tofile="${org.apache.jetspeed.genapp.home}/project-info.xml" overwrite="true"
+            failonerror="true" />
+        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/core-build.xml"
+            tofile="${org.apache.jetspeed.genapp.home}/core-build.xml" overwrite="true"
+            failonerror="true" />
+           
+        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/portal-project.xml"
             tofile="${org.apache.jetspeed.genapp.home}/project.xml" overwrite="true"
             failonerror="true" />
         
