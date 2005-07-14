@@ -43,15 +43,13 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>maven-plugins</groupId>
-            <artifactId>maven-torque-plugin</artifactId>
+            <id>maven-plugins:maven-torque-plugin</id>
             <version>3.2</version>
             <type>plugin</type>
             <properties/>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <id>commons-logging</id>
             <version>1.0.3</version>
             <type>jar</type>
         </dependency>
