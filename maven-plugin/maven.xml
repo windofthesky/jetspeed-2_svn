@@ -20,6 +20,7 @@
     xmlns:ant="jelly:ant" xmlns:util="jelly:util">
 
     <preGoal name="java:jar-resources">
+        <!--
          <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
             <fileset dir="../etc/project-dependencies" />
         </copy>
@@ -29,9 +30,14 @@
         <copy todir="target/classes/plugin-resources/etc/project-reports" overwrite="true" failonerror="true">
             <fileset dir="../etc/project-reports" />
         </copy>
+        -->
         <!--
         <attainGoal name="copyDb" />
         -->
+        <copy todir="target/classes/plugin-resources/etc/db-ojb" overwrite="true" failonerror="true">
+            <fileset dir="../etc/db-ojb" />
+        </copy>
+        
         <attainGoal name="copyPortlaWebApp" />
         <copy file="../portal-webapp/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml"
             overwrite="true" failonerror="true" />
