@@ -53,9 +53,11 @@
         <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
             <fileset dir="../portal-webapp/src/resources" />
         </copy>
+<!--        
         <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version}.war"
             tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true"
             failonerror="true" />
+-->            
         <copy file="../full-portal.xml" tofile="target/classes/plugin-resources/full-portal.xml" overwrite="true"
             failonerror="true" />
         <copy file="../core-build.xml" tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
