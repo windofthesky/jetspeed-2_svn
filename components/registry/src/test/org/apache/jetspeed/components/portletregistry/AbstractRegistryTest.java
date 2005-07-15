@@ -16,8 +16,12 @@
 package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
+
+import junit.framework.TestCase;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
@@ -28,6 +32,7 @@ import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 
 /**
  * @author scott
@@ -35,7 +40,7 @@ import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Generation - Code and Comments
  */
-public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCase 
+public abstract class AbstractRegistryTest extends TestCase
 {
     
     protected static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
@@ -51,6 +56,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
     protected PortletRegistry registry;
     private static int testPasses = 0;
+    private OJBHelper ojbHelper;
     
 
     /**
@@ -63,8 +69,13 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
      */
     protected void setUp() throws Exception
     {
-        super.setUp();
-        registry = (PortletRegistry) ctx.getBean("portletRegistry");
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
+        
+        PersistenceBrokerPortletRegistry targetRegistry = new PersistenceBrokerPortletRegistry("META-INF/registry_repository.xml");
+        targetRegistry.init();
+        this.registry = (PortletRegistry) ojbHelper.getTxProxiedObject(targetRegistry, new String[]{PortletRegistry.class.getName()});
        
         testPasses++;
     }
@@ -78,9 +89,8 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
      * @throws Exception
      */
     protected void tearDown() throws Exception
-    {
-
-       // super.tearDown();
+    { 
+       ojbHelper.tearDown();
     }
 
     protected void validateDublinCore( GenericMetadata metadata )

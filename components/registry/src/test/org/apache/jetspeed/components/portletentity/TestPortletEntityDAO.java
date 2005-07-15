@@ -20,11 +20,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
+import junit.framework.TestCase;
+
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -34,10 +37,10 @@ import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
-//import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -56,7 +59,7 @@ import org.jmock.core.stub.ReturnStub;
  * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
  *
  */
-public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
+public class TestPortletEntityDAO extends TestCase
 {
 
     // Dummy ContentFragment wrapper around Fragment as using the real ContentFragmentImpl
@@ -372,14 +375,22 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     private static final String TEST_APP = "EntityTestApp";
     private static final String TEST_PORTLET = "EntityTestPortlet";
     private static final String TEST_ENTITY = "user5/entity-9";
-    private PortletEntityAccessComponent entityAccess = null;
-    private PortletRegistry registry;   
+    private PersistenceBrokerPortletEntityAccess entityAccess = null;
+    private PortletRegistry registry;
+    private OJBHelper ojbHelper;   
  
     protected void setUp() throws Exception
     {      
-        super.setUp();
-        this.entityAccess = (PortletEntityAccessComponent) ctx.getBean("portletEntityAccess");
-        this.registry = (PortletRegistry) ctx.getBean("portletRegistry");
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
+        
+        PersistenceBrokerPortletRegistry targetRegistry = new PersistenceBrokerPortletRegistry("META-INF/registry_repository.xml");
+        targetRegistry.init();
+        this.registry = (PortletRegistry) ojbHelper.getTxProxiedObject(targetRegistry, new String[]{PortletRegistry.class.getName()});
+        
+        
+        this.entityAccess = new PersistenceBrokerPortletEntityAccess(this.registry);
         teardownTestData();
         setupTestData();
     }
@@ -387,6 +398,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected void tearDown() throws Exception
     {
         teardownTestData();
+        ojbHelper.tearDown();
     }
     
     public void test1() throws Exception
@@ -396,10 +408,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     }
 
     public void testEntities() throws Exception
-    {
-        
-       
-        
+    {       
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
         assertNotNull("Portlet Application", pa);
         System.out.println("pa = " + pa.getId());

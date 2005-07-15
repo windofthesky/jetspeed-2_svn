@@ -29,17 +29,11 @@ using the MetadataManager.
 
 
     <jdbc-connection-descriptor
-        jcd-alias="jetspeed"
-        platform="@PLATFORM@"
+        jcd-alias="JetspeedDS"
         default-connection="true"
         jdbc-level="2.0"
-         jndi-datasource-name="java:comp/env/jdbc/jetspeed"
         batch-mode="false"
      >
-
-        <connection-pool
-            maxActive="21"
-            validationQuery="" />
 
         <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">
             <attribute attribute-name="grabSize" attribute-value="20"/>

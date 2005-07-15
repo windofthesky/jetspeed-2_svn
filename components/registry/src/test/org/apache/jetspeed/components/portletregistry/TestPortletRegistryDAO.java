@@ -17,13 +17,16 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.PortletMode;
 
+import junit.framework.TestCase;
+
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -41,6 +44,7 @@ import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -56,7 +60,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @version $Id$
  *
  */
-public class TestPortletRegistryDAO extends  DatasourceEnabledSpringTestCase
+public class TestPortletRegistryDAO extends  TestCase
 {
     public static final String APP_1_NAME = "RegistryTestPortlet";
     protected static final String MODE_EDIT = "EDIT";
@@ -70,15 +74,22 @@ public class TestPortletRegistryDAO extends  DatasourceEnabledSpringTestCase
     protected static final String PORTLET_1_UID = "com.portlet.MyClass.Portlet 1";
     
     protected PortletRegistry portletRegistry;
+    private OJBHelper ojbHelper;
     
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
-        super.setUp();
+           
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
         
-		this.portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+        PersistenceBrokerPortletRegistry targetRegistry = new PersistenceBrokerPortletRegistry("META-INF/registry_repository.xml");
+        targetRegistry.init();
+        this.portletRegistry = (PortletRegistry) ojbHelper.getTxProxiedObject(targetRegistry, new String[]{PortletRegistry.class.getName()});        
+        
 		buildTestData();
 		
     }
@@ -88,13 +99,12 @@ public class TestPortletRegistryDAO extends  DatasourceEnabledSpringTestCase
      */
     protected void tearDown() throws Exception
     {
-        //super.tearDown();
         Iterator itr = portletRegistry.getPortletApplications().iterator();
         while(itr.hasNext())
         {        
             portletRegistry.removeApplication((PortletApplicationDefinition)itr.next());
         }
-        
+        ojbHelper.tearDown();
         
     }
     
@@ -140,6 +150,14 @@ public class TestPortletRegistryDAO extends  DatasourceEnabledSpringTestCase
      */
     private void buildTestData() throws RegistryException, LockFailedException
     {
+        // start clean
+        Iterator itr = portletRegistry.getPortletApplications().iterator();
+        while(itr.hasNext())
+        {        
+            portletRegistry.removeApplication((PortletApplicationDefinition)itr.next());
+        }
+        
+        
         // Create an Application and a Web app
         
         
