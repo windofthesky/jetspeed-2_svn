@@ -15,14 +15,16 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -49,7 +51,9 @@ import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
+import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.portalsite.MenuElement;
 
 /**
  * AbstractPageManagerService
@@ -508,5 +512,188 @@ public abstract class AbstractPageManager
                 log.error("Failed to notify page manager event listener", e);
             }
         }
+    }
+    
+    protected Fragment cloneFragment(Fragment source)
+    {
+        Fragment clone = newFragment();
+        clone.setDecorator(source.getDecorator());
+        clone.setName(source.getName());
+        clone.setShortTitle(source.getShortTitle());
+        clone.setSkin(source.getSkin());
+        clone.setTitle(source.getTitle());
+        clone.setType(source.getType());
+        clone.setState(source.getState());
+        
+        // clone properties
+        Iterator names = source.getLayoutProperties().iterator();
+        while (names.hasNext())
+        {
+            String name = (String)names.next();
+            Iterator props = source.getProperties(name).iterator();
+            while (props.hasNext())
+            {
+                Property srcProp = (Property)props.next();
+                Property dstProp = newProperty();
+                dstProp.setLayout(name);
+                dstProp.setName(srcProp.getName());
+                dstProp.setValue(srcProp.getValue());
+                clone.addProperty(dstProp);
+            }            
+        }
+        
+        // clone security constraints
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();
+        if (srcSecurity != null)
+        {
+            SecurityConstraints dstSecurity = cloneSecurityConstraints(srcSecurity);
+            clone.setSecurityConstraints(dstSecurity);
+        }            
+        
+        // recursively clone fragments
+        Iterator fragments = source.getFragments().iterator();
+        while (fragments.hasNext())
+        {
+            Fragment fragment = (Fragment)fragments.next();
+            Fragment clonedFragment = cloneFragment(fragment);
+            clone.getFragments().add(clonedFragment);
+        }
+        
+        return clone;
+    }
+    
+    public Page clonePage(Page source, String path)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        // create the new page and clone attributes
+        Page page = newPage(path);
+        page.setTitle(source.getTitle());
+        page.setShortTitle(source.getShortTitle());
+        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
+        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
+        page.setDefaultSkin(source.getDefaultSkin());
+            
+        // TODO: clone the metadata
+//        if (source.getMetadata() != null)
+//        {
+//            Collection fields = source.getMetadata().getFields();
+//            if (fields != null)
+//            {
+//                Iterator fieldsIterator = fields.iterator();
+//                while (fieldsIterator.hasNext())
+//                {
+//                    // LEFT OFF HERE Field srcField = (Field)fieldIterator.next();
+//                }
+//            }
+//        }
+        
+        // create the root fragment and clone attributes and all subfragments
+        Fragment root = cloneFragment(source.getRootFragment());
+        page.setRootFragment(root);
+        
+        // clone menus
+        List menus = page.getMenuDefinitions();
+        if (menus != null)
+        {
+            List clonedMenus = cloneMenuDefinitions(page.getMenuDefinitions());
+            page.setMenuDefinitions(clonedMenus);
+        }
+        
+        // clone security constraints
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+        if (srcSecurity != null)
+        {
+            SecurityConstraints clonedSecurity = cloneSecurityConstraints(srcSecurity);
+            page.setSecurityConstraints(clonedSecurity);
+        }    
+        
+        updatePage(page);
+        return page;
+    }
+
+    protected List cloneMenuDefinitions(List srcMenus)
+    {
+        List clonedMenus = new ArrayList(4); 
+        Iterator menus = srcMenus.iterator();
+        while (menus.hasNext())
+        {
+            MenuDefinition srcMenu = (MenuDefinition)menus.next();
+            MenuDefinition clonedMenu = newMenuDefinition();
+            clonedMenu.setDepth(srcMenu.getDepth());
+            clonedMenu.setName(srcMenu.getName());
+            clonedMenu.setOptions(srcMenu.getOptions());
+            clonedMenu.setOrder(srcMenu.getOrder());
+            clonedMenu.setPaths(srcMenu.isPaths());
+            clonedMenu.setProfile(srcMenu.getProfile());
+            clonedMenu.setRegexp(srcMenu.isRegexp());
+            
+            // TODO: how do I clone all localized short titles?
+            clonedMenu.setShortTitle(srcMenu.getShortTitle());
+            
+            clonedMenu.setSkin(srcMenu.getSkin());
+            
+            // TODO: how do I clone all localized titles?            
+            clonedMenu.setTitle(srcMenu.getTitle());
+            
+            // TODO: clone metadata
+            clonedMenu.getMetadata();
+            
+            List srcElements = clonedMenu.getMenuElements();
+            if (srcElements != null)
+            {
+                List clonedElements = cloneMenuElements(srcElements);
+                clonedMenu.setMenuElements(clonedElements);
+            }
+        }
+        return clonedMenus;
+    }
+    
+    protected List cloneMenuElements(List srcElements)
+    {
+        List clonedElements = new ArrayList(8);
+        Iterator elements = srcElements.iterator();
+        while (elements.hasNext())
+        {
+            MenuElement srcElement = (MenuElement)elements.next();
+            // MenuElement clonedElement = newMenuElement();
+        }
+        return clonedElements;
+    }
+    
+    protected SecurityConstraints cloneSecurityConstraints(SecurityConstraints source)
+    {
+        SecurityConstraints security = newSecurityConstraints();
+        if (source.getOwner() != null)        
+        {
+            security.setOwner(source.getOwner());
+        }
+        if (source.getSecurityConstraints() != null)
+        {
+            List clonedConstraints = new ArrayList(8);
+            Iterator constraints = source.getSecurityConstraints().iterator();
+            while (constraints.hasNext())
+            {
+                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
+                SecurityConstraint dstConstraint = newSecurityConstraint();
+                dstConstraint.setUsers(srcConstraint.getUsers());                
+                dstConstraint.setRoles(srcConstraint.getRoles());
+                dstConstraint.setGroups(srcConstraint.getGroups());
+                dstConstraint.setPermissions(srcConstraint.getPermissions());
+                clonedConstraints.add(dstConstraint);
+            }
+            security.setSecurityConstraints(clonedConstraints);
+        }
+        if (source.getSecurityConstraintsRefs() != null)
+        {
+            List clonedRefs = new ArrayList(8);
+            Iterator refs = source.getSecurityConstraintsRefs().iterator();
+            while (refs.hasNext())
+            {                
+                String constraintsRef = (String)refs.next();                
+                clonedRefs.add(constraintsRef);
+            }
+            security.setSecurityConstraintsRefs(clonedRefs);            
+        }
+        return security;
     }
 }

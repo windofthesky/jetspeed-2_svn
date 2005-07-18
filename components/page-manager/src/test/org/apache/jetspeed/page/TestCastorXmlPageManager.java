@@ -850,4 +850,103 @@ public class TestCastorXmlPageManager extends TestCase
         }
         assertTrue(exceptionFound);
     }
+    
+    public void testClonePage() throws Exception
+    {
+        Page testpage = pageManager.getPage("/clonetest.psml");
+        assertNotNull(testpage);
+        Page clone = pageManager.clonePage(testpage, "/cloned.psml");
+        assertNotNull(clone);
+        
+        assertTrue(clone.getId().equals("/cloned.psml"));
+        assertTrue(clone.getName().equals("cloned.psml"));
+        assertTrue(testpage.getTitle().equals("Test Page"));
+        assertTrue(testpage.getDefaultSkin().equals("test-skin"));
+        assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
+
+        // TODO: Test Meta data
+        Fragment root = testpage.getRootFragment();
+        Fragment cloneRoot = clone.getRootFragment();
+        
+        assertNotNull(cloneRoot);
+        assertNotNull(cloneRoot.getId());        
+        assertFalse(cloneRoot.getId().equals(root.getId()));
+        assertTrue(cloneRoot.getName().equals("TwoColumns"));
+        assertTrue(cloneRoot.getType().equals(Fragment.LAYOUT));
+        assertNull(cloneRoot.getDecorator());
+
+        List children = root.getFragments();
+        List cloneChildren = cloneRoot.getFragments();
+        assertNotNull(cloneChildren);
+        assertTrue(cloneChildren.size() == 3);
+
+        Fragment f = (Fragment) children.get(0);
+        Fragment cf = (Fragment) cloneChildren.get(0);
+        assertNotNull(cf.getId());
+        assertFalse(cf.getId().equals(f.getId()));
+        assertTrue(cf.getName().equals("HelloPortlet"));
+        assertTrue(cf.getType().equals(Fragment.PORTLET));
+
+        List properties = f.getProperties(root.getName());
+        List cloneProperties = cf.getProperties(cloneRoot.getName());
+        
+        assertNotNull(cloneProperties);
+        assertTrue(cloneProperties.size() == 2);
+        assertTrue(((Property) cloneProperties.get(0)).getName().equals("row"));
+        assertTrue(((Property) cloneProperties.get(0)).getValue().equals("0"));
+        assertTrue(((Property) cloneProperties.get(1)).getName().equals("column"));
+        assertTrue(((Property) cloneProperties.get(1)).getValue().equals("0"));
+
+        cf = (Fragment) cloneChildren.get(1);
+        f = (Fragment) children.get(1);
+        assertNotNull(cf.getId());
+        assertFalse(cf.getId().equals(f.getId()));
+        assertTrue(cf.getName().equals("JMXPortlet"));
+        assertTrue(cf.getType().equals(Fragment.PORTLET));
+
+        properties = cf.getProperties(root.getName());        
+        assertNotNull(properties);
+        assertTrue(properties.size() == 2);
+        assertTrue(((Property) properties.get(0)).getName().equals("row"));
+        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
+        assertTrue(((Property) properties.get(1)).getName().equals("column"));
+        assertTrue(((Property) properties.get(1)).getValue().equals("1"));
+
+        f = testpage.getFragmentById("f002");
+        cf = (Fragment) cloneChildren.get(2);
+        String id = cf.getId();
+        cf = clone.getFragmentById(id);
+        
+        assertNotNull(cf);        
+        assertNotNull(cf.getId());        
+        assertFalse(cf.getId().equals(f.getId()));
+        assertTrue(cf.getName().equals("Card"));
+        assertTrue(cf.getType().equals(Fragment.LAYOUT));
+        assertTrue(cf.getDecorator().equals("Tab"));
+        assertNotNull(cf.getFragments());
+        assertTrue(cf.getFragments().size() == 2);
+        
+        // security testing
+        SecurityConstraints constraints = clone.getSecurityConstraints();
+        assertNotNull(constraints); 
+        assertTrue(constraints.getOwner().equals("new-user"));
+        List secs = constraints.getSecurityConstraints();
+        assertNotNull(secs);
+        assertTrue(secs.size() == 1);
+        SecurityConstraint constraint = (SecurityConstraint)secs.get(0);
+        assertNotNull(constraint);
+        assertTrue(constraint.getUsers().equals("user10,user11"));
+        assertTrue(constraint.getRoles().equals("*"));
+        assertTrue(constraint.getPermissions().equals("edit,view"));
+        List refs = constraints.getSecurityConstraintsRefs();
+        assertNotNull(refs);
+        assertTrue(refs.size() == 1);
+        String ref = (String)refs.get(0);
+        assertNotNull(ref);
+        assertTrue(ref.equals("public-view"));
+        
+        // TODO: menu testing
+    }
+    
 }
