@@ -17,6 +17,8 @@
 package org.apache.jetspeed.page;
 
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -134,6 +136,20 @@ public interface PageManager
      * @return a newly created MenuSeparatorDefinition object
      */
     public MenuSeparatorDefinition newMenuSeparatorDefinition();
+
+    /**
+     * newSecurityConstraints - creates a new empty security constraints definition
+     *
+     * @return a newly created SecurityConstraints object
+     */
+    public SecurityConstraints newSecurityConstraints();
+
+    /**
+     * newSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    public SecurityConstraint newSecurityConstraint();
 
    /**
     * 

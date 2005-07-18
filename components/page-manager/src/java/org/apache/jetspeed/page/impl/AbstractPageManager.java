@@ -23,6 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -43,6 +45,8 @@ import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
 import org.apache.jetspeed.page.document.Node;
@@ -68,6 +72,8 @@ public abstract class AbstractPageManager
     protected Class menuIncludeDefinitionClass = MenuIncludeDefinitionImpl.class;
     protected Class menuOptionsDefinitionClass = MenuOptionsDefinitionImpl.class;
     protected Class menuSeparatorDefinitionClass = MenuSeparatorDefinitionImpl.class;
+    protected Class securityConstraintsClass = SecurityConstraintsImpl.class;
+    protected Class securityConstraintClass = SecurityConstraintImpl.class;
 
     protected IdGenerator generator = null;
 
@@ -350,6 +356,44 @@ public abstract class AbstractPageManager
         catch (ClassCastException e)
         {
             String message = "Failed to create menu separator definition object for " + this.menuSeparatorDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newSecurityConstraints - creates a new empty security constraints definition
+     *
+     * @return a newly created SecurityConstraints object
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        try
+        {
+            return (SecurityConstraints)createObject(this.securityConstraintsClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraints definition object for " + this.securityConstraintsClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        try
+        {
+            return (SecurityConstraint)createObject(this.securityConstraintClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraint definition object for " + this.securityConstraintClass;
             log.error(message, e);
         }
         return null;

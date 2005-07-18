@@ -32,6 +32,8 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -289,6 +291,20 @@ public class TestCastorXmlPageManager extends TestCase
         p.setValue("0");
         f.addProperty(p);
         root.getFragments().add(f);
+
+        SecurityConstraints constraints = pageManager.newSecurityConstraints();
+        constraints.setOwner("new-user");
+        List constraintsList = new ArrayList(1);
+        SecurityConstraint constraint = pageManager.newSecurityConstraint();
+        constraint.setUsers("user10,user11");
+        constraint.setRoles("*");
+        constraint.setPermissions(page.EDIT_ACTION + "," + page.VIEW_ACTION);
+        constraintsList.add(constraint);
+        constraints.setSecurityConstraints(constraintsList);
+        List constraintsRefsList = new ArrayList(1);
+        constraintsRefsList.add("public-view");
+        constraints.setSecurityConstraintsRefs(constraintsRefsList);
+        page.setSecurityConstraints(constraints);
 
         try
         {
