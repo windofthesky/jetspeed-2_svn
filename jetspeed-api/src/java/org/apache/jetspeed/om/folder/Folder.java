@@ -40,6 +40,9 @@ public interface Folder extends Node
 
     String FALLBACK_DEFAULT_PAGE = "default-page.psml";
     String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
+    String USER_FOLDER = "/_user/";
+    String ROLE_FOLDER = "/_role/";
+    String GROUP_FOLDER = "/_group/";
     
     /**
      * 

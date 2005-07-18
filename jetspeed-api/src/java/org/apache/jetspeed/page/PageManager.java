@@ -274,4 +274,16 @@ public interface PageManager
      * @param listener page manager event listener
      */
     public void removeListener(PageManagerEventListener listener);
+    
+    /** 
+     * Clone the source page creating and returning a new cloned page  
+     * with the same portlet and fragment collection as the source
+     * All fragments are created with new fragment ids
+     * 
+     * @param source The source Page object to be cloned 
+     * @param path a PSML normalized path to the new page to be created
+     * @return a new Page object cloned from the source, with new fragment ids
+     */
+    public Page clonePage(Page source, String path) 
+        throws JetspeedException, PageNotUpdatedException;;
 }
