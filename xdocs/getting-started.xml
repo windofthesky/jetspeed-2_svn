@@ -67,11 +67,13 @@
                 <tr>
                     <th>property</th>
                     <th>example</th>
+					<th>default in /project.properties and plugin.properties</th>
                     <th>what is it?</th>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.portal.name</td>
                     <td>jetspeed</td>
+					<td>jetspeed</td>
                     <td>
                         The name of the portal application. When using j2:genapp.portal. This property should be set to
                         the new portal application name. See the section on Creating a new Portal Application.
@@ -80,41 +82,52 @@
                 <tr>
                     <td>org.apache.jetspeed.project.home</td>
                     <td>/home/apache/jetspeed-2/</td>
+					<td><i>no default</i></td>
                     <td>The root of your Jetspeed-2 source installation (see example on left).</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.server.home</td>
                     <td>${CATALINA_HOME}/</td>
+					<td><i>no default</i></td>
                     <td>The root of your Tomcat server installation.</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.catalina.version.major</td>
                     <td>5</td>
+					<td><i>no default</i></td>
                     <td>Are you using Tomcat 5.0.x (use: 5) or 5.5.x? (use: 5.5)</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.server.shared</td>
                     <td>${org.apache.jetspeed.server.home}/shared/lib/</td>
+					<td><i>no default</i></td>
                     <td>The location of the shared jars in your Tomcat installation.</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.deploy.war.dir</td>
                     <td>${org.apache.jetspeed.server.home}/webapps/</td>
+					<td><i>no default</i></td>
                     <td>The location to deploy web application in Tomcat.</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.services.autodeployment.user</td>
                     <td>your-tomcat-manager-user</td>
+					<td><i>no default</i></td>
                     <td>a Tomcat user with the manager role. See the Tomcat Configuration section below.</td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.services.autodeployment.password</td>
                     <td>your-tomcat-manager-user-password</td>
+					<td><i>no default</i></td>
                     <td>The password of the Tomcat manager user.</td>
                 </tr>
                 <tr>
                     <td>jetspeed.version</td>
                     <td>2.0-M4-SNAPSHOT</td>
+					<td>
+						Defaults to SVN HEADS deafult vault which, as of the last update of this document 
+						is 2.0-M4-SNAPSHOT
+					</td>
                     <td>The jetspeed version.  Required to resolve Jetspeed build dependencies.</td>
                 </tr>
             </table>
