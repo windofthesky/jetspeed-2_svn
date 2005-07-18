@@ -31,19 +31,17 @@ Ditto it is possible to add jdbc-connection-descriptor at runtime
 using the MetadataManager.
 -->
 
+<!-- 
+	There is no need to specify any DB or JNDI info as the org.springframework.orm.ojb.support.LocalDataSourceConnectionFactory
+	defined in OJB.properties will be using a matching Datasource that is defined in Spring.
+	-->
     <jdbc-connection-descriptor
-        jcd-alias="jetspeed"
+        jcd-alias="JetspeedDS"
         platform="@PLATFORM@"
         default-connection="true"
         jdbc-level="2.0"
-        jndi-datasource-name="java:comp/env/jdbc/jetspeed"
         batch-mode="false"
      >
-
-        <connection-pool
-            maxActive="21"
-            validationQuery="" />
-
         <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">
             <attribute attribute-name="grabSize" attribute-value="20"/>
             <attribute attribute-name="autoNaming" attribute-value="true"/>
