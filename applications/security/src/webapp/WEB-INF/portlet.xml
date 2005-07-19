@@ -195,6 +195,10 @@ limitations under the License.
         <name>defaultProfile</name>
         <value>role-fallback</value>
       </preference>
+      <preference>
+        <name>newUserTemplateDirectory</name>
+        <value>/_user/template/</value>
+      </preference>      
     </portlet-preferences>
     <portlet-info>
       <title>User Detail Information</title>

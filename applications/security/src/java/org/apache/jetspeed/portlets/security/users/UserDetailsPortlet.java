@@ -43,6 +43,11 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
@@ -114,6 +119,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
     
+    private PageManager pageManager;
     private UserManager userManager;
     private RoleManager roleManager;
     private GroupManager groupManager;
@@ -155,6 +161,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
         }
+        
+        pageManager = (PageManager)getPortletContext().getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
+        if (null == pageManager)
+        {
+            throw new PortletException("Failed to find the Page Manager on portlet initialization");
+        }
+        
         paIdentifier = ((MutablePortletApplication)((JetspeedPortletContext)config.getPortletContext())
                 .getApplication()).getApplicationIdentifier();
     }
@@ -548,6 +561,16 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 userManager.removeUser(userName);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
+                
+                // TODO: remove ALL user from PSML
+                Page page = pageManager.getPage(Folder.USER_FOLDER + userName + "/default-page.psml");
+                pageManager.removePage(page);
+                
+                Folder folder = pageManager.getFolder(Folder.USER_FOLDER + userName);
+                pageManager.removeFolder(folder);
+                                
+                // TODO: send message to site manager portlet
+                
             }
             catch (Exception e)
             {
@@ -999,7 +1022,19 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     roleManager.addRoleToUser(userName, role);
                 }
+                
+                // create user's home page and folder                                
+                Folder folder = pageManager.newFolder(Folder.USER_FOLDER + userName);
+                pageManager.updateFolder(folder);
+                
+                String templateFolder = actionRequest.getPreferences().getValue("newUserTemplateDirectory", "/_user/template/");
 
+                // TODO: copy the entire dir tree, not just the default-page.psml                 
+                Page template = pageManager.getPage(templateFolder + "default-page.psml");                
+                pageManager.clonePage(template, Folder.USER_FOLDER + userName + "/default-page.psml");                
+                
+                // TODO: send message that site tree portlet invalidated
+                
                 String rule = actionRequest.getParameter(RULES_CONTROL);
                 if (!SecurityUtil.isEmpty(rule) && user != null) 
                 {
