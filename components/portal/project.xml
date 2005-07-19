@@ -18,7 +18,7 @@
 	$Id: project.xml 189937 2005-06-10 10:51:53Z ate $
 -->
 <project>
-	<extend>${basedir}/../../full-portal.xml</extend>
+	<extend>${basedir}/../../jetspeed-components.xml</extend>
 	<id>jetspeed-portal</id>
 	<name>Jetspeed-2 Portal Components</name>
 	<package>org.apache.jetspeed</package>
