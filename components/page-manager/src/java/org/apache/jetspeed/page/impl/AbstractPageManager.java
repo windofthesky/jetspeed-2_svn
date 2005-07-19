@@ -569,8 +569,8 @@ public abstract class AbstractPageManager
         Page page = newPage(path);
         page.setTitle(source.getTitle());
         page.setShortTitle(source.getShortTitle());
-        page.setDefaultDecorator(Fragment.LAYOUT, source.getDefaultDecorator(Fragment.LAYOUT));
-        page.setDefaultDecorator(Fragment.PORTLET, source.getDefaultDecorator(Fragment.PORTLET));
+        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
+        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
         page.setDefaultSkin(source.getDefaultSkin());
             
         // TODO: clone the metadata

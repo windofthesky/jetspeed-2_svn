@@ -116,7 +116,7 @@ public class PageImpl extends AbstractNode implements Page
 
     public void setDefaultDecorator( String decoratorName, String fragmentType )
     {
-        this.defaults.setDecorator(decoratorName, fragmentType);
+        this.defaults.setDecorator(fragmentType, decoratorName);
     }
 
     public Fragment getRootFragment()
