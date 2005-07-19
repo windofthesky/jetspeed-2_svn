@@ -17,39 +17,39 @@
     $Id$
 -->
 <project>
-	<extends>${basedir}/../project-info.xml</extends>
+    <id>jetspeed2:maven-jetspeed2-plugin</id>
+    <extends>${basedir}/../project-info.xml</extends>
     <pomVersion>3</pomVersion>
-    <id>maven-jetspeed2-plugin</id>
+    <artifactId>maven-jetspeed2-plugin</artifactId>
     <groupId>jetspeed2</groupId>
     <name>Jetspeed 2 Maven Plugin</name>
     <currentVersion>${jetspeed.version}</currentVersion>
     <description>Plugin for assisting with portlet development</description>
     <shortDescription>Portlet Development Plugin</shortDescription>
-
     <repository>
         <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-plugin</connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-plugin
-        </developerConnection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-plugin</developerConnection>
         <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/maven-plugin/</url>
     </repository>
-
     <dependencies>
         <dependency>
-            <id>hsqldb</id>
+            <groupId>maven-plugins</groupId>
+            <artifactId>maven-torque-plugin</artifactId>
+            <id>maven-plugins:maven-torque-plugin</id>
+            <version>3.2</version>
+            <type>plugin</type>
+        </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
             <version>1.7.1</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>maven-plugins:maven-torque-plugin</id>
-            <version>3.2</version>
-            <type>plugin</type>
-            <properties/>
-        </dependency>
-        <dependency>
-            <id>commons-logging</id>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
             <version>1.0.3</version>
             <type>jar</type>
         </dependency>
@@ -59,6 +59,7 @@
             <resource>
                 <directory>${basedir}/src/plugin-resources</directory>
                 <targetPath>plugin-resources</targetPath>
+                <filtering>false</filtering>
             </resource>
             <resource>
                 <directory>${basedir}</directory>
@@ -68,8 +69,8 @@
                     <include>project.properties</include>
                     <include>project.xml</include>
                 </includes>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>
 </project>
-
