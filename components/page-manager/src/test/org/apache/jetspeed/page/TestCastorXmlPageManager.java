@@ -860,10 +860,10 @@ public class TestCastorXmlPageManager extends TestCase
         
         assertTrue(clone.getId().equals("/cloned.psml"));
         assertTrue(clone.getName().equals("cloned.psml"));
-        assertTrue(testpage.getTitle().equals("Test Page"));
-        assertTrue(testpage.getDefaultSkin().equals("test-skin"));
-        assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
-        assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
+        assertTrue(clone.getTitle().equals("Test Page"));
+        assertTrue(clone.getDefaultSkin().equals("test-skin"));
+        assertTrue(clone.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(clone.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
 
         // TODO: Test Meta data
         Fragment root = testpage.getRootFragment();
