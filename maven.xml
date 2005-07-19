@@ -118,7 +118,7 @@
 
     <goal name="initMavenPlugin">
     	<!-- build jetspeed 2 plugin core -->
-		<maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin-withoutwebapp"
+		<maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin"
             banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />
     </goal>
     
