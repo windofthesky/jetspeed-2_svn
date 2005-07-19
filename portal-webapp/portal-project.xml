@@ -45,13 +45,6 @@ Project file used for j2:genapp.portal and embedded in the Jetspeed plugin.
             <type>plugin</type>
             <properties/>
         </dependency>
-        <dependency>
-            <id>jetspeed2:jetspeed-portal</id>
-            <version>${jetspeed.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
     </dependencies>
 </project>
 

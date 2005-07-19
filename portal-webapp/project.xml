@@ -31,16 +31,5 @@
         </developerConnection>
         <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/portal/</url>
     </repository>
-
-    <dependencies>
-        <dependency>
-            <id>jetspeed2:jetspeed-portal</id>
-            <version>${jetspeed.version}</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-    </dependencies>
-
 </project>
 
