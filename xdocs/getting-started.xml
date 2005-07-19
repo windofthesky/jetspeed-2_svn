@@ -301,6 +301,23 @@ maven -DartifactId=maven-jetspeed2-plugin -DgroupId=jetspeed2
                 <![CDATA[
 maven j2:genapp.portal]]>
                 </source>
+				<p>
+					Alternative "runtime" build.
+			    </p>
+				<p>
+					If you would prefer <strong>not</strong> to have the plugin copy all of
+					jetspeed 2 into your custom portal project.  You use this goal:
+				</p>
+					<source>
+                <![CDATA[
+				maven j2:genapp.portal.runtime]]>
+                </source>
+				<p>
+					This goal will copy all of the required Jetspeed's runtime files
+					to your projects target/{app-name} directory.  This allows the developer
+					to easily shadow only certain existing Jetspeed config files without maintaining 
+					all of Jetspeed's application files in their projects workspace.
+				</p>				
             </p>
             <p>
             	4. Go to the directory where you just created your new portal application and execute:
