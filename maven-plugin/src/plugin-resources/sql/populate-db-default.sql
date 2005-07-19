@@ -379,10 +379,16 @@ insert into PROFILING_RULE values ('security',
    'The security profiling rule needed for credential change requirements.');
 insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my-account.psml', 0);
 
-insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j1' );
+insert into PROFILING_RULE values ('j2', 
+   'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
+   'The default profiling rule following the Jetspeed-1 profiler fallback algorithm minus mediatype, language and country.');
+insert into RULE_CRITERION values (18, 'j2', 0, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values (19, 'j2', 1, 'group.role.user', 'user', null, 0);
+
+insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'menu', 'role-group' );
-insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'page', 'j1' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'menu', 'role-group' );
 
 -- test data for db browser

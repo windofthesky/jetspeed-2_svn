@@ -193,7 +193,7 @@ limitations under the License.
       </preference>
       <preference>
         <name>defaultProfile</name>
-        <value>role-fallback</value>
+        <value>j2</value>
       </preference>
       <preference>
         <name>newUserTemplateDirectory</name>
