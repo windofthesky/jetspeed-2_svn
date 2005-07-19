@@ -16,11 +16,14 @@
 package org.apache.jetspeed.page.document;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -67,8 +70,9 @@ import org.xml.sax.helpers.XMLReaderAdapter;
  */
 public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page.document.DocumentHandler, FileCacheEventListener
 {
-
     private final static Log log = LogFactory.getLog(CastorFileSystemDocumentHandler.class);
+
+    private final static String PSML_DOCUMENT_ENCODING = "UTF-8";
 
     protected String mappingFile;
     protected String documentType;
@@ -107,7 +111,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         this.format = new OutputFormat();
         format.setIndenting(true);
         format.setIndent(4);
-        format.setEncoding("UTF-8");
+        format.setEncoding(PSML_DOCUMENT_ENCODING);
 
         loadMapping();
     }
@@ -175,7 +179,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             fileName = path + this.documentType;
         }
         File f = new File(this.documentRootDir, fileName);
-        FileWriter writer = null;
+        Writer writer = null;
 
         try
         {
@@ -183,7 +187,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // page and folder menu definition menu elements ordered
             // polymorphic collection to strip artifical <menu-element>
             // tags enabling Castor XML binding; see META-INF/page-mapping.xml
-            writer = new FileWriter(f);
+            writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
             Serializer serializer = new XMLSerializer(writer, this.format);
             final DocumentHandler handler = serializer.asDocumentHandler();
             Marshaller marshaller = new Marshaller(new DocumentHandler()
@@ -349,7 +353,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             SAXParser parser = factory.newSAXParser();
             XMLReader reader = parser.getXMLReader();
             final XMLReaderAdapter readerAdapter = new XMLReaderAdapter(reader);
-            final InputSource readerInput = new InputSource(new FileReader(f));
+            final InputSource readerInput = new InputSource(new InputStreamReader(new FileInputStream(f), PSML_DOCUMENT_ENCODING));
             Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
             document = (Document) unmarshaller.unmarshal(new EventProducer()
                 {

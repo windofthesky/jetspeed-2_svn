@@ -274,6 +274,9 @@ public class TestCastorXmlPageManager extends TestCase
         System.out.println("Retrieved test_id in create " + this.testPage002);
         page.setDefaultSkin("myskin");
         page.setTitle("Created Page");
+        GenericMetadata metadata = page.getMetadata();
+        metadata.addField(Locale.FRENCH, "title", "Created Page de PSML");
+        metadata.addField(Locale.JAPANESE, "title", "Created \u3078\u3088\u3046\u3053\u305d");
 
         Fragment root = page.getRootFragment();
         root.setName("TestLayout");
@@ -321,7 +324,9 @@ public class TestCastorXmlPageManager extends TestCase
         page = pageManager.getPage(this.testPage002);
         assertNotNull(page);
         assertTrue(page.getId().equals(this.testPage002));
-        assertTrue(page.getTitle().equals("Created Page"));
+        assertEquals("Created Page", page.getTitle());
+        assertEquals("Created Page de PSML", page.getTitle(Locale.FRENCH));
+        assertEquals("Created \u3078\u3088\u3046\u3053\u305d", page.getTitle(Locale.JAPANESE));
         assertNotNull(page.getRootFragment());
         assertTrue(page.getRootFragment().getName().equals("TestLayout"));
         assertTrue(page.getRootFragment().getFragments().size() == 1);
@@ -550,6 +555,9 @@ public class TestCastorXmlPageManager extends TestCase
         String frenchTitle = page.getTitle(Locale.FRENCH);
         assertNotNull(frenchTitle);
         assertEquals("Ma Premiere Page de PSML", frenchTitle);
+        String japaneseTitle = page.getTitle(Locale.JAPANESE);
+        assertNotNull(japaneseTitle);
+        assertEquals("Jetspeed 2 \u3078\u3088\u3046\u3053\u305d", japaneseTitle);
         String defaultTitle = page.getTitle(Locale.GERMAN);
         assertNotNull(defaultTitle);
         assertEquals("My First PSML Page", defaultTitle);
@@ -948,5 +956,4 @@ public class TestCastorXmlPageManager extends TestCase
         
         // TODO: menu testing
     }
-    
 }

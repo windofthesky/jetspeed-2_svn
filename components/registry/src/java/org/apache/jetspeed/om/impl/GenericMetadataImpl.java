@@ -43,7 +43,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
      */
     public void addField(Locale locale, String name, String value)
     {
-        LocalizedFieldImpl field = new LocalizedFieldImpl();
+        LocalizedField field = createLocalizedField();
         field.setName(name);
         field.setValue(value);
         field.setLocale(locale);

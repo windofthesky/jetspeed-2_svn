@@ -54,7 +54,7 @@
       <bind-xml name="name" node="attribute"/>
     </field>
 
-    <field name="locale" type="java.lang.String" set-method="setLanguage">
+    <field name="language" type="java.lang.String">
       <bind-xml name="xml:lang" node="attribute"/>
     </field>
 

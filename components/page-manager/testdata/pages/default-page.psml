@@ -18,6 +18,12 @@ limitations under the License.
 	<defaults skin="light-blue" layout-decorator="clear" 
 		portlet-decorator="box-titled" />
 	<title>My First PSML Page</title>
+	<metadata name="title" xml:lang="fr">
+		Ma Premiere Page de PSML
+	</metadata>
+	<metadata name="title" xml:lang="ja">
+		Jetspeed 2 へようこそ
+	</metadata>
 	<fragment id="f001" type="layout" name="TwoColumns">
 		<fragment id="pe001" type="portlet" name="HelloPortlet">
 			<property layout="TwoColumns" name="row" value="0" />
@@ -36,7 +42,4 @@ limitations under the License.
 			<property layout="TwoColumns" name="column" value="1" />
 		</fragment>
 	</fragment>
-	<metadata name="title" xml:lang="fr">
-		Ma Premiere Page de PSML
-	</metadata>
 </page>

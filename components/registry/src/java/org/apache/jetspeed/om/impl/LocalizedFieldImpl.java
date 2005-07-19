@@ -125,6 +125,15 @@ public class LocalizedFieldImpl implements LocalizedField
         }
     }
 
+    public String getLanguage()
+    {
+        if (this.locale != null)
+        {
+            return this.locale.toString();
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.LocalizedField#getName()
      */
