@@ -29,10 +29,27 @@
                 <filter token="JETSPEED_VERSION" value="${jetspeed.version}" />
                 <filter token="JETSPEED_GROUPID" value="${pom.groupId}" />
                 <filter token="PLUTO_VERSION" value="${pluto.version}" />
+                <filter token="PORTLET_API_VERSION" value="${portlet.api.version}" />
+                <filter token="SERVLET_API_VERSION" value="${servlet.api.version}" />
+                <filter token="MYFACES_VERSION" value="${myfaces.version}" />
+                <filter token="SPRING_VERSION" value="${spring.version}" />
                 <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="${portals.bridges.common.version}" />
+                <filter token="PORTALS_BRIDGES_FRAMEWORKS_VERSION" value="${portals.bridges.frameworks.version}" />
+                <filter token="PORTALS_BRIDGES_JSF_VERSION" value="${portals.bridges.jsf.version}" />
+                <filter token="PORTALS_BRIDGES_PERL_VERSION" value="${portals.bridges.perl.version}" />
+                <filter token="PORTALS_BRIDGES_PHP_VERSION" value="${portals.bridges.php.version}" />
+                <filter token="PORTALS_BRIDGES_STRUTS_VERSION" value="${portals.bridges.struts.version}" />
+                <filter token="PORTALS_BRIDGES_VELOCITY_VERSION" value="${portals.bridges.velocity.version}" />
+                <filter token="COMMONS_LOGGING_VERSION" value="${commons.logging.version}" />                
+                <filter token="LOG4J_VERSION" value="${log4j.version}" />                
             </filterset>
         </copy>
-
+        <copy file="project.xml" tofile="${basedir}/target/classes/project.xml" overwrite="true"
+            failonerror="true">
+            <filterset begintoken="$" endtoken="}">
+                <filter token="{jetspeed.version" value="${jetspeed.version}" />
+            </filterset>
+        </copy>
     </preGoal>
 
     <goal name="deploy-plugin">
@@ -48,7 +65,9 @@
 
     <goal name="copyPortalWebApp">
         <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
-            <fileset dir="../portal-webapp/src/webapp" />
+            <fileset dir="../portal-webapp/src/webapp" >
+              <exclude name="**/conf/override.properties"/>
+            </fileset>
         </copy>
         <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
             <fileset dir="../portal-webapp/src/resources" />
@@ -62,8 +81,10 @@
             failonerror="true" />
         <copy file="../core-build.xml" tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
             failonerror="true" />
+        <copy file="../jetspeed-components.xml" tofile="target/classes/plugin-resources/jetspeed-components.xml" overwrite="true"
+            failonerror="true" />
         <copy file="../portal-webapp/portal-project-info.xml"
-            tofile="${basedir}/target/classes/plugin-resources/project-info.xml" overwrite="true" failonerror="true" />
+            tofile="${basedir}/target/classes/plugin-resources/project-info.xml" overwrite="true" failonerror="true" />            
         <copy file="../portal-webapp/portal-project.xml"
             tofile="${basedir}/target/classes/plugin-resources/portal-project.xml" overwrite="true" failonerror="true">
             <filterset begintoken="@" endtoken="@">
@@ -105,15 +126,6 @@ jta.include=${jta.include}
 # You only need HSQL if you do not supply your own database
 hsql.include=${hsql.include}
 
-# ---------------------------------------------------------------------------
-# Torque settings
-# ---------------------------------------------------------------------------
-torque.project=${torque.project}
-torque.schema.sql.includes=${torque.schema.sql.includes}
-torque.schema.sql.excludes=${torque.schema.sql.excludes}
-torque.schema.dir=${torque.schema.dir}
-torque.idTableXMLFile=${torque.idTableXMLFile}
-torque.template.sql=${torque.template.sql}
 
 # ---------------------------------------------------------------------------
 # Database Properties
