@@ -87,12 +87,16 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
     {
         System.out.println("Processing SAVE action.");
         FolderProxyBean proxy = (FolderProxyBean)bean;
-        String key = proxy.getLookupKey();
+        String key = proxy.getKey();
         try
         {
             Folder folder = pageManager.getFolder(key);
             proxy.update(folder);
-            //pageManager.updateFolder(folder);
+            pageManager.updateFolder(folder);
+            
+            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
+            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
+            
         }
         catch (JetspeedException e)
         {
@@ -101,4 +105,30 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         return "folder-view:success";
     }
 
+    public String processAddFolderAction(ActionRequest request, ActionResponse response, Object bean) 
+    throws PortletException,
+           IOException
+    {
+        System.out.println("Processing SAVE action.");
+        FolderProxyBean proxy = (FolderProxyBean)bean;
+        String key = proxy.getKey();
+        try
+        {
+            //Folder folder = pageManager.newFolder();
+            
+            Folder folder = pageManager.getFolder(key);
+            proxy.update(folder);
+            pageManager.updateFolder(folder);
+            
+            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
+            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
+            
+        }
+        catch (JetspeedException e)
+        {
+            
+        }
+        return "folder-view:success";
+    }
+    
 }

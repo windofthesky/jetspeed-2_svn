@@ -45,6 +45,7 @@ public class FolderProxyBean
     private String defaultPage;
     private String theme;
     private String resourceType;
+    private String key;
     
     /**
      * @return Returns the defaultPage.
@@ -119,6 +120,7 @@ public class FolderProxyBean
                 setTitle(folder.getTitle());                
                 setShortTitle(folder.getShortTitle());
                 setDefaultPage(folder.getDefaultPage(true));
+                setKey(key);
                 isNew = false;
             }
         }
@@ -171,5 +173,19 @@ public class FolderProxyBean
     public void setNew(boolean isNew)
     {
         this.isNew = isNew;
+    }
+    /**
+     * @return Returns the key.
+     */
+    public String getKey()
+    {
+        return key;
+    }
+    /**
+     * @param key The key to set.
+     */
+    public void setKey(String key)
+    {
+        this.key = key;
     }
 }
