@@ -80,4 +80,28 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+        <unitTest>
+            <resources>
+                <resource>
+                    <directory>${basedir}/src/test</directory>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                </resource>
+                <resource>
+                    <directory>${basedir}/src/java</directory>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                        <exclude>**/META-INF/**</exclude>
+                    </excludes>
+                </resource>
+                <resource>
+                    <directory>${basedir}/../../etc/log4j</directory>
+                </resource>
+            </resources>
+        </unitTest>
+    </build>
+
 </project>

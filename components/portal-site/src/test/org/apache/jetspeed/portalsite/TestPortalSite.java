@@ -439,6 +439,82 @@ public class TestPortalSite extends AbstractSpringTestCase
     }
 
     /**
+     * testPortalSiteRequests - Test PortalSite request path logic
+     *
+     * @throws Exception
+     */
+    public void testPotalSiteRequests() throws Exception
+    {
+        assertNotNull(portalSite);
+        PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
+        assertNotNull(sessionContext);
+        JetspeedProfileLocator locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, "default-page");
+        locator.add("user", true, false, "user");
+        Map locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        Page requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page2.psml", requestPageProxy.getName());
+        assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, null);
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page2.psml", requestPageProxy.getName());
+        assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, "page1");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page1.psml", requestPageProxy.getName());
+        assertEquals("/page1.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, "folder1/");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page0.psml", requestPageProxy.getName());
+        assertEquals("/_user/user/folder1/page0.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, "/folder0/");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page0.psml", requestPageProxy.getName());
+        assertEquals("/folder0/page0.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+    }
+
+    /**
      * testPortalSiteMenus - Test PortalSite menu generation
      *
      * @throws Exception

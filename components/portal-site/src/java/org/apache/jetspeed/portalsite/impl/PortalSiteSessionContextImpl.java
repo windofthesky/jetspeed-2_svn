@@ -145,13 +145,21 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // extract page request path from the locators
             String requestPath = Folder.PATH_SEPARATOR;
             ProfileLocator locator = (ProfileLocator)requestProfileLocators.get(ProfileLocator.PAGE_LOCATOR);
-            if (locator == null)
+            if (locator != null)
+            {
+                // use 'page' locator to determine request page by executing
+                // profile locator to determine path
+                requestPath = getRequestPathFromLocator(locator);
+            }
+            else
             {
                 // 'page' locator unavailable, use first locator since
-                // all locators should have identical request paths
+                // all locators should have identical request paths, (do
+                // not execute profile locator though to determine path:
+                // simply use the request path)
                 locator = (ProfileLocator)requestProfileLocators.values().iterator().next();
+                requestPath = locator.getRequestPath();
             }
-            requestPath = locator.getRequestPath();
             
             // attempt to select request page or folder using
             // profile locators and site view
@@ -182,6 +190,96 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 
         // no request page available
         throw new NodeNotFoundException("No request page available in site view.");
+    }
+
+    /**
+     * getRequestPathFromLocator - execute profile locator to extract
+     *                             request path using locator rules; this
+     *                             is request specific and is not part of
+     *                             the site view
+     *
+     * @param locator profile locator to execute
+     * @return request path from profile locator
+     */
+    private String getRequestPathFromLocator(ProfileLocator locator)
+    {
+        // use profile iterator to process the initial
+        // full set of profile locator properties searching
+        // for the first non control/navigation property
+        // that will force the request path if non-null;
+        // otherwise default to locator request path
+        Iterator locatorIter = locator.iterator();
+        if (locatorIter.hasNext())
+        {
+            ProfileLocatorProperty [] properties = (ProfileLocatorProperty []) locatorIter.next();
+            for (int i = 0; (i < properties.length); i++)
+            {
+                if (!properties[i].isControl() && !properties[i].isNavigation())
+                {
+                    // request path property; append to or replace
+                    // using locator specified path
+                    String path = properties[i].getValue();
+                    if (path != null)
+                    {
+                        if (!path.startsWith(Folder.PATH_SEPARATOR))
+                        {
+                            // specified path to be appended to request path
+
+                            // strip page from request path if required
+                            // and append path to base request path
+                            String basePath = locator.getRequestPath();
+                            if (basePath == null)
+                            {
+                                basePath = Folder.PATH_SEPARATOR;
+                            }
+                            else if (basePath.endsWith(Page.DOCUMENT_TYPE))
+                            {
+                                basePath = basePath.substring(0, basePath.lastIndexOf(Folder.PATH_SEPARATOR)+1);
+                            }
+                            else if (!basePath.endsWith(Folder.PATH_SEPARATOR))
+                            {
+                                basePath += Folder.PATH_SEPARATOR;
+                            }
+                            path = basePath + path;
+
+                            // make sure path ends in page extension
+                            // if folder not explicitly specified
+                            if (!path.endsWith(Folder.PATH_SEPARATOR) && !path.endsWith(Page.DOCUMENT_TYPE))
+                            {
+                                path += Page.DOCUMENT_TYPE;
+                            }
+
+                            // log modified page request
+                            if (log.isDebugEnabled() && !path.equals(locator.getRequestPath()))
+                            {
+                                log.debug("Request page modified by profile locator: request path=" + path);
+                            }
+                            return path;
+                        }
+                        else
+                        {
+                            // specified path to replace request path
+
+                            // log modified page request
+                            if (log.isDebugEnabled() && !path.equals(locator.getRequestPath()))
+                            {
+                                log.debug("Request page modified by profile locator: request path=" + path);
+                            }
+                            return path;
+                        }
+                    }
+                    else
+                    {
+                        // interpret null path as using default
+                        // locator request path
+                        return locator.getRequestPath();
+                    }
+                }
+            }
+        }
+
+        // return locator request path
+        return locator.getRequestPath();
     }
 
     /**
