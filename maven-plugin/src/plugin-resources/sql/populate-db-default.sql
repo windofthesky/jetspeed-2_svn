@@ -381,7 +381,7 @@ insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my
 
 insert into PROFILING_RULE values ('j2', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
-   'The default profiling rule following the Jetspeed-1 profiler fallback algorithm minus mediatype, language and country.');
+   'The default profiling rule for users minus mediatype, language and country.');
 insert into RULE_CRITERION values (18, 'j2', 0, 'path.session', 'page', 'default-page', 0);
 insert into RULE_CRITERION values (19, 'j2', 1, 'group.role.user', 'user', null, 0);
 
