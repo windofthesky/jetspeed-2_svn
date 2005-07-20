@@ -87,13 +87,8 @@ limitations under the License.
   </bean>
     
   <!-- Portlet Registry DAO-->
-  <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init"
-  	    depends-on="ojbConfigurer">
-        <!--
-            note: depends-on required due to hidden dep via OJB.properties:
-                  ConnectionFactoryClass=org.springframework.orm.ojb.support.LocalDataSourceConnectionFactory
-            see: datasource.xml and configured http://www.springframework.org/docs/reference/orm.html#d0e7571
-         -->
+  <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init" >
+
         <constructor-arg index="0"><value>META-INF/registry_repository.xml</value></constructor-arg>
         <constructor-arg index="1"><ref bean="portletFactory"/></constructor-arg>
   </bean>
@@ -288,12 +283,7 @@ limitations under the License.
   <bean id="java.util.prefs.PreferencesFactory" 
   	class="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"
   	name="prefsFactory" init-method="init"
-  	depends-on="ojbConfigurer">
-    <!--
-        note: depends-on required due to hidden dep via OJB.properties:
-              ConnectionFactoryClass=org.springframework.orm.ojb.support.LocalDataSourceConnectionFactory
-        see: datasource.xml and configured http://www.springframework.org/docs/reference/orm.html#d0e7571
-     -->
+  	>
   		<property name="prefsProvider"> 
 			<ref bean="prefsProvider"/>
 		</property>	

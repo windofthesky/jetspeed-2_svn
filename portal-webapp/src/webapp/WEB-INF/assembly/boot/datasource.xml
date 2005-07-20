@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>	
-	
+<beans>		
   <!-- 
 	  Creates a JNDI-based datasource bean name JetspeedDS.
 	  The  jdbc-connection-descriptor jcd-alias property must
@@ -52,9 +51,5 @@
 	 - see: http://www.springframework.org/docs/reference/orm.html#d0e7571
 	-->
 	
-  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/>
-  
-  
-   
-	
+  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/>    	
 </beans>

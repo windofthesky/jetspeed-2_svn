@@ -22,12 +22,14 @@ import java.io.IOException;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * <p>
@@ -106,7 +108,13 @@ public class SpringEngine extends AbstractEngine
             }          
         }
         
-        SpringComponentManager cm = new SpringComponentManager(configs, null);
+        XmlWebApplicationContext bootCtx = new XmlWebApplicationContext();
+        ServletContext servletContext = servletConfig.getServletContext();
+        bootCtx.setServletContext(servletContext);
+        bootCtx.setConfigLocations(new String[] {"/WEB-INF/assembly/boot/*.xml"});
+        bootCtx.refresh();
+        
+        SpringComponentManager cm = new SpringComponentManager(configs, bootCtx);
         servletConfig.getServletContext().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, cm.getApplicationContext());
         
         return cm;
