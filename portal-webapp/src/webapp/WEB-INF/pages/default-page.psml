@@ -16,7 +16,7 @@ limitations under the License.
 <page>
   <defaults
      skin="orange"
-     layout-decorator="tigris"
+     layout-decorator="jscookmenu"
      portlet-decorator="tigris"
   />
   <title>Welcome to Jetspeed 2</title>
