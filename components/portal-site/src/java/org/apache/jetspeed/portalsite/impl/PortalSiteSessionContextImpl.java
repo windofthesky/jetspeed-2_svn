@@ -203,11 +203,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     private String getRequestPathFromLocator(ProfileLocator locator)
     {
-        // use profile iterator to process the initial
-        // full set of profile locator properties searching
-        // for the first non control/navigation property
-        // that will force the request path if non-null;
-        // otherwise default to locator request path
+        // use profile iterator to process the initial full
+        // set of profile locator properties searching for
+        // the first non control/navigation, (i.e. page/path),
+        // property that will force the request path if
+        // non-null; otherwise default to locator request path
+        String requestPath = locator.getRequestPath();
         Iterator locatorIter = locator.iterator();
         if (locatorIter.hasNext())
         {
@@ -216,18 +217,19 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             {
                 if (!properties[i].isControl() && !properties[i].isNavigation())
                 {
-                    // request path property; append to or replace
+                    // request page/path property; append to or replace
                     // using locator specified path
                     String path = properties[i].getValue();
                     if (path != null)
                     {
+                        // specified page/path to be appended to request path if
+                        // relative; otherwise specified page/path to replace
+                        // request path
                         if (!path.startsWith(Folder.PATH_SEPARATOR))
                         {
-                            // specified path to be appended to request path
-
                             // strip page from request path if required
-                            // and append path to base request path
-                            String basePath = locator.getRequestPath();
+                            // and append page/path to base request path
+                            String basePath = requestPath;
                             if (basePath == null)
                             {
                                 basePath = Folder.PATH_SEPARATOR;
@@ -248,38 +250,41 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             {
                                 path += Page.DOCUMENT_TYPE;
                             }
-
-                            // log modified page request
-                            if (log.isDebugEnabled() && !path.equals(locator.getRequestPath()))
-                            {
-                                log.debug("Request page modified by profile locator: request path=" + path);
-                            }
-                            return path;
                         }
-                        else
+
+                        // detect profile locator request path modification
+                        if (!path.equals(requestPath))
                         {
-                            // specified path to replace request path
-
+                            // if modified request path ends with default page,
+                            // strip default page from path to allow folder level
+                            // defaulting to take place: locator should not force
+                            // selection of default page when selection of the
+                            // folder is implied by use in locator page/path
+                            if (path.endsWith(Folder.PATH_SEPARATOR + Folder.FALLBACK_DEFAULT_PAGE))
+                            {
+                                path = path.substring(0, path.length() - Folder.FALLBACK_DEFAULT_PAGE.length());
+                            }
+                            
                             // log modified page request
-                            if (log.isDebugEnabled() && !path.equals(locator.getRequestPath()))
+                            if (log.isDebugEnabled() && !path.equals(requestPath))
                             {
                                 log.debug("Request page modified by profile locator: request path=" + path);
                             }
-                            return path;
                         }
+                        return path;
                     }
                     else
                     {
                         // interpret null path as using default
                         // locator request path
-                        return locator.getRequestPath();
+                        return requestPath;
                     }
                 }
             }
         }
 
         // return locator request path
-        return locator.getRequestPath();
+        return requestPath;
     }
 
     /**
