@@ -60,7 +60,22 @@
 
     <goal name="undeploy-plugin">
         <attainGoal name="plugin:uninstall-now" />
-        <delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="false" />
+        <util:available file="${maven.home.local}/plugins">
+          <delete>
+            <fileset dir="${maven.home.local}/plugins" >
+              <include name="**/${pom.artifactId}*" />
+            </fileset>
+          </delete>
+        </util:available>
+        
+        <util:available file="${maven.home.local}/cache">
+          <delete>
+            <fileset dir="${maven.home.local}/cache" >
+              <include name="**/${pom.artifactId}*" />
+              <include name="**/*.cache" />
+            </fileset>
+          </delete>   
+        </util:available>                  
     </goal>
 
     <goal name="copyPortalWebApp">
