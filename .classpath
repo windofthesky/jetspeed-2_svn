@@ -10,6 +10,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/deploy-tool/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/file-cache/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/file-cache/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/header-resource/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/id-generator/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/id-generator/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed/src/java"/>

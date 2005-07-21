@@ -68,6 +68,9 @@ limitations under the License.
           <entry key='Powertools'>
             <ref bean='Powertools'/>
           </entry>
+          <entry key="HeaderResource">
+            <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory"/>
+          </entry>
   	   	</map>
   	   </constructor-arg>
   </bean>

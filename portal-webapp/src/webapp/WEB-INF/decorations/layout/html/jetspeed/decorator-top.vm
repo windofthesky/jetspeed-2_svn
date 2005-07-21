@@ -24,7 +24,7 @@ limitations under the License.
 <head>
     <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
     <title>$jetspeed.page.getTitle($preferedLocale)</title>
-    #includeStyleSheets()
+    #includeHeaderResource()
 </head>
 <body class="${_layoutBaseCssClass}">
 

@@ -60,7 +60,7 @@ DEALINGS IN THE SOFTWARE.
     <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
     <meta http-equiv="Content-style-type" content="text/css" />
 
-    #includeStyleSheets()
+    #includeHeaderResource()
     <title>$jetspeed.page.getTitle($preferedLocale)</title>
 
     <meta name="version" content="/* $Id$" />

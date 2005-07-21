@@ -6,9 +6,8 @@
 #end
 
 #* Adds link for all style sheets required by the layout and portlet decorations *#
-#macro (includeStyleSheets)
- #set($cssUrls = $renderRequest.getAttribute("cssUrls"))
- #foreach($cssUrl in $cssUrls)
-	<link rel="stylesheet" type="text/css" media="all" href="$response.encodeURL($cssUrl)" />
- #end
+#macro (includeHeaderResource)
+ #set($resourceHeaderFactory = $jetspeed.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+ #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
+ $resourceHeader
 #end

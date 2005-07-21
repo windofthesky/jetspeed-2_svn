@@ -210,7 +210,17 @@ limitations under the License.
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
-		
+		<dependency>
+			<id>jetspeed-header-resource</id>
+			<groupId>jetspeed2</groupId>
+			<version>
+				${jetspeed.version}
+			</version>
+			<properties>
+	           <war.bundle>true</war.bundle>
+	        </properties>
+		</dependency>
+
         <!-- taglib stuff -->
 		<dependency>
 			<id>jstl</id>

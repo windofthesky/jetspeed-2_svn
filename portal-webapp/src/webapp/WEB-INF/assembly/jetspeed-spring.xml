@@ -403,5 +403,11 @@ limitations under the License.
       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location"><value>file:///${applicationRoot}/WEB-INF/conf/jetspeed.properties</value></property>
   </bean>  
-  
+
+  <!-- HeaderResource Factory -->
+  <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory"
+      class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl"
+  >
+  </bean>
+
 </beans>

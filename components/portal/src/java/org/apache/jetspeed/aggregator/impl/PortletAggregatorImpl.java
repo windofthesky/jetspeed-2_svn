@@ -17,16 +17,17 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
@@ -85,23 +86,16 @@ public class PortletAggregatorImpl implements PortletAggregator
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
         log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
-        Set cssUrls = (Set) context.getAttribute("cssUrls");
-
-        if (cssUrls == null)
-        {
-            cssUrls = new HashSet();
-            context.setAttribute("cssUrls", cssUrls);
-        }
-        
-        //cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");
+        HeaderResourceFactory headerResourceFactory=(HeaderResourceFactory)Jetspeed.getComponentManager().getComponent(HeaderResourceFactory.class);
+        HeaderResource headerResource=headerResourceFactory.getHeaderResouce(context);
         
         if(decoratorType.equals(Fragment.LAYOUT))
         {
-            cssUrls.add("content/css/styles.css");
+            headerResource.addStyleSheet("content/css/styles.css");
         }
         else
         {
-            cssUrls.add("content/"+decoratorName+"/css/styles.css");
+            headerResource.addStyleSheet("content/"+decoratorName+"/css/styles.css");
         }
     }
 }
