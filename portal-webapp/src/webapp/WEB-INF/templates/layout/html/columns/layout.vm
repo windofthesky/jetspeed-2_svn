@@ -69,14 +69,14 @@ function openWindow(pipeline)
       #foreach ($action in $actions)
       <td align="right" valign="middle" class="PContent" >
       <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      <td/>
+      </td>
       #end
 	  #if($editing == true)    		  	  
 	   #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
             #set ($imgsrc="${jetspeed.pageBasePath}/content/images/select.gif")
 	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
-	      <td/>	  
+	      </td>	  
 	  #end      
       </tr>
       </table>
@@ -122,8 +122,7 @@ function openWindow(pipeline)
               <div id="_$f.id_toolBox"  >
                <table cellpadding="0" cellspacing="0" >
                  <tr>
-                   <td >
-                   </td>
+                   <td></td>
                    <td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($row > 0)
                          #set($upUrl = $renderResponse.createRenderURL())    
@@ -133,8 +132,8 @@ function openWindow(pipeline)
                          <a href="$upUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
-                   <td/>
-                   <td/>
+                   <td></td>
+                   <td></td>
                  </tr>
                  <tr>
                    <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
@@ -167,7 +166,7 @@ function openWindow(pipeline)
                     </td>
                  </tr>
 				 <tr>
-					<td ></td>
+					<td></td>
 					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
 					  #set($lastRow = $renderRequest.getAttribute("lastRowForColumn").get($col))
 					  #if($row < $lastRow)						
@@ -178,8 +177,8 @@ function openWindow(pipeline)
 					    <a href="$downUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
-					<td/>
-					<td/>
+					<td></td>
+					<td></td>
 				 </tr>
 			  </table>
 			</div>

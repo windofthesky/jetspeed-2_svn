@@ -43,7 +43,7 @@ limitations under the License.
       #foreach ($action in $actions)
       <td align="right" valign="middle" class="PTitle" >
       <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      <td/>
+      </td>
       #end
       </tr>  
       </table>

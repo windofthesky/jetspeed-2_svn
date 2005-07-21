@@ -42,7 +42,8 @@ limitations under the License.
 <!--  BEGIN: layout/html/tigris/decorator.vm -->
 
     <div class="layout-tigris">
-<!-- Banner -->
+
+<!-- Banner Content -->
       <div id="banner">
         <table border="0" cellspacing="0" cellpadding="8" width="100%">
           <tr>
@@ -57,19 +58,27 @@ limitations under the License.
           </tr>
         </table>
       </div>
-<!-- Top Tabs -->
-      <div class="tabs">
+
+<!-- Top Tabs Menu -->
 #set($pagesStandardMenu = $site.getMenu("pages"))
 #if(!$pagesStandardMenu.empty)
+      <div class="tabs">
 #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
-#end
       </div>
+#end
+
+## <!-- Back Navigation -->
+##       <div id="breadcrumbs">
+## #set($backStandardMenu = $site.getMenu("back"))
+## #if(!$backStandardMenu.empty)
+## #includeLinksNavigation($backStandardMenu $LEFT_TO_RIGHT $TITLE_LAST "" "")
+## #else
+##         &nbsp;
+## #end
+##       </div>
+
+<!-- Breadcrumbs Back Navigation -->
       <div id="breadcrumbs">
-#* standard back breadcrumb *#
-##set($backStandardMenu = $site.getMenu("back"))
-##if(!$backStandardMenu.empty)
-##includeLinksNavigation($backStandardMenu $LEFT_TO_RIGHT $TITLE_LAST "" "")
-#* standard breadcrumbs *#
 #set($breadcrumbsStandardMenu = $site.getMenu("breadcrumbs"))
 #if(!$breadcrumbsStandardMenu.empty)
 #includeLinksNavigation($breadcrumbsStandardMenu $LEFT_TO_RIGHT "" $BREADCRUMBS_STYLE "")
@@ -77,22 +86,24 @@ limitations under the License.
         &nbsp;
 #end
       </div>
+
+<!-- Content Table -->
       <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
         <tr>
+
+<!-- Left Navigations Menu Table Data -->
 #set($navigationsStandardMenu = $site.getMenu("navigations"))
 #if(!$navigationsStandardMenu.empty)
           <td valign="top" id="leftcol" width="20%">
             <div id="navcolumn">
-
-<!-- Navigation Column -->
               <table cellpadding="0" cellspacing="4" border="0" width="100%">
 #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
               </table>
-
             </div>
           </td>
 #end
 
+<!-- Content Table Data -->
           <td nowrap valign="top">
   
 ## $jetspeed.include($jetspeed.currentFragment)
