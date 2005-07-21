@@ -95,7 +95,7 @@ DEALINGS IN THE SOFTWARE.
 
 <!-- Top Menu -->
 #if(!$siteNavigationsStandardMenu.empty)
-#includeJSCookMenuDefinion("tophorizontalmenu" $siteNavigationsStandardMenu)
+#includeJSCookMenuDefinition("tophorizontalmenu" $siteNavigationsStandardMenu)
       <div id="tophorizontalmenu"></div>
 #includeJSCookMenuDraw("tophorizontalmenu" $jsCookMenuTheme $LEFT_TO_RIGHT)
 #end
@@ -116,7 +116,7 @@ DEALINGS IN THE SOFTWARE.
 <!-- Left Menu Table Data -->
 #if(!$additionalLinksStandardMenu.empty)
           <td valign="top" width="20%">
-#includeJSCookMenuDefinion("leftverticalmenu" $additionalLinksStandardMenu)
+#includeJSCookMenuDefinition("leftverticalmenu" $additionalLinksStandardMenu)
             <div id="leftverticalmenu"></div>
 #includeJSCookMenuDraw("leftverticalmenu" $jsCookMenuTheme $TOP_TO_BOTTOM)
           </td>
