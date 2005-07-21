@@ -66,6 +66,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         super();
         this.registry = registry;
         PortletEntityImpl.pac = this;
+        PortletEntityImpl.registry = registry;
     }
 
     /**
@@ -101,7 +102,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         {
             String msg = "Failed to retrieve Portlet Definition for " + fragment.getName();
             logger.warn(msg);
-            portletEntity = new PortletEntityImpl();
+            portletEntity = new PortletEntityImpl(fragment);
             fragment.overrideRenderedContent(msg);
         }
 

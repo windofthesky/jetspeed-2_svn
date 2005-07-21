@@ -31,11 +31,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
 import org.apache.jetspeed.components.persistence.store.RemovalAware;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
@@ -66,6 +68,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     private JetspeedObjectID id;
 
     protected static PortletEntityAccessComponent pac;
+    
+    protected static PortletRegistry registry;
 
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
@@ -90,6 +94,18 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected String appName;
 
     private boolean dirty = false;
+    
+    private Fragment fragment;
+    
+    public PortletEntityImpl(Fragment fragment)
+    {
+        this.fragment = fragment;
+    }
+
+    public PortletEntityImpl()
+    {
+        super();
+    }
 
     // protected Principal principal;
     protected ThreadLocal principalRef = new ThreadLocal();
@@ -188,6 +204,15 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public PortletDefinition getPortletDefinition()
     {
+        // there are cases when jetspeed gets initialized before
+        // all of the portlet web apps have.  In this event, premature
+        // access to the portal would cause portlet entities to be cached
+        // with their associated window without there corresponding PortletDefinition
+        // (becuase the PortletApplication has yet to be registered).
+        if(this.portletDefinition == null)
+        {
+            setPortletDefinition(registry.getPortletDefinitionByIdentifier(getPortletUniqueName()));
+        }
         return this.portletDefinition;
     }
 
@@ -495,6 +520,24 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     }
     public String getPortletUniqueName()
     {
-        return this.appName+"::"+this.portletName;
+        if(this.appName != null && this.portletName != null)
+        {
+            return this.appName+"::"+this.portletName;
+        }
+        else if(fragment != null)
+        {
+            return fragment.getName();
+        }
+        else
+        {
+            return null;
+        }
     }
+
+    public void setFragment(Fragment fragment)
+    {
+        this.fragment = fragment;
+    }
+    
+    
 }

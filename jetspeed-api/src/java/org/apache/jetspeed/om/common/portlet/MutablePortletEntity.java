@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.common.portlet;
 
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 
@@ -34,4 +35,6 @@ public interface MutablePortletEntity
     public static final String PORTLET_ENTITY_ROOT = "portlet_entity";
     
     String getPortletUniqueName();
+    
+    void setFragment(Fragment fragment);
 }
