@@ -21,6 +21,10 @@
     <options>/non-java</options>
   </menu>
 
+  <!-- temporary menu definitions for jscookmenu layout decorator; will be standard -->
+  <menu name="site-navigations" options="/" depth="-1"/>
+  <menu name="additional-links" regexp="true" options="/*.link"/>
+
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
