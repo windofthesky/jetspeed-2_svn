@@ -37,7 +37,7 @@ limitations under the License.
   <body marginwidth="0" marginheight="0" class="layout-tigris">
 
 #set($myF = $jetspeed.currentFragment)
-#set($site = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
+#set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
 
 <!--  BEGIN: layout/html/tigris/decorator.vm -->
 
