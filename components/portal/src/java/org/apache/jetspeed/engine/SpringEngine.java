@@ -16,7 +16,6 @@
 package org.apache.jetspeed.engine;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -70,51 +69,19 @@ public class SpringEngine extends AbstractEngine
         final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
         final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
         
-        FileFilter extFilter = new FileFilter()
-        {
-            public boolean accept( File pathname )
-            {
-                boolean isConfig = pathname.getName().endsWith(assemblyFileExtension);
-                if(useInternalJNDI)
-                {
-                    return isConfig;
-                    
-                }
-                else
-                {
-                    return isConfig && pathname.getName().indexOf("pooled-datasource-support") < 0;
-                }
-            }
-            
-        };
-        
-        File assemblyDirFile = new File(getRealPath(assemblyDir));
-        if(!assemblyDirFile.exists())
-        {
-            throw new FileNotFoundException("The assembly path "+assemblyDirFile.getAbsolutePath()+" does not exist.");
-        }
-        
-        File[] configFiles = assemblyDirFile.listFiles(extFilter);
-        String[] configs = new String[configFiles.length];
-        for(int i=0; i<configFiles.length; i++)
-        {
-            configs[i] = configFiles[i].getCanonicalFile().toURL().toExternalForm();
-            if(configs[i].indexOf("pooled-datasource-support") > -1 && i > 0)
-            {	
-                String current0Offset = configs[0];
-                configs[0] = configs[i];
-                configs[i] = current0Offset;
-                
-            }          
-        }
-        
         XmlWebApplicationContext bootCtx = new XmlWebApplicationContext();
         ServletContext servletContext = servletConfig.getServletContext();
         bootCtx.setServletContext(servletContext);
         bootCtx.setConfigLocations(new String[] {"/WEB-INF/assembly/boot/*.xml"});
         bootCtx.refresh();
         
-        SpringComponentManager cm = new SpringComponentManager(configs, bootCtx);
+        XmlWebApplicationContext appCtx = new XmlWebApplicationContext();
+        appCtx.setParent(bootCtx);
+        appCtx.setServletContext(servletContext);
+        appCtx.setConfigLocations(new String[] {assemblyDir+"/*"+assemblyFileExtension});
+        appCtx.refresh();
+        
+        SpringComponentManager cm = new SpringComponentManager(appCtx);
         servletConfig.getServletContext().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, cm.getApplicationContext());
         
         return cm;

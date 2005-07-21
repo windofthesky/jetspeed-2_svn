@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
@@ -34,18 +35,22 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  */
 public class SpringComponentManager implements ComponentManager
 {
-    protected FileSystemXmlApplicationContext appContext;
+    protected ConfigurableApplicationContext appContext;
     
     protected ArrayList factories;
-
-    public SpringComponentManager(String[] springConfigs, ApplicationContext parentAppContext)
+    
+    public SpringComponentManager(ConfigurableApplicationContext appContext)
     {
-        factories = new ArrayList();
-        appContext = new FileSystemXmlApplicationContext(springConfigs, parentAppContext );
-        
+        this.appContext = appContext;
+        factories = new ArrayList();        
         factories.add(appContext);        
      }
 
+    public SpringComponentManager(String[] springConfigs, ApplicationContext parentAppContext)
+    {
+       this(new FileSystemXmlApplicationContext(springConfigs, parentAppContext ));    
+    }
+    
     /**
      * <p>
      * getComponent
