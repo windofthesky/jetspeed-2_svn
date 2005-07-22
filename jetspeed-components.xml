@@ -80,16 +80,6 @@ limitations under the License.
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed-header-resource</id>
-			<groupId>jetspeed2</groupId>
-			<version>
-				${jetspeed.version}
-			</version>
-			<properties>
-	           <war.bundle>true</war.bundle>
-	        </properties>
-		</dependency>        
-		<dependency>
 			<id>jetspeed-search</id>
 			<groupId>jetspeed2</groupId>
 			<version>
