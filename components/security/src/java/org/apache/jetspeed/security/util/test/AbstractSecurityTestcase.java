@@ -86,10 +86,7 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
     {
 
         super.setUp();
-        
-        
-        
-        
+
         // SPI Security handlers.
         securityAccess = (SecurityAccess) ctx.getBean("org.apache.jetspeed.security.spi.SecurityAccess");
         ch =  (CredentialHandler) ctx.getBean("org.apache.jetspeed.security.spi.CredentialHandler");
