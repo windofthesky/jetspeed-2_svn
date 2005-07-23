@@ -34,8 +34,8 @@ limitations under the License.
     </menu>
     <menu name='Security'>        
       <item name="Security Overview" href="multiproject/jetspeed-security/index.html"/>       
-      <item name="Authentication" href="authentication.html"/>
-      <item name="JAAS Authorization" href="authorization.html"/>
+      <item name="Authentication" href="multiproject/jetspeed-security/atn.html"/>
+      <item name="JAAS Authorization" href="multiproject/jetspeed-security/atz.html"/>
       <item name="PSML Authorization" href="bronco.html"/>
       <item name="SPI: Providers and Handlers" href="spi.html"/>
       <item name="Security Services Configuration" href="multiproject/jetspeed-security/config.html"/>
