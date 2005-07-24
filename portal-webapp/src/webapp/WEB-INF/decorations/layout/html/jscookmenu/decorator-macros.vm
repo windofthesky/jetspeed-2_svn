@@ -130,7 +130,7 @@ DEALINGS IN THE SOFTWARE.
 #macro (nestJSCookMenuDefinition $_menu)
 #set($menuTitle = $_menu.getTitle($preferedLocale))
 #set($menuName = $_menu.getShortTitle($preferedLocale))
-['', '$!{menuName}', '', '', '$!{menuTitle}',
+["", "$!{menuName}", "", "", "$!{menuTitle}",
 #foreach($element in $_menu.elements.iterator())
   #if($velocityCount > 1),#end
   #if($element.elementType == "option")
@@ -138,10 +138,10 @@ DEALINGS IN THE SOFTWARE.
     #set($linkName = $element.getShortTitle($preferedLocale))
     #set($linkUrl = $jetspeed.getAbsoluteUrl($element.url))
     #if(($element.type == "page") || ($element.type == "folder"))
-      ['', '${linkName}', '${linkUrl}', '', '$!{linkTitle}']
+      ["", "${linkName}", "${linkUrl}", "", "$!{linkTitle}"]
     #elseif($element.type == "link")
       #set($linkTarget = $element.target)
-      ['', '${linkName}', '${linkUrl}', '$!{linkTarget}', '$!{linkTitle}']
+      ["", "${linkName}", "${linkUrl}", "$!{linkTarget}", "$!{linkTitle}"]
     #end
   #elseif($element.elementType == "menu")
     #nestJSCookMenuDefinition($element)
@@ -165,10 +165,10 @@ var ${_id}menu =
     #set($linkName = $element.getShortTitle($preferedLocale))
     #set($linkUrl = $jetspeed.getAbsoluteUrl($element.url))
     #if(($element.type == "page") || ($element.type == "folder"))
-      ['', '${linkName}', '${linkUrl}', '', '$!{linkTitle}']
+      ["", "${linkName}", "${linkUrl}", "", "$!{linkTitle}"]
     #elseif($element.type == "link")
       #set($linkTarget = $element.target)
-      ['', '${linkName}', '${linkUrl}', '$!{linkTarget}', '$!{linkTitle}']
+      ["", "${linkName}", "${linkUrl}", "$!{linkTarget}", "$!{linkTitle}"]
     #end
   #elseif($element.elementType == "menu")
     #nestJSCookMenuDefinition($element)
