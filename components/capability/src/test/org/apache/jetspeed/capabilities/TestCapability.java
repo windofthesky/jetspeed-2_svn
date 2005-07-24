@@ -16,12 +16,17 @@
 
 package org.apache.jetspeed.capabilities;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.jetspeed.capabilities.impl.JetspeedCapabilities;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 /**
  * Test Capability Service
@@ -29,9 +34,10 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends DatasourceEnabledSpringTestCase
+public class TestCapability extends TestCase
 {
     private Capabilities capabilities = null;
+    private OJBHelper ojbHelper;
         
     /**
      * Start the tests.
@@ -46,8 +52,17 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
 
     protected void setUp() throws Exception
     {
-        super.setUp();               
-        this.capabilities = (Capabilities) ctx.getBean("capabilities");
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
+
+        
+        JetspeedCapabilities targetCapabilities
+            = new JetspeedCapabilities("META-INF/capabilities-ojb.xml");
+        targetCapabilities.init();
+        this.capabilities = (Capabilities) 
+            ojbHelper.getTxProxiedObject(targetCapabilities, new String[]{Capabilities.class.getName()});                
+        
     }
     
     public static Test suite()
@@ -61,9 +76,6 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
      * @throws Exception
      */
     public void testCapability() throws Exception
-    {
-    }
-    public void xtestCapability() throws Exception
     {
         assertNotNull("capabilities component is null", capabilities);
         int lastOrder = 0;
