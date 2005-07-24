@@ -20,21 +20,26 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.prefs.om.Property;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 
 /**
  * <p>Unit testing for {@link PropertyManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestPropertyManager extends DatasourceEnabledSpringTestCase
+public class TestPropertyManager extends TestCase
 {
 
     /** The property manager. */
     private static PropertyManager pms;
+    private OJBHelper ojbHelper;
 
     /**
      * <p>Defines property set types.</p>
@@ -198,10 +203,20 @@ public class TestPropertyManager extends DatasourceEnabledSpringTestCase
      */
     public void setUp() throws Exception
     {
-        super.setUp();
-        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
+
+        PersistenceBrokerPreferencesProvider targetProvider = new PersistenceBrokerPreferencesProvider("META-INF/prefs_repository.xml", true);
+        targetProvider.init();
+        this.provider = (PreferencesProvider) 
+            ojbHelper.getTxProxiedObject(targetProvider, new String[]{PreferencesProvider.class.getName()});                
         
-        pms = (PropertyManager) ctx.getBean("propertyManager");        
+        PropertyManagerImpl targetPropMan = new PropertyManagerImpl(provider);
+        
+        pms = (PropertyManager) 
+            ojbHelper.getTxProxiedObject(targetPropMan, new String[]{PropertyManager.class.getName()});                
+        
     }
 
 }
