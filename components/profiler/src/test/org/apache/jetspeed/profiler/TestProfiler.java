@@ -26,9 +26,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
