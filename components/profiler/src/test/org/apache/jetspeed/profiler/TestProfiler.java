@@ -16,16 +16,21 @@
 package org.apache.jetspeed.profiler;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
@@ -33,6 +38,7 @@ import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.testhelpers.OJBHelper;
 
 /**
  * TestProfiler
@@ -40,9 +46,11 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestProfiler extends DatasourceEnabledSpringTestCase
+public class TestProfiler extends TestCase
 {
     private Profiler profiler = null;
+    private OJBHelper ojbHelper;
+    
     protected static final Properties TEST_PROPS = new Properties();
     
     static
@@ -74,8 +82,14 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected void setUp() throws Exception
     {
-        super.setUp();
-        this.profiler = (Profiler) ctx.getBean("profiler");
+        Map context = new HashMap();
+        ojbHelper = new OJBHelper(context);
+        ojbHelper.setUp();
+
+        JetspeedProfilerImpl targetProfiler = new JetspeedProfilerImpl("META-INF/profiler-ojb.xml");
+        targetProfiler.init();
+        this.profiler = (Profiler) 
+            ojbHelper.getTxProxiedObject(targetProfiler, new String[]{Profiler.class.getName()});                
     }
 
     public static Test suite()
