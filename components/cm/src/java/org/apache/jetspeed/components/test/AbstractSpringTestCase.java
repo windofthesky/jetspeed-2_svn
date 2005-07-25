@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.components.test;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import junit.framework.TestCase;
@@ -38,13 +39,34 @@ public abstract class AbstractSpringTestCase extends TestCase
      */
     protected ClassPathXmlApplicationContext ctx;
     
-    protected abstract String[] getConfigurations();
-    
-    
-
+    /**
+     * setup Spring context as part of test setup
+     */
     protected void setUp() throws Exception
     {        
         super.setUp();
-        ctx = new ClassPathXmlApplicationContext(getConfigurations());
+        String [] bootConfigurations = getBootConfigurations();
+        if (bootConfigurations != null)
+        {
+            ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootConfigurations, true);
+            ctx = new ClassPathXmlApplicationContext(getConfigurations(), true, bootContext);
+        }
+        else
+        {
+            ctx = new ClassPathXmlApplicationContext(getConfigurations(), true);
+        }
+    }
+
+    /**
+     * required specification of spring configurations
+     */
+    protected abstract String[] getConfigurations();
+    
+    /**
+     * optional specification of boot spring configurations
+     */
+    protected String[] getBootConfigurations()
+    {
+        return null;
     }
 }
