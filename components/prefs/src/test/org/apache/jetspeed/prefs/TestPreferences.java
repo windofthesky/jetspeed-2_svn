@@ -20,12 +20,9 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
-import org.apache.jetspeed.testhelpers.OJBHelper;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 /**
  * <p>
@@ -34,7 +31,7 @@ import org.apache.jetspeed.testhelpers.OJBHelper;
  * 
  * @author <a href="dlestrat@yahoo.com">David Le Strat </a>
  */
-public class TestPreferences extends TestCase
+public class TestPreferences extends DatasourceEnabledSpringTestCase
 {
 
     /** The property manager. */
@@ -49,7 +46,6 @@ public class TestPreferences extends TestCase
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
     private PreferencesProvider provider;
-    private OJBHelper ojbHelper;
 
     private PreferencesProvider providerNoProp;
 
@@ -58,21 +54,11 @@ public class TestPreferences extends TestCase
      */
     public void setUp() throws Exception
     {
+        super.setUp();
+        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
         
-        Map context = new HashMap();
-        ojbHelper = new OJBHelper(context);
-        ojbHelper.setUp();
-
-        PersistenceBrokerPreferencesProvider targetProvider = new PersistenceBrokerPreferencesProvider("META-INF/prefs_repository.xml", true);
-        targetProvider.init();
-        this.provider = (PreferencesProvider) 
-            ojbHelper.getTxProxiedObject(targetProvider, new String[]{PreferencesProvider.class.getName()});                
+        pms = (PropertyManager) ctx.getBean("propertyManager");
         
-        PropertyManagerImpl targetPropMan = new PropertyManagerImpl(provider);
-        
-        pms = (PropertyManager) 
-            ojbHelper.getTxProxiedObject(targetPropMan, new String[]{PropertyManager.class.getName()});                
-                
         // Make sure we are starting with a clean slate
         clearChildren(Preferences.userRoot());
         clearChildren(Preferences.systemRoot());
