@@ -325,7 +325,7 @@ public class TreeControlTag extends TagSupport
         
         // Render the beginning of this node
         out.println("  <tr valign=\"middle\">");
-        out.print("<td><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr valign=\"middle\"><td>");
+        out.print("<td><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr valign=\"middle\">");
 
         // Create the appropriate number of indents
         for (int i = 0; i < level; i++) {
