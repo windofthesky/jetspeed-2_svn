@@ -32,12 +32,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-
 import org.apache.jetspeed.sso.SSOException;
 import java.lang.Exception;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 
 /**
  * <p>
@@ -46,7 +44,7 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
  * 
  * @author <a href="rogerrut@apache.org">Roger Ruttimann </a>
  */
-public class TestSSOComponent extends DatasourceEnabledSpringTestCase
+public class TestSSOComponent extends AbstractSpringTestCase
 {
 	/**
 	 * test url for this UnitTest
@@ -389,5 +387,11 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     {
         return new String[]
         { "META-INF/sso-dao.xml", "META-INF/transaction.xml"};
+    }
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 }
