@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 
 /**
  * <p>
@@ -23,10 +23,8 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
  * @version $Id$
  *
  */
-public class TestPreferencesNoPropManager extends DatasourceEnabledSpringTestCase
+public class TestPreferencesNoPropManager extends AbstractSpringTestCase
 {
-
- 
 
     /**
      * The property manager. 
@@ -62,6 +60,11 @@ public class TestPreferencesNoPropManager extends DatasourceEnabledSpringTestCas
     protected String[] getConfigurations()
     {
         return new String[]{"META-INF/prefs-noprop-dao.xml", "META-INF/transaction.xml"};
+    }
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]{"test-repository-datasource-spring.xml"};
     }
 
     protected void clearChildren(Preferences node) throws Exception

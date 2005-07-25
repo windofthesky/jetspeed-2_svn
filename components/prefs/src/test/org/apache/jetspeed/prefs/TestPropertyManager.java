@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.prefs.om.Property;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.jetspeed.prefs.om.Property;
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestPropertyManager extends DatasourceEnabledSpringTestCase
+public class TestPropertyManager extends AbstractSpringTestCase
 {
 
     /** The property manager. */
@@ -191,6 +191,11 @@ public class TestPropertyManager extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]{"META-INF/prefs-dao.xml", "META-INF/transaction.xml"};
+    }
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]{"test-repository-datasource-spring.xml"};
     }
 
     /**

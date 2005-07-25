@@ -34,4 +34,14 @@ limitations under the License.
     <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/rewriter/</url>
   </repository>
  
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+    <unitTest>
+      <includes>
+        <include>**/Test*.java</include>
+      </includes>
+    </unitTest>
+  </build>
+
 </project>

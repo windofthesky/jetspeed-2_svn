@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.prefs.util.test;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyManager;
 
@@ -30,7 +30,7 @@ import org.apache.jetspeed.prefs.PropertyManager;
  * @version $Id$
  *
  */
-public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestCase
+public class AbstractPrefsSupportedTestCase extends AbstractSpringTestCase
 {   
     protected PropertyManager propertyManager;
     protected PreferencesProvider prefsProvider;
@@ -40,6 +40,11 @@ public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestC
         return new String[]{"META-INF/prefs-noprop-dao.xml", "META-INF/transaction.xml"};
     }
     
+    protected String[] getBootConfigurations()
+    {
+        return new String[]{"test-repository-datasource-spring.xml"};
+    }
+
     protected void setUp() throws Exception
     {
         super.setUp();
