@@ -40,15 +40,15 @@
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
-      <excludes>
-        <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
-        <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
-        <exclude>**/TestJMX*.java</exclude>
-        <exclude>**/TestEngine.java</exclude>
-      </excludes>
-      <includes>
-        <include>**/Test*.java</include>
-      </includes>
+       <excludes>
+            <exclude>**/TestSpring*</exclude>                        
+            <exclude>**/TestPipeline*</exclude>                        
+            <exclude>**/TestNavigationalState*</exclude>                        
+            <exclude>**/TestWebXML*</exclude>                                                
+            <exclude>**/JetspeedTest*</exclude>                        
+            <exclude>**/PortalTestConstants*</exclude>                                                
+            <exclude>**/Abstract*</exclude>                                                
+       </excludes>
       <resources>
       <resource>
         <directory>${basedir}/src/java</directory>
