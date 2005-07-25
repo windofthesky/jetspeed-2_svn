@@ -16,6 +16,8 @@
 -->
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define">
 
+  <property name='testcase' value='org.apache.jetspeed.components.portalsite.TestPortalSite'/>
+
   <preGoal name="test:test">
     <copy todir="target/testdata">
       <fileset dir="testdata"/>
