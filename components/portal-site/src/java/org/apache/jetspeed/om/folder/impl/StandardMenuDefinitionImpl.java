@@ -206,6 +206,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      */
     public String getTitle()
     {
+        // fallback to getName()
         return getName();
     }
 
@@ -226,6 +227,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      */
     public String getShortTitle()
     {
+        // fallback to getTitle()
         return getTitle();
     }
 
@@ -247,6 +249,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      */
     public String getTitle(Locale locale)
     {
+        // fallback to getTitle()
         return getTitle();
     }
 
@@ -258,8 +261,11 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      */
     public String getShortTitle(Locale locale)
     {
+        // fallback to getTitle(Locale)
         String title = getTitle(locale);
-        if (title == null)
+
+        // fallback to getShortTitle() over getTitle()
+        if ((title == null) || (title == getTitle()))
         {
             title = getShortTitle();
         }
