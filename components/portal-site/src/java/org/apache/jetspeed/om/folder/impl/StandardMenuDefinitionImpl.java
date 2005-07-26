@@ -258,7 +258,12 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      */
     public String getShortTitle(Locale locale)
     {
-        return getShortTitle();
+        String title = getTitle(locale);
+        if (title == null)
+        {
+            title = getShortTitle();
+        }
+        return title;
     }
 
     /**
