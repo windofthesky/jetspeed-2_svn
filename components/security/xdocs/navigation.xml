@@ -28,7 +28,7 @@
             </item>
             <item name="Authorization" href="atz.html">
                 <item name="JAAS Authorization" href="atz-jaas.html"/>
-                <item name="Permissions and Authorization Policies" href="permission.html"/>
+                <item name="PermissionManager Overview" href="permission.html"/>
             </item>
             <item name="Aggregate Security Services" href="#" />
             <item name="Security Services Configuration" href="config.html" />

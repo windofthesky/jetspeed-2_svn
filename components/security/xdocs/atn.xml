@@ -22,7 +22,55 @@
         </authors>
     </properties>
     <body>
-        <section name="Authentication Overview">            
+        <section name="Authentication Architecture Overview">
+            <p>
+                For authentication, Jetspeed 2 leverages Java 
+                <a href="http://java.sun.com/j2se/1.4.2/docs/api/javax/security/auth/spi/LoginModule.html">LoginModule</a> 
+                architecture.  It provides a <a href="login-module.html">DefaultLoginModule</a> implementation and a
+                flexible architecture to be able to authenticate user against multiple user repositories and provide user
+                management capabilities across those repository.  A <code>UserManager</code> provides a set of coarsed
+                services for authenticating and managing users.  The class diagram below illustrates how the 
+                <code>UserManager</code> provides authentication to the <code>DefaultLoginModule</code> and leverages 
+                the <a href="atn-spi.html">Authentication SPI</a> to interact with various implementation and user stores.
+            </p>
+            <p>
+                <img src="images/atn-arch-c.gif" border="0" />
+            </p>
+            <p>
+                The various components described above fulfill the following functions:
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>DefaultLoginModule</code></td>
+                        <td>Jetspeed 2 default <a href="login-module.html">LoginModule</a> implementation which
+                        leverages the <code>authenticate()</code> method of the <code>UserManager</code> to provide
+                        authentication against the various <code>AuthenticationProvider</code> implementation currently
+                        configured.</td>
+                    </tr>
+                    <tr>
+                        <td><code>UserManager</code></td>
+                        <td>Coarsed service providing authentication and user management.  The <code>UserManager</code>code>
+                        leverages the various <code>AuthenticationProvider</code> implementations exposed to it through
+                        the <code>AuthenticationProviderProxy</code> through the <code>SecurityProvider</code>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>SecurityProvider</code></td>
+                        <td>Provides access to the security providers exposing SPI implementation to the coarsed security
+                        services.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>AuthenticationProviderProxy</code></td>
+                        <td>A proxy to the various <code>AuthenticationProvider</code> implementations.  The <code>AuthenticationProviderProxy</code>
+                        is responsible of invoking the correct <code>AuthenticationProvider</code> to authenticate or manage
+                        a specific user against a specific data store.</td>
+                    </tr>
+                </table>
+            </p>
         </section>
 
     </body>

@@ -71,6 +71,15 @@ grant principal o.a.j.security.GroupPrincipal "theGroupPrincipal" {
                 &quot;theUserPrincipal&quot; has permission to &quot;view&quot; the page called &quot;mypage&quot;, to
                 &quot;view,edit,minimize,maximize&quot; the portlet portlet called &quot;myportlet&quot;      
             </p>
+            <p>
+                The <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/AccessController.html">AccessController</a>
+                validates a <code>Subject</code> permissions.  For instance, a page permission check would perform the following
+                check:
+                <source><![CDATA[
+PagePermission permission = new PagePermission(path, actions);
+AccessController.checkPermission(permission);                
+                ]]></source>
+            </p>
         </section>
         <section name="Jetspeed JAAS Policy">
             <p>
@@ -92,7 +101,7 @@ pms.getPermissions(user.getPrincipals());
             </p>
             <p>
                 To get more detail about the implementation of the <code>PermissionManager</code>, see 
-                <a href="permission.html">Permissions and Authorization Policies</a>.
+                <a href="permission.html">PermissionManager Overview</a>.
             </p>
             <p>
                 <u>Note:</u> The current <code>RdbmsPolicy</code> manages the policies to apply.  It applies <code>RdbmsPolicy</code>

@@ -67,6 +67,14 @@
                             6. Creating a new Portal Application</a> for detail instructions on how to use this goal.
                         </td>
                     </tr>
+                    <tr>
+                        <td>j2:genapp.portal.runtime</td>
+                        <td>
+                            Keep your application in sync with Jetspeed latest dependencies. 
+                            See <a href="getting-started.html">Getting Started -> 
+                            6. Creating a new Portal Application</a> for detail instructions on how to use this goal.
+                        </td>
+                    </tr>
                 </table>
             </subsection>
             <subsection name="Getting Started Goals">

@@ -53,7 +53,7 @@ a page decorator template, a PSML definition, and one or more portlet decorator 
 As of release 2.0, templates can be stored on the file system. In future releases, templates 
 will also be stored in a CMS backend for versioning.
 </p>
-<subsection name='Layouts'>
+<subsection name='Layout Templates'>
 <p>
 Layout templates are packaged in special Jetspeed-specific and deployable portlet applications. 
 Layout templates control the overall aggregation of a portal page. Layout templates are 

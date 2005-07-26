@@ -27,10 +27,10 @@ limitations under the License.
 <ul>
 	 <li><a href="#Page">Page</a></li>	      
 	 <li><a href="#Defaults">Defaults</a></li>	 
-    <li><a href="#Title and Metadata">Title and Metadata</a></li>
-    <li><a href="#Layout Fragments">Layout Fragments</a></li>    
-    <li><a href="#Portlet Fragments">Portlet Fragments</a></li>    
-    <li><a href="#Security Constraints">Security Constraints</a></li>        
+    <li><a href="#Title_and_Metadata">Title and Metadata</a></li>
+    <li><a href="#Layout_Fragments">Layout Fragments</a></li>    
+    <li><a href="#Portlet_Fragments">Portlet Fragments</a></li>    
+    <li><a href="#PSML_Security_Constraints">Security Constraints</a></li>        
 </ul>
     
 <p>
@@ -224,7 +224,7 @@ There are three valid attributes on the defaults element:
 ]]></source>
 </section>
 
-<section name='Security Constraints'>
+<section name="PSML Security Constraints">
 <p>
 <a href='bronco.html'>Link to Security Constraints Docs</a>
 </p>

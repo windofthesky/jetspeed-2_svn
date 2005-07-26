@@ -54,7 +54,7 @@ algorithms are two column, three column, nested.
     <img src='images/layouts/layouts-overview.png'/>
 </p>
 </section>
-<section name='Packaging'>
+<section name="Layouts Packaging">
 <p>
 Layouts are packaged as standard portlet applications.
 Layouts usual have a 

@@ -40,7 +40,7 @@ needs this, as some application may decide to use another login module other tha
 </subsection>
 <subsection name="security-atz.xml">
 <p>
-This configuration file configures the authorization policy, in J2's case RDBMSPolicy.
+This configuration file configures the authorization policy, in J2's case <a href="atz-jass.html">RdbmsPolicy</a>.
 </p>
 </subsection>
 <subsection name="security-managers.xml">
@@ -52,6 +52,39 @@ This configuration file configures all the managers for security purpose.
 <p>
 This configuration file configures the various providers and weaves the SPI together.
 </p>
+<ul>
+<li><code>AuthenticationProviderProxy</code>: Configures the list of <code>AuthenticationProvider</code>
+and the default authenticator.
+<source><![CDATA[
+<bean id="org.apache.jetspeed.security.AuthenticationProviderProxy" 
+   class="org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl">  	   
+   <constructor-arg >
+      <list>
+         <ref bean="org.apache.jetspeed.security.AuthenticationProvider"/>
+      </list>
+   </constructor-arg>
+  <constructor-arg><value>DefaultAuthenticator</value></constructor-arg>
+</bean>]]>
+</source>
+</li>
+<li><code>AuthenticationProvider</code>: Configure the authentication providers for the current portal implementation.
+The example below configures the default authenticator that uses the RDBMS to manage/store user information.
+<source><![CDATA[
+<bean id="org.apache.jetspeed.security.AuthenticationProvider" 
+  	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl">  	   
+   <constructor-arg index="0"><value>DefaultAuthenticator</value></constructor-arg>
+   <constructor-arg index="1"><value>The default authenticator</value></constructor-arg>
+   <constructor-arg index="2"><value>login.conf</value></constructor-arg>
+   <constructor-arg index="3">
+      <ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/>
+   </constructor-arg>
+   <constructor-arg index="4">
+      <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/>
+   </constructor-arg>
+</bean>]]>
+</source>
+</li>
+</ul>
 </subsection>
 <subsection name="security-spi.xml">
 <p>
@@ -72,7 +105,7 @@ This configuration file contains configuration that are common to the authentica
 </subsection>
 <subsection name="security-spi-atn.xml">
 <p>
-This configuratio file contains all the configurations for configuring the authentication SPI.
+This configuration file contains all the configurations for configuring the authentication SPI.
 </p>
 <table>
 	<tr>

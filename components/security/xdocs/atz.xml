@@ -22,7 +22,24 @@
         </authors>
     </properties>
     <body>
-        <section name="Authorization Overview">       
+        <section name="Authorization Overview">
+            <p>
+                For auhorization, Jetspeed 2 implements its own 
+                <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Policy.html">java.security.Policy</a> using
+                a relation database store to manage associations between principals and permissions.
+            </p>
+            <p align="center">
+                <img src="images/rdbms-policy-overview-c.gif" border="0" />
+            </p>
+            <p>
+                The <code>PermissionManager</code> provides access to the permissions associated to given principals.
+            </p>
+            <p>
+                <ul>
+                    <li>The <a href="atz-jaas.html">JAAS Authorization</a> provides an overview of the authorization aspect of JAAS.</li>
+                    <li>The <a href="permission.html">PermissionManager Overview</a> documents the <code>PermissionManager</code> implementation.</li>
+                </ul>
+            </p>
         </section>
 
     </body>

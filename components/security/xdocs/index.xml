@@ -67,7 +67,8 @@
             <p>
                 <img src="images/components.jpg" align="right" border="0" hspace="1" vspace="2" />
                 Jetspeed 2 security services are founded on a set of modular and extensible security modules exposed through an SPI model. The SPI model
-                provides the ability to modify the behavior of the security services through the modification and configuration of specialized handlers. For
+                provides the ability to modify the behavior of the Jetspeed coarsed security services (UserManager, RoleManager, GroupManager)
+                through the modification and configuration of specialized handlers. For
                 instance, Jetspeed security services can be configured to retrieve user security principals through the default Jetspeed store or through an
                 LDAP store or both.
                 <br />

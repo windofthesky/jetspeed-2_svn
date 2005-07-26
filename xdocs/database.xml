@@ -64,7 +64,7 @@ If you are going to run the unit tests you will also need an additional test dat
 A user named 'jetspeed2' should be granted access to both the 'j2' and 'j2test' databases.
 </p>
 
-<subsection name ='Known Issues'>
+<subsection name ="MySQL Known Issues">
 <p>
 None
 </p>
@@ -107,7 +107,7 @@ Also, you will need a database user (schema) called 'j2' for production usage.<b
 If you are going to run the unit tests you will need an additional user called 'j2test'.
 </p>
 
-<subsection name ='Known Issues'>
+<subsection name ="Oracle Known Issues">
 <p>
 Only for the first time you create the database for Oracle, there is an issue with the drop statements.
 To get around this problem, set your properties as above in your $HOME/build.properties, and then 
@@ -137,20 +137,26 @@ NOTE: The Hypersonic JDBC driver is distributed with Jetspeed and require no con
 <source test=""><![CDATA[
 
 # My SQL Driver Path Example, test and production
-org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
-org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
 
 # Oracle 9i Driver Path Example, test and production
-org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
-org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
 
 # Oracle 8i Driver Path Example, test and production
-org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/oracle/classes12.jar;
-org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/oracle/classes12.jar;
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/oracle/classes12.jar;
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/oracle/classes12.jar;
 
 ]]></source>
 
-<subsection name ='Distributing Drivers'>
+<subsection name="Distributing Drivers">
 <p>
 When Jetspeed is deployed to an application server using the maven deploy target, only the Hypersonic JDBC driver is copied into the web application.
 To distribute a specific driver (i.e. Oracle, MySQL), you will need to copy the driver into the application server's common class path for shared code.
