@@ -20,6 +20,7 @@ limitations under the License.
     <extend>project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <name>Jetspeed 2 Enterprise Portal</name>
+    <artifactId>jetspeed2</artifactId>
     <currentVersion>${jetspeed.version}</currentVersion>   
     <dependencies>
         <dependency>
