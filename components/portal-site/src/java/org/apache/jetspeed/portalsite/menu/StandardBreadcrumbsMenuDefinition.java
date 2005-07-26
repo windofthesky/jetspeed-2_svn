@@ -68,25 +68,12 @@ public class StandardBreadcrumbsMenuDefinition extends StandardBackMenuDefinitio
     }
     
     /**
-     * getTitle - get default title for menu
+     * getTitleResourceKey - get resource key used to lookup menu titles
      *
-     * @return title text
+     * @return resource key
      */
-    public String getTitle()
+    protected String getTitleResourceKey()
     {
-        // use locale defaults
-        return getMenuTitleText(null, "menu.title.breadcrumbs");
-    }
-
-    /**
-     * getTitle - get locale specific title for menu from metadata
-     *
-     * @param locale preferred locale
-     * @return title text
-     */
-    public String getTitle(Locale locale)
-    {
-        // use specified locale
-        return getMenuTitleText(locale, "menu.title.breadcrumbs");
+        return "menu.title.breadcrumbs";
     }
 }

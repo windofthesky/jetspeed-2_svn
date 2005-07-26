@@ -250,7 +250,25 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
     public String getTitle(Locale locale)
     {
         // fallback to getTitle()
-        return getTitle();
+        return getTitle(locale, true);
+    }
+
+    /**
+     * getTitle - get locale specific title for menu from metadata
+     *            protocol, with or without falback enabled
+     *
+     * @param locale preferred locale
+     * @param fallback whether to return default title
+     * @return title text
+     */
+    protected String getTitle(Locale locale, boolean fallback)
+    {
+        // fallback to getTitle() if enabled
+        if (fallback)
+        {
+            return getTitle();
+        }
+        return null;
     }
 
     /**
@@ -262,10 +280,10 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
     public String getShortTitle(Locale locale)
     {
         // fallback to getTitle(Locale)
-        String title = getTitle(locale);
+        String title = getTitle(locale, false);
 
-        // fallback to getShortTitle() over getTitle()
-        if ((title == null) || (title == getTitle()))
+        // fallback to getShortTitle()
+        if (title == null)
         {
             title = getShortTitle();
         }

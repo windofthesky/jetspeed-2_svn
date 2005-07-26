@@ -79,19 +79,36 @@ public class StandardBackMenuDefinition extends StandardMenuDefinitionImpl
     public String getTitle()
     {
         // use locale defaults
-        return getMenuTitleText(null, "menu.title.back");
+        return getMenuTitleText(null, getTitleResourceKey());
     }
 
     /**
      * getTitle - get locale specific title for menu from metadata
+     *            protocol, with or without falback enabled
      *
      * @param locale preferred locale
+     * @param fallback whether to return default title
      * @return title text
      */
-    public String getTitle(Locale locale)
+    protected String getTitle(Locale locale, boolean fallback)
     {
-        // use specified locale
-        return getMenuTitleText(locale, "menu.title.back");
+        // use specified locale or fallback if locale specific title not defined
+        String title = getMenuTitleText(locale, getTitleResourceKey());
+        if (title != null)
+        {
+            return title;
+        }
+        return super.getTitle(locale, fallback);
+    }
+
+    /**
+     * getTitleResourceKey - get resource key used to lookup menu titles
+     *
+     * @return resource key
+     */
+    protected String getTitleResourceKey()
+    {
+        return "menu.title.back";
     }
 
     /**
