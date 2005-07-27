@@ -49,8 +49,8 @@
             <p>
             The OJB mappings for the security component are described in <code>security_repository.xml</code>:
             <ul>
-            <li><code>InternalPrincipal</code>: Map to the <code>SECURITY_PRINCIPAL</code> table.</li>
-            <li><code>InternalPermission</code>: Map to the <code>SECURITY_PERMISSION</code> table.</li>
+            <li><code>InternalPrincipal</code>: Maps to the <code>SECURITY_PRINCIPAL</code> table.</li>
+            <li><code>InternalPermission</code>: Maps to the <code>SECURITY_PERMISSION</code> table.</li>
             <li>Associations between <code>InternalPrincipal</code> and <code>InternalPermission</code> are
             maintained through the indirection table <code>PRINCIPAL_PERMISSION</code>.</li>
             </ul>

@@ -25,6 +25,7 @@
             <item name="Authentication" href="atn.html">
                 <item name="Login Module" href="login-module.html" />
                 <item name="Authentication SPI" href="atn-spi.html"/>
+                <item name="Credentials Management" href="credentials.html"/>
             </item>
             <item name="Authorization" href="atz.html">
                 <item name="JAAS Authorization" href="atz-jaas.html"/>
