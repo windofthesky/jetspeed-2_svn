@@ -57,7 +57,7 @@ public class TestPortletContainer extends TestCase
     {
         super.setUp();
         
-        portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
+      //  portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
     }
 
    public static Test suite()

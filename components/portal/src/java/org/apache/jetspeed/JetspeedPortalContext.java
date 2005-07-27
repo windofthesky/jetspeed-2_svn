@@ -15,12 +15,16 @@
  */
 package org.apache.jetspeed;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
-import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.util.Enumerator;
 
 /**
@@ -31,6 +35,10 @@ import org.apache.pluto.util.Enumerator;
  */
 public class JetspeedPortalContext implements PortalContext
 {
+    private static final String SUPPORTED_WINDOWSTATE_ATTR = "supported.windowstate";
+    private static final String SUPPORTED_PORTLETMODE_ATTR = "supported.portletmode";
+    private static final String PORTAL_VERSION_ATTR = "portal.version";
+    private static final String PORTAL_NAME_ATTR = "portal.name";
     /**
      * The engine associated with this context.
      */
@@ -50,15 +58,43 @@ public class JetspeedPortalContext implements PortalContext
      * The base from which the Jetspped application will operate.
      */
     private String applicationRoot;
+    
+      /** Portlet Modes */
+    private final List portletModes;
+    
+    /** Window States */
+    private final List windowStates;
+
+    private final String portalName;
+
+    private final String portalVersion;
 
 
-    public JetspeedPortalContext(Engine engine)
+    public JetspeedPortalContext(Engine engine, Configuration configuration, String applicationRoot)
     {
         this.engine = engine;
-    }
-
-    private JetspeedPortalContext()
-    {
+        this.configuration = configuration;
+        this.applicationRoot = applicationRoot;
+             
+        
+        portalName = configuration.getString(PORTAL_NAME_ATTR);
+        portalVersion = configuration.getString(PORTAL_VERSION_ATTR);
+        
+        // Inititalize supported portlet modes 
+        String[] supportedModes = configuration.getStringArray(SUPPORTED_PORTLETMODE_ATTR);
+        portletModes = new ArrayList(supportedModes.length);        
+        for (int i=0; i<supportedModes.length; i++) 
+        {
+            portletModes.add(new PortletMode(supportedModes[i].toString().toLowerCase()));
+        }
+        
+        // Initialize supported window states         
+        String[] supportedStates = configuration.getStringArray(SUPPORTED_WINDOWSTATE_ATTR);
+        windowStates = new ArrayList(supportedStates.length);
+        for (int i=0; i<supportedStates.length; i++) 
+        {
+            windowStates.add(new WindowState(supportedStates[i].toString().toLowerCase()));
+        }       
     }
 
     // ------------------------------------------------------------------------
@@ -152,7 +188,11 @@ public class JetspeedPortalContext implements PortalContext
      */
     public String getProperty(String name)
     {
-        return getPortalContextProvider().getProperty(name);
+        if (name == null) 
+        {
+            throw new IllegalArgumentException("Property name == null");
+        }
+        return(String) configuration.getProperty(name);
     }
 
     /* (non-Javadoc)
@@ -160,7 +200,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getPropertyNames()
     {
-        return new Enumerator(getPortalContextProvider().getPropertyNames());
+        return new Enumerator(configuration.getKeys());
     }
 
     /* (non-Javadoc)
@@ -168,7 +208,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getSupportedPortletModes()
     {
-        return new Enumerator(getPortalContextProvider().getSupportedPortletModes());
+        return new Enumerator(portletModes);
     }
 
     /* (non-Javadoc)
@@ -176,7 +216,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getSupportedWindowStates()
     {
-        return new Enumerator(getPortalContextProvider().getSupportedWindowStates());
+        return new Enumerator(windowStates);
     }
 
     /* (non-Javadoc)
@@ -184,26 +224,6 @@ public class JetspeedPortalContext implements PortalContext
      */
     public String getPortalInfo()
     {
-        return getPortalContextProvider().getPortalInfo();
-    }
-
-    /**
-     * TODO: need to refactor context provider, move implementation directly into here since it comes back here anyway
-     * @return
-     */
-    private PortalContextProvider getPortalContextProvider()
-    {
-        javax.servlet.ServletContext context = engine.getServletConfig().getServletContext();
-
-        PortalContextProvider provider =
-            (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
-
-        if (provider == null)
-        {
-            provider = new PortalContextProviderImpl();
-            context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
-        }
-
-        return provider;
+        return portalName + "/" + portalVersion;
     }
 }

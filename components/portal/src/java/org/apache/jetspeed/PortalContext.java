@@ -22,7 +22,7 @@ import org.apache.jetspeed.engine.Engine;
  * Portal Context associated with running thread of the engine
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: PortalContext.java 185962 2004-03-08 01:03:33Z jford $
  */
 public interface PortalContext extends javax.portlet.PortalContext
 {

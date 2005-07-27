@@ -15,11 +15,14 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import junit.framework.Test;
+import java.util.HashMap;
+import java.util.Map;
 
+import junit.framework.TestCase;
+
+import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.pipeline.valve.Valve;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 /**
  * TestPipeline
@@ -27,44 +30,10 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPipeline extends JetspeedTest
+public class TestPipeline extends TestCase
 {
-
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestPipeline(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
-     */
-    public static void main(String args[])
-    {
-        junit.awtui.TestRunner.main(new String[] { TestPipeline.class.getName()});
-    }
-
-    public void setup()
-    {
-    }
-
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestPipeline.class);
-    }
+     private Engine engine;
+    private SpringEngineHelper engineHelper;
 
     /**
      * Tests
@@ -77,18 +46,33 @@ public class TestPipeline extends JetspeedTest
         Pipeline pipeline = engine.getPipeline();
         assertNotNull(pipeline);
         Valve[] valves = pipeline.getValves();
-        assertTrue(valves[0].toString().equals("LocalizationValve"));
-        assertTrue(valves[1].toString().equals("CapabilityValveImpl"));
-        assertTrue(valves[2].toString().equals("PortalURLValveImpl"));     
-        assertTrue(valves[3].toString().equals("SecurityValve"));
-        assertTrue(valves[4].toString().equals("PasswordCredentialValve"));                
-        assertTrue(valves[5].toString().equals("LoginValidationValve"));                
-        assertTrue(valves[6].toString().equals("ProfilerValve"));        
-        assertTrue(valves[7].toString().equals("ContainerValve"));
-        assertTrue(valves[8].toString().equals("ActionValveImpl"));     
-        assertTrue(valves[9].toString().equals("AggregatorValve"));
-        assertTrue(valves[10].toString().equals("CleanupValveImpl"));
+        assertEquals("CapabilityValveImpl", valves[0].toString());
+        assertEquals("PortalURLValveImpl", valves[1].toString());
+        assertEquals("SecurityValve", valves[2].toString());
+        assertEquals("LocalizationValve", valves[3].toString());
+        assertEquals("PasswordCredentialValve", valves[4].toString());
+        assertEquals("LoginValidationValve", valves[5].toString());
+        assertEquals("ProfilerValve", valves[6].toString());
+        assertEquals("ContainerValve", valves[7].toString());
+        assertEquals("ActionValveImpl", valves[8].toString());
+        assertEquals("AggregatorValve", valves[9].toString());
+        assertEquals("CleanupValveImpl", valves[10].toString());
+        
+        
         assertNotNull(engine.getPipeline("action-pipeline"));
         assertNotNull(engine.getPipeline("portlet-pipeline"));
+    }
+
+    protected void setUp() throws Exception
+    {
+        Map context = new HashMap();
+        engineHelper = new SpringEngineHelper(context);
+        engineHelper.setUp();
+        this.engine = (Engine)context.get(SpringEngineHelper.ENGINE_ATTR);
+    }
+
+    protected void tearDown() throws Exception
+    {
+        engineHelper.tearDown();
     }
 }

@@ -18,6 +18,7 @@ package org.apache.jetspeed.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
@@ -34,8 +35,8 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalTestConstants;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.apache.jetspeed.engine.SpringEngine;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.jmock.Mock;
 
 import com.mockrunner.mock.web.MockServletConfig;
@@ -52,7 +53,8 @@ import com.mockrunner.mock.web.MockServletContext;
  */
 public class JetspeedTestSuite extends TestSuite
 {
-    protected static Engine engine = null;    
+    protected static Engine engine = null;
+    private static SpringEngineHelper engineHelper;    
 
     /**
      * 
@@ -112,7 +114,10 @@ public class JetspeedTestSuite extends TestSuite
             Mock servletConfigMock = new Mock(ServletConfig.class);
             MockServletConfig msc = new MockServletConfig();
             msc.setServletContext(new MockServletContext());
-            engine = Jetspeed.createEngine(properties, applicationRoot, msc, SpringEngine.class);
+            HashMap context = new HashMap();
+            engineHelper = new SpringEngineHelper(context);
+            engineHelper.setUp();
+            engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
 
         }
         catch (Exception e)

@@ -15,34 +15,38 @@
  */
 package org.apache.jetspeed.container.state;
 
-import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalTestConstants;
-import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
+import org.apache.jetspeed.JetspeedPortalContext;
+import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec;
 import org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent;
+import org.apache.jetspeed.container.state.impl.NavigationalStateCodec;
+import org.apache.jetspeed.container.state.impl.PathNavigationalState;
+import org.apache.jetspeed.container.state.impl.SessionFullNavigationalState;
+import org.apache.jetspeed.container.state.impl.SessionNavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.url.impl.AbstractPortalURL;
+import org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL;
+import org.apache.jetspeed.container.url.impl.QueryStringEncodingPortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.engine.AbstractEngine;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.engine.SpringEngine;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
@@ -56,7 +60,6 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
 import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
 
 /**
  * TestPortletContainer
@@ -73,6 +76,10 @@ public class TestNavigationalState extends TestCase
     private NavigationalStateComponent navFullSession;
     private NavigationalStateComponent navSession;
     private NavigationalStateComponent navPluto;
+    private SpringEngineHelper engineHelper;
+    private Engine engine;
+    private NavigationalStateCodec codec;
+    private PortalContext portalContext;
 
     /**
      * Defines the testcase name for JUnit.
@@ -98,17 +105,10 @@ public class TestNavigationalState extends TestCase
     {
         super.setUp();
 
-        // need to flag internal JNDI on...
-        System.setProperty(AbstractEngine.JNDI_SUPPORT_FLAG_KEY, "true");
-        
-        // create Engine
-        PropertiesConfiguration config = new  PropertiesConfiguration();
-        config.load(new FileInputStream(PortalTestConstants.JETSPEED_PROPERTIES_PATH));
-        Mock servletConfigMock = new Mock(ServletConfig.class);
-        MockServletConfig msc = new MockServletConfig();
-        msc.setServletContext(new MockServletContext());
-        Engine engine = Jetspeed.createEngine(config, PortalTestConstants.PORTAL_WEBAPP_PATH, msc, SpringEngine.class);
-
+        HashMap context = new HashMap();
+        engineHelper = new SpringEngineHelper(context);
+        engineHelper.setUp();
+        engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
         // mock test PortletWindow
         Mock entityMock = new Mock(MutablePortletEntity.class);        
         Mock windowListMock = new Mock(CompositeWindowList.class);
@@ -118,20 +118,13 @@ public class TestNavigationalState extends TestCase
         windowListMock.expects(new AnyArgumentsMatcher()).method("add").withAnyArguments().will(
                 new VoidStub());
 
-        PortletWindowAccessor accessor = (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);        
+        PortletWindowAccessor accessor = (PortletWindowAccessor) engine.getComponentManager().getComponent(PortletWindowAccessor.class);        
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "111");
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "222");
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "333");
         
-        navFullSession = new JetspeedNavigationalStateComponent("org.apache.jetspeed.container.state.impl.SessionFullNavigationalState",
-                "org.apache.jetspeed.container.url.impl.QueryStringEncodingPortalURL",
-                 "org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec");
-        navSession = new JetspeedNavigationalStateComponent("org.apache.jetspeed.container.state.impl.SessionNavigationalState",
-                "org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL",
-                 "org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec");
-        navPluto = new JetspeedNavigationalStateComponent("org.apache.jetspeed.container.state.impl.PathNavigationalState",
-               "org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL",
-                "org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec");
+        codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
+        portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");        
     }
 
     public static Test suite()
@@ -140,23 +133,44 @@ public class TestNavigationalState extends TestCase
         return new TestSuite(TestNavigationalState.class);
     }
 
-    public void testAllComponents()
-        throws Exception
-    {
-
-        // general navigational state test
-        navigationTest(navFullSession, true);
-        navigationTest(navSession, false);
-        navigationTest(navPluto, false);
+    
+    public void testSessionFullStateAndQuery()
+    {        
+        SessionFullNavigationalState navState = new SessionFullNavigationalState(codec);
+        QueryStringEncodingPortalURL portalUrl = new QueryStringEncodingPortalURL(navState, portalContext);
+        HttpServletRequest request = buildRequest(portalUrl, true);
+        navState = new SessionFullNavigationalState(codec);
+        portalUrl = new QueryStringEncodingPortalURL(navState, portalContext);
+        doTestUrl(portalUrl, request);
+        
     }
-
-    private void navigationTest(NavigationalStateComponent component, boolean useQueryStringPortalURL)
-    throws Exception
+    
+    public void testSessionStateAndPathInfo()
+    {        
+        SessionNavigationalState navState = new SessionNavigationalState(codec);
+        PathInfoEncodingPortalURL portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
+        HttpServletRequest request = buildRequest(portalUrl, false);
+        navState = new SessionNavigationalState(codec);
+        portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
+        doTestUrl(portalUrl, request);
+    }
+    
+    public void testPathStateAndPathInfo()
+    {        
+        PathNavigationalState navState = new PathNavigationalState(codec);
+        PathInfoEncodingPortalURL portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
+        HttpServletRequest request = buildRequest(portalUrl, false);
+        navState = new PathNavigationalState(codec);
+        portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
+        doTestUrl(portalUrl, request);
+    }
+    
+    
+    protected HttpServletRequest buildRequest(PortalURL portalURL, boolean useQueryStringPortalURL)
     {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpSession session = new MockHttpSession();
-        HttpServletResponse response = new MockHttpServletResponse();
-        ServletConfig config = new MockServletConfig();
+
         request.setSession(session);
         request.setServerName("www.sporteportal.com");
         request.setScheme("http");
@@ -165,22 +179,17 @@ public class TestNavigationalState extends TestCase
         request.setPathInfo("stuff");
         request.setRequestURI("/jetspeed/portal/stuff");
 
-        JetspeedRequestContext context = new JetspeedRequestContext(request, response, config, null );
-        
-        // create base PortletURL
-        PortalURL url = component.createURL(context.getRequest(), context.getCharacterEncoding());
-        context.setPortalURL(url);
+        portalURL.setRequest(request);
+        portalURL.setCharacterEncoding("UTF-8");
 
         PortletWindow window = new PortletWindowImpl("111");
-        PortletWindow window2 = new PortletWindowImpl("222");
-        PortletWindow window3 = new PortletWindowImpl("333");
- 
+
         HashMap parameters = new HashMap();
         parameters.put("test",new String[]{"one","two","three"});
 
-        String portletURL = url.createPortletURL(window,parameters,PortletMode.EDIT,WindowState.MAXIMIZED,true,false);
+        String portletURL = portalURL.createPortletURL(window,parameters,PortletMode.EDIT,WindowState.MAXIMIZED,true,false);
         
-        String navStateParameterName = Jetspeed.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", AbstractPortalURL.DEFAULT_NAV_STATE_PARAMETER); 
+        String navStateParameterName = engine.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", AbstractPortalURL.DEFAULT_NAV_STATE_PARAMETER); 
 
         if ( useQueryStringPortalURL )
         {
@@ -191,34 +200,47 @@ public class TestNavigationalState extends TestCase
             request.setPathInfo(portletURL.substring(portletURL.indexOf("/portal")+7));
         }
         
-        context = new JetspeedRequestContext(request, response, config, null );
-                
-        url = component.createURL(context.getRequest(), context.getCharacterEncoding());
-        context.setPortalURL(url);
-        NavigationalState nav = url.getNavigationalState();
+        return request;        
+    }
+    
+    protected void doTestUrl(PortalURL portalURL, HttpServletRequest request)
+    {             
+      portalURL.setRequest(request);
+      portalURL.setCharacterEncoding("UTF-8");
+      
+      PortletWindow window = new PortletWindowImpl("111");
+      NavigationalState nav = portalURL.getNavigationalState();
 
-        // Check that they come out correctly
-        assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.EDIT));
-        assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
-        PortletWindow target = nav.getPortletWindowOfAction();
-        assertNotNull("target window is null", target);
-        assertEquals("target window should equal window 111", target.getId(), "111");
+      // Check that they come out correctly
+      assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.EDIT));
+      assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
+      PortletWindow target = nav.getPortletWindowOfAction();
+      assertNotNull("target window is null", target);
+      assertEquals("target window should equal window 111", target.getId(), "111");
 
-        PortletWindow maximizedWindow = nav.getMaximizedWindow();
-        assertNotNull("maximized window is null", maximizedWindow);
-        assertEquals("maximized window should equal window 111", maximizedWindow.getId(), "111");
+      PortletWindow maximizedWindow = nav.getMaximizedWindow();
+      assertNotNull("maximized window is null", maximizedWindow);
+      assertEquals("maximized window should equal window 111", maximizedWindow.getId(), "111");
 
-        Iterator iter = nav.getParameterNames(target);
-        int parameterCount = 0;
-        assertTrue("There should be one parameter",iter.hasNext());
-        while ( iter.hasNext() ) {
-            assertEquals("parameter name should equals \"test\"", (String)iter.next(), "test");
-            String[] values = nav.getParameterValues(target,"test");
-            assertNotNull("parameter name has no values", values);
-            assertEquals("parameter test should have 3 values", values.length, 3);
-            assertEquals("parameter test[0] should be \"one\"", values[0], "one");
-            assertEquals("parameter test[1] should be \"two\"", values[1], "two");
-            assertEquals("parameter test[2] should be \"three\"", values[2], "three");
-        }
+      Iterator iter = nav.getParameterNames(target);
+      int parameterCount = 0;
+      assertTrue("There should be one parameter",iter.hasNext());
+      while ( iter.hasNext() ) {
+          assertEquals("parameter name should equals \"test\"", (String)iter.next(), "test");
+          String[] values = nav.getParameterValues(target,"test");
+          assertNotNull("parameter name has no values", values);
+          assertEquals("parameter test should have 3 values", values.length, 3);
+          assertEquals("parameter test[0] should be \"one\"", values[0], "one");
+          assertEquals("parameter test[1] should be \"two\"", values[1], "two");
+          assertEquals("parameter test[2] should be \"three\"", values[2], "three");
+      }
+        
+    }
+
+
+    protected void tearDown() throws Exception
+    {
+        engineHelper.tearDown();
+        super.tearDown();
     }
 }

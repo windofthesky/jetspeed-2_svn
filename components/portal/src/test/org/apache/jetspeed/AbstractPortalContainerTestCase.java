@@ -39,6 +39,6 @@ public class AbstractPortalContainerTestCase extends RegistrySupportedTestCase
     {
         super.setUp();
         windowAccessor = new PortletWindowAccessorImpl(entityAccess, true);
-        portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
+       //  portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
     }
 }

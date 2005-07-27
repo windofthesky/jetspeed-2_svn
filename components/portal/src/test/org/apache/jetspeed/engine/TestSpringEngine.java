@@ -17,7 +17,6 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.prefs.PreferencesProvider;
@@ -48,16 +47,15 @@ import org.apache.pluto.services.information.StaticInformationProvider;
 public class TestSpringEngine extends AbstractEngineTest
 {
     public TestSpringEngine()
-    {
-        System.out.println(System.getProperty("org.apache.jetspeed.database.user"));
+    {        
         keysToCheck = new Object[] {"IdGenerator", "DecorationLocator", "TemplateLocator", "IdGenerator", "PageFileCache", PageManager.class, 
                                      PortletRegistry.class, PortletEntityAccessComponent.class, "PortalServices",
                                      Profiler.class, Capabilities.class, PropertyManager.class, PreferencesProvider.class, UserManager.class,
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
-                                     UserInfoManager.class, NavigationalStateComponent.class, RequestContextComponent.class, PortletWindowAccessor.class,
+                                     UserInfoManager.class, RequestContextComponent.class, PortletWindowAccessor.class,
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
                                      "deploymentManager", "portletFactory", ServletConfig.class, 
-                                     StaticInformationProvider.class};
+                                     StaticInformationProvider.class, "NavigationalStateCodec", "PortalURL", "NavigationalStateComponent"};
     }
     
     public static Test suite()
@@ -66,17 +64,6 @@ public class TestSpringEngine extends AbstractEngineTest
         return new TestSuite(TestSpringEngine.class);
     }
 
-    /**
-     * <p>
-     * getEngineClass
-     * </p>
-     * 
-     * @see org.apache.jetspeed.engine.AbstractEngineTest#getEngineClass()
-     * @return
-     */
-    protected Class getEngineClass()
-    {
-        return SpringEngine.class;
-    }
+
 
 }

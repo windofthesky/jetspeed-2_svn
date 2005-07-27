@@ -42,42 +42,6 @@ public class Jetspeed
     private static final Log log = LogFactory.getLog(Jetspeed.class);
 
     /**
-     * Creates a Jetspeed Engine
-     * 
-     * @param configuration a configuration associated with this Jetspeed instance
-     * @param applicationRoot the root of the servlet application
-     * @param config the servlet configuration, this parameter can be null for unit tests or utilities
-     * @return the newly created Engine
-     * @throws JetspeedException
-     */
-    public static Engine createEngine(Configuration configuration, String applicationRoot, ServletConfig config, Class engineClass)
-        throws JetspeedException
-    {
-        try
-        {
-            synchronized(Jetspeed.class)
-            {
-                if(engine == null)
-                {
-                    log.info("Jetspeed environment attempting to initialize portal Engine...");
-                    engine = (Engine) engineClass.newInstance();
-                    engine.init(configuration, applicationRoot, config);
-                    log.info("JetspeedEngine successfuly intialized.");
-                    log.info("Jetspeed environment successfuly intialized.");
-                }
-                return engine;
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            String msg = "Unable to create Engine";
-            log.error(msg, e);
-            throw new JetspeedException(msg, e);
-        }
-    }
-
-    /**
      * Shuts down the currently running instance of the portal
      * Engine.
      * @throws JetspeedException
@@ -138,4 +102,10 @@ public class Jetspeed
     {
         return engine.getComponentManager();
     }
+
+    public static void setEngine(Engine engine)
+    {
+        Jetspeed.engine = engine;
+    }
+    
 }

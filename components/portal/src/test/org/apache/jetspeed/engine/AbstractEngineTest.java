@@ -15,20 +15,12 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.io.FileInputStream;
-
-import javax.servlet.ServletConfig;
+import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalTestConstants;
 import org.apache.jetspeed.components.ComponentManagement;
-import org.jmock.Mock;
-
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 /**
  * <p>
@@ -61,6 +53,8 @@ public abstract class AbstractEngineTest extends TestCase
 
     protected Object[] keysToCheck;
 
+    private SpringEngineHelper engineHelper;
+
     public void testEngine() throws Exception
     {
         assertNotNull(engine.getComponentManager());
@@ -73,22 +67,16 @@ public abstract class AbstractEngineTest extends TestCase
 
     protected void setUp() throws Exception
     {
-        super.setUp();
-        // need to flag internal JNDI on...
-        System.setProperty(AbstractEngine.JNDI_SUPPORT_FLAG_KEY, "true");
-        PropertiesConfiguration config = new PropertiesConfiguration();
-        config.load(new FileInputStream(PortalTestConstants.JETSPEED_PROPERTIES_PATH));
-        Mock servletConfigMock = new Mock(ServletConfig.class);
-        MockServletConfig msc = new MockServletConfig();
-        msc.setServletContext(new MockServletContext());
-        engine = Jetspeed.createEngine(config, PortalTestConstants.PORTAL_WEBAPP_PATH, msc, getEngineClass());
-
+       HashMap context = new HashMap();
+       engineHelper = new SpringEngineHelper(context);
+       engineHelper.setUp();
+       engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
     }
 
     protected void tearDown() throws Exception
     {
-
-        super.tearDown();
+        engineHelper.tearDown();
+        super.tearDown();        
     }
 
     protected void verifyComponents(Object[] keys)
@@ -101,5 +89,4 @@ public abstract class AbstractEngineTest extends TestCase
         }
     }
 
-    protected abstract Class getEngineClass();
 }

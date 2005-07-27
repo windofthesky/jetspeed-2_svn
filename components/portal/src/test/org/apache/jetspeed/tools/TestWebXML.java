@@ -15,9 +15,6 @@
  */
 package org.apache.jetspeed.tools;
 
-import org.apache.jetspeed.test.JetspeedTestSuite;
-
-import junit.framework.Test;
 import junit.framework.TestCase;
 
 /**
@@ -29,22 +26,7 @@ import junit.framework.TestCase;
  */
 public class TestWebXML extends TestCase
 {
-    /**
-     * Creates a new instance.
-     */
-    public TestWebXML(String testName)
-    {
-        super(testName);
-    }
-
-    /**
-     * Return the Test
-     */
-    public static Test suite()
-    {
-        return new JetspeedTestSuite(TestWebXML.class);
-    }
-
+    
     /**
      * Setup the test.
      */

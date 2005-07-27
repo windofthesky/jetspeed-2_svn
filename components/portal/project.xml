@@ -40,15 +40,9 @@
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
-       <excludes>
-            <exclude>**/TestSpring*</exclude>                        
-            <exclude>**/TestPipeline*</exclude>                        
-            <exclude>**/TestNavigationalState*</exclude>                        
-            <exclude>**/TestWebXML*</exclude>                                                
-            <exclude>**/JetspeedTest*</exclude>                        
-            <exclude>**/PortalTestConstants*</exclude>                                                
-            <exclude>**/Abstract*</exclude>                                                
-       </excludes>
+       <includes>
+         <include>**/Test*</include>  
+       </includes>
       <resources>
       <resource>
         <directory>${basedir}/src/java</directory>
