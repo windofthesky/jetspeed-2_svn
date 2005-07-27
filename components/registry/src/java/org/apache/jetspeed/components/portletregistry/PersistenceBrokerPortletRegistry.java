@@ -297,6 +297,16 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         }
 
     }
+
+    public PortletDefinitionComposite getPortletDefinition(ObjectID id)
+    {
+        Criteria c = new Criteria();
+        c.addEqualTo("id", new Long(id.toString()));
+        PortletDefinitionComposite portlet = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
+                QueryFactory.newQuery(PortletDefinitionImpl.class, c));
+        postLoad(portlet);
+        return portlet;
+    }
     
     
 }

@@ -27,6 +27,7 @@ limitations under the License.
   
   <!-- ServletConfig -->
     <bean id="javax.servlet.ServletConfig"
+		  name="ServletConfig"
         class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean"
   />             
     
@@ -320,14 +321,7 @@ limitations under the License.
 		</property>		
   </bean>
       
-  <!--  Navigational State component -->
-  <bean id="org.apache.jetspeed.container.state.NavigationalStateComponent" 
-  	   class="org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent"
-  >  	   
-       <constructor-arg index="0"><value>org.apache.jetspeed.container.state.impl.SessionFullNavigationalState</value></constructor-arg>
-       <constructor-arg index="1"><value>org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL</value></constructor-arg>
-       <constructor-arg index="2"><value>org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec</value></constructor-arg>       
-  </bean>
+
      
   <!-- Request Context -->
    <bean id="org.apache.jetspeed.request.RequestContextComponent" 
@@ -338,8 +332,9 @@ limitations under the License.
   </bean>
   
   <!-- Portlet Window Component -->
-  <bean id="org.apache.jetspeed.container.window.PortletWindowAccessor" 
+  <bean id="PortletWindowAccessor" 
   	   class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
+	   name="org.apache.jetspeed.container.window.PortletWindowAccessor"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
        <!-- enable window validation -->
@@ -350,9 +345,14 @@ limitations under the License.
   <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl" />  	   
   
   <!-- Jetspeed 2's wrapper around Pluto -->
+  <!-- settings for this bean will start the underlying pluto portlet container -->
   <bean id="org.apache.pluto.PortletContainer" 
-  	   class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper"  >  	   
+  	   class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper" 
+	   init-method="start" destroy-method="shutdown" >  	   
   	   <constructor-arg ><ref bean="Pluto" /></constructor-arg>
+	   <constructor-arg><value>${portal.name}</value></constructor-arg>
+	   <constructor-arg><ref bean="ServletConfig" /></constructor-arg>
+	   <constructor-arg><ref bean="Engine" /></constructor-arg>
   </bean>
   
   <!-- Portlet Renderer -->
@@ -409,5 +409,4 @@ limitations under the License.
       class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl"
   >
   </bean>
-
 </beans>
