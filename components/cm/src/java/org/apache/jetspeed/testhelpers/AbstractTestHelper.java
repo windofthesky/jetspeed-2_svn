@@ -3,13 +3,29 @@ package org.apache.jetspeed.testhelpers;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 public abstract class AbstractTestHelper implements TestHelper
 {
-    public static final String BEAN_FACTORY = "bean.factory";
+    public static final String APP_CONTEXT = "AppContext";
     private final Map context;
+
+    private static final PropertiesConfiguration USER_PROPERTIES;
+    static
+    {
+        try
+        {
+            USER_PROPERTIES= new PropertiesConfiguration(new File(System.getProperty("user.home"), "build.properties"));
+        }
+        catch (ConfigurationException e)
+        {
+            
+           throw new IllegalStateException("Unable to load ${USER_HOME}/build.properties");
+        }
+    }   
 
     public AbstractTestHelper(Map context)
     {
@@ -26,20 +42,29 @@ public abstract class AbstractTestHelper implements TestHelper
         // use system properties passed to test via the
         // maven.junit.sysproperties configuration from
         // maven build.properties and/or project.properties
-        return System.getProperty(key).toString();
+        
+        String prop = System.getProperty(key);
+        if(prop == null)
+        {
+            return (String) USER_PROPERTIES.getProperty(key);
+        }
+        else
+        {
+            return prop;
+        }
     }
     
     protected final void addBeanFactory(ConfigurableBeanFactory bf)
     {
-        ConfigurableBeanFactory currentBf = (ConfigurableBeanFactory) context.get(BEAN_FACTORY);
+        ConfigurableBeanFactory currentBf = (ConfigurableBeanFactory) context.get(APP_CONTEXT);
         if(currentBf != null)
         {
             bf.setParentBeanFactory(currentBf);
-            context.put(BEAN_FACTORY, new DefaultListableBeanFactory(bf));
+            context.put(APP_CONTEXT, new DefaultListableBeanFactory(bf));
         }
         else
         {
-            context.put(BEAN_FACTORY, bf);
+            context.put(APP_CONTEXT, bf);
         }
     }
 

@@ -15,56 +15,95 @@
  */
 package org.apache.jetspeed.components;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import javax.servlet.ServletContext;
+
+import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * <p>
  * SpringComponentManager
  * </p>
  * <p>
- *
+ * 
  * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
+ * 
  */
 public class SpringComponentManager implements ComponentManager
 {
     protected ConfigurableApplicationContext appContext;
-    
-    protected ArrayList factories;
-    
-    public SpringComponentManager(ConfigurableApplicationContext appContext)
-    {
-        this.appContext = appContext;
-        factories = new ArrayList();        
-        factories.add(appContext);        
-     }
 
-    public SpringComponentManager(String[] springConfigs, ApplicationContext parentAppContext)
+    private ConfigurableApplicationContext bootCtx;
+
+    protected ArrayList factories;
+
+    private Map preconfiguredBeans;
+
+    private boolean started = false;
+
+    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
+            String appRoot)
     {
-       this(new FileSystemXmlApplicationContext(springConfigs, parentAppContext ));    
+        File appRootDir = new File(appRoot);
+        System.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRootDir.getAbsolutePath());
+
+        if (bootConfigs != null && bootConfigs.length > 0)
+        {
+            bootCtx = new XmlWebApplicationContext();
+            ((XmlWebApplicationContext) bootCtx).setServletContext(servletContext);
+            ((XmlWebApplicationContext) bootCtx).setConfigLocations(bootConfigs);
+        }
+        else
+        {
+            bootCtx = new GenericApplicationContext();
+        }
+
+        appContext = new XmlWebApplicationContext();
+        ((XmlWebApplicationContext) appContext).setParent(bootCtx);
+        ((XmlWebApplicationContext) appContext).setServletContext(servletContext);
+        ((XmlWebApplicationContext) appContext).setConfigLocations(appConfigs);
+
+        factories = new ArrayList();
+        factories.add(appContext);
+
+        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this);
     }
-    
+
+    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
+            String appRoot, Map preconfiguredBeans)
+    {
+        this(bootConfigs, appConfigs, servletContext, appRoot);
+        this.preconfiguredBeans = preconfiguredBeans;
+    }
+
     /**
      * <p>
      * getComponent
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object)
      * @param componentName
      * @return
      */
-    public Object getComponent( Object componentName )
-    {        
-        if(componentName instanceof Class)
+    public Object getComponent(Object componentName)
+    {
+        if (componentName instanceof Class)
         {
-            return appContext.getBean(((Class)componentName).getName());
+            return appContext.getBean(((Class) componentName).getName());
         }
         else
         {
@@ -76,13 +115,14 @@ public class SpringComponentManager implements ComponentManager
      * <p>
      * getComponent
      * </p>
-     *
-     * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object, java.lang.Object)
+     * 
+     * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object,
+     *      java.lang.Object)
      * @param containerName
      * @param componentName
      * @return
      */
-    public Object getComponent( Object containerName, Object componentName )
+    public Object getComponent(Object containerName, Object componentName)
     {
         return getComponent(componentName);
     }
@@ -91,12 +131,12 @@ public class SpringComponentManager implements ComponentManager
      * <p>
      * getContainer
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.components.ContainerManagement#getContainer(java.lang.String)
      * @param containerName
      * @return
      */
-    public Object getContainer( String containerName )
+    public Object getContainer(String containerName)
     {
         return appContext;
     }
@@ -105,7 +145,7 @@ public class SpringComponentManager implements ComponentManager
      * <p>
      * getRootContainer
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.components.ContainerManagement#getRootContainer()
      * @return
      */
@@ -118,12 +158,12 @@ public class SpringComponentManager implements ComponentManager
      * <p>
      * getContainers
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.components.ContainerManagement#getContainers()
      * @return
      */
     public Collection getContainers()
-    {        
+    {
         return factories;
     }
 
@@ -131,18 +171,51 @@ public class SpringComponentManager implements ComponentManager
      * <p>
      * stop
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.components.ContainerManagement#stop()
      * 
      */
     public void stop()
     {
         appContext.close();
+        bootCtx.close();
+        started = false;
     }
-    
+
     public ApplicationContext getApplicationContext()
     {
         return appContext;
+    }
+
+    public void addComponent(String name, Object bean)
+    {
+        if (preconfiguredBeans == null)
+        {
+            preconfiguredBeans = new HashMap();
+        }
+        preconfiguredBeans.put(name, bean);
+
+        if (started)
+        {
+            bootCtx.getBeanFactory().registerSingleton(name, bean);
+        }
+    }
+
+    public void start()
+    {
+        bootCtx.refresh();
+        if (preconfiguredBeans != null)
+        {
+            Iterator itr = preconfiguredBeans.entrySet().iterator();
+            while (itr.hasNext())
+            {
+                Map.Entry entry = (Map.Entry) itr.next();
+                bootCtx.getBeanFactory().registerSingleton(entry.getKey().toString(), entry.getValue());
+            }
+        }
+
+        appContext.refresh();
+        started = true;
     }
 
 }

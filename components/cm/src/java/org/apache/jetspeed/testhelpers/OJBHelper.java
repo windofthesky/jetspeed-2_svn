@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.orm.ojb.PersistenceBrokerTransactionManager;
 import org.springframework.orm.ojb.support.LocalOjbConfigurer;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
@@ -12,6 +13,7 @@ public class OJBHelper extends DatasourceHelper
 {
 
     public static final String DATASOURCE_BEAN = "JetspeedDS";
+    private GenericApplicationContext appCtx;
     private DefaultListableBeanFactory bf;
 
     public OJBHelper(Map context)
@@ -20,14 +22,16 @@ public class OJBHelper extends DatasourceHelper
     }
 
     public void setUp() throws Exception
-    {
-        super.setUp();
-        bf = new DefaultListableBeanFactory();
+    {        
+        super.setUp();        
+        bf = new DefaultListableBeanFactory();        
         bf.registerSingleton(DATASOURCE_BEAN, datasource);
         LocalOjbConfigurer ojbConfigurer = new LocalOjbConfigurer();
-        ojbConfigurer.setBeanFactory(bf);
+        ojbConfigurer.setBeanFactory(bf);        
         addBeanFactory(bf);        
+        appCtx = new GenericApplicationContext(bf);
         bf.preInstantiateSingletons();
+        getContext().put(APP_CONTEXT, appCtx);
     }
 
     public void tearDown() throws Exception

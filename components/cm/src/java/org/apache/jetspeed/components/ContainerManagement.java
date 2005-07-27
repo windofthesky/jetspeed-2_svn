@@ -24,8 +24,7 @@ import java.util.Collection;
  * @version $Id$
  */
 public interface ContainerManagement
-{
-    
+{    
     Object getContainer(String containerName);
     
     Object getRootContainer();
@@ -34,8 +33,5 @@ public interface ContainerManagement
     
     void stop();
     
-    // void addContainer(String containerName, MutablePicoContainer container);
-    
-    // void removeContainer(String containerName);
-    
+    void start();   
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 
 import org.apache.pluto.factory.Factory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
@@ -40,6 +41,7 @@ public class PlutoFactoryFactoryBean extends AbstractFactoryBean
     private String className;
     private Map props;
     private ServletConfig servletConfig;
+    private Object bean;
     
     /**
      * <p>
@@ -51,15 +53,29 @@ public class PlutoFactoryFactoryBean extends AbstractFactoryBean
      * @throws java.lang.Exception
      */
     protected Object createInstance() throws Exception
-    {        
-        Factory factory = (Factory)Thread.currentThread()
-            .getContextClassLoader().loadClass(className).newInstance();
+    {
+        Factory factory;
+        if(bean == null && className != null)            
+        {
+            factory = (Factory)Thread.currentThread()
+                .getContextClassLoader().loadClass(className).newInstance();
+        }
+        else if(bean != null)
+        {
+            factory = (Factory)bean;
+        }
+        else
+        {
+            throw new BeanCreationException("PlutoFactoryFactoryBean requires either a 'className' or a 'bean' reference to be set.");
+        }
+        
         if(props == null)
         {
             props = new HashMap();
         }
+        
         factory.init(servletConfig, props);
-        return factory;
+        return factory;  
     }
 
     /**
@@ -120,4 +136,16 @@ public class PlutoFactoryFactoryBean extends AbstractFactoryBean
     {
         this.className = className;
     }
+
+    public Object getBean()
+    {
+        return bean;
+    }
+    
+
+    public void setBean(Object bean)
+    {
+        this.bean = bean;
+    }
+    
 }

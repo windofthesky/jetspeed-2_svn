@@ -27,4 +27,5 @@ public interface ComponentManagement
     
     Object getComponent(Object containerName, Object componentName);
     
+    void addComponent(String name, Object bean);    
 }

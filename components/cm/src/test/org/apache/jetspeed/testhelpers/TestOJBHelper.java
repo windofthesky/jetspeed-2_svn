@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
 import junit.framework.TestCase;
 
@@ -14,9 +15,9 @@ public class TestOJBHelper extends TestCase
         Map context = new HashMap();
         OJBHelper helper = new OJBHelper(context);
         helper.setUp();
-        ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) context.get(AbstractTestHelper.BEAN_FACTORY);
-        assertNotNull(beanFactory);
-        assertNotNull(beanFactory.getBean(OJBHelper.DATASOURCE_BEAN));
+        ApplicationContext appCtx = (ApplicationContext) context.get(AbstractTestHelper.APP_CONTEXT);
+        assertNotNull(appCtx);
+        assertNotNull(appCtx.getBean(OJBHelper.DATASOURCE_BEAN));
         helper.tearDown();
     }
 
