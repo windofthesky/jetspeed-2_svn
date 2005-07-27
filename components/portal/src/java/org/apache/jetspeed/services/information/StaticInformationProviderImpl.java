@@ -16,11 +16,8 @@
 package org.apache.jetspeed.services.information;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.services.information.PortalContextProvider;
@@ -37,11 +34,15 @@ import org.apache.pluto.services.information.StaticInformationProvider;
  */
 public class StaticInformationProviderImpl implements StaticInformationProvider
 {
-    private ServletConfig config = null;
+    private final ServletConfig config;
+    private final PortalContextProvider portalContextProvider;
+    private final PortletRegistry portletRegistry;
 
-    public StaticInformationProviderImpl(ServletConfig config)
+    public StaticInformationProviderImpl(ServletConfig config, PortalContextProvider portalContextProvider, PortletRegistry portletRegistry)
     {
         this.config = config;
+        this.portalContextProvider = portalContextProvider;
+        this.portletRegistry = portletRegistry;
     }
 
     /**
@@ -51,10 +52,8 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
      * @param uniqueId The uniquely identifying portlet id in the registry
      */
     public PortletDefinition getPortletDefinition(String uniqueId)
-    {
-        PortletRegistry registry =
-            (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        return registry.getPortletDefinitionByIdentifier(uniqueId);
+    {        
+        return portletRegistry.getPortletDefinitionByIdentifier(uniqueId);
     }
 
     /** 
@@ -67,18 +66,7 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
      */
     public PortalContextProvider getPortalContextProvider()
     {
-        ServletContext context = config.getServletContext();
-
-        PortalContextProvider provider =
-            (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
-
-        if (provider == null)
-        {
-            provider = new PortalContextProviderImpl();
-            context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
-        }
-
-        return provider;
+        return portalContextProvider;
     }
 
     /** 
@@ -90,10 +78,9 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
      * @param arg0
      * @return
      */
-    public PortletDefinition getPortletDefinition(ObjectID arg0)
-    {
-        // TODO Auto-generated method stub
-        return null;
+    public PortletDefinition getPortletDefinition(ObjectID id)
+    {        
+        return portletRegistry.getPortletDefinition(id);
     }
 
 }

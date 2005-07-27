@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.services.information;
 
+import java.util.Map;
+
+import javax.servlet.ServletConfig;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.factory.Factory;
@@ -32,35 +36,22 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
 {
     private javax.servlet.ServletConfig servletConfig;
     private static final Log log = LogFactory.getLog(InformationProviderServiceImpl.class);
-
-    public void init(javax.servlet.ServletConfig config, java.util.Map properties) throws Exception
+    private final StaticInformationProvider staticInformationProvider;
+    
+    public InformationProviderServiceImpl(StaticInformationProvider staticInformationProvider, ServletConfig config)
     {
-        servletConfig = config;
+        this.staticInformationProvider = staticInformationProvider;
+        
+    }
+
+    public void init(ServletConfig config, Map properties) throws Exception
+    {
+        // does nothing at all    
     }
 
     public StaticInformationProvider getStaticProvider()
-    {
-        javax.servlet.ServletContext context = servletConfig.getServletContext();
-
-        StaticInformationProvider provider =
-            (StaticInformationProvider) context.getAttribute("org.apache.jetspeed.engine.core.StaticInformationProvider");
-
-        if (provider == null)
-        {
-            provider = new StaticInformationProviderImpl(servletConfig);
-            context.setAttribute("org.apache.engine.core.StaticInformationProvider", provider);
-        }
-
-        if (provider != null)
-        {
-            // log.info("Static information provider " + provider.getClass().getName());
-        }
-        else
-        {
-            log.warn("A static information provider has not been defined");
-        }
-
-        return provider;
+    {        
+        return staticInformationProvider;
     }
 
     public DynamicInformationProvider getDynamicProvider(javax.servlet.http.HttpServletRequest request)
@@ -87,6 +78,6 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
      */
     public void destroy() throws Exception
     {       
-
+       // also does nothing
     }
 }
