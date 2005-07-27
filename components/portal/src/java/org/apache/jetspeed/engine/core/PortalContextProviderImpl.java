@@ -15,16 +15,16 @@
  */
 package org.apache.jetspeed.engine.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import javax.portlet.PortalContext;
-
-import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalContext;
 import org.apache.pluto.services.information.PortalContextProvider;
 
 /**
@@ -36,26 +36,22 @@ import org.apache.pluto.services.information.PortalContextProvider;
 public class PortalContextProviderImpl 
     implements PortalContextProvider
 {
-    PortalContextImpl portalContext = null;
+    private final PortalContext  portalContext;
     /** Portal information */
 
-    private String info = null;
-    private String portalName = null;
-    private String portalVersion = null;
+    private String info;
+    private final String portalName;
+    private final String portalVersion;
     
     /** supported portlet modes by this portal */
     private Vector modes;
 
     /** supported window states by this portal */
     private Vector states;
-
-    /** portal properties */
-    private HashMap properties = new HashMap();
-
-
-    public PortalContextProviderImpl()
+    
+    public PortalContextProviderImpl(PortalContext portalContext)
     {
-        portalContext = new PortalContextImpl(this);
+        this.portalContext = portalContext;
         
         modes = getDefaultModes();
 
@@ -64,8 +60,8 @@ public class PortalContextProviderImpl
         states = getDefaultStates(); 
 
         // set info
-        portalName = Jetspeed.getContext().getConfiguration().getString("portal.name");
-        portalVersion = Jetspeed.getContext().getConfiguration().getString("portal.version");         
+        portalName = this.portalContext.getConfiguration().getString("portal.name");
+        portalVersion = this.portalContext.getConfiguration().getString("portal.version");         
         info = portalName + "/" + portalVersion;   
         
     }
@@ -102,11 +98,7 @@ public class PortalContextProviderImpl
      */
     public String getProperty(String name)
     {        
-        if (name == null) 
-        {
-            throw new IllegalArgumentException("Property name == null");
-        }
-        return(String) properties.get(name);
+        return portalContext.getProperty(name);   
     }
 
     /** 
@@ -119,7 +111,13 @@ public class PortalContextProviderImpl
      */
     public Collection getPropertyNames()
     {     
-        return properties.keySet();
+         Iterator itr = portalContext.getConfiguration().getKeys();
+         ArrayList names = new ArrayList();
+         while(itr.hasNext())
+         {
+             names.add(itr.next());
+         }
+         return names;
     }
 
     /** 
@@ -149,13 +147,12 @@ public class PortalContextProviderImpl
     }
 
     private Vector getDefaultModes()
-    {
+    {  
         Vector m = new Vector();
-        String[] supportedModes = Jetspeed.getContext().getConfiguration().getStringArray("supported.portletmode");
-        
-        for (int i=0; i<supportedModes.length; i++) 
+        Enumeration supportedPortletModes = portalContext.getSupportedPortletModes();
+        while(supportedPortletModes.hasMoreElements()) 
         {
-            m.add(new PortletMode(supportedModes[i].toString().toLowerCase()));
+            m.add((PortletMode) supportedPortletModes.nextElement());
         }
 
         return m;
@@ -164,11 +161,10 @@ public class PortalContextProviderImpl
     private Vector getDefaultStates()
     {
         Vector s = new Vector();
-        String[] supportedStates = Jetspeed.getContext().getConfiguration().getStringArray("supported.windowstate");
-
-        for (int i=0; i<supportedStates.length; i++) 
+        Enumeration supportedWindowStates = portalContext.getSupportedWindowStates();
+        while(supportedWindowStates.hasMoreElements()) 
         {
-            s.add(new WindowState(supportedStates[i].toString().toLowerCase()));
+            s.add((WindowState) supportedWindowStates.nextElement());
         }
 
         return s;
@@ -180,7 +176,7 @@ public class PortalContextProviderImpl
         {
             throw new IllegalArgumentException("Property name == null");
         }
-        properties.put(name, value);
+        portalContext.getConfiguration().setProperty(name, value);
     }      
 
     // expects enumeration of PortletMode objects
@@ -234,7 +230,7 @@ public class PortalContextProviderImpl
         // these are the minimum states that the portal needs to support
         states = getDefaultStates();    
 
-        properties.clear();
+        //properties.clear();
     }
 
 }

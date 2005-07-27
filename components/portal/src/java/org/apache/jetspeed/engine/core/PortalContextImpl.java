@@ -27,6 +27,7 @@ import org.apache.pluto.util.Enumerator;
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
+ * @deprecated Can't any references as it appears we always use JetpseedPortletContext
  */
 public class PortalContextImpl implements PortalContext
 {
