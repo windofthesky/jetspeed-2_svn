@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.engine;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -30,6 +31,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.components.SpringComponentManager;
+import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
@@ -124,26 +128,13 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
 
                 console.info("JetspeedServlet attempting to create the  portlet engine...");
-                String engineClassName = config.getInitParameter("engine");
-                if (engineClassName == null)
-                {
-                    throw new IllegalStateException(
-                            "You must define the engine init-parameter org.apache.jetspeed.engine.JetspeedServlet servlet.");
-                }
-                Class engineClass = Class.forName(engineClassName);
 
-                engine = Jetspeed.createEngine(properties, applicationRoot, config, engineClass);
-                if (engine != null)
-                {
-                    console.info("JetspeedServlet successfuly created the portal Engine. " + engine);
-                }
-                else
-                {
-                    throw new ServletException("Unable to create Jetspeed portal engine");
-                }
-                console.info("JetspeedServlet attempting to initialize the  portletcontainer...");
-                engine.initContainer(config);
-                console.info("JetspeedServlet has successfuly initialized the portlet container...");
+                engine = new JetspeedEngine(properties, applicationRoot, config, initializeComponentManager(config, applicationRoot, properties));
+             
+                console.info("JetspeedServlet attempting to start the Jetspeed Portal Engine...");
+                engine.start();
+                Jetspeed.setEngine(engine);
+                console.info("JetspeedServlet has successfuly started the Jetspeed Portal Engine....");
 
             }
             catch (Throwable e)
@@ -153,7 +144,6 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 initFailure = e;               
                 log.fatal(msg, e);
                 console.fatal(msg, e);
-
             }
 
             console.info(INIT_DONE_MSG);
@@ -288,5 +278,37 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             System.out.println("name = " + name);
             System.out.println("value = " + value);
         }
+    }
+    
+    
+    /**
+     * If you prefer to use a component manager other than Spring, you
+     * can override this method to do so.  Do not explicitly call start()
+     * of the ComponentManager as the JetspeedEngine will do this within its
+     * own start() method.
+     * 
+     * @param servletConfig
+     * @param appRoot
+     * @param configuration
+     * @return
+     * @throws IOException
+     */
+    protected ComponentManager initializeComponentManager(ServletConfig servletConfig, String appRoot, Configuration configuration) throws IOException
+    {
+        ServletConfigFactoryBean.setServletConfig(servletConfig);
+       // String relativeApplicationRoot = getRealPath("/");
+        String relativeApplicationRoot = appRoot;
+        String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();               
+        
+        final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
+        final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
+            
+        
+        String[] bootConfigs = new String[] {"/WEB-INF/assembly/boot/*.xml"};
+        String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension};
+        ServletContext servletContext = servletConfig.getServletContext();
+        SpringComponentManager cm = new SpringComponentManager(bootConfigs, appConfigs, servletContext, appRoot);      
+        
+        return cm;        
     }
 }

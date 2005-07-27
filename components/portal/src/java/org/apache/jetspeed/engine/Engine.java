@@ -17,13 +17,11 @@ package org.apache.jetspeed.engine;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.services.PortletContainerEnvironment;
 import org.apache.pluto.services.factory.FactoryManagerService;
 
@@ -32,29 +30,18 @@ import org.apache.pluto.services.factory.FactoryManagerService;
  * Engine Abstraction - to run from both unit tests and servlet
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: Engine.java 187178 2004-08-02 19:00:15Z weaver $
  */
 public interface Engine extends JetspeedEngineConstants, FactoryManagerService, PortletContainerEnvironment 
 {
     /**
      * Initializes the engine with a commons configuration, starting all early initable services.
      *
-     * @param configuration a commons <code>Configuration</code> set
-     * @param applicationRoot a <code>String</code> path to the application root for resources
-     * @param config the servlet configuration, this parameter can be null for unit tests or utilities
      * @throws JetspeedException when the engine fails to initilialize
      */
-    public void init(Configuration configuration, String applicationRoot, ServletConfig config)
+    public void start()
        throws JetspeedException;
 
-    /**
-     * Initializes the portlet container given a servlet configuration.
-     * 
-     * @param config The servlet configuration.
-     * @throws PortletContainerException when the container fails to initialize.
-     */
-    public void initContainer(ServletConfig config)
-        throws PortletContainerException; 
     
     /**
      * Shuts down the Jetspeed engine and all associated services

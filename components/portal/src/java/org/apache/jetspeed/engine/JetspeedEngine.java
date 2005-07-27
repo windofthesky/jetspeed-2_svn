@@ -59,21 +59,40 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  * </p>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * @version $Id: AbstractEngine.java 188433 2005-03-23 22:50:44Z ate $
  *
  */
-public abstract class AbstractEngine implements Engine
-{
+public class JetspeedEngine implements Engine
+{   
+    private final PortalContext context;
+    private final ServletConfig config;
+    private final ComponentManager componentManager;
+    private final Configuration configuration;
+    private final String applicationRoot;
+    
+    protected static final Log log = LogFactory.getLog(JetspeedEngine.class);
+    private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);        
+    protected String defaultPipelineName;    
 
-    public static final String JNDI_SUPPORT_FLAG_KEY = "portal.use.internal.jndi";
-    private PortalContext context;
-    private ServletConfig config = null;
-    private ComponentManager componentManager = null;
-    protected static final Log log = LogFactory.getLog(AbstractEngine.class);
-    private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
-    /** stores the most recent RequestContext on a per thread basis */
-    protected boolean useInternalJNDI;
-    protected String defaultPipelineName;
+    public JetspeedEngine(Configuration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
+    {
+        this.configuration = configuration;
+        this.applicationRoot = applicationRoot;
+        this.componentManager = componentManager;
+        this.context = new JetspeedPortalContext(this, configuration, applicationRoot);
+        this.config = config;
+        context.setApplicationRoot(applicationRoot);
+        context.setConfiguration(configuration);           
+
+        defaultPipelineName = configuration.getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
+        configuration.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
+        
+        // Make these availble as beans to Spring
+        componentManager.addComponent("Engine", this);
+        componentManager.addComponent("PortalContext", context);
+    }  
+    
+    
 
     /**
      * Initializes the engine with a commons configuration, starting all early
@@ -88,36 +107,12 @@ public abstract class AbstractEngine implements Engine
      * @throws JetspeedException
      *                   when the engine fails to initilialize
      */
-    public void init( Configuration configuration, String applicationRoot, ServletConfig config ) throws JetspeedException
+    public void start() throws JetspeedException
     {
         DateFormat format = DateFormat.getInstance();
-        Date startTime = new Date();
-        
-        
+        Date startTime = new Date();        
         try
-        {
-            this.context = new JetspeedPortalContext(this);
-            this.config = config;
-            context.setApplicationRoot(applicationRoot);
-            context.setConfiguration(configuration);
-            useInternalJNDI = configuration.getBoolean(JNDI_SUPPORT_FLAG_KEY,
-                    true);
-            defaultPipelineName = configuration.getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
-            configuration.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
-            
-            if(System.getProperty(JNDI_SUPPORT_FLAG_KEY) ==  null)
-            {
-                 System.setProperty(JNDI_SUPPORT_FLAG_KEY, String
-                    .valueOf(useInternalJNDI));                 
-            }
-            else
-            {
-                // System property over rides the configurtaion                
-                useInternalJNDI = Boolean.getBoolean(JNDI_SUPPORT_FLAG_KEY);
-                log.warn("Internal JNDI has been flagged "+useInternalJNDI+" by the "+JNDI_SUPPORT_FLAG_KEY+" system  property.  This overrides the configuration setting of "+configuration.getBoolean(JNDI_SUPPORT_FLAG_KEY,
-                        true));
-            }
-            
+        {  
             //
             // Configure Log4J
             //
@@ -139,12 +134,8 @@ public abstract class AbstractEngine implements Engine
             //ClassLoader ploader2 = Thread.currentThread().getContextClassLoader();
             ClassHelper.setClassLoader(ploader2);
             
-            //
-            // bootstrap the initable services
-            //
-            componentManager = initComponents(configuration, config);
-            log.info("Components initialization complete");
-                
+            //Start the ComponentManager
+            componentManager.start();               
         }
         catch (Throwable e)
         {
@@ -172,35 +163,7 @@ public abstract class AbstractEngine implements Engine
         return this.config;
     }
 
-    /**
-     * Initializes the portlet container given a servlet configuration.
-     * 
-     * @param config
-     *                  The servlet configuration.
-     */
-    public void initContainer( ServletConfig config ) throws PortletContainerException
-    {
-        try
-        {
-            PortletContainer container = (PortletContainer) componentManager
-                    .getComponent(PortletContainer.class);
 
-            container.init("jetspeed", config, this, new Properties());
-        }
-        catch (Throwable e)
-        {
-            console.error("Unable to initalize Engine.", e);
-            log.error("Unable to initalize Engine.", e);
-            if (e instanceof PortletContainerException)
-            {
-                throw (PortletContainerException) e;
-            }
-            else
-            {
-                throw new PortletContainerException(e);
-            }
-        }
-    }
 
     public void shutdown() throws JetspeedException
     {        
@@ -225,26 +188,7 @@ public abstract class AbstractEngine implements Engine
 
     public void service( RequestContext context ) throws JetspeedException
     {
-        // requestContextPerThread.put(Thread.currentThread(), context);
 
-
-            if (useInternalJNDI)
-            {
-                // bind the current JNDI context to this service thread.
-                JNDIComponent jndi = (JNDIComponent) componentManager
-                        .getComponent(JNDIComponent.class);
-                if (jndi != null)
-                {
-                    try
-                    {
-                        jndi.bindToCurrentThread();
-                    }
-                    catch (NamingException e)
-                    {
-                        throw new JetspeedException("Unable bind jndi: "+e.toString(), e);
-                    }
-                }
-            }
             String targetPipeline = context
                     .getRequestParameter(PortalReservedParameters.PIPELINE);
             if (null == targetPipeline)
@@ -303,23 +247,6 @@ public abstract class AbstractEngine implements Engine
         return base.concat(path);
     }
     
-    /**
-     * 
-     * <p>
-     * initComponents
-     * </p>
-     * Main responsibility of the subclassed implementation of this method
-     * is to provide a <code>ComponentManager</code> implementation for the 
-     * Engine.
-     *
-     * @param configuration Usually jetspeed.properties
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @throws NamingException
-     */
-    protected abstract ComponentManager initComponents( Configuration configuration, ServletConfig servletConfig )
-    throws IOException, ClassNotFoundException, NamingException;
-
     public Pipeline getPipeline( String pipelineName )
     {
         return (Pipeline) componentManager.getComponent(pipelineName);
@@ -383,4 +310,5 @@ public abstract class AbstractEngine implements Engine
             return null;
         }
     }
+
 }
