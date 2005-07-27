@@ -41,13 +41,41 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
 {
     private boolean initialized = false;
     private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);
-    private PortletContainer pluto;
+    private final PortletContainer pluto;
+    private final String containerId;
+    private final Properties properties;
+    private final PortletContainerEnvironment environment;
+    private final ServletConfig servletConfig;
 
-    public JetspeedPortletContainerWrapper(PortletContainer pluto)
+    public JetspeedPortletContainerWrapper(PortletContainer pluto, String containerId, 
+            ServletConfig servletConfig, PortletContainerEnvironment env, Properties properties)
     {
         this.pluto = pluto;
+        this.containerId = containerId;
+        this.environment = env;
+        this.properties = properties;
+        this.servletConfig = servletConfig;
     }
-
+    
+    public JetspeedPortletContainerWrapper(PortletContainer pluto, String containerId, 
+            ServletConfig servletConfig, PortletContainerEnvironment env)
+    {
+        this(pluto, containerId, servletConfig, env, new Properties());
+    }
+    
+    /**
+     * Allows starting of the container without providing calling the 
+     * <code>init()</code> method without all of the arguments as the
+     * arguments have already been provided in the constructor.
+     * 
+     * @throws PortletContainerException
+     */
+    public void start() throws PortletContainerException
+    {
+        log.info("Attmepting to start Pluto portal container...");
+        this.init(containerId, servletConfig, environment, properties);
+        log.info("Pluto portlet container successfully started.");
+    }
   
     /**
      * initialization is still handled outside component architecture, since Pluto is not a component
