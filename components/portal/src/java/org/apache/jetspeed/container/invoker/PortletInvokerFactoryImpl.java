@@ -21,14 +21,12 @@ import javax.servlet.ServletConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.factory.PortletInvokerFactory;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.invoker.PortletInvoker;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -67,13 +65,26 @@ public class PortletInvokerFactoryImpl
     private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
 
     /** The servlet configuration for the Jetspeed portal */
-    private ServletConfig servletConfig;
+    private final ServletConfig servletConfig;
 
-    private Map props;
-
-    private PortalContext portalContext;
+    private final PortalContext portalContext;
     
-    private PortletFactory portletFactory;
+    private final PortletFactory portletFactory;
+    
+    private final JetspeedPortletInvoker servletPortletInvoker;
+    
+    private final JetspeedPortletInvoker localPortletInvoker;
+    
+    public PortletInvokerFactoryImpl(ServletConfig servletConfig, PortalContext portalContext, 
+            PortletFactory portletFactory, JetspeedPortletInvoker servletPortletInvoker, JetspeedPortletInvoker localPortletInvoker)
+    {
+        this.servletConfig = servletConfig;        
+        this.portalContext = portalContext;        
+        this.portletFactory = portletFactory;
+        this.servletPortletInvoker = servletPortletInvoker;
+        this.localPortletInvoker = localPortletInvoker;
+        
+    }
                
     /* (non-Javadoc)
      * @see org.apache.pluto.factory.Factory#init(javax.servlet.ServletConfig, java.util.Map)
@@ -81,10 +92,7 @@ public class PortletInvokerFactoryImpl
     public void init(ServletConfig config, Map properties)
     throws Exception
     {
-        servletConfig = config;        
-        portalContext = Jetspeed.getContext();
-        props = properties;                        
-        portletFactory = (PortletFactory)props.get("PortletFactory");
+        // does absolutely nothing
     }
 
     /* (non-Javadoc)
@@ -100,7 +108,7 @@ public class PortletInvokerFactoryImpl
      */
     public PortletInvoker getPortletInvoker(PortletDefinition portletDefinition)
     {
-        JetspeedPortletInvoker invoker = null;
+        
 
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
         if(app == null)
@@ -110,16 +118,14 @@ public class PortletInvokerFactoryImpl
         
         if (app.getApplicationType() == MutablePortletApplication.LOCAL)
         {
-                invoker =  (JetspeedPortletInvoker) props.get("LocalPortletInvoker"); 
-                invoker.activate(portletFactory, portletDefinition, servletConfig);
-                return invoker;           
+            localPortletInvoker.activate(portletFactory, portletDefinition, servletConfig);
+            return localPortletInvoker;           
         }
         else
-        {
-            invoker =  (JetspeedPortletInvoker) props.get("ServletPortletInvoker"); 
+        {             
             String servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
-            invoker.activate(portletFactory, portletDefinition, servletConfig, servletMappingName);            
-            return invoker;
+            servletPortletInvoker.activate(portletFactory, portletDefinition, servletConfig, servletMappingName);            
+            return servletPortletInvoker;
         }
 
     }
