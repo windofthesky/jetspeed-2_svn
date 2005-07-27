@@ -89,6 +89,18 @@ public interface PortletRegistry
      * have a parent PortletApplicationDefinition
      */
     PortletDefinitionComposite getPortletDefinitionByIdentifier( String identifier );
+    
+    
+    /**
+     * Locates the portlet defintion by its unique <code>ObjectID</code>.
+     * The ObjectID is generated internally by the portal when the portlet
+     * definition is first registered and has no connection to the information
+     * stored within the <code>portlet.xml</code>.
+     * @param id
+     * @return PortletDefinitionComposite
+     */
+    PortletDefinitionComposite getPortletDefinition(ObjectID id);
+    
 
     /**
      * unique name is a string formed by the combination of a portlet's

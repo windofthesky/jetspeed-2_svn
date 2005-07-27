@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.pluto.om.window.PortletWindow;
@@ -115,4 +116,13 @@ public interface PortalURL
      * @return a new renderURL as String
      */
     String createPortletURL(PortletWindow window, PortletMode mode, WindowState state, boolean secure);
+    
+    /**
+     * Sets the @link{javax.servlet.http.HttpServletRequest} that will be used 
+     * to generate urls.
+     * @param request
+     */
+    void setRequest(HttpServletRequest request);
+    
+    void setCharacterEncoding(String characterEncoding);
 }
