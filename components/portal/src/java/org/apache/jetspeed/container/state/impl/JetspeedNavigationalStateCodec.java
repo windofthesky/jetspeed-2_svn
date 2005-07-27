@@ -28,7 +28,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -55,12 +55,16 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final String keytable = "01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     protected final PortletMode[] portletModes;
     protected final WindowState[] windowStates;
+    private final PortalContext portalContext;
+    private final PortletWindowAccessor windowAccessor;
     
-    public JetspeedNavigationalStateCodec()
+    public JetspeedNavigationalStateCodec(PortalContext portalContext, PortletWindowAccessor windowAccessor)
     {
         Object o;
         ArrayList list = new ArrayList();
-        Enumeration portletModesEnum = Jetspeed.getContext().getSupportedPortletModes();
+        Enumeration portletModesEnum = portalContext.getSupportedPortletModes();
+        this.portalContext = portalContext;
+        this.windowAccessor = windowAccessor;
         
         // ensure standard modes will be first in the portletModeNames array
         // this ensures those modes are never lost from a bookmarked url when new modes are added somewhere in the
@@ -91,7 +95,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         list.add(WindowState.NORMAL);
         list.add(WindowState.MAXIMIZED);
         list.add(WindowState.MINIMIZED);
-        Enumeration windowStatesEnum = Jetspeed.getContext().getSupportedWindowStates();
+        Enumeration windowStatesEnum = portalContext.getSupportedWindowStates();
         while ( windowStatesEnum.hasMoreElements() )
         {
             o = windowStatesEnum.nextElement();
@@ -117,80 +121,19 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             
             int position = 0;
             StringBuffer buffer = new StringBuffer();
-            PortletWindowAccessor accessor = (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+            
             PortletWindowRequestNavigationalState currentState = null;
             String parameter;
             while ( (position = decodeArgument(position, decodedParameters, buffer, PARAMETER_SEPARATOR )) != -1 )
             {
                 parameter = buffer.toString();
-                currentState = decodeParameter( accessor, states, currentState, parameter);
+                currentState = decodeParameter( windowAccessor, states, currentState, parameter);
             }
+            
+            // Big ole debug 
             if ( log.isDebugEnabled() )
             {
-                buffer.setLength(0);
-                
-                String actionWindowId = states.getActionWindow() != null ? states.getActionWindow().getId().toString() : "";
-                
-                Iterator iter = states.getWindowIdIterator();
-                while ( iter.hasNext() )
-                {
-                    if ( buffer.length() == 0 )
-                    {
-                        buffer.append("[[");
-                    }
-                    else
-                    {
-                        buffer.append(",[");
-                    }
-                    currentState = states.getPortletWindowNavigationalState((String)iter.next());
-                    buffer.append("window:"+currentState.getWindowId());
-                    
-                    if ( currentState.getWindowId().equals(actionWindowId))
-                    {
-                        buffer.append(",action:true");
-                    }
-                    if (currentState.getPortletMode() != null) 
-                    {
-                        buffer.append(",mode:"+currentState.getPortletMode());
-                    }
-                    if (currentState.getWindowState() != null )
-                    {
-                        buffer.append(",state:"+currentState.getWindowState());
-                    }
-                    if (!currentState.isClearParameters())
-                    {
-                        if (currentState.getParametersMap() != null)
-                        {
-                            buffer.append(",parameters:[");
-                            boolean first = true;
-                            Iterator parIter = currentState.getParametersMap().keySet().iterator();
-                            while ( parIter.hasNext() ) 
-                            {
-                                if ( first )
-                                {
-                                    first = false;
-                                }
-                                else
-                                {
-                                    buffer.append(",");
-                                }
-                                String name = (String)parIter.next();
-                                buffer.append(name+":[");
-                                String[] values = (String[])currentState.getParametersMap().get(name);
-                                for ( int i = 0; i < values.length; i++ )
-                                {
-                                    if ( i > 0 )
-                                    {
-                                        buffer.append(",");
-                                    }                                    
-                                    buffer.append(values[i]);
-                                }
-                                buffer.append("]");
-                            }
-                        }
-                    }
-                    buffer.append("]");
-                }
+                logDecode(states, buffer);
                 if ( buffer.length() > 0 )
                 {
                     buffer.append("]");
@@ -199,6 +142,73 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
         }
         return states;
+    }
+
+    private void logDecode(PortletWindowRequestNavigationalStates states, StringBuffer buffer)
+    {
+        PortletWindowRequestNavigationalState currentState;
+        buffer.setLength(0);
+        String actionWindowId = states.getActionWindow() != null ? states.getActionWindow().getId().toString() : "";
+        Iterator iter = states.getWindowIdIterator();
+        while ( iter.hasNext() )
+        {
+            if ( buffer.length() == 0 )
+            {
+                buffer.append("[[");
+            }
+            else
+            {
+                buffer.append(",[");
+            }
+            currentState = states.getPortletWindowNavigationalState((String)iter.next());
+            buffer.append("window:"+currentState.getWindowId());
+            
+            if ( currentState.getWindowId().equals(actionWindowId))
+            {
+                buffer.append(",action:true");
+            }
+            if (currentState.getPortletMode() != null) 
+            {
+                buffer.append(",mode:"+currentState.getPortletMode());
+            }
+            if (currentState.getWindowState() != null )
+            {
+                buffer.append(",state:"+currentState.getWindowState());
+            }
+            if (!currentState.isClearParameters())
+            {
+                if (currentState.getParametersMap() != null)
+                {
+                    buffer.append(",parameters:[");
+                    boolean first = true;
+                    Iterator parIter = currentState.getParametersMap().keySet().iterator();
+                    while ( parIter.hasNext() ) 
+                    {
+                        if ( first )
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            buffer.append(",");
+                        }
+                        String name = (String)parIter.next();
+                        buffer.append(name+":[");
+                        String[] values = (String[])currentState.getParametersMap().get(name);
+                        for ( int i = 0; i < values.length; i++ )
+                        {
+                            if ( i > 0 )
+                            {
+                                buffer.append(",");
+                            }                                    
+                            buffer.append(values[i]);
+                        }
+                        buffer.append("]");
+                    }
+                }
+            }
+            buffer.append("]");
+        }
     }
     
     public String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, PortletMode portletMode, 
