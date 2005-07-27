@@ -22,10 +22,11 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -53,28 +54,32 @@ public abstract class AbstractPortalURL implements PortalURL
     private String nonSecureBaseURL;
     private int serverPort;    
     private boolean secure;
-    private String characterEncoding;
+    private String characterEncoding = "UTF-8";
     
-    public AbstractPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
+    
+    public AbstractPortalURL(NavigationalState navState, PortalContext portalContext)
     {
         if ( navStateParameter == null )
         {
             navStateParameter = 
-                Jetspeed.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", 
+                portalContext.getConfigurationProperty("portalurl.navigationalstate.parameter.name", 
                         DEFAULT_NAV_STATE_PARAMETER);
         }
         
-        this.navState = navState;
+        this.navState = navState;        
+    }
+    
+    
+    public AbstractPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        this(navState, portalContext);
         this.characterEncoding = characterEncoding;
-
-        if (null != request)
-        {
-            decodeBaseURL(request);
-            
-            decodeBasePath(request);
-            
-            decodePathAndNavigationalState(request);
-        }
+    }
+    
+    public AbstractPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        this(characterEncoding, navState, portalContext);
+        setRequest(request);
     }
     
     public static String getNavigationalStateParameterName()
@@ -135,8 +140,9 @@ public abstract class AbstractPortalURL implements PortalURL
         }
         catch (UnsupportedEncodingException e)
         {
-            // should never happen
-            e.printStackTrace();
+            IllegalStateException ise = new IllegalStateException("An unsupported encoding was defined for this NavigationalState.");
+            ise.initCause(e);
+            throw ise;
         }
     }
 
@@ -227,4 +233,18 @@ public abstract class AbstractPortalURL implements PortalURL
     protected abstract void decodePathAndNavigationalState(HttpServletRequest request);
     
     protected abstract String createPortletURL(String encodedNavState, boolean secure);
+
+    public void setRequest(HttpServletRequest request)
+    {
+        ArgUtil.assertNotNull(HttpServletRequest.class, request, this, "setRequest");
+        decodeBaseURL(request);        
+        decodeBasePath(request);        
+        decodePathAndNavigationalState(request);        
+    }
+
+    public void setCharacterEncoding(String characterEncoding)
+    {
+        this.characterEncoding = characterEncoding;
+    }
+    
 }

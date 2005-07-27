@@ -17,6 +17,7 @@ package org.apache.jetspeed.container.url.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 
 /**
@@ -27,9 +28,19 @@ import org.apache.jetspeed.container.state.NavigationalState;
  */
 public class QueryStringEncodingPortalURL extends AbstractPortalURL
 {
-    public QueryStringEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
+    public QueryStringEncodingPortalURL(NavigationalState navState, PortalContext portalContext)
     {
-        super(request, characterEncoding, navState);
+        super(navState, portalContext);
+    }
+
+    public QueryStringEncodingPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        super(characterEncoding, navState, portalContext);
+    }
+
+    public QueryStringEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        super(request, characterEncoding, navState, portalContext);
     }
 
     protected void decodePathAndNavigationalState(HttpServletRequest request)

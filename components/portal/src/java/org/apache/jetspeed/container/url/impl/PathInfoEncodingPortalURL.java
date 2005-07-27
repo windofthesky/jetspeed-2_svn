@@ -15,10 +15,12 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 
 /**
@@ -29,11 +31,22 @@ import org.apache.jetspeed.container.state.NavigationalState;
  */
 public class PathInfoEncodingPortalURL extends AbstractPortalURL
 {
-    public PathInfoEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
+
+    public PathInfoEncodingPortalURL(NavigationalState navState, PortalContext portalContext)
     {
-        super(request, characterEncoding, navState);
+        super(navState, portalContext);
     }
-    
+
+    public PathInfoEncodingPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        super(characterEncoding, navState, portalContext);
+    }
+
+    public PathInfoEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState, PortalContext portalContext)
+    {
+        super(request, characterEncoding, navState, portalContext);
+    }
+
     protected void decodePathAndNavigationalState(HttpServletRequest request)
     {
         String path = null;
