@@ -14,12 +14,21 @@
   <document-order>profiler.psml</document-order>
 
   <menu name="page-navigations">
-    <separator>Users Admin Pages</separator>
+    <separator>
+      <text>Users Admin Pages</text>
+      <metadata name="text" xml:lang="ja">ユーザー管理ページ</metadata>
+    </separator>
     <options>/Administrative/user-mgt.psml</options>
     <options>/Administrative/users-jsf.psml</options>
-    <separator>Profiled Pages</separator>
+    <separator>
+      <text>Profiled Pages</text>
+      <metadata name="text" xml:lang="ja">プロファイルページ</metadata>
+    </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
-    <separator>Non Java Pages</separator>
+    <separator>
+      <text>Non Java Pages</text>
+      <metadata name="text" xml:lang="ja">Non-Javaページ</metadata>
+    </separator>
     <options>/non-java</options>
   </menu>
 

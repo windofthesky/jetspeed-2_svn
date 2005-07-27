@@ -16,6 +16,10 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>SSO Management</title>
+  <metadata name="title" xml:lang="ja">
+        SSO 管理
+  </metadata>
+
   <fragment id="ssoa-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ssoa-200" type="portlet" name="security::SSOBrowserPortlet">
       <property layout="TwoColumns" name="row" value="0" />

@@ -17,6 +17,10 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Portal Site Manager</title>
+  <metadata name="title" xml:lang="ja">
+        ポータルサイト管理
+  </metadata>
+
   <fragment id="js-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="pdb-1" type="portlet" name="pam::PortalSiteBrowser" >
       <property layout="TwoColumns" name="row" value="0" />

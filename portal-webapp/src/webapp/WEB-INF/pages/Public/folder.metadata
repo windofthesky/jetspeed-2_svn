@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <folder>
   <title>Public Folders</title>  
+  <metadata name="title" xml:lang="ja">公開フォルダ</metadata>
 
   <security-constraints>
     <security-constraints-ref>public-edit</security-constraints-ref>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <link target="top">
  <title>[USER] Apache Portals</title>
+  <metadata name="title" xml:lang="ja">
+    [ユーザー] Apache Portals
+  </metadata>
+
  <url>http://portals.apache.org</url>
 </link>

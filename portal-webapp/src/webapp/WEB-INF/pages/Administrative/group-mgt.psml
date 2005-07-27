@@ -17,6 +17,10 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Group Management</title>
+  <metadata name="title" xml:lang="ja">
+        グループ管理
+  </metadata>
+
   <fragment id="gm-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="gm-3" type="portlet" name="security::GroupBrowserPortlet">
       <property layout="TwoColumns" name="row" value="0" />

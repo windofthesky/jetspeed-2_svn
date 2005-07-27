@@ -20,7 +20,11 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   
-   <title>DB Browser Demo</title>
+  <title>DB Browser Demo</title>
+  <metadata name="title" xml:lang="ja">
+        DBブラウザデモ
+  </metadata>
+
   <fragment id="dbb-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="dbb-101" type="portlet" name="demo::DbBrowserExample">
       <property layout="TwoColumns" name="row" value="0" />

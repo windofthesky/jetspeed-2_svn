@@ -1,4 +1,8 @@
 <link target="top">
  <title>Google Web Search</title>
+  <metadata name="title" xml:lang="ja">
+    グーグルウェブ検索
+  </metadata>
+
  <url>http://www.google.com</url>
 </link>

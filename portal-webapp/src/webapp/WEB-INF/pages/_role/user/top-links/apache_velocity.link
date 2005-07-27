@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <link target="top">
  <title>[USER] Apache Velocity</title>
+  <metadata name="title" xml:lang="ja">
+    [ユーザー] Apache Velocity
+  </metadata>
+
  <url>http://jakarta.apache.org/velocity</url>
 </link>

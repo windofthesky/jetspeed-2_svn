@@ -21,6 +21,10 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>[USER 004] PSML Page</title>
+  <metadata name="title" xml:lang="ja">
+    [ユーザー 004] PSML ページ
+  </metadata>
+
   <fragment id="u4-xx1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="u4-xx3" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />

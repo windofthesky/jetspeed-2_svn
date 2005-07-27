@@ -2,7 +2,7 @@
 <folder>
   <title >Non-Java Portlets</title>  
   <metadata name="title" xml:lang="fr">Portlet non-Java</metadata>
-  <metadata name="title" xml:lang="ja">non-Javaポートレット</metadata>
+  <metadata name="title" xml:lang="ja">Non-Javaポートレット</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

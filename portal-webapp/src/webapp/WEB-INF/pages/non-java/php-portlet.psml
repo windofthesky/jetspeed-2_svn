@@ -17,6 +17,10 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>PHP demo</title>
+  <metadata name="title" xml:lang="ja">
+        PHP デモ
+  </metadata>
+
   <fragment id="php-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="phpdemo-1" type="portlet" name="PHP::php-demo">
       <property layout="TwoColumns" name="row" value="0" />

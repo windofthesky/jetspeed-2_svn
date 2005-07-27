@@ -2,7 +2,14 @@
 <page>
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
   <title>Nested Layout Test</title>
+  <metadata name="title" xml:lang="ja">
+    入れ子レイアウトテスト
+  </metadata>
   <short-title>Nested Layout</short-title>
+  <metadata name="short-title" xml:lang="ja">
+    入れ子レイアウト
+  </metadata>
+
   <fragment id="100393" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="100939" type="portlet" name="pam::LocaleSelector">
       <property layout="OneColumn" name="row" value="0"/>

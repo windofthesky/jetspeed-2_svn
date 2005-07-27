@@ -21,7 +21,11 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   
-   <title>Plumtree RSS Portlet</title>
+  <title>Plumtree RSS Portlet</title>
+  <metadata name="title" xml:lang="ja">
+    Plumtree RSS ポートレット
+  </metadata>
+
   <fragment id="rss-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="rrsPortlet1" type="portlet" name="RssPortlet::RssPortlet">
       <property layout="TwoColumns" name="row" value="0" />

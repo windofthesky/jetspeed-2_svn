@@ -16,6 +16,10 @@ limitations under the License.
      portlet-decorator="clear"
   />
   <title>User Chooser</title>
+  <metadata name="title" xml:lang="ja">
+        ユーザー選択
+  </metadata>
+
   <fragment id="mchooser-users" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="mchooser-users-1" type="portlet" name="security::UserMultiChooser" >
     </fragment>

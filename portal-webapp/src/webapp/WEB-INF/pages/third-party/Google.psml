@@ -21,7 +21,11 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   
-   <title>Google Portlets</title>
+  <title>Google Portlets</title>
+  <metadata name="title" xml:lang="ja">
+    グーグルポートレット
+  </metadata>
+
   <fragment id="goo-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="googlePortlet1" type="portlet" name="GooglePortlet::GooglePortlet">
       <property layout="TwoColumns" name="row" value="0" />

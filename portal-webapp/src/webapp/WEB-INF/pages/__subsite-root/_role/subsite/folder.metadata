@@ -2,6 +2,10 @@
 <folder>
 
   <title>Subsite Root Folder</title>  
+  <metadata name="title" xml:lang="ja">
+    サブサイトルートフォルダ
+  </metadata>
+
 
   <default-page>subsite-default-page.psml</default-page>
 

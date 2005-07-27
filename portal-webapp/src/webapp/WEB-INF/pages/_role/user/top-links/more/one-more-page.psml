@@ -16,6 +16,10 @@ limitations under the License.
 <page>
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
   <title>[USER] One More Page</title>
+  <metadata name="title" xml:lang="ja">
+    [ユーザー] 追加ページ
+  </metadata>
+
   <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="utp-4" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />

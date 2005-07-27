@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <folder>
   <title>[USER] Root Folder</title>  
+  <metadata name="title" xml:lang="ja">
+    [ユーザー] ルートフォルダ
+  </metadata>
   <metadata name="title" xml:lang="fr">[USER] Répertoire racine</metadata>
 
   <document-order>Google.link</document-order>

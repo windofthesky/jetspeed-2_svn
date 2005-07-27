@@ -21,7 +21,11 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   
-   <title>Sun Portlets</title>
+  <title>Sun Portlets</title>
+  <metadata name="title" xml:lang="ja">
+    Sun ポートレット
+  </metadata>
+
   <fragment id="sunportletspage" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="showTime1" type="portlet" name="portletsamples::JSPPortlet">
       <property layout="TwoColumns" name="row" value="0" />

@@ -4,6 +4,9 @@
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
 
   <title>Subsite Bookmarks</title>
+  <metadata name="title" xml:lang="ja">
+    サブサイトブックマーク
+  </metadata>
 
   <fragment id="sub-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="sub-21" type="portlet" name="demo::BookmarkPortlet">

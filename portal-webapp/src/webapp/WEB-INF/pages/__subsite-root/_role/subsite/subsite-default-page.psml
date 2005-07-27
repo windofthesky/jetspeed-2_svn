@@ -4,6 +4,10 @@
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
 
   <title>Subsite Home</title>
+  <metadata name="title" xml:lang="ja">
+    サブサイトホーム
+  </metadata>
+
 
   <fragment id="sub-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="sub-1" type="portlet" name="pam::LocaleSelector">

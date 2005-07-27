@@ -2,6 +2,9 @@
 <link target="top">
 
  <title>Subsite Root Google Web Search</title>
+  <metadata name="title" xml:lang="ja">
+    サブサイトルートのグーグルウェブ検索
+  </metadata>
 
  <url>http://www.google.com</url>
 
