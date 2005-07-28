@@ -89,6 +89,9 @@ limitations under the License.
                 <resource>
                     <directory>${basedir}/../../etc/db-ojb</directory>
                 </resource>
+                <resource>
+                    <directory>${basedir}/../../portal-webapp/src/webapp/WEB-INF/assembly</directory>
+                </resource>
             </resources>
         </unitTest>
     

@@ -23,26 +23,26 @@ import org.apache.jetspeed.prefs.PropertyManager;
  * <p>
  * AbstractPrefsSupportedTestCase
  * </p>
- * <p>
- *
- * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
  */
 public class AbstractPrefsSupportedTestCase extends AbstractSpringTestCase
-{   
+{
     protected PropertyManager propertyManager;
+
     protected PreferencesProvider prefsProvider;
 
     protected String[] getConfigurations()
     {
-        return new String[]{"META-INF/prefs-noprop-dao.xml", "META-INF/transaction.xml"};
+        return new String[]
+        { "prefs.xml", "transaction.xml" };
     }
-    
+
     protected String[] getBootConfigurations()
     {
-        return new String[]{"test-repository-datasource-spring.xml"};
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 
     protected void setUp() throws Exception

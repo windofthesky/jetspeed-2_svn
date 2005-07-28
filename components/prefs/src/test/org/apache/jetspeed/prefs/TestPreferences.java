@@ -23,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
 
 /**
  * <p>
@@ -43,6 +44,7 @@ public class TestPreferences extends AbstractSpringTestCase
      * </p>
      */
     private final static int USER_PROPERTY_SET_TYPE = 0;
+
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
     private PreferencesProvider provider;
@@ -55,14 +57,16 @@ public class TestPreferences extends AbstractSpringTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
-        
+        provider = (PreferencesProvider) ctx.getBean("prefsProvider");
         pms = (PropertyManager) ctx.getBean("propertyManager");
-        
+        PersistenceBrokerPreferencesProvider prefsPersistenceBroker = (PersistenceBrokerPreferencesProvider) ctx
+                .getBean("prefsPersistenceBroker");
+        prefsPersistenceBroker.setEnablePropertyManager(true);
+
         // Make sure we are starting with a clean slate
         clearChildren(Preferences.userRoot());
         clearChildren(Preferences.systemRoot());
-        
+
     }
 
     /**
@@ -87,7 +91,7 @@ public class TestPreferences extends AbstractSpringTestCase
      */
     public void testUserRoot()
     {
-        
+
         Preferences prefs = Preferences.userRoot();
         if (null != prefs)
         {
@@ -151,7 +155,7 @@ public class TestPreferences extends AbstractSpringTestCase
         assertNotNull("should not be null", prefs1);
         assertTrue("expected node == /an1/san1, " + prefs1.absolutePath(), prefs1.absolutePath().equals("/an1/san1"));
 
-        //Relative path.
+        // Relative path.
         Preferences prefs3 = Preferences.userRoot().node("/an1");
         Preferences prefs4 = prefs3.node("rn1/srn1");
         assertNotNull("should not be null", prefs4);
@@ -182,9 +186,9 @@ public class TestPreferences extends AbstractSpringTestCase
 
     /**
      * <p>
-     * Test adding properties to a property set node and get property keys for a
-     * given node.
+     * Test adding properties to a property set node and get property keys for a given node.
      * </p>
+     * 
      * @throws Exception
      */
     public void testPropertyAndPropertyKeys() throws Exception
@@ -268,15 +272,15 @@ public class TestPreferences extends AbstractSpringTestCase
 
         removeNode.removeNode();
         assertFalse(prefs.nodeExists(test_node));
-        
+
         try
         {
-           removeNode.childrenNames();
-           assertFalse("An IllegalStateException should have been thrown by the AbtractPreferences class", true);
+            removeNode.childrenNames();
+            assertFalse("An IllegalStateException should have been thrown by the AbtractPreferences class", true);
         }
         catch (IllegalStateException e)
         {
-            
+
         }
     }
 
@@ -343,11 +347,11 @@ public class TestPreferences extends AbstractSpringTestCase
             System.out.println("BackingStoreException" + bse);
         }
     }
-    
+
     protected void clearChildren(Preferences node) throws Exception
     {
         String[] names = node.childrenNames();
-        for(int i=0; i < names.length; i++)
+        for (int i = 0; i < names.length; i++)
         {
             node.node(names[i]).removeNode();
         }
@@ -355,11 +359,13 @@ public class TestPreferences extends AbstractSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[]{"META-INF/prefs-dao.xml", "META-INF/transaction.xml"};
+        return new String[]
+        { "prefs.xml", "transaction.xml" };
     }
 
     protected String[] getBootConfigurations()
     {
-        return new String[]{"test-repository-datasource-spring.xml"};
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 }

@@ -16,55 +16,41 @@
 
 package org.apache.jetspeed.capabilities;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.jetspeed.capabilities.impl.JetspeedCapabilities;
-import org.apache.jetspeed.testhelpers.OJBHelper;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 
 /**
  * Test Capability Service
- *
+ * 
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends TestCase
+public class TestCapability extends AbstractSpringTestCase
 {
     private Capabilities capabilities = null;
-    private OJBHelper ojbHelper;
-        
+
     /**
      * Start the tests.
-     *
-     * @param args the arguments. Not used
+     * 
+     * @param args
+     *            the arguments. Not used
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(
-            new String[] { TestCapability.class.getName()});
+        junit.awtui.TestRunner.main(new String[]
+        { TestCapability.class.getName() });
     }
 
     protected void setUp() throws Exception
     {
-        Map context = new HashMap();
-        ojbHelper = new OJBHelper(context);
-        ojbHelper.setUp();
-
-        
-        JetspeedCapabilities targetCapabilities
-            = new JetspeedCapabilities("META-INF/capabilities-ojb.xml");
-        targetCapabilities.init();
-        this.capabilities = (Capabilities) 
-            ojbHelper.getTxProxiedObject(targetCapabilities, new String[]{Capabilities.class.getName()});                
-        
+        super.setUp();
+        capabilities = (Capabilities) ctx.getBean("capabilities");
     }
-    
+
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
@@ -73,6 +59,7 @@ public class TestCapability extends TestCase
 
     /**
      * Tests categories
+     * 
      * @throws Exception
      */
     public void testCapability() throws Exception
@@ -82,7 +69,7 @@ public class TestCapability extends TestCase
         Iterator caps = capabilities.getClients();
         while (caps.hasNext())
         {
-            Client client = (Client)caps.next();
+            Client client = (Client) caps.next();
             int evalOrder = client.getEvalOrder();
             if (lastOrder >= evalOrder)
             {
@@ -90,7 +77,7 @@ public class TestCapability extends TestCase
             }
             lastOrder = evalOrder;
         }
-        
+
         // Find specific client -- testing pattern matching
         String userAgent;
         System.out.println("Testing all supported Clients...");
@@ -98,28 +85,28 @@ public class TestCapability extends TestCase
         System.out.println("Find pattern: " + userAgent);
         CapabilityMap cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("Opera", cm.getClient().getName().equals("opera7"));                
+        assertTrue("Opera", cm.getClient().getName().equals("opera7"));
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/4.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("Netscape/Mozilla4", cm.getClient().getName().equals("ns4"));                        
+        assertTrue("Netscape/Mozilla4", cm.getClient().getName().equals("ns4"));
         capabilityMapReport(cm);
 
         userAgent = "MSIE 5.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("MSIE 5", cm.getClient().getName().equals("ie5"));                                
+        assertTrue("MSIE 5", cm.getClient().getName().equals("ie5"));
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/5.0";
         System.out.println("Find pattern: " + userAgent);
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("Mozilla 5.0", cm.getClient().getName().equals("mozilla"));                                        
+        assertTrue("Mozilla 5.0", cm.getClient().getName().equals("mozilla"));
         capabilityMapReport(cm);
 
         userAgent = "Lynx";
@@ -133,28 +120,27 @@ public class TestCapability extends TestCase
         cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
-        
+
         userAgent = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/125.5.6 (KHTML, like Gecko) Safari/125.12";
         System.out.println("Find pattern: " + userAgent);
-        cm = capabilities.getCapabilityMap(userAgent);                
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         assertTrue("found Safari", cm.getClient().getName().equals("safari"));
         capabilityMapReport(cm);
-        
+
         userAgent = "Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)";
         System.out.println("Find pattern: " + userAgent);
-        cm = capabilities.getCapabilityMap(userAgent);                
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("IE for Mac " + cm.getClient().getName(), cm.getClient().getName().equals("ie5mac"));        
+        assertTrue("IE for Mac " + cm.getClient().getName(), cm.getClient().getName().equals("ie5mac"));
         capabilityMapReport(cm);
-        
+
         userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)";
         System.out.println("Find pattern: " + userAgent);
-        cm = capabilities.getCapabilityMap(userAgent);                
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        assertTrue("IE 6 Windows", cm.getClient().getName().equals("ie6"));        
+        assertTrue("IE 6 Windows", cm.getClient().getName().equals("ie6"));
         capabilityMapReport(cm);
-        
 
     }
 
@@ -191,7 +177,14 @@ public class TestCapability extends TestCase
 
     protected String[] getConfigurations()
     {
-        return new String[] {"/META-INF/test-spring.xml"};
+        return new String[]
+        { "capabilities.xml", "transaction.xml" };
     }
-    
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
+    }
+
 }

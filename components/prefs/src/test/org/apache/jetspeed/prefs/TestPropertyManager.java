@@ -23,11 +23,14 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
 import org.apache.jetspeed.prefs.om.Property;
 
 /**
- * <p>Unit testing for {@link PropertyManager}.</p>
- *
+ * <p>
+ * Unit testing for {@link PropertyManager}.
+ * </p>
+ * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class TestPropertyManager extends AbstractSpringTestCase
@@ -37,13 +40,15 @@ public class TestPropertyManager extends AbstractSpringTestCase
     private static PropertyManager pms;
 
     /**
-     * <p>Defines property set types.</p>
+     * <p>
+     * Defines property set types.
+     * </p>
      */
     private final static int USER_PROPERTY_SET_TYPE = 0;
+
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
     private PreferencesProvider provider;
-
 
     /**
      * @see junit.framework.TestCase#tearDown()
@@ -51,7 +56,7 @@ public class TestPropertyManager extends AbstractSpringTestCase
     public void tearDown() throws Exception
     {
         clean();
-        // super.tearDown();        
+        // super.tearDown();
     }
 
     public static Test suite()
@@ -60,14 +65,15 @@ public class TestPropertyManager extends AbstractSpringTestCase
         return new TestSuite(TestPropertyManager.class);
     }
 
- 
     /**
-     * <p>Test add property keys to a {@link Preferences} node.</p>
+     * <p>
+     * Test add property keys to a {@link Preferences} node.
+     * </p>
      */
     public void testAddPropertyKeys() throws Exception
     {
         Map propertyKeys = initPropertyKeysMap();
-        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1"); 
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
         try
         {
             pms.addPropertyKeys(pref, propertyKeys);
@@ -79,7 +85,10 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Test get property key.</p>
+     * <p>
+     * Test get property key.
+     * </p>
+     * 
      * @throws Exception
      */
     public void testGetPropertyKeys() throws Exception
@@ -91,7 +100,9 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Test update property key.</p>
+     * <p>
+     * Test update property key.
+     * </p>
      */
     public void testUpdatePropertyKey() throws Exception
     {
@@ -116,7 +127,9 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Test remove property keys.</p>
+     * <p>
+     * Test remove property keys.
+     * </p>
      */
     public void testRemovePropertyKeys() throws Exception
     {
@@ -136,7 +149,9 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Init property property keys map.</p>
+     * <p>
+     * Init property property keys map.
+     * </p>
      */
     protected Map initPropertyKeysMap()
     {
@@ -151,7 +166,9 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Init property property keys.</p>
+     * <p>
+     * Init property property keys.
+     * </p>
      */
     protected void initPropertyKeys() throws Exception
     {
@@ -168,7 +185,9 @@ public class TestPropertyManager extends AbstractSpringTestCase
     }
 
     /**
-     * <p>Clean properties.</p>
+     * <p>
+     * Clean properties.
+     * </p>
      */
     protected void clean() throws Exception
     {
@@ -190,12 +209,14 @@ public class TestPropertyManager extends AbstractSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[]{"META-INF/prefs-dao.xml", "META-INF/transaction.xml"};
+        return new String[]
+        { "prefs.xml", "transaction.xml" };
     }
 
     protected String[] getBootConfigurations()
     {
-        return new String[]{"test-repository-datasource-spring.xml"};
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 
     /**
@@ -204,9 +225,11 @@ public class TestPropertyManager extends AbstractSpringTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
-        
-        pms = (PropertyManager) ctx.getBean("propertyManager");        
+        provider = (PreferencesProvider) ctx.getBean("prefsProvider");
+        PersistenceBrokerPreferencesProvider prefsPersistenceBroker = (PersistenceBrokerPreferencesProvider) ctx.getBean("prefsPersistenceBroker");
+        prefsPersistenceBroker.setEnablePropertyManager(true);
+
+        pms = (PropertyManager) ctx.getBean("propertyManager");
     }
 
 }

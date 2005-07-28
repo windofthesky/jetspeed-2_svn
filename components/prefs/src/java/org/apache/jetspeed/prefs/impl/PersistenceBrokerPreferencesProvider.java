@@ -35,23 +35,24 @@ import org.apache.ojb.broker.query.QueryFactory;
  * <p>
  * PersistenceBrokerPreferencesProvider
  * </p>
- * <p>
- * 
- * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *  
  */
-public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBrokerDaoSupport implements PreferencesProvider
+public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBrokerDaoSupport implements
+        PreferencesProvider
 {
 
     private static class NodeCache implements Serializable
     {
         Node node;
+
         String fullpath;
-        int type;        
+
+        int type;
+
         boolean childrenLoaded;
+
         Collection children;
 
         public NodeCache(Node node)
@@ -60,13 +61,13 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             this.fullpath = node.getFullPath();
             this.type = node.getNodeType();
         }
-        
+
         public NodeCache(String fullpath, int type)
         {
             this.fullpath = fullpath;
-            this.type     = type;
+            this.type = type;
         }
-        
+
         public boolean isChildrenLoaded()
         {
             return childrenLoaded;
@@ -86,17 +87,17 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         {
             return node;
         }
-        
+
         public void setNode(Node node)
         {
             this.node = node;
         }
-        
+
         public int getType()
         {
             return type;
         }
-        
+
         public Collection getChildren()
         {
             return children;
@@ -106,40 +107,53 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         {
             this.children = children;
         }
-        
+
         public boolean equals(Object obj)
         {
-            if ( obj != null && obj instanceof NodeCache )
+            if (obj != null && obj instanceof NodeCache)
             {
-                NodeCache other = (NodeCache)obj;
+                NodeCache other = (NodeCache) obj;
                 return fullpath.equals(other.fullpath) && type == other.type;
             }
             return false;
         }
-        
+
         public int hashCode()
         {
             return fullpath.hashCode() + type;
         }
     }
-    
+
     private HashMap nodeMap = new HashMap();
+
     private boolean enablePropertyManager;
 
     /**
-     * 
-     * @param repository Location of repository mapping file.  Must be available within the classpath.
-     * @param prefsFactoryImpl <code>java.util.prefs.PreferencesFactory</code> implementation to use.
-     * @param enablePropertyManager  Whether or not we chould be suing the property manager.
-     * @throws ClassNotFoundException if the <code>prefsFactoryImpl</code> argument does not reperesent
-     * a Class that exists in the current classPath.
+     * @param repository
+     *            Location of repository mapping file. Must be available within the classpath.
+     * @param prefsFactoryImpl
+     *            <code>java.util.prefs.PreferencesFactory</code> implementation to use.
+     * @param enablePropertyManager
+     *            Whether or not we chould be suing the property manager.
+     * @throws ClassNotFoundException
+     *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
+     *             current classPath.
      */
-    public PersistenceBrokerPreferencesProvider(String repositoryPath, boolean enablePropertyManager) throws ClassNotFoundException
+    public PersistenceBrokerPreferencesProvider(String repositoryPath, boolean enablePropertyManager)
+            throws ClassNotFoundException
     {
-        super(repositoryPath);                
+        super(repositoryPath);
         this.enablePropertyManager = enablePropertyManager;
     }
     
+    /**
+     * @param enablePropertyManager Whether to enable the <code>PropertyManager</code>.
+     */
+    public void setEnablePropertyManager(boolean enablePropertyManager)
+    {
+        this.enablePropertyManager = enablePropertyManager;
+    }
+
     /**
      * <p>
      * Get the node id from the full path.
@@ -152,17 +166,16 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      * @return An array of value returned including:
      * @throws NodeNotFoundException
      *             if the node does not exist
-     *  
      */
-    public Node getNode( String fullPath, int nodeType ) throws NodeDoesNotExistException
+    public Node getNode(String fullPath, int nodeType) throws NodeDoesNotExistException
     {
         NodeCache key = new NodeCache(fullPath, nodeType);
-        NodeCache hit = (NodeCache)nodeMap.get(key);
-        if ( hit != null )
+        NodeCache hit = (NodeCache) nodeMap.get(key);
+        if (hit != null)
         {
             return hit.getNode();
         }
-        
+
         Criteria c = new Criteria();
         c.addEqualTo("fullPath", fullPath);
         c.addEqualTo("nodeType", new Integer(nodeType));
@@ -171,7 +184,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         Node nodeObj = (Node) getPersistenceBrokerTemplate().getObjectByQuery(query);
         if (null != nodeObj)
         {
-            key.setNode(nodeObj);           
+            key.setNode(nodeObj);
             nodeMap.put(key, key);
             return nodeObj;
         }
@@ -180,18 +193,17 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             throw new NodeDoesNotExistException("No node of type " + nodeType + "found at path: " + fullPath);
         }
     }
-    
+
     /**
-     * 
      * <p>
      * nodeExists
      * </p>
-     *
+     * 
      * @param fullPath
      * @param nodeType
      * @return
      */
-    public boolean nodeExists( String fullPath, int nodeType )
+    public boolean nodeExists(String fullPath, int nodeType)
     {
         try
         {
@@ -218,15 +230,15 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      * @param fullPath
      *            The node full path.
      * @return the newly created node
-     * @throws NodeAlreadyExistsException if a node of the same type having the same path
-     * already exists.
+     * @throws NodeAlreadyExistsException
+     *             if a node of the same type having the same path already exists.
      */
-    public Node createNode( Node parent, String nodeName, int nodeType, String fullPath )
+    public Node createNode(Node parent, String nodeName, int nodeType, String fullPath)
             throws FailedToCreateNodeException, NodeAlreadyExistsException
-    {      
+    {
         if (nodeExists(fullPath, nodeType))
         {
-            throw new NodeAlreadyExistsException("Node of type "+nodeType+" already exists at path "+fullPath);
+            throw new NodeAlreadyExistsException("Node of type " + nodeType + " already exists at path " + fullPath);
         }
         else
         {
@@ -237,47 +249,47 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             }
 
             Node nodeObj = new NodeImpl(parentNodeId, nodeName, nodeType, fullPath);
-            
+
             try
             {
                 getPersistenceBrokerTemplate().store(nodeObj);
                 NodeCache key = new NodeCache(nodeObj);
-                nodeMap.put(key,key);
+                nodeMap.put(key, key);
                 return nodeObj;
             }
             catch (Exception e)
             {
-               throw new FailedToCreateNodeException("Failed to create node of type "+nodeType+" for the path "+fullPath+".  "+e.toString(), e);
+                throw new FailedToCreateNodeException("Failed to create node of type " + nodeType + " for the path "
+                        + fullPath + ".  " + e.toString(), e);
             }
-            
+
         }
     }
-    
+
     /**
-     * 
      * <p>
      * getChildren
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.prefs.PreferencesProvider#getChildren(org.apache.jetspeed.prefs.om.Node)
      * @param parentNode
      * @return
      */
-    public Collection getChildren( Node parentNode )
+    public Collection getChildren(Node parentNode)
     {
         NodeCache key = new NodeCache(parentNode);
-        NodeCache hit = (NodeCache)nodeMap.get(key);
-        if ( hit == null )
+        NodeCache hit = (NodeCache) nodeMap.get(key);
+        if (hit == null)
         {
             key.setNode(parentNode);
-            nodeMap.put(key,key);
+            nodeMap.put(key, key);
             hit = key;
         }
-        if ( hit.isChildrenLoaded() )
+        if (hit.isChildrenLoaded())
         {
             return hit.getChildren();
         }
-        
+
         Criteria c = new Criteria();
         c.addEqualTo("parentNodeId", new Long(parentNode.getNodeId()));
         Query query = QueryFactory.newQuery(NodeImpl.class, c);
@@ -287,26 +299,26 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         hit.setChildrenLoaded(true);
         return children;
     }
-    
-    public void storeNode( Node node )
-    {
-       NodeCache key = new NodeCache(node);
-       nodeMap.remove(key);
-       getPersistenceBrokerTemplate().store(node);
-    }
-    
-    public void removeNode( Node node )
+
+    public void storeNode(Node node)
     {
         NodeCache key = new NodeCache(node);
         nodeMap.remove(key);
-       getPersistenceBrokerTemplate().delete(node);
+        getPersistenceBrokerTemplate().store(node);
+    }
+
+    public void removeNode(Node node)
+    {
+        NodeCache key = new NodeCache(node);
+        nodeMap.remove(key);
+        getPersistenceBrokerTemplate().delete(node);
     }
 
     /**
      * <p>
      * isPropertyManagerEnabled
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.prefs.PreferencesProvider#isPropertyManagerEnabled()
      * @return
      */
