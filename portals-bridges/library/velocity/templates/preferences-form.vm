@@ -1,0 +1,10 @@
+
+<form action="$renderResponse.createActionURL()" method="post">
+<table>
+#foreach ($pref in $prefs.iterator())
+#form4ColumnCell($MESSAGES.getString('$pref.Name'-displayname) "$pref.Value" "40" "$pref.Name")
+</table>
+#end
+<input type="submit" name="Save" value="$MESSAGES.getString("save")" />
+</form>
+

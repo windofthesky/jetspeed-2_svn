@@ -1,0 +1,24 @@
+    <dependency>
+      <id>velocity</id>
+      <version>1.4</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>      
+    </dependency>
+    <dependency>
+      <id>velocity-tools</id>
+      <version>1.1</version>
+      <url>http://jakarta.apache.org/velocity</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>      
+    </dependency>    
+    <dependency>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-velocity</artifactId>
+      <version>&portals-bridges-velocity-version;</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    

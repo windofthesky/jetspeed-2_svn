@@ -1,0 +1,63 @@
+#if ($renderRequest.WindowState == $STATE_NORMAL)
+
+#if ($renderRequest.isWindowStateAllowed($STATE_MAX))
+#set($max = $renderResponse.createRenderURL())
+$max.setWindowState($STATE_MAX)
+<a href="$max">Max</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MIN))
+#set($min = $renderResponse.createRenderURL())
+$min.setWindowState($STATE_MIN)
+<a href="$min">Min</a>
+#end
+
+#elseif ($renderRequest.WindowState == $STATE_MAX)
+
+#set($norm = $renderResponse.createRenderURL())
+$norm.setWindowState($STATE_NORMAL)
+<a href="$norm">Normal</a>
+
+#if ($renderRequest.isWindowStateAllowed($STATE_MIN))
+#set($min = $renderResponse.createRenderURL())
+$min.setWindowState($STATE_MIN)
+<a href="$min">Min</a>
+#end
+
+#end
+
+#if ($renderRequest.PortletMode == $MODE_VIEW)
+
+#if ($renderRequest.isPortletModeAllowed($MODE_EDIT))
+#set($edit = $renderResponse.createRenderURL())
+$edit.setPortletMode($MODE_EDIT)
+<a href="$edit">Edit</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_HELP))
+#set($help = $renderResponse.createRenderURL())
+$help.setPortletMode($MODE_HELP)
+<a href="$help">Help</a>
+#end
+
+#elseif ($renderRequest.PortletMode == $MODE_EDIT)
+
+#set($mview = $renderResponse.createRenderURL())
+$mview.setPortletMode($MODE_VIEW)
+<a href="$mview">View</a>
+#if ($renderRequest.isPortletModeAllowed($MODE_HELP))
+#set($help = $renderResponse.createRenderURL())
+$help.setPortletMode($MODE_HELP)
+<a href="$help">Help</a>
+#end
+
+#elseif ($renderRequest.PortletMode == $MODE_HELP)
+
+#set($mview = $renderResponse.createRenderURL())
+$mview.setPortletMode($MODE_VIEW)
+<a href="$mview">View</a>
+#if ($renderRequest.isPortletModeAllowed($MODE_EDIT))
+#set($edit = $renderResponse.createRenderURL())
+$edit.setPortletMode($MODE_EDIT)
+<a href="$edit">Edit</a>
+#end
+
+#end

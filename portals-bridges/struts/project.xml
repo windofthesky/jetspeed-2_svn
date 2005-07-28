@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id$
+-->
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <pomVersion>3</pomVersion>
+  <groupId>portals-bridges</groupId>
+  <id>portals-bridges-struts</id>
+  <name>Apache Portals Struts Bridge</name>
+  <currentVersion>&portals-bridges-struts-version;</currentVersion>
+  <package>org.apache.portals.bridges.struts</package>
+  <description>
+    Apache Portals Struts Bridge
+  </description>
+  <shortDescription>Apache Portals Struts Bridge</shortDescription>
+  <repository>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/struts</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/struts/</url>
+  </repository>
+  <developers>
+    <developer>
+      <name>Ate Douma</name>
+      <id>ate</id>
+      <email>ate@douma.nu</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.5</version>
+      <url>http://jakarta.apache.org/commons/digester.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>portlet-api</groupId>
+      <artifactId>portlet-api</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>servletapi</groupId>
+      <artifactId>servletapi</artifactId>
+      <version>2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts</artifactId>
+      <version>1.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts-el</artifactId>
+      <version>1.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-common</artifactId>
+      <version>&portals-bridges-common-version;</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <includes>
+          <include>META-INF/tlds/*</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+  </build>
+  <reports>
+
+        &j2-reports;
+
+  </reports>
+</project>
+

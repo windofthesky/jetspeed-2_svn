@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN"
+ "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <description>Spring Portlet Components</description>
+    
+<!-- Model -->    
+    <bean id="clientInfo" singleton='false' class="com.manning.enterpriseportals.portlets.chapter8.finance.ClientInfoBean">
+        <description>Client Info bean used in help mode.</description>
+    </bean>    
+    
+<!-- Views -->
+    <bean id="portlet-views" class="java.util.HashMap">
+       <description>Logical View name to actual view</description>
+  	   <constructor-arg>
+  	   	<map>
+  	   	  <entry key="stocks-view">
+  	   	  	<value>/WEB-INF/view/chapter8/stocks-view.vm</value>
+  	   	  </entry>
+  	   	  <entry key="stocks-view2">
+  	   	  	<value>/WEB-INF/view/chapter8/stocks-view2.jsp</value>
+  	   	  </entry>
+  	   	  <entry key="stocks-edit">
+  	   	  	<value>/WEB-INF/view/chapter8/stocks-edit.vm</value>
+  	   	  </entry>
+  	   	  <entry key="stocks-help">
+  	   	  	<value>/WEB-INF/view/chapter8/stocks-help.vm</value>
+  	   	  </entry>  	   	  
+  	   	</map>
+  	   </constructor-arg>    	
+    </bean>
+
+
+<!-- MVC Map: Views to Beans -->    
+    <bean id="portlet-view-bean-map" singleton="true" class="java.util.HashMap">
+       <description>Maps views to model beans</description>
+  	   <constructor-arg>
+  	   	<map>
+  	   	  <entry key="stocks-help">
+  	   	  	<value>clientInfo</value>
+  	   	  </entry>
+  	   	</map>
+  	   </constructor-arg>    	
+    </bean>
+
+<!-- MVC Map: Views to Validator -->    
+    <bean id="portlet-view-validator-map" singleton="true" class="java.util.HashMap">
+       <description>Maps views to validators</description>
+  	   <constructor-arg>
+  	   	<map>
+  	   	  <entry key="stocks-help">
+  	   	  	<value>clientInfo</value>
+  	   	  </entry>
+  	   	  <entry key="stocks-edit">
+  	   	  	<value>symbols</value>
+  	   	  </entry>  	   	  
+  	   	</map>
+  	   </constructor-arg>    	
+    </bean>
+
+    
+<!-- MVC Map: Action Forward Map - 2 standard actions: success, failure
+			  Naming Convention: (viewname):action i.e. myview:success, myview:failure			  
+			  entry key == view name : action (success or failure)
+			  value == view name, mode:[view,edit,help], state:[minimized,maximized,norma], any combination of 3
+-->    
+    <bean id="portlet-action-forward-map" singleton="true" class="java.util.HashMap">
+       <description>Maps logical forward names to views</description>
+  	   <constructor-arg>
+  	   	<map>
+  	   	  <entry key="stocks-edit:success">
+  	   	  	<value>mode:view</value>
+  	   	  </entry>
+  	   	  <entry key="stocks-help:success">
+  	   	  	<value>mode:view,state:maximized</value>
+  	   	  </entry>  	   	  
+  	   	</map>  	   	
+  	   </constructor-arg>    	
+    </bean>    
+</beans>
