@@ -42,17 +42,10 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/common/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/frameworks/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/jsf/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/php/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/perl/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/struts/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="portals-bridges/velocity/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="content-server/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="taglibs/treecontrol/src/java"/>
-    <classpathentry excluding="**/.svn/*" kind="src" path="app-servers/security/jboss/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="app-servers/security/jboss/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/demo/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/gems/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="applications/jpetstore/src/java"/>
