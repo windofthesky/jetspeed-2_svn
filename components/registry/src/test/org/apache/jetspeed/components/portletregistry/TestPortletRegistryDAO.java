@@ -17,16 +17,13 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.portlet.PortletMode;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -44,7 +41,6 @@ import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.testhelpers.OJBHelper;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -53,45 +49,44 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * <p>
  * TestPortletRegistryDAO
  * </p>
- * <p>
- *
- * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
  */
-public class TestPortletRegistryDAO extends  TestCase
+public class TestPortletRegistryDAO extends AbstractSpringTestCase
 {
     public static final String APP_1_NAME = "RegistryTestPortlet";
+
     protected static final String MODE_EDIT = "EDIT";
+
     protected static final String MODE_HELP = "HELP";
+
     protected static final String MODE_VIEW = "VIEW";
+
     protected static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
+
     protected static final String PORTLET_0_NAME = "Portlet 0";
+
     protected static final String PORTLET_0_UID = "com.portlet.MyClass0.Portlet 0";
+
     protected static final String PORTLET_1_CLASS = "com.portlet.MyClass";
+
     protected static final String PORTLET_1_NAME = "Portlet 1";
+
     protected static final String PORTLET_1_UID = "com.portlet.MyClass.Portlet 1";
-    
+
     protected PortletRegistry portletRegistry;
-    private OJBHelper ojbHelper;
-    
+
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
-           
-        Map context = new HashMap();
-        ojbHelper = new OJBHelper(context);
-        ojbHelper.setUp();
-        
-        PersistenceBrokerPortletRegistry targetRegistry = new PersistenceBrokerPortletRegistry("META-INF/registry_repository.xml");
-        targetRegistry.init();
-        this.portletRegistry = (PortletRegistry) ojbHelper.getTxProxiedObject(targetRegistry, new String[]{PortletRegistry.class.getName()});        
-        
-		buildTestData();
-		
+        super.setUp();
+        this.portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+
+        buildTestData();
+
     }
 
     /*
@@ -100,14 +95,12 @@ public class TestPortletRegistryDAO extends  TestCase
     protected void tearDown() throws Exception
     {
         Iterator itr = portletRegistry.getPortletApplications().iterator();
-        while(itr.hasNext())
-        {        
-            portletRegistry.removeApplication((PortletApplicationDefinition)itr.next());
+        while (itr.hasNext())
+        {
+            portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
         }
-        ojbHelper.tearDown();
-        
     }
-    
+
     public void test1() throws Exception
     {
         assertNotNull(portletRegistry);
@@ -144,7 +137,7 @@ public class TestPortletRegistryDAO extends  TestCase
      * <p>
      * buildTestData
      * </p>
-     *
+     * 
      * @throws RegistryException
      * @throws LockFailedException
      */
@@ -152,58 +145,57 @@ public class TestPortletRegistryDAO extends  TestCase
     {
         // start clean
         Iterator itr = portletRegistry.getPortletApplications().iterator();
-        while(itr.hasNext())
-        {        
-            portletRegistry.removeApplication((PortletApplicationDefinition)itr.next());
+        while (itr.hasNext())
+        {
+            portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
         }
-        
-        
+
         // Create an Application and a Web app
-        
-        
+
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
-        
+
         UserAttributeRef uaRef = new UserAttributeRefImpl("user-name-family", "user.name.family");
         app.addUserAttributeRef(uaRef);
-    
+
         UserAttribute ua = new UserAttributeImpl("user.name.family", "User Last Name");
         app.addUserAttribute(ua);
-    
+
         JetspeedServiceReference service1 = new JetspeedServiceReferenceImpl("PortletEntityAccessComponent");
         app.addJetspeedService(service1);
         JetspeedServiceReference service2 = new JetspeedServiceReferenceImpl("PortletRegistryComponent");
         app.addJetspeedService(service2);
-        
+
         addDublinCore(app.getMetadata());
-    
+
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
         webApp.setContextRoot("/app1");
-        webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: La fromage est dans ma pantalon!");
-    
+        webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
+        webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
+
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
         portlet.setClassName("org.apache.Portlet");
         portlet.setName("Portlet 1");
         portlet.addDescription(Locale.getDefault(), "POrtlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
-    
+
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
-    
+
         addDublinCore(portlet.getMetadata());
-    
+
         // PreferenceComposite pc = new PrefsPreference();
         app.addPortletDefinition(portlet);
-        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet(); 
-        PreferenceComposite pc =(PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]{"value 1", "value 2"}));
+        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet();
+        PreferenceComposite pc = (PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]
+        { "value 1", "value 2" }));
         pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
-        
+
         assertNotNull(pc.getValueAt(0));
-    
-    
-        portlet.addLanguage(portletRegistry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1", null));
-    
+
+        portlet.addLanguage(portletRegistry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1",
+                "This is Portlet 1", null));
+
         ContentTypeComposite html = new ContentTypeImpl();
         html.setContentType("html/text");
         ContentTypeComposite wml = new ContentTypeImpl();
@@ -215,8 +207,7 @@ public class TestPortletRegistryDAO extends  TestCase
         wml.addPortletMode(new PortletMode(MODE_VIEW));
         portlet.addContentType(html);
         portlet.addContentType(wml);
-    
-        
+
         app.setWebApplicationDefinition(webApp);
         portletRegistry.updatePortletApplication(app);
     }
@@ -226,27 +217,28 @@ public class TestPortletRegistryDAO extends  TestCase
         MutablePortletApplication app;
         WebApplicationDefinitionImpl webApp;
         PortletDefinitionComposite portlet;
-    
+
         // Now makes sure everthing got persisted
-        
+
         app = null;
-        
+
         app = (PortletApplicationDefinitionImpl) portletRegistry.getPortletApplication("App_1");
-        
+
         assertNotNull(app);
-        
+
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         portlet = (PortletDefinitionImpl) app.getPortletDefinitionByName("Portlet 1");
-    
+
         assertNotNull("Failed to reteive portlet application", app);
-    
+
         validateDublinCore(app.getMetadata());
-    
+
         Collection services = app.getJetspeedServices();
         assertNotNull("jetspeed services is null", services);
         System.out.println("services is " + services);
-        
-        assertNotNull("Failed to reteive portlet application via registry", portletRegistry.getPortletApplication("App_1"));
+
+        assertNotNull("Failed to reteive portlet application via registry", portletRegistry
+                .getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         if (!afterUpdates)
@@ -255,16 +247,17 @@ public class TestPortletRegistryDAO extends  TestCase
         }
         else
         {
-            assertTrue("\"user.name.family\" and user.pets user attributes were not found.", app.getUserAttributes().size() == 2);
-            
+            assertTrue("\"user.name.family\" and user.pets user attributes were not found.", app.getUserAttributes()
+                    .size() == 2);
+
         }
-    
+
         portlet = (PortletDefinitionComposite) portletRegistry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
-    
+
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
-    
+
         validateDublinCore(portlet.getMetadata());
-    
+
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet
                 .getPortletApplicationDefinition());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
@@ -278,35 +271,34 @@ public class TestPortletRegistryDAO extends  TestCase
         assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));
         Iterator itr = portlet.getPreferenceSet().get("preference 1").getValues();
         int valueCount = 0;
-    
+
         while (itr.hasNext())
         {
             itr.next();
             valueCount++;
         }
         assertEquals("\"preference 1\" did not have 2 values.", 2, valueCount);
-    
+
         // Pull out our Web app and add a Description to it
-             webApp = null;
-       
+        webApp = null;
+
         app = portletRegistry.getPortletApplication("App_1");
-        
+
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         assertNotNull("Web app was not located by query.", webApp);
         webApp.addDescription(Locale.getDefault(), "Web app description");
-    
-       
+
         webApp = null;
-    
+
         app = portletRegistry.getPortletApplication("App_1");
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();    
- 
+        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
+
         assertNotNull("Web app was not located by query.", webApp);
-        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
-    
+        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.FRENCH));
+
     }
 
-    protected void validateDublinCore( GenericMetadata metadata )
+    protected void validateDublinCore(GenericMetadata metadata)
     {
         DublinCore dc = new DublinCoreImpl(metadata);
         assertEquals(dc.getTitles().size(), 3);
@@ -325,10 +317,15 @@ public class TestPortletRegistryDAO extends  TestCase
         assertEquals(dc.getTypes().size(), 1);
     }
 
-
-
     protected String[] getConfigurations()
     {
-        return new String[] {"/META-INF/transaction.xml", "/META-INF/registry-dao.xml"};
+        return new String[]
+        { "transaction.xml", "registry.xml" };
+    }
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 }

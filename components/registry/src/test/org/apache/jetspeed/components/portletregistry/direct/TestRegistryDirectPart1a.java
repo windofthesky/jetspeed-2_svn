@@ -88,9 +88,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
      */
     private void buildTestData() throws RegistryException, LockFailedException
     {
-        // Create an Application and a Web app
-
-        
+        // Create an Application and a Web app      
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
@@ -110,13 +108,13 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
 
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
         webApp.setContextRoot("/app1");
-        webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: La fromage est dans ma pantalon!");
+        webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
+        webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
         portlet.setClassName("org.apache.Portlet");
         portlet.setName("Portlet 1");
-        portlet.addDescription(Locale.getDefault(), "POrtlet description.");
+        portlet.addDescription(Locale.getDefault(), "Portlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
 
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());

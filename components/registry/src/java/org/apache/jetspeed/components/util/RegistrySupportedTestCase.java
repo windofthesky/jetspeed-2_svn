@@ -38,8 +38,7 @@ public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTe
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/registry-dao.xml");
-        confList.add("META-INF/entity-dao.xml");
+        confList.add("registry.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 }

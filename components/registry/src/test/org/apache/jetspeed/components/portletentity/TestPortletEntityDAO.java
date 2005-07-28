@@ -20,14 +20,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.prefs.Preferences;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -40,7 +37,6 @@ import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.testhelpers.OJBHelper;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -52,25 +48,22 @@ import org.jmock.core.stub.ReturnStub;
  * <p>
  * TestPortletEntityDAO
  * </p>
- * <p>
- *
- * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
- *
  */
-public class TestPortletEntityDAO extends TestCase
+public class TestPortletEntityDAO extends AbstractSpringTestCase
 {
 
-    // Dummy ContentFragment wrapper around Fragment as using the real ContentFragmentImpl
-    // would introduce a circular dependency between the registry and page-manager components.
-    // Probably should be replaced by a Mock but I don't know how to setup that quickly
-    // and the whole ContentFragment construction is bound to be replaced soon anyway...
-    
-    private static class ContentFragmentImpl implements Fragment, ContentFragment
-    {
+    /**
+     * Dummy ContentFragment wrapper around Fragment as using the real ContentFragmentImpl would introduce a circular
+     * dependency between the registry and page-manager components. Probably should be replaced by a Mock but I don't
+     * know how to setup that quickly and the whole ContentFragment construction is bound to be replaced soon anyway...
+     */
+     private static class ContentFragmentImpl implements Fragment, ContentFragment
+     {
         private Fragment f;
-        
+
         /**
          * @param f
          * @param list
@@ -80,6 +73,7 @@ public class TestPortletEntityDAO extends TestCase
             super();
             this.f = f;
         }
+
         /**
          * @param p
          */
@@ -87,6 +81,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.addProperty(p);
         }
+
         /**
          * @param actions
          * @throws SecurityException
@@ -95,6 +90,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.checkAccess(actions);
         }
+
         /**
          * @param actions
          * @throws SecurityException
@@ -103,6 +99,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.checkConstraints(actions);
         }
+
         /**
          * @param actions
          * @throws SecurityException
@@ -111,6 +108,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.checkPermissions(actions);
         }
+
         /**
          * @param layoutName
          */
@@ -118,13 +116,17 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.clearProperties(layoutName);
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
         public boolean equals(Object obj)
         {
             return f.equals(obj);
         }
+
         /**
          * @return
          */
@@ -132,6 +134,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getConstraintsEnabled();
         }
+
         /**
          * @return
          */
@@ -139,6 +142,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getDecorator();
         }
+
         /**
          * @return
          */
@@ -146,6 +150,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getFragments();
         }
+
         /**
          * @return
          */
@@ -153,6 +158,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getId();
         }
+
         /**
          * @return
          */
@@ -160,6 +166,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getLayoutProperties();
         }
+
         /**
          * @return
          */
@@ -167,6 +174,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getName();
         }
+
         /**
          * @return
          */
@@ -174,6 +182,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getPermissionsEnabled();
         }
+
         /**
          * @param layoutName
          * @return
@@ -182,6 +191,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getProperties(layoutName);
         }
+
         /**
          * @param layout
          * @param propName
@@ -191,6 +201,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getPropertyValue(layout, propName);
         }
+
         /**
          * @return
          */
@@ -198,6 +209,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getSecurityConstraints();
         }
+
         /**
          * @return
          */
@@ -205,6 +217,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getShortTitle();
         }
+
         /**
          * @return
          */
@@ -212,6 +225,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getSkin();
         }
+
         /**
          * @return
          */
@@ -219,6 +233,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getState();
         }
+
         /**
          * @return
          */
@@ -226,6 +241,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getTitle();
         }
+
         /**
          * @return
          */
@@ -233,13 +249,17 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.getType();
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#hashCode()
          */
         public int hashCode()
         {
             return f.hashCode();
         }
+
         /**
          * @return
          */
@@ -247,6 +267,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             return f.isReference();
         }
+
         /**
          * @param p
          */
@@ -254,6 +275,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.removeProperty(p);
         }
+
         /**
          * @param decoratorName
          */
@@ -261,6 +283,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setDecorator(decoratorName);
         }
+
         /**
          * @param id
          */
@@ -268,6 +291,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setId(id);
         }
+
         /**
          * @param name
          */
@@ -275,6 +299,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setName(name);
         }
+
         /**
          * @param layout
          * @param propName
@@ -284,6 +309,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setPropertyValue(layout, propName, value);
         }
+
         /**
          * @param constraints
          */
@@ -291,6 +317,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setSecurityConstraints(constraints);
         }
+
         /**
          * @param title
          */
@@ -298,6 +325,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setShortTitle(title);
         }
+
         /**
          * @param skinName
          */
@@ -305,6 +333,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setSkin(skinName);
         }
+
         /**
          * @param state
          */
@@ -312,6 +341,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setState(state);
         }
+
         /**
          * @param title
          */
@@ -319,6 +349,7 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setTitle(title);
         }
+
         /**
          * @param type
          */
@@ -326,19 +357,25 @@ public class TestPortletEntityDAO extends TestCase
         {
             f.setType(type);
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#toString()
          */
         public String toString()
         {
             return f.toString();
         }
-        
+
         public Object clone() throws CloneNotSupportedException
         {
             return f.clone();
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.apache.jetspeed.om.page.ContentFragment#getContentFragments()
          */
         public List getContentFragments()
@@ -346,7 +383,10 @@ public class TestPortletEntityDAO extends TestCase
             // TODO Auto-generated method stub
             return null;
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.apache.jetspeed.om.page.ContentFragment#getRenderedContent()
          */
         public String getRenderedContent() throws IllegalStateException
@@ -354,53 +394,55 @@ public class TestPortletEntityDAO extends TestCase
             // TODO Auto-generated method stub
             return null;
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.apache.jetspeed.om.page.ContentFragment#overrideRenderedContent(java.lang.String)
          */
         public void overrideRenderedContent(String contnent)
         {
             // TODO Auto-generated method stub
-            
+
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.apache.jetspeed.om.page.ContentFragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
          */
         public void setPortletContent(PortletContent portletContent)
         {
             // TODO Auto-generated method stub
-            
+
         }
     }
-    
+
     private static final String TEST_APP = "EntityTestApp";
+
     private static final String TEST_PORTLET = "EntityTestPortlet";
+
     private static final String TEST_ENTITY = "user5/entity-9";
+
     private PersistenceBrokerPortletEntityAccess entityAccess = null;
+
     private PortletRegistry registry;
-    private OJBHelper ojbHelper;   
- 
+
     protected void setUp() throws Exception
-    {      
-        Map context = new HashMap();
-        ojbHelper = new OJBHelper(context);
-        ojbHelper.setUp();
-        
-        PersistenceBrokerPortletRegistry targetRegistry = new PersistenceBrokerPortletRegistry("META-INF/registry_repository.xml");
-        targetRegistry.init();
-        this.registry = (PortletRegistry) ojbHelper.getTxProxiedObject(targetRegistry, new String[]{PortletRegistry.class.getName()});
-        
-        
-        this.entityAccess = new PersistenceBrokerPortletEntityAccess(this.registry);
+    {
+        super.setUp();
+        this.registry = (PortletRegistry) ctx.getBean("portletRegistry");
+        this.entityAccess = (PersistenceBrokerPortletEntityAccess) ctx.getBean("portletEntityAccessImpl");
+
         teardownTestData();
         setupTestData();
     }
-    
+
     protected void tearDown() throws Exception
     {
         teardownTestData();
-        ojbHelper.tearDown();
     }
-    
+
     public void test1() throws Exception
     {
         assertNotNull(this.entityAccess);
@@ -408,214 +450,216 @@ public class TestPortletEntityDAO extends TestCase
     }
 
     public void testEntities() throws Exception
-    {       
+    {
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
         assertNotNull("Portlet Application", pa);
         System.out.println("pa = " + pa.getId());
-        PortletDefinitionList portlets = pa.getPortletDefinitionList(); //.get(JetspeedObjectID.createFromString(TEST_PORTLET));
+        PortletDefinitionList portlets = pa.getPortletDefinitionList(); // .get(JetspeedObjectID.createFromString(TEST_PORTLET));
         Iterator pi = portlets.iterator();
         PortletDefinitionComposite pd = null;
         while (pi.hasNext())
         {
-            pd = (PortletDefinitionComposite)pi.next();
+            pd = (PortletDefinitionComposite) pi.next();
             assertTrue("Portlet Def not found", pd.getName().equals("EntityTestPortlet"));
         }
         assertNotNull("Portlet Def is null", pd);
-        
-        
-        
+
         Mock mockf1 = new Mock(Fragment.class);
         mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
         mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(TEST_ENTITY));
         ContentFragment f1 = new ContentFragmentImpl((Fragment) mockf1.proxy(), new HashMap());
-            
-        MutablePortletEntity entity = entityAccess.generateEntityFromFragment(new ContentFragmentImpl(f1, new HashMap()));
+
+        MutablePortletEntity entity = entityAccess
+                .generateEntityFromFragment(new ContentFragmentImpl(f1, new HashMap()));
         PreferenceSetComposite prefs = (PreferenceSetComposite) entity.getPreferenceSet();
         prefs.remove("pref1");
         assertNotNull(prefs);
         assertNull(prefs.get("pref1"));
-        
+
         // test adding a pref
-        prefs.add("pref1", Arrays.asList(new String[]{"1"}));
+        prefs.add("pref1", Arrays.asList(new String[]
+        { "1" }));
         assertNotNull(prefs.get("pref1"));
-        
+
         // Remove should return the deleted pref
         assertNotNull(prefs.remove("pref1"));
-        
+
         // Should be gone
-        assertNull(prefs.get("pref1"));        
-        
-        // Add it back so we can test tole back
-        prefs.add("pref1", Arrays.asList(new String[]{"1"}));
-    
-        entityAccess.storePortletEntity(entity);
-        
-        prefs = (PreferenceSetComposite) entity.getPreferenceSet();
-        
-        assertNotNull(prefs.get("pref1"));
-        
-        PreferenceComposite pref = (PreferenceComposite) prefs.get("pref1");
-        
-        assertEquals("1", pref.getValueAt(0));
-        
-        pref.setValueAt(0, "2");
-        
-        assertEquals("2", pref.getValueAt(0));
-        
-        entity.reset();
-        
-        pref = (PreferenceComposite) prefs.get("pref1");
-        
-        assertEquals("1", pref.getValueAt(0));
-        
-        prefs.remove(pref);       
-        
         assertNull(prefs.get("pref1"));
-        
-        entity.reset();
-        
+
+        // Add it back so we can test tole back
+        prefs.add("pref1", Arrays.asList(new String[]
+        { "1" }));
+
+        entityAccess.storePortletEntity(entity);
+
+        prefs = (PreferenceSetComposite) entity.getPreferenceSet();
+
         assertNotNull(prefs.get("pref1"));
-        
-        prefs.add("pref2", Arrays.asList(new String[]{"2", "3"}));
-        
+
+        PreferenceComposite pref = (PreferenceComposite) prefs.get("pref1");
+
+        assertEquals("1", pref.getValueAt(0));
+
+        pref.setValueAt(0, "2");
+
+        assertEquals("2", pref.getValueAt(0));
+
+        entity.reset();
+
+        pref = (PreferenceComposite) prefs.get("pref1");
+
+        assertEquals("1", pref.getValueAt(0));
+
+        prefs.remove(pref);
+
+        assertNull(prefs.get("pref1"));
+
+        entity.reset();
+
+        assertNotNull(prefs.get("pref1"));
+
+        prefs.add("pref2", Arrays.asList(new String[]
+        { "2", "3" }));
+
         entity.store();
-        
+
         PreferenceComposite pref2 = (PreferenceComposite) prefs.get("pref2");
-        
+
         assertNotNull(pref2);
-        
+
         Iterator prefsValues = pref2.getValues();
         int count = 0;
-        while(prefsValues.hasNext())
+        while (prefsValues.hasNext())
         {
             prefsValues.next();
             count++;
         }
-        
+
         assertEquals(2, count);
-        
+
         pref2.addValue("4");
         prefsValues = pref2.getValues();
         count = 0;
-        while(prefsValues.hasNext())
+        while (prefsValues.hasNext())
         {
-            assertEquals(String.valueOf(count+2), prefsValues.next());
+            assertEquals(String.valueOf(count + 2), prefsValues.next());
             count++;
         }
         assertEquals(3, count);
-        
+
         entity.reset();
-        
+
         prefsValues = pref2.getValues();
         count = 0;
-        while(prefsValues.hasNext())
+        while (prefsValues.hasNext())
         {
-            assertEquals(String.valueOf(count+2), prefsValues.next());
+            assertEquals(String.valueOf(count + 2), prefsValues.next());
             count++;
         }
         assertEquals(2, count);
-        
+
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
         mockf1.verify();
-        
-        
+
         Mock mockf2 = new Mock(Fragment.class);
         mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
         ContentFragment f2 = new ContentFragmentImpl((Fragment) mockf2.proxy(), new HashMap());
-        
+
         MutablePortletEntity entity5 = entityAccess.newPortletEntityInstance(pd);
-        
-        System.out.println("before storing entity: "  + entity5.getId());
-        
+
+        System.out.println("before storing entity: " + entity5.getId());
+
         entityAccess.storePortletEntity(entity5);
-        System.out.println("store done: " + entity5.getId());  
-        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub( entity5.getId().toString()));
-    
+        System.out.println("store done: " + entity5.getId());
+        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(entity5.getId().toString()));
+
         MutablePortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
         assertNotNull(entity6);
-        System.out.println("reget : " + entity6.getId());        
-        
+        System.out.println("reget : " + entity6.getId());
+
         entityAccess.removePortletEntity(entity6);
-        
-                
+
     }
 
-    private void teardownTestData()
-    throws Exception
-    {   
-        
-        
+    private void teardownTestData() throws Exception
+    {
+
         JetspeedObjectID objId = JetspeedObjectID.createFromString(TEST_ENTITY);
         MutablePortletEntity entity = entityAccess.getPortletEntity(objId);
         System.out.println("entity == " + entity);
-        
+
         if (entity != null)
         {
             entityAccess.removePortletEntity(entity);
         }
-        
+
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
         System.out.println("pa == " + pa);
         if (pa != null)
         {
             registry.removeApplication(pa);
         }
-        
-       
-        
-        if(Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
+
+        if (Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
         {
             Preferences.systemRoot().node(MutablePortletApplication.PREFS_ROOT).removeNode();
         }
-        
-        if(Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
+
+        if (Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
         {
             Preferences.userRoot().node(PortletDefinitionComposite.PORTLETS_PREFS_ROOT).removeNode();
-        }        
-        
-        
-        if(Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
+        }
+
+        if (Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
         {
             Preferences.userRoot().node(MutablePortletEntity.PORTLET_ENTITY_ROOT).removeNode();
         }
 
     }
 
-    private void setupTestData()
-    throws Exception
+    private void setupTestData() throws Exception
     {
-                
+
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName(TEST_APP);
         app.setApplicationIdentifier(TEST_APP);
-                
+
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
         webApp.setContextRoot("/app1");
         webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
-        
+
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
         portlet.setClassName("org.apache.Portlet");
         portlet.setName(TEST_PORTLET);
-        portlet.addDescription(Locale.getDefault(),"Portlet description.");
-        portlet.addDisplayName(Locale.getDefault(),"Portlet display Name.");
-        
+        portlet.addDescription(Locale.getDefault(), "Portlet description.");
+        portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
+
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
-                        
-        app.addPortletDefinition(portlet);      
-    
+
+        app.addPortletDefinition(portlet);
+
         app.setWebApplicationDefinition(webApp);
-        
+
         PreferenceSetComposite prefSet = (PreferenceSetComposite) portlet.getPreferenceSet();
-        prefSet.add("pref1", Arrays.asList(new String[]{"1"}));
-        
-        registry.registerPortletApplication(app);           
+        prefSet.add("pref1", Arrays.asList(new String[]
+        { "1" }));
+
+        registry.registerPortletApplication(app);
     }
-    
+
     protected String[] getConfigurations()
     {
-        return new String[] {"/META-INF/transaction.xml", "/META-INF/registry-dao.xml", "/META-INF/entity-dao.xml"};
+        return new String[]
+        { "transaction.xml", "registry.xml" };
+    }
+
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "test-repository-datasource-spring.xml" };
     }
 }

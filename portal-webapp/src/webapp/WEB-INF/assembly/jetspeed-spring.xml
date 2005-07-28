@@ -89,112 +89,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- Portlet Registry DAO-->
-    <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
-
-        <constructor-arg index="0">
-            <value>META-INF/registry_repository.xml</value>
-        </constructor-arg>
-        <constructor-arg index="1">
-            <ref bean="portletFactory" />
-        </constructor-arg>
-    </bean>
-
-    <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">
-        <property name="proxyInterfaces">
-            <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
-        </property>
-
-        <property name="target">
-            <ref bean="portletRegistryImpl" />
-        </property>
-        <property name="transactionAttributes">
-            <props>
-                <prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="*">PROPAGATION_SUPPORTS</prop>
-            </props>
-        </property>
-    </bean>
-
-    <!-- Portlet Entity Access DAO-->
-    <!--
-        <bean id="systemCache" class="org.apache.jetspeed.cache.general.SimpleHashMapCache" />
-        
-        <bean id="systemCachingInterceptor" class="org.apache.jetspeed.components.interceptors.CachingInterceptor" >
-        <constructor-arg>
-        <ref bean="systemCache"/>
-        </constructor-arg>
-        </bean>
-        
-        <bean id="systemRemoveFromCacheInterceptor" class="org.apache.jetspeed.components.interceptors.RemoveFromCacheInterceptor" >
-        <constructor-arg>
-        <ref bean="systemCache"/>
-        </constructor-arg>
-        </bean>   	
-        
-        <bean id="portletEntityCachingAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-        <property name="advice">
-        <ref bean="systemCachingInterceptor"/>
-        </property>
-        <property name="patterns">
-        <list>
-        <value>.*getPortletEntity.*</value>
-        </list>
-        </property>
-        </bean>
-        
-        <bean id="portletEntityRemoveFromCacheAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-        <property name="advice">
-        <ref bean="systemRemoveFromCacheInterceptor"/>
-        </property>
-        <property name="patterns">
-        <list>
-        <value>.*removePortletEntity.*</value>
-        </list>
-        </property>
-        </bean>
-        
-    -->
-    <!--
-        - PortletEntity business object: OJB implementation, as an inner bean wrapped
-        - by an outer transactional proxy. The two bean definitions could have been separate,
-        - but this is cleaner as there is no need to ever access the unwrapped object.
-    -->
-
-    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
-        <constructor-arg>
-            <ref bean="portletRegistry" />
-        </constructor-arg>
-    </bean>
-
-
-    <bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" parent="baseTransactionProxy" name="portletEntityAccess">
-        <property name="proxyInterfaces">
-            <value>org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent</value>
-        </property>
-        <property name="target">
-            <ref bean="portletEntityAccessImpl" />
-        </property>
-        <!--
-            <property name="preInterceptors">
-            <list>
-            <ref bean="portletEntityCachingAdvisor"/>
-            <ref bean="portletEntityRemoveFromCacheAdvisor"/>
-            </list>
-            </property>
-        -->
-        <property name="transactionAttributes">
-            <props>
-                <prop key="remove*">PROPAGATION_REQUIRED</prop>
-                <prop key="store*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException</prop>
-                <prop key="*">PROPAGATION_SUPPORTS</prop>
-            </props>
-        </property>
-    </bean>
-
     <!-- SSO Implementation -->
     <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider" init-method="init">
         <constructor-arg index="0">
@@ -276,9 +170,6 @@
             <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
         </constructor-arg>
     </bean>
-
-    <!-- Portlet Factory -->
-    <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory"></bean>
 
     <!-- Aggregation: Page -->
     <bean id="org.apache.jetspeed.aggregator.PageAggregator" class="org.apache.jetspeed.aggregator.impl.PageAggregatorImpl">

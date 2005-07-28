@@ -49,26 +49,31 @@ import org.apache.ojb.broker.query.QueryFactory;
  */
 public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport implements Profiler
 {
+    /** The default rule. */
+    public final static String DEFAULT_RULE = "j1";
+    
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
 
     /**
-     * This is the princapl that is used if there are no principal to rule
-     * associations for the current principal
+     * This is the princapl that is used if there are no principal to rule associations for the current principal
      */
     public final static Principal DEFAULT_RULE_PRINCIPAL = new UserPrincipalImpl("*");
 
     /** The default locator class implementation */
     private Class locatorClass = JetspeedProfileLocator.class;
+
     /** The default principalRule association class implementation */
     private Class principalRuleClass = PrincipalRuleImpl.class;
+
     /** The base (abstract) profilingRule class implementation */
     private Class profilingRuleClass = AbstractProfilingRule.class;
 
     /** The configured default rule for this portal */
-    private String defaultRule = "j1";
+    private String defaultRule = DEFAULT_RULE;
 
     private Map principalRules = new HashMap();
+
     private Map rulesPerPrincipal = new HashMap();
 
     public JetspeedProfilerImpl(String repositoryPath)
@@ -77,38 +82,41 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     }
 
     /**
-     * Create a JetspeedProfiler with properties. Expected properties are:
-     * 
-     * defaultRule = the default profiling rule anonymousUser = the name of the
-     * anonymous user storeName = The name of the persistence store component to
-     * connect to services.profiler.locator.impl = the pluggable Profile Locator
-     * impl services.profiler.principalRule.impl = the pluggable Principal Rule
-     * impl services.profiler.profilingRule.impl = the pluggable Profiling Rule
-     * impl
+     * Create a JetspeedProfiler with properties. Expected properties are: defaultRule = the default profiling rule
+     * anonymousUser = the name of the anonymous user storeName = The name of the persistence store component to connect
+     * to services.profiler.locator.impl = the pluggable Profile Locator impl services.profiler.principalRule.impl = the
+     * pluggable Principal Rule impl services.profiler.profilingRule.impl = the pluggable Profiling Rule impl
      * 
      * @param properties
-     *                     Properties for this component described above
+     *            Properties for this component described above
      * @throws ClassNotFoundException
-     *                    if any the implementation classes defined within the
-     *                    <code>properties</code> argument could not be found.
+     *             if any the implementation classes defined within the <code>properties</code> argument could not be
+     *             found.
      */
-    public JetspeedProfilerImpl(String repositoryPath, String defaultRule) 
-    throws ClassNotFoundException
+    public JetspeedProfilerImpl(String repositoryPath, String defaultRule) throws ClassNotFoundException
     {
         this(repositoryPath);
-        this.defaultRule = defaultRule; 
+        this.defaultRule = defaultRule;
         // start()
     }
 
-    public JetspeedProfilerImpl( String repositoryPath, String defaultRule, Properties properties) 
-    throws ClassNotFoundException
+    public JetspeedProfilerImpl(String repositoryPath, String defaultRule, Properties properties)
+            throws ClassNotFoundException
     {
         this(repositoryPath, defaultRule);
         initModelClasses(properties); // TODO: move this to
         // start()
     }
     
-    private void initModelClasses( Properties properties ) throws ClassNotFoundException
+    /**
+     * @param defaultRule The default rule to set.
+     */
+    public void setDefaultRule(String defaultRule)
+    {
+        this.defaultRule = defaultRule;
+    }
+
+    private void initModelClasses(Properties properties) throws ClassNotFoundException
     {
         String modelName = "";
 
@@ -126,7 +134,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         }
     }
 
-    public ProfileLocator getProfile( RequestContext context, String locatorName ) throws ProfilerException
+    public ProfileLocator getProfile(RequestContext context, String locatorName) throws ProfilerException
     {
         // get the principal representing the currently logged on user
         Subject subject = context.getSubject();
@@ -163,10 +171,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         // create a profile locator for given rule
         return rule.apply(context, this);
     }
-    
-    public ProfileLocator getDefaultProfile( RequestContext context, String locatorName ) throws ProfilerException
+
+    public ProfileLocator getDefaultProfile(RequestContext context, String locatorName) throws ProfilerException
     {
-       
+
         ProfilingRule rule = getRuleForPrincipal(DEFAULT_RULE_PRINCIPAL, locatorName);
         if (null == rule)
         {
@@ -176,7 +184,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
 
         if (null == rule)
         {
-            String msg = "Couldn't find any profiling rules including default rule for principal " + DEFAULT_RULE_PRINCIPAL;
+            String msg = "Couldn't find any profiling rules including default rule for principal "
+                    + DEFAULT_RULE_PRINCIPAL;
             log.error(msg);
             throw new ProfilerException(msg);
         }
@@ -188,9 +197,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * (non-Javadoc)
      * 
      * @see org.apache.jetspeed.profiler.Profiler#getProfile(org.apache.jetspeed.request.RequestContext,
-     *          org.apache.jetspeed.profiler.rules.ProfilingRule)
+     *      org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public ProfileLocator getProfile( RequestContext context, ProfilingRule rule ) throws ProfilerException
+    public ProfileLocator getProfile(RequestContext context, ProfilingRule rule) throws ProfilerException
     {
         // create a profile locator for given rule
         return rule.apply(context, this);
@@ -201,7 +210,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#createLocator(org.apache.jetspeed.request.RequestContext)
      */
-    public ProfileLocator createLocator( RequestContext context )
+    public ProfileLocator createLocator(RequestContext context)
     {
         try
         {
@@ -219,10 +228,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.profiler.Profiler#getRuleForPrincipal(java.security.Principal,
-     *          java.lang.String)
+     * @see org.apache.jetspeed.profiler.Profiler#getRuleForPrincipal(java.security.Principal, java.lang.String)
      */
-    public ProfilingRule getRuleForPrincipal( Principal principal, String locatorName )
+    public ProfilingRule getRuleForPrincipal(Principal principal, String locatorName)
     {
         ProfilingRule rule = null;
         // lookup the rule for the given principal in our user/rule table
@@ -233,8 +241,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         {
             // find rule on locator name
             rule = getRule(locatorName);
-            
-            if ( rule == null )
+
+            if (rule == null)
             {
                 // if not found, fallback to the system wide rule
                 rule = getDefaultRule();
@@ -253,9 +261,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * (non-Javadoc)
      * 
      * @see org.apache.jetspeed.profiler.Profiler#setRuleForPrincipal(java.security.Principal,
-     *          org.apache.jetspeed.profiler.rules.ProfilingRule, java.lang.String)
+     *      org.apache.jetspeed.profiler.rules.ProfilingRule, java.lang.String)
      */
-    public void setRuleForPrincipal( Principal principal, ProfilingRule rule, String locatorName )
+    public void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName)
     {
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
@@ -274,10 +282,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         pr.setProfilingRule(rule);
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
-        this.rulesPerPrincipal.remove(principal.getName());        
+        this.rulesPerPrincipal.remove(principal.getName());
     }
 
-    private String makePrincipalRuleKey( String principal, String locator )
+    private String makePrincipalRuleKey(String principal, String locator)
     {
         return principal + ":" + locator;
     }
@@ -286,11 +294,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * Helper function to lookup principal rule associations by principal
      * 
      * @param principal
-     *                     The string representation of the principal name.
-     * @return The found PrincipalRule associated with the principal key or null
-     *                if not found.
+     *            The string representation of the principal name.
+     * @return The found PrincipalRule associated with the principal key or null if not found.
      */
-    private PrincipalRule lookupPrincipalRule( String principal, String locatorName )
+    private PrincipalRule lookupPrincipalRule(String principal, String locatorName)
     {
         PrincipalRule pr = (PrincipalRule) principalRules.get(makePrincipalRuleKey(principal, locatorName));
         if (pr != null)
@@ -334,7 +341,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#getRule(java.lang.String)
      */
-    public ProfilingRule getRule( String id )
+    public ProfilingRule getRule(String id)
     {
         // TODO: implement caching
         Criteria c = new Criteria();
@@ -349,7 +356,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#getLocatorNamesForPrincipal(java.security.Principal)
      */
-    public String[] getLocatorNamesForPrincipal( Principal principal )
+    public String[] getLocatorNamesForPrincipal(Principal principal)
     {
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
@@ -358,7 +365,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
                 QueryFactory.newQuery(principalRuleClass, c));
         if (result.size() == 0)
         {
-            return new String[]{};
+            return new String[]
+            {};
         }
         String[] names = new String[result.size()];
         Iterator it = result.iterator();
@@ -369,7 +377,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
             names[ix] = pr.getLocatorName();
             ix++;
         }
-        return names; 
+        return names;
     }
 
     /*
@@ -377,9 +385,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#getRulesForPrincipal(java.security.Principal)
      */
-    public Collection getRulesForPrincipal( Principal principal )
+    public Collection getRulesForPrincipal(Principal principal)
     {
-        Collection rules = (Collection)this.rulesPerPrincipal.get(principal.getName());
+        Collection rules = (Collection) this.rulesPerPrincipal.get(principal.getName());
         if (rules != null)
             return rules;
         Criteria c = new Criteria();
@@ -393,13 +401,13 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * (non-Javadoc)
      * 
      * @see org.apache.jetspeed.profiler.Profiler#getProfileLocators(org.apache.jetspeed.request.RequestContext,
-     *          java.security.Principal)
+     *      java.security.Principal)
      */
-    public Map getProfileLocators( RequestContext context, Principal principal ) throws ProfilerException
+    public Map getProfileLocators(RequestContext context, Principal principal) throws ProfilerException
     {
         Map locators = new HashMap();
         Collection rules = getRulesForPrincipal(principal);
-    
+
         Iterator it = rules.iterator();
         while (it.hasNext())
         {
@@ -409,7 +417,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         return locators;
     }
 
-    public Map getDefaultProfileLocators( RequestContext context) throws ProfilerException
+    public Map getDefaultProfileLocators(RequestContext context) throws ProfilerException
     {
         Map locators = new HashMap();
 
@@ -429,7 +437,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#storeProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public void storeProfilingRule( ProfilingRule rule ) throws ProfilerException
+    public void storeProfilingRule(ProfilingRule rule) throws ProfilerException
     {
         getPersistenceBrokerTemplate().store(rule);
     }
@@ -439,7 +447,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#deleteProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public void deleteProfilingRule( ProfilingRule rule ) throws ProfilerException
+    public void deleteProfilingRule(ProfilingRule rule) throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
     }
@@ -449,7 +457,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#storePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
      */
-    public void storePrincipalRule( PrincipalRule rule ) throws ProfilerException
+    public void storePrincipalRule(PrincipalRule rule) throws ProfilerException
     {
         getPersistenceBrokerTemplate().store(rule);
     }
@@ -459,7 +467,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.profiler.Profiler#deletePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
      */
-    public void deletePrincipalRule( PrincipalRule rule ) throws ProfilerException
+    public void deletePrincipalRule(PrincipalRule rule) throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
     }

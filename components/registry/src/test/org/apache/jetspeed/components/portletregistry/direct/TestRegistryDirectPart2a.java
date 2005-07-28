@@ -52,9 +52,6 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
      */
     protected void tearDown() throws Exception
     {
-        
-        
-        
         Iterator itr = registry.getPortletApplications().iterator();
         while(itr.hasNext())
         {        

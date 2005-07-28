@@ -227,11 +227,10 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
     protected String[] getConfigurations()
     {
-        
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/registry-dao.xml");
-        confList.add("org/apache/jetspeed/userinfo/user-info.xml");
+        confList.add("registry.xml");
+        confList.add("META-INF/user-info.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 }
