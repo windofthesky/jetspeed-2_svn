@@ -17,7 +17,6 @@ limitations under the License.
   $Id$
 -->
 <project>
-    <extend>../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <name>Portals Bridges</name>
     <groupId>portals-bridges</groupId>
