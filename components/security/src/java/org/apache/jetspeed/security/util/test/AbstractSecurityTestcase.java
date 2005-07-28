@@ -144,7 +144,13 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/security.xml");
+        confList.add("security-atn.xml");
+        confList.add("security-atz.xml");
+        confList.add("security-managers.xml");
+        confList.add("security-providers.xml");
+        confList.add("security-spi.xml");
+        confList.add("security-spi-atn.xml");
+        confList.add("security-spi-atz.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 

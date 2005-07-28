@@ -23,7 +23,7 @@ limitations under the License.
   	   class="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl"
   	   init-method="init"
   >  	   
-  	   <constructor-arg ><value>META-INF/security_repository.xml</value></constructor-arg>  	   
+  	   <constructor-arg ><value>META-INF/ojb/security_repository.xml</value></constructor-arg>  	   
   </bean>
   
   <bean id="org.apache.jetspeed.security.spi.SecurityAccess" parent="baseTransactionProxy" 
