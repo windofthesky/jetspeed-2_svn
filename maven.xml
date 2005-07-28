@@ -96,35 +96,44 @@
     </goal>
 
     <goal name="allSite"
-          prereqs="multiproject:site-init" 
           description="Build the site for the master project and all subprojects">
 
       <!-- Modified version of multiproject:site goal not using the reactor to run the site goal for each subproject
            but exec it in a separate process.
            This way one doesn't need to allocated 900M+ JVM memory to get this working!
       -->
+      <maven:reactor
+        basedir="${basedir}"
+        banner="Gathering project list"
+        includes="${maven.multiproject.includes}"
+        excludes="${maven.multiproject.excludes}"
+        postProcessing="true"
+        collectOnly="true"
+        collectionVar="multiprojects"
+        ignoreFailures="${maven.multiproject.ignoreFailures}"
+      />
       
+      <j:set var="online" value="${maven.mode.online}"/>
+      <j:choose>
+        <j:when test="${online}">
+          <j:set var="cmdargs" value="${maven.multiproject.site.goals}"/>
+        </j:when>
+        <j:otherwise>
+          <j:set var="cmdargs" value="-o ${maven.multiproject.site.goals}"/>
+        </j:otherwise>
+      </j:choose>
+        
       <j:forEach var="reactorProject" items="${multiprojects}">
 
-        <j:set var="online" value="${maven.mode.online}"/>
-        <j:choose>
-          <j:when test="${online}">
-            <j:set var="cmdargs" value="site"/>
-          </j:when>
-          <j:otherwise>
-            <j:set var="cmdargs" value="-o site"/>
-          </j:otherwise>
-        </j:choose>
-        
         <!-- I don't know yet if this will work on Linux too ... -->
         <exec dir="${reactorProject.context.getVariable('basedir')}" vmlauncher="false" failonerror="true" executable="maven">
           <arg line="${cmdargs}"/>
         </exec>
       </j:forEach>        
-      
       <echo>Now building reactor projects: ${multiprojects}</echo>
     
       <!-- copy each project over into ${maven.docs.dest} -->
+      
       <j:forEach var="reactorProject" items="${multiprojects}">
         <j:set var="directory" value="${maven.docs.dest}/${maven.multiproject.aggregateDir}${reactorProject.artifactId}"/>
         <mkdir dir="${directory}"/>
@@ -138,6 +147,7 @@
       <attainGoal name="multiproject:create-nav"/>
       <attainGoal name="multiproject:create-overview-page"/>
       <attainGoal name="site" />            
+            
     </goal>
     
     <goal name="jetspeed2:jar:install">
