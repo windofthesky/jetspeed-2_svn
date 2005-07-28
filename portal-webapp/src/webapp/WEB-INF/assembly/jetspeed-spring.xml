@@ -89,34 +89,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- SSO Implementation -->
-    <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider" init-method="init">
-        <constructor-arg index="0">
-            <value>META-INF/sso_repository.xml</value>
-        </constructor-arg>
-    </bean>
-
-    <bean id="org.apache.jetspeed.sso.SSOProvider" parent="baseTransactionProxy" name="ssoProvider">
-        <property name="proxyInterfaces">
-            <value>org.apache.jetspeed.sso.SSOProvider</value>
-        </property>
-
-        <property name="target">
-            <ref bean="PersistenceBrokerSSOProvider" />
-        </property>
-        <property name="transactionAttributes">
-            <props>
-                <prop key="addSite">PROPAGATION_REQUIRED</prop>
-                <prop key="removeSite">PROPAGATION_REQUIRED</prop>
-                <prop key="addCredentialsForSite">PROPAGATION_REQUIRED</prop>
-                <prop key="updateCredentialsForSite">PROPAGATION_REQUIRED</prop>
-                <prop key="removeCredentialsForSite">PROPAGATION_REQUIRED</prop>
-                <prop key="*">PROPAGATION_SUPPORTS</prop>
-            </props>
-        </property>
-
-    </bean>
-
     <!-- Request Context -->
     <bean id="org.apache.jetspeed.request.RequestContextComponent" class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
         <constructor-arg>

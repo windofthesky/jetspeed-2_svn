@@ -99,10 +99,10 @@ public class TestCastorXmlPageManager extends TestCase
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
         
-        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
-        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
-        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
-        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", PageSecurity.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
+        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
+        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
+        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/castor/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
+        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/META-INF/castor/page-mapping.xml", PageSecurity.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
         
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
         handlerFactory.registerDocumentHandler(psmlHandler);

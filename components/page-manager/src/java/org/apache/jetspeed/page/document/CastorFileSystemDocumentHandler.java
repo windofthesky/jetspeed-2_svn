@@ -186,7 +186,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // marshal: use SAX I handler to filter document XML for
             // page and folder menu definition menu elements ordered
             // polymorphic collection to strip artifical <menu-element>
-            // tags enabling Castor XML binding; see META-INF/page-mapping.xml
+            // tags enabling Castor XML binding; see META-INF/castor/page-mapping.xml
             writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
             Serializer serializer = new XMLSerializer(writer, this.format);
             final DocumentHandler handler = serializer.asDocumentHandler();
@@ -348,7 +348,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // unmarshal: use SAX I parser to read document XML, filtering
             // for page and folder menu definition menu elements ordered
             // polymorphic collection to insert artifical <menu-element>
-            // tags enabling Castor XML binding; see META-INF/page-mapping.xml
+            // tags enabling Castor XML binding; see META-INF/castor/page-mapping.xml
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             XMLReader reader = parser.getXMLReader();

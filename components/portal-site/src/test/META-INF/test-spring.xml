@@ -45,7 +45,7 @@ limitations under the License.
   <!-- DocumentHandlerFactory -->
   <bean id="PsmlDocumentHandler"      
        class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
-       <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="0"><value>/META-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>.psml</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.Page</value></constructor-arg>       
        <constructor-arg index="3" ><value>target/testdata/pages</value></constructor-arg>
@@ -54,7 +54,7 @@ limitations under the License.
   
   <bean id="LinkDocumentHandler"       
        class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
-       <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="0"><value>/META-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>.link</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.Link</value></constructor-arg>       
        <constructor-arg index="3" ><value>target/testdata/pages</value></constructor-arg>
@@ -63,7 +63,7 @@ limitations under the License.
   
   <bean id="FolderMetaDataDocumentHandler"         
        class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
-       <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="0"><value>/META-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>folder.metadata</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.folder.FolderMetaData</value></constructor-arg>       
        <constructor-arg index="3" ><value>target/testdata/pages</value></constructor-arg>
@@ -72,7 +72,7 @@ limitations under the License.
   
   <bean id="PageSecurityDocumentHandler"       
        class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
-       <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="0"><value>/META-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>page.security</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.PageSecurity</value></constructor-arg>       
        <constructor-arg index="3" ><value>target/testdata/pages</value></constructor-arg>
