@@ -25,13 +25,13 @@ limitations under the License.
  <body>
    <menu name="Essentials">
       <item name="Overview" href="index.html"/>
-      <item name="Documenting Jetspeed 2" href="documentation.html"/>
       <item name="Getting Started" href="getting-started.html"/>
       <item name="Database" href="database.html"/>
       <item name="Localization" href="l10n-guide.html"/>
       <item name="User Attributes" href="user-attributes.html"/>
       <item name="Sub Projects" href="projects-overview.html"/>
-      <item name="Jetspeed 2 Maven Plugin" href="j2-maven-plugin.html"/>
+      <item name="Maven Plugin" href="j2-maven-plugin.html"/>
+      <item name="Documentation" href="documentation.html"/>
     </menu>
     <menu name='Security'>        
       <item name="Security Overview" href="multiproject/jetspeed-security/index.html"/>

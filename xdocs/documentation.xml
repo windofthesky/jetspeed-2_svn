@@ -20,16 +20,33 @@
         <subtitle>Documentation Guideline</subtitle>
         <authors>
             <person name="David Le Strat" email="dlestrat@apache.org" />
+            <person name="Ate Douma" email="ate@apache.org" />
         </authors>
     </properties>
     <body>
-        <section name="Documetation Process Overview">
+        <section name="Documentation Process Overview">
             <p>
             Documentation is critical to make Jetspeed's adoption as smooth as possible.  Jetspeed documentation
             process can be found 
             <a href="http://wiki.apache.org/portals/Jetspeed2/DocumenationProcessWebsite">on Jetspeed&apos;s Wiki</a>.  
             Please submit documentation patches, or contribute to the Wiki.
             </p>
+        </section>
+        <section name="Generating full Site Documentation">
+        <p>
+          To generate the full site documentation for Jetspeed run the following maven command:
+        </p>
+        <source>
+          <![CDATA[
+maven allSite]]>
+          </source>
+        <p>
+        Note: make sure Jetspeed builds without problems as this goal will take quite some time.
+        </p>
+        <p>
+        To speed up this goal, I recommend running it without an internet connection (link checks can take very long)
+        and with maven.mode.online=false (or use -o on the commandline).
+        </p>  
         </section>
         <section name="Generating PDF Documentation">
             <subsection name="Installing Maven PDF Plugin">
@@ -58,6 +75,23 @@ maven plugin:download -DgroupId=maven -DartifactId=maven-pdf-plugin
 maven pdf]]>
                 </source>
             </subsection>
+        </section>
+        <section name="Updating the website">
+          <p>
+          Once you generated a new version of the site documentation, you can bring it online as follows:
+          </p>
+          <ul>
+            <li>(tar.g)zip the contents of ${JETSPEED_2_HOME}/target/docs</li>  
+            <li>upload the resulting archive on people.apache.org</li>  
+            <li>extract the archive in /www/portals.apache.org/jetspeed-2</li>              
+          </ul>
+          <p>
+          More information can be found at: <a href="http://www.apache.org/dev/committers.html#web">Committers' FAQ</a>
+          </p>
+          <p>
+          Note: the above link points at information assuming the site itself is under svn. For Jetspeed-2 this 
+          isn't (yet) the case.          
+          </p>
         </section>
     </body>
 </document>
