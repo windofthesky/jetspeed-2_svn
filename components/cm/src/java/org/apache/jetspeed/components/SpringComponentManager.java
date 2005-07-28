@@ -80,7 +80,7 @@ public class SpringComponentManager implements ComponentManager
         factories = new ArrayList();
         factories.add(appContext);
 
-        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this);
+        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);
     }
 
     public SpringComponentManager(String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
