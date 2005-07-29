@@ -24,10 +24,10 @@ public abstract class AbstractTestHelper implements TestHelper
             Configuration userBuildProps = loadConfiguration(userBuildFile);
             
             File mavenBuildFile = new File("../../build.properties");
-            Configuration mavenBuildProps = loadConfiguration(userBuildFile);
+            Configuration mavenBuildProps = loadConfiguration(mavenBuildFile);
             
             File mavenProjectFile = new File("../../project.properties");
-            Configuration mavenProjectProps = loadConfiguration(userBuildFile);
+            Configuration mavenProjectProps = loadConfiguration(mavenProjectFile);
             
             USER_PROPERTIES = new CompositeConfiguration();
             USER_PROPERTIES.addConfiguration(userBuildProps);
