@@ -82,7 +82,7 @@ limitations under the License.
         <column name="PARAMETER_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FRAGMENT_ID" required="true" type="INTEGER"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="VALUE" required="true" type="LONGVARCHAR"/>
+        <column name="COLUMN_VALUE" required="true" type="LONGVARCHAR"/>
         <unique name="UN_FRAGMENT_PARAMETER_1">
           <unique-column name="FRAGMENT_ID" />
           <unique-column name="PARAMETER_ID" />
@@ -121,7 +121,7 @@ limitations under the License.
         <column name="FALLBACK_ORDER" required="true" type="INTEGER"/>
         <column name="REQUEST_TYPE" required="true" size="40" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="VALUE" size="128" type="VARCHAR"/>
+        <column name="COLUMN_VALUE" size="128" type="VARCHAR"/>
         <column default="1" name="FALLBACK_TYPE" type="INTEGER"/>
         <index name="IX_RULE_CRITERION_1">
             <index-column name="RULE_ID" />

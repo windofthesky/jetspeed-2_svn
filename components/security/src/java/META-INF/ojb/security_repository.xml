@@ -159,7 +159,7 @@ limitations under the License.
 	    </field-descriptor>
 	    <field-descriptor
 	        name="value"
-	        column="value"
+	        column="column_value"
 	        jdbc-type="VARCHAR"
 	        nullable="false"
 	        length="150"

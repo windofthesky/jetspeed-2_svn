@@ -123,7 +123,7 @@ limitations under the License.
     />    
     <field-descriptor
      name="value"
-     column="VALUE"
+     column="COLUMN_VALUE"
      jdbc-type="VARCHAR"
     />    
     <field-descriptor 
