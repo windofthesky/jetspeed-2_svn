@@ -1,61 +1,63 @@
 <?xml version="1.0"?>
 <!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 -->
 <document>
-<properties>
-	<title>Jetspeed 2 Security Services Configuration</title>
-    <authors>
-      <person name="David Le Strat" email="dlestrat@apache.org"/>
-    </authors>
-</properties>
-<body>
-<section name="Default configuration">
-<p>
-Jetspeed 2 default security services configuration leverages a relational database as its default persitent 
-datastore for security information.  Jetspeed 2 security service provider interface provides a mechanism
-to replace the default datastore configured.
-</p>
-<p>
-3 files are involved when configuring Jetspeed 2 security SPI.  All the SPI configuration files are
-located under <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>.
-</p>
-<subsection name="security-atn.xml">
-<p>
-This configuration file provides the login module configuration.  Not everyone
-needs this, as some application may decide to use another login module other than the one provided.
-</p>
-</subsection>
-<subsection name="security-atz.xml">
-<p>
-This configuration file configures the authorization policy, in J2's case <a href="atz-jass.html">RdbmsPolicy</a>.
-</p>
-</subsection>
-<subsection name="security-managers.xml">
-<p>
-This configuration file configures all the managers for security purpose.
-</p>
-</subsection>
-<subsection name="security-providers.xml">
-<p>
-This configuration file configures the various providers and weaves the SPI together.
-</p>
-<ul>
-<li><code>AuthenticationProviderProxy</code>: Configures the list of <code>AuthenticationProvider</code>
-and the default authenticator.
-<source><![CDATA[
+    <properties>
+        <title>Jetspeed 2 Security Services Configuration</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Default configuration">
+            <p>
+                Jetspeed 2 default security services configuration leverages a relational database as its default persitent datastore for security information.
+                Jetspeed 2 security service provider interface provides a mechanism to replace the default datastore configured.
+            </p>
+            <p>
+                3 files are involved when configuring Jetspeed 2 security SPI. All the SPI configuration files are located under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>
+                .
+            </p>
+            <subsection name="security-atn.xml">
+                <p>
+                    This configuration file provides the login module configuration. Not everyone needs this, as some application may decide to use another
+                    login module other than the one provided.
+                </p>
+            </subsection>
+            <subsection name="security-atz.xml">
+                <p>
+                    This configuration file configures the authorization policy, in J2's case
+                    <a href="atz-jass.html">RdbmsPolicy</a>
+                    .
+                </p>
+            </subsection>
+            <subsection name="security-managers.xml">
+                <p>This configuration file configures all the managers for security purpose.</p>
+            </subsection>
+            <subsection name="security-providers.xml">
+                <p>This configuration file configures the various providers and weaves the SPI together.</p>
+                <ul>
+                    <li>
+                        <code>AuthenticationProviderProxy</code>
+                        : Configures the list of
+                        <code>AuthenticationProvider</code>
+                        and the default authenticator.
+                        <source>
+                            <![CDATA[
 <bean id="org.apache.jetspeed.security.AuthenticationProviderProxy" 
    class="org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl">  	   
    <constructor-arg >
@@ -65,11 +67,14 @@ and the default authenticator.
    </constructor-arg>
   <constructor-arg><value>DefaultAuthenticator</value></constructor-arg>
 </bean>]]>
-</source>
-</li>
-<li><code>AuthenticationProvider</code>: Configure the authentication providers for the current portal implementation.
-The example below configures the default authenticator that uses the RDBMS to manage/store user information.
-<source><![CDATA[
+                        </source>
+                    </li>
+                    <li>
+                        <code>AuthenticationProvider</code>
+                        : Configure the authentication providers for the current portal implementation. The example below configures the default authenticator
+                        that uses the RDBMS to manage/store user information.
+                        <source>
+                            <![CDATA[
 <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
   	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl">  	   
    <constructor-arg index="0"><value>DefaultAuthenticator</value></constructor-arg>
@@ -82,53 +87,63 @@ The example below configures the default authenticator that uses the RDBMS to ma
       <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/>
    </constructor-arg>
 </bean>]]>
-</source>
-</li>
-</ul>
-</subsection>
-<subsection name="security-spi.xml">
-<p>
-This configuration file contains configuration that are common to the authentication and authorization SPIs.
-</p>
-<table>
-	<tr>
-  		<th>Bean</th> 
-  		<th>Description</th> 
-  	</tr>
-	<tr>
-		<td>org.apache.jetspeed.security.spi.SecurityAccess</td>
-  		<td>Used internally by the default OJB based SPI. Provide access to common action/methods
-  		for the various SPI implementations.  The <i>SecurityAccess</i> bean is used by both the Authentication 
-  		and Authorization SPIs.</td> 
-  	</tr>
-</table>
-</subsection>
-<subsection name="security-spi-atn.xml">
-<p>
-This configuration file contains all the configurations for configuring the authentication SPI.
-</p>
-<table>
-	<tr>
-  		<th>Bean</th> 
-  		<th>Description</th>
-  	</tr>
-	<tr>
-		<td>org.apache.jetspeed.security.spi.CredentialHandler</td>
-  		<td>The <i>CredentialHandler</i> encapsulates the operations involving manipulation 
-  		of credentials.  The default implementation provides support for password protection as
-  		defined by the <i>PasswordCredentialProvider</i>; as well as lifecycle management of
-  		credentials through <i>InternalPasswordCredentialInterceptor</i> which manages parameters such as
-  		maximum number of authentication failures, maximum life span of a credential in days and how much history
-  		to retain for a given credential.</td> 
-  	</tr>
-	<tr>
- 		<td>org.apache.jetspeed.security.spi.UserSecurityHandler</td> 
-  		<td>The <i>UserSecurityHandler</i> encapuslated all the operations around the user principals.</td> 
-  	</tr>
-</table>
-<p>
-    A sample <code>CredentialHandler</code> configuration could be:
-    <source><![CDATA[
+                        </source>
+                    </li>
+                </ul>
+            </subsection>
+            <subsection name="security-spi.xml">
+                <p>This configuration file contains configuration that are common to the authentication and authorization SPIs.</p>
+                <table>
+                    <tr>
+                        <th>Bean</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.SecurityAccess</td>
+                        <td>
+                            Used internally by the default OJB based SPI. Provide access to common action/methods for the various SPI implementations. The
+                            <i>SecurityAccess</i>
+                            bean is used by both the Authentication and Authorization SPIs.
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+            <subsection name="security-spi-atn.xml">
+                <p>This configuration file contains all the configurations for configuring the authentication SPI.</p>
+                <table>
+                    <tr>
+                        <th>Bean</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.CredentialHandler</td>
+                        <td>
+                            The
+                            <i>CredentialHandler</i>
+                            encapsulates the operations involving manipulation of credentials. The default implementation provides support for password
+                            protection as defined by the
+                            <i>PasswordCredentialProvider</i>
+                            ; as well as lifecycle management of credentials through
+                            <i>InternalPasswordCredentialInterceptor</i>
+                            which manages parameters such as maximum number of authentication failures, maximum life span of a credential in days and how much
+                            history to retain for a given credential.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.UserSecurityHandler</td>
+                        <td>
+                            The
+                            <i>UserSecurityHandler</i>
+                            encapuslated all the operations around the user principals.
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    A sample
+                    <code>CredentialHandler</code>
+                    configuration could be:
+                    <source>
+                        <![CDATA[
 <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator" 
  class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator"/>
 
@@ -156,90 +171,151 @@ This configuration file contains all the configurations for configuring the auth
    <!-- historySize -->     
    <constructor-arg index="2"><value>3</value></constructor-arg>       
 </bean>]]>
-    </source>
-</p>
-</subsection>
-<subsection name="security-spi-atz.xml">
-<p>
-This configuration file contains all the configurations for configuring the authorization SPI.
-</p>
-<table>
-	<tr>
-  		<th>Bean</th> 
-  		<th>Description</th>
-  	</tr>
-	<tr>
-		<td>org.apache.jetspeed.security.spi.RoleSecurityHandler</td>
-  		<td>The <i>RoleSecurityHandler</i> encapsulates all the operations around the role principals.</td> 
-  	</tr>
-	<tr>
- 		<td>org.apache.jetspeed.security.spi.GroupSecurityHandler</td> 
-  		<td>The <i>GroupSecurityHandler</i> encapsulates all the operations around the group principals.</td> 
-  	</tr>
-  	<tr>
- 		<td>org.apache.jetspeed.security.spi.SecurityMappingHandler</td> 
-  		<td>The <i>SecurityMappingHandler</i> encapsulates all the operations involving mapping between principals.
-  		It contains the logic managing hierarchy resolution for hierarchical principals (roles or groups).
-  		The default hierarchy resolution provided is a hierarchy by generalization (see overview for definitions).
-  	    A <i>contructor-arg</i> can be added to the <i>SecurityMappingHandler</i> to change the hierarchy resolution
-  	    strategy.  Jetspeed 2 also support a hierarchy resolution by aggregation.</td> 
-  	</tr>
-</table>
-</subsection>
-</section>
-<section name="LDAP Configuration">
-<p>
-Jetspeed 2 provides LDAP support for authentication.  Configuring LDAP authentication can be done by replacing the 
-configuration files located under <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i> by the
-files located under as indicated <i>${jetspeed-source-home}/components/security/etc/</i>.
-below.
-</p>
-<p>
-Jetspeed 2 <b>does not currently provide an embedded LDAP directory</b>. A external LDAP directory must be configured
-in order to leverage this functionality.
-</p>
-<p>
-<i>security-spi-atn.xml</i> should be replaced by <i>security-spi-ldap-atn.xml</i> and  
-<i>security-spi-ldap.xml</i> should be copied to the assembly directory as well.
-</p>
-<p>
-The <i>security-spi-ldap-atn.xml</i> preforms the same functions as the <i>security-spi-atn.xml</i>
-described above.  It replaces the default implementation for <i>CredentialHandler</i> and
-<i>UserSecurityHandler</i> with an LDAP specific implementation.
-</p>
-<p> 
-Additionally, <i>ldap.properties</i> located under <i>${jetspeed-source-home}/components/security/etc/</i> should
-be copied under <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/conf/</i>.
-</p>
-<subsection name="ldap.properties">
-<table>
-	<tr>
-  		<th>Property</th> 
-  		<th>Value</th> 
-  	</tr>
-	<tr>
-		<td>org.apache.jetspeed.ldap.ldapServerName</td>
-  		<td>The LDAP server name to connect to. E.g. <i>localhost</i></td> 
-  	</tr>
-	<tr>
- 		<td>org.apache.jetspeed.ldap.rootDn</td> 
-  		<td>The root domain name. E.g. <i>cn=Manager,dc=proto,dc=dataline,dc=com</i>.  In
-  		properties files the "=" in the value should be escaped, i.e. <i>cn\=Manager,dc\=proto,dc\=dataline,dc\=com</i></td> 
-  	</tr>
-  	<tr>
- 		<td>org.apache.jetspeed.ldap.rootPassword</td> 
-  		<td>The root password.</td> 
-  	</tr>
-  	<tr>
- 		<td>org.apache.jetspeed.ldap.rootContext</td> 
-  		<td>The root context. E.g. <i>dc=proto,dc=dataline,dc=com</i></td> 
-  	</tr>
-  	<tr>
- 		<td>org.apache.jetspeed.ldap.defaultDnSuffix</td> 
-  		<td>The default suffix. E.g. <i>ou=Norfolk,o=Dataline</i></td> 
-  	</tr>
-</table>
-</subsection>
-</section>
-</body>
+                    </source>
+                </p>
+            </subsection>
+            <subsection name="security-spi-atz.xml">
+                <p>This configuration file contains all the configurations for configuring the authorization SPI.</p>
+                <table>
+                    <tr>
+                        <th>Bean</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.RoleSecurityHandler</td>
+                        <td>
+                            The
+                            <i>RoleSecurityHandler</i>
+                            encapsulates all the operations around the role principals.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.GroupSecurityHandler</td>
+                        <td>
+                            The
+                            <i>GroupSecurityHandler</i>
+                            encapsulates all the operations around the group principals.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.security.spi.SecurityMappingHandler</td>
+                        <td>
+                            The
+                            <i>SecurityMappingHandler</i>
+                            encapsulates all the operations involving mapping between principals. It contains the logic managing hierarchy resolution for
+                            hierarchical principals (roles or groups). The default hierarchy resolution provided is a hierarchy by generalization (see overview
+                            for definitions). A
+                            <i>contructor-arg</i>
+                            can be added to the
+                            <i>SecurityMappingHandler</i>
+                            to change the hierarchy resolution strategy. Jetspeed 2 also support a hierarchy resolution by aggregation.
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    A sample
+                    <code>SecurityMappingHandler</code>
+                    configuration could be:
+                    <source><![CDATA[
+<!-- Security SPI: SecurityMappingHandler -->
+<bean id="org.apache.jetspeed.security.spi.SecurityMappingHandler" 
+      class="org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler">  	   
+   <constructor-arg >
+      <ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/>
+   </constructor-arg>
+   <!-- Default role hierarchy strategy is by generalization.  
+        Add contructor-arg to change the strategy. -->
+   <!-- Default group hierarchy strategy is by generalization.  
+        Add contructor-arg to change the strategy. -->
+</bean>]]>
+                    </source>
+                </p>
+            </subsection>
+        </section>
+        <section name="LDAP Configuration">
+            <p>
+                Jetspeed 2 provides LDAP support for authentication. Configuring LDAP authentication can be done by replacing the configuration files located
+                under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>
+                by the files located under as indicated
+                <i>${jetspeed-source-home}/components/security/etc/</i>
+                . below.
+            </p>
+            <p>
+                Jetspeed 2
+                <b>does not currently provide an embedded LDAP directory</b>
+                . A external LDAP directory must be configured in order to leverage this functionality.
+            </p>
+            <p>
+                <i>security-spi-atn.xml</i>
+                should be replaced by
+                <i>security-spi-ldap-atn.xml</i>
+                and
+                <i>security-spi-ldap.xml</i>
+                should be copied to the assembly directory as well.
+            </p>
+            <p>
+                The
+                <i>security-spi-ldap-atn.xml</i>
+                preforms the same functions as the
+                <i>security-spi-atn.xml</i>
+                described above. It replaces the default implementation for
+                <i>CredentialHandler</i>
+                and
+                <i>UserSecurityHandler</i>
+                with an LDAP specific implementation.
+            </p>
+            <p>
+                Additionally,
+                <i>ldap.properties</i>
+                located under
+                <i>${jetspeed-source-home}/components/security/etc/</i>
+                should be copied under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/conf/</i>
+                .
+            </p>
+            <subsection name="ldap.properties">
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.ldapServerName</td>
+                        <td>
+                            The LDAP server name to connect to. E.g.
+                            <i>localhost</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootDn</td>
+                        <td>
+                            The root domain name. E.g.
+                            <i>cn=Manager,dc=proto,dc=dataline,dc=com</i>
+                            . In properties files the "=" in the value should be escaped, i.e.
+                            <i>cn\=Manager,dc\=proto,dc\=dataline,dc\=com</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootPassword</td>
+                        <td>The root password.</td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootContext</td>
+                        <td>
+                            The root context. E.g.
+                            <i>dc=proto,dc=dataline,dc=com</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.defaultDnSuffix</td>
+                        <td>
+                            The default suffix. E.g.
+                            <i>ou=Norfolk,o=Dataline</i>
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+        </section>
+    </body>
 </document>

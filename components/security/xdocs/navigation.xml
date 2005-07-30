@@ -30,8 +30,10 @@
             <item name="Authorization" href="atz.html">
                 <item name="JAAS Authorization" href="atz-jaas.html"/>
                 <item name="PermissionManager Overview" href="permission.html"/>
+                <item name="Authorization/Security Mapping SPI" href="atz-spi.html"/>
+                <item name="Hierarchy Management" href="hierarchy.html"/>
             </item>
-            <item name="Aggregate Security Services" href="#" />
+            <item name="High Level Security Services" href="#" />
             <item name="Security Services Configuration" href="config.html" />
         </menu>
         <menu name="Misc.">
