@@ -18,7 +18,7 @@
 -->
 <project>
     <id>jetspeed2:maven-jetspeed2-plugin</id>
-    <extends>${basedir}/../project-info.xml</extends>
+    <extend>${basedir}/../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>maven-jetspeed2-plugin</artifactId>
     <groupId>jetspeed2</groupId>
@@ -55,6 +55,7 @@
         </dependency>
     </dependencies>
     <build>
+        <sourceDirectory>src/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>${basedir}/src/plugin-resources</directory>
