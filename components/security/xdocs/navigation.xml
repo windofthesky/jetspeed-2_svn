@@ -33,7 +33,7 @@
                 <item name="Authorization/Security Mapping SPI" href="atz-spi.html"/>
                 <item name="Hierarchy Management" href="hierarchy.html"/>
             </item>
-            <item name="High Level Security Services" href="#" />
+            <item name="High Level Security Services" href="high-level-services.html" />
             <item name="Security Services Configuration" href="config.html" />
         </menu>
         <menu name="Misc.">
