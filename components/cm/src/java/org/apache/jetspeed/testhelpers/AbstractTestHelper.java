@@ -1,6 +1,7 @@
 package org.apache.jetspeed.testhelpers;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.CompositeConfiguration;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 public abstract class AbstractTestHelper implements TestHelper
 {
     public static final String APP_CONTEXT = "AppContext";
+
     private final Map context;
 
     private static final CompositeConfiguration USER_PROPERTIES;
@@ -22,28 +24,28 @@ public abstract class AbstractTestHelper implements TestHelper
         {
             File userBuildFile = new File(System.getProperty("user.home"), "build.properties");
             Configuration userBuildProps = loadConfiguration(userBuildFile);
-            
+
             File mavenBuildFile = new File("../../build.properties");
             Configuration mavenBuildProps = loadConfiguration(mavenBuildFile);
-            
+
             File mavenProjectFile = new File("../../project.properties");
             Configuration mavenProjectProps = loadConfiguration(mavenProjectFile);
-            
+
             USER_PROPERTIES = new CompositeConfiguration();
             USER_PROPERTIES.addConfiguration(userBuildProps);
             USER_PROPERTIES.addConfiguration(mavenBuildProps);
-            USER_PROPERTIES.addConfiguration(mavenProjectProps);            
+            USER_PROPERTIES.addConfiguration(mavenProjectProps);
         }
         catch (ConfigurationException e)
         {
-            
-           throw new IllegalStateException("Unable to load ${USER_HOME}/build.properties");
+
+            throw new IllegalStateException("Unable to load ${USER_HOME}/build.properties");
         }
     }
 
     private static Configuration loadConfiguration(File propsFile) throws ConfigurationException
     {
-        if(propsFile.exists())
+        if (propsFile.exists())
         {
             return new PropertiesConfiguration(propsFile);
         }
@@ -51,11 +53,16 @@ public abstract class AbstractTestHelper implements TestHelper
         {
             return new PropertiesConfiguration();
         }
-    }   
+    }
 
     public AbstractTestHelper(Map context)
     {
         this.context = context;
+    }
+    
+    public AbstractTestHelper()
+    {
+        context = new HashMap();
     }
 
     public Map getContext()
@@ -63,14 +70,13 @@ public abstract class AbstractTestHelper implements TestHelper
         return context;
     }
 
-    protected final String getUserProperty(String key)
+    public final String getUserProperty(String key)
     {
         // use system properties passed to test via the
         // maven.junit.sysproperties configuration from
         // maven build.properties and/or project.properties
-        
         String prop = System.getProperty(key);
-        if(prop == null)
+        if (prop == null)
         {
             return (String) USER_PROPERTIES.getProperty(key);
         }
@@ -79,11 +85,11 @@ public abstract class AbstractTestHelper implements TestHelper
             return prop;
         }
     }
-    
+
     protected final void addBeanFactory(ConfigurableBeanFactory bf)
     {
         ConfigurableBeanFactory currentBf = (ConfigurableBeanFactory) context.get(APP_CONTEXT);
-        if(currentBf != null)
+        if (currentBf != null)
         {
             bf.setParentBeanFactory(currentBf);
             context.put(APP_CONTEXT, new DefaultListableBeanFactory(bf));
