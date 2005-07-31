@@ -20,6 +20,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 import org.apache.jetspeed.sso.SSOProvider;
 
 import junit.framework.Test;
@@ -28,44 +29,49 @@ import junit.framework.TestSuite;
 import javax.security.auth.Subject;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.jetspeed.sso.SSOException;
 import java.lang.Exception;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
-
 /**
- * <p>
- * Unit testing for {@link Preferences}.
- * </p>
- * 
- * @author <a href="rogerrut@apache.org">Roger Ruttimann </a>
+ * @author   David Le Strat
  */
-public class TestSSOComponent extends AbstractSpringTestCase
+public class TestSSOComponent extends AbstractSecurityTestcase
 {
-	/**
-	 * test url for this UnitTest
-	 */
-	static private String TEST_URL= "http://localhost/jetspeed";
-	static private String TEST_URL2= "http://localhost/jetspeed-2";
-	static private String TEST_USER= "joe";
-	static private String REMOTE_USER= "remoteJS";
-	static private String REMOTE_USER2= "remoteJS-2";
-	static private String REMOTE_PWD_1 = "remote_1";
-	static private String REMOTE_PWD_2 = "remote_2";
-	
-	static private String TEST_GROUP= "engineers";
-	static private String TEST_GROUP_USER= "jack";
-	
-		
+    /**
+     * test url for this UnitTest
+     */
+    static private String TEST_URL = "http://localhost/jetspeed";
+
+    static private String TEST_URL2 = "http://localhost/jetspeed-2";
+
+    static private String TEST_USER = "joe";
+
+    static private String REMOTE_USER = "remoteJS";
+
+    static private String REMOTE_USER2 = "remoteJS-2";
+
+    static private String REMOTE_PWD_1 = "remote_1";
+
+    static private String REMOTE_PWD_2 = "remote_2";
+
+    static private String TEST_GROUP = "engineers";
+
+    static private String TEST_GROUP_USER = "jack";
+
     /** The property manager. */
     private static SSOProvider ssoBroker = null;
+
     /** The user manager. */
     protected UserManager ums;
-    protected GroupManager gms;		// Group Manager
+
+    protected GroupManager gms; // Group Manager
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -107,83 +113,85 @@ public class TestSSOComponent extends AbstractSpringTestCase
      * Test user root.
      * </p>
      */
-  /*  public void testSSO() throws Exception
-    {
-        // TODO: FIXME: test fails on HSQL Oracle
-    }
-    */
     public void testSSOGroup() throws Exception
     {
-        System.out.println("*************************************\nStart Unit Test for SSO Group Support\n*************************************");
-        
+        System.out.println("*************************************\n" + "Start Unit Test for SSO Group Support"
+                + "\n*************************************");
+
         // Create a user
         try
-	    {
-	        ums.addUser(TEST_GROUP_USER, "password");
-	    }
-	    catch (SecurityException sex)
-	    {
-	        //assertTrue("user already exists. exception caught: " + sex, false);
-	    }
-        
+        {
+            ums.addUser(TEST_GROUP_USER, "password");
+        }
+        catch (SecurityException sex)
+        {
+            // assertTrue("user already exists. exception caught: " + sex, false);
+        }
+
         // Create a group
         try
         {
             gms.addGroup(TEST_GROUP);
-            // Add user to Group
-            gms.addUserToGroup(TEST_GROUP_USER,TEST_GROUP);
-            
             System.out.println("Creating Group " + TEST_GROUP + " and adding User " + TEST_GROUP_USER + " succeeded!.");
         }
         catch (SecurityException secex)
         {
-            System.out.println("Creating Group " + TEST_GROUP + " and adding User " + TEST_GROUP_USER + " failed. Group might already exist. Continue test...");
-            //secex.printStackTrace();
-    		//throw new Exception(secex.getMessage()); 
+            System.out.println("Creating Group " + TEST_GROUP + " and adding User " + TEST_GROUP_USER
+                    + " failed. Group might already exist. Continue test...");
+            // secex.printStackTrace();
+            // throw new Exception(secex.getMessage());
         }
-        
-        
-        
-         //  Initialization of Group
-    	Principal principal = new GroupPrincipalImpl(TEST_GROUP);
-        Set principals = new HashSet();
-        principals.add(principal);
-        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());	
-        
-        // Add SSO Credentail for Group
-        if ( ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
+
+        if (gms.groupExists(TEST_GROUP))
         {
-	        try
-			{
-				ssoBroker.addCredentialsForSite(subject, REMOTE_USER, TEST_URL,REMOTE_PWD_1);
-				System.out.println("SSO Credential added for Group:" + TEST_GROUP+ " site: " + TEST_URL);
-			}
-			catch(SSOException ssoex)
-			{
-	    		System.out.println("SSO Credential add FAILED for Group:" + TEST_GROUP+ " site: " + TEST_URL);
-	    		ssoex.printStackTrace();
-	    		throw new Exception(ssoex.getMessage());
-			}
+            // Add user to Group
+            gms.addUserToGroup(TEST_GROUP_USER, TEST_GROUP);
         }
         else
         {
-            System.out.println("Group:" + TEST_GROUP+ " site: " + TEST_URL + " has already a remote credential");
+            assertTrue("Could not create group. Abort test.", false);
+        }
+
+        // Initialization of Group
+        Principal principal = new GroupPrincipalImpl(TEST_GROUP);
+        Set principals = new HashSet();
+        principals.add(principal);
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
+
+        // Add SSO Credential for Group
+        if (ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
+        {
+            try
+            {
+                ssoBroker.addCredentialsForSite(subject, REMOTE_USER, TEST_URL, REMOTE_PWD_1);
+                System.out.println("SSO Credential added for Group:" + TEST_GROUP + " site: " + TEST_URL);
+            }
+            catch (SSOException ssoex)
+            {
+                System.out.println("SSO Credential add FAILED for Group:" + TEST_GROUP + " site: " + TEST_URL);
+                ssoex.printStackTrace();
+                throw new Exception(ssoex.getMessage());
+            }
+        }
+        else
+        {
+            System.out.println("Group:" + TEST_GROUP + " site: " + TEST_URL + " has already a remote credential");
         }
 
         // Create Principal for User
-		principal = new UserPrincipalImpl(TEST_GROUP_USER);
+        principal = new UserPrincipalImpl(TEST_GROUP_USER);
         principals = new HashSet();
         principals.add(principal);
-        subject = new Subject(true, principals, new HashSet(), new HashSet());	
-        
-        // User should have credential for site    
-        if ( ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
-    	{
+        subject = new Subject(true, principals, new HashSet(), new HashSet());
+
+        // User should have credential for site
+        if (ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
+        {
             // Group expansion failed. User not recognized
-    		System.out.println("No SSO Credential for user:" + TEST_GROUP_USER+ " site: " + TEST_URL);
-    		
-    		// Test failure
-    		try
+            System.out.println("No SSO Credential for user:" + TEST_GROUP_USER + " site: " + TEST_URL);
+
+            // Test failure
+            try
             {
                 ums.removeUser(TEST_GROUP_USER);
                 gms.removeGroup(TEST_GROUP);
@@ -192,36 +200,35 @@ public class TestSSOComponent extends AbstractSpringTestCase
             {
                 assertTrue("could not remove user and group. exception caught: " + sex, false);
             }
-            
+
             throw new Exception("SSO Unit test for Group support failed");
-    	}
+        }
         else
         {
             // Group lookup succesful
-    		System.out.println("SSO Test for Group support successful\nSSO Credential for user:" + TEST_GROUP_USER + " site: " + TEST_URL + " found. User is member of Group " + TEST_GROUP);
+            System.out.println("SSO Test for Group support successful" + "\nSSO Credential for user:" + TEST_GROUP_USER
+                    + " site: " + TEST_URL + " found. User is member of Group " + TEST_GROUP);
         }
-        
+
         // Cleanup test.
-        
+
         /*
-    	 * For hypersonic the cascading deletes are not generated by Torque and the remove credentials
-    	 * fails with a constraint error.
-    	 * Comment test out for M1 release but the problem needs to be addressed for the upcoming releases
-    	*/
-        /*
-     	try
-		{
-	    	// Remove credential for Site
-	    	ssoBroker.removeCredentialsForSite("/group/"+TEST_GROUP, TEST_URL);
-	    	System.out.println("SSO Credential removed for Group:" + TEST_GROUP+ " site: " + TEST_URL);
-		}
-    	catch(SSOException ssoex)
-		{
-    		System.out.println("SSO Credential remove FAILED for Group:" + TEST_GROUP+ " site: " + TEST_URL);
-    		throw new Exception(ssoex.getMessage());
-		}
-    	*/
-        
+         * For hypersonic the cascading deletes are not generated by Torque and the remove credentials fails with a
+         * constraint error. Comment test out for M1 release but the problem needs to be addressed for the upcoming
+         * releases
+         */
+        try
+        {
+            // Remove credential for Site
+            ssoBroker.removeCredentialsForSite("/group/" + TEST_GROUP, TEST_URL);
+            System.out.println("SSO Credential removed for Group:" + TEST_GROUP + " site: " + TEST_URL);
+        }
+        catch (SSOException ssoex)
+        {
+            System.out.println("SSO Credential remove FAILED for Group:" + TEST_GROUP + " site: " + TEST_URL);
+            throw new Exception(ssoex.getMessage());
+        }
+
         try
         {
             ums.removeUser(TEST_GROUP_USER);
@@ -231,142 +238,134 @@ public class TestSSOComponent extends AbstractSpringTestCase
         {
             assertTrue("could not remove user and group. exception caught: " + sex, false);
         }
-        
-        
-		
+
     }
-    
+
     public void testSSO() throws Exception
     {
         System.out.println("***************************\nStart Unit Test for SSO API\n***************************");
-        
-		// Create a user
-		 try
-		    {
-		        ums.addUser(TEST_USER, "password");
-		    }
-		    catch (SecurityException sex)
-		    {
-		        //assertTrue("user already exists. exception caught: " + sex, false);
-		    }
-	        
-    	// Initialization
-    	Principal principal = new UserPrincipalImpl(TEST_USER);
+
+        // Create a user
+        try
+        {
+            ums.addUser(TEST_USER, "password");
+        }
+        catch (SecurityException sex)
+        {
+            // assertTrue("user already exists. exception caught: " + sex, false);
+        }
+
+        // Initialization
+        Principal principal = new UserPrincipalImpl(TEST_USER);
         Set principals = new HashSet();
         principals.add(principal);
-        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());	
-    	
-    	if ( ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
-    	{
-    		System.out.println("No SSO Credential for user:" + TEST_USER+ " site: " + TEST_URL);
-    		
-    		// Add credential
-    		try
-			{
-    			ssoBroker.addCredentialsForSite(subject, REMOTE_USER, TEST_URL,REMOTE_PWD_1);
-    			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL);
-			}
-			catch(SSOException ssoex)
-			{
-	    		System.out.println("SSO Credential add FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
-	    		ssoex.printStackTrace();
-	    		throw new Exception(ssoex.getMessage());
-			}
-    	}
-    	else
-    	{
-    		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL);
-    	}
-    	
-    	// Add another remote principal for the same user
-    	if ( ssoBroker.hasSSOCredentials(subject, TEST_URL2) == false)
-    	{
-    		System.out.println("No SSO Credential for user:" + TEST_USER+ " site: " + TEST_URL2);
-    		
-    		// Add credential
-    		try
-			{
-    			ssoBroker.addCredentialsForSite(subject, REMOTE_USER2, TEST_URL2,REMOTE_PWD_1);
-    			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL2);
-			}
-			catch(SSOException ssoex)
-			{
-	    		System.out.println("SSO Credential add FAILED for user:" + TEST_USER+ " site: " + TEST_URL2);
-	    		ssoex.printStackTrace();
-	    		throw new Exception(ssoex.getMessage());
-			}
-		}
-    	else
-    	{
-    		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL2);
-    	}
-    	
-    	// Add the credentail again -- should get an error
-		try
-		{
-			ssoBroker.addCredentialsForSite(subject, REMOTE_USER2, TEST_URL2,REMOTE_PWD_1);
-			throw new Exception("Added same credentail twice -- API should prevent users from doing that.");
-			
-		}
-		catch(SSOException ssoex)
-		{
-    		System.out.println("Adding same SSO Credentialtwice failed (as expected) Message :" + ssoex.getMessage());
-		}
-		catch( Exception e)
-		{
-		    throw new Exception("Adding SSO Credential twice throw an unandled exception. Error: " + e.getMessage());
-		}
-    	
-    	// Test if the credential where persisted
-    	
-    	// Test credential update
-    	SSOContext ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
-    	System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential()+ " for site: " + TEST_URL);
-    	
-    	SSOContext ssocontext2 = ssoBroker.getCredentials(subject, TEST_URL2);
-    	System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential() + " for site: " + TEST_URL2);
-    	
-    	try
-		{
-    		// Update Remote credential
-    		System.out.println("SSO Credential Update" );
-    		ssoBroker.updateCredentialsForSite(subject, REMOTE_USER , TEST_URL, REMOTE_PWD_2);
-    		
-    		ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
-    		System.out.println("SSO Credential updated: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential());
-    		
-		}
-    	catch(SSOException ssoex)
-		{
-    		System.out.println("SSO Credential update FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
-    		throw new Exception(ssoex.getMessage());
-		}
-    	
-    	/*
-    	 * For hypersonic the cascading deletes are not generated by Torque and the remove credentials
-    	 * fails with a constraint error.
-    	 * Comment test out for M1 release but the problem needs to be addressed for the upcoming releases
-    	 
-     	try
-		{
-	    	// Remove credential for Site
-	    	ssoBroker.removeCredentialsForSite(subject, TEST_URL);
-	    	System.out.println("SSO Credential removed for user:" + TEST_USER+ " site: " + TEST_URL);
-		}
-    	catch(SSOException ssoex)
-		{
-    		System.out.println("SSO Credential remove FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
-    		throw new Exception(ssoex.getMessage());
-		}
-		*/
-        
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
+
+        if (ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
+        {
+            System.out.println("No SSO Credential for user:" + TEST_USER + " site: " + TEST_URL);
+
+            // Add credential
+            try
+            {
+                ssoBroker.addCredentialsForSite(subject, REMOTE_USER, TEST_URL, REMOTE_PWD_1);
+                System.out.println("SSO Credential added for user:" + TEST_USER + " site: " + TEST_URL);
+            }
+            catch (SSOException ssoex)
+            {
+                System.out.println("SSO Credential add FAILED for user:" + TEST_USER + " site: " + TEST_URL);
+                ssoex.printStackTrace();
+                throw new Exception(ssoex.getMessage());
+            }
+        }
+        else
+        {
+            System.out.println("SSO Credential found for user:" + TEST_USER + " site: " + TEST_URL);
+        }
+
+        // Add another remote principal for the same user
+        if (ssoBroker.hasSSOCredentials(subject, TEST_URL2) == false)
+        {
+            System.out.println("No SSO Credential for user:" + TEST_USER + " site: " + TEST_URL2);
+
+            // Add credential
+            try
+            {
+                ssoBroker.addCredentialsForSite(subject, REMOTE_USER2, TEST_URL2, REMOTE_PWD_1);
+                System.out.println("SSO Credential added for user:" + TEST_USER + " site: " + TEST_URL2);
+            }
+            catch (SSOException ssoex)
+            {
+                System.out.println("SSO Credential add FAILED for user:" + TEST_USER + " site: " + TEST_URL2);
+                ssoex.printStackTrace();
+                throw new Exception(ssoex.getMessage());
+            }
+        }
+        else
+        {
+            System.out.println("SSO Credential found for user:" + TEST_USER + " site: " + TEST_URL2);
+        }
+
+        // Add the credentail again -- should get an error
+        try
+        {
+            ssoBroker.addCredentialsForSite(subject, REMOTE_USER2, TEST_URL2, REMOTE_PWD_1);
+            throw new Exception("Added same credentail twice -- API should prevent users from doing that.");
+
+        }
+        catch (SSOException ssoex)
+        {
+            System.out.println("Adding same SSO Credentialtwice failed (as expected) Message :" + ssoex.getMessage());
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Adding SSO Credential twice throw an unandled exception. Error: " + e.getMessage());
+        }
+
+        // Test if the credential where persisted
+
+        // Test credential update
+        SSOContext ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
+        System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: "
+                + ssocontext.getRemoteCredential() + " for site: " + TEST_URL);
+
+        SSOContext ssocontext2 = ssoBroker.getCredentials(subject, TEST_URL2);
+        System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: "
+                + ssocontext.getRemoteCredential() + " for site: " + TEST_URL2);
+
+        try
+        {
+            // Update Remote credential
+            System.out.println("SSO Credential Update");
+            ssoBroker.updateCredentialsForSite(subject, REMOTE_USER, TEST_URL, REMOTE_PWD_2);
+
+            ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
+            System.out.println("SSO Credential updated: User:" + ssocontext.getRemotePrincipalName() + " Password: "
+                    + ssocontext.getRemoteCredential());
+
+        }
+        catch (SSOException ssoex)
+        {
+            System.out.println("SSO Credential update FAILED for user:" + TEST_USER + " site: " + TEST_URL);
+            throw new Exception(ssoex.getMessage());
+        }
+
+        /*
+         * For hypersonic the cascading deletes are not generated by Torque and the remove credentials fails with a
+         * constraint error. Comment test out for M1 release but the problem needs to be addressed for the upcoming
+         * releases try { // Remove credential for Site ssoBroker.removeCredentialsForSite(subject, TEST_URL);
+         * System.out.println("SSO Credential removed for user:" + TEST_USER+ " site: " + TEST_URL); }
+         * catch(SSOException ssoex) { System.out.println("SSO Credential remove FAILED for user:" + TEST_USER+ " site: " +
+         * TEST_URL); throw new Exception(ssoex.getMessage()); }
+         */
+
         Iterator sites = ssoBroker.getSites("");
         while (sites.hasNext())
         {
-            SSOSite site = (SSOSite)sites.next();
+            SSOSite site = (SSOSite) sites.next();
             System.out.println("Site = " + site.getName());
         }
-        
+
     }
 
     /**
@@ -378,20 +377,15 @@ public class TestSSOComponent extends AbstractSpringTestCase
     {
         // Cleanup any credentails added during the test
         /*
-         * try { } catch (SSOException ex) { System.out.println("SSOException" +
-         * ex); }
+         * try { } catch (SSOException ex) { System.out.println("SSOException" + ex); }
          */
     }
 
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "META-INF/sso-dao.xml", "META-INF/transaction.xml"};
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
+        String[] confs = super.getConfigurations();
+        List confList = new ArrayList(Arrays.asList(confs));
+        confList.add("sso.xml");
+        return (String[]) confList.toArray(new String[1]);
     }
 }

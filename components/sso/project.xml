@@ -94,9 +94,6 @@
     <build>
         <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
         <unitTest>
-            <excludes>
-                <exclude>**/TestSSOComponent.java</exclude>
-            </excludes>
             <resources>
                 <resource>
                     <directory>${basedir}/src/test</directory>

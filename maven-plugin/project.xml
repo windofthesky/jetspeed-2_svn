@@ -33,10 +33,10 @@
     </repository>
     <dependencies>
         <dependency>
-            <groupId>maven-plugins</groupId>
+            <groupId>torque</groupId>
             <artifactId>maven-torque-plugin</artifactId>
-            <id>maven-plugins:maven-torque-plugin</id>
-            <version>3.2</version>
+            <id>torque:maven-torque-plugin</id>
+            <version>3.2-rc1</version>
             <type>plugin</type>
         </dependency>
         <dependency>

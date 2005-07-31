@@ -37,35 +37,44 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
+import org.apache.jetspeed.testhelpers.BuildPropertiesHelper;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
 /**
- * <p>Unit test for {@link UserInfoManager}</p>
- *
+ * <p>
+ * Unit test for {@link UserInfoManager}
+ * </p>
+ * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class TestUserInfoManager extends AbstractSecurityTestcase
 {
 
+    /** The test MutablePortletApplication. */
+    private MutablePortletApplication portletApp;
+
+    /** The build properties helper. */
+    private BuildPropertiesHelper buildProperties = new BuildPropertiesHelper();
+
     /** The user info manager. */
     private UserInfoManager single;
+
     /** The Multi Source user info manager */
     private UserInfoManager multi;
-    
+
     private PortletRegistry portletRegistry;
 
-  
     /**
      * @see junit.framework.TestCase#setUp()
      */
     public void setUp() throws Exception
     {
         super.setUp();
-        
-        single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager"); 
+
+        single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager");
         portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
-        multi = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.MultiUserInfoManager");        
+        multi = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.MultiUserInfoManager");
     }
 
     /**
@@ -74,6 +83,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     public void tearDown() throws Exception
     {
         super.tearDown();
+        cleanUp();
     }
 
     public static Test suite()
@@ -82,33 +92,35 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         return new TestSuite(TestUserInfoManager.class);
     }
 
-    /** Test set user info map. **/ 
+    /** Test set user info map. * */
     public void testSingleSetUserInfoMap() throws Exception
     {
         innerTestSetUserInfoMap(single);
     }
-    
-//    public void testMultiSetUserInfoMap() throws Exception
-//    {
-//        innerTestSetUserInfoMap(multi);
-//    }
-    
+
+    // public void testMultiSetUserInfoMap() throws Exception
+    // {
+    // innerTestSetUserInfoMap(multi);
+    // }
+
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
-        MutablePortletApplication app = pad.createPortletApplication();            
-        assertNotNull("App is null", app);
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(
+                buildProperties.getUserProperty("org.apache.jetspeed.project.home")
+                + "/components/portal/test/testdata/deploy/portlet.xml"), "unit-test");
+        portletApp = pad.createPortletApplication();
+        assertNotNull("App is null", portletApp);
 
         // persist the app
         try
-        {            
-            portletRegistry.registerPortletApplication(app);            
+        {
+            portletRegistry.registerPortletApplication(portletApp);
         }
         catch (Exception e)
         {
-            String msg =
-                "Unable to register portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
-            
+            String msg = "Unable to register portlet application, " + portletApp.getName()
+                    + ", through the portlet portletRegistry: " + e.toString();
+
             throw new Exception(msg, e);
         }
 
@@ -116,45 +128,51 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
         // Without linked attributes
         // There are no preferences associated to the user profile.
-        Map userInfo = uim.getUserInfoMap(app.getId(), request);
+        Map userInfo = uim.getUserInfoMap(portletApp.getId(), request);
         assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
         initUser();
         request = initRequestContext("test");
-        userInfo = uim.getUserInfoMap(app.getId(), request);
+        userInfo = uim.getUserInfoMap(portletApp.getId(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
         assertEquals("should contain user.name.given", "Test Dude", (String) userInfo.get("user.name.given"));
         assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
-        
+
         // With linked attributes
-        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader("./test/testdata/deploy/jetspeed-portlet.xml"), app);
+        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(
+                buildProperties.getUserProperty("org.apache.jetspeed.project.home")
+                + "/components/portal/test/testdata/deploy/jetspeed-portlet.xml"),
+                portletApp);
         extMetaData.load();
         
-        userInfo = uim.getUserInfoMap(app.getId(), request);
-        assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
-        assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
-        assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
-         
-        // remove the app
+        // persist the app
         try
-        {            
-            portletRegistry.removeApplication(app);            
+        {
+            portletRegistry.updatePortletApplication(portletApp);
         }
         catch (Exception e)
         {
-            String msg =
-                "Unable to remove portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
+            String msg = "Unable to update portlet application, " + portletApp.getName()
+                    + ", through the portlet portletRegistry: " + e.toString();
+
             throw new Exception(msg, e);
         }
-                
-        destroyUser();
+
+        userInfo = uim.getUserInfoMap(portletApp.getId(), request);
+        assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
+        assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
+        assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
     }
 
     /**
-     * <p>Initialize the mock request context.</p>
-     * @param username The username.
+     * <p>
+     * Initialize the mock request context.
+     * </p>
+     * 
+     * @param username
+     *            The username.
      * @return The request context.
      */
     private RequestContext initRequestContext(String username)
@@ -166,7 +184,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Init test user.</p>
+     * <p>
+     * Init test user.
+     * </p>
      */
     private void initUser() throws Exception
     {
@@ -195,7 +215,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Init property property keys map.</p>
+     * <p>
+     * Init property property keys map.
+     * </p>
      */
     protected Map initPropertyKeysMap()
     {
@@ -208,7 +230,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Destroy user test object.</p>
+     * <p>
+     * Destroy user test object.
+     * </p>
      */
     protected void destroyUser()
     {
@@ -223,6 +247,28 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         {
             System.out.println("could not remove test users. exception caught: " + sex);
         }
+    }
+
+    /**
+     * <p>
+     * Clean up test.
+     * </p>
+     */
+    private void cleanUp() throws Exception
+    {
+        // remove the app
+        try
+        {
+            portletRegistry.removeApplication(portletApp);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to remove portlet application, " + portletApp.getName()
+                    + ", through the portlet portletRegistry: " + e.toString();
+            throw new Exception(msg, e);
+        }
+
+        destroyUser();
     }
 
     protected String[] getConfigurations()

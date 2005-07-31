@@ -22,11 +22,11 @@ limitations under the License.
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
-
 ]>
 
-
-<descriptor-repository version="1.0" isolation-level="read-uncommitted">
+<descriptor-repository version="1.0"
+                       isolation-level="read-uncommitted"
+                       proxy-prefetching-limit="50">
 
     <!-- include all used database connections -->
     &database;
