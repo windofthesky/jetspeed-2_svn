@@ -35,10 +35,9 @@ using the MetadataManager.
 	There is no need to specify any DB or JNDI info as the org.springframework.orm.ojb.support.LocalDataSourceConnectionFactory
 	defined in OJB.properties will be using a matching Datasource that is defined in Spring.
 	-->
-	<!-- platform="@PLATFORM@" -->
     <jdbc-connection-descriptor
         jcd-alias="JetspeedDS"
-        platform="Hsqldb"
+        platform="@PLATFORM@"
         default-connection="true"
         jdbc-level="2.0"
         batch-mode="false"
