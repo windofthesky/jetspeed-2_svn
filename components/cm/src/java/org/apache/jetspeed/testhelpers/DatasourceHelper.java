@@ -5,28 +5,30 @@ import java.util.Map;
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * This helper adds a "datasource" based on the maven
- * build.properties/project.properties database settings
- * passed to the test case, (see AbstractTestHelper).
- * 
+ * This helper adds a "datasource" based on the maven build.properties/project.properties database settings passed to
+ * the test case, (see AbstractTestHelper).
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
  */
 public class DatasourceHelper extends AbstractTestHelper
 {
 
     public static final String DATASOURCE_KEY = "datasource";
+
     private static final String ORG_APACHE_JETSPEED_TEST_DATABASE_PASSWORD = "org.apache.jetspeed.test.database.password";
+
     private static final String ORG_APACHE_JETSPEED_TEST_DATABASE_USER = "org.apache.jetspeed.test.database.user";
+
     private static final String ORG_APACHE_JETSPEED_TEST_DATABASE_URL = "org.apache.jetspeed.test.database.url";
+
     private static final String ORG_APACHE_JETSPEED_TEST_DATABASE_DRIVER = "org.apache.jetspeed.test.database.driver";
+
     protected BasicDataSource datasource;
-    
+
     public DatasourceHelper(Map context)
     {
         super(context);
-        
+
     }
 
     public void setUp() throws Exception
@@ -43,7 +45,5 @@ public class DatasourceHelper extends AbstractTestHelper
     {
         datasource.close();
     }
-
-   
 
 }
