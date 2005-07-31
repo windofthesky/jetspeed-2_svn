@@ -82,38 +82,8 @@
             <p>
                 Role based access control (RBAC) in Jetspeed 2 support multiple hierarchy resolution strategies as defined in
                 <a href="http://www.doc.ic.ac.uk/~ecl1/papers/rbac99.pdf">The Uses of Hierarchy in Access Control</a>
-                . Two hierarchy resolution strategies are supported for authorization decisions:
+                . See <a href="hierarchy.html">Hierarchy Management Overview</a> for more information.
             </p>
-            <ul>
-                <li>
-                    Hierarchy resolution by Generalization: This is the default hierarchy resolution in Jetspeed. If a hierarchy uses a generalization strategy,
-                    each role is more general than the previous one. For instance, if a user has the role [roleA.roleB.roleC] then
-                    <code>user.getSubject().getPrincipals()</code>
-                    returns:
-                    <ul>
-                        <li>/role/roleA</li>
-                        <li>/role/roleA/roleB</li>
-                        <li>/role/roleA/roleB/roleC</li>
-                    </ul>
-                </li>
-                <li>
-                    Hierarchy resolution by Aggregation: If a hierarchy uses a aggregation strategy, the higher role is responsible for a superset of the
-                    activities of the lower role. For instance, if the following roles are available:
-                    <ul>
-                        <li>roleA</li>
-                        <li>roleA.roleB</li>
-                        <li>roleA.roleB.roleC</li>
-                    </ul>
-                    If a user has the role [roleA] then,
-                    <code>user.getSubject().getPrincipals()</code>
-                    returns:
-                    <ul>
-                        <li>/role/roleA</li>
-                        <li>/role/roleA/roleB</li>
-                        <li>/role/roleA/roleB/roleC</li>
-                    </ul>
-                </li>
-            </ul>
         </section>
     </body>
 </document>
