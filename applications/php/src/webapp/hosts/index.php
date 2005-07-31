@@ -22,7 +22,7 @@ echo '
 <title> GroundWork </title>
 <meta name="Author" content="Scott Parris">
 <meta name="Description" content="GroundWork Configuration Management">
-<link rel="stylesheet" type="text/css" href="/PHP/css/style.css" />
+<link rel="stylesheet" type="text/css" href="/php/css/style.css" />
 </head>
 <body>
 <table width=70% cellspacing=0 cellpadding=5 border=1>

@@ -21,7 +21,7 @@ echo '
 <title> Hosts Installation </title>
 <meta name="Author" content="Scott Parris">
 <meta name="Description" content="GroundWork Hosts Installation">
-<link rel="stylesheet" type="text/css" href="/PHP/css/style.css" />
+<link rel="stylesheet" type="text/css" href="/php/css/style.css" />
 </head>
 <body>
 <table width=70% align="center" cellpadding=5 cellspacing=0 border=1>
