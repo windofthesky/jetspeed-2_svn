@@ -112,7 +112,13 @@
 	<!-- ============== DATABASE SCRIPT GENERATION ============== -->
 	<!-- ======================================================== -->
     
-    <goal name="j2:db.scripts.gen" prereqs="torque:init" description="Build SQL scripts using Torque generator">
+    <!-- use local (to the plugin) invocation of the real scripts.gen goal (_db.scripts.gen) because if called directly from
+         a project it wouldn't be called within the plugin context -->
+    <goal name="j2:db.scripts.gen">
+      <attainGoal name="_db.scripts.gen"/>
+    </goal>
+    
+    <goal name="_db.scripts.gen" prereqs="torque:init" description="Build SQL scripts using Torque generator">
         <echo message="Using Torque schema located under: ${torque.schema.dir}" />
 
         <echo>Plugin Root: ${org.apache.jetspeed.plugin.root}</echo>        <echo message="Generating SQL schema creation scripts for HSQLDB" />
@@ -239,7 +245,7 @@
         <attainGoal name="j2:db.create" />
     </goal>
 
-    <goal name="j2:db.create" prereqs="j2:db.scripts.gen">
+    <goal name="j2:db.create">
        <j:set var="sql.src.path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated" />
        <attainGoal name="j2:run.all.scripts.in.path" />
 
@@ -300,7 +306,7 @@
         <attainGoal name="j2:db.execute" />
     </goal>
     
-    <goal name="j2:db.recreate">
+    <goal name="j2:db.recreate" prereqs="j2:db.scripts.gen">
         <attainGoal name="j2:db.create.production" />
     </goal>
     
@@ -395,6 +401,7 @@
             <classpath>
                 <path refid="maven.dependency.classpath" />
                 <pathelement path="${maven.build.dest}" />
+                <pathelement path="${org.apache.jetspeed.plugin.root}" />
             </classpath>
             <arg value="-drops" />
             <arg value="${dropstable}" />
