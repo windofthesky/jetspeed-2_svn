@@ -172,7 +172,7 @@ CREATE TABLE SECURITY_CREDENTIAL
 (
                     CREDENTIAL_ID INT NOT NULL,
                     PRINCIPAL_ID INT NOT NULL,
-                    VALUE VARCHAR (254) NOT NULL,
+                    COLUMN_VALUE VARCHAR (254) NOT NULL,
                     TYPE SMALLINT NOT NULL,
                     CLASSNAME VARCHAR (254) NULL,
                     UPDATE_REQUIRED INT NOT NULL,
