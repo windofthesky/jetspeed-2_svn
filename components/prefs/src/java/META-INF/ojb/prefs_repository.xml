@@ -183,7 +183,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="booleanPropertyValue"
 	        column="BOOLEAN_VALUE"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="true"
 	    >
 	    </field-descriptor>

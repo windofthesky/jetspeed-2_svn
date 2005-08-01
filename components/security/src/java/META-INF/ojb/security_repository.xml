@@ -45,7 +45,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="isMappingOnly"
 	        column="is_mapping_only"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
@@ -74,7 +75,8 @@ limitations under the License.
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
@@ -211,21 +213,24 @@ limitations under the License.
       <field-descriptor
           name="updateRequired"
           column="update_required"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
       <field-descriptor
           name="encoded"
           column="is_encoded"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
@@ -239,7 +244,8 @@ limitations under the License.
       <field-descriptor
           name="expired"
           column="is_expired"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>                  
@@ -281,7 +287,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="isMappingOnly"
 	        column="is_mapping_only"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
@@ -310,7 +317,8 @@ limitations under the License.
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
@@ -387,7 +395,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="isMappingOnly"
 	        column="is_mapping_only"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
@@ -416,7 +425,8 @@ limitations under the License.
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      
@@ -493,7 +503,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="isMappingOnly"
 	        column="is_mapping_only"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
@@ -522,7 +533,8 @@ limitations under the License.
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>      

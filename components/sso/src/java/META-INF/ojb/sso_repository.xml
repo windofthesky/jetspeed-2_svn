@@ -45,7 +45,8 @@ limitations under the License.
 	    <field-descriptor
 	        name="isMappingOnly"
 	        column="is_mapping_only"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
@@ -74,7 +75,8 @@ limitations under the License.
       <field-descriptor
           name="enabled"
           column="is_enabled"
-          jdbc-type="BIT"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
       </field-descriptor>
@@ -132,14 +134,16 @@ limitations under the License.
 	    <field-descriptor
 	        name="isAllowUserSet"
 	        column="ALLOW_USER_SET"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
 	        name="isCertificateRequired"
 	        column="REQUIRES_CERTIFICATE"
-	        jdbc-type="BIT"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
 	    </field-descriptor>

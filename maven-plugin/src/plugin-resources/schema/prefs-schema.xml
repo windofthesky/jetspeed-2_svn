@@ -25,7 +25,7 @@ limitations under the License.
         <column name="PROPERTY_VALUE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="NODE_ID" type="INTEGER"/>
         <column name="PROPERTY_KEY_ID" type="INTEGER"/>
-        <column name="BOOLEAN_VALUE" type="BIT"/>
+        <column name="BOOLEAN_VALUE" type="BOOLEANINT"/>
         <column name="DATETIME_VALUE" type="TIMESTAMP"/>
         <column name="LONG_VALUE" type="INTEGER"/>
         <column name="DOUBLE_VALUE" type="DOUBLE"/>

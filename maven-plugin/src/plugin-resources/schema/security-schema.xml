@@ -31,8 +31,8 @@ limitations under the License.
     <table name="SECURITY_PRINCIPAL">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
-        <column name="IS_MAPPING_ONLY" required="true" type="BIT"/>
-        <column name="IS_ENABLED" required="true" type="BIT"/>
+        <column name="IS_MAPPING_ONLY" required="true" type="BOOLEANINT"/>
+        <column name="IS_ENABLED" required="true" type="BOOLEANINT"/>
         <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
@@ -76,11 +76,11 @@ limitations under the License.
         <column name="COLUMN_VALUE" required="true" size="254" type="VARCHAR"/>
         <column name="TYPE" required="true" type="SMALLINT"/>
         <column name="CLASSNAME" size="254" type="VARCHAR"/>
-        <column name="UPDATE_REQUIRED" required="true" type="BIT"/>
-        <column name="IS_ENCODED" required="true" type="BIT"/>
-        <column name="IS_ENABLED" required="true" type="BIT"/>
+        <column name="UPDATE_REQUIRED" required="true" type="BOOLEANINT"/>
+        <column name="IS_ENCODED" required="true" type="BOOLEANINT"/>
+        <column name="IS_ENABLED" required="true" type="BOOLEANINT"/>
         <column name="AUTH_FAILURES" required="true" type="SMALLINT"/>
-        <column name="IS_EXPIRED" required="true" type="BIT"/>
+        <column name="IS_EXPIRED" required="true" type="BOOLEANINT"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
         <column name="PREV_AUTH_DATE" required="false" type="TIMESTAMP"/>
@@ -99,8 +99,8 @@ limitations under the License.
         <column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="NAME" required="true" size="254" type="VARCHAR"/>
         <column name="URL" required="true" size="254" type="VARCHAR"/>
-        <column name="ALLOW_USER_SET" default="0" type="BIT"/>
-        <column name="REQUIRES_CERTIFICATE" default="0" type="BIT"/>
+        <column name="ALLOW_USER_SET" default="0" type="BOOLEANINT"/>
+        <column name="REQUIRES_CERTIFICATE" default="0" type="BOOLEANINT"/>
         <unique name="UIX_SITE_URL">
           <unique-column name="URL" />
         </unique>                
