@@ -1,65 +1,68 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 -->
 <!--
-  WARNING:  This file is generated.  The source is xdocs-templates/navigation.xml 
-
-  Note:  Changes to this file are not reflected on the generated site until the
-         allSite goal is atained, i.e. maven allSite 
- -->
+    WARNING:  This file is generated.  The source is xdocs-templates/navigation.xml 
+    
+    Note:  Changes to this file are not reflected on the generated site until the
+    allSite goal is atained, i.e. maven allSite 
+-->
 <project>
 
- <body>
-   <menu name="Essentials">
-      <item name="Overview" href="index.html"/>
-      <item name="Getting Started" href="getting-started.html"/>
-      <item name="Database" href="database.html"/>
-      <item name="Localization" href="l10n-guide.html"/>
-      <item name="User Attributes" href="user-attributes.html"/>
-      <item name="Sub Projects" href="projects-overview.html"/>
-      <item name="Maven Plugin" href="j2-maven-plugin.html"/>
-      <item name="Documentation" href="documentation.html"/>
-    </menu>
-    <menu name='Security'>        
-      <item name="Security Overview" href="multiproject/jetspeed-security/index.html"/>
-      <item name="Architecture Overview" href="multiproject/jetspeed-security/arch.html"/>       
-      <item name="Authentication" href="multiproject/jetspeed-security/atn.html"/>
-      <item name="JAAS Authorization" href="multiproject/jetspeed-security/atz.html"/>
-      <item name="PSML Authorization" href="bronco.html"/>
-      <item name="SPI: Providers and Handlers" href="spi.html"/>
-      <item name="Security Services Configuration" href="multiproject/jetspeed-security/config.html"/>
-      <item name="Single Sign on" href="sso.html"/>        
-    </menu>
-    <menu name='Portal Design'>
-      <item name="Portal Design Overview" href="portal-design.html"/>       
-      <item name="Layouts" href="layouts.html"/>
-      <item name="Decorators" href="decorators.html"/>
-      <item name="Jetspeed Power Tool" href="jpt.html"/>        
-      <item name="PSML" href="psml.html"/>
-      <item name="Site" href="site.html"/>
-    </menu>
-    <menu name='Components'>
-      <item name="Profiler" href="components/profiler.html"/>       
-    </menu>
-    <menu name="Support">
-      <item name="Mailing List" href="mail-lists.html"/>
-      <item name="Bug Database" href="issue-tracking.html"/>
-      <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2"/>
-      <item name="Quality Testing" href="quality-testing.html"/>
-      <item name="Source Code Repository" href="source-code.html"/>
-    </menu>
-  </body>
+    <body>
+        <links>
+            <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
+        </links>
+        <menu name="Essentials">
+            <item name="Overview" href="index.html" />
+            <item name="Getting Started" href="getting-started.html" />
+            <item name="Database" href="database.html" />
+            <item name="Localization" href="l10n-guide.html" />
+            <item name="User Attributes" href="user-attributes.html" />
+            <item name="Sub Projects" href="projects-overview.html" />
+            <item name="Maven Plugin" href="j2-maven-plugin.html" />
+            <item name="Documentation" href="documentation.html" />
+        </menu>
+        <menu name='Security'>
+            <item name="Security Overview" href="multiproject/jetspeed-security/index.html" />
+            <item name="Architecture Overview" href="multiproject/jetspeed-security/arch.html" />
+            <item name="Authentication" href="multiproject/jetspeed-security/atn.html" />
+            <item name="JAAS Authorization" href="multiproject/jetspeed-security/atz.html" />
+            <item name="PSML Authorization" href="bronco.html" />
+            <item name="SPI: Providers and Handlers" href="spi.html" />
+            <item name="Security Services Configuration" href="multiproject/jetspeed-security/config.html" />
+            <item name="Single Sign on" href="sso.html" />
+        </menu>
+        <menu name='Portal Design'>
+            <item name="Portal Design Overview" href="portal-design.html" />
+            <item name="Layouts" href="layouts.html" />
+            <item name="Decorators" href="decorators.html" />
+            <item name="Jetspeed Power Tool" href="jpt.html" />
+            <item name="PSML" href="psml.html" />
+            <item name="Site" href="site.html" />
+        </menu>
+        <menu name='Components'>
+            <item name="Profiler" href="components/profiler.html" />
+        </menu>
+        <menu name="Support">
+            <item name="Mailing List" href="mail-lists.html" />
+            <item name="Bug Database" href="issue-tracking.html" />
+            <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2" />
+            <item name="Quality Testing" href="quality-testing.html" />
+            <item name="Source Code Repository" href="source-code.html" />
+        </menu>
+    </body>
 </project>

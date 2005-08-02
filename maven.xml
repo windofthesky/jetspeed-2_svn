@@ -146,7 +146,8 @@
 
       <attainGoal name="multiproject:create-nav"/>
       <attainGoal name="multiproject:create-overview-page"/>
-      <attainGoal name="site" />            
+      <attainGoal name="site" />
+      <attainGoal name="pdf" />            
             
     </goal>
     
