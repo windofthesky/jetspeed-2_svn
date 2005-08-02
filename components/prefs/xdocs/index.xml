@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Preferences</title>
+    </properties>
+    <body>
+        <section name="Preferences Overview">
+            <p>
+                The
+                <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/prefs/Preferences.html">java.util.prefs.Preferences API</a>
+                provides a generic mechanism for storing user and system preferences, as well as configuration data. Jetspeed 2 relies on this API to provide a
+                wide ranging of functionality to higher level services. Some of the Jetspeed components leveraging the
+                <code>java.util.prefs.Preferences</code>
+                API are:
+                <ul>
+                    <li>
+                        Portlet Preferences: Portlet preferences are stored in the system preferences tree. The following path structure is used to establish
+                        the location of a given portlet preference in the preferences tree:
+                        <code>/portlet_application/${Portlet Application Name}/portlets/${Portlet Name}/preferences/${Preference Name}/values</code>
+                        . The preferences values are stored under the
+                        <code>values</code>
+                        node as a map of key/values.
+                    </li>
+                    <li>
+                        User Attributes: User attributes are stored in the user preferences tree as follow. The following path structure is used to stored a
+                        user's attributes:
+                        <code>/user/${User Name}/userinfo</code>
+                        . The user attributes are stored as a preferences key/values map under the userinfo node.
+                    </li>
+                    <li>
+                        Roles and groups hierarchy: Documentation on how roles and groups hierarchy use the
+                        <code>Preferences</code>
+                        model can be found in the
+                        <a href="/multiproject/jetspeed-security/hierarchy.html#Leveraging_Preferences_to_Manage_Hierarchies">security section</a>
+                        of the documentation.
+                    </li>
+                </ul>
+            </p>
+        </section>
+        <section name="Preferences Implementation Overview">
+            <p>
+                Jetspeed 2
+                <code>Preferences</code>
+                implementation leverages the following classes:
+            </p>
+            <p>
+                <img src="images/preferences-c.gif" border="0" />
+            </p>
+            <table>
+                <tr>
+                    <th>Class</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>
+                        <code>PreferencesFactoryImpl</code>
+                    </td>
+                    <td>
+                        Implements the <code>java.util.prefs.PreferencesFactory</code> that generates 
+                        <code>Preferences</code> objects.  The <code>PreferencesFactoryImpl</code> is 
+                        configured through spring assembly (<code>prefs.xml</code>) to use a 
+                        <code>PreferencesProvider</code> that encapsalutes the backing store implementation.
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>PreferencesImpl</code>
+                    </td>
+                    <td>
+                        Extends the <code>java.util.prefs.AbstractPreferences</code> and implements the SPI by
+                        leveraging the <code>PreferencesProvider</code> API.  Jetspeed <code>Preferences</code>
+                        implementation can be configured to validate that preferences map key/values are created
+                        for predefined keys.  A <code>PropertyManager</code> enforces the checks if enabled.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>PreferencesProvider</code>
+                    </td>
+                    <td>
+                        Encapsulates the preferences implementation again a specific backing store.  In Jetspeed 2, the
+                        default implementation is provided by 
+                        <code>org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider</code>
+                    </td>
+                </tr>
+            </table>
+            <subsection name="Preferences Database Schema">
+                <p>
+                    The following database schema is being used in Jetspeed 2 to store <code>Preferences</code> 
+                    in a relational database model.
+                </p>
+                <p>
+                    <img src="images/preferences-schema.gif" border="0"/>
+                </p>
+            </subsection>    
+        </section>
+    </body>
+</document>
+

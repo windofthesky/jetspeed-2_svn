@@ -21,14 +21,7 @@ limitations under the License.
   <body>
     <section name="Tasks">
       <p>
-        Currently this is just a listing of tasks.
-      </p>
-      <p>
-        <ul>
-<li>
-  Remove unused classes.
-</li>
-        </ul>
+        See <a href="http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492">JIRA</a> for a list of tasks.
       </p>
     </section>
   </body>
