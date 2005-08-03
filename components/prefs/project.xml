@@ -82,7 +82,7 @@ limitations under the License.
                     <directory>${basedir}/src/java</directory>
                     <excludes>
                         <exclude>**/*.java</exclude>
-                        <exclude>**/META-INF/**</exclude>
+                        <exclude>**/JETSPEED-INF/**</exclude>
                     </excludes>
                 </resource>
                 <resource>

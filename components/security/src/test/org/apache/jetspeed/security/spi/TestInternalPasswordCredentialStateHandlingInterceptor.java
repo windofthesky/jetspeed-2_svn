@@ -102,7 +102,7 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/sipcshi.xml");
+        confList.add("JETSPEED-INF/spring/sipcshi.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

@@ -19,7 +19,7 @@
     <!-- Profiler -->
     <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" name="profilerImpl" init-method="init">
         <constructor-arg index="0">
-            <value>META-INF/ojb/profiler_repository.xml</value>
+            <value>JETSPEED-INF/ojb/profiler_repository.xml</value>
         </constructor-arg>
         <constructor-arg index="1">
             <value>j2</value>

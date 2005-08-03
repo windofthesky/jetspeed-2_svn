@@ -91,7 +91,7 @@ public class TestDefaultInternalPasswordCredentialInterceptor extends AbstractSe
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/defipci.xml");
+        confList.add("JETSPEED-INF/spring/defipci.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

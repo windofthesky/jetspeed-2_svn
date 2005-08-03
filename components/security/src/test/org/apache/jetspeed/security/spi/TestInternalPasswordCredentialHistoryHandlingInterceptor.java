@@ -93,7 +93,7 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/sipchhi.xml");
+        confList.add("JETSPEED-INF/spring/sipchhi.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

@@ -103,7 +103,7 @@ public class TestPortalSite extends AbstractSpringTestCase
      */
     protected String[] getConfigurations()
     {
-        return new String[] {"/META-INF/test-spring.xml"};
+        return new String[] {"/JETSPEED-INF/spring/test-spring.xml"};
     }
 
     /**

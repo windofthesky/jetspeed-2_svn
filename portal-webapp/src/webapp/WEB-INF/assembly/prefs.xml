@@ -20,7 +20,7 @@
     <!-- Preferences Implementation -->
     <bean id="PreferencesProviderImpl" class="org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider" name="prefsPersistenceBroker" init-method="init">
         <constructor-arg index="0">
-            <value>META-INF/ojb/prefs_repository.xml</value>
+            <value>JETSPEED-INF/ojb/prefs_repository.xml</value>
         </constructor-arg>
         <constructor-arg type="boolean" index="1">
             <value>false</value>

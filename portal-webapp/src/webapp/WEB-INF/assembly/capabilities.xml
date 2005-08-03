@@ -20,7 +20,7 @@
     <!-- Capabilities DAO-->
     <bean id="capabilitiesImpl" class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities" init-method="init">
         <constructor-arg>
-            <value>META-INF/ojb/capabilities_repository.xml</value>
+            <value>JETSPEED-INF/ojb/capabilities_repository.xml</value>
         </constructor-arg>
     </bean>
 

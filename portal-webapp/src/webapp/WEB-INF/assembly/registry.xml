@@ -24,7 +24,7 @@
     <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
 
         <constructor-arg index="0">
-            <value>META-INF/ojb/registry_repository.xml</value>
+            <value>JETSPEED-INF/ojb/registry_repository.xml</value>
         </constructor-arg>
         <constructor-arg index="1">
             <ref bean="portletFactory" />
