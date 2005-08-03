@@ -55,6 +55,7 @@ function openWindow(pipeline)
   #end
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
+#set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 
 #if ($actions.size()>0)
 <table  width="100%" cellspacing="0" cellpadding="0" >
@@ -97,7 +98,7 @@ function openWindow(pipeline)
   <tr>
      #set ($sizeIndex = 0)
      #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
-     #foreach($entry in $table)
+     #foreach($column in $columnLayout.columns)
         #if ($sizes)
           #if ($sizeIndex < $sizes.size())
              <td valign='top' width='$sizes.get($sizeIndex)'/>
@@ -109,14 +110,13 @@ function openWindow(pipeline)
        #end
        #set ($sizeIndex = $sizeIndex + 1)     
        <table width="100%" class="portal-layout-column">
-       #foreach($f in $entry)       
+       #foreach($f in $column)       
         <tr>
-         <td width="100%">			
-            #set($row = $f.getPropertyValue($layoutType, "row"))
-            #set($col = $f.getPropertyValue($layoutType, "column"))
-            #set($temp = 0) ##create temp Integer to parse strings
-	        #set($row = $temp.parseInt($row))
-            #set($col = $temp.parseInt($col))
+         <td width="100%">		
+			#set($coords = $columnLayout.getCoordinate($f))
+			#set($col = $coords.x)
+			#set($row = $coords.y)
+
             #if($editing)<div id="_$f.id">        
             <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
               <div id="_$f.id_toolBox"  >
@@ -126,7 +126,7 @@ function openWindow(pipeline)
                    <td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($row > 0)
                          #set($upUrl = $renderResponse.createRenderURL())    
-                         $!upUrl.setParameter("moveBy","0,-1")
+                         $!upUrl.setParameter("move","1")
                          $!upUrl.setParameter("fragmentId","$f.id")
                          #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
                          <a href="$upUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
@@ -139,7 +139,7 @@ function openWindow(pipeline)
                    <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($lastColumn > 0 && $col > 0)            
                          #set($leftUrl = $renderResponse.createRenderURL())    
-                         $!leftUrl.setParameter("moveBy","-1,0")
+                         $!leftUrl.setParameter("move","3")
                          $!leftUrl.setParameter("fragmentId","$f.id")    
                          #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
                          <a href="$leftUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
@@ -151,7 +151,7 @@ function openWindow(pipeline)
                    <td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($lastColumn > 0 && $col < $lastColumn)
                          #set($rightUrl = $renderResponse.createRenderURL())    
-                         $!rightUrl.setParameter("moveBy","1,0")
+                         $!rightUrl.setParameter("move","4")
                          $!rightUrl.setParameter("fragmentId","$f.id")
                          #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
                          <a href="$rightUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
@@ -171,9 +171,9 @@ function openWindow(pipeline)
 					  #set($lastRow = $renderRequest.getAttribute("lastRowForColumn").get($col))
 					  #if($row < $lastRow)						
 					    #set($downUrl = $renderResponse.createRenderURL())	
-			            $!downUrl.setParameter("moveBy","0,1")
+			            $!downUrl.setParameter("move","2")
 			            $!downUrl.setParameter("fragmentId","$f.id")
-              #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
+                        #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
 					    <a href="$downUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
