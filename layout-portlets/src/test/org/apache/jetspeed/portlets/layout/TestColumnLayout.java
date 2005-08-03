@@ -41,6 +41,10 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testBasics() throws Exception
     {
+        assertEquals(f1, layout.getFirstColumn().iterator().next());
+        
+        // The last column is currently empty
+        assertTrue(layout.getLastColumn().isEmpty());
 
         assertEquals(3, layout.getNumberOfColumns());
         Iterator column0 = layout.getColumn(0).iterator();
@@ -76,6 +80,8 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(f4, testFragment);
         
         assertEquals(3, layout.getColumns().size());
+        
+        
     }
 
     public void testSameRowSameColumn() throws Exception
@@ -303,6 +309,11 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testInvalidOperations() throws Exception
     {
+        // Create a mock that veridies events are NOT being fired on invalid operations
+        Mock listenerMock = mock(LayoutEventListener.class);
+        layout.addLayoutEventListener((LayoutEventListener) listenerMock.proxy());
+        listenerMock.expects(never()).method("handleEvent").withAnyArguments();
+        
         layout.moveUp(f1); // Nothing at all should happen, not even exceptions
 
         assertEquals(f1, layout.getFragmentAt(new LayoutCoordinate(0, 0)));
@@ -359,6 +370,11 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(f3, layout.getFragmentAt(new LayoutCoordinate(0, 1)));
         assertEquals(f4, layout.getFragmentAt(new LayoutCoordinate(1, 0)));
         assertEquals(f5, layout.getFragmentAt(new LayoutCoordinate(1, 1)));
+        assertEquals(f6, layout.getFragmentAt(new LayoutCoordinate(1, 2)));
+        
+        //try moving a fragment below the bottom-most row.
+        listenerMock.expects(never()).method("handleEvent").withAnyArguments();
+        layout.moveDown(f6);
         assertEquals(f6, layout.getFragmentAt(new LayoutCoordinate(1, 2)));
 
     }

@@ -17,6 +17,13 @@ package org.apache.jetspeed.portlets.layout;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * Simple class that holds an x,y (column,row) coordinate.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public final class LayoutCoordinate implements Comparable, Serializable
 {
     private final int x;
@@ -27,18 +34,26 @@ public final class LayoutCoordinate implements Comparable, Serializable
         this.x = x;
         this.y = y;
     }
-
+    
+    /**
+     * @return the x axis (column) value of this coordinate.
+     */
     public int getX()
     {
         return x;
     }
     
-
+    /**
+     * @return the y axis (row) value of this coordinate.
+     */
     public int getY()
     {
         return y;
     }
-
+    
+    /**
+     * Two LayoutCoordinates are equal if thier respective x and y values are equal.
+     */
     public boolean equals(Object obj)
     {
         if(obj instanceof LayoutCoordinate)

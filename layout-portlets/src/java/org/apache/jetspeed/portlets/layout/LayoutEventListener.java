@@ -15,7 +15,22 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
+/**
+ * 
+ * Interface to be implemented by classes that want to handle 
+ * LayoutEvents
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @see LayoutEvent
+ * @see org.apache.jetspeed.portlets.layout.ColumnLayout
+ */
 public interface LayoutEventListener
 {
+    /**
+     * Invoked anytime a LayoutEvent is dispatched.
+     * 
+     * @param event LayoutEvent that has been dispatched.
+     * @throws LayoutEventException if an error occurs will processing the event.
+     */
     void handleEvent(LayoutEvent event) throws LayoutEventException;
 }

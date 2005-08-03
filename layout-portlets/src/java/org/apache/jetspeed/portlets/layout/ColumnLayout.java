@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import org.apache.jetspeed.om.page.Fragment;
 
 /**
+ * <h2>Basics</h2>
  * <p>
  * <code>ColumnLayout</code> is the model used to support any 1 to <i>n</i>
  * column-based layout. <code>ColumnLayout</code> is constrained by a number
@@ -36,7 +37,28 @@ import org.apache.jetspeed.om.page.Fragment;
  * outside of this constraint. Any fragment exceeded the specified column
  * constraint will be deposited into the right-most column.
  * </p>
- * Columns always start at 0.
+ * 
+ * <h2>Characteristics:</h2>
+ * <ul>
+ *   <li>Columns and rows always start at 0.</li>
+ *   <li>Unless otherwise noted, assume all Collections returned are immutbale.</li>
+ *   <li>Unless otherwies noted, assume that no public method will ever return <code>null</code>.</li>
+ * </ul>
+ *  
+ * 
+ * <h2>Layout Events</h2>
+ * <p>
+ * When any move*() method is invoked and a portlet is actually moved (see indvidual
+ * methods for what causes these circumstances), an initial LayoutEvent is dispatched.  
+ * This may cause a cascade of LayoutEvents to be fired in turn if the movement of the
+ * target fragment cause other fragments to be repositioned.  In this case a LayoutEvent
+ * is dispatched for each portlet moved, which in turn may our may not cause another
+ * LayoutEvent to be fired. 
+ * </p>
+ * @see org.apache.jetspeed.portlets.layout.LayoutEvent
+ * @see org.apache.jetspeed.portlets.layout.LayoutEventListener
+ * @see org.apache.jetspeed.portlets.layout.LayoutCoordinate
+ * @see org.apache.jetspeed.om.page.Fragment
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  * 
@@ -46,11 +68,17 @@ public class ColumnLayout implements Serializable
     private static final String COLUMN = "column";
 
     private static final String ROW = "row";
-
+   
+    /** Constrains the columns for this layout */
     private final int numberOfColumns;
-
+    
+    /** SortedMap of Columns (which are also sorted maps */
     private final SortedMap columns;
-
+    
+    /** 
+     * The type of layout this is, required for extract row/column properties
+     * from a fragment.
+     */
     private final String layoutType;
 
     /** Efficent way to always be aware of the next available row in a column */
@@ -59,6 +87,7 @@ public class ColumnLayout implements Serializable
     /** maps Fragments (key) to it's current LayoutCoordinate (value) in this layout */
     private final Map coordinates;
     
+    /** All of the LayoutEventListeners registered to this layout */
     private final List eventListeners;
 
     /**
@@ -71,6 +100,7 @@ public class ColumnLayout implements Serializable
      *            property settings based on the type of layout in use. This
      *            effectively allows for the interchange of multiple layout
      *            formats without one format effecting the settings of another.
+     * @see org.apache.jetspeed.om.page.Fragment#getType()
      */
     public ColumnLayout(int numberOfColumns, String layoutType)
     {
@@ -93,7 +123,25 @@ public class ColumnLayout implements Serializable
             nextRowNumber[i] = 0;
         }
     }
-
+    
+    /**
+     * Same as ColumnLayout(int numberOfColumns, String layoutType) but also
+     * supplies a Collection of fragmetns to initially populate the layout
+     * with.  Adding these fragments <strong>WILL NOT</strong> cause
+     * a LayoutEvent to be dispatched.
+     * 
+     * @see ColumnLayout(int numberOfColumns, String layoutType)
+     * @param numberOfColumns
+     *            the maximum number of columns this layout will have.
+     * @param layoutType
+     *            this value corresponds to the property settings of the
+     *            fragments within your psml. Layout type allows segration of
+     *            property settings based on the type of layout in use. This
+     *            effectively allows for the interchange of multiple layout
+     *            formats without one format effecting the settings of another.
+     * @param fragments Initial set of fragments to add to this layout.
+     * @throws LayoutEventException
+     */
     public ColumnLayout(int numberOfColumns, String layoutType, Collection fragments) throws LayoutEventException
     {
         this(numberOfColumns, layoutType);
@@ -134,6 +182,7 @@ public class ColumnLayout implements Serializable
      * @param fragment
      *            Fragment to add to this layout.
      * @throws LayoutEventException 
+     * @see org.apache.jetspeed.om.page.Fragment
      * 
      */
     public void addFragment(Fragment fragment) throws LayoutEventException
@@ -157,6 +206,14 @@ public class ColumnLayout implements Serializable
         }
     }
     
+    /**
+     * Adds a LayoutEventListener to this layout that will be fired any time
+     * a LayoutEvent is disaptched.
+     * 
+     * @param eventListener
+     * @see LayoutEventListener
+     * @see LayoutEventListener
+     */
     public void addLayoutEventListener(LayoutEventListener eventListener)
     {
         eventListeners.add(eventListener);
@@ -164,13 +221,12 @@ public class ColumnLayout implements Serializable
 
     /**
      * 
-     * 
      * @param columnNumber
      *            Number of column to retreive
      * @return requested column (as a immutable Collection). Never returns
      *         <code>null.</code>
      * @throws InvalidLayoutLocationException
-     *             if the column is outisde of the constraintes of this layout
+     *             if the column is outisde of the constraints of this layout
      */
     public Collection getColumn(int columnNumber) throws InvalidLayoutLocationException
     {
@@ -205,12 +261,14 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     * Retrieves the fragment at the specified loaction.
      * 
-     * @param columnNumber
-     * @param rowNumber
-     * @return
-     * @throws EmptyLayoutLocationException
-     * @throws InvalidLayoutLocationException
+     * @param columnNumber Column coordinate (first column starts at 0)
+     * @param rowNumber Row coordinate (first row starts at 0)
+     * @return Fragment at the specified coordinate.  Never returns <code>null</code>.
+     * @throws EmptyLayoutLocationException if there is no fragment currently located at the specified coordinate.
+     * @throws InvalidLayoutLocationException if the coordinate lies outside the confines of this layout, i.e., the
+     * <code>columnNumber</code> exceeds the max columns setting for this layout.
      */
     public Fragment getFragmentAt(int columnNumber, int rowNumber) throws EmptyLayoutLocationException,
             InvalidLayoutLocationException
@@ -226,7 +284,20 @@ public class ColumnLayout implements Serializable
             throw new EmptyLayoutLocationException(columnNumber, rowNumber);
         }
     }
-
+    
+    /**
+     * 
+     * Retrieves the fragment at the specified loaction.
+     * 
+     * @param coodinate LayoutCoordinate object that will be used to located a fragment in this
+     * layout.
+     * @see LayoutCoordinate
+     * @return Fragment at the specified coordinate.  Never returns <code>null</code>.
+     * @throws EmptyLayoutLocationException if there is no fragment currently located at the specified coordinate.
+     * @throws InvalidLayoutLocationException if the coordinate lies outside the confines of this layout, i.e., the
+     * <code>columnNumber</code> exceeds the max columns setting for this layout.
+     * @see LayoutCoordinate
+     */
     public Fragment getFragmentAt(LayoutCoordinate coodinate) throws EmptyLayoutLocationException,
             InvalidLayoutLocationException
     {
@@ -235,7 +306,7 @@ public class ColumnLayout implements Serializable
 
     /**
      * 
-     * @return
+     * @return The total number of columns in this layout.
      */
     public int getNumberOfColumns()
     {
@@ -244,32 +315,56 @@ public class ColumnLayout implements Serializable
 
     /**
      * 
-     * @return
-     * @throws InvalidLayoutLocationException
+     * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection getLastColumn() throws InvalidLayoutLocationException
+    public Collection getLastColumn() 
     {
-        return Collections.unmodifiableCollection((Collection) getColumnMap(numberOfColumns - 1).values());
+        try
+        {
+            return Collections.unmodifiableCollection((Collection) getColumnMap(numberOfColumns - 1).values());
+        }
+        catch (InvalidLayoutLocationException e)
+        {
+            // This should NEVER happen as getLastColumn() is
+            // always correctly constrained and should always exists.
+            throw new LayoutError("It appears this layout is corrupt and cannot correctly identify its last column.", e);
+        }
     }
 
     /**
      * 
-     * @return
-     * @throws InvalidLayoutLocationException
+     * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection getFirstColumn() throws InvalidLayoutLocationException
+    public Collection getFirstColumn()
     {
-        return Collections.unmodifiableCollection((Collection) getColumnMap(1).values());
+        try
+        {
+            return Collections.unmodifiableCollection((Collection) getColumnMap(0).values());
+        }
+        catch (InvalidLayoutLocationException e)
+        {
+            // This should NEVER happen as getLastColumn() is
+            // always correctly constrained and should always exists.
+            throw new LayoutError("It appears this layout is corrupt and cannot correctly identify its first column.", e);
+        }
     }
 
     /**
      * 
-     * @param fragment
-     * @throws FragmentNotInLayoutException
-     * @throws InvalidLayoutLocationException
-     * @throws LayoutEventException 
+     * Moves a fragment one column to the right.  A LayoutEvent is triggered by
+     * this action.
+     * 
+     * <p>
+     * If the fragment currently
+     * resides in right-most column, no action is taking and no event LayoutEvent
+     * is fired.
+     * </p>
+     * 
+     * @param fragment fragment to move.
+     * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
+     * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveRight(Fragment fragment) throws FragmentNotInLayoutException, InvalidLayoutLocationException, LayoutEventException
+    public void moveRight(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX() + 1, coordinate.getY());
@@ -277,59 +372,89 @@ public class ColumnLayout implements Serializable
         if (newCoordinate.getX() < numberOfColumns)
         {
 
-            doMove(fragment, coordinate, newCoordinate);
-            processEvent(new LayoutEvent(LayoutEvent.MOVED_RIGHT, fragment, coordinate, newCoordinate));
-            // now move the fragment below up one level.
             try
             {
-                Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
-                moveUp(fragmentBelow);
+                doMove(fragment, coordinate, newCoordinate);
+                processEvent(new LayoutEvent(LayoutEvent.MOVED_RIGHT, fragment, coordinate, newCoordinate));
+                // now move the fragment below up one level.
+                try
+                {
+                    Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
+                    moveUp(fragmentBelow);
+                }
+                catch (EmptyLayoutLocationException e)
+                {
+                    // indicates no fragment below
+                }
             }
-            catch (EmptyLayoutLocationException e)
+            catch (InvalidLayoutLocationException e)
             {
-                // indicates no fragment below
-            }
+                // This should NEVER happen as the location has already been verfied to be valid
+                throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
+            }      
         }
     }
 
     /**
+     * Moves a fragment one column to the left.  A LayoutEvent is triggered by
+     * this action.
+     * 
+     * <p>
+     * If the fragment currently
+     * resides in left-most column, no action is taking and no event LayoutEvent
+     * is fired.
+     * </p>
      * 
      * @param fragment
-     * @throws FragmentNotInLayoutException
-     * @throws InvalidLayoutLocationException
-     * @throws LayoutEventException 
+     * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
+     * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveLeft(Fragment fragment) throws FragmentNotInLayoutException, InvalidLayoutLocationException, LayoutEventException
+    public void moveLeft(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX() - 1, coordinate.getY());
 
         if (newCoordinate.getX() >= 0)
         {
-            doMove(fragment, coordinate, newCoordinate);
-            processEvent(new LayoutEvent(LayoutEvent.MOVED_LEFT, fragment, coordinate, newCoordinate));
-            // now move the fragment below up one level.
             try
             {
-                Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
-                moveUp(fragmentBelow);
+                doMove(fragment, coordinate, newCoordinate);
+                processEvent(new LayoutEvent(LayoutEvent.MOVED_LEFT, fragment, coordinate, newCoordinate));
+                // now move the fragment below up one level.
+                try
+                {
+                    Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
+                    moveUp(fragmentBelow);
+                }
+                catch (EmptyLayoutLocationException e)
+                {
+                    // indicates no fragment below
+                }
             }
-            catch (EmptyLayoutLocationException e)
+            catch (InvalidLayoutLocationException e)
             {
-                // indicates no fragment below
+                // This should NEVER happen as the location has already been verfied to be valid
+                throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
             }
+         
         }
 
     }
 
     /**
+     * Moves a fragment one row to the up.  A LayoutEvent is triggered by
+     * this action.
      * 
+     * <p>
+     * If the fragment currently
+     * resides in top-most row, no action is taking and no event LayoutEvent
+     * is fired.
+     * </p>
      * @param fragment
-     * @throws FragmentNotInLayoutException
-     * @throws InvalidLayoutLocationException
-     * @throws LayoutEventException 
+     * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
+     * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveUp(Fragment fragment) throws FragmentNotInLayoutException, InvalidLayoutLocationException, LayoutEventException
+    public void moveUp(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate aboveLayoutCoordinate = new LayoutCoordinate(coordinate.getX(), coordinate.getY() - 1);
@@ -340,46 +465,52 @@ public class ColumnLayout implements Serializable
         {
             try
             {
-                // now move the fragment above down one level.
-                Fragment fragmentAbove = getFragmentAt(aboveLayoutCoordinate);
-                doMove(fragment, coordinate, newCoordinate);
-                processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragment, coordinate, newCoordinate));                
-            }
-            catch (EmptyLayoutLocationException e)
-            {
-                // Nothing above??? Then scoot all elements below up one level.
-                doMove(fragment, coordinate, newCoordinate);
-                processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragment, coordinate, newCoordinate));
-                
-                // If this the last row, make sure to update the next row pointer accordingly.
-                if(coordinate.getY() == (nextRowNumber[coordinate.getX()] - 1))
-                {
-                    nextRowNumber[coordinate.getX()] = coordinate.getX();
-                }
-                
                 try
                 {
-                    Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(),
-                            coordinate.getY() + 1));
-                    moveUp(fragmentBelow);
+                    // now move the fragment above down one level.
+                    Fragment fragmentAbove = getFragmentAt(aboveLayoutCoordinate);
+                    doMove(fragment, coordinate, newCoordinate);
+                    processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragment, coordinate, newCoordinate));                
                 }
-                catch (EmptyLayoutLocationException e1)
+                catch (EmptyLayoutLocationException e)
                 {
+                    // Nothing above??? Then scoot all elements below up one level.
+                    doMove(fragment, coordinate, newCoordinate);
+                    processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragment, coordinate, newCoordinate));
+                    
+                    // If this the last row, make sure to update the next row pointer accordingly.
+                    if(coordinate.getY() == (nextRowNumber[coordinate.getX()] - 1))
+                    {
+                        nextRowNumber[coordinate.getX()] = coordinate.getX();
+                    }
+                    
+                    try
+                    {
+                        Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(),
+                                coordinate.getY() + 1));
+                        moveUp(fragmentBelow);
+                    }
+                    catch (EmptyLayoutLocationException e1)
+                    {
 
+                    }
                 }
             }
-
+            catch (InvalidLayoutLocationException e)
+            {
+                // This should NEVER happen as the location has already been verfied to be valid
+                throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
+            }
         }
     }
 
     /**
      * 
      * @param fragment
-     * @throws FragmentNotInLayoutException
-     * @throws InvalidLayoutLocationException
-     * @throws LayoutEventException 
+     * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
+     * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveDown(Fragment fragment) throws FragmentNotInLayoutException, InvalidLayoutLocationException, LayoutEventException
+    public void moveDown(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1);
@@ -389,24 +520,35 @@ public class ColumnLayout implements Serializable
         {
             try
             {
-                // the best approach to move a fragment down is to actually move
-                // its neighbor underneath up
-                LayoutCoordinate aboveCoord = new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1);
-                Fragment fragmentBelow = getFragmentAt(aboveCoord);
-                doMove(fragmentBelow, aboveCoord, coordinate);
-                processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragmentBelow, aboveCoord, coordinate));
-                // Since this logic path is a somewhat special case, the processing of the  MOVED_DOWN
-                // event happens within the doAdd() method.
+                try
+                {
+                    // the best approach to move a fragment down is to actually move
+                    // its neighbor underneath up
+                    LayoutCoordinate aboveCoord = new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1);
+                    Fragment fragmentBelow = getFragmentAt(aboveCoord);
+                    doMove(fragmentBelow, aboveCoord, coordinate);
+                    processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragmentBelow, aboveCoord, coordinate));
+                    // Since this logic path is a somewhat special case, the processing of the  MOVED_DOWN
+                    // event happens within the doAdd() method.
+                }
+                catch (EmptyLayoutLocationException e)
+                {
+                    doMove(fragment, coordinate, newCoordinate);
+                    processEvent(new LayoutEvent(LayoutEvent.MOVED_DOWN, fragment, coordinate, newCoordinate));
+                }
             }
-            catch (EmptyLayoutLocationException e)
+            catch (InvalidLayoutLocationException e)
             {
-                doMove(fragment, coordinate, newCoordinate);
-                processEvent(new LayoutEvent(LayoutEvent.MOVED_DOWN, fragment, coordinate, newCoordinate));
+                // This should NEVER happen as the location has already been verfied to be valid
+                throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
             }
+ 
         }
     }
 
     /**
+     * Performs the actual movement of a fragment.
+     * 
      * 
      * @param fragment
      * @param oldCoordinate
@@ -425,10 +567,13 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     *
      * 
-     * @param fragment
-     * @return
-     * @throws FragmentNotInLayoutException
+     * @param fragment fragment whose LayoutCoordinate we ant.
+     * @return LayoutCoordinate representing the current location of this
+     * Fragment within this layout.
+     * @throws FragmentNotInLayoutException if the Fragment is not present in this layout.
+     * @see LayoutCoordinate
      */
     public LayoutCoordinate getCoordinate(Fragment fragment) throws FragmentNotInLayoutException
     {
@@ -443,12 +588,14 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     * Adds a fragment at the indicated <code>columnNumber</code>
+     * and <code>rowNumber</code>.
      * 
      * @param columnNumber
      * @param rowNumber
      * @param fragment
-     * @throws InvalidLayoutLocationException
-     * @throws LayoutEventException 
+     * @throws InvalidLayoutLocationException if the coordinates are outside the bounds of this layout.
+     * @throws LayoutEventException id a LayoutEvent fails
      */
     protected void doAdd(int columnNumber, int rowNumber, Fragment fragment) throws InvalidLayoutLocationException, LayoutEventException
     {
@@ -481,10 +628,13 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     * Retrieves this specified <code>columnNumber</code> as a
+     * SortedMap.
      * 
      * @param columnNumber
      * @return
-     * @throws InvalidLayoutLocationException
+     * @throws InvalidLayoutLocationException if the <code>columnNumber</code> resides
+     * outside the bounds of this layout.
      */
     protected final SortedMap getColumnMap(int columnNumber) throws InvalidLayoutLocationException
     {
@@ -502,10 +652,13 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     * Gets the row number of this fragment to looking the <code>layoutType</code>
+     * property <i>row</i>.  If this property is undefined, the bottom-most row
+     * number of <code>currentColumn</code> is returned.
      * 
      * @param currentColumn
      * @param fragment
-     * @return
+     * @return valid row for this fragment within this layout.
      */
     protected final int getRow(int currentColumn, Fragment fragment)
     {
@@ -523,6 +676,13 @@ public class ColumnLayout implements Serializable
     }
 
     /**
+     * Gets the row number of this fragment to looking the <code>layoutType</code>
+     * property <i>column</i>. 
+     * 
+     * If the <i>column</i> is undefined or exceeds the constriants of this
+     * layout, the value returned is <code>numberOfColumns - 1</code>.  If the
+     * value is less than 0, 0 is returned.
+     * 
      * 
      * @param fragment
      * @return
@@ -553,6 +713,12 @@ public class ColumnLayout implements Serializable
         }
     }
     
+    /**
+     * Dispatches a LayoutEvent to all LayoutEventListeners registered to this layout.
+     * 
+     * @param event
+     * @throws LayoutEventException if an error occurs while processing a the LayoutEvent.
+     */
     protected final void processEvent(LayoutEvent event) throws LayoutEventException
     {
         Iterator itr = eventListeners.iterator();
