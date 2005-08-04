@@ -5,6 +5,7 @@
 <script language="javascript">
 
 var currentApp;
+var applicationRoot = "${jetspeedContextPath}";
 
 
 function Portlet(portletId, title)

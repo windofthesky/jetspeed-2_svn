@@ -12,9 +12,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
@@ -45,6 +47,8 @@ public class PortletEntityBrowserPortlet extends GenericVelocityPortlet
         context.put("portletApps", portletApps);
         context.put("entityAccess", entityAccess);
         context.put("portletContext", getPortletContext());
+        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        context.put("jetspeedContextPath", requestContext.getRequest().getContextPath());
         super.doView(request, response);
     }
     

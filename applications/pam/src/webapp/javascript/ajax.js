@@ -53,7 +53,7 @@ function PortletAppLoader(elementId)
      }
   }
   
-  var requestCaller = new XMLHttpRequestCaller("/jetspeed/ajax/portlet_apps.ajax?ajax_service=portletRegistry.getPortletApplications" ,this); 
+  var requestCaller = new XMLHttpRequestCaller(applicationRoot+"/ajax/portlet_apps.ajax?ajax_service=portletRegistry.getPortletApplications" ,this); 
   requestCaller.serviceRequest();
 }
 
@@ -78,7 +78,7 @@ function PortletDefinitionLoader(elementId)
   this.load = function(appName)
   {
      this.appName = appName;
-     var requestCaller = new XMLHttpRequestCaller("/jetspeed/ajax/portlet_definitions.ajax?ajax_service=portletRegistry.getPortletApplication&ajax_param_0_str="+appName ,this); 
+     var requestCaller = new XMLHttpRequestCaller(applicationRoot+"/ajax/portlet_definitions.ajax?ajax_service=portletRegistry.getPortletApplication&ajax_param_0_str="+appName ,this); 
      requestCaller.serviceRequest();
   }
 }
@@ -111,7 +111,7 @@ function PortletEntityLoader(elementId, blockId)
   
   this.load = function(portletName)
   {
-      var requestCaller = new XMLHttpRequestCaller("/jetspeed/ajax/portlet_entities.ajax?ajax_service=entityAccess.getPortletEntities&ajax_param_0_str="+portletName ,this); 
+      var requestCaller = new XMLHttpRequestCaller(applicationRoot+"/ajax/portlet_entities.ajax?ajax_service=entityAccess.getPortletEntities&ajax_param_0_str="+portletName ,this); 
       requestCaller.serviceRequest();
   }
 }
@@ -157,7 +157,7 @@ function InitEntityEditor(nameId, prefListId, labelId)
   
   this.load = function(entityName)
   {
-      var requestCaller = new XMLHttpRequestCaller("/jetspeed/ajax/portlet_entity.ajax?ajax_service=entityAccess.getPortletEntity&ajax_param_0_str="+entityName,this); 
+      var requestCaller = new XMLHttpRequestCaller(applicationRoot+"/ajax/portlet_entity.ajax?ajax_service=entityAccess.getPortletEntity&ajax_param_0_str="+entityName,this); 
       requestCaller.serviceRequest();
   }
 
