@@ -98,6 +98,16 @@
     </goal>
     
     <goal name="j2:db.execute">
+        <!-- Ugly hack (or sound fix) setting the parentScope to an empty String because
+             with maven project inheritance the size of this property is killing
+             performance when the sql task is trying to interpose property values.
+             See: http://issues.apache.org/jira/browse/JS2-322
+             Without this hack the time to run the db.create.test task (using Oracle9i)
+             increases by at least 30 seconds for each level of inheritance.
+             Note: the project generated with genapp has an inheritance level of 4!
+             Hopefully, these kind of problems are solved when we move to maven 2 ...
+        -->      
+        <j:set var="parentScope" scope="parent" value=""/>
         <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
             userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
             src="${database.arg.script}">
