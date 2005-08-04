@@ -25,9 +25,7 @@
 
     <repository>
         <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/layout-portlets</connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/layout-portlets
-        </developerConnection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/layout-portlets</developerConnection>
         <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/layout-portlets/</url>
     </repository>
 
@@ -46,14 +44,14 @@
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
-		<dependency>
-		  <id>pluto</id>
-		  <version>${pluto.version}</version>
-		  <type>jar</type>
-		  <properties>
-		    <war.bundle>false</war.bundle>
-		  </properties>
-		</dependency>
+        <dependency>
+            <id>pluto</id>
+            <version>${pluto.version}</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
         <dependency>
             <id>velocity</id>
             <version>1.4-rc1</version>
@@ -63,45 +61,42 @@
         </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-commons</id>
-            <version>
-                ${jetspeed.version}
-            </version>
+            <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-api</id>
-            <version>
-                ${jetspeed.version}
-            </version>
+            <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-cm</id>
-            <version>
-                ${jetspeed.version}
-            </version>
+            <version>${jetspeed.version}</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>jetspeed2:jetspeed-page-manager</id>
+            <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-registry</id>
-            <version>
-                ${jetspeed.version}
-            </version>
+            <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-portal</id>
-            <version>
-                ${jetspeed.version}
-            </version>
+            <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
@@ -109,9 +104,7 @@
         <dependency>
             <id>portals-bridges-common</id>
             <groupId>portals-bridges</groupId>
-            <version>
-                ${portals.bridges.common.version}
-            </version>
+            <version>${portals.bridges.common.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
@@ -119,9 +112,7 @@
         <dependency>
             <id>portals-bridges-velocity</id>
             <groupId>portals-bridges</groupId>
-            <version>
-                ${portals.bridges.velocity.version}
-            </version>
+            <version>${portals.bridges.velocity.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
@@ -134,5 +125,21 @@
                 <war.bundle>${commons.logging.include}</war.bundle>
             </properties>
         </dependency>
+
+        <!-- Unit testing -->
+        <dependency>
+            <id>jmock</id>
+            <version>SNAPSHOT</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+			<id>log4j</id>
+			<version>${log4j.version}</version>
+			<properties>
+	          <war.bundle>${log4j.include}</war.bundle>
+	        </properties>
+		</dependency>
     </dependencies>
 </project>
