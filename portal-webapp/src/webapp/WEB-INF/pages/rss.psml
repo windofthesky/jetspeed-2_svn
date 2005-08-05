@@ -17,9 +17,8 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>RSS Demo</title>
-  <metadata name="title" xml:lang="ja">
-        RSS デモ
-  </metadata>
+  <metadata name="title" xml:lang="ja">RSS デモ</metadata>
+  <metadata name="title" xml:lang="es">Portlet RSS</metadata>
 
   <fragment id="rss-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="rss-101" type="portlet" name="rss::RSS">

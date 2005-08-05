@@ -16,9 +16,8 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Role Management</title>
-  <metadata name="title" xml:lang="ja">
-    ロール管理
-  </metadata>
+  <metadata name="title" xml:lang="ja">ロール管理</metadata>
+  <metadata name="title" xml:lang="es">Gestión de Roles</metadata>
 
   <fragment id="rolemgt-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="rolemgt-2" type="portlet" name="security::RoleMgtPortlet">

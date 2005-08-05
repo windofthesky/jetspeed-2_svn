@@ -35,9 +35,8 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="0" />
      </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">
-        JSF デモ
-  </metadata>
+  <metadata name="title" xml:lang="ja">JSF デモ</metadata>
+  <metadata name="title" xml:lang="es">Demostración Java Server Faces</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

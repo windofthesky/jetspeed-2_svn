@@ -2,9 +2,8 @@
 <link target="top">
 
  <title>Subsite2 Google Web Search</title>
-  <metadata name="title" xml:lang="ja">
-    サブサイト２グーグルウェブ検索
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイト２グーグルウェブ検索</metadata>
+  <metadata name="title" xml:lang="es">Búsqueda en Google (Subportal 2)</metadata>
 
  <url>http://www.google.com/search?hl=en&amp;q=subsite2</url>
 

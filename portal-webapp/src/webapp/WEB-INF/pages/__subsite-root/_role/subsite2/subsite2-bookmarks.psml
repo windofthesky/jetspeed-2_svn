@@ -4,9 +4,8 @@
   <defaults layout-decorator="jetspeed" portlet-decorator="jetspeed"/>
 
   <title>Subsite2 Bookmarks</title>
-  <metadata name="title" xml:lang="ja">
-    サブサイト２ブックマーク
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイト２ブックマーク</metadata>
+  <metadata name="title" xml:lang="es">Favoritos (Subportal 2)</metadata>
 
 
   <fragment id="sub2-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">

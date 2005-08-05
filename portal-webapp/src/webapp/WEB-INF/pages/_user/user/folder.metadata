@@ -3,13 +3,11 @@
   <title>[USER] Root Folder</title>  
   <short-title>[USER] Root</short-title>  
   <metadata name="title" xml:lang="fr">[USER] Répertoire racine</metadata>
-  <metadata name="title" xml:lang="ja">
-    [ユーザー] ルートフォルダ
-  </metadata>
+  <metadata name="title" xml:lang="ja">[ユーザー] ルートフォルダ</metadata>
+  <metadata name="title" xml:lang="es">Carpeta raiz [USUARIO]</metadata>
   <metadata name="short-title" xml:lang="fr">[USER] Racine</metadata>
-  <metadata name="short-title" xml:lang="ja">
-    [ユーザー] ルート
-  </metadata>
+  <metadata name="short-title" xml:lang="ja">[ユーザー] ルート</metadata>
+  <metadata name="short-title" xml:lang="es">Raiz [USUARIO]</metadata>
 
   <document-order>Google.link</document-order>
   <document-order>Jetspeed2.link</document-order>
@@ -32,20 +30,24 @@
       <text>[USER] Top Pages</text>
       <metadata name="text" xml:lang="fr">[USER] Page haut</metadata>
       <metadata name="text" xml:lang="ja">[ユーザー] トップページ</metadata>
+      <metadata name="text" xml:lang="es">Páginas populates [USUARIO]</metadata>
     </separator>
     <options regexp="true" profile="menu">/top-links/*.*</options>
     <menu regexp="true" profile="menu" options="/top-links/more/*.*">
       <title>[USER] More Pages</title>
       <metadata name="title" xml:lang="ja">[ユーザー] 追加ページ</metadata>
+      <metadata name="title" xml:lang="es">Más páginas [USUARIO]</metadata>
     </menu>
     <separator>
       <text>Profiled Pages</text>
       <metadata name="text" xml:lang="ja">プロファイルページ</metadata>
+      <metadata name="text" xml:lang="es">Páginas de perfil</metadata>
     </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
     <separator>
       <text>Non Java Pages</text>
       <metadata name="text" xml:lang="ja">Non-Javaページ</metadata>
+      <metadata name="text" xml:lang="es">Páginas sin Java</metadata>
     </separator>
     <options>/non-java</options>
   </menu>

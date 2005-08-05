@@ -17,9 +17,8 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Portlet Application Manager</title>
-  <metadata name="title" xml:lang="ja">
-        ポートレットアプリケーションマネージャ
-  </metadata>
+  <metadata name="title" xml:lang="ja">ポートレットアプリケーションマネージャ</metadata>
+  <metadata name="title" xml:lang="es">Gestor de aplicaciones de Portlets</metadata>
 
   <fragment id="pam-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="13" type="portlet" name="pam::PortletApplicationBrowser" >

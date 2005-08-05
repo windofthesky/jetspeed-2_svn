@@ -16,9 +16,8 @@ limitations under the License.
      portlet-decorator="clear"
   />
   <title>Portlet Selector</title>
-  <metadata name="title" xml:lang="ja">
-        ポートレットセレクタ
-  </metadata>
+  <metadata name="title" xml:lang="ja">ポートレットセレクタ</metadata>
+  <metadata name="title" xml:lang="es">Selector de portlets</metadata>
 
   <fragment id="portlet-selector" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="portlet-selector-1" type="portlet" name="pam::PortletSelector" >

@@ -17,9 +17,8 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>PALM</title>
-  <metadata name="title" xml:lang="ja">
-        PALM
-  </metadata>
+  <metadata name="title" xml:lang="ja">PALM</metadata>
+  <metadata name="title" xml:lang="es">Gestión dinámica de aplicaciones(PALM)</metadata>
 
   <fragment id="palm-layout" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="palm-app" type="portlet" name="palm::PortletApplicationLifecycleManager">

@@ -2,9 +2,8 @@
 <folder>
 
   <title>Subsite Root Folder</title>  
-  <metadata name="title" xml:lang="ja">
-    サブサイトルートフォルダ
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイトルートフォルダ</metadata>
+  <metadata name="title" xml:lang="es">Carpeta raiz de subportal</metadata>
 
 
   <default-page>subsite-default-page.psml</default-page>

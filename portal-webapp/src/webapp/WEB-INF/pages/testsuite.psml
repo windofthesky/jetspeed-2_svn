@@ -31,9 +31,8 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">
-        テストスイートページ
-  </metadata>
+  <metadata name="title" xml:lang="ja">テストスイートページ</metadata>
+  <metadata name="title" xml:lang="es">Página de casos de prueba</metadata>
 
   <security-constraints>
     <security-constraint>

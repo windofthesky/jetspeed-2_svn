@@ -21,9 +21,8 @@ limitations under the License.
   />
   
   <title>DB Browser Demo</title>
-  <metadata name="title" xml:lang="ja">
-        DBブラウザデモ
-  </metadata>
+  <metadata name="title" xml:lang="ja">DBブラウザデモ</metadata>
+  <metadata name="title" xml:lang="es">Navegador de Base de Datos</metadata>
 
   <fragment id="dbb-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="dbb-101" type="portlet" name="demo::DbBrowserExample">

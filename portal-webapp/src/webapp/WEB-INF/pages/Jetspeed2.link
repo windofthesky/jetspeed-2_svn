@@ -1,7 +1,6 @@
 <link target="top">
  <title>Jetspeed 2 Home Page</title>
  <url>http://portals.apache.org/jetspeed-2/</url>
- <metadata name="title" xml:lang="ja">
-    Jetspeed 2 ホームページ
- </metadata>
+ <metadata name="title" xml:lang="ja">Jetspeed 2 ホームページ</metadata>
+ <metadata name="title" xml:lang="es">Página Web de Jetspeed 2</metadata>
 </link>

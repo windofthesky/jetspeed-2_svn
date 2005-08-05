@@ -3,6 +3,7 @@
   <title >Work In Progress</title>  
   <metadata name="title" xml:lang="fr">En Construction</metadata>
   <metadata name="title" xml:lang="ja">処理中の作業</metadata>
+  <metadata name="title" xml:lang="es">Trabajo en curso</metadata>
 
   <document-order>role-mgt.psml</document-order>
 

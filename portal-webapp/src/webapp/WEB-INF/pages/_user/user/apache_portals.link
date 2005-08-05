@@ -1,7 +1,6 @@
 <link>
  <title>[USER] Apache Portals Website</title>
  <url>http://portals.apache.org</url>
- <metadata name="title" xml:lang="ja">
-    [USER] Apache Portals ウェブサイト
- </metadata>
+ <metadata name="title" xml:lang="ja">[USER] Apache Portals ウェブサイト</metadata>
+ <metadata name="title" xml:lang="es">Sitio web de Apache Portals [USUARIO]</metadata>
 </link>

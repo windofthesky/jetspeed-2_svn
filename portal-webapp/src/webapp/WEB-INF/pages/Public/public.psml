@@ -17,9 +17,8 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Public Share</title>
-  <metadata name="title" xml:lang="ja">
-        一般共有
-  </metadata>
+  <metadata name="title" xml:lang="ja">一般共有</metadata>
+  <metadata name="title" xml:lang="es">Carpeta compartida</metadata>
 
   <fragment id="ps-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ps-1001" type="portlet" name="rss::RSS">

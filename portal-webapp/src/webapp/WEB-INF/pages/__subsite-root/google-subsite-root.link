@@ -2,9 +2,8 @@
 <link target="top">
 
  <title>Subsite Root Google Web Search</title>
-  <metadata name="title" xml:lang="ja">
-    サブサイトルートのグーグルウェブ検索
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイトルートのグーグルウェブ検索</metadata>
+  <metadata name="title" xml:lang="es">Búsqueda en Google de raiz de subportal</metadata>
 
  <url>http://www.google.com</url>
 

@@ -4,9 +4,8 @@
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
 
   <title>Subsite Home</title>
-  <metadata name="title" xml:lang="ja">
-    サブサイトホーム
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイトホーム</metadata>
+  <metadata name="title" xml:lang="es">Página inicial de subportal</metadata>
 
 
   <fragment id="sub-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">

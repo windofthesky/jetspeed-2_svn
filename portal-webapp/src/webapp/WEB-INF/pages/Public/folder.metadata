@@ -2,6 +2,7 @@
 <folder>
   <title>Public Folders</title>  
   <metadata name="title" xml:lang="ja">公開フォルダ</metadata>
+  <metadata name="title" xml:lang="es">Carpetas públicas</metadata>
 
   <security-constraints>
     <security-constraints-ref>public-edit</security-constraints-ref>

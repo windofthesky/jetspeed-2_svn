@@ -28,9 +28,8 @@ limitations under the License.
 
   </fragment>
    
-  <metadata name="title" xml:lang="ja">
-        PSML ページ 2
-  </metadata>  
+  <metadata name="title" xml:lang="ja">PSML ページ 2</metadata>
+  <metadata name="title" xml:lang="es">Mi segunda página PSML</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

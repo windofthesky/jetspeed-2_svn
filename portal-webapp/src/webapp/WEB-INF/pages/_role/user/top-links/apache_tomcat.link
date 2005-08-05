@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <link target="top">
  <title>[USER] Apache Tomcat</title>
-  <metadata name="title" xml:lang="ja">
-    [ユーザー] Apache Tomcat
-  </metadata>
+  <metadata name="title" xml:lang="ja">[ユーザー] Apache Tomcat</metadata>
+  <metadata name="title" xml:lang="es">Apache Tomcat [USUARIO]</metadata>
 
  <url>http://jakarta.apache.org/tomcat</url>
 </link>

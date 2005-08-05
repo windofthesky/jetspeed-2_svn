@@ -20,12 +20,9 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Welcome to Jetspeed 2</title>
-  <metadata name="title" xml:lang="fr">
-		Ma Premiere Page de PSML
-  </metadata>
-  <metadata name="title" xml:lang="ja">
-		Jetspeed 2 へようこそ
-  </metadata>
+  <metadata name="title" xml:lang="fr">Ma Premiere Page de PSML</metadata>
+  <metadata name="title" xml:lang="ja">Jetspeed 2 へようこそ</metadata>
+  <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="dp-3" type="portlet" name="pam::LocaleSelector">

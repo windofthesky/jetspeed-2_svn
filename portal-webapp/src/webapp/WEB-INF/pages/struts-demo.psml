@@ -23,9 +23,8 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">
-        Struts メールリーダーデモ
-  </metadata>
+  <metadata name="title" xml:lang="ja">Struts メールリーダーデモ</metadata>
+  <metadata name="title" xml:lang="es">Lector de correo Struts</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

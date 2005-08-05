@@ -4,9 +4,8 @@
   <defaults layout-decorator="jetspeed" portlet-decorator="jetspeed"/>
 
   <title>Subsite2 Home</title>
-  <metadata name="title" xml:lang="ja">
-    サブサイト２ホーム
-  </metadata>
+  <metadata name="title" xml:lang="ja">サブサイト２ホーム</metadata>
+  <metadata name="title" xml:lang="es">Inicio de Subportal 2</metadata>
 
 
   <fragment id="sub2-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">

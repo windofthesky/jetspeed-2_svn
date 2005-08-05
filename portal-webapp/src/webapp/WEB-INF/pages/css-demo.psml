@@ -23,9 +23,8 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">
-        CSS デモ
-  </metadata>
+  <metadata name="title" xml:lang="ja">CSS デモ</metadata>
+  <metadata name="title" xml:lang="es">Demo de hojas de Estilo CSS</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>
