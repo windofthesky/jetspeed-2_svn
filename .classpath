@@ -107,7 +107,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-full-2.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-1.1.5.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-common-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-frameworks-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-jsf-0.4-SNAPSHOT.jar"/>
