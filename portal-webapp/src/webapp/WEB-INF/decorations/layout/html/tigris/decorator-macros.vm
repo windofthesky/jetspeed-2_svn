@@ -206,7 +206,7 @@
   #end
   #if($rowStarted)
             </div>
-          <td>
-        <tr>
+          </td>
+        </tr>
   #end
 #end
