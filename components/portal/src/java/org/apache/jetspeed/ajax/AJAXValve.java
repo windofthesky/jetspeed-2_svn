@@ -23,22 +23,21 @@ import org.apache.jetspeed.request.RequestContext;
 /**
  * This should eventually replace the AJAX ServletFilter.
  * 
- * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * 
  */
 public class AJAXValve extends AbstractValve
 {
-    public AJAXValve()
+
+    public AJAXValve(AJAXService service)
     {
         super();
-        
     }
 
     public void invoke(RequestContext request, ValveContext context)
             throws PipelineException
     {
-       
-
+        System.out.println("invoking ajax valve ");
     }
 
 }
