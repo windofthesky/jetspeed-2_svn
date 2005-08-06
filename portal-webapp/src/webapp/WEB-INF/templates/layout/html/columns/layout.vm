@@ -27,15 +27,7 @@ limitations under the License.
 
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
-  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
-<script>
-function openWindow(pipeline)
-{	
-    var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');
-    vWinUsers.opener = self;
-	vWinUsers.focus();
-}
-</script>  
+  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)  
 #end    
   
  #if($myFragment.getDecorator())
