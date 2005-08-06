@@ -36,7 +36,7 @@
             <groupId>torque</groupId>
             <artifactId>maven-torque-plugin</artifactId>
             <id>torque:maven-torque-plugin</id>
-            <version>3.2-rc1</version>
+            <version>3.2-rc2-dev</version>
             <type>plugin</type>
         </dependency>
         <dependency>
