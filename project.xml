@@ -35,7 +35,7 @@ limitations under the License.
         <dependency>
             <groupId>torque</groupId>
             <artifactId>maven-torque-plugin</artifactId>
-            <version>3.2-rc1</version>
+            <version>3.2-rc2-dev</version>
             <type>plugin</type>
             <properties/>
         </dependency>
