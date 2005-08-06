@@ -100,6 +100,8 @@ public class Jetspeed
 
     public static ComponentManager getComponentManager()
     {
+        if (engine == null)
+            return null;
         return engine.getComponentManager();
     }
 
