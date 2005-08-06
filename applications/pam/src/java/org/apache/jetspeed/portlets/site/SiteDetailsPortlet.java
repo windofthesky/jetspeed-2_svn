@@ -100,7 +100,7 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         }
         catch (JetspeedException e)
         {
-            
+            e.printStackTrace();            
         }
         return "folder-view:success";
     }
@@ -114,9 +114,10 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         String key = proxy.getKey();
         try
         {
-            //Folder folder = pageManager.newFolder();
+            Folder folder = pageManager.newFolder(key);
             
-            Folder folder = pageManager.getFolder(key);
+            
+            //Folder folder = pageManager.getFolder(key);
             proxy.update(folder);
             pageManager.updateFolder(folder);
             
@@ -126,7 +127,7 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         }
         catch (JetspeedException e)
         {
-            
+            e.printStackTrace();
         }
         return "folder-view:success";
     }
