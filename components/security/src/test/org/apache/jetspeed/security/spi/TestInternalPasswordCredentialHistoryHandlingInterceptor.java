@@ -60,12 +60,18 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
 
     public void testPasswordHistory() throws Exception
     {
+        // note that the automated test here must wait between
+        // create user and set password operations to ensure that
+        // passwords get unique timestamps
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
+        Thread.sleep(10);
         ums.setPassword("testcred","password","password1");
+        Thread.sleep(10);
         ums.setPassword("testcred","password1","password2");
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password2"));
         try
         {
+            Thread.sleep(10);
             ums.setPassword("testcred","password2","password");
             fail("Should not be allowed to reuse a password from password history");
         }
@@ -73,8 +79,11 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
         {
             assertTrue(SecurityException.PASSWORD_ALREADY_USED.equals(sex.getKeyedMessage()));
         }
+        Thread.sleep(10);
         ums.setPassword("testcred","password2","password3");
+        Thread.sleep(10);
         ums.setPassword("testcred","password3","password4");
+        Thread.sleep(10);
         ums.setPassword("testcred","password4","password");
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
     }
