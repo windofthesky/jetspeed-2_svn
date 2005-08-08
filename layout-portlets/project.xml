@@ -125,6 +125,22 @@
                 <war.bundle>${commons.logging.include}</war.bundle>
             </properties>
         </dependency>
+        <dependency>
+            <id>commons-configuration</id>
+            <version>1.0</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>commons-lang</id>
+            <version>2.0</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
 
         <!-- Unit testing -->
         <dependency>
