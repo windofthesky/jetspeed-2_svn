@@ -19,8 +19,6 @@
     <preGoal name="jar:jar">
         <copy file="../../portal-webapp/src/webapp/WEB-INF/tld/portlet.tld"
             toDir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy" />
-        <copy file="../../portal-webapp/web-app_2_3.dtd"
-            toDir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy" />
     </preGoal>
 
 </project>
