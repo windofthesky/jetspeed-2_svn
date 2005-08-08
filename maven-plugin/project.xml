@@ -17,7 +17,6 @@
     $Id$
 -->
 <project>
-    <id>jetspeed2:maven-jetspeed2-plugin</id>
     <extend>${basedir}/../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>maven-jetspeed2-plugin</artifactId>
@@ -60,17 +59,12 @@
             <resource>
                 <directory>${basedir}/src/plugin-resources</directory>
                 <targetPath>plugin-resources</targetPath>
-                <filtering>false</filtering>
             </resource>
             <resource>
                 <directory>${basedir}</directory>
                 <includes>
                     <include>plugin.jelly</include>
-                    <include>plugin.properties</include>
-                    <include>project.properties</include>
-                    <include>project.xml</include>
                 </includes>
-                <filtering>false</filtering>
             </resource>
         </resources>
     </build>

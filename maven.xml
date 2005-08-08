@@ -171,8 +171,12 @@
     
     <goal name="allBuild" description="Build all jars and war">
             
-        <attainGoal name="j2:check.required.properties" />
-        <attainGoal name="j2:db.scripts.gen" />
+      <attainGoal name="j2:portal.conf.sql"/>
+      <attainGoal name="j2:portal.conf.ojb"/>
+
+      <attainGoal name="j2:portal.conf.jetspeed"/>
+      <attainGoal name="j2:portal.conf.tomcat"/>
+
         <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
             <attainGoal name="j2:db.create.test" />
         </j:if>
@@ -180,11 +184,15 @@
         <!-- Build jars files-->
         <attainGoal name="jetspeed2:jar:install" />
 
-        <!-- Build war files -->
+      <!-- disabling testing as we're past that -->
+
+      <j:set var="maven.test.skip" value="true"/>
+        
+      <!-- Build and install pa war files -->
         <attainGoal name="jetspeed2:war:install" />
         
-        <maven:reactor basedir="${basedir}/portal-webapp" includes="project.xml" goals="j2:portal.install"
-            banner="Build and deploy the Jetspeed 2 Portal Engine" postProcessing="false" ignoreFailures="false" />
+      <!-- Build and install portal war file -->
+      <attainGoal name="war:install"/>        
 
         <!-- build jetspeed 2 plugin with webapp -->
         <maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin"

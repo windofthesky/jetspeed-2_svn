@@ -13,887 +13,787 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+    $Id$
 -->
-<project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define" xmlns:maven="jelly:maven"
-    xmlns:ant="jelly:ant" xmlns:util="jelly:util">
+<project default="java:jar" 
+         xmlns:j="jelly:core"
+         xmlns:define="jelly:define"
+         xmlns:maven="jelly:maven"
+         xmlns:ant="jelly:ant"
+         xmlns:util="jelly:util">
+
+  <!-- ====================================================== -->
+  <!-- ============== GENERATE NEW APPLICATION ============== -->
+  <!-- ====================================================== -->
+  
+  <goal name="j2:portal.genapp" prereqs="j2:_check.required.properties">
+            
+    <attainGoal name="j2:portal.copy.webapp"/>
+    <attainGoal name="j2:portal.conf.project"/>
+    <attainGoal name="j2:portal.conf.sql"/>
+    <attainGoal name="j2:portal.conf.ojb"/>
+    <attainGoal name="j2:portal.conf.jetspeed"/>
+    <attainGoal name="j2:portal.conf.tomcat"/>
+  </goal>
     
-    <!-- ======================================== -->
-	<!-- ============== Settings ============== -->
-	<!-- ======================================== -->
+  <goal name="j2:portal.copy.webapp" prereqs="j2:_check.required.properties">
+    <j:set var="portal.webapp.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.webapp.dir}"/>      
+    <mkdir dir="${portal.webapp.dir}"/>
+    <copy todir="${portal.webapp.dir}" overwrite="true" failonerror="true">
+      <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp">
+        <exclude name="WEB-INF/conf/jetspeed.properties"/>
+      </fileset>
+    </copy>
+  </goal>
+  
+  <goal name="j2:portal.conf.project" prereqs="j2:_check.required.properties">
+    <j:set var="portal.home.dir" value="${org.apache.jetspeed.portal.home}"/>
+    <mkdir dir="${portal.home.dir}"/>              
 
-	<goal name="j2:check.required.properties" description="Check if the required properties are defined">
-        <fail
-            message="Required property org.apache.jetspeed.portal.name undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.portal.name" />
-        <fail
-            message="Required property org.apache.jetspeed.server.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.server.home" />
-        <fail
-            message="Required property org.apache.jetspeed.catalina.version.major undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.catalina.version.major" />
-        <fail
-            message="Required property org.apache.jetspeed.server.shared undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.server.shared" />
-        <fail
-            message="Required property org.apache.jetspeed.deploy.war.dir undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.deploy.war.dir" />
-        <fail
-            message="Required property org.apache.jetspeed.services.autodeployment.user undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.services.autodeployment.user" />
-        <fail
-            message="Required property org.apache.jetspeed.services.autodeployment.password undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.services.autodeployment.password" />     
-        
-    </goal>
-	
-	<!-- ======================================== -->
-	<!-- ============== DEPLOYMENT ============== -->
-	<!-- ======================================== -->
+    <filterset id="dependenciesFilterSet" begintoken="$" endtoken="}">
+      <filter token="{jetspeed.version" value="${jetspeed.version}"/>
+      <filter token="{pluto.version" value="${pluto.version}"/>
+      <filter token="{portlet.api.version" value="${portlet.api.version}"/>
+      <filter token="{servlet.api.version" value="${servlet.api.version}"/>
+      <filter token="{myfaces.version" value="${myfaces.version}"/>
+      <filter token="{spring.version" value="${spring.version}"/>
+      <filter token="{portals.bridges.common.version" value="${portals.bridges.common.version}"/>
+      <filter token="{portals.bridges.frameworks.version" value="${portals.bridges.frameworks.version}"/>
+      <filter token="{portals.bridges.jsf.version" value="${portals.bridges.jsf.version}"/>
+      <filter token="{portals.bridges.perl.version" value="${portals.bridges.perl.version}"/>
+      <filter token="{portals.bridges.php.version" value="${portals.bridges.php.version}"/>
+      <filter token="{portals.bridges.struts.version" value="${portals.bridges.struts.version}"/>
+      <filter token="{portals.bridges.velocity.version" value="${portals.bridges.velocity.version}"/>
+      <filter token="{commons.logging.version" value="${commons.logging.version}"/>
+      <filter token="{log4j.version" value="${log4j.version}"/>
+      <filter token="{commons.logging.include" value="${commons.logging.include}"/>
+      <filter token="{log4j.include" value="${log4j.include}"/>
+      <filter token="{jta.include" value="${jta.include}"/>
+      <filter token="{hsql.include" value="${hsql.include}"/>
+    </filterset>
 
-    <goal name="j2:deploy">
-        <copy file="${maven.repo.local}/${jetspeed.groupId}/wars/${maven.war.final.name}-${jetspeed.version}.war"
-            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"
-            overwrite="true" failonerror="true" />
-    </goal>
-
-    <goal name="j2:undeploy">
-        <delete file="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war" />
-    </goal>
-
-	<!-- ================================================= -->
-	<!-- ============== DATABASE MANAGEMENT ============== -->
-	<!-- ================================================= -->
-
-    <goal name="j2:start.production.server">
-    	<j:set var="maven.start.hsql.message" value="Production/Deployment Database" />
-    	<j:set var="org.apache.jetspeed.plugin.hsql.db" value="${org.apache.jetspeed.plugin.root}/plugin-resources/database/hsql/Production" />
-    	<attainGoal name="j2:start.hsql" />
-    </goal>
+    <!-- Note: keep already existing project-info.xml allowing custom modifications -->
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
+          tofile="${portal.home.dir}/project-info.xml"
+          overwrite="false"
+          failonerror="true"/>
     
-    <goal name="j2:start.test.server">
-    	<j:set var="maven.start.hsql.message" value="Testing Database" />
-    	<j:set var="org.apache.jetspeed.plugin.hsql.db" value="${org.apache.jetspeed.plugin.root}/plugin-resources/database/hsql/Test" />
-    	<attainGoal name="j2:start.hsql" />
-    </goal>
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/core-build.xml"
+          tofile="${portal.home.dir}/core-build.xml"
+          overwrite="true"
+          failonerror="true">
+      <filterset refid="dependenciesFilterSet"/>
+    </copy>
     
-    <goal name="j2:start.hsql">
-        <echo message="====================================" />
-        <echo message="${maven.start.hsql.message}" />
-        <echo message="====================================" />
-        <java classname="org.hsqldb.Server" fork="yes">
-            <classpath>
-                <path refid="maven.dependency.classpath" />
-                <pathelement path="${maven.build.dest}" />
-                <pathelement path="${plugin.getDependencyPath('hsqldb')}" />
-            </classpath>
-            <arg value="-database" />
-            <arg value="${org.apache.jetspeed.plugin.hsql.db}" />
-            <arg value="-port" />
-            <arg value="9001" />
-            <arg value="-silent" />
-            <arg value="true" />
-            <arg value="-trace" />
-            <arg value="false" />
-        </java>
-    </goal>
-    
-    <goal name="j2:db.execute">
-        <!-- Ugly hack (or sound fix) setting the parentScope to an empty String because
-             with maven project inheritance the size of this property is killing
-             performance when the sql task is trying to interpose property values.
-             See: http://issues.apache.org/jira/browse/JS2-322
-             Without this hack the time to run the db.create.test task (using Oracle9i)
-             increases by at least 30 seconds for each level of inheritance.
-             Note: the project generated with genapp has an inheritance level of 4!
-             Hopefully, these kind of problems are solved when we move to maven 2 ...
-        -->      
-        <j:set var="parentScope" scope="parent" value=""/>
-        <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
-            userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
-            src="${database.arg.script}">
-            <classpath>
-                <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}" />
-                <path refid="maven.dependency.classpath" />
-            </classpath>
-        </sql>
-    </goal>
-    
-    <!-- ======================================================== -->
-	<!-- ============== DATABASE SCRIPT GENERATION ============== -->
-	<!-- ======================================================== -->
-    
-    <!-- use local (to the plugin) invocation of the real scripts.gen goal (_db.scripts.gen) because if called directly from
-         a project it wouldn't be called within the plugin context -->
-    <goal name="j2:db.scripts.gen">
-      <attainGoal name="_db.scripts.gen"/>
-    </goal>
-    
-    <goal name="_db.scripts.gen" prereqs="torque:init" description="Build SQL scripts using Torque generator">
-        <echo message="Using Torque schema located under: ${torque.schema.dir}" />
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed-components.xml"
+          tofile="${portal.home.dir}/jetspeed-components.xml"
+          overwrite="true"
+          failonerror="true">
+      <filterset refid="dependenciesFilterSet"/>
+    </copy>
 
-        <echo>Plugin Root: ${org.apache.jetspeed.plugin.root}</echo>        <echo message="Generating SQL schema creation scripts for HSQLDB" />
-        <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/generated" failonerror="false" />
-        <mkdir dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/generated"/>       
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/generated" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/generated/sqldb.map" targetDatabase="hypersonic" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>        
-        <attainGoal name="j2:process.sql.script.override" >'
-          <j:set var="org.apache.jetspeed.target.rdbms" value="hsql" />
-        </attainGoal>
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/full-portal.xml"
+          tofile="${portal.home.dir}/full-portal.xml"
+          overwrite="true"
+          failonerror="true">
+      <filterset refid="dependenciesFilterSet"/>
+    </copy>          
 
-        <echo message="Generating SQL schema creation scripts for MySQL" />
-        <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated" failonerror="false" />
-        <mkdir dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated"/>
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/generated/sqldb.map" targetDatabase="mysql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>        
-        <attainGoal name="j2:process.sql.script.override" >
-         <j:set var="org.apache.jetspeed.target.rdbms" value="mysql" />
-        </attainGoal>
+    <!-- Note: keep existing project.xml allowing for custom modifications -->
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.xml"
+          tofile="${portal.home.dir}/project.xml"
+          overwrite="false"
+          failonerror="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="PORTAL_GROUPID" value="${org.apache.jetspeed.portal.groupId}"/>
+        <filter token="PORTAL_ARTIFACTID" value="${org.apache.jetspeed.portal.artifactId}"/>
+        <filter token="PORTAL_NAME" value="${org.apache.jetspeed.portal.name}"/>
+        <filter token="PORTAL_CURRENT_VERSION" value="${org.apache.jetspeed.portal.currentVersion}"/>
+      </filterset>
+    </copy>
+  </goal>
 
-        <echo message="Generating SQL schema creation scripts for Oracle" />
-        <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/generated" failonerror="false" />
-        <mkdir dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/generated"/>
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/generated" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/generated/sqldb.map" targetDatabase="oracle" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-        
-        <attainGoal name="j2:process.sql.script.override" >
-          <j:set var="org.apache.jetspeed.target.rdbms" value="oracle" />
-        </attainGoal>
+  <goal name="j2:portal.conf.sql" prereqs="j2:_check.required.properties">
+    <j:set var="portal.sql.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql"/>
+    <j:set var="portal.sql.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
 
-        <echo message="Generating SQL schema creation scripts for MS SQL" />
-        <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/generated" failonerror="false" />
-        <mkdir dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/generated"/>
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/generated" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/generated/sqldb.map" targetDatabase="mssql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-        
-        <attainGoal name="j2:process.sql.script.override" >
-          <j:set var="org.apache.jetspeed.target.rdbms" value="mssql" />
-       </attainGoal>
-
-        <echo message="Generating SQL schema creation scripts for Postgres" />
-        <delete dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/postgres/generated" failonerror="false" />
-        <mkdir dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/postgres/generated"/>
-        <torque-sql basePathToDbProps="sql/base/" contextProperties="${torque.contextProperties}"
-            controlTemplate="${torque.template.sql}" idTableXMLFile="${torque.idTableXMLFile}"
-            outputDirectory="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/postgres/generated" outputFile="report.${torque.project}.sql.generation"
-            sqldbmap="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/postgres/generated/sqldb.map" targetDatabase="postgresql" useClasspath="true">
-            <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}"
-                excludes="${torque.schema.sql.excludes}" />
-        </torque-sql>
-        
-        <attainGoal name="j2:process.sql.script.override" >
-          <j:set var="org.apache.jetspeed.target.rdbms" value="postgres" />
-        </attainGoal>
-    </goal>
+    <delete dir="${portal.sql.target.dir}" failonerror="false"/>
+    <mkdir dir="${portal.sql.target.dir}"/>
+          
+    <copy todir="${portal.sql.target.dir}" overwrite="true" verbose="true" failonerror="false" flatten="true">
+      <fileset dir="${portal.sql.src.dir}">
+        <include name="*.sql"/>
+      </fileset>
+    </copy>        
+               
+    <j:set var="org.apache.jetspeed.target.rdbms" value="${org.apache.jetspeed.production.database.default.name}"/>
+    <attainGoal name="j2:_set.rdbms.props"/>
+    <attainGoal name="j2:_generate.sql"/>
+    <attainGoal name="j2:_copy.rdbms.sql.scripts"/>
     
-    <goal name="j2:process.sql.script.override" >
-      
-      <fail
-            message="org.apache.jetspeed.target.rdbms must be set before executing the j2:process.sql.script.overrid goal."
-            unless="org.apache.jetspeed.target.rdbms" />
-      <!-- Allow specific DB scripts to override the Torque-generated ones -->
-      <echo>Checking SQL script overrides for ${org.apache.jetspeed.database.default.name}</echo>
-      <echo>${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}/generated</echo>
-      <copy todir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}/generated" overwrite="true"  verbose="true" failonerror="false" flatten="true">
-        <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.target.rdbms}">
-            <include name="**/override/*.sql" />
-        </fileset>
-      </copy>        
-    </goal>
+    <j:if test="${org.apache.jetspeed.use.test.database}">    
+      <j:set var="test_db" value="${org.apache.jetspeed.test.database.default.name}"/>
+      <j:set var="prod_db" value="${org.apache.jetspeed.production.database.default.name}"/>
+      <j:if test="${prod_db != test_db}">
+        <j:set var="org.apache.jetspeed.target.rdbms" value="${org.apache.jetspeed.test.database.default.name}"/>
+        <attainGoal name="j2:_set.rdbms.props"/>
+        <attainGoal name="j2:_generate.sql"/>
+        <attainGoal name="j2:_copy.rdbms.sql.scripts"/>
+      </j:if>
+    </j:if>  
+  </goal> 
+  
+  <goal name="j2:portal.conf.ojb" prereqs="j2:_check.required.properties">
+    <j:set var="portal.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}"/>      
+    <mkdir dir="${portal.target.dir}/WEB-INF/classes"/>
+    <copy todir="${portal.target.dir}/WEB-INF/classes" overwrite="true">
+      <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/db-ojb"/>
+      <filterset begintoken="@" endtoken="@">
+        <filter token="PLATFORM" value="${org.apache.jetspeed.production.database.ojb.platform}"/>
+      </filterset>
+    </copy>
+  </goal>
+  
+  <goal name="j2:portal.conf.jetspeed" prereqs="j2:_check.required.properties">
+    <j:set var="portal.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}"/>      
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp/WEB-INF/conf/jetspeed.properties"
+          todir="${portal.target.dir}/WEB-INF/conf/" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}"/>
+        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+       </filterset>
+       <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
+           in a test failure (TestSpringEngine)
+           This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
+       -->
+       <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
+           <filter token="="
+               value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+       </filterset>
+       <filterset begintoken="autodeployment.port" endtoken="8080">
+           <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+       </filterset>
+    </copy>
+  </goal>
+  
+  <goal name="j2:portal.conf.tomcat" prereqs="j2:_check.required.properties">
+    <j:set var="portal.conf.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.conf.dir}"/>      
+    <mkdir dir="${portal.conf.dir}/tomcat"/>
+    <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+    <j:choose>
+      <j:when test="${catalina_version_major == '5.5'}">
+        <j:set var="context_file_source" value="jetspeed-tomcat-5.5.xml"/>
+      </j:when>
+      <j:otherwise>
+        <j:set var="context_file_source" value="jetspeed-tomcat-5.xml"/>
+      </j:otherwise>
+    </j:choose>
+    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/conf/tomcat/${context_file_source}"
+          tofile="${portal.conf.dir}/tomcat/context.xml" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="CONTEXT" value="${org.apache.jetspeed.portal.artifactId}"/>
+        <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+        <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+        <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+        <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+      </filterset>
+    </copy>
+  </goal>
     
-    <!-- ============================================= -->
-	<!-- ============== DATABASE CREATE ============== -->
-	<!-- ============================================= -->
-    
-	<goal name="j2:db.test.properties">
-        <j:set var="org.apache.jetspeed.database.default.name" value="${org.apache.jetspeed.test.database.default.name}" />
-        <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}" />
-        <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}" />
-        <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}" />
-        <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}" />
-        <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}" />
-    </goal>
+  <!-- ================================================= -->
+  <!-- ============== DATABASE MANAGEMENT ============== -->
+  <!-- ================================================= -->
 
-    <goal name="j2:db.production.properties">
-        <j:set var="org.apache.jetspeed.database.default.name"
-            value="${org.apache.jetspeed.production.database.default.name}" />
-        <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}" />
-        <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}" />
-        <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}" />
-        <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}" />
-        <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}" />
-    </goal>
+  <goal name="j2:start.production.server" prereqs="j2:_check.required.properties">
+    <j:set var="maven.start.hsql.message" value="Production/Deployment Database"/>
+    <j:set var="org.apache.jetspeed.plugin.hsql.db" 
+           value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.db.dir}/hsql/Production"/>
+    <attainGoal name="j2:_start.hsql"/>
+  </goal>
+  
+  <goal name="j2:start.test.server" prereqs="j2:_check.required.properties">
+    <j:set var="maven.start.hsql.message" value="Testing Database"/>
+    <j:set var="org.apache.jetspeed.plugin.hsql.db" 
+           value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.db.dir}/hsql/Test"/>
+    <attainGoal name="j2:_start.hsql"/>
+  </goal>
+  
+  <!-- ============================================= -->
+  <!-- ============== DATABASE CREATE ============== -->
+  <!-- ============================================= -->
 
-    <goal name="j2:db.create.test">
-        <attainGoal name="j2:db.test.properties" />
-        <attainGoal name="j2:db.drop2" />
-        <attainGoal name="j2:db.create" />
-    </goal>
+  <goal name="j2:db.create.test">
+    <attainGoal name="j2:_db.test.properties"/>
+    <attainGoal name="j2:_db.drop"/>
+    <attainGoal name="j2:_db.create"/>
+  </goal>
 
-    <goal name="j2:db.create.production" >
-        <attainGoal name="j2:db.production.properties" />
-        <attainGoal name="j2:db.drop2" />
-        <attainGoal name="j2:db.create" />
-    </goal>
+  <goal name="j2:db.create.production" >
+    <attainGoal name="j2:_db.production.properties"/>
+    <attainGoal name="j2:_db.drop"/>
+    <attainGoal name="j2:_db.create"/>
+  </goal>
 
-    <goal name="j2:db.create">
-       <j:set var="sql.src.path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated" />
-       <attainGoal name="j2:run.all.scripts.in.path" />
-
-       <j:set var="database.arg.script"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/populate-db-default.sql" />
-       <attainGoal name="j2:db.execute" />
-        <!-- process user custom SQL -->
-       <echo>Running user-defined SQL scripts...</echo>   
-       <j:set var="sql.src.path" value="${basedir}/src/sql" />
-       <attainGoal name="j2:run.all.scripts.in.path" />
-    </goal>
+  <goal name="j2:db.recreate" prereqs="j2:portal.conf.sql">
+    <attainGoal name="j2:db.create.production"/>
+  </goal>
     
-    <!-- Use this uility goal to run all of the .sql scripts in the specified path -->
-    <goal name="j2:run.all.scripts.in.path" >
-        <echo>Checking for SQL scripts at path ${sql.src.path}...</echo>
-        <!-- process user custom SQL -->
-        <util:available file="${sql.src.path}">
-         <echo>Running SQL scripts in directory ${sql.src.path}...</echo>
-          <util:file name="${sql.src.path}" var="sqldir" />
-          <j:set var="fileList" value="${sqldir.listFiles()}" />
-          <j:forEach items="${fileList}" var="sqlfile" >
-             <j:if test="${sqlfile.name.endsWith('.sql')}" >
-               <echo>Running script ${sqlfile.absolutePath}...</echo>
-               <j:set var="database.arg.script" value="${sqlfile.absolutePath}" />
-               <attainGoal name="j2:db.execute" />
-             </j:if>
-          </j:forEach>
-        </util:available>
-    </goal>
+  <goal name="j2:db.user.scripts.production" >
+     <attainGoal name="j2:_db.production.properties"/>         
+     <echo>Running user-defined SQL scripts...</echo>   
+     <j:set var="sql.src.path" value="${basedir}/src/sql"/>
+     <j:set var="database.arg.onerror" value="abort"/> 
+     <j:set var="process.database.script.goal" value="j2:_db.execute"/>
+     <attainGoal name="j2:_process.all.scripts.in.path"/>   
+  </goal>    
     
-    <goal name="j2:db.user.scripts.production" >
-       <attainGoal name="j2:db.production.properties" />         
-       <echo>Running user-defined SQL scripts...</echo>   
-       <j:set var="sql.src.path" value="${basedir}/src/sql" /> 
-       <attainGoal name="j2:run.all.scripts.in.path" />   
-    </goal>    
-      
-    <goal name="j2:db.entities" prereqs="j2:db.scripts.gen">
-        <j:set var="dbase" value="${org.apache.jetspeed.production.database.default.name}" />
-        <attainGoal name="j2:db.production.properties" />
-        <j:choose>
-            <j:when test="${dbase == 'mssql'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mssql/populate-userinfo-for-default-psml.sql" />
-            </j:when>
-            <j:when test="${dbase == 'mysql'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/populate-userinfo-for-default-psml.sql" />
-            </j:when>
-            <j:when test="${dbase == 'oracle'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/populate-userinfo-for-default-psml.sql" />
-            </j:when>
-            <j:when test="${dbase == 'hsql'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/populate-userinfo-for-default-psml.sql" />
-            </j:when>
-            <j:otherwise>
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/populate-userinfo-for-default-psml.sql" />
-            </j:otherwise>
-        </j:choose>
-        <attainGoal name="j2:db.execute" />
-    </goal>
+  <goal name="j2:db.entities">
+    <attainGoal name="j2:_db.production.properties"/>
+    <j:set var="org.apache.jetspeed.target.rdbms" value="${org.apache.jetspeed.production.database.default.name}"/>
+    <attainGoal name="j2:_set.rdbms.props"/>
+    <j:set var="portal.sql.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
+    <j:set var="database.arg.script" value="${portal.sql.dir}/populate-userinfo-for-default-psml.sql"/>
+    <util:available file="${portal.sql.dir}/${org.apache.jetspeed.target.rdbms}/populate-userinfo-for-default-psml.sql">
+      <j:set var="database.arg.script"
+             value="${portal.sql.dir}/${org.apache.jetspeed.target.rdbms}/populate-userinfo-for-default-psml.sql"/>
+    </util:available>
+     <j:set var="database.arg.onerror" value="abort"/> 
+    <attainGoal name="j2:_db.execute"/>
+  </goal>
     
-    <goal name="j2:db.recreate" prereqs="j2:db.scripts.gen">
-        <attainGoal name="j2:db.create.production" />
-    </goal>
-    
-    <!-- =========================================== -->
-	<!-- ============== DATABASE DROP ============== -->
-	<!-- =========================================== -->
+  <!-- =========================================== -->
+  <!-- ============== DATABASE DROP ============== -->
+  <!-- =========================================== -->
     
     <goal name="j2:db.drop.test">
-        <attainGoal name="j2:db.test.properties" />
-        <attainGoal name="j2:db.drop" />
+        <attainGoal name="j2:_db.test.properties"/>
+        <attainGoal name="j2:_db.drop"/>
     </goal>
 
     <goal name="j2:db.drop.production">
-        <attainGoal name="j2:db.production.properties" />
-        <attainGoal name="j2:db.drop" />
+        <attainGoal name="j2:_db.production.properties"/>
+        <attainGoal name="j2:_db.drop"/>
     </goal>
 
-    <goal name="j2:db.drop">
-        <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/drop.sql" />
-        <attainGoal name="j2:db.execute" />
-        <j:set var="database.arg.script"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/registry-drop.sql" />
-        <attainGoal name="j2:db.execute" />
-    </goal>
+  <!-- =============================================== -->
+  <!-- ========= JETSPEED PORTLET DEPLOYMENT ========= -->
+  <!-- =============================================== -->
+  
+  <goal name="j2:deploy">
+    <copy file="${maven.repo.local}/${plugin.groupId}/wars/${maven.war.final.name}-${jetspeed.version}.war"
+          tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"
+          overwrite="true"
+          failonerror="true"/>
+  </goal>
 
-    <goal name="j2:db.drop2">
-        <j:set var='nodots' value="${org.apache.jetspeed.database.default.name}" />
-        <j:choose>
-            <j:when test="${nodots == 'mysql'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/mysql/drop.sql" />
-                <attainGoal name="j2:db.execute" />
-            </j:when>
-        </j:choose>
-        <j:choose>
-            <j:when test="${nodots == 'hsql'}">
-                <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/hsql/drop.sql" />
-                <attainGoal name="j2:db.execute" />
-            </j:when>
-        </j:choose>
-        <j:choose>
-            <j:when test="${nodots == 'oracle'}">
-                <!--
-                <attainGoal name="j2:dropdrops" />
-                -->
-            </j:when>
-        </j:choose>
-    </goal>
+  <goal name="j2:pam.layoutdeploy">
+    <j:set var="maven.war.final.name" value="jetspeed-layouts"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
 
-    <goal name="j2:db.drop.oracle">
-        <attainGoal name="db.production.properties" />
-        <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/oracle/drop.sql" />
-        <attainGoal name="db.execute" />
-    </goal>
+  <goal name="j2:pam.demodeploy">
+    <j:set var="maven.war.final.name" value="demo"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.palmdeploy">
+    <j:set var="maven.war.final.name" value="palm"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.pamdeploy">
+    <j:set var="maven.war.final.name" value="pam"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.tsdeploy">
+    <j:set var="maven.war.final.name" value="testsuite"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.strutsdeploy">
+    <j:set var="maven.war.final.name" value="struts-demo"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.jpetstoredeploy">
+    <j:set var="maven.war.final.name" value="jpetstore"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.jsfdeploy">
+    <j:set var="maven.war.final.name" value="jsf-demo"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.jsfmyfacesdeploy">
+    <j:set var="maven.war.final.name" value="jsf-demo-myfaces"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.securitydeploy">
+    <j:set var="maven.war.final.name" value="security"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.phpdeploy">
+    <j:set var="maven.war.final.name" value="php"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.perldeploy">
+    <j:set var="maven.war.final.name" value="perl"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <goal name="j2:pam.rssdeploy">
+    <j:set var="maven.war.final.name" value="rss"/>
+    <attainGoal name="j2:deploy"/>
+  </goal>
+
+  <!-- ================================================= -->
+  <!-- ======== JETSPEED COMPONENT DEPLOYMENT ========== -->
+  <!-- ================================================= -->
+  <goal name="j2:jar.deploy">
+    <attainGoal name="jar:install"/>
+    <echo>Deploying ${pom.artifactId}-${jetspeed.version}.jar to ${org.apache.jetspeed.portal.dir}/WEB-INF/lib...</echo>
+    <copy file="${basedir}/target/${pom.artifactId}-${jetspeed.version}.jar"
+          todir="${org.apache.jetspeed.portal.dir}/WEB-INF/lib"
+          overwrite="true"
+          failonerror="true"/>
+  </goal>
     
-    <goal name="j2:dropdrops">
-        <attainGoal name="j2:db.production.properties" />
-        <attainGoal name="j2:all.dropdrops" />
-    </goal>
-
-    <goal name="j2:test.dropdrops">
-        <attainGoal name="j2:db.test.properties" />
-        <attainGoal name="j2:all.dropdrops" />
-    </goal>
-
-    <goal name="j2:all.dropdrops">
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-        	value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/phase1-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable" 
-        	value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/phase2-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/phase3ojb-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-        	value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/prefs-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/registry-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/security-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-        <j:set var="dropstable"
-            value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql/${org.apache.jetspeed.database.default.name}/generated/test-persistence-schema.sql" />
-        <attainGoal name="j2:run.dropdrops" />
-    </goal>
-
-    <goal name="j2:run.dropdrops">
-        <java classname="org.apache.jetspeed.dbutil.ScriptUtil" fork="yes">
-            <classpath>
-                <path refid="maven.dependency.classpath" />
-                <pathelement path="${maven.build.dest}" />
-                <pathelement path="${org.apache.jetspeed.plugin.root}" />
-            </classpath>
-            <arg value="-drops" />
-            <arg value="${dropstable}" />
-        </java>
-    </goal>
+  <goal name="j2:jar.deploy.shared">
+    <attainGoal name="jar:install"/>
+    <echo>Deploying ${pom.artifactId}-${jetspeed.version}.jar to ${org.apache.jetspeed.server.shared}...</echo>   
+    <copy file="${basedir}/target/${pom.artifactId}-${jetspeed.version}.jar" 
+          todir="${org.apache.jetspeed.server.shared}"
+          overwrite="true"
+          failonerror="true"/>
+  </goal>
     
-    <!-- =============================================== -->
-	<!-- ============== PORTLET DEPLOYMENT ============= -->
-	<!-- =============================================== -->
-	
-    <goal name="j2:pam.layoutdeploy">
-        <j:set var="maven.war.final.name" value="jetspeed-layouts" />
-        <attainGoal name="j2:deploy" />
-    </goal>
+  <!-- ============================================== -->
+  <!-- ============== PORTAL DEPLOYMENT ============= -->
+  <!-- ============================================== -->
+  <goal name="j2:copy.shared.deps">
+    <attainGoal name="j2:catalina.base.shared"/>
+    <attainGoal name="j2:catalina.shared"/>
+  </goal>
+  
+  <goal name="j2:catalina.base.shared" description="Copy all base jars necessary for common container">
+    <echo>Deploys misc. jars shared/lib to Tomcat</echo>
+    <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-${pluto.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
+  </goal>
 
-    <goal name="j2:pam.demodeploy">
-        <j:set var="maven.war.final.name" value="demo" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.demoundeploy">
-        <j:set var="maven.war.final.name" value="demo" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.palmdeploy">
-        <j:set var="maven.war.final.name" value="palm" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.palmundeploy">
-        <j:set var="maven.war.final.name" value="palm" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.pamdeploy">
-        <j:set var="maven.war.final.name" value="pam" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.pamundeploy">
-        <j:set var="maven.war.final.name" value="pam" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.tsdeploy">
-        <j:set var="maven.war.final.name" value="testsuite" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.tsundeploy">
-        <j:set var="maven.war.final.name" value="testsuite" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.strutsdeploy">
-        <j:set var="maven.war.final.name" value="struts-demo" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.strutsundeploy">
-        <j:set var="maven.war.final.name" value="struts-demo" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.jpetstoredeploy">
-        <j:set var="maven.war.final.name" value="jpetstore" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.jpetstoreundeploy">
-        <j:set var="maven.war.final.name" value="jpetstore" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.jsfdeploy">
-        <j:set var="maven.war.final.name" value="jsf-demo" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.jsfundeploy">
-        <j:set var="maven.war.final.name" value="jsf-demo" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.jsfmyfacesdeploy">
-        <j:set var="maven.war.final.name" value="jsf-demo-myfaces" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.jsfmyfacesundeploy">
-        <j:set var="maven.war.final.name" value="jsf-demo-myfaces" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.securitydeploy">
-        <j:set var="maven.war.final.name" value="security" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.securityundeploy">
-        <j:set var="maven.war.final.name" value="security" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.phpdeploy">
-        <j:set var="maven.war.final.name" value="php" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.phpundeploy">
-        <j:set var="maven.war.final.name" value="php" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.perldeploy">
-        <j:set var="maven.war.final.name" value="perl" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.perlundeploy">
-        <j:set var="maven.war.final.name" value="perl" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-
-    <goal name="j2:pam.rssdeploy">
-        <j:set var="maven.war.final.name" value="rss" />
-        <attainGoal name="j2:deploy" />
-    </goal>
-
-    <goal name="j2:pam.rssundeploy">
-        <j:set var="maven.war.final.name" value="rss" />
-        <attainGoal name="j2:undeploy" />
-    </goal>
-    	
-	<!-- ================================================= -->
-	<!-- ============== COMPONENT DEPLOYMENT ============= -->
-	<!-- ================================================= -->
-	    
-	<goal name="j2:jar.deploy">
-        <attainGoal name="jar:install" />
-        <echo>Deploying ${pom.artifactId}-${jetspeed.version}.jar to ${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/lib...</echo>
-        <copy file="${basedir}/target/${pom.artifactId}-${jetspeed.version}.jar"
-            todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/lib" overwrite="true" failonerror="true" />
-    </goal>
-    
-    <goal name="j2:jar.deploy.shared">
-  	    <attainGoal name="jar:install"/>
-	    <echo>Deploying ${pom.artifactId}-${jetspeed.version}.jar to ${org.apache.jetspeed.server.shared}...</echo>   
-  	    <copy file="${basedir}/target/${pom.artifactId}-${jetspeed.version}.jar" 
-  	        todir="${org.apache.jetspeed.server.shared}"/>
-    </goal>
+  <goal name="j2:catalina.shared" description="Copy all jars necessary for common container">
+    <echo>Deploys container jars to shared/lib to Tomcat</echo>
+    <copy file="${maven.repo.local}/${plugin.groupId}/jars/jetspeed-commons-${jetspeed.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/${plugin.groupId}/jars/jetspeed-api-${jetspeed.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portlet-api/jars/portlet-api-${portlet.api.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
+  </goal>
     
     
-    <!-- ================================================= -->
-	<!-- ============== CONTENT DEPLOYMENT   ============= -->
-	<!-- ================================================= -->
-	<goal name="j2:deploy.decorations">
-	    <copy todir="${org.apache.jetspeed.portal.dir}/WEB-INF/decorations" >
-	      <fileset dir="${basedir}/src/webapp/WEB-INF/decorations" />
-	    </copy>	  
-	</goal>
-	
-	<!-- ============================================== -->
-	<!-- ============== PORTAL DEPLOYMENT ============= -->
-	<!-- ============================================== -->
-	
-	<goal name="j2:copy.shared.deps">
-        <attainGoal name="j2:catalina.base.shared" />
-        <attainGoal name="j2:catalina.shared" />
-    </goal>
-	
-	<goal name="j2:catalina.base.shared" description="Copy all base jars necessary for common container">
-        <echo>Deploys misc. jars shared/lib  to Tomcat</echo>
-        <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
-        <copy file="${maven.repo.local}/pluto/jars/pluto-${pluto.version}.jar"
-            todir="${org.apache.jetspeed.server.shared}" />
-        <copy
-            file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
-            todir="${org.apache.jetspeed.server.shared}" />
-    </goal>
+  <goal name="j2:portal.deploy">
+    <attainGoal name="j2:remove.wars"/>
+    <echo message="Deploying ${org.apache.jetspeed.portal.artifactId}"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
+    <copy file="${maven.repo.local}/${org.apache.jetspeed.portal.groupId}/wars/${org.apache.jetspeed.portal.artifactId}-${org.apache.jetspeed.portal.currentVersion}.war"
+          tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"
+          verbose="true" />
+    <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"
+           dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
 
-    <goal name="j2:catalina.shared" description="Copy all jars necessary for common container">
-        <echo>Deploys container jars to shared/lib to Tomcat</echo>
-        <copy file="${maven.repo.local}/${jetspeed.groupId}/jars/jetspeed-commons-${jetspeed.version}.jar"
-            todir="${org.apache.jetspeed.server.shared}" />
-        <copy file="${maven.repo.local}/${jetspeed.groupId}/jars/jetspeed-api-${jetspeed.version}.jar"
-            todir="${org.apache.jetspeed.server.shared}" />
-        <copy file="${maven.repo.local}/portlet-api/jars/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}" />
-    </goal>
+    <j:set var="portal.conf.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.conf.dir}"/>      
+
+    <copy file="${portal.conf.dir}/tomcat/context.xml"
+          tofile="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/${org.apache.jetspeed.portal.artifactId}.xml"
+          overwrite="true"/>
+
+    <attainGoal name="j2:catalina.base.shared"/>
+    <attainGoal name="j2:catalina.shared"/>
+  </goal>
     
-    <goal name="j2:portal.deploy">
-        <attainGoal name="j2:remove.wars" />
-        <echo message="Deploying ${pom.groupId}" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}" />
-        <copy file="${maven.repo.local}/${pom.groupId}/wars/${org.apache.jetspeed.portal.name}-${pom.currentVersion}.war"
-            tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war" verbose="true" />
-        <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"
-            dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}" />
+  <goal name="j2:minDeploy">
+      <attainGoal name="j2:portal.deploy"/>
+      <attainGoal name="j2:pam.layoutdeploy"/>
+      <attainGoal name="j2:pam.securitydeploy"/>
+      <attainGoal name="j2:db.entities"/>
+  </goal>
 
-        <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}" />
-        <j:choose>
-            <j:when test="${catalina_version_major == '5.5'}">
-                <j:set var="context_file_source" value="jetspeed-tomcat-5.5.xml" />
-            </j:when>
-            <j:otherwise>
-                <j:set var="context_file_source" value="jetspeed-tomcat-5.xml" />
-            </j:otherwise>
-        </j:choose>
-        <j:set var="context_file_target"
-            value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/${context_file_source}" tofile="${context_file_target}" overwrite="true">
-            <filterset begintoken="@" endtoken="@">
-                <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}" />
-                <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}" />
-                <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}" />
-                <filter token="URL" value="${org.apache.jetspeed.production.database.url}" />
-            </filterset>
-        </copy>
-        <attainGoal name="j2:catalina.base.shared" />
-        <attainGoal name="j2:catalina.shared" />
-    </goal>
+  <goal name="j2:nodbMinDeploy">
+      <attainGoal name="j2:portal.deploy"/>
+      <attainGoal name="j2:pam.layoutdeploy"/>
+      <attainGoal name="j2:pam.securitydeploy"/>
+  </goal>
+  
+  <goal name="j2:basicDeploy">
+      <attainGoal name="j2:minDeploy"/>
+      <attainGoal name="j2:pam.pamdeploy"/>
+      <attainGoal name="j2:pam.palmdeploy"/>
+  </goal>
+
+  <goal name="j2:nodbBasicDeploy">
+      <attainGoal name="j2:nodbMinDeploy"/>
+      <attainGoal name="j2:pam.pamdeploy"/>
+      <attainGoal name="j2:pam.palmdeploy"/>
+  </goal>
+
+  <goal name="j2:fullDeploy">
+      <attainGoal name="j2:basicDeploy"/>
+      <attainGoal name="j2:pam.demodeploy"/>
+      <attainGoal name="j2:pam.strutsdeploy"/>
+      <attainGoal name="j2:pam.jsfdeploy"/>
+      <attainGoal name="j2:pam.jsfmyfacesdeploy"/>
+      <attainGoal name="j2:pam.phpdeploy"/>
+      <attainGoal name="j2:pam.perldeploy"/>
+      <attainGoal name="j2:pam.rssdeploy"/>
+      <attainGoal name="j2:pam.jpetstoredeploy"/>
+  </goal>
+
+  <goal name="j2:nodbfullDeploy">
+      <attainGoal name="j2:nodbBasicDeploy"/>
+      <attainGoal name="j2:pam.demodeploy"/>
+      <attainGoal name="j2:pam.strutsdeploy"/>
+      <attainGoal name="j2:pam.jsfdeploy"/>
+      <attainGoal name="j2:pam.jsfmyfacesdeploy"/>
+      <attainGoal name="j2:pam.phpdeploy"/>
+      <attainGoal name="j2:pam.perldeploy"/>
+      <attainGoal name="j2:pam.rssdeploy"/>
+      <attainGoal name="j2:pam.jpetstoredeploy"/>
+  </goal>
+
+  <!-- ============================================== -->
+  <!-- ============== PORTAL CLEAN UP ============= -->
+  <!-- ============================================== -->
     
-    <goal name="j2:portal.install">
-    	<copy todir="${maven.build.dest}" overwrite="true">
-            <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/db-ojb" />
-            <filterset begintoken="@" endtoken="@">
-                <filter token="PLATFORM" value="${org.apache.jetspeed.production.database.ojb.platform}" />
-            </filterset>
-        </copy>
-        <attainGoal name="war:init" />
-        
-        <attainGoal name="war:webapp" />
-              
-        <util:available file="${maven.war.src}/WEB-INF/conf/jetspeed.properties">
-        <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties"
-            tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
-            <filterset begintoken="@" endtoken="@">
-                <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}" />
-                <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}" />
-                <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}" />
-            </filterset>
-            <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
-                in a test failure (TestSpringEngine)
-                This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
-            -->
-            <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
-                <filter token="="
-                    value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}" />
-            </filterset>
-            <filterset begintoken="autodeployment.port" endtoken="8080">
-                <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}" />
-            </filterset>
-        </copy>
-        </util:available>
-        
-        <attainGoal name="war:install" />
-    </goal>
+  <goal name="j2:remove.wars">
+      <echo>Remove war files, make sure to shutdown server first...</echo>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/palm"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/palm.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/pam.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/security.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/php"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/rss.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war"/>
+      <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+      <delete file="${context_dir}/${org.apache.jetspeed.portal.artifactId}.xml"/>
+      <delete file="${context_dir}/security.xml"/>
+      <delete file="${context_dir}/jpetstore.xml"/>
+  </goal>
+  
+  <!-- ============================================= -->
+  <!-- ============== GETTING STARTED ============== -->
+  <!-- ============================================= -->
+  
+  <goal name="j2:doStart">
+
+    <maven:property name="deployType" defaultValue="j2:fullDeploy"/>
+    <maven:property name="recreateDB" defaultValue="true"/>
+
+    <j:if test="${recreateDB}">
+      <attainGoal name="j2:db.recreate"/>
+    </j:if>
+
+    <attainGoal name="j2:remove.wars"/>
+      
+    <!-- Dependency copying -->
+    <attainGoal name="j2:copy.shared.deps"/>
+
+    <attainGoal name="${deployType}"/>
+  </goal>
+
+  <goal name="j2:quickStart" description="Creates the production DB and calls portal/maven j2:fullDeploy">
+    <j:set var="deployType" value="j2:fullDeploy"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
+
+  <goal name="j2:nodbQuickStart" description="Don't create a new production DB but call portal/maven j2:fullDeploy">
+    <j:set var="deployType" value="j2:nodbfullDeploy"/>
+    <j:set var="recreateDB" value="false"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
+
+  <goal name="j2:minStart" description="Creates the production DB and calls portal/maven j2:minDeploy">
+    <j:set var="deployType" value="j2:minDeploy"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
+
+  <goal name="j2:nodbMinStart" description="Don't create a new production DB but call portal/maven j2:minDeploy">
+    <j:set var="deployType" value="j2:nodbMinDeploy"/>
+    <j:set var="recreateDB" value="false"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
     
-    <goal name="j2:portal.hotdeploy">
-        <echo message="Hot Deploying ${pom.artifactId}, ${pom.name}" />
-        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes" overwrite="true">
-            <fileset dir="${maven.build.dir}/classes"></fileset>
-        </copy>
-        <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/" overwrite="true" verbose="true">
-            <fileset dir="${maven.src.dir}/webapp">
-                <exclude name="WEB-INF/db/**" />
-            </fileset>
-        </copy>
-    </goal>
+  <goal name="j2:basicStart" description="Creates the production DB and calls portal/maven j2:basicDeploy">
+    <j:set var="deployType" value="j2:basicDeploy"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
+
+  <goal name="j2:nodbBasicStart" description="Don't create a new production DB but call portal/maven j2:basicDeploy">
+    <j:set var="deployType" value="j2:nodbBasicDeploy"/>
+    <j:set var="recreateDB" value="false"/>
+    <attainGoal name="j2:doStart"/>
+  </goal>
     
-    <goal name="j2:fullDeploy">
-        <attainGoal name="j2:portal.deploy" />
-        <attainGoal name="j2:pam.layoutdeploy" />
-        <attainGoal name="j2:pam.demodeploy" />
-        <attainGoal name="j2:pam.palmdeploy" />
-        <attainGoal name="j2:pam.pamdeploy" />
-        <attainGoal name="j2:pam.strutsdeploy" />
-        <attainGoal name="j2:pam.jsfdeploy" />
-        <attainGoal name="j2:pam.jsfmyfacesdeploy" />
-        <attainGoal name="j2:pam.securitydeploy" />
-        <attainGoal name="j2:pam.phpdeploy" />
-        <attainGoal name="j2:pam.perldeploy" />
-        <attainGoal name="j2:pam.rssdeploy" />
-        <attainGoal name="j2:pam.jpetstoredeploy" />
+  <!-- ================================================= -->
+  <!-- ================= PLUGIN INTERNAL =============== -->
+  <!-- ================================================= -->
+  
+  <goal name="j2:_check.required.property">
+    <fail message="Required property ${required.property} undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
+          unless="${required.property}"/>
+  </goal>
 
-        <attainGoal name="j2:db.entities" />
-    </goal>
+  <goal name="j2:_check.required.properties" description="Check if the required properties are defined">
+    <j:if test="${_requiredPropertiesChecked == null}">
+      <j:set var="_requiredPropertiesChecked" value="true"/>      
+      <j:set var="required.property" value="org.apache.jetspeed.portal.home"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.portal.groupId"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.portal.artifactId"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.portal.name"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.portal.currentVersion"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.server.home"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.catalina.version.major"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.server.shared"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.deploy.war.dir"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.services.autodeployment.user"/>
+      <attainGoal name="j2:_check.required.property"/>
+      <j:set var="required.property" value="org.apache.jetspeed.services.autodeployment.password"/>
+      <attainGoal name="j2:_check.required.property"/>
+    </j:if>
+  </goal>
 
-    <goal name="j2:nodbfullDeploy">
-        <attainGoal name="j2:portal.deploy" />
-        <attainGoal name="j2:pam.layoutdeploy" />
-        <attainGoal name="j2:pam.demodeploy" />
-        <attainGoal name="j2:pam.palmdeploy" />
-        <attainGoal name="j2:pam.pamdeploy" />
-        <attainGoal name="j2:pam.strutsdeploy" />
-        <attainGoal name="j2:pam.jsfdeploy" />
-        <attainGoal name="j2:pam.jsfmyfacesdeploy" />
-        <attainGoal name="j2:pam.securitydeploy" />
-        <attainGoal name="j2:pam.phpdeploy" />
-        <attainGoal name="j2:pam.perldeploy" />
-        <attainGoal name="j2:pam.rssdeploy" />
-        <attainGoal name="j2:pam.jpetstoredeploy" />
-    </goal>
+  <goal name="j2:_set.rdbms.props">
+    <j:set var="dbase" value="${org.apache.jetspeed.target.rdbms}"/>
+    <j:choose>
+      <j:when test="${dbase == 'mssql'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="mssql"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="false"/>
+      </j:when>
+      <j:when test="${dbase == 'mysql'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="mysql"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="false"/>
+      </j:when>
+      <j:when test="${dbase == 'oracle'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="oracle"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
+      </j:when>
+      <j:when test="${dbase == 'hsql'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="hypersonic"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="false"/>
+      </j:when>
+      <j:when test="${dbase == 'postgres'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="postgresql"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
+      </j:when>
+      <j:otherwise>
+        <fail message="unsupported target database: ${org.apache.jetspeed.target.rdbms}"/>
+      </j:otherwise>
+    </j:choose>
+  </goal>
+  
+  <goal name="j2:_generate.sql"
+        description="Build SQL scripts using Torque generator for target database: ${org.apache.jetspeed.target.rdbms.name}">
+    <echo message="Using Torque schema located under: ${torque.schema.dir}"/>
+    <j:if test="${_torqueInitialized == null}">
+      <attainGoal name="torque:init"/>
+      <j:set var="_torqueInitialized" value="true"/>
+    </j:if>
+    <echo message="Generating SQL schema creation scripts for ${org.apache.jetspeed.target.rdbms.name}"/>
+    <mkdir dir="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}/schema"/>       
+    <torque-sql basePathToDbProps="sql/base/"
+                contextProperties="${torque.contextProperties}"
+                controlTemplate="${torque.template.sql}"
+                idTableXMLFile="${torque.idTableXMLFile}"
+                outputDirectory="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}/schema"
+                outputFile="report.${torque.project}.sql.generation"
+                sqldbmap="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}/schema/sqldb.map"
+                targetDatabase="${org.apache.jetspeed.target.rdbms.name}"
+                useClasspath="true">
+      <fileset dir="${torque.schema.dir}" includes="${torque.schema.sql.includes}" excludes="${torque.schema.sql.excludes}"/> 
+    </torque-sql>
+    <j:if test="${org.apache.jetspeed.target.rdbms.dropdrops}">
+      <j:set var="sql.src.path" value="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}/schema"/> 
+      <j:set var="process.database.script.goal" value="j2:_run.dropdrops"/>
+      <attainGoal name="j2:_process.all.scripts.in.path"/>   
+    </j:if>        
+  </goal>
+  
+  <goal name="j2:_copy.rdbms.sql.scripts" >
+    <!-- Copy specific DB scripts possibly also overriding the Torque-generated ones -->      
+    <copy todir="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}"
+          overwrite="true"
+          verbose="true"
+          failonerror="false"
+          flatten="true">
+      <fileset dir="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}">
+        <include name="**/*.sql"/>
+      </fileset>
+    </copy>        
+  </goal>
 
-    <goal name="j2:minDeploy">
-        <attainGoal name="j2:portal.deploy" />
-        <attainGoal name="j2:pam.layoutdeploy" />
-        <attainGoal name="j2:pam.securitydeploy" />
-        <attainGoal name="j2:db.entities" />
-    </goal>
-
-    <goal name="j2:nodbMinDeploy">
-        <attainGoal name="j2:portal.deploy" />
-        <attainGoal name="j2:pam.layoutdeploy" />
-        <attainGoal name="j2:pam.securitydeploy" />
-    </goal>
-    
-	<!-- ============================================== -->
-	<!-- ============== PORTAL CLEAN UP ============= -->
-	<!-- ============================================== -->
-    
-    <goal name="j2:remove.wars">
-        <echo>Remove war files, make sure to shutdown server first...</echo>
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/palm" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/palm.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/pam.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/security" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/security.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/php" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/rss.war" />
-        <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore" />
-        <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war" />
-        <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost" />
-        <delete file="${context_dir}/${org.apache.jetspeed.portal.name}.xml" />
-        <delete file="${context_dir}/security.xml" />
-        <delete file="${context_dir}/jpetstore.xml" />
-    </goal>
-	
-    <!-- ============================================= -->
-	<!-- ============== GETTING STARTED ============== -->
-	<!-- ============================================= -->
-	
-	<goal name="j2:doStart">
-        <maven:property name="deployType" defaultValue="j2:fullDeploy" />
-        <maven:property name="recreateDB" defaultValue="true" />
-
-        <j:if test="${recreateDB}">
-            <attainGoal name="j2:db.recreate" />
+  <!-- Use this uility goal to process all of the .sql scripts in the specified path using the specified goal -->
+  <goal name="j2:process.all.scripts.in.path" >
+    <echo>Checking for SQL scripts at path ${sql.src.path}...</echo>
+    <!-- process user custom SQL -->
+    <util:available file="${sql.src.path}">
+      <echo>Running SQL scripts in directory ${sql.src.path}...</echo>
+      <util:file name="${sql.src.path}" var="sqldir"/>
+      <j:set var="fileList" value="${sqldir.listFiles()}"/>
+      <j:forEach items="${fileList}" var="sqlfile" >
+        <j:if test="${sqlfile.name.endsWith('.sql')}" >
+          <j:set var="database.arg.script" value="${sqlfile.absolutePath}"/>
+          <attainGoal name="${process.database.script.goal}"/>
         </j:if>
+      </j:forEach>
+    </util:available>
+  </goal>
+  
+  <goal name="j2:_run.dropdrops">
+    <java classname="org.apache.jetspeed.dbutil.ScriptUtil" fork="yes">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${maven.build.dest}"/>
+        <pathelement path="${org.apache.jetspeed.plugin.root}"/>
+      </classpath>
+      <arg value="-drops"/>
+      <arg value="${database.arg.script}"/>
+    </java>
+  </goal>
 
-		<attainGoal name="j2:remove.wars" />
-        
-        <!-- Dependency copying -->
-        <attainGoal name="j2:copy.shared.deps" />
-
-		<attainGoal name="${deployType}" />
-    </goal>
-
-    <goal name="j2:quickStart" description="Creates the production DB and calls portal/maven j2:fullDeploy">
-        <j:set var="deployType" value="j2:fullDeploy" />
-        <attainGoal name="j2:doStart" />
-    </goal>
-
-    <goal name="j2:nodbQuickStart" description="Don't create a new production DB but call portal/maven j2:fullDeploy">
-        <j:set var="deployType" value="j2:nodbfullDeploy" />
-        <j:set var="recreateDB" value="false" />
-        <attainGoal name="j2:doStart" />
-    </goal>
-
-    <goal name="j2:minStart" description="Creates the production DB and calls portal/maven j2:minDeploy">
-        <j:set var="deployType" value="j2:minDeploy" />
-        <attainGoal name="j2:doStart" />
-    </goal>
-
-    <goal name="j2:nodbMinStart" description="Don't create a new production DB but call portal/maven j2:minDeploy">
-        <j:set var="deployType" value="j2:nodbMinDeploy" />
-        <j:set var="recreateDB" value="false" />
-        <attainGoal name="j2:doStart" />
-    </goal>
+  <!-- Use this uility goal to process all of the .sql scripts in the specified path -->
+  <goal name="j2:_process.all.scripts.in.path" >
+    <echo>Checking for SQL scripts at path ${sql.src.path}...</echo>
+    <!-- process user custom SQL -->
+    <util:available file="${sql.src.path}">
+      <echo>Running SQL scripts in directory ${sql.src.path}...</echo>
+      <util:file name="${sql.src.path}" var="sqldir"/>
+      <j:set var="fileList" value="${sqldir.listFiles()}"/>
+      <j:forEach items="${fileList}" var="sqlfile" >
+        <j:if test="${sqlfile.name.endsWith('.sql')}" >
+          <j:set var="database.arg.script" value="${sqlfile.absolutePath}"/>
+          <attainGoal name="${process.database.script.goal}"/>
+        </j:if>
+      </j:forEach>
+    </util:available>
+  </goal>
     
-    <!-- ====================================================== -->
-	<!-- ============== GENERATE NEW APPLICATION ============== -->
-	<!-- ====================================================== -->
-	
-	<goal name="j2:genapp.portal">
-		<fail
-            message="Required property org.apache.jetspeed.genapp.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html."
-            unless="org.apache.jetspeed.genapp.home" />
-            
-    	<mkdir dir="${org.apache.jetspeed.genapp.home}/src/webapp"/>
-    	<copy todir="${org.apache.jetspeed.genapp.home}/src/webapp" overwrite="true" failonerror="true">
-            <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />
-        </copy>
-        
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.properties"
-            tofile="${org.apache.jetspeed.genapp.home}/project.properties" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/full-portal.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/full-portal.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/project-info.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/core-build.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/core-build.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed-components.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/jetspeed-components.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/portal-project.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/project.xml" overwrite="true"
-            failonerror="true" />
-        
-        <!-- Not Currently Working
-        <maven:set plugin="maven-eclipse-plugin" property="basedir" value="${org.apache.jetspeed.genapp.home}" />
-        <attainGoal name="eclipse" />
-        -->   
-	</goal>
-	
-	<goal name="j2:genapp.portal.runtime">
+  <goal name="j2:_start.hsql">
+    <echo message="===================================="/>
+    <echo message="${maven.start.hsql.message}"/>
+    <echo message="===================================="/>
+    <java classname="org.hsqldb.Server" fork="yes">
+      <classpath>
+        <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
+      </classpath>
+      <arg value="-database"/>
+      <arg value="${org.apache.jetspeed.plugin.hsql.db}"/>
+      <arg value="-port"/>
+      <arg value="9001"/>
+      <arg value="-silent"/>
+      <arg value="true"/>
+      <arg value="-trace"/>
+      <arg value="false"/>
+    </java>
+  </goal>
+    
+  <goal name="j2:_db.execute">
+    <!-- Ugly hack (or sound fix) setting the parentScope to an empty String because
+         with maven project inheritance the size of this property is killing
+         performance when the sql task is trying to interpose property values.
+         See: http://issues.apache.org/jira/browse/JS2-322
+         Without this hack the time to run the db.create.test task (using Oracle9i)
+         increases by at least 30 seconds for each level of inheritance.
+         Note: the project generated with genapp has an inheritance level of 4!
+         Hopefully, these kind of problems are solved when we move to maven 2 ...
+    -->      
+    <j:set var="parentScope" scope="parent" value=""/>
+    <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
+         src="${database.arg.script}"
+         onerror="${database.arg.onerror}">
+      <classpath>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+        <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
+      </classpath>
+    </sql>
+  </goal>
+    
+  <goal name="j2:_db.test.properties">
+    <j:set var="org.apache.jetspeed.database.default.name" value="${org.apache.jetspeed.test.database.default.name}"/>
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+  </goal>
 
-    	<copy todir="${maven.build.dir}/${pom.artifactId}" overwrite="true" failonerror="true">
-            <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />
-        </copy>
-        
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp/WEB-INF/conf/jetspeed.properties"
-            tofile="${maven.build.dir}/${pom.artifactId}/WEB-INF/conf/jetspeed.properties" overwrite="true">
-            <filterset begintoken="@" endtoken="@">
-                <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}" />
-                <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}" />
-                <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}" />
-            </filterset>
-            <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
-                in a test failure (TestSpringEngine)
-                This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
-            -->
-            <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
-                <filter token="="
-                    value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}" />
-            </filterset>
-            <filterset begintoken="autodeployment.port" endtoken="8080">
-                <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}" />
-            </filterset>
-        </copy>        
+  <goal name="j2:_db.production.properties">
+    <j:set var="org.apache.jetspeed.database.default.name" value="${org.apache.jetspeed.production.database.default.name}"/>
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+  </goal>
+  
+  <goal name="j2:_db.create">
+    <j:set var="portal.sql.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
+    <j:set var="sql.src.path" value="${portal.sql.dir}/${org.apache.jetspeed.database.default.name}/schema"/>
+    <j:set var="database.arg.onerror" value="abort"/> 
+    <j:set var="process.database.script.goal" value="j2:_db.execute"/>
+    <attainGoal name="j2:_process.all.scripts.in.path"/>
 
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.properties"
-            tofile="${org.apache.jetspeed.genapp.home}/project.properties" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/full-portal.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/full-portal.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/project-info.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/core-build.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/core-build.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed-components.xml"
-            tofile="${org.apache.jetspeed.genapp.home}/jetspeed-components.xml" overwrite="true"
-            failonerror="true" />          
+    <j:set var="database.arg.script" value="${portal.sql.dir}/populate-db-default.sql"/>
+    <attainGoal name="j2:_db.execute"/>
 
-        
-        <!-- Not Currently Working
-        <maven:set plugin="maven-eclipse-plugin" property="basedir" value="${org.apache.jetspeed.genapp.home}" />
-        <attainGoal name="eclipse" />
-        -->   
-	</goal>    
+     <!-- process user custom SQL -->
+    <echo>Running user-defined SQL scripts...</echo>   
+    <j:set var="sql.src.path" value="${basedir}/src/sql"/>
+    <j:set var="process.database.script.goal" value="j2:_db.execute"/>
+    <attainGoal name="j2:_process.all.scripts.in.path"/>
+  </goal>
+    
+  <goal name="j2:_db.drop">
+    <j:set var="portal.sql.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
+    <j:set var="database.arg.script" value="${portal.sql.dir}/drop.sql"/>
+    <j:set var="database.arg.onerror" value="continue"/>
+    <attainGoal name="j2:_db.execute"/>
+  </goal>
+    
 </project>
-

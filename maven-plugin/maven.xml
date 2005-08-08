@@ -19,42 +19,67 @@
 <project default="java:jar" xmlns:j="jelly:core" xmlns:maven="jelly:maven" xmlns:artifact="artifact"
     xmlns:ant="jelly:ant" xmlns:util="jelly:util">
 
-    <preGoal name="java:jar-resources">
-        <copy todir="target/classes/plugin-resources/etc/db-ojb" overwrite="true" failonerror="true">
-            <fileset dir="../etc/db-ojb" />
-        </copy>
-        <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true"
-            failonerror="true">
-            <filterset begintoken="@" endtoken="@">
-                <filter token="JETSPEED_VERSION" value="${jetspeed.version}" />
-                <filter token="JETSPEED_GROUPID" value="${pom.groupId}" />
-                <filter token="PLUTO_VERSION" value="${pluto.version}" />
-                <filter token="PORTLET_API_VERSION" value="${portlet.api.version}" />
-                <filter token="SERVLET_API_VERSION" value="${servlet.api.version}" />
-                <filter token="MYFACES_VERSION" value="${myfaces.version}" />
-                <filter token="SPRING_VERSION" value="${spring.version}" />
-                <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="${portals.bridges.common.version}" />
-                <filter token="PORTALS_BRIDGES_FRAMEWORKS_VERSION" value="${portals.bridges.frameworks.version}" />
-                <filter token="PORTALS_BRIDGES_JSF_VERSION" value="${portals.bridges.jsf.version}" />
-                <filter token="PORTALS_BRIDGES_PERL_VERSION" value="${portals.bridges.perl.version}" />
-                <filter token="PORTALS_BRIDGES_PHP_VERSION" value="${portals.bridges.php.version}" />
-                <filter token="PORTALS_BRIDGES_STRUTS_VERSION" value="${portals.bridges.struts.version}" />
-                <filter token="PORTALS_BRIDGES_VELOCITY_VERSION" value="${portals.bridges.velocity.version}" />
-                <filter token="COMMONS_LOGGING_VERSION" value="${commons.logging.version}" />                
-                <filter token="LOG4J_VERSION" value="${log4j.version}" />                
-            </filterset>
-        </copy>
-        <copy file="project.xml" tofile="${basedir}/target/classes/project.xml" overwrite="true"
-            failonerror="true">
-            <filterset begintoken="$" endtoken="}">
-                <filter token="{jetspeed.version" value="${jetspeed.version}" />
-            </filterset>
-        </copy>
-    </preGoal>
+  <preGoal name="java:jar-resources">
+    <copy todir="${basedir}/target/classes/plugin-resources/db-ojb" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../etc/db-ojb">
+        <exclude name="**/*test*"/>
+      </fileset>
+    </copy>
+    <copy todir="${basedir}/target/classes/plugin-resources/conf" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../etc/conf"/>
+    </copy>
+    <copy todir="${basedir}/target/classes/plugin-resources/schema" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../etc/schema"/>
+    </copy>
+    <copy todir="${basedir}/target/classes/plugin-resources/sql" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../etc/sql"/>
+    </copy>
+    <copy todir="${basedir}/target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../src/webapp"/>
+    </copy>
+        
+    <copy file="${basedir}/../core-build.xml" todir="${basedir}/target/classes/plugin-resources/" overwrite="true" failonerror="true"/>
+    <copy file="${basedir}/../jetspeed-components.xml" todir="${basedir}/target/classes/plugin-resources/" overwrite="true" failonerror="true"/>
+    <copy file="${basedir}/../full-portal.xml" todir="${basedir}/target/classes/plugin-resources/" overwrite="true" failonerror="true"/>
+
+    <!-- make sure the plugin project.xml is mapped to a local project-info.xml  -->
+    <copy file="project.xml" todir="${basedir}/target/classes/" overwrite="true" failonerror="true">        
+      <filterset begintoken="$${basedir}/.." endtoken="project-info.xml">
+        <filter token="/" value="project-info.xml" />
+      </filterset>
+      <filterset begintoken="$" endtoken="}">
+        <filter token="{jetspeed.version" value="${jetspeed.version}" />
+      </filterset>
+    </copy>
+    <copy file="${basedir}/../project-info.xml" todir="${basedir}/target/classes/" overwrite="true" failonerror="true">
+      <filterset begintoken="$" endtoken="}">
+        <filter token="{jetspeed.version" value="${jetspeed.version}" />
+      </filterset>
+    </copy>
+    <copy file="plugin.properties" todir="${basedir}/target/classes/" overwrite="true" failonerror="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="JETSPEED_VERSION" value="${jetspeed.version}" />
+        <filter token="JETSPEED_GROUPID" value="${pom.groupId}" />
+        <filter token="PLUTO_VERSION" value="${pluto.version}" />
+        <filter token="PORTLET_API_VERSION" value="${portlet.api.version}" />
+        <filter token="SERVLET_API_VERSION" value="${servlet.api.version}" />
+        <filter token="MYFACES_VERSION" value="${myfaces.version}" />
+        <filter token="SPRING_VERSION" value="${spring.version}" />
+        <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="${portals.bridges.common.version}" />
+        <filter token="PORTALS_BRIDGES_FRAMEWORKS_VERSION" value="${portals.bridges.frameworks.version}" />
+        <filter token="PORTALS_BRIDGES_JSF_VERSION" value="${portals.bridges.jsf.version}" />
+        <filter token="PORTALS_BRIDGES_PERL_VERSION" value="${portals.bridges.perl.version}" />
+        <filter token="PORTALS_BRIDGES_PHP_VERSION" value="${portals.bridges.php.version}" />
+        <filter token="PORTALS_BRIDGES_STRUTS_VERSION" value="${portals.bridges.struts.version}" />
+        <filter token="PORTALS_BRIDGES_VELOCITY_VERSION" value="${portals.bridges.velocity.version}" />
+        <filter token="COMMONS_LOGGING_VERSION" value="${commons.logging.version}" />                
+        <filter token="LOG4J_VERSION" value="${log4j.version}" />                
+      </filterset>
+    </copy>
+  </preGoal>
 
     <goal name="deploy-plugin">
         <attainGoal name="clean" />
-        <attainGoal name="copyPortalWebApp" />
         <attainGoal name="core-deploy-plugin" />
     </goal>
 
@@ -78,120 +103,11 @@
         </util:available>                  
     </goal>
 
-    <goal name="copyPortalWebApp">
-        <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
-            <fileset dir="../portal-webapp/src/webapp" >
-              <exclude name="**/conf/override.properties"/>
-            </fileset>
-        </copy>
-        <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
-            <fileset dir="../portal-webapp/src/resources" />
-        </copy>
-<!--        
-        <copy file="${maven.repo.local}/${pom.groupId}/wars/jetspeed-layouts-${jetspeed.version}.war"
-            tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/jetspeed-layouts.war" overwrite="true"
-            failonerror="true" />
--->            
-        <copy file="../full-portal.xml" tofile="target/classes/plugin-resources/full-portal.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="../core-build.xml" tofile="target/classes/plugin-resources/core-build.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="../jetspeed-components.xml" tofile="target/classes/plugin-resources/jetspeed-components.xml" overwrite="true"
-            failonerror="true" />
-        <copy file="../portal-webapp/portal-project-info.xml"
-            tofile="${basedir}/target/classes/plugin-resources/project-info.xml" overwrite="true" failonerror="true" />            
-        <copy file="../portal-webapp/portal-project.xml"
-            tofile="${basedir}/target/classes/plugin-resources/portal-project.xml" overwrite="true" failonerror="true">
-            <filterset begintoken="@" endtoken="@">
-                <filter token="GENAPP_GROUPID" value="${org.apache.jetspeed.genapp.groupId}" />
-                <filter token="GENAPP_ARTIFACTID" value="${org.apache.jetspeed.portal.name}" />
-                <filter token="GENAPP_NAME" value="${org.apache.jetspeed.genapp.name}" />
-                <filter token="GENAPP_CURRENT_VERSION" value="${org.apache.jetspeed.genapp.currentVersion}" />
-            </filterset>
-        </copy>
-        <!-- Hack. The project properties that need to be passed to the plugin. echoproperties only works
-        with Ant 1.6 and above. -->
-        <loadproperties srcFile="../project.properties"/>
-        <echo file="${basedir}/target/classes/plugin-resources/project.properties" append="false">
-# ---------------------------------------------------------------------------
-# Dependencies
-# ---------------------------------------------------------------------------
-jetspeed.version=${jetspeed.version}
-pluto.version=${pluto.version}
-portlet.api.version=${portlet.api.version}
-servlet.api.version=${servlet.api.version}
-myfaces.version=${myfaces.version}
-spring.version=${spring.version}
-portals.bridges.common.version=${portals.bridges.common.version}
-portals.bridges.frameworks.version=${portals.bridges.frameworks.version}
-portals.bridges.jsf.version=${portals.bridges.jsf.version}
-portals.bridges.perl.version=${portals.bridges.perl.version}
-portals.bridges.php.version=${portals.bridges.php.version}
-portals.bridges.struts.version=${portals.bridges.struts.version}
-portals.bridges.velocity.version=${portals.bridges.velocity.version}
-commons.logging.version=${commons.logging.version} 
-log4j.version=${log4j.version}
-
-# Whether or not to include log4j in war files
-commons.logging.include=${commons.logging.include}
-# Whether or not to include log4j in war files.  Your container may already have this.
-log4j.include=${log4j.include}
-# Whether or not to include JTP api in war files.  Your container may already have this.
-jta.include=${jta.include}
-# You only need HSQL if you do not supply your own database
-hsql.include=${hsql.include}
-
-
-# ---------------------------------------------------------------------------
-# Database Properties
-# ---------------------------------------------------------------------------
-
-# Default production server settings.
-org.apache.jetspeed.production.database.url=${org.apache.jetspeed.production.database.url}
-org.apache.jetspeed.production.database.driver=${org.apache.jetspeed.production.database.driver}
-org.apache.jetspeed.production.database.user=${org.apache.jetspeed.production.database.user}
-org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}
-
-org.apache.jetspeed.production.jdbc.drivers.path=${org.apache.jetspeed.production.jdbc.drivers.path}
-org.apache.jetspeed.production.database.default.name=${org.apache.jetspeed.production.database.default.name}
-
-# Override this to put your database elsewhere than the plugin repo
-org.apache.jetspeed.plugin.hsql.db=${org.apache.jetspeed.plugin.hsql.db}
-
-# Default database server settings.
-org.apache.jetspeed.database.url=${org.apache.jetspeed.database.url}
-org.apache.jetspeed.database.driver=${org.apache.jetspeed.database.driver}
-org.apache.jetspeed.database.user=${org.apache.jetspeed.database.user}
-org.apache.jetspeed.database.password=${org.apache.jetspeed.database.password}
-
-org.apache.jetspeed.jdbc.drivers.path=${org.apache.jetspeed.jdbc.drivers.path}
-org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}
-
-# The database to use with OJB. Substitution value for repository_database.xml jdbc-connection-descriptor 
-# platform attribute.
-org.apache.jetspeed.production.database.ojb.platform=${org.apache.jetspeed.production.database.ojb.platform}
-     </echo>
-    </goal>
-
-    <goal name="deploy-plugin-withoutwebapp">
-        <attainGoal name="clean" />
-        <attainGoal name="core-deploy-plugin" />
-    </goal>
-
     <goal name="core-deploy-plugin">
         <attainGoal name="undeploy-plugin" />
 
         <!-- install will do the uninstall if needed for us -->
         <attainGoal name="plugin:install" />
-        <!-- get the plugin available now (like with plugin:install-now, but which doesn't install).
-            Bug: If a new version of the plugin is deployed while an older version is available
-            maven gets very confused... Haven't found a workaround for that.
-        -->
-
-        <!-- deploy the plugin to the local repository directly: 
-            using the plugin:repository-install goal would lead to another build of the jar as all plugin goals do that as 
-            prereq
-        -->
         <maven:installPlugin file="${maven.build.dir}/${maven.final.name}.jar" cache="true" />
         <artifact:install artifact="${maven.build.dir}/${maven.final.name}.jar" type="plugin" project="${pom}" />
         <unjar src="${maven.build.dir}/${maven.final.name}.jar" dest="${maven.home.local}/plugins/${maven.final.name}"
