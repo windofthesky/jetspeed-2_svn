@@ -28,6 +28,8 @@ limitations under the License.
 	    <js:service name='IdGenerator'/>
 		<js:service name='PortletRegistryComponent'/>
 		<js:service name='PageManager'/>
+		<js:service name='TemplateLocator'/>
+		<js:service name='DecorationLocator'/>
 		<js:service name='Powertools'/>        
 	</js:services>
 	

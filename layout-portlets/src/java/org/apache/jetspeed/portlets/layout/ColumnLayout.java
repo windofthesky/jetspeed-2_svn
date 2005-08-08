@@ -251,6 +251,19 @@ public class ColumnLayout implements Serializable
     }
     
     /**
+     * 
+     * Returns the index of the last row in the specified column.
+     * 
+     * @param columnNumber column form whom we ant to identify the
+     * last row.
+     * @return the index of the last row in the specified column.
+     */
+    public int getLastRowNumber(int columnNumber)
+    {
+        return nextRowNumber[columnNumber] - 1;
+    }
+    
+    /**
      * Returns an immutable Collection of all the Fragments contained within
      * this ColumnLayout in no sepcific order.
      * @return Immutable Collection of Fragments.

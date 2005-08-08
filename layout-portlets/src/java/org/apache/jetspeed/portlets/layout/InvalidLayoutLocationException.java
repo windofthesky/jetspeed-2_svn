@@ -16,6 +16,13 @@
 package org.apache.jetspeed.portlets.layout;
 
 
+/**
+ * Indicates an attempt to access a local within a layout that is outside
+ * of the bounds of that layout.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public class InvalidLayoutLocationException extends LayoutException
 {
     public InvalidLayoutLocationException(LayoutCoordinate coordinate)

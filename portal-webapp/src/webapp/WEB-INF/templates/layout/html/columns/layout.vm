@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
-#set($table = $jetspeed.columns)
 #set($sizes = $jetspeed.columnSizes)
 
 #set($myPage = $jetspeed.page)
@@ -104,11 +103,11 @@ limitations under the License.
        <table width="100%" class="portal-layout-column">
        #foreach($f in $column)       
         <tr>
-         <td width="100%">		
-			#set($coords = $columnLayout.getCoordinate($f))
-			#set($col = $coords.x)
+         <td width="100%">			
+			#set($coords = $columnLayout.getCoordinate($f))	  
+	        #set($col = $coords.x)
+	        #set($lastRow = $columnLayout.getLastRowNumber($col))
 			#set($row = $coords.y)
-
             #if($editing)<div id="_$f.id">        
             <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
               <div id="_$f.id_toolBox"  >
@@ -159,8 +158,7 @@ limitations under the License.
                  </tr>
 				 <tr>
 					<td></td>
-					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-					  #set($lastRow = $renderRequest.getAttribute("lastRowForColumn").get($col))
+					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">					  
 					  #if($row < $lastRow)						
 					    #set($downUrl = $renderResponse.createRenderURL())	
 			            $!downUrl.setParameter("move","2")

@@ -15,9 +15,16 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
+
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.i18n.KeyedMessage;
 
+/**
+ * Base exception for all layout exceptions.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public class LayoutException extends JetspeedException
 {
 

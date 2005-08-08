@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -26,12 +27,20 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.locator.LocatorDescriptor;
+import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -45,6 +54,21 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServletPortlet
 {
+    public static final String GENERIC_TEMPLATE_TYPE = "generic";
+
+    public static final String FRAGMENT_PROCESSING_ERROR_PREFIX = "fragment.processing.error.";
+
+    public static final String FRAGMENT_ATTR = "fragment";
+
+    public static final String LAYOUT_ATTR = "layout";
+
+    public static final String HIDDEN = "hidden";
+
+    public static final String LAYOUT_TEMPLATE_TYPE = "layout";
+
+    public static final String DECORATOR_TYPE = "decorator";
+    
+    
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
     
@@ -52,6 +76,9 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PageManager pageManager;
     protected IdGenerator generator;
     protected JetspeedPowerToolFactory jptFactory;
+    protected TemplateLocator templateLocator;
+    protected PortletEntityAccessComponent entityAccess;
+    protected TemplateLocator decorationLocator;
     
     public void init( PortletConfig config ) throws PortletException
     {
@@ -77,6 +104,9 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             throw new PortletException("Failed to find the JPT Factory on portlet initialization");
         }        
+        
+        templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
+        decorationLocator = (TemplateLocator) getPortletContext().getAttribute("DecorationLocator");
         
     }
 
@@ -119,12 +149,11 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         }
         super.doView(request, response);
 
-     //   request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE);
-     //   request.removeAttribute("fragment");
-     //   request.removeAttribute("layout");
-     //   request.removeAttribute("dispatcher");
     }
-
+    
+    /**
+     * 
+     */
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         response.setContentType("text/html");
@@ -310,7 +339,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         
         return tool;
     }
-
+    
+    /**
+     * 
+     * @param request
+     * @param maximized
+     * @return
+     */
     protected Fragment getFragment( RenderRequest request, boolean maximized )
     {
         String attribute = (maximized)
@@ -318,12 +353,22 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 : PortalReservedParameters.FRAGMENT_ATTRIBUTE;
         return (Fragment) request.getAttribute(attribute);       
     }
-
+   
+    /**
+     * 
+     * @param request
+     * @return
+     */
     protected Fragment getMaximizedLayout( RenderRequest request )
     {
         return (Fragment) request.getAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
     }
-
+    
+    /**
+     * 
+     * @param request
+     * @return
+     */
     protected RequestContext getRequestContext( RenderRequest request )
     {
         RequestContext requestContext = (RequestContext) request
@@ -354,5 +399,142 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     public void doEdit( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         doView(request, response);
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws TemplateLocatorException
+     */
+    protected LocatorDescriptor getTemplateLocatorDescriptor(RenderRequest request) throws TemplateLocatorException
+    {
+        RequestContext requestContext = getRequestContext(request);
+        CapabilityMap capabilityMap = requestContext.getCapabilityMap();
+        Locale locale = requestContext.getLocale();
+
+        LocatorDescriptor templateLocatorDescriptor = templateLocator.createLocatorDescriptor(null);
+        templateLocatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
+        templateLocatorDescriptor.setCountry(locale.getCountry());
+        templateLocatorDescriptor.setLanguage(locale.getLanguage());
+        return templateLocatorDescriptor;     
+    }
+    
+    
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws TemplateLocatorException
+     */
+    protected LocatorDescriptor getDecoratorLocatorDescriptor(RenderRequest request) throws TemplateLocatorException
+    {
+        RequestContext requestContext = getRequestContext(request);
+        CapabilityMap capabilityMap = requestContext.getCapabilityMap();
+        Locale locale = requestContext.getLocale();
+  
+        LocatorDescriptor decorationLocatorDescriptor = decorationLocator.createLocatorDescriptor(null);
+        decorationLocatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
+        decorationLocatorDescriptor.setCountry(locale.getCountry());
+        decorationLocatorDescriptor.setLanguage(locale.getLanguage());
+        
+        return decorationLocatorDescriptor;
+    }
+    
+    /**
+     * 
+     * @param request
+     * @param fragment
+     * @param page
+     * @return
+     * @throws TemplateLocatorException
+     * @throws ConfigurationException
+     */
+    public String decorateAndInclude(RenderRequest request, Fragment fragment, Page page) throws TemplateLocatorException, ConfigurationException
+    {   
+        String fragmentType = fragment.getType();
+        String decorator = fragment.getDecorator();
+        LocatorDescriptor decorationLocatorDescriptor = getDecoratorLocatorDescriptor(request);
+        if (decorator == null)
+        {
+            decorator = page.getDefaultDecorator(fragmentType);
+        }
+
+        // get fragment properties for fragmentType or generic
+        TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType,
+                decorationLocator, decorationLocatorDescriptor);
+        if (propsTemp == null)
+        {
+            fragmentType = GENERIC_TEMPLATE_TYPE;
+            propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType, decorationLocator,
+                    decorationLocatorDescriptor);
+        }
+
+        // get decorator template
+        Configuration decoConf = new PropertiesConfiguration(propsTemp.getAbsolutePath());
+        String ext = decoConf.getString("template.extension");
+        String decoratorPath = decorator + "/" + DECORATOR_TYPE + ext;
+        TemplateDescriptor template = null;
+        try
+        {
+            template = getDecoration(request, decoratorPath, fragmentType);
+        }
+        catch (TemplateLocatorException e)
+        {
+            String parent = decoConf.getString("extends");
+            if (parent != null)
+            {
+                template = getDecoration(request, parent + "/" + DECORATOR_TYPE + ext, fragmentType);
+            }
+        }
+
+        return  template.getAppRelativePath();
+    }
+    
+    /**
+     * 
+     * @param request
+     * @param path
+     * @param templateType
+     * @return
+     * @throws TemplateLocatorException
+     */
+    protected TemplateDescriptor getDecoration( RenderRequest request, String path, String templateType ) throws TemplateLocatorException
+    {        
+        return getTemplate(path, templateType, decorationLocator, getDecoratorLocatorDescriptor(request));
+    }
+    
+    /**
+     * 
+     * @param path
+     * @param templateType
+     * @param locator
+     * @param descriptor
+     * @return
+     * @throws TemplateLocatorException
+     */
+    protected TemplateDescriptor getTemplate( String path, String templateType, TemplateLocator locator,
+            LocatorDescriptor descriptor ) throws TemplateLocatorException
+    {
+        
+        if (templateType == null)
+        {
+            templateType = GENERIC_TEMPLATE_TYPE;
+        }
+        try
+        {
+
+            descriptor.setName(path);
+            descriptor.setType(templateType);
+
+            TemplateDescriptor template = locator.locateTemplate(descriptor);
+            return template;
+        }
+        catch (TemplateLocatorException e)
+        {
+            log.error("Unable to locate template: " + path, e);
+            System.out.println("Unable to locate template: " + path);
+            throw e;
+        }
     }
 }

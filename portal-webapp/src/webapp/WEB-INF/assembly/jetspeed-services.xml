@@ -71,6 +71,12 @@ limitations under the License.
           <entry key="HeaderResource">
             <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory"/>
           </entry>
+		  <entry key="TemplateLocator">
+            <ref bean="TemplateLocator"/>
+          </entry>
+		  <entry key="DecorationLocator">
+            <ref bean="DecorationLocator"/>
+          </entry>		  
   	   	</map>
   	   </constructor-arg>
   </bean>

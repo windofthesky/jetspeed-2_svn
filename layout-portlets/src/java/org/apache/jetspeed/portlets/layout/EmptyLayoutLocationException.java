@@ -16,6 +16,13 @@
 package org.apache.jetspeed.portlets.layout;
 
 
+/**
+ * This exception indicates that an attempt to access a layout
+ * coordinate that does not contain a Fragment.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @see org.apache.jetspeed.portlets.layout.ColumnLayout
+ */
 public class EmptyLayoutLocationException extends LayoutException
 {
     public EmptyLayoutLocationException(int column, int row)

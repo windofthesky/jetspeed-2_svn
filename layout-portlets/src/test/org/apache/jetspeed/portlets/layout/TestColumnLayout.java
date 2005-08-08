@@ -81,7 +81,8 @@ public class TestColumnLayout extends MockObjectTestCase
         
         assertEquals(3, layout.getColumns().size());
         
-        
+        assertEquals(2, layout.getLastRowNumber(0));
+        assertEquals(2, layout.getLastRowNumber(1));       
     }
 
     public void testSameRowSameColumn() throws Exception
