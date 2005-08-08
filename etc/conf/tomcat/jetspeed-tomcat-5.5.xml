@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<Context path="/jetspeed" docBase="jetspeed" crossContext="true">
+<Context path="/@CONTEXT@" docBase="@CONTEXT@" crossContext="true">
 
   <Realm className="org.apache.catalina.realm.JAASRealm"
          appName="Jetspeed"
