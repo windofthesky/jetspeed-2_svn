@@ -17,7 +17,7 @@
 <project default="uberjar" xmlns:j="jelly:core" xmlns:ant="jelly:ant">
 
     <preGoal name="jar:jar">
-        <copy file="../../portal-webapp/src/webapp/WEB-INF/tld/portlet.tld"
+        <copy file="../../src/webapp/WEB-INF/tld/portlet.tld"
             toDir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy" />
     </preGoal>
 

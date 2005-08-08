@@ -24,9 +24,9 @@ package org.apache.jetspeed;
  */
 public class PortalTestConstants
 {
-    public final static String JETSPEED_PROPERTIES_PATH = "../../portal-webapp/src/webapp/WEB-INF/conf/jetspeed.properties";
+    public final static String JETSPEED_PROPERTIES_PATH = "../../src/webapp/WEB-INF/conf/jetspeed.properties";
     
-    public final static String PORTAL_WEBAPP_PATH = "../../portal-webapp/src/webapp";
+    public final static String PORTAL_WEBAPP_PATH = "../../src/webapp";
     
-    public static final String JETSPEED_APPLICATION_ROOT = "../../portal-webapp/src/webapp";
+    public static final String JETSPEED_APPLICATION_ROOT = "../../src/webapp";
 }

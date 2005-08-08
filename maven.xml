@@ -80,14 +80,14 @@
 
     <goal name="allTest" description="Test all components">
         <j:set var="maven.test.skip" value="false" scope="parent" />
-        <maven:reactor basedir="${basedir}" includes="portal-webapp/project.xml,components/*/project.xml"
+        <maven:reactor basedir="${basedir}" includes="components/*/project.xml"
             excludes="applications/project.xml" goals="test" banner="Testing..." ignoreFailures="false" />
     </goal>
 
     <goal name="subClean" description="Clean all subprojects">
 
         <maven:reactor basedir="${basedir}"
-            includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,portal-webapp/project.xml"
+            includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml"
             excludes="applications/project.xml,taglibs/project.xml,portals-bridges/project.xml" goals="clean"
             banner="Cleaning" ignoreFailures="true" />
         <maven:reactor basedir="${basedir}"
