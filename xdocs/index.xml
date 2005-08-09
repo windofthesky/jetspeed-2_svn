@@ -46,7 +46,7 @@ The data presented via Jetspeed is independent of content type, This means that 
 XML,RSS or SMTP can be integrated with Jetspeed. The actual presentation of the data is 
 handled via ates XSL and delivered to the user for example via the combination of Java Server Pages (JSPs) 
 and HTML. Jetspeed provides support for templating and content publication frameworks such as 
-<a href="http://xml.apache.org/cocoon/">Cocoon</a>, <a href="http://www.webmacro.org/">WebMacro</a> and 
+<a href="http://cocoon.apache.org">Cocoon</a>, <a href="http://www.webmacro.org/">WebMacro</a> and 
 <a href="http://jakarta.apache.org/velocity/">Velocity</a>. Note that outside of regular browser Jetspeed also supports WAP devices.
 </p>
       <p>
