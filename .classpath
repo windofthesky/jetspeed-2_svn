@@ -114,5 +114,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-php-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-struts-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-velocity-0.4-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>	
 	<classpathentry kind="output" path="bin"/>
 </classpath>
