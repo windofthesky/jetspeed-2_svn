@@ -48,11 +48,6 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
      */
     public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";
 
-    private static final int MAJOR_VERSION = 2;
-    private static final int MINOR_VERSION = 0;
-    private static final String JETSPEED_APPLICATION_INFO =
-        "Jakarta Jetspeed Portal Server, Version " + MAJOR_VERSION + "." + MINOR_VERSION;
-
     private ServletContext servletContext;
     private MutablePortletApplication application;
 
@@ -64,12 +59,12 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public int getMajorVersion()
     {
-        return MAJOR_VERSION;
+        return ContainerInfo.getMajorSpecificationVersion();
     }
 
     public int getMinorVersion()
     {
-        return MINOR_VERSION;
+        return ContainerInfo.getMinorSpecificationVersion();
     }
 
     // Delegated methods
@@ -203,7 +198,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public String getServerInfo()
     {
-        return JETSPEED_APPLICATION_INFO;
+        return ContainerInfo.getServerInfo();
     }
 
     // internal portlet context implementation
