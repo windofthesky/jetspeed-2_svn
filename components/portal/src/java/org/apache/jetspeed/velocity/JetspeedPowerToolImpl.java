@@ -688,44 +688,6 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
             PortletWindow window = windowAccess.getPortletWindow(fragment);
             String resourceBase = getPageBasePath();
 
-            if ( !layout )
-            {
-                if (state.equals(WindowState.NORMAL))
-                {
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
-                    }
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
-                    }
-                }
-                else if (state.equals(WindowState.MAXIMIZED))
-                {
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
-                    }
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
-                    }
-                }
-                else
-                // minimized
-                {
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
-                    }
-                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
-                    }
-                }
-            }
-            
             if ( !layout || pageActionAccess.isEditAllowed() )
             {
                 if (mode.equals(PortletMode.VIEW))
@@ -767,6 +729,46 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
                     }
                 }
             }
+
+
+            if ( !layout )
+            {
+                if (state.equals(WindowState.NORMAL))
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
+                    }
+                }
+                else if (state.equals(WindowState.MAXIMIZED))
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
+                    }
+                }
+                else
+                // minimized
+                {
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED, resourceBase));
+                    }
+                    if ( pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
+                    {
+                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL, resourceBase));
+                    }
+                }
+            }
+            
 
             return actions;
         }
