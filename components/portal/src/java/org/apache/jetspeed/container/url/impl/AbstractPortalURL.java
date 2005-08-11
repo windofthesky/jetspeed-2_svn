@@ -93,23 +93,19 @@ public abstract class AbstractPortalURL implements PortalURL
         this.serverPort = request.getServerPort();
         this.serverScheme = request.getScheme();
         this.secure = request.isSecure();
-        StringBuffer buffer = new StringBuffer(this.serverScheme);
-        buffer.append("://");
-        buffer.append(this.serverName);
-        if ((this.serverScheme.equals(HTTP) && this.serverPort != 80) ||
-                (this.serverScheme.equals(HTTPS) && this.serverPort != 443))
-        {
-            buffer.append(":");
-            buffer.append(this.serverPort);
-        }
-        if ( secure )
-        {
-            this.secureBaseURL = buffer.toString();
-        }
-        else
-        {
-            this.nonSecureBaseURL = buffer.toString();
-        }
+        StringBuffer buffer;
+	
+        buffer = new StringBuffer(HTTPS);
+	buffer.append("://").append(this.serverName);
+	if(this.serverPort != 443 && this.serverPort != 80)
+	    buffer.append(":").append(this.serverPort);
+	this.secureBaseURL = buffer.toString();
+	    
+        buffer = new StringBuffer(HTTP);
+        buffer.append("://").append(this.serverName);
+        if(this.serverPort != 443 && this.serverPort != 80)
+             buffer.append(":").append(this.serverPort);
+        this.nonSecureBaseURL = buffer.toString();
     }
     
     protected void decodeBasePath(HttpServletRequest request)
@@ -161,7 +157,7 @@ public abstract class AbstractPortalURL implements PortalURL
         // TODO: delivering both secure and non-secure baseURL for PLT.7.1.2
         //       currently only the baseURL as decoded (secure or non-secure) is returned
         //       and the secure parameter is ignored
-        return this.secure ? secureBaseURL : nonSecureBaseURL;
+        return secure ? secureBaseURL : nonSecureBaseURL;
     }
     
     public String getBasePath()
