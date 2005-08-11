@@ -1,343 +1,790 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2004 The Apache Software Foundation
-    
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    
-    http://www.apache.org/licenses/LICENSE-2.0
-    
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
 -->
 <document>
-    <properties>
-        <title>Getting Started with Jetspeed 2</title>
-        <subtitle>Getting up and running quickly</subtitle>
-        <authors>
-            <person name="David Sean Taylor" email="taylor@apache.org" />
-            <person name="Ate Douma" email="ate@apache.org" />
-            <person name="David Le Strat" email="dlestrat@apache.org" />
-        </authors>
-    </properties>
-    <body>
-        <section name="Requirements">
-            <p>
-                It is expected that the user is familiar with both the
-                <a href="http://maven.apache.org">Apache Maven</a>
-                project tool and the
-                <a href="http://ant.apache.org">Apache Ant</a>
-                build tool.
-            </p>
-            <ul>
-                <li>
-                    <a href="http://ant.apache.org/bindownload.cgi">Ant 1.5</a>
-                    or higher
-                </li>
-                <li>
-                    <a href="http://maven.apache.org/start/download.html">Maven 1.0</a>
-                    or higher
-                </li>
-                <li>Java 1.4.2_02 or higher</li>
-                <li>
-                    Servlet 2.3:
-                    <br />
-                    Tomcat 5.0.30 (or higher)
-                    <br />
-                    <b>or</b>
-                    <br />
-                    Tomcat 5.5.8 (or higher)
-                </li>
-            </ul>
-        </section>
-        <section name='1. Get Maven Ready'>
-            <p>If you have not already done so, download and install Maven.</p>
-        </section>
-        <section name='2. Build Properties'>
-            <p>
-                Please set these values in your ${USER_HOME}/
-                <code>build.properties</code>
-                file:
-            </p>
-            <table>
-                <tr>
-                    <th>property</th>
-                    <th>example</th>
-                    <th>default in /project.properties and plugin.properties</th>
-                    <th>what is it?</th>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.portal.name</td>
-                    <td>jetspeed</td>
-                    <td>jetspeed</td>
-                    <td>
-                        The name of the portal application. When using j2:genapp.portal. This property should be set to the new portal application name. See the
-                        section on Creating a new Portal Application.
-                    </td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.project.home</td>
-                    <td>/home/apache/jetspeed-2/</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>The root of your Jetspeed-2 source installation (see example on left).</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.server.home</td>
-                    <td>${CATALINA_HOME}/</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>The root of your Tomcat server installation.</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.catalina.version.major</td>
-                    <td>5</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>Are you using Tomcat 5.0.x (use: 5) or 5.5.x? (use: 5.5)</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.server.shared</td>
-                    <td>${org.apache.jetspeed.server.home}/shared/lib/</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>The location of the shared jars in your Tomcat installation.</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.deploy.war.dir</td>
-                    <td>${org.apache.jetspeed.server.home}/webapps/</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>The location to deploy web application in Tomcat.</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.services.autodeployment.user</td>
-                    <td>your-tomcat-manager-user</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>a Tomcat user with the manager role. See the Tomcat Configuration section below.</td>
-                </tr>
-                <tr>
-                    <td>org.apache.jetspeed.services.autodeployment.password</td>
-                    <td>your-tomcat-manager-user-password</td>
-                    <td>
-                        <i>no default</i>
-                    </td>
-                    <td>The password of the Tomcat manager user.</td>
-                </tr>
-                <tr>
-                    <td>jetspeed.version</td>
-                    <td>2.0-M4-SNAPSHOT</td>
-                    <td>Defaults to SVN HEADS deafult vault which, as of the last update of this document is 2.0-M4-SNAPSHOT</td>
-                    <td>The jetspeed version. Required to resolve Jetspeed build dependencies.</td>
-                </tr>
-            </table>
-            <p>
-                To develop or deploy Jetspeed with another database (not the default HSQL), see the property configuration in the
-                <a href='database.html'>Database Configuration documentation</a>
-                .
-            </p>
-        </section>
-        <section name="3. Tomcat Configuration">
-            <p>
-                Jetspeed 2 now can use the Tomcat manager application for managing portlet applications through its new Portlet Application Lifecycle Manager
-                Portlet. To be able to do so it needs a configured Tomcat user with the predefined 'manager' role in the ${CATALINA_HOME}/conf/tomcat-users.xml.
-            </p>
-            <p>
-                A minimal example tomcat-users.xml could look like:
-                <source>
-                    <![CDATA[
-<?xml version='1.0' encoding='utf-8'?>
+  <properties>
+    <title>Getting Started with Jetspeed 2</title>
+    <subtitle>Getting up and running quickly</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org" />
+      <person name="Ate Douma" email="ate@apache.org" />
+      <person name="David Le Strat" email="dlestrat@apache.org" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Requirements">
+      <p>
+        It is expected that the user is familiar with both the <a href="http://maven.apache.org">Apache Maven</a>
+        project tool and the <a href="http://ant.apache.org">Apache Ant</a> build tool.
+      </p>
+      <ul>
+        <li>
+          <a href="http://ant.apache.org/bindownload.cgi">Ant 1.5</a>
+          or higher
+        </li>
+        <li>
+          <a href="http://maven.apache.org/start/download.html">
+            Maven 1.0
+          </a>
+          or higher
+        </li>
+        <li>Java 1.4.2_02 or higher</li>
+        <li>
+          Servlet 2.3:
+          <br />
+          Tomcat 5.0.30 (or higher)
+          <br />
+          <b>or</b>
+          <br />
+          Tomcat 5.5.8 (or higher)
+        </li>
+      </ul>
+    </section>
+    <section name='1. Get Maven Ready'>
+      <p>
+        If you have not already done so, download and install Maven.
+      </p>
+    </section>
+    <section name='2. Jetspeed build and maven-plugin Properties'>
+      <p>
+        If you are going to build Jetspeed directly from the source or want to setup a custom portal you need to set a
+        few properties.
+      </p>
+      <p>
+        Creating your own custom portal is very easy with the maven plugin provided by Jetspeed 2. And, it is used when
+        you build jetspeed from source as well. In fact, the jetspeed-2 build procedure is just one example of a custom
+        portal configuration and setup.
+      </p>
+      <p>
+        The Jetspeed 2 maven-plugin defines default values for most of the properties you can set, but not all. When you
+        download or checkout the jetspeed-2 source tree, you'll see it contains a project.properties file in the root
+        folder overriding and setting some of these properties.
+      </p>
+      <p>
+        As said before: not all properties are provided with a default value: you <i>must</i> specify a few yourself.
+        And you'll most likely want to override some others.
+      </p>
+      <p>
+        Set or override the build or maven-plugin properties in your <code>${USER_HOME}/build.properties</code> file.
+      </p>
+      <subsection name="Required Portal Configuration Properties">
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.home</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will (re)create or update your custom portal maven project configuration
+              (with goal <code>j2:portal.conf.project</code>).
+              <br />
+              Example: <code>/home/myportal/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.groupId</code>
+            </td>
+            <td>
+              The (maven) short name of your portal project group.
+              <br />
+              This value is used for the maven repository folder in which the project artifacts (like the portal war
+              file) is stored.
+              <br />
+              Example: <code>myprojects</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.artifactId</code>
+            </td>
+            <td>
+              The (maven) short name of your portal project.
+              <br />
+              This value is used for the portal war file and the (portal) web application context name.
+              <br />
+              Example: <code>myportal</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.name</code>
+            </td>
+            <td>
+              The (maven) full name of your portal project.
+              <br />
+              This value is used by maven for generating JavaDoc titles.
+              <br />
+              Example: <code>My Test Portal</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.currentVersion</code>
+            </td>
+            <td>
+              The current version of your portal project.
+              <br />
+              This value is used by maven as name postfix for the generated artifacts.
+              <br />
+              Example: <code>1.0</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Optional Portal Configuration Properties">
+        <p>
+          The following properties all specify a subfolder of the <code>${org.apache.jetspeed.portal.home}</code>
+          location as defined above.
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.conf.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy application server specific configuration files
+              as a tomcat application context descriptor.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.conf.tomcat</code>.
+            </td>
+            <td>
+              <i>target/portal-conf</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.sql.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy portal and database server specific sql DDL and
+              DML scripts.
+              <br />
+              This folder and its contents is always (re)created by plugin goal <code>j2:portal.conf.sql</code>.
+            </td>
+            <td>
+              <i>target/portal-sql</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.db.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will create its build-in HSQLDB database(s).
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:start.production.server</code>
+              or <code>j2:start.test.server</code>.
+            </td>
+            <td>
+              <i>target/portal-db</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.webapp.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will copy the standard jetspeed web application resources.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.copy.webapp</code>.
+            </td>
+            <td>
+              <i>target/${org.apache.jetspeed.portal.artifactId}</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.target.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy runtime portal configuration files.
+              <br />
+              These configuration files contain values derived from build/plugin properties for the portal and OJB.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.conf.jetspeed</code>
+              and goal <code>j2:portal.conf.ojb</code>.
+            </td>
+            <td>
+              <i>target/${org.apache.jetspeed.portal.artifactId}</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Required Application Server Properties">
+        <p>
+          <i>
+            Note: The maven-plugin currently only supports the Tomcat Server 5.0.x or 5.5.x
+          </i>
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.server.home</code>
+            </td>
+            <td>
+              The root folder of your Tomcat server installation.
+              <br />
+              Example: <code>${CATALINA_HOME}/</code>.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.server.shared</code>
+            </td>
+            <td>
+              The location of the shared jars in your Tomcat installation.
+              <br />
+              Example: <code>${org.apache.jetspeed.server.home}/shared/lib/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.deploy.war.dir</code>
+            </td>
+            <td>
+              The location of web applications in your Tomcat installation.
+              <br />
+              Example: <code>${org.apache.jetspeed.server.home}/webapps/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.services.autodeployment.user</code>
+            </td>
+            <td>
+              A Tomcat user with the manager role.
+              <br />
+              Used to access the Tomcat Manager application from within the portal, explained below.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.services.autodeployment.password</code>
+            </td>
+            <td>
+              The password of the Tomcat user above.
+              <br />
+              Used to access the Tomcat Manager application from within the portal, explained below.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.catalina.version.major</code>
+            </td>
+            <td>
+              The major version of the Tomcat server you are using: 5 or 5.5
+              <br />
+              Example: <code>5.5</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Optional Database Server Properties">
+        <p>
+          Jetspeed-2 and its maven-plugin uses, as well as provides, by default a HSQLDB database.
+        </p>
+        <p>
+          If you want to use a different database you will need to override the following properties:
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.default.name</code>
+            </td>
+            <td>
+              The type of database you are using. Used for sql script generation with Torque.
+              <br />
+              Currently supported databases (with corresponding Torque target database name):
+              <ul>
+                <li>hsql (hypersonic)</li>
+                <li>oracle (oracle)</li>
+                <li>mysql (mysql)</li>
+                <li>postgres (postresql)</li>
+                <li>mssql (mssql)</li>
+              </ul>
+            </td>
+            <td>hsql</td>
+          </tr>
+          <tr>
+            <td>
+              <code>
+                org.apache.jetspeed.production.database.ojb.platform
+              </code>
+            </td>
+            <td>
+              The type of database you are using as understood by OJB
+              <a href="http://db.apache.org/ojb/docu/guides/platforms.html#Selecting+a+platform+profile">
+                (the platform property)
+              </a>
+              <br />
+              Currently supported values:
+              <ul>
+                <li>Hsqldb</li>
+                <li>Oracle or Oracle9i</li>
+                <li>MySQL</li>
+                <li>PostgreSQL</li>
+                <li>MsSQLServer</li>
+              </ul>
+            </td>
+            <td>Hsqldb</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.url</code>
+            </td>
+            <td>The jdbc connection url</td>
+            <td>jdbc:hsqldb:hsql://127.0.0.1:9001</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.user</code>
+            </td>
+            <td>The database user name to connect with.</td>
+            <td>sa</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.password</code>
+            </td>
+            <td>The database user its password to connect with.</td>
+            <td>
+              <i>empty</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.driver</code>
+            </td>
+            <td>The jdbc driver class name</td>
+            <td>org.hsqldb.jdbcDriver</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.jdbc.drivers.path</code>
+            </td>
+            <td>
+              A Java classpath style path to the jdbc driver classes or jar(s) needed for connecting to the database.
+              <br />
+              Example: <code>/lib/ojdbc14.jar;/lib/nls_charset12.jar</code>
+            </td>
+            <td>
+              <i>empty</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Example: A minimal custom portal configuration">
+        <p>
+          Make sure you have define at least the required properties as described above in your
+          <code>${USER_HOME}/build.properties</code>. A minimal custom portal configuration using the default HSQLDB
+          database can be something like:
+          <source>
+            <![CDATA[
+# required portal configuration properties          
+org.apache.jetspeed.portal.home           = /home/myportal/
+org.apache.jetspeed.portal.groupId        = myprojects
+org.apache.jetspeed.portal.artifactId     = myportal
+org.apache.jetspeed.portal.name           = My Test Portal
+org.apache.jetspeed.portal.currentVersion = 1.0
+
+# required application server properties
+org.apache.jetspeed.server.home                      = ${CATALINA_HOME}/
+org.apache.jetspeed.server.shared                    = ${org.apache.jetspeed.server.home}/shared/lib/
+org.apache.jetspeed.deploy.war.dir                   = ${org.apache.jetspeed.server.home}/webapps/
+org.apache.jetspeed.services.autodeployment.user     = j2deployer
+org.apache.jetspeed.services.autodeployment.password = xxxxx
+org.apache.jetspeed.catalina.version.major           = 5.5]]>
+          </source>
+          <i>
+            Note: If you're going to build the default Jetspeed 2 portal directly from the source only the
+            <code>org.apache.jetspeed.portal.home</code> property is required from the set of required portal
+            configuration properties.
+          </i>  
+        </p>
+      </subsection>
+    </section>
+    <section name="3 Tomcat Configuration">
+      <p>
+        Jetspeed 2 can use the Tomcat Manager application for managing portlet applications with the Portlet Application
+        Lifecycle Manager Portlet (PALM). To be able to do so it needs a configured Tomcat user with the predefined
+        'manager' role in the ${org.apache.jetspeed.server.home}/conf/tomcat-users.xml.
+      </p>
+      <p>
+        A minimal example tomcat-users.xml can look like:
+        <source>
+          <![CDATA[
 <tomcat-users>
-	<role rolename="manager"/>
-    <user username="j2deployer" password="j2deployer" roles="manager"/>
+  <role rolename="manager"/>
+    <user username="j2deployer" password="xxxxx" roles="manager"/>
 </tomcat-users>]]>
-                </source>
-                Make sure to use a more appropriate username and password.
-                <br />
-                With the above example the required autodeployment properties should be set as:
-                <source>
-                    <![CDATA[
-org.apache.jetspeed.services.autodeployment.user=j2deployer
-org.apache.jetspeed.services.autodeployment.password=j2deployer
-                ]]>
-                </source>
-            </p>
-            <subsection name="Tomcat 5.5.9 on Windows">
-                <p>
-                    To have redeployment and undeployment working properly when using Tomcat 5.5.9 on Windows you have to set the global Context attribute
-                    "antiJARLocking" to true.
-                </p>
-                <p>
-                    Thus, in $CATALINA_HOME\conf\context.xml use:
-                    <source>
-                        <![CDATA[
+        </source>
+        <i>
+          The attribute values for username and password must correspond to the specified values for
+          <code>${org.apache.jetspeed.services.autodeployment.user}</code> and 
+          <code>${org.apache.jetspeed.services.autodeployment.user}</code> as described above.
+        </i>
+      </p>
+      <subsection name="Tomcat 5.5.9 on Windows">
+        <p>
+          To have redeployment and undeployment working properly when using Tomcat 5.5.9 on Windows you have to set the
+          global Context attribute "antiJARLocking" to true.
+        </p>
+        <p>
+          In ${org.apache.jetspeed.server.home}\conf\context.xml use:
+          <source>
+            <![CDATA[
     <Context antiJARLocking="true">
     ...
     </Context>]]>
-                    </source>
-                </p>
-            </subsection>
-        </section>
-        <section name='4. Building Jetspeed 2'>
-            <p>
-                Build the portal and all components for Jetspeed-2. If you are building Jetspeed 2 for the first time, the Jetspeed 2 maven plugin is most
-                likely not set up. Run:
-            </p>
-            <source test="">
-                <![CDATA[
-cd ${jetspeed-2-home}
-maven initMavenPlugin allClean allBuild
-]]>
+          </source>
+        </p>
+      </subsection>
+    </section>
+    <section name="4. Creating a new Portal Application">
+      <p>
+        Now we're going to configure, setup and build a new custom portal application using the Jetspeed-2 maven-plugin.
+      </p>
+      <subsection name="4.1 Set the maven remote repository lookup configuration">
+        <p>
+          To be able to setup a Jetspeed 2 based portal the maven remote repository lookup needs to be configured
+          properly in your <code>${USER_HOME}/build.properties</code>:
+          <source>
+            <![CDATA[
+maven.repo.remote = http://www.bluesunrise.com/maven/, http://www.ibiblio.org/maven/, \
+                    http://dist.codehaus.org/, http://cvs.apache.org/repository]]>
+          </source>
+          <i>
+            Note: the order in which these repositories must be specified is significant!
+          </i>
+        </p>
+      </subsection>
+      <subsection name="4.2 Install the Jetspeed 2 maven-plugin">
+        <p>
+          The first time, and when you want to upgrade to a newer version of Jetspeed 2, you need to install the
+          maven-plugin as follows:
+          <source>
+            <![CDATA[
+maven -DartifactId=maven-jetspeed2-plugin -DgroupId=jetspeed2 -Dversion=2.0-M4-SNAPSHOT plugin:download]]>
+          </source>
+          <i>
+            Note: you can set the version flag to the specific version you want to install, 2.0-M4-SNAPSHOT is just an
+            example here.
+          </i>
+        </p>
+      </subsection>
+      <subsection name="4.3 Generate a new portal project">
+        <p>
+          Once you have the maven-plugin installed and set properties as needed, generate a default portal configuration
+          using the plugin as follows:
+          <source>
+            <![CDATA[
+maven j2:portal.genapp]]>
+          </source>
+          <i>
+            This maven goal actually executes several subgoals which are further described in the 
+            <a href="j2-maven-plugin.html">maven-plugin documentation</a> itself.
+          </i>
+        </p>
+      </subsection>
+      <subsection name="4.5 Further customization of the portal">
+        <p>
+          This section doesn't specify anything to do. After the portal project is generated you can adapt and customize
+          it to your taste by overriding and merging your own configurations and extensions.
+        </p>
+        <p>
+          You can regenerate or update (part of) your portal project with the <code>j2:portal.genapp</code> goal as
+          described in the previous section or use its subgoals directly. 
+        </p>
+      </subsection>
+      <subsection name="4.4 Build the portal">
+        <p>
+          Once your portal configuration and setup is ready, you can build and install the portal application in your
+          local maven repository (as needed for deployment) using the standard maven goal:
+          <source>
+            <![CDATA[
+maven war:install]]>
+          </source>
+        </p>
+        <p>
+          You are now ready to deploy the new portal application. For this, skip the following section on building the
+          Jetspeed 2 portal from source and continue with the <a href="#6__Deploy_and_Run">deployment</a> section.
+        </p>
+      </subsection>
+    </section>
+    <section name='5. Build Jetspeed 2 from source'>
+      <p>
+        Build the Jetspeed 2 portal directly from the source is somewhat easier to do but should only be done if you
+        don't want to create a new, customizable portal. 
+      </p>
+      <subsection name="5.1 Setup the Jetspeed 2 source and build properties">
+        <p>
+          The Jetspeed 2 source contains a <code>project.properties</code> file which provides all of the required 
+          portal configuration settings as described <a href="#Required_Portal_Configuration_Properties">above</a>.
+        </p>
+        <p>
+          You should <i><b>not</b></i> define any of those properties in your <code>${USER_HOME}/build.properties</code>.
+          <br />
+          Instead, you <i>must</i> set a <code>org.apache.jetspeed.project.home</code> property, specifying the location
+          where you expanded the downloaded source or checked out the source from subversion, like:
+          <source>
+            <![CDATA[
+# required Jetspeed 2 portal configuration property for building from the source
+org.apache.jetspeed.project.home = /home/apache/jetspeed-2/]]>
+          </source>
+          <i>
+            Note: you still need to specify the required application server properties as described
+            <a href="#Required_Application_Server_Properties">above</a>.
+          </i>
+        </p>
+        <p>
+          The Jetspeed 2 project.properties uses this property to define the required 
+          <code>org.apache.portal.home</code>:
+          <source>
+            <![CDATA[
+org.apache.jetspeed.portal.home = ${org.apache.jetspeed.project.home}]]>
+          </source>
+          So, they are the same when you build the Jetspeed 2 portal from the source.
+        </p>
+        <p>
+          When you are going to deploy the portal as described further below, you'll see references to the
+          <code>org.apache.jetspeed.portal.home</code> which you can translate with the root folder of your Jetspeed 2
+          source.
+        </p>
+        <p>
+          If you want to run the testcases when building the Jetspeed 2 sources <i>and</i> don't want to use the default
+          HSQLDB test database, you need to override the default test database properties, similar to the production
+          database properties as described <a href="#Optional_Database_Server_Properties">above</a>:
+          <ul>
+            <li><code>org.apache.jetspeed.test.database.default.name</code></li>
+            <li><code>org.apache.jetspeed.test.database.ojb.platform</code></li>
+            <li><code>org.apache.jetspeed.test.database.url</code></li>
+            <li><code>org.apache.jetspeed.test.database.user</code></li>
+            <li><code>org.apache.jetspeed.test.database.password</code></li>
+            <li><code>org.apache.jetspeed.test.database.driver</code></li>
+            <li><code>org.apache.jetspeed.test.database.drivers.path</code></li>
+          </ul>
+          <i>
+            Note: due to outstanding issue <a href="http://issues.apache.org/jira/browse/JS2-320">JS2-320</a> you
+            currently <b>must</b> use hard coded values for the test database properties.
+          </i>
+        </p>
+      </subsection>
+      <subsection name="Initialize the maven-plugin">
+        <p>
+          Instead of downloading and installing the Jetspeed 2 maven-plugin, you are going to build and install it
+          directly from the source. You will need to repeat this every time you update to a newer version of Jetspeed 2
+          or change its project configuration, the plugin itself or the resources used by the plugin. 
+        </p>
+        <p>
+          Build and install the maven-plugin as follows from the root directory of the Jetspeed-2 source:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.project.home}
+maven initMavenPlugin]]>
+          </source>
+        </p>
+      </subsection>
+      <subsection name="Optional: start the HSQLDB test database first">
+        <p>
+          If you are going to run the testcases and are using the default HSQLDB database configuration, you will need
+          to start the test database before building Jetspeed 2 in a <i>separate</i> console:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.project.home}
+maven j2:start.test.server]]>
+          </source>
+        </p>
+        <p>
+          After the build is finished you can stop the database and close this console with a <code>Ctrl-C</code>.
+        </p>
+      </subsection>
+      <subsection name="Build the Jetspeed 2 portal and demo portlet applications">
+        <p>
+          For a full build and installation of the portal and the demo portlet applications in your local maven 
+          repository run:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.project.home}
+maven allClean allBuild]]>
+          </source>
+        </p>      
+        <p>
+          But, if you also want to run the testcases during the build run the following instead:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.project.home}
+maven -Dmaven.test.skip=false allClean allBuild]]>
+          </source>
+        </p>
+        <p>
+          You are now ready to deploy the Jetspeed 2 Portal.
+        </p>      
+      </subsection>
+    </section>
+    <section name="6. Deploy and Run">
+      <subsection name="Optional: start the HSQLDB production database first">
+        <p>
+          If you are using the default HSQLDB database you need to start it before deploying the portal.
+        </p>
+        <p>
+          To start the HSQLDB production database run the following in a <i>separate</i> console:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:start.production.server]]>
             </source>
-            <p>If the Jetspeed 2 maven plugin is installed, then to build the portal and all its components run:</p>
-            <source test="">
-                <![CDATA[
-cd ${jetspeed-2-home}
-maven allClean allBuild
-]]>
-            </source>
-        </section>
-        <section name="5. Deploying Jetspeed into Tomcat">
-            <p>We only cover deploying to Tomcat 5 or Tomcat 5.5. Step #1 below is optional if you are NOT using the default Hypersonic database.</p>
-            <ul>
-                <li>
-                    1. If you are using the Hypersonic SQL database, start the production Hypersonic database by typing
-                    <br />
-                    <br />
-                    <b>maven j2:start.production.server</b>
-                    <br />
-                    <br />
-                </li>
-                <li>
-                    2. (in seperate window/terminal session)
-                    <br></br>
-                    <br></br>
-                    <b>cd ${jetspeed-2-home}</b>
-                    <br></br>
-                    <br></br>
-                    <b>maven j2:quickStart</b>
-                    <br></br>
-                    <br></br>
-                    This will recreate the DB to deploy into. WARNING This will drop all the tables and data in the production database.
-                    <br></br>
-                    <br></br>
-                </li>
-                <li>
-                    3. Start up Tomcat. With a browser, go to:
-                    <br />
-                    <br />
-                    <b>http://localhost:8080/jetspeed</b>
-                    <br />
-                </li>
-            </ul>
-        </section>
-        <section name="6. Creating a new Portal Application">
-            <subsection name="Initializing your Portal Application">
-                <p>
-                    In order to get started with a new portal application that will include a developer's specific portal customization, Jetspeed 2 provides as
-                    part of its
-                    <a href="j2-maven-plugin.html">Maven Plugin</a>
-                    a goal that can get you started with your project. To do so:
-                </p>
-                <p>
-                    1. Make sure that the following properties are set in your your ${USER_HOME}/
-                    <code>build.properties</code>
-                    file:
-                </p>
-                <table>
-                    <tr>
-                        <th>property</th>
-                        <th>example</th>
-                        <th>what is it?</th>
-                    </tr>
-                    <tr>
-                        <td>org.apache.jetspeed.portal.name</td>
-                        <td>testportal</td>
-                        <td>The name of your new portal application. This will also be used as the artifactId for your project in the maven repository.</td>
-                    </tr>
-                    <tr>
-                        <td>org.apache.jetspeed.genapp.home</td>
-                        <td>C:/tools/workspace/testportal</td>
-                        <td>The location where your new portal application should be created.</td>
-                    </tr>
-                    <tr>
-                        <td>org.apache.jetspeed.genapp.groupId</td>
-                        <td>testportal</td>
-                        <td>The maven pom group id indicates the group location for your project in the maven repository.</td>
-                    </tr>
-                    <tr>
-                        <td>org.apache.jetspeed.genapp.name</td>
-                        <td>My Test Portal</td>
-                        <td>A friendly name for your new portal.</td>
-                    </tr>
-                    <tr>
-                        <td>org.apache.jetspeed.genapp.currentVersion</td>
-                        <td>1.0</td>
-                        <td>The current version for your new portal application.</td>
-                    </tr>
-                </table>
-                <p>
-                    2. Once the above properties are set, make sure that the Jetspeed 2 Maven Plugin is installed on your local machine. You can install the
-                    Jetspeed 2 Maven Plugin as follow:
-                    <source>
-                        <![CDATA[
-maven -DartifactId=maven-jetspeed2-plugin -DgroupId=jetspeed2 
-      -Dversion=2.0-M4-SNAPSHOT plugin:download]]>
-                    </source>
-                    <ul>
-                        <li>artifactId: The name of the Jetspeed2 plugin artifact deployed to the maven repository.</li>
-                        <li>groupId: The name of the group where the Jetspeed2 plugin is deployed in the maven repository.</li>
-                        <li>version: The version that you want to use. For this functionality, the version should be 2.0-M4-SNAPSHOT or above.</li>
-                    </ul>
-                </p>
-                <p>
-                    3. Run the Jetspeed2 plugin target for generating a new portal application:
-                    <source>
-                        <![CDATA[
-maven j2:genapp.portal]]>
-                    </source>
-                </p>
-                <p>
-                    4. Go to the directory where you just created your new portal application and execute:
-                    <source>
-                        <![CDATA[
-maven j2:portal.install
+        </p>
+        <p>
+          You need to have this database running during the deployment and while running the application server.
+          Afterwards you can stop the database and close this console with a <code>Ctrl-C</code>.
+        </p>
+        <p>
+          Note: this is required when using the <code>j2:quickStart</code> goal as described below. The Jetspeed 2
+          maven-plugin provides other (sub)goals which you can use without (re)creating a production database and/or
+          inserting default portal configuration data. See the <a href="j2-maven-plugin.html">Plugin documentation</a>
+          for further information about the available goals.
+        </p>
+      </subsection>
+      <subsection name="Deploy">
+        <p>
+          We currently only cover deploying to Tomcat 5 or Tomcat 5.5.
+        </p>
+        <p>
+          Information about deployment to other application servers can be found at the The Jetspeed 2
+          <a href="http://wiki.apache.org/portals/Jetspeed2">Wiki</a>.
+        </p>
+        <p>
+          To deploy a default Jetspeed 2 portal, including the demo portlet applications, run the following in a
+          <i>separate</i> console:
+          <source>
+            <![CDATA[
+cd ${org.apache.jetspeed.portal.home}
 maven j2:quickStart]]>
-                    </source>
-                    That's it, you are ready to get started with your new portal application.
-                </p>
-            </subsection>
-            <subsection name="Maintaining your Runtime Application">
-                <p>An alternative "runtime" target is provided to keep your portal in sync with the latest Jetspeed
-                dependencies while preserving your dependencies.</p>
-                <p>
-                    If you would prefer
-                    <strong>not</strong>
-                    to have the plugin copy all of jetspeed 2 into your custom portal project. You use this goal:
-                </p>
-                <source>
-                    <![CDATA[
-maven j2:genapp.portal.runtime]]>
-                </source>
-                <p>
-                    This goal will copy all of the required Jetspeed's runtime files to your projects target/{app-name} directory. This allows the developer to
-                    easily shadow only certain existing Jetspeed config files without maintaining all of Jetspeed's application files in their projects
-                    workspace.
-                </p>
-            </subsection>
-        </section>
-
-    </body>
+          </source>
+          <i>
+            Note: the <a href="j2-maven-plugin.html">maven-plugin documentation</a> described other goals you can use to
+            customize the deployment to your taste.
+           </i>
+        </p>
+      </subsection> 
+      <subsection name="Run">
+        <p>
+          The final step is starting up your Tomcat server and the portal will automatically install any deployed
+          portlet applications.
+        </p>
+        <p>
+          Then you can access the portal with your browser at:
+          <pre>
+    <a href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a>
+          </pre>
+          or replace "jetspeed" in the above url with the name of you own portal application
+          (<code>${org.apache.jetspeed.portal.artifactId}</code>).
+        </p>
+        </subsection>
+        <subsection name="Default installed user accounts">
+        <p>
+          With the default Jetspeed 2 portal deployment, several example user accounts are inserted into the portal
+          database with which you can logon to the portal:
+          <table>
+            <tr>
+              <th>username</th>
+              <th>password</th>
+              <th>roles</th>
+            </tr>
+            <tr>
+              <td><code>admin</code></td>
+              <td><code>admin</code></td>
+              <td><code>admin, manager, user</code></td>
+            </tr>
+            <tr>
+              <td><code>manager</code></td>
+              <td><code>manager</code></td>
+              <td><code>manager, user</code></td>
+            </tr>
+            <tr>
+              <td><code>jetspeed</code></td>
+              <td><code>jetspeed</code></td>
+              <td><code>manager</code></td>
+            </tr>
+            <tr>
+              <td><code>user</code></td>
+              <td><code>user</code></td>
+              <td><code>user</code></td>
+            </tr>
+            <tr>
+              <td><code>tomcat</code></td>
+              <td><code>tomcat</code></td>
+              <td></td>
+            </tr>
+          </table> 
+        </p>
+      </subsection>
+    </section>
+  </body>
 </document>
-
