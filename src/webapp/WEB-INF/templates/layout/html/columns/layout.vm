@@ -24,6 +24,7 @@ limitations under the License.
 
 #set($actions = $jetspeed.PageDecoratorActions)
 
+#set($editing = false)
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
   #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)  
