@@ -671,7 +671,7 @@
           overwrite="true"
           verbose="true"
           failonerror="false"
-          flatten="true">
+          flatten="false">
       <fileset dir="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}">
         <include name="**/*.sql"/>
       </fileset>
