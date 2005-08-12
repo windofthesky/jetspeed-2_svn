@@ -282,6 +282,17 @@
   <!-- =============================================== -->
   
   <goal name="j2:deploy">
+    <j:set var="online" value="${maven.mode.online}"/>
+    <j:if test="${online}">
+      <j:set var="depGroup" value="${plugin.groupId}"/>
+      <j:set var="depType" value="wars"/>
+      <j:set var="depName" value="${maven.war.final.name}-${jetspeed.version}.war"/>
+      <j:set var="depVersion" value="${jetspeed.version}"/>
+      <j:if test="${depVersion.endsWith('SNAPSHOT')}">
+        <j:set var="depSnapshot" value="true"/>
+      </j:if>
+      <attainGoal name="j2:_check.dep"/>
+    </j:if>
     <copy file="${maven.repo.local}/${plugin.groupId}/wars/${maven.war.final.name}-${jetspeed.version}.war"
           tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"
           overwrite="true"
@@ -796,4 +807,45 @@
     <attainGoal name="j2:_db.execute"/>
   </goal>
     
+  <!-- Check for availability of a dependency in the local repository and download it from the remote repo(s)
+       if not found or a snapshot.
+       Taken from the maven-plugin-plugin 1.5.2.
+   -->
+  <goal name="j2:_check.dep">
+    <util:file var="localFile" name="${maven.repo.local}/${depGroup}/${depType}/${depName}" /> 
+    <j:if test="${!localFile.exists()}">
+      <j:set var="nolocalFile" value="true"/>
+    </j:if>       
+    <j:if test="${depSnapshot || nolocalFile}">
+      <j:set var="depFullname" value="${depGroup}/${depType}/${depName}"/>
+      <echo> fullName is ${depFullname}</echo>
+      <ant:mkdir dir="${maven.repo.local}/${depGroup}/${depType}" />
+      <j:set var="repoList">${maven.repo.remote}</j:set>
+      <util:tokenize var="repos" delim=",">${repoList.trim()}</util:tokenize>
+      <j:forEach var="repo" items="${repos}">
+        <echo>repo is '${repo}'</echo>
+        <j:set var="remoteFile" value="${repo}/${depFullname}" />
+        <echo>trying to download ${remoteFile}</echo>
+        <j:catch var="ex">
+          <j:invokeStatic var="dummy" method="getFile" className="org.apache.maven.util.HttpUtils">
+            <j:arg type="java.lang.String" value="${remoteFile}" />
+            <j:arg type="java.io.File" value="${localFile}"/>
+            <j:arg type="boolean" value="false"/>
+            <j:arg type="boolean" value="true"/>
+            <j:arg type="java.lang.String" value="${maven.proxy.host}" />
+            <j:arg type="java.lang.String" value="${maven.proxy.port}" />
+            <j:arg type="java.lang.String" value="${maven.proxy.username}" />
+            <j:arg type="java.lang.String" value="${maven.proxy.password}" />
+            <j:arg type="boolean" value="false"/>
+          </j:invokeStatic>
+        </j:catch>
+        <j:break test="${localFile.exists()}"/>
+      </j:forEach>
+    </j:if>
+    <j:set var="downloaded" value="${localFile.exists()}"/>
+    <j:if test="${!downloaded}">
+      <ant:fail message="Unable to download ${depFullname}" />    
+    </j:if>    
+  </goal>
+  
 </project>
