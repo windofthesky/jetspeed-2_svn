@@ -207,7 +207,12 @@ limitations under the License.
 		<report>maven-jxr-plugin</report>
 		<report>maven-junit-report-plugin</report>
 		<report>maven-jcoverage-plugin</report>
+<!--		
 		<report>maven-linkcheck-plugin</report>
+-->		
 		<report>maven-tasklist-plugin</report>
+    <report>maven-dashboard-plugin</report>
+    <report>maven-multiproject-plugin</report>
+    <report>maven-multichanges-plugin</report>
 	</reports>
 </project>
