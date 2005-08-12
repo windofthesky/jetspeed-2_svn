@@ -24,12 +24,12 @@
 
     <body>
         <links>
+            <item name="Doc for 2.0-M3" href="M3/"/>
             <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
         </links>
         <menu name="Essentials">
             <item name="Overview" href="index.html" />
             <item name="Getting Started" href="getting-started.html" />
-            <item name="Database" href="database.html" />
             <item name="Localization" href="l10n-guide.html" />
             <item name="User Attributes" href="user-attributes.html" />
             <item name="Sub Projects" href="projects-overview.html" />
