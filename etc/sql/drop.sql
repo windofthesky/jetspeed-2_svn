@@ -1,5 +1,3 @@
-drop table A;
-drop table B;
 drop table CLUBS;
 drop table OJB_HL_SEQ;
 drop table OJB_LOCKENTRY;
