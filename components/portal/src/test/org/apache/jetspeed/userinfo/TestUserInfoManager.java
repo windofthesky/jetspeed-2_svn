@@ -105,8 +105,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(
-                buildProperties.getUserProperty("org.apache.jetspeed.project.home")
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(buildProperties
+                .getUserProperty("org.apache.jetspeed.portal.home")
                 + "/components/portal/test/testdata/deploy/portlet.xml"), "unit-test");
         portletApp = pad.createPortletApplication();
         assertNotNull("App is null", portletApp);
@@ -141,12 +141,11 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
 
         // With linked attributes
-        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(
-                buildProperties.getUserProperty("org.apache.jetspeed.project.home")
-                + "/components/portal/test/testdata/deploy/jetspeed-portlet.xml"),
-                portletApp);
+        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(buildProperties
+                .getUserProperty("org.apache.jetspeed.portal.home")
+                + "/components/portal/test/testdata/deploy/jetspeed-portlet.xml"), portletApp);
         extMetaData.load();
-        
+
         // persist the app
         try
         {
@@ -257,15 +256,18 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     private void cleanUp() throws Exception
     {
         // remove the app
-        try
+        if (null != portletApp)
         {
-            portletRegistry.removeApplication(portletApp);
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to remove portlet application, " + portletApp.getName()
-                    + ", through the portlet portletRegistry: " + e.toString();
-            throw new Exception(msg, e);
+            try
+            {
+                portletRegistry.removeApplication(portletApp);
+            }
+            catch (Exception e)
+            {
+                String msg = "Unable to remove portlet application, " + portletApp.getName()
+                        + ", through the portlet portletRegistry: " + e.toString();
+                throw new Exception(msg, e);
+            }
         }
 
         destroyUser();
