@@ -24,6 +24,7 @@
 
     <body>
         <links>
+            <item name="Portals Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
             <item name="Doc for 2.0-M3" href="M3/"/>
             <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
         </links>
