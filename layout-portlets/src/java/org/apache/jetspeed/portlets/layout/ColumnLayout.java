@@ -596,7 +596,7 @@ public class ColumnLayout implements Serializable
         }
         else
         {
-            throw new FragmentNotInLayoutException(fragment);
+            throw new FragmentNotInLayoutException((fragment == null)? "null fragment": fragment.getId());
         }
     }
 

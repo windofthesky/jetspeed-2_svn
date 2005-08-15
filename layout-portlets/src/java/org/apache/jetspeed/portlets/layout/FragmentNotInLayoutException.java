@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
-import org.apache.jetspeed.om.page.Fragment;
 
 /**
  * This exception indicates that an attmept was made get the coordinates
@@ -26,9 +25,9 @@ import org.apache.jetspeed.om.page.Fragment;
  */
 public class FragmentNotInLayoutException extends LayoutException
 {
-    public FragmentNotInLayoutException(Fragment fragment)
+    public FragmentNotInLayoutException(String fragmentId)
     {
-        super("The fragment "+fragment.getId()+" could not be located in this layout.");
+        super("The fragment "+fragmentId+" could not be located in this layout.");
     }
 
 }
