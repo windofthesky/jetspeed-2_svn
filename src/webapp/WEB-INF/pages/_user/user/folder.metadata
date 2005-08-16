@@ -47,7 +47,7 @@
     <separator>
       <text>Non Java Pages</text>
       <metadata name="text" xml:lang="ja">Non-Javaページ</metadata>
-      <metadata name="text" xml:lang="es">Páginas sin Java</metadata>
+      <metadata name="text" xml:lang="es">Portlets sin Java</metadata>
     </separator>
     <options>/non-java</options>
   </menu>

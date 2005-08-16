@@ -24,7 +24,9 @@ limitations under the License.
     </fragment>
   </fragment>
   <metadata name="title" xml:lang="ja">Struts メールリーダーデモ</metadata>
-  <metadata name="title" xml:lang="es">Lector de correo Struts</metadata>
+  <metadata name="title" xml:lang="es">Demo Lector de Correo Struts</metadata>
+  <metadata name="short-title" xml:lang="es">Demo Struts</metadata>
+  <metadata name="title" xml:lang="hu">Struts levelező</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

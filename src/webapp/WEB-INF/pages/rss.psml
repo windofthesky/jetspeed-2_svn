@@ -18,8 +18,9 @@ limitations under the License.
   />
   <title>RSS Demo</title>
   <metadata name="title" xml:lang="ja">RSS デモ</metadata>
-  <metadata name="title" xml:lang="es">Portlet RSS</metadata>
-
+  <metadata name="title" xml:lang="es">Demo de portlets de sindicación RSS</metadata>
+  <metadata name="short-title" xml:lang="es">Demo RSS</metadata>
+  <metadata name="title" xml:lang="hu">RSS hírolvasó</metadata>
   <fragment id="rss-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="rss-101" type="portlet" name="rss::RSS">
       <property layout="TwoColumns" name="row" value="0" />

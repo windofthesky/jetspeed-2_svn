@@ -29,7 +29,9 @@ limitations under the License.
   </fragment>
    
   <metadata name="title" xml:lang="ja">PSML ページ 2</metadata>
-  <metadata name="title" xml:lang="es">Mi segunda página PSML</metadata>
+  <metadata name="title" xml:lang="es">Mi 2ª página PSML</metadata>
+  <metadata name="short-title" xml:lang="es">Otra página</metadata>
+  <metadata name="title" xml:lang="hu">A második PSML oldalam</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

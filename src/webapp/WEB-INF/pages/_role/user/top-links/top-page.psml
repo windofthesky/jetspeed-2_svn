@@ -18,6 +18,7 @@ limitations under the License.
   <title>[USER] Top Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー] トップページ</metadata>
   <metadata name="title" xml:lang="es">Página Raiz [USUARIO]</metadata>
+  <metadata name="title" xml:lang="hu">[Felhasználó] Top oldal</metadata>
 
   <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="utp-2" type="portlet" name="security::LoginPortlet">

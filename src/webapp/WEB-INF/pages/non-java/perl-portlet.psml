@@ -19,6 +19,7 @@ limitations under the License.
   <title>PERL demo</title>
   <metadata name="title" xml:lang="ja">Perlデモ</metadata>
   <metadata name="title" xml:lang="es">Demo en perl</metadata>
+  <metadata name="title" xml:lang="hu">PERL demo</metadata>
 
   <fragment id="perl-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="perldemo-1" type="portlet" name="perl::perl-demo">

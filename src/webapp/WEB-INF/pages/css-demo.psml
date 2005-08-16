@@ -24,7 +24,9 @@ limitations under the License.
     </fragment>
   </fragment>
   <metadata name="title" xml:lang="ja">CSS デモ</metadata>
-  <metadata name="title" xml:lang="es">Demo de hojas de Estilo CSS</metadata>
+  <metadata name="title" xml:lang="es">Demo Hojas de Estilo en Cascada</metadata>
+  <metadata name="short-title" xml:lang="es">Demo CSS</metadata>
+  <metadata name="title" xml:lang="hu">CSS</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

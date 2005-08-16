@@ -18,7 +18,9 @@ limitations under the License.
   />
   <title>Portlet Application Manager</title>
   <metadata name="title" xml:lang="ja">ポートレットアプリケーションマネージャ</metadata>
-  <metadata name="title" xml:lang="es">Gestor de aplicaciones de Portlets</metadata>
+  <metadata name="title" xml:lang="es">PAM (Gestor de aplicaciones de portlets</metadata>
+  <metadata name="short-title" xml:lang="es">PAM</metadata>
+  <metadata name="title" xml:lang="hu">Portlet alkalmazás beállítások</metadata>
 
   <fragment id="pam-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="13" type="portlet" name="pam::PortletApplicationBrowser" >

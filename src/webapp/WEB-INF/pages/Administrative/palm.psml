@@ -20,6 +20,8 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">PALM</metadata>
   <metadata name="title" xml:lang="es">Gestión dinámica de aplicaciones de Porllets</metadata>
   <metadata name="short-title" xml:lang="es">PALM</metadata>
+  <metadata name="short-title" xml:lang="hu">PALM</metadata>
+  <metadata name="title" xml:lang="hu">PALM</metadata>
 
   <fragment id="palm-layout" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="palm-app" type="portlet" name="palm::PortletApplicationLifecycleManager">

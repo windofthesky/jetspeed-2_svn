@@ -24,6 +24,7 @@ limitations under the License.
   <title>Plumtree RSS Portlet</title>
   <metadata name="title" xml:lang="ja">Plumtree RSS ポートレット</metadata>
   <metadata name="title" xml:lang="es">Portlet RSS de Plumtree</metadata>
+  <metadata name="title" xml:lang="hu">RSS hírolvasó</metadata>
 
   <fragment id="rss-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="rrsPortlet1" type="portlet" name="RssPortlet::RssPortlet">
