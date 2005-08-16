@@ -65,7 +65,7 @@ limitations under the License.
       </td>
       #end
 	  #if($editing == true)    		  	  
-	   #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
+	   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
             #set ($imgsrc="${jetspeed.pageBasePath}/content/images/select.gif")
 	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
