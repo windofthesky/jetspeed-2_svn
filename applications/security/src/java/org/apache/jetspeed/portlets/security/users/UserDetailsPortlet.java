@@ -41,12 +41,11 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
@@ -1025,6 +1024,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 
                 // create user's home page and folder                                
                 Folder folder = pageManager.newFolder(Folder.USER_FOLDER + userName);
+                setSecurityConstraints(folder, userName);                
                 pageManager.updateFolder(folder);
                 
                 String templateFolder = actionRequest.getPreferences().getValue("newUserTemplateDirectory", "/_user/template/");
@@ -1051,5 +1051,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }
     
-    
+    private void setSecurityConstraints(Folder folder, String userName)
+    {
+        SecurityConstraints constraints = pageManager.newSecurityConstraints();
+        constraints.setOwner(userName);
+        folder.setSecurityConstraints(constraints);        
+    }
 }
