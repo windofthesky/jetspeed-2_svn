@@ -107,42 +107,50 @@ public class ContentFilter implements Filter
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException,
             ServletException
     {
-        if (request instanceof HttpServletRequest)
+        try
         {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            String requestURI = httpRequest.getRequestURI();
-            
-            SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, urlHints, useCache, httpRequest
-                    .getContextPath(), requestURI, getContentSearchPathes(httpRequest));
-
-            ContentLocatingResponseWrapper respWrapper = new ContentLocatingResponseWrapper(httpResponse,
-                    contentLocator);
-            
-            ContentLocatingRequestWrapper reqWrapper = new ContentLocatingRequestWrapper(httpRequest,
-                    contentLocator);
-            httpRequest.setAttribute("org.apache.jetspeed.content.filtered", "true");
-            chain.doFilter(reqWrapper, respWrapper);
-            if(!respWrapper.wasLocationAttempted() && !respWrapper.outputStreamCalled && !respWrapper.writerCalled)
+            if (request instanceof HttpServletRequest)
             {
-                try
-                {                   
-                    httpResponse.setContentLength((int) contentLocator.writeToOutputStream(httpResponse.getOutputStream()));
-                    httpResponse.setStatus(HttpServletResponse.SC_OK);
-                }
-                catch (FileNotFoundException e)
-                {
-                    httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-                }
-               
+                HttpServletRequest httpRequest = (HttpServletRequest) request;
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
+                String requestURI = httpRequest.getRequestURI();
                 
-            }
+                SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, urlHints, useCache, httpRequest
+                        .getContextPath(), requestURI, getContentSearchPathes(httpRequest));
 
+                ContentLocatingResponseWrapper respWrapper = new ContentLocatingResponseWrapper(httpResponse,
+                        contentLocator);
+                
+                ContentLocatingRequestWrapper reqWrapper = new ContentLocatingRequestWrapper(httpRequest,
+                        contentLocator);
+                httpRequest.setAttribute("org.apache.jetspeed.content.filtered", "true");
+                chain.doFilter(reqWrapper, respWrapper);
+                if(!respWrapper.wasLocationAttempted() && !respWrapper.outputStreamCalled && !respWrapper.writerCalled)
+                {
+                    try
+                    {                   
+                        httpResponse.setContentLength((int) contentLocator.writeToOutputStream(httpResponse.getOutputStream()));
+                        httpResponse.setStatus(HttpServletResponse.SC_OK);
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+                    }
+                   
+                    
+                }
+
+            }
+            else
+            {
+                chain.doFilter(request, response);
+            }
         }
-        else
+        catch (FileNotFoundException e)
         {
             chain.doFilter(request, response);
         }
+       
 
     }
 

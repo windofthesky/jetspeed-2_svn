@@ -17,7 +17,6 @@ package org.apache.jetspeed.contentserver;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,24 +42,33 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *  
+ * 
  */
 public abstract class AbstractContentLocator implements ContentLocator
 {
 
     protected String rootPath;
+
     protected boolean useCachedLookup;
-    protected static final Map fileCache = new HashMap();
-    protected static final Map contentCache = new HashMap();
+
+    protected static final Map fileCache = new HashMap();    
+
     protected String[] URLHints;
+
     protected static final Log log = LogFactory.getLog(SimpleContentLocator.class);
+
     protected String contextRoot;
+
     protected String URI;
+
     protected List lookupPathes;
+
     private String basePath;
 
-    public AbstractContentLocator( String rootPath, String[] URLHints, boolean useCachedLookup, String contextRoot,
-            String URI, List lookupPathes )
+    protected File contentFile;
+
+    public AbstractContentLocator(String rootPath, String[] URLHints, boolean useCachedLookup, String contextRoot,
+            String URI, List lookupPathes) throws FileNotFoundException
     {
         this.contextRoot = contextRoot;
         this.rootPath = rootPath;
@@ -67,17 +76,27 @@ public abstract class AbstractContentLocator implements ContentLocator
         this.URLHints = URLHints;
         this.URI = URI;
         this.lookupPathes = lookupPathes;
+        String realPath = getRealPath();
+        if (realPath != null)
+        {
+            this.contentFile = new File(realPath);
+        }
+        else
+        {
+            throw new FileNotFoundException("Target path " + URI + " not found withint the content locations provided");
+        }
+
     }
 
     public OutputStream getOutputStream() throws IOException
     {
-        File content = new File(getRealPath());
-        BufferedOutputStream bos = new BufferedOutputStream(new ByteArrayOutputStream((int) content.length()));
+
+        BufferedOutputStream bos = new BufferedOutputStream(new ByteArrayOutputStream((int) contentFile.length()));
         writeToOutputStream(bos);
         return bos;
     }
 
-    public long writeToOutputStream( OutputStream stream ) throws IOException
+    public long writeToOutputStream(OutputStream stream) throws IOException
     {
 
         InputStream is = getInputStream();
@@ -130,54 +149,27 @@ public abstract class AbstractContentLocator implements ContentLocator
      * @param lookupPathes
      * @return
      * @throws IOException
-     * @throws FileNotFoundException if the content cannot be found
+     * @throws FileNotFoundException
+     *             if the content cannot be found
      */
     public InputStream getInputStream() throws IOException
     {
         String realPath = getRealPath();
-        
-        if(realPath == null)
-        {
-            throw new FileNotFoundException("The "+URI+" could not be resolved by the ContentLocator");
-        }
-                
-        if (contentCache.containsKey(realPath) && useCachedLookup)
-        {
-            byte[] contentInBytes =(byte[]) contentCache.get(realPath);            
-            return new BufferedInputStream(new ByteArrayInputStream(contentInBytes));
 
+        if (realPath == null)
+        {
+            throw new FileNotFoundException("The " + URI + " could not be resolved by the ContentLocator");
+        }
+
+        if (contentFile != null)
+        {
+              return new BufferedInputStream(new FileInputStream(contentFile));
         }
         else
         {
-            File content = new File(realPath);
-
-            if (content != null)
-            {
-                if(useCachedLookup)
-                {
-                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(content));
-                    int size = (int) content.length();
-                    int i = 0;
-                    byte[] buffer = new byte[size];
-                    for (int j = bis.read(); j != -1; j = bis.read())
-                    {
-                        buffer[i] = (byte) j;
-                        i++;
-                    }
-                    
-                    contentCache.put(realPath, buffer);
-                    return new BufferedInputStream(new ByteArrayInputStream(buffer));
-                }
-                else
-                {
-                    return new BufferedInputStream(new FileInputStream(content));
-                }
-            }
-            else
-            {
-                throw new FileNotFoundException("Failed to load content source "+realPath);
-            }
+            throw new FileNotFoundException("Failed to load content source " + realPath);
         }
+
     }
 
     public String getBasePath()
@@ -188,7 +180,7 @@ public abstract class AbstractContentLocator implements ContentLocator
 
             if (absPath != null)
             {
-                absPath = absPath.replace('\\','/');
+                absPath = absPath.replace('\\', '/');
                 int startOffset = absPath.indexOf(contextRoot) + contextRoot.length();
                 basePath = absPath.substring(startOffset, absPath.length());
             }
@@ -199,6 +191,11 @@ public abstract class AbstractContentLocator implements ContentLocator
         }
         return basePath;
 
+    }
+
+    public Date getLastModified()
+    {
+        return new Date(contentFile.lastModified());
     }
 
 }

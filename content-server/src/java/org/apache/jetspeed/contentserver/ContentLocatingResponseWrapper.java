@@ -9,6 +9,9 @@ package org.apache.jetspeed.contentserver;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +50,12 @@ public class ContentLocatingResponseWrapper extends HttpServletResponseWrapper
         super(response);
         this.contentLocator = contentLocator;
         this.response = response;
-
+        
+        DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy hh:mm:ss zzz");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        this.response.setHeader("Last-Modified", dateFormat.format(contentLocator.getLastModified()));
+        this.response.setHeader("Cache-Control", "max-age=3600, must-revalidate, proxy-revalidate");
+        this.response.setHeader("Apache-Jetspeed-Info", "real-path="+this.contentLocator.getBasePath());
     }
 
      /**

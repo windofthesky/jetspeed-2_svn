@@ -16,6 +16,7 @@
 package org.apache.jetspeed.contentserver;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -39,8 +40,9 @@ public class SimpleContentLocator extends AbstractContentLocator implements Cont
      * @param contextRoot
      * @param URI
      * @param lookupPathes
+     * @throws FileNotFoundException 
      */
-    public SimpleContentLocator( String rootPath, String[] URLHints, boolean useCachedLookup, String contextRoot, String URI, List lookupPathes )
+    public SimpleContentLocator( String rootPath, String[] URLHints, boolean useCachedLookup, String contextRoot, String URI, List lookupPathes ) throws FileNotFoundException
     {
         super(rootPath, URLHints, useCachedLookup, contextRoot, URI, lookupPathes);
     }  
