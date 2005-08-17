@@ -18,9 +18,15 @@ package org.apache.jetspeed.contentserver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -61,7 +67,14 @@ public class ContentFilter implements Filter
     protected String[] urlHints;
 
     protected boolean useCache;
-
+    
+    static DateFormat HEADER_DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy hh:mm:ss zzz");
+    
+    public ContentFilter()
+    {
+        HEADER_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+    
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
@@ -117,7 +130,7 @@ public class ContentFilter implements Filter
                 
                 SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, urlHints, useCache, httpRequest
                         .getContextPath(), requestURI, getContentSearchPathes(httpRequest));
-
+                 
                 ContentLocatingResponseWrapper respWrapper = new ContentLocatingResponseWrapper(httpResponse,
                         contentLocator);
                 
@@ -127,16 +140,23 @@ public class ContentFilter implements Filter
                 chain.doFilter(reqWrapper, respWrapper);
                 if(!respWrapper.wasLocationAttempted() && !respWrapper.outputStreamCalled && !respWrapper.writerCalled)
                 {
-                    try
-                    {                   
-                        httpResponse.setContentLength((int) contentLocator.writeToOutputStream(httpResponse.getOutputStream()));
-                        httpResponse.setStatus(HttpServletResponse.SC_OK);
+                    try                    
+                    {         
+                        if(resourceContentRequired(httpRequest, contentLocator))
+                        {
+                            httpResponse.setContentLength((int) contentLocator.writeToOutputStream(httpResponse.getOutputStream()));
+                            httpResponse.setStatus(HttpServletResponse.SC_OK);
+                        }
+                        else
+                        {
+                            httpResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                        }
+                                      
                     }
                     catch (FileNotFoundException e)
                     {
                         httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-                    }
-                   
+                    }                   
                     
                 }
 
@@ -171,5 +191,28 @@ public class ContentFilter implements Filter
             //        .setAttribute(SESSION_THEME_ATTR, contentPathes);
         }
         return contentPathes;
+    }
+    
+    protected boolean resourceContentRequired(HttpServletRequest request, ContentLocator contentLocator)
+    {
+        String dateString = request.getHeader("If-Modified-Since");
+        if (dateString != null)
+        {
+            try
+            {
+                Date ifModifiedSince = HEADER_DATE_FORMAT.parse(dateString);
+                Date lastModified = contentLocator.getLastModified();
+                return lastModified.after(ifModifiedSince);
+            }
+            catch (ParseException e)
+            {
+                // Unreadable date string
+                return true;
+            }
+        }
+        else
+        {
+            return true;
+        }
     }
 }
