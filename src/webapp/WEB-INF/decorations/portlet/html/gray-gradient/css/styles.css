@@ -210,14 +210,12 @@ limitations under the License.
 /* PLT.C.4 Sections                  */
 /* --------------------------------- */
 .gray-gradient .portlet-section-header {
-    background-image: url(content/tigris/images/nw_maj_rond.gif);
-    background-repeat: no-repeat;
-    color: #fff;
-    background-color: #036;
-    padding: 5px;
-    margin-right: 2px;
-    margin-left: 2px;
+    background-image: url(content/gray-gradient/images/grad1gray.png);
+    color: #01375D;
+    padding: 2px;
+    background-repeat: repeat-x;
     clear: both;
+    height: 16px;
 }
 
 .gray-gradient .portlet-section-body {
@@ -230,7 +228,7 @@ limitations under the License.
 }
 
 .gray-gradient .portlet-section-alternate {
-    background: #ddd;
+    background: #efefef;
     border: none;
     padding: 2px 3px;
     text-align: left;
