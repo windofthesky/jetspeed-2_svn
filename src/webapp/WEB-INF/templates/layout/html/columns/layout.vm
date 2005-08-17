@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 #*
 Copyright 2004 The Apache Software Foundation
 
@@ -24,7 +25,6 @@ limitations under the License.
 
 #set($actions = $jetspeed.PageDecoratorActions)
 
-#set($editing = false)
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
   #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)  
@@ -49,157 +49,121 @@ limitations under the License.
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 
+#*
+<!-- Page Action Bar -->
 #if ($actions.size()>0)
-<table  width="100%" cellspacing="0" cellpadding="0" >
-  <tr>
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-
-    <td align="left" valign="middle" class="PContent" >
-    </td>
-    <td align="right" valign="middle" class="PContent" >
-      <table border="0" cellpadding="0" cellspacing="0" >
-      <tr>
-      #foreach ($action in $actions)
-      <td align="right" valign="middle" class="PContent" >
-      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      </td>
-      #end
-	  #if($editing == true)    		  	  
-	   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
-	      <td align="right" valign="middle" class="PContent" >
-            #set ($imgsrc="${jetspeed.pageBasePath}/content/images/select.gif")
-	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
-	      </td>	  
-	  #end      
-      </tr>
-      </table>
-    </td>
-
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-  </tr>
-</table>
+  <div id="portal-page-actions">
+     #foreach ($action in $actions)
+      <a href="${action.Action}" title="${action.Name}" class="pageAction" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
+	 #end
+	 #if($editing == true)    		  	  
+	   #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
+       <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
+	 #end   
+  </div>
 #end
+*#
+  <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
+	#set ($sizeIndex = 0)
+    #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
+	#foreach($column in $columnLayout.columns)
+	  #set($columnWidth = "auto")
+	  
+	  #if ($columnLayout.getSafeColumnWidth($sizeIndex, 1) > 0)
+	    #set($columnWidth = $columnLayout.getSafeColumnWidth($sizeIndex, 4))
+	  #end
 
-<form name='portletform' action="$renderResponse.createActionURL()" method="post">
-<input type='hidden' name='portlets'/>
-<input type='hidden' name='page' value='$myPage'/>
-</form>
-
-<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
-<table  width="100%" cellspacing="0" cellpadding="0" >
-  <tr>
-     #set ($sizeIndex = 0)
-     #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
-     #foreach($column in $columnLayout.columns)
-        #if ($sizes)
-          #if ($sizeIndex < $sizes.size())
-             <td valign='top' width='$sizes.get($sizeIndex)'/>
-          #else
-	       <td valign="top">          
-          #end
-        #else
-       <td  valign="top">
-       #end
-       #set ($sizeIndex = $sizeIndex + 1)     
-       <table width="100%" class="portal-layout-column">
-       #foreach($f in $column)       
-        <tr>
-         <td width="100%">			
-			#set($coords = $columnLayout.getCoordinate($f))	  
-	        #set($col = $coords.x)
-	        #set($lastRow = $columnLayout.getLastRowNumber($col))
-			#set($row = $coords.y)
-            #if($editing)<div id="_$f.id">        
-            <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
-              <div id="_$f.id_toolBox"  >
-               <table cellpadding="0" cellspacing="0" >
-                 <tr>
-                   <td></td>
-                   <td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-                        #if($row > 0)
-                         #set($upUrl = $renderResponse.createRenderURL())    
-                         $!upUrl.setParameter("move","1")
-                         $!upUrl.setParameter("fragmentId","$f.id")
-                         #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
-                         <a href="$upUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
-                       #end
-                   </td>
-                   <td></td>
-                   <td></td>
-                 </tr>
-                 <tr>
-                   <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-                        #if($lastColumn > 0 && $col > 0)            
-                         #set($leftUrl = $renderResponse.createRenderURL())    
-                         $!leftUrl.setParameter("move","3")
-                         $!leftUrl.setParameter("fragmentId","$f.id")    
-                         #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
-                         <a href="$leftUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
-                        #end
-                   </td>
-                   <td align="center" style="font-size:smaller; font-weight:bold" >
-                      &nbsp;  Position &nbsp;
-                   </td>
-                   <td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-                        #if($lastColumn > 0 && $col < $lastColumn)
-                         #set($rightUrl = $renderResponse.createRenderURL())    
-                         $!rightUrl.setParameter("move","4")
-                         $!rightUrl.setParameter("fragmentId","$f.id")
-                         #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
-                         <a href="$rightUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
-                        #end
-                    </td>
-                    <td>
-                         #set($deleter = $renderResponse.createActionURL())    
-                         $deleter.setParameter("deleteId","$f.id")
-                         $deleter.setParameter("page","$myPage")                         
-                         #set ($imgsrc="$layoutImageBase/close.gif")
-                         &nbsp;<a href="$deleter"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Remove Portlet"/></a>                    
-                    </td>
-                 </tr>
-				 <tr>
-					<td></td>
-					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">					  
-					  #if($row < $lastRow)						
-					    #set($downUrl = $renderResponse.createRenderURL())	
-			            $!downUrl.setParameter("move","2")
-			            $!downUrl.setParameter("fragmentId","$f.id")
-                        #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
-					    <a href="$downUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
-					  #end
-					</td>
-					<td></td>
-					<td></td>
-				 </tr>
-			  </table>
-			</div>
-		 #end			
+	  #set ($sizeIndex = $sizeIndex + 1)  
+	  <div class="portal-layout-column" style="width:${columnWidth}%;">
+		 
+	     #foreach($f in $column)
+           ## Set up coordinates for this fragment
+           #set($coords = $columnLayout.getCoordinate($f))	  
+           #set($col = $coords.x)
+           #set($lastRow = $columnLayout.getLastRowNumber($col))
+           #set($row = $coords.y)
+			
            ## get the decorated Portlet content
-		  #if($f.type == "portlet")
-   		    #parse($jetspeed.decorateAndInclude($f))
-		  #else		
-			$jetspeed.setCurrentFragment($f)
-			$f.renderedContent			
-		  #end
-           
-          ##$jetspeed.decorateAndInclude($f)
+		   <div class="portal-layout-cell" >
+		   ## editing block
+		   #if($editing)
+			 ## Move portlet left
+			 #if($lastColumn > 0 && $col > 0)            
+               #set($leftUrl = $renderResponse.createRenderURL())    
+               $!leftUrl.setParameter("move","3")
+               $!leftUrl.setParameter("fragmentId","$f.id")    
+               #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
+               <a href="$leftUrl" class="move-portlet-left"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
+			 #end
+			 
+			 ## Move portlet up	
+			 #if($row > 0)			   
+               #set($upUrl = $renderResponse.createRenderURL())    
+                 $!upUrl.setParameter("move","1")
+                 $!upUrl.setParameter("fragmentId","$f.id")
+                 #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
+                 <a href="$upUrl" class="move-portlet-up"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
+			 #end
+			 
+			 ## Remove portlet from page
+             #set($deleter = $renderResponse.createActionURL())    
+             $deleter.setParameter("deleteId","$f.id")
+             $deleter.setParameter("page","$myPage")                         
+             #set ($imgsrc="$layoutImageBase/close.gif")
+             <a href="$deleter" class="remove-portlet-from-apge"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Remove Portlet"/></a>
+			 
+			 ## Move portlet down
+             #if($row < $lastRow)						
+               #set($downUrl = $renderResponse.createRenderURL())	
+               $!downUrl.setParameter("move","2")
+               $!downUrl.setParameter("fragmentId","$f.id")
+               #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
+               <a href="$downUrl" class="move-portlet-down"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
+			 #end
+			 
+			 ## Move portlet right
+             #if($lastColumn > 0 && $col < $lastColumn)
+               #set($rightUrl = $renderResponse.createRenderURL())    
+               $!rightUrl.setParameter("move","4")
+               $!rightUrl.setParameter("fragmentId","$f.id")
+               #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
+               <a href="$rightUrl" class="move-portlet-right"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
+             #end
+		   #end
+		   
+		   #if($f.type == "portlet")
+   		     #parse($jetspeed.decorateAndInclude($f))
+		   #else		
+	 	 	 $jetspeed.setCurrentFragment($f)
+			 $f.renderedContent			
+		   #end
+		   </div>
+		 #end
+		 #if($column.size() == 0)
+			<!-- IE Hack -->
+			<div class="portal-layout-cell" >
+			  <div class="PTitle" >
+                <div class="PTitleContent">
+                  &nbsp;
+                </div>   
+                <div class="PActionBar">
+                  &nbsp;
+                </div>
+              </div>
+              <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span>
+                &nbsp;
+              </div>  
+			</div>
+		 #end
+	  </div>
+	 #end
+   </div>  
 
-		  #if($editing)
-		 </div>
-		</div>
-       #end		
-
-      </td>
-	 </tr>
-	   #end
-
-    </table>
-   </td>
-   #end
-  </tr>
-</table>
-</div>
-
-#if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
-   #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
-#end
+  #if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
+    #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
+  #end
+  
+  <form name='portletform' action="$renderResponse.createActionURL()" method="post">
+    <input type='hidden' name='portlets'/>
+    <input type='hidden' name='page' value='$myPage'/>
+  </form>
