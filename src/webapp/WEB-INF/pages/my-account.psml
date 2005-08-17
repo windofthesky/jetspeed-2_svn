@@ -19,7 +19,7 @@ limitations under the License.
   <title>My Account</title>
   <metadata name="title" xml:lang="ja">アカウント</metadata>
   <metadata name="title" xml:lang="es">Mi cuenta</metadata>
-  <metadata name="title" xml:lang="es">Személyes beállítások</metadata>
+  <metadata name="title" xml:lang="hu">Személyes beállítások</metadata>
 
   <fragment id="cpwd-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="cpwd-2" type="portlet" name="security::ChangePasswordPortlet">
