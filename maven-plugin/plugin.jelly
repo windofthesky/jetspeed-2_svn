@@ -571,6 +571,27 @@
     <j:set var="recreateDB" value="false"/>
     <attainGoal name="j2:doStart"/>
   </goal>
+  <!-- ================================================= -->
+  <!-- ============= DEVELOPMENT UTILITIES ============= -->
+  <!-- ================================================= -->
+  
+  <goal name="j2:deployDecorations">
+  	<copy todir="${org.apache.jetspeed.portal.dir}/WEB-INF/decorations" >
+  		<fileset dir="${basedir}/src/webapp/WEB-INF/decorations" />
+  	</copy>  
+  </goal>	
+  
+  <goal name="j2:deployTemplates">
+  	<copy todir="${org.apache.jetspeed.portal.dir}/WEB-INF/templates" >
+  		<fileset dir="${basedir}/src/webapp/WEB-INF/templates" />
+  	</copy>  
+  </goal>	
+  
+  <goal name="j2:deployPages">
+  	<copy todir="${org.apache.jetspeed.portal.dir}/WEB-INF/pages" >
+  		<fileset dir="${basedir}/src/webapp/WEB-INF/pages" />
+  	</copy>  
+  </goal>	
     
   <!-- ================================================= -->
   <!-- ================= PLUGIN INTERNAL =============== -->
