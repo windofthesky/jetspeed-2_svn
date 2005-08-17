@@ -75,6 +75,9 @@ public class ColumnLayout implements Serializable
     /** SortedMap of Columns (which are also sorted maps */
     private final SortedMap columns;
     
+    /** Width settings for eacah column */
+    private final String[] columnWidthes;
+    
     /** 
      * The type of layout this is, required for extract row/column properties
      * from a fragment.
@@ -88,7 +91,7 @@ public class ColumnLayout implements Serializable
     private final Map coordinates;
     
     /** All of the LayoutEventListeners registered to this layout */
-    private final List eventListeners;
+    private final List eventListeners;    
 
     /**
      * 
@@ -102,10 +105,11 @@ public class ColumnLayout implements Serializable
      *            formats without one format effecting the settings of another.
      * @see org.apache.jetspeed.om.page.Fragment#getType()
      */
-    public ColumnLayout(int numberOfColumns, String layoutType)
+    public ColumnLayout(int numberOfColumns, String layoutType, String[] columnWidthes)
     {
         this.numberOfColumns = numberOfColumns;
         this.layoutType = layoutType;
+        this.columnWidthes = columnWidthes;
         eventListeners = new ArrayList();
 
         columns = new TreeMap();
@@ -142,9 +146,9 @@ public class ColumnLayout implements Serializable
      * @param fragments Initial set of fragments to add to this layout.
      * @throws LayoutEventException
      */
-    public ColumnLayout(int numberOfColumns, String layoutType, Collection fragments) throws LayoutEventException
+    public ColumnLayout(int numberOfColumns, String layoutType, Collection fragments, String[] columnWidthes) throws LayoutEventException
     {
-        this(numberOfColumns, layoutType);
+        this(numberOfColumns, layoutType, columnWidthes);
         Iterator fragmentsItr = fragments.iterator();
         try
         {
@@ -231,6 +235,61 @@ public class ColumnLayout implements Serializable
     public Collection getColumn(int columnNumber) throws InvalidLayoutLocationException
     {
         return Collections.unmodifiableCollection(getColumnMap(columnNumber).values());
+    }
+    
+    /**
+     * returns the width to be used with the specified column.  If
+     * there is no specific column setting sfor the specified column
+     * 0 is returned.
+     * 
+     * @param columnNumber whose width has been requested.
+     * @return the width to be used with the specified column.  Or 0 if no value
+     * has been specified.
+     */
+    public int getColumnWidth(int columnNumber)
+    {
+        if (columnNumber < numberOfColumns)
+        {
+            String stringValue = columnWidthes[columnNumber];
+            if (stringValue.endsWith("%"))
+            {
+                return Integer.parseInt(stringValue.substring(0, (stringValue.length() - 1)));
+            }
+            else
+            {
+                return Integer.parseInt(stringValue);
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    /**
+     * IE has a non-conformant box modle that takes into account both padding
+     * and margin settings.  You can use this method to return the column width
+     * reduced by the <code>reductionAmount</code> to prevent unwanted 
+     * scrolling/wrapping.
+     *
+     * 
+     * @param columnNumber whose width has been requested.  Will be reduced by
+     * the <code>reductionAmount</code> argument.
+     * @param reductionAmount amount to subtract from the column's width setting
+     * @return column width reduced by the <code>reductionAmount</code>.
+     */
+    public int getSafeColumnWidth(int columnNumber, int reductionAmount)
+    {
+        int columnWidth = getColumnWidth(columnNumber);
+        if(columnWidth > 0)
+        {
+            return (columnWidth - reductionAmount);
+        }
+        else
+        {
+            return 0;
+        }
+    
     }
 
     /**
@@ -596,7 +655,7 @@ public class ColumnLayout implements Serializable
         }
         else
         {
-            throw new FragmentNotInLayoutException((fragment == null)? "null fragment": fragment.getId());
+            throw new FragmentNotInLayoutException(fragment);
         }
     }
 
