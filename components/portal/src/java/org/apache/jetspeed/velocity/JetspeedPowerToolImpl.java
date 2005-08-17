@@ -60,6 +60,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.util.Path;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.window.PortletWindow;
@@ -88,6 +89,8 @@ import org.apache.velocity.context.Context;
 public class JetspeedPowerToolImpl implements JetspeedPowerTool
 {
     
+    private static final String DECORATOR_ID_ATTR = "decoratorId";
+    private static final String ACTION_IMAGE_EXTENSION_ATTR = "actionImageExtension";
     protected static final String PORTLET_CONFIG_ATTR = "javax.portlet.config";
     protected static final String RENDER_RESPONSE_ATTR = "javax.portlet.response";
     protected static final String RENDER_REQUEST_ATTR = "javax.portlet.request";
@@ -219,7 +222,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     public void setCurrentFragment( ContentFragment f )
     {
         checkState();
-        renderRequest.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, f);
+        setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, f);
         
     }
 
@@ -228,7 +231,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         checkState();
 
         ContentFragment f = (ContentFragment) getRequestContext().getRequest().getAttribute(LAYOUT_ATTR);
-        renderRequest.setAttribute(LAYOUT_ATTR, f);
+        setAttribute(LAYOUT_ATTR, f);       
     }
 
     /**
@@ -541,7 +544,9 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
                 template = getDecoration(parent + "/" + DECORATOR_TYPE + ext, fragmentType);
             }
         }
-
+        
+        setAttribute(DECORATOR_ID_ATTR, decoConf.getString("id"));     
+        setAttribute(ACTION_IMAGE_EXTENSION_ATTR, decoConf.getString("action.image.extension", ".gif"));
         return  template.getAppRelativePath();
     }   
     
@@ -580,6 +585,15 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
             descriptor.setType(templateType);
 
             TemplateDescriptor template = locator.locateTemplate(descriptor);
+            // Check for defaults above the currently specified root
+            if(template == null)
+            {
+                Path pathObject = new Path(path);
+                if(pathObject.length() > 1)
+                {
+                    template = getTemplate(pathObject.getSegment(1).toString(), templateType, locator, descriptor);
+                }
+            }
             return template;
         }
         catch (TemplateLocatorException e)
@@ -606,7 +620,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         if (exceptions == null)
         {
             exceptions = new HashSet();
-            renderRequest.setAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX + fragment.getId(), exceptions);
+            setAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX + fragment.getId(), exceptions);
         }
         exceptions.add(e);
 
@@ -781,7 +795,11 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
 
     protected DecoratorAction createDecoratorAction( String resourceBase, String actionName )
     {
-        // TODO: HARD-CODED .gif link
+        String imageExt = (String) renderRequest.getAttribute(ACTION_IMAGE_EXTENSION_ATTR);
+        if(imageExt == null)
+        {
+            imageExt = ".gif";
+        }
         String link = renderResponse.encodeURL(resourceBase+"/content/images/"+actionName+".gif");
         return new DecoratorAction(actionName, actionName, link); 
     }
@@ -903,5 +921,29 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     {
         return getRequestContext().getPortalURL().getPageBasePath();
     }
+
+
+    public void setVelocityContext(Context velocityContext)
+    {
+        this.velocityContext = velocityContext;
+    }
+    
+    /**
+     * Sets an attribute for use within your layout and decoration templates. The value is always stored
+     * within the current <code>javax.portlet.Renderrequest</code> and is also stored within the current 
+     * <code>org.apache.velocity.Context</code> if it is available.
+     * 
+     * @param name to store the attribute under.
+     * @param obj object to set.
+     */
+    protected void setAttribute(String name, Object object)
+    {
+        renderRequest.setAttribute(name, object);
+        if(velocityContext != null)
+        {
+            velocityContext.put(name, object);
+        }
+    }
+    
     
 }

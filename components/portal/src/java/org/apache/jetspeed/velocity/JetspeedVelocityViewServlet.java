@@ -183,6 +183,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                    "the HttpServletRequest.");
         }
         
+        jpt.setVelocityContext(ctx);
         ctx.put("jetspeed", jpt);  
         ctx.put("JS2RequestContext", requestContext);
         ctx.put("renderRequest", renderRequest);

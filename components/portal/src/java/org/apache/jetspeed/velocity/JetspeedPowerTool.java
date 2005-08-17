@@ -28,6 +28,7 @@ import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.velocity.context.Context;
 
 /**
  * JetspeedPowerTool
@@ -230,4 +231,12 @@ public interface JetspeedPowerTool
     String getBasePath();
 
     String getPageBasePath();
+    
+    /**
+     * Sets the Velocity Context object for this powertool instance.  This is
+     * only required if using Velocity based decortaions and layouts.
+     * 
+     * @param velocityContext
+     */
+    void setVelocityContext(Context velocityContext);
 }
