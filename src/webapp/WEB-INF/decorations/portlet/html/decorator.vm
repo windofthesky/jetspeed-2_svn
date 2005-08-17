@@ -31,7 +31,7 @@ the root of your decortaion.  This will be used instead of the default.
 
 <!-- Begin: Fragment: ${myF.id} Decoration: ${decoratorId} -->
 
-<div id="portlet-${myF.id}" class="${decoratorId}">
+<div id="${myF.id}" class="${decoratorId}">
   <div class="PTitle" >
     <div class="PTitleContent">
       $jetspeed.getTitle($myPE, $myF)

@@ -91,8 +91,8 @@ limitations under the License.
 	  #end
 	  #if($editing == true)    		  	  
 	    #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
-		
-        <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
+
+        <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$response.encodeURL('content/images/select.gif')" border="0" title="Add a Portlet"/></a>
 	  #end 
 	  
     </div>

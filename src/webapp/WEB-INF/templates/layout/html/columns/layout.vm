@@ -49,21 +49,8 @@ limitations under the License.
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 
-#*
-<!-- Page Action Bar -->
-#if ($actions.size()>0)
-  <div id="portal-page-actions">
-     #foreach ($action in $actions)
-      <a href="${action.Action}" title="${action.Name}" class="pageAction" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
-	 #end
-	 #if($editing == true)    		  	  
-	   #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
-       <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
-	 #end   
-  </div>
-#end
-*#
-  <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
+
+  <div id="$renderResponse.namespace" class="portal-layout">
 	#set ($sizeIndex = 0)
     #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
 	#foreach($column in $columnLayout.columns)
@@ -138,22 +125,6 @@ limitations under the License.
 			 $f.renderedContent			
 		   #end
 		   </div>
-		 #end
-		 #if($column.size() == 0)
-			<!-- IE Hack -->
-			<div class="portal-layout-cell" >
-			  <div class="PTitle" >
-                <div class="PTitleContent">
-                  &nbsp;
-                </div>   
-                <div class="PActionBar">
-                  &nbsp;
-                </div>
-              </div>
-              <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span>
-                &nbsp;
-              </div>  
-			</div>
 		 #end
 	  </div>
 	 #end
