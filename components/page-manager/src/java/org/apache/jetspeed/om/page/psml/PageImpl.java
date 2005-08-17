@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl;
+import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.AbstractNode;
@@ -30,7 +31,7 @@ import org.apache.jetspeed.page.document.AbstractNode;
  */
 public class PageImpl extends AbstractNode implements Page
 {
-    private Defaults defaults = new Defaults();
+    private DefaultsImpl defaults = new DefaultsImpl();
 
     private Fragment root = null;
 
@@ -166,7 +167,7 @@ public class PageImpl extends AbstractNode implements Page
         return this.defaults;
     }
 
-    public void setDefaults( Defaults defaults )
+    public void setDefaults( DefaultsImpl defaults )
     {
         this.defaults = defaults;
     }

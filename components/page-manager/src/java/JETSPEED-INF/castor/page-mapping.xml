@@ -25,7 +25,7 @@
     </field>
     
     <field name="defaults"
-           type="org.apache.jetspeed.om.page.psml.Defaults">
+           type="org.apache.jetspeed.om.page.psml.DefaultsImpl">
       <bind-xml name="defaults"/>
     </field>
 
@@ -356,7 +356,7 @@
     </field>    
   </class>
 
-  <class name="org.apache.jetspeed.om.page.psml.Defaults">
+  <class name="org.apache.jetspeed.om.page.psml.DefaultsImpl">
     <map-to xml="defaults"/>
 
     <field name="skin" type="java.lang.String">

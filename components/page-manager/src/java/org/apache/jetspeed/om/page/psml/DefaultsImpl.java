@@ -20,19 +20,24 @@ package org.apache.jetspeed.om.page.psml;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.apache.jetspeed.om.page.Defaults;
+
 /**
  * @version $Id$
  */
-public class Defaults
+public class DefaultsImpl implements Defaults
 {
 
     private String skin = null;
     private Map decoratorMap = new HashMap();
 
-    public Defaults()
+    public DefaultsImpl()
     {
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getSkin()
+     */
     public String getSkin()
     {
         return this.skin;
@@ -43,6 +48,9 @@ public class Defaults
         this.skin = skin;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getDecorator(java.lang.String)
+     */
     public String getDecorator(String type)
     {
         return (String)decoratorMap.get(type);
@@ -53,6 +61,9 @@ public class Defaults
         decoratorMap.put(type,decorator);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getLayoutDecorator()
+     */
     public String getLayoutDecorator()
     {
         return getDecorator("layout");
@@ -63,6 +74,9 @@ public class Defaults
         setDecorator("layout",decorator);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getPortletDecorator()
+     */
     public String getPortletDecorator()
     {
         return getDecorator("portlet");
