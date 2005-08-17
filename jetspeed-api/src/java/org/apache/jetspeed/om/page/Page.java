@@ -17,6 +17,8 @@ package org.apache.jetspeed.om.page;
 
 import java.util.List;
 
+import org.apache.jetspeed.om.page.psml.DefaultsImpl;
+
 /**
  * This interface represents a complete page document used by Jetspeed
  * to layout a user-customizable portal page.
@@ -107,5 +109,11 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @param definitions definition list
      */
     void setMenuDefinitions(List definitions);    
+    
+    /**
+     * Returns the defaults object defined for this page.
+     * @return
+     */
+    Defaults getDefaults();
 }
 
