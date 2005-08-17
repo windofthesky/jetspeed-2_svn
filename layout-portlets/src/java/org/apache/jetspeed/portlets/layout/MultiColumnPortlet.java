@@ -82,7 +82,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         ColumnLayout layout;
         try
         {
-            layout = new ColumnLayout(numColumns, layoutType, f.getFragments());
+            layout = new ColumnLayout(numColumns, layoutType, f.getFragments(), this.colSizes.split("\\,") );
             layout.addLayoutEventListener(new PageManagerLayoutEventListener(pm, page, layoutType));
         }
         catch (LayoutEventException e1)
