@@ -119,24 +119,24 @@ portlet-menu-caption <fmt:message key="css.label.style"/>: <div class="portlet-m
     <th class="portlet-section-header"><fmt:message key="css.label.Description"/></th>
   </tr>
   <tr>
-    <td class="portlet-section-body"><input type="checkbox"/></th>
-    <td class="portlet-section-body"><fmt:message key="css.label.portlet-msg-status"/></th>
-    <td class="portlet-section-body"><fmt:message key="css.label.StatusOfTheCurrentOperation"/></th>
+    <th class="portlet-section-body"><input type="checkbox"/></th>
+    <th class="portlet-section-body"><fmt:message key="css.label.portlet-msg-status"/></th>
+    <th class="portlet-section-body"><fmt:message key="css.label.StatusOfTheCurrentOperation"/></th>
   </tr>
   <tr>
-    <td class="portlet-section-alternate"><input type="checkbox"/></th>
-    <td class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-info"/></th>
-    <td class="portlet-section-alternate"><fmt:message key="css.label.HelpMessagesGeneralAdditionalInformationEtc"/></th>
+    <th class="portlet-section-alternate"><input type="checkbox"/></th>
+    <th class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-info"/></th>
+    <th class="portlet-section-alternate"><fmt:message key="css.label.HelpMessagesGeneralAdditionalInformationEtc"/></th>
   </tr>
   <tr>
-    <td class="portlet-section-body"><input type="checkbox"/></th>
-    <td class="portlet-section-body"><fmt:message key="css.label.portlet-msg-error"/></th>
-    <td class="portlet-section-body"><fmt:message key="css.label.ErrorMessages"/></th>
+    <th class="portlet-section-body"><input type="checkbox"/></th>
+    <th class="portlet-section-body"><fmt:message key="css.label.portlet-msg-error"/></th>
+    <th class="portlet-section-body"><fmt:message key="css.label.ErrorMessages"/></th>
   </tr>
   <tr>
-    <td class="portlet-section-alternate"><input type="checkbox"/></th>
-    <td class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-alert"/></th>
-    <td class="portlet-section-alternate"><fmt:message key="css.label.WarningMessages"/></th>
+    <th class="portlet-section-alternate"><input type="checkbox"/></th>
+    <th class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-alert"/></th>
+    <th class="portlet-section-alternate"><fmt:message key="css.label.WarningMessages"/></th>
   </tr>
 </table>
 <div class="portlet-section-footer">
