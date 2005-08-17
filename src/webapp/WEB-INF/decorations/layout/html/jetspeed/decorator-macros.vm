@@ -27,7 +27,7 @@
 #macro (includeFoldersNavigation $_nodeSet)
   <div class="FolderList">
   #foreach($childFolder in $_nodeSet.iterator())
-    <span><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink" title="$childFolder.getTitle($preferedLocale)">$childFolder.getShortTitle($preferedLocale)</a></span>		
+    <span><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink" title="$childFolder.getTitle($preferedLocale)">$childFolder.getShortTitle($preferedLocale)</a></span>        
   #end
   </div>
 #end
@@ -87,7 +87,7 @@
       <div>
     #end
 
-    <a href="$jetspeed.getAbsoluteUrl($childPage.url)" class="FolderLink" title="$childPage.getTitle($preferedLocale)">$childPage.getShortTitle($preferedLocale)</a>		
+    <a href="$jetspeed.getAbsoluteUrl($childPage.url)" class="FolderLink" title="$childPage.getTitle($preferedLocale)">$childPage.getShortTitle($preferedLocale)</a>        
 
     #if($_orientation == $LEFT_TO_RIGHT)
       </span>

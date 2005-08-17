@@ -75,7 +75,7 @@ BODY.layout-Jetspeed
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
-  padding-left: 19px;	
+  padding-left: 19px;    
   
   /** Needed to offset the 19px padding on the left, 
     * othewise we "bleed" into our neighboring element 
@@ -89,7 +89,7 @@ BODY.layout-Jetspeed
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
-  padding-left: 19px;	
+  padding-left: 19px;    
   
   /** Needed to offset the 19px padding on the left, 
     * othewise we "bleed" into our neighboring element 
@@ -103,7 +103,7 @@ BODY.layout-Jetspeed
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
-  padding-left: 19px;	
+  padding-left: 19px;    
   
   /** Needed to offset the 19px padding on the left, 
     * othewise we "bleed" into our neighboring element 
@@ -114,26 +114,26 @@ BODY.layout-Jetspeed
 
 .layout-Jetspeed .LTabLeftLow
 {
-	/**
-	Needs to specify the width of image used
-	otherwise it won't show !
-	**/
-	width:10px;
+    /**
+    Needs to specify the width of image used
+    otherwise it won't show !
+    **/
+    width:10px;
     
-	/** Always use relative path ! **/
-	background:url(content/jetspeed/images/tableft_low.gif);
+    /** Always use relative path ! **/
+    background:url(content/jetspeed/images/tableft_low.gif);
 }
 
 .layout-Jetspeed .LTabLow
 {
-	/**
-	Specify the height of the image used
-	else it will use the text height	
-	**/
+    /**
+    Specify the height of the image used
+    else it will use the text height    
+    **/
 
-	height:25px;	
-	color:black;
-	background:url(content/jetspeed/images/tabmiddle_low.gif);
+    height:25px;    
+    color:black;
+    background:url(content/jetspeed/images/tabmiddle_low.gif);
 }
  
 .layout-Jetspeed .LTabLow A:link, 
@@ -141,20 +141,20 @@ BODY.layout-Jetspeed
 .layout-Jetspeed .LTabLow A:hover, 
 .layout-Jetspeed .LTabLow A:active
 {
-	color:black;
-	text-decoration: none;
+    color:black;
+    text-decoration: none;
 }
 
 .layout-Jetspeed .LTabRightLow
 {
-	width:10px;
-	background:url(content/jetspeed/images/tabright_low.gif);
+    width:10px;
+    background:url(content/jetspeed/images/tabright_low.gif);
 }
 
 .layout-Jetspeed .LTabLeft
 {
-	width:10px;
-	background:url(content/jetspeed/images/tableft.gif);
+    width:10px;
+    background:url(content/jetspeed/images/tableft.gif);
 }
 
 .layout-Jetspeed .LTab
@@ -162,15 +162,15 @@ BODY.layout-Jetspeed
   
     font-weight: bold;
     letter-spacing: 1;
-	height:25px;	
-	color:black;
-	background:url(content/jetspeed/images/tabmiddle.gif);
+    height:25px;    
+    color:black;
+    background:url(content/jetspeed/images/tabmiddle.gif);
 }
  
 .layout-Jetspeed .LTabRight
 {
-	width:10px;
-	background:url(content/jetspeed/images/tabright.gif);
+    width:10px;
+    background:url(content/jetspeed/images/tabright.gif);
 }
 
 /*
@@ -245,5 +245,25 @@ BODY.layout-Jetspeed
     border-right: 1px solid #0A0A0A;
     border-bottom: 1px solid #0A0A0A;
     width : 65px;
+}
+
+#portal-page-actions A img
+{
+   display: inline;   
+}
+
+#portal-page-actions
+{
+   text-align: right;   
+}
+
+.portal-layout-column
+{
+  display:inline; 
+  float: left;
+}
+.portal-layout-cell
+{
+  padding: 2px;
 }
         

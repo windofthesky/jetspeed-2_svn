@@ -16,83 +16,83 @@ limitations under the License.
 
 
 /**
-	Metal Skin that uses the cascading capability of CSS
+    Metal Skin that uses the cascading capability of CSS
 **/
 
 .portlet-Metal .PTitleLeft
 {
-	/**
-	Needs to specify the width of image used
-	otherwise it won't show !
-	**/
-	width:10px;
-	
-	/** Always use relative path ! **/
-	background:  url(content/metal/images/titleleft.gif);
-	
+    /**
+    Needs to specify the width of image used
+    otherwise it won't show !
+    **/
+    width:10px;
+    
+    /** Always use relative path ! **/
+    background:  url(content/metal/images/titleleft.gif);
+    
 }
 
 .portlet-Metal .PTitle
 {
-	/**Specify the height of the image usedelse it will use the text height**/
-	height:16px;
-	color:#FFFFFF;
-	background: url(content/metal/images/title.gif);
-	font-family : monospace;
-	font-weight:bold;
-	font-size:12pt;
+    /**Specify the height of the image usedelse it will use the text height**/
+    height:16px;
+    color:#FFFFFF;
+    background: url(content/metal/images/title.gif);
+    font-family : monospace;
+    font-weight:bold;
+    font-size:12pt;
 }
  
 .portlet-Metal .PTitleRight
 {
-	/**
-	Needs to specify the width of image used
-	otherwise it won't show !
-	**/
-	width:10px;
-	background:  url(content/metal/images/titleright.gif);
+    /**
+    Needs to specify the width of image used
+    otherwise it won't show !
+    **/
+    width:10px;
+    background:  url(content/metal/images/titleright.gif);
 }
 
 .portlet-Metal .PContentLeft
 {
-	width:10px;
-	background:  url(content/metal/images/contentleft.gif);
-	height : 100%;
-	
+    width:10px;
+    background:  url(content/metal/images/contentleft.gif);
+    height : 100%;
+    
 }
 
 .portlet-Metal .PContent
 {
-	padding-left:5px;
+    padding-left:5px;
     background-color:#717171;
 }
 
 .portlet-Metal .PContentRight
 {
-	width:10px;
-	background:  url(content/metal/images/contentright.gif);
+    width:10px;
+    background:  url(content/metal/images/contentright.gif);
 }
 
 .portlet-Metal .PBottomLeft
 {
-	width:10px;
-	background:  url(content/metal/images/bottomleft.gif);
+    width:10px;
+    background:  url(content/metal/images/bottomleft.gif);
 }
 
 .portlet-Metal .PBottom
 {
-	/**
-	Specify the height of the image used
-	else it won't appear
-	**/
-	height:13px;
-	background:  url(content/metal/images/bottom.gif);
+    /**
+    Specify the height of the image used
+    else it won't appear
+    **/
+    height:13px;
+    background:  url(content/metal/images/bottom.gif);
 }
 
 .portlet-Metal .PBottomRight
 {
-	width:10px;
-	background:  url(content/metal/images/bottomright.gif);
+    width:10px;
+    background:  url(content/metal/images/bottomright.gif);
 }
 
 

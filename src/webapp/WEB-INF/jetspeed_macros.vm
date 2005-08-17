@@ -7,7 +7,7 @@
 
 #* Adds link for all style sheets required by the layout and portlet decorations *#
 #macro (includeHeaderResource)
- <script>
+ <script type="text/javascript">
     function openWindow(pipeline)
     {	
       var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');

@@ -43,14 +43,10 @@ limitations under the License.
   #if ($decoTop)
       #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
   #end
-<table width="100%" cellspacing="0" cellpadding="0">
-  <tr>
-    <td valign="top">
-	    ## get the decorated Portlet content
-	   #parse($jetspeed.decorateAndInclude($myFragment))    
-     </td>
-  </tr>
-</table>
+
+  ## get the decorated Portlet content
+  #parse($jetspeed.decorateAndInclude($myFragment))    
+
 
 #if ($decoBottom)
    #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)

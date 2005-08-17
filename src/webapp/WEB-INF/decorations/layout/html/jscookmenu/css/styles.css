@@ -89,3 +89,23 @@ body.layout-jscookmenu
 {
 }
 
+#portal-page-actions A img
+{
+   display: inline;   
+}
+
+#portal-page-actions
+{
+   text-align: right;   
+}
+
+.portal-layout-column
+{
+  display:inline; 
+  float: left;
+}
+.portal-layout-cell
+{
+  padding: 2px;
+}
+

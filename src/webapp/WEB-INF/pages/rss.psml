@@ -14,7 +14,7 @@ limitations under the License.
   <defaults
      skin="orange"
      layout-decorator="tigris"
-     portlet-decorator="tigris"
+     portlet-decorator="gray-gradient"
   />
   <title>RSS Demo</title>
   <metadata name="title" xml:lang="ja">RSS デモ</metadata>

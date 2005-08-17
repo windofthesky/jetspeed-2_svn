@@ -1,6 +1,6 @@
 #* define navigation constants *#
 #macro (defineNavigationConstants)
-  #* Constants for layout orientation *#	
+  #* Constants for layout orientation *#    
   #set($LEFT_TO_RIGHT = "LeftToRight")
   #set($RIGHT_TO_LEFT = "RightToLeft")
   #set($TOP_TO_BOTTOM = "TopToBottom")
@@ -20,17 +20,17 @@
     #end
 
     #if($node.type == ".psml")
-      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>    
     #elseif($node.type == ".link")
-      <a href="$node.url" target="$node.target" class="Link" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
+      <a href="$node.url" target="$node.target" class="Link" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>    
     #elseif($node.type == "folder")
-      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>    
     #elseif($node.type == ".ds")
       #set($__nodePrefix = "${_nodePrefix}${node.url}")
       #set($__nodeSet = $site.getDocumentSetNodes($__nodePrefix))
       #includeNestedLinksWithIconNavigation($__nodeSet $__nodePrefix $_orientation)
     #else
-      <a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a>	
+      <a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a>    
     #end
 
     #if($_orientation == $TOP_TO_BOTTOM)
@@ -55,7 +55,7 @@
       <div>
     #end
 
-    <a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink" title="$childFolder.getTitle($preferedLocale)">$childFolder.getShortTitle($preferedLocale)</a>		
+    <a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink" title="$childFolder.getTitle($preferedLocale)">$childFolder.getShortTitle($preferedLocale)</a>        
 
     #if($_orientation == $LEFT_TO_RIGHT)
       </span>

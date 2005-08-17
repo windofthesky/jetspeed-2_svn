@@ -19,9 +19,6 @@ limitations under the License.
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
 
-
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
@@ -34,7 +31,7 @@ limitations under the License.
     <meta name="keywords" content="" />
     <meta name="description" content="$jetspeed.page.getTitle($preferedLocale)" />
   </head>
-  <body marginwidth="0" marginheight="0" class="layout-tigris">
+  <body class="layout-tigris">
 
 #set($myF = $jetspeed.currentFragment)
 #set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
@@ -85,6 +82,22 @@ limitations under the License.
 #else
         &nbsp;
 #end
+     <!-- Page Action Bar -->
+    #if ($actions.size()>0)
+    <div id="portal-page-actions" >
+      #foreach ($action in $actions)
+		
+        <a href="${action.Action}" title="${action.Name}" class="pageAction" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
+	  #end
+	  #if($editing == true)    		  	  
+	    #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
+		
+        <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
+	  #end 
+	  
+    </div>
+    #end
+
       </div>
 
 <!-- Content Table -->
@@ -93,6 +106,7 @@ limitations under the License.
 
 <!-- Left Navigations Menu Table Data -->
 #set($navigationsStandardMenu = $site.getMenu("navigations"))
+
 #if(!$navigationsStandardMenu.empty)
           <td valign="top" id="leftcol" width="20%">
             <div id="navcolumn">

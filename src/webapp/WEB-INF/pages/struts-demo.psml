@@ -14,21 +14,21 @@ limitations under the License.
   <defaults
      skin="orange"
      layout-decorator="tigris"
-     portlet-decorator="tigris"
+     portlet-decorator="pretty-single-portlet"
   />
-  <title>Struts MailReader Demo</title>
-  <fragment id="sd-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="15" type="portlet" name="struts-demo::StrutsPortletDemo">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>
+
+   <title>MailReader Demo</title>
+   <metadata name="title" xml:lang="ja">Struts メールリーダーデモ</metadata>
+   <metadata name="title" xml:lang="es">Demo Lector de Correo Struts</metadata>
+   <metadata name="short-title" xml:lang="es">Demo Struts</metadata>
+   <metadata name="title" xml:lang="hu">Struts levelező</metadata>
+
+  <fragment id="sd-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="15" type="portlet" name="struts-demo::StrutsPortletDemo"/>
   </fragment>
-  <metadata name="title" xml:lang="ja">Struts メールリーダーデモ</metadata>
-  <metadata name="title" xml:lang="es">Demo Lector de Correo Struts</metadata>
-  <metadata name="short-title" xml:lang="es">Demo Struts</metadata>
-  <metadata name="title" xml:lang="hu">Struts levelező</metadata>
 
   <security-constraints>
-    <security-constraints-ref>users</security-constraints-ref>
+    <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
+
 </page>

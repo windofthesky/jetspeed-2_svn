@@ -47,11 +47,14 @@
   #end
   #set($menuTitle = $_menu.getTitle($preferedLocale))
   #set($menuName = $_menu.getShortTitle($preferedLocale))
+  
       <div class="FolderList">
   #if($_title == $TITLE_FIRST)
     #if($_orientation == $LEFT_TO_RIGHT)
+		
         <span title="$!menuTitle">${menuName}&nbsp;</span>
     #elseif($_orientation == $TOP_TO_BOTTOM)
+		
         <div class="pagetitle" title="$!menuTitle">${menuName}</div>
     #end
   #end
@@ -62,28 +65,37 @@
       #set($linkUrl = $jetspeed.getAbsoluteUrl($element.url))
       #if($_style != $BREADCRUMBS_STYLE || $element.type != "page" || $velocityCount < $_menu.elements.size())
         #if($_orientation == $LEFT_TO_RIGHT)
+			
         <span>
         #elseif($_orientation == $TOP_TO_BOTTOM)
+			
         <div>
         #end
         #if($element.type == "page")
+			
           <a href="$linkUrl" class="LinkPage" title="$!linkTitle">${linkName}</a>
         #elseif($element.type == "link")
+			
           <a href="$linkUrl" class="Link" title="$!linkTitle">${linkName}</a>
         #elseif($element.type == "folder")
+			
           <a href="$linkUrl" class="LinkFolder" title="$!linkTitle">${linkName}</a>
         #else
+			
           <a href="$linkUrl" title="$!linkTitle">${linkName}</a>
         #end
         #if($_orientation == $LEFT_TO_RIGHT)
         ${_delimiter}</span>
         #elseif($_orientation == $TOP_TO_BOTTOM)
+			
         </div>
         #end
       #else
         #if($_orientation == $LEFT_TO_RIGHT)
-        <span title="$!linkTitle">${linkName}&nbsp;</span>
+			
+        <span title="$!linkTitle">${linkName}&nbsp;</span>		
         #elseif($_orientation == $TOP_TO_BOTTOM)
+			
         <div title="$!linkTitle">${linkName}</div>
         #end
       #end
@@ -91,19 +103,24 @@
       #set($separatorTitle = $element.getTitle($preferedLocale))
       #set($separatorText = $element.getText($preferedLocale))
       #if($_orientation == $LEFT_TO_RIGHT)
+		
         <span title="$!separatorTitle">${separatorText}${_delimiter}</span>              
       #elseif($_orientation == $TOP_TO_BOTTOM)
+		
         <div class="pagetitle" title="$!separatorTitle">${separatorText}</div>              
       #end
     #end
   #end
   #if($_title == $TITLE_LAST)
     #if($_orientation == $LEFT_TO_RIGHT)
+		
         <span title="$!menuTitle">${menuName}&nbsp;</span>
     #elseif($_orientation == $TOP_TO_BOTTOM)
+		
         <div class="pagetitle" title="$!menuTitle">${menuName}</div>
     #end
   #end
+  
       </div>
 #end
 

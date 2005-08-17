@@ -14,10 +14,10 @@ limitations under the License.
   <defaults
      skin="orange"
      layout-decorator="tigris"
-     portlet-decorator="tigris"
+     portlet-decorator="pretty-single-portlet"
   />
   <title>JPetstore</title>
-  <metadata name="title" xml:lang="ja">ペットストア</metadata>
+    <metadata name="title" xml:lang="ja">ペットストア</metadata>
   <metadata name="short-title" xml:lang="es">JPetstore</metadata>
   <metadata name="title" xml:lang="es">Demo: tienda de animales</metadata>
   <metadata name="title" xml:lang="hu">Kisállatkereskedés (JPetstore)</metadata>

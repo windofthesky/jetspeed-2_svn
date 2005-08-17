@@ -14,11 +14,11 @@ limitations under the License.
   <defaults
      skin="orange"
      layout-decorator="tigris"
-     portlet-decorator="tigris"
+     portlet-decorator="blue-gradient"
   />
   <title>CSS Demo</title>
   <fragment id="css-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="css-1" type="portlet" name="demo::CSSDemoPortlet" decorator="tigris">
+    <fragment id="css-1" type="portlet" name="demo::CSSDemoPortlet" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>

@@ -17,80 +17,86 @@ limitations under the License.
 
 .portlet-Jetspeed .PTitleLeft
 {
-	/**
-	Needs to specify the width of image used
-	otherwise it won't show !
-	**/
-	width:10px;
+    /**
+    Needs to specify the width of image used
+    otherwise it won't show !
+    **/
+    width:10px;
     
-	/** Always use relative path ! **/
-	background:  url(content/jetspeed/images/titleleft.gif);
+    /** Always use relative path ! **/
+    background:  url(content/jetspeed/images/titleleft.gif);
 }
 
 .portlet-Jetspeed .PTitle
 {
-	/**
-	Specify the height of the image used
-	else it will use the text height	
-	**/
-	height:10px;	
-	color:#FFFFFF;
-	font-weight:bold;
-	background:  url(content/jetspeed/images/title.gif);
+    /**
+    Specify the height of the image used
+    else it will use the text height    
+    **/
+    height:10px;    
+    color:#FFFFFF;
+    font-weight:bold;
+    background:  url(content/jetspeed/images/title.gif);
+}
+
+.portlet-Jetspeed .PActionBar
+{
+   float: right;
+   display: inline;
 }
  
 .portlet-Jetspeed .PTitleRight
 {
-	/**
-	Needs to specify the width of image used
-	otherwise it won't show !
-	**/
-	width:10px;
-	background:  url(content/jetspeed/images/titleright.gif);
+    /**
+    Needs to specify the width of image used
+    otherwise it won't show !
+    **/
+    width:10px;
+    background:  url(content/jetspeed/images/titleright.gif);
 }
 
 .portlet-Jetspeed .PContentLeft
 {
-	width:10px;
-	background: url(content/jetspeed/images/contentleft.gif);
-	height : 100%;
+    width:10px;
+    background: url(content/jetspeed/images/contentleft.gif);
+    height : 100%;
 
 }
 
 .portlet-Jetspeed .PContent
 {
-	overflow : scroll;
+    overflow : scroll;
 
 }
 
 .portlet-Jetspeed .PContentRight
 {
-	width:10px;
-	background:  url(content/jetspeed/images/contentright.gif);
-	height : 100%;
+    width:10px;
+    background:  url(content/jetspeed/images/contentright.gif);
+    height : 100%;
 
 }
 
 .portlet-Jetspeed .PBottomLeft
 {
-	width:10px;
-	background:  url(content/jetspeed/images/bottomleft.gif);
+    width:10px;
+    background:  url(content/jetspeed/images/bottomleft.gif);
 }
 
 .portlet-Jetspeed .PBottom
 {
-	/**
-	Specify the height of the image used
-	else it won't appear
-	**/
-	height:13px;
-	background:  url(content/jetspeed/images/bottom.gif);
+    /**
+    Specify the height of the image used
+    else it won't appear
+    **/
+    height:13px;
+    background:  url(content/jetspeed/images/bottom.gif);
 }
 
 .portlet-Jetspeed .PBottomRight
 {
-	width:10px;
-	background:  url(content/jetspeed/images/bottomright.gif);
+    width:10px;
+    background:  url(content/jetspeed/images/bottomright.gif);
 }
 
 

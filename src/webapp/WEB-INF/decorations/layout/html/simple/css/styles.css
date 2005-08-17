@@ -58,7 +58,7 @@ body.layout-tigris
 
 .layout-tigris .LTabLeftLow
 {
-	width: 5px;
+    width: 5px;
 
     background-image: url(content/tigris/images/nw_maj_rond.gif);
     background-repeat: no-repeat;
@@ -71,7 +71,7 @@ body.layout-tigris
 
 .layout-tigris .LTabLow
 {
-	height:25px;;	
+    height:25px;;    
 
     background-color: #999;
     border-bottom: 1px solid #fff;
@@ -85,13 +85,13 @@ body.layout-tigris
 .layout-tigris .LTabLow A:hover, 
 .layout-tigris .LTabLow A:active
 {
-	text-decoration: none;
+    text-decoration: none;
     color: #fff;
 }
 
 .layout-tigris .LTabRightLow
 {
-	width: 0px;
+    width: 0px;
 
     background-color: #999;
     border-bottom: 1px solid #fff;
@@ -102,7 +102,7 @@ body.layout-tigris
 
 .layout-tigris .LTabLeft
 {
-	width: 5px;
+    width: 5px;
 
     background-image: url(content/tigris/images/nw_maj_rond.gif);
     background-repeat: no-repeat;
@@ -116,7 +116,7 @@ body.layout-tigris
 
 .layout-tigris .LTab
 {
-	height:25px;	
+    height:25px;    
 
     background-color: #ddd;
     color: #555;
@@ -126,7 +126,7 @@ body.layout-tigris
  
 .layout-tigris .LTabRight
 {
-	width:10px;
+    width:10px;
 
     border-right: 1px solid #333;
     background-color: #ddd;
