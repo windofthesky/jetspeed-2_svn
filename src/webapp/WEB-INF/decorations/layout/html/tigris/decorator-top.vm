@@ -90,7 +90,7 @@ limitations under the License.
         <a href="${action.Action}" title="${action.Name}" class="pageAction" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
 	  #end
 	  #if($editing == true)    		  	  
-	    #set ($chooser = "${jetspeed.basePath}/Administrative/choosers/portlet-selector.psml")
+	    #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
 
         <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$response.encodeURL('content/images/select.gif')" border="0" title="Add a Portlet"/></a>
 	  #end 
