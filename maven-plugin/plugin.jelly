@@ -36,6 +36,16 @@
     <attainGoal name="j2:portal.conf.jetspeed"/>
     <attainGoal name="j2:portal.conf.tomcat"/>
   </goal>
+  
+  <goal name="j2:portal.genapp.minimal" prereqs="j2:_check.required.properties">
+            
+    <attainGoal name="j2:portal.copy.webapp.minimal"/>
+    <attainGoal name="j2:portal.conf.project"/>
+    <attainGoal name="j2:portal.conf.sql"/>
+    <attainGoal name="j2:portal.conf.ojb"/>
+    <attainGoal name="j2:portal.conf.jetspeed"/>
+    <attainGoal name="j2:portal.conf.tomcat"/>
+  </goal>
     
   <goal name="j2:portal.copy.webapp" prereqs="j2:_check.required.properties">
     <j:set var="portal.webapp.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.webapp.dir}"/>      
@@ -43,6 +53,23 @@
     <copy todir="${portal.webapp.dir}" overwrite="true" failonerror="true">
       <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp">
         <exclude name="WEB-INF/conf/jetspeed.properties"/>
+      </fileset>
+    </copy>
+  </goal>
+  
+  <goal name="j2:portal.copy.webapp.minimal" prereqs="j2:_check.required.properties">
+    <j:set var="portal.webapp.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.webapp.dir}"/>      
+    <mkdir dir="${portal.webapp.dir}"/>
+    <copy todir="${portal.webapp.dir}" overwrite="true" failonerror="true">
+      <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp">
+        <exclude name="WEB-INF/conf/jetspeed.properties"/>
+        <exclude name="WEB-INF/pages/**"/>     
+      </fileset>
+    </copy>
+	<copy todir="${portal.webapp.dir}" overwrite="true" failonerror="true">
+      <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp">
+        <include name="WEB-INF/pages/Administrative/**"/>
+		<include name="WEB-INF/pages/page.security"/>           
       </fileset>
     </copy>
   </goal>
