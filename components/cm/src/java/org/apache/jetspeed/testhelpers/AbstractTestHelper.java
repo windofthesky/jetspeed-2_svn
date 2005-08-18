@@ -78,7 +78,7 @@ public abstract class AbstractTestHelper implements TestHelper
         String prop = System.getProperty(key);
         if (prop == null)
         {
-            return (String) USER_PROPERTIES.getProperty(key);
+            return USER_PROPERTIES.getString(key);
         }
         else
         {
