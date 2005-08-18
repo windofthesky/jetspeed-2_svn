@@ -128,6 +128,13 @@
     </copy>          
 
     <!-- Note: keep existing project.xml allowing for custom modifications -->
+	<j:set var="copy.project.xml" value="true" />
+	<util:available file="${portal.home.dir}/project.xml"> 
+		 <j:set var="copy.project.xml" value="false" />
+	</util:available>
+	
+	<echo>${portal.home.dir}/project.xml does not exist?  ${copy.project.xml} </echo>
+	<j:if test="${copy.project.xml}">
     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.xml"
           tofile="${portal.home.dir}/project.xml"
           overwrite="false"
@@ -139,7 +146,9 @@
         <filter token="PORTAL_CURRENT_VERSION" value="${org.apache.jetspeed.portal.currentVersion}"/>
       </filterset>
     </copy>
+	</j:if>
   </goal>
+ 
 
   <goal name="j2:portal.conf.sql" prereqs="j2:_check.required.properties">
     <j:set var="portal.sql.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql"/>
