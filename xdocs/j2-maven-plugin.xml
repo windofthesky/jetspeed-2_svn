@@ -69,6 +69,17 @@
               <br />
             </td>
           </tr>
+		  <tr>
+            <td><code>j2:portal.genapp.minimal</code></td>
+            <td>
+              Works similar to <code>j2:portal.genapp</code>.  However, it
+			  will only copy the following directories/files from <code>WEB-INF/pages</code>.
+			  <ul>
+				<li>/WEB-INF/pages/Administrative/** (all contents)</li>
+				<li>/WEB-INF/pages/page.security</li>
+			  </ul>
+            </td>
+          </tr>
         </table>
       </subsection>
       <subsection name="Configuring and updating a Portal Application">
@@ -94,6 +105,17 @@
               If you need to upgrade to a newer version of the Jetspeed 2 portal you should clear out these resources
               yourself first. By default, the target folder is configured within the maven default target folder and
               running the <code>clear</code> goal will do exactly that.
+            </td>
+          </tr>
+		  <tr>
+            <td><code>j2:portal.copy.webapp.minimal</code></td>
+            <td>
+              Similar to <code>j2:portal.copy.webapp</code> However, it
+			  will only copy the following directories/files from <code>WEB-INF/pages</code>.
+			  <ul>
+				<li>/WEB-INF/pages/Administrative/** (all contents)</li>
+				<li>/WEB-INF/pages/page.security</li>
+			  </ul>
             </td>
           </tr>
           <tr>
@@ -492,6 +514,18 @@
           <td>
             Deploys a Jetspeed core component shared library from the local maven repository to the Tomcat shared
             library directory.
+          </td>
+        </tr>
+		<tr>
+          <td><code>j2:deployDecorations</code></td>
+          <td>
+            Deploys all decoration files from the WEB-INF/decorations directory to the deployed portal.
+          </td>
+        </tr>
+		<tr>
+          <td><code>j2:deployTemplates</code></td>
+          <td>
+            Deploys all template files from the WEB-INF/templates directory to the deployed portal.
           </td>
         </tr>
       </table>
