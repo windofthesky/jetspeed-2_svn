@@ -101,10 +101,18 @@
     </filterset>
 
     <!-- Note: keep already existing project-info.xml allowing custom modifications -->
-    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
-          tofile="${portal.home.dir}/project-info.xml"
-          overwrite="false"
-          failonerror="true"/>
+	<j:set var="copy.project-info.xml" value="true" />
+	<util:available file="${portal.home.dir}/project-info.xml"> 
+		 <j:set var="copy.project-info.xml" value="false" />
+	</util:available>
+	
+	<echo>${portal.home.dir}/project-info.xml does not exist?  ${copy.project-info.xml} </echo>
+	<j:if test="${copy.project.xml}">
+      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
+            tofile="${portal.home.dir}/project-info.xml"
+            overwrite="false"
+            failonerror="true"/>
+    </j:if>
     
     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/core-build.xml"
           tofile="${portal.home.dir}/core-build.xml"
@@ -135,17 +143,17 @@
 	
 	<echo>${portal.home.dir}/project.xml does not exist?  ${copy.project.xml} </echo>
 	<j:if test="${copy.project.xml}">
-    <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.xml"
-          tofile="${portal.home.dir}/project.xml"
-          overwrite="false"
-          failonerror="true">
-      <filterset begintoken="@" endtoken="@">
-        <filter token="PORTAL_GROUPID" value="${org.apache.jetspeed.portal.groupId}"/>
-        <filter token="PORTAL_ARTIFACTID" value="${org.apache.jetspeed.portal.artifactId}"/>
-        <filter token="PORTAL_NAME" value="${org.apache.jetspeed.portal.name}"/>
-        <filter token="PORTAL_CURRENT_VERSION" value="${org.apache.jetspeed.portal.currentVersion}"/>
-      </filterset>
-    </copy>
+      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project.xml"
+            tofile="${portal.home.dir}/project.xml"
+            overwrite="false"
+            failonerror="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="PORTAL_GROUPID" value="${org.apache.jetspeed.portal.groupId}"/>
+          <filter token="PORTAL_ARTIFACTID" value="${org.apache.jetspeed.portal.artifactId}"/>
+          <filter token="PORTAL_NAME" value="${org.apache.jetspeed.portal.name}"/>
+          <filter token="PORTAL_CURRENT_VERSION" value="${org.apache.jetspeed.portal.currentVersion}"/>
+        </filterset>
+      </copy>
 	</j:if>
   </goal>
  
