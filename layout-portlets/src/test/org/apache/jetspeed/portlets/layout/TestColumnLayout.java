@@ -39,13 +39,15 @@ public class TestColumnLayout extends MockObjectTestCase
     private FragmentImpl f5;
 
     private FragmentImpl f6;
+    
+    private FragmentImpl f8;
 
     public void testBasics() throws Exception
     {
         assertEquals(f1, layout.getFirstColumn().iterator().next());
         
         // The last column is currently empty
-        assertTrue(layout.getLastColumn().isEmpty());
+      //  assertTrue(layout.getLastColumn().isEmpty());
 
         assertEquals(3, layout.getNumberOfColumns());
         Iterator column0 = layout.getColumn(0).iterator();
@@ -441,6 +443,11 @@ public class TestColumnLayout extends MockObjectTestCase
         f6.setId("f6");
         f6.setPropertyValue("test", "row", "2");
         f6.setPropertyValue("test", "column", "1");
+        
+        f8 = new FragmentImpl();
+        f8.setId("f8");
+        f8.setPropertyValue("test", "row", "1");
+        f8.setPropertyValue("test", "column", "2");
 
         layout = new ColumnLayout(3, "test", widthes );
         layout.addFragment(f1);
@@ -449,6 +456,7 @@ public class TestColumnLayout extends MockObjectTestCase
         layout.addFragment(f4);
         layout.addFragment(f5);
         layout.addFragment(f6);
+        layout.addFragment(f8);
     }
 
     protected LayoutEvent createEvent(Fragment fragment, ColumnLayout layout, int eventType) throws Exception

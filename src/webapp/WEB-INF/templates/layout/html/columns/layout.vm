@@ -56,14 +56,15 @@ limitations under the License.
 	#foreach($column in $columnLayout.columns)
 	  #set($columnWidth = "auto")
 	  
-	  #if ($columnLayout.getSafeColumnWidth($sizeIndex, 1) > 0)
-	    #set($columnWidth = $columnLayout.getSafeColumnWidth($sizeIndex, 4))
+	  #if ($columnLayout.getColumnWidth($sizeIndex) > 0)
+	    #set($columnWidth = $columnLayout.getColumnWidth($sizeIndex))
 	  #end
 
 	  #set ($sizeIndex = $sizeIndex + 1)  
 	  <div class="portal-layout-column" style="width:${columnWidth}%;">
 		 
 	     #foreach($f in $column)
+  	     
            ## Set up coordinates for this fragment
            #set($coords = $columnLayout.getCoordinate($f))	  
            #set($col = $coords.x)
@@ -74,20 +75,23 @@ limitations under the License.
 		   <div class="portal-layout-cell" >
 		   ## editing block
 		   #if($editing)
+		   <div class="portlet-edit-bar">
 			 ## Move portlet left
 			 #if($lastColumn > 0 && $col > 0)            
-               #set($leftUrl = $renderResponse.createRenderURL())    
+               #set($leftUrl = $renderResponse.createActionURL())    
                $!leftUrl.setParameter("move","3")
-               $!leftUrl.setParameter("fragmentId","$f.id")    
+               $!leftUrl.setParameter("fragmentToMove","$f.id")
+			   $!leftUrl.setParameter("editingPage","$myPage.id")  
                #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
                <a href="$leftUrl" class="move-portlet-left"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
 			 #end
 			 
 			 ## Move portlet up	
 			 #if($row > 0)			   
-               #set($upUrl = $renderResponse.createRenderURL())    
+               #set($upUrl = $renderResponse.createActionURL())    
                  $!upUrl.setParameter("move","1")
-                 $!upUrl.setParameter("fragmentId","$f.id")
+                 $!upUrl.setParameter("fragmentToMove","$f.id")
+				 $!upUrl.setParameter("editingPage","$myPage.id") 
                  #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
                  <a href="$upUrl" class="move-portlet-up"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
 			 #end
@@ -101,21 +105,24 @@ limitations under the License.
 			 
 			 ## Move portlet down
              #if($row < $lastRow)						
-               #set($downUrl = $renderResponse.createRenderURL())	
+               #set($downUrl = $renderResponse.createActionURL())	
                $!downUrl.setParameter("move","2")
-               $!downUrl.setParameter("fragmentId","$f.id")
+               $!downUrl.setParameter("fragmentToMove","$f.id")
+			   $!downUrl.setParameter("editingPage","$myPage.id") 
                #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
                <a href="$downUrl" class="move-portlet-down"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
 			 #end
 			 
 			 ## Move portlet right
              #if($lastColumn > 0 && $col < $lastColumn)
-               #set($rightUrl = $renderResponse.createRenderURL())    
+               #set($rightUrl = $renderResponse.createActionURL())    
                $!rightUrl.setParameter("move","4")
-               $!rightUrl.setParameter("fragmentId","$f.id")
+               $!rightUrl.setParameter("fragmentToMove","$f.id")
+			   $!rightUrl.setParameter("editingPage","$myPage.id") 
                #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
                <a href="$rightUrl" class="move-portlet-right"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
-             #end
+			 #end
+		   </div>
 		   #end
 		   
 		   #if($f.type == "portlet")

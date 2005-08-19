@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -33,6 +35,8 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -90,52 +94,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
         }
 
-        if (request.getParameter("move") != null && request.getParameter("fragmentId") != null)
-        {            
-            Fragment fragmentToMove = page.getFragmentById(request.getParameter("fragmentId"));
-           
-            int moveCode = Integer.parseInt(request.getParameter("move"));           
-
-            try
-            {                
-                switch (moveCode)
-                {
-                case LayoutEvent.MOVED_UP:
-                    layout.moveUp(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_DOWN:
-                    layout.moveDown(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_RIGHT:
-                    layout.moveRight(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_LEFT:
-                    layout.moveLeft(fragmentToMove);
-                    break;
-                default:
-                    throw new PortletException("Invalid movement code " + moveCode);
-                }
-               
-            }
-            catch (SecurityException se)
-            {
-                // ignore page security constraint violations, only
-                // permitted users can edit managed pages; page
-                // update will remain transient
-                log.info("Unable to update page " + page.getId() + " layout due to security permission/constraint.", se);
-            }
-            catch (Exception e)
-            {
-                if (e instanceof PortletException)
-                {
-                    throw (PortletException)e;
-                }
-                else
-                {
-                    throw new PortletException("Unable to process layout for page " + page.getId() + " layout: " + e.toString(), e);
-                }
-            }
-        }
+       
 
         // if (targetState != null && targetState.isMaximized())
         if (window != null)
@@ -204,5 +163,82 @@ public class MultiColumnPortlet extends LayoutPortlet
         }
 
         return list;
+    }
+
+    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
+    {
+        if (request.getParameter("move") != null 
+                && request.getParameter("fragmentToMove") != null
+                && request.getParameter("editingPage") != null)
+        {        
+            Page page;
+            try
+            {
+                page = pm.getPage(request.getParameter("editingPage"));
+            }
+            catch (Exception e)
+            {
+                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+            }
+          
+            Fragment rootFragment = page.getRootFragment();
+            Fragment fragmentToMove = page.getFragmentById(request.getParameter("fragmentToMove"));           
+            int moveCode = Integer.parseInt(request.getParameter("move"));
+            
+            ColumnLayout layout;
+            try
+            {
+                layout = new ColumnLayout(numColumns, layoutType, rootFragment.getFragments(), this.colSizes.split("\\,") );
+                layout.addLayoutEventListener(new PageManagerLayoutEventListener(pm, page, layoutType));
+            }
+            catch (LayoutEventException e1)
+            {
+                throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
+            }
+
+            try
+            {                
+                switch (moveCode)
+                {
+                case LayoutEvent.MOVED_UP:
+                    layout.moveUp(fragmentToMove);
+                    break;
+                case LayoutEvent.MOVED_DOWN:
+                    layout.moveDown(fragmentToMove);
+                    break;
+                case LayoutEvent.MOVED_RIGHT:
+                    layout.moveRight(fragmentToMove);
+                    break;
+                case LayoutEvent.MOVED_LEFT:
+                    layout.moveLeft(fragmentToMove);
+                    break;
+                default:
+                    throw new PortletException("Invalid movement code " + moveCode);
+                }
+               
+            }
+            catch (SecurityException se)
+            {
+                // ignore page security constraint violations, only
+                // permitted users can edit managed pages; page
+                // update will remain transient
+                log.info("Unable to update page " + page.getId() + " layout due to security permission/constraint.", se);
+            }
+            catch (Exception e)
+            {
+                if (e instanceof PortletException)
+                {
+                    throw (PortletException)e;
+                }
+                else
+                {
+                    throw new PortletException("Unable to process layout for page " + page.getId() + " layout: " + e.toString(), e);
+                }
+            }
+        }
+        else
+        {        
+            super.processAction(request, response);
+        }
     }
 }
