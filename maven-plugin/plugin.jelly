@@ -101,13 +101,13 @@
     </filterset>
 
     <!-- Note: keep already existing project-info.xml allowing custom modifications -->
-	<j:set var="copy.project-info.xml" value="true" />
+	<j:set var="copy.project_info.xml" value="true" />
 	<util:available file="${portal.home.dir}/project-info.xml"> 
-		 <j:set var="copy.project-info.xml" value="false" />
+		 <j:set var="copy.project_info.xml" value="false" />
 	</util:available>
 	
-	<echo>${portal.home.dir}/project-info.xml does not exist?  ${copy.project-info.xml} </echo>
-	<j:if test="${copy.project.xml}">
+	<echo>${portal.home.dir}/project-info.xml does not exist?  ${copy.project_info.xml} </echo>
+	<j:if test="${copy.project_info.xml}">
       <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/project-info.xml"
             tofile="${portal.home.dir}/project-info.xml"
             overwrite="false"
