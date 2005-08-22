@@ -69,6 +69,7 @@ limitations under the License.
     </supports>                                
     <supported-locale>en</supported-locale>                
     <supported-locale>de</supported-locale>            
+    <supported-locale>ja</supported-locale>            
     <resource-bundle>org.apache.portals.applications.desktop.resources.Bookmark</resource-bundle>            
     <portlet-preferences>
       <preference>                            
@@ -86,6 +87,50 @@ limitations under the License.
     </portlet-preferences>        
   </portlet>
 	  
+  <portlet>
+    <description>Bookmark Portlet for XHTML Basic</description>
+    <portlet-name>BookmarkPortletForXHTMLBasic</portlet-name>
+    <display-name>Bookmark Portlet for XHTML Basic</display-name>
+    <portlet-class>org.apache.portals.applications.desktop.BookmarkPortlet</portlet-class>
+    <init-param>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/bookmark-view-xhtmlbasic.jsp</value>
+     </init-param>   
+    <init-param>
+		<name>EditPage</name>
+			<value>/WEB-INF/view/bookmark-edit-xhtmlbasic.jsp</value>
+     </init-param>   
+    <init-param>
+		<name>HelpPage</name>
+			<value>/WEB-INF/view/bookmark-help-xhtmlbasic.jsp</value>
+     </init-param>   
+    <expiration-cache>0</expiration-cache>            
+    <supports>
+      <mime-type>text/html</mime-type>                
+      <portlet-mode>VIEW</portlet-mode>                
+      <portlet-mode>EDIT</portlet-mode>                
+      <portlet-mode>HELP</portlet-mode>                
+    </supports>                                
+    <supported-locale>en</supported-locale>                
+    <supported-locale>de</supported-locale>            
+    <supported-locale>ja</supported-locale>            
+    <resource-bundle>org.apache.portals.applications.desktop.resources.Bookmark</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>Jetspeed-2 Site</name>                    
+        <value>http://portals.apache.org/jetspeed-2/</value>    
+      </preference>                               		
+      <preference>                            
+        <name>Bluesunrise Site</name>                    
+        <value>http://www.bluesunrise.com/</value>    
+      </preference>                               
+      <preference>                            
+        <name>Apache Home</name>                    
+        <value>http://www.apache.org/</value>    
+      </preference>                               	  
+    </portlet-preferences>        
+  </portlet>
+
   <portlet id="PreferencePortlet">
     <portlet-name>PreferencePortlet</portlet-name>
     <display-name>PreferencePortlet</display-name>

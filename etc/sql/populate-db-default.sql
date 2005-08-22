@@ -89,6 +89,7 @@ INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES(2,'text/vnd.wap.wml');
 INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES(3,'text/vxml');
 INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES(4,'text/xml');
 INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES(5,'text/xhtml');
+INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES(6,'application/xhtml+xml');
 
 ----------------------------------------------------------------------------
 -- Supported clients
@@ -109,31 +110,31 @@ INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,M
 VALUES(5, 8, 'nokia_generic','Nokia.*','Nokia','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(6, 9, 'up','UP.*|.*UP\.Browser.*','United Planet','Generic','',2);
+VALUES(6, 10, 'up','UP.*|.*UP\.Browser.*','United Planet','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(7, 10, 'sonyericsson','Ercis.*|SonyE.*','SonyEricsson','Generic','',2);
+VALUES(7, 11, 'sonyericsson','Ercis.*|SonyE.*','SonyEricsson','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(8, 11, 'wapalizer','Wapalizer.*','Wapalizer','Generic','',2);
+VALUES(8, 12, 'wapalizer','Wapalizer.*','Wapalizer','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(9, 12, 'klondike','Klondike.*','Klondike','Generic','',2);
+VALUES(9, 13, 'klondike','Klondike.*','Klondike','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(10, 13, 'wml_generic','.*WML.*|.*WAP.*|.*Wap.*|.*wml.*','Generic','Generic','',2);
+VALUES(10, 14, 'wml_generic','.*WML.*|.*WAP.*|.*Wap.*|.*wml.*','Generic','Generic','',2);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(11, 14, 'vxml_generic','.*VoiceXML.*','Generic','Generic','',3);
+VALUES(11, 15, 'vxml_generic','.*VoiceXML.*','Generic','Generic','',3);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(12, 15, 'nuance','Nuance.*','Nuance','Generic','',3);
+VALUES(12, 16, 'nuance','Nuance.*','Nuance','Generic','',3);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(13, 16, 'agentxml','agentxml/1.0.*','Unknown','Generic','',4);
+VALUES(13, 17, 'agentxml','agentxml/1.0.*','Unknown','Generic','',4);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
-VALUES(14, 17, 'opera7','.*Opera/7.*','Opera','Opera7','7.x',1);
+VALUES(14, 18, 'opera7','.*Opera/7.*','Opera','Opera7','7.x',1);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
 VALUES(15, 1, 'ie5mac','.*MSIE 5.*Mac.*','Microsoft','None','5.*',1);
@@ -143,6 +144,9 @@ VALUES(16, 2, 'safari','.*Mac.*Safari.*','Apple','None','5.*',1);
 
 INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
 VALUES(17, 3,'ie6','.*MSIE 6.*','Microsoft','None','6.0',1);
+
+INSERT INTO CLIENT (CLIENT_ID,EVAL_ORDER,NAME,	USER_AGENT_PATTERN,MANUFACTURER,MODEL ,VERSION, PREFERRED_MIMETYPE_ID)
+VALUES(18, 9, 'xhtml-basic','DoCoMo/2.0.*|KDDI-.*UP\.Browser.*|J-PHONE/5.0.*|Vodafone/1.0/.*','WAP','Generic','',6);
 
 
 
@@ -160,6 +164,9 @@ VALUES(3,'vxml','UTF-8','VoiceXML','Format suitable for use with an audio VoiceX
 
 INSERT INTO MEDIA_TYPE (MEDIATYPE_ID,NAME, CHARACTER_SET, TITLE, DESCRIPTION)
 VALUES(4,'xml','','XML','XML 1.0');
+
+INSERT INTO MEDIA_TYPE (MEDIATYPE_ID,NAME, CHARACTER_SET, TITLE, DESCRIPTION)
+VALUES(5,'xhtml-basic','UTF-8','XHTML','XHTML Basic');
 
 ------------------------------------------------------
 -- Client association
@@ -325,6 +332,8 @@ INSERT INTO CLIENT_TO_MIMETYPE(CLIENT_ID ,MIMETYPE_ID)VALUES(17,1);
 INSERT INTO CLIENT_TO_MIMETYPE(CLIENT_ID ,MIMETYPE_ID)VALUES(17,4);
 INSERT INTO CLIENT_TO_MIMETYPE(CLIENT_ID ,MIMETYPE_ID)VALUES(17,5);
 
+INSERT INTO CLIENT_TO_MIMETYPE(CLIENT_ID ,MIMETYPE_ID)VALUES(18,6);
+
 ----------------------------------------------------
 -- Media Type association
 ----------------------------------------------------
@@ -337,6 +346,7 @@ INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(1,1);
 INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(2,2);
 INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(3,3);
 INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(4,4);
+INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(5,6);
 
 -----------------------
 -- Profiler
@@ -381,9 +391,10 @@ insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my
 
 insert into PROFILING_RULE values ('j2', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
-   'The default profiling rule for users minus mediatype, language and country.');
+   'The default profiling rule for users and mediatype minus language and country.');
 insert into RULE_CRITERION values (18, 'j2', 0, 'path.session', 'page', 'default-page', 0);
 insert into RULE_CRITERION values (19, 'j2', 1, 'group.role.user', 'user', null, 0);
+insert into RULE_CRITERION values (20, 'j2', 2, 'mediatype', 'mediatype', null, 0);
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
