@@ -89,7 +89,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/aopalliance/jars/aopalliance-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jstl/jars/jstl-1.0.6.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0-svn-201864.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc4.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/lucene/jars/lucene-1.4.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/nekohtml/jars/nekohtml-0.9.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar"/>
@@ -114,6 +114,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-php-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-struts-0.4-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-velocity-0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>	
+	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
