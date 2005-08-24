@@ -432,8 +432,12 @@ limitations under the License.
 				<value>http://portals.apache.org</value>
             </preference>
 			<preference>
+<!-- Don't specify a HEIGHT if you want a normal filled out layout
+     because percentage values result in the content not to be displayed on IE6.
+     Specific values are ok though. 
 				<name>HEIGHT</name>
-				<value>100%</value>
+				<value>300</value>
+-->        
 			</preference>
 			<preference>
 				<name>WIDTH</name>
@@ -445,7 +449,11 @@ limitations under the License.
 			</preference>
 			<preference>
 				<name>MAX-WIDTH</name>
-				<value>100%</value>
+				<value>100%</value>        
+      </preference>
+      <preference>
+        <name>SCROLLING</name>
+        <value>AUTO</value>
 			</preference>
         </portlet-preferences>
         <supported-locale>en</supported-locale>

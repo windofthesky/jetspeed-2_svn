@@ -55,7 +55,6 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         attributes.put("MARGINWIDTH", "0");
         attributes.put("NAME", "");
 
-        attributes.put("HEIGHT", "100%");
         attributes.put("WIDTH", "100%");
         attributes.put("SCROLLING", "NO");
         attributes.put("STYLE", "");
@@ -132,6 +131,10 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         String source = getURLSource(request, response, prefs);
         // generate HTML IFRAME content
         StringBuffer content = new StringBuffer(4096);
+
+        // fix JS2-349
+        content.append("<TABLE WIDTH='100%'><TR><TD>");
+
         content.append("<IFRAME");
 
         // special case source
@@ -162,6 +165,9 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         content.append("<P STYLE=\"textAlign:center\"><A HREF=\"").append(source).append("\">").append(source).append(
                 "</A></P>");
         content.append("</IFRAME>");
+
+        // end fix JS2-349
+        content.append("</TD></TR></TABLE>");
 
         // set required content type and write HTML IFRAME content
         response.setContentType("text/html");
