@@ -417,28 +417,27 @@ limitations under the License.
 		<name>HelpPage</name>
 		  <value>/WEB-INF/view/iframe-help.html</value>
 		</init-param>
-
-        <portlet-class>org.apache.jetspeed.portlet.IFrameGenericPortlet</portlet-class>
-        <expiration-cache>-1</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>EDIT</portlet-mode>
-            <portlet-mode>VIEW</portlet-mode>
-            <portlet-mode>HELP</portlet-mode>
-        </supports>
-        <portlet-preferences>
-            <preference>
-                <name>SRC</name>
+    <portlet-class>org.apache.jetspeed.portlet.IFrameGenericPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-preferences>
+      <preference>
+        <name>SRC</name>
 				<value>http://portals.apache.org</value>
-            </preference>
-			<preference>
+      </preference>
 <!-- Don't specify a HEIGHT if you want a normal filled out layout
      because percentage values result in the content not to be displayed on IE6.
      Specific values are ok though. 
+      <preference>
 				<name>HEIGHT</name>
 				<value>300</value>
--->        
 			</preference>
+-->        
 			<preference>
 				<name>WIDTH</name>
 				<value>100%</value>
