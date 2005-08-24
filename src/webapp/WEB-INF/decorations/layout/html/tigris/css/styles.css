@@ -374,11 +374,14 @@ body.layout-tigris
 .portal-layout-column
 {  
   float: left;
-  /** This id the "gutter" setting for columns */
+}
+.portal-layout-column-gutter
+{  
+  /** This is the "gutter" setting for columns */
   padding-right: 4px;
   padding-top: 4px;
- 
 }
+
 .portal-layout-cell
 {
   width: 100%;  
