@@ -46,7 +46,7 @@ public class SpringEngineHelper extends OJBHelper
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         ApplicationContext bootCtx = (ApplicationContext) context.get(AbstractTestHelper.APP_CONTEXT);
         
-        SpringComponentManager scm = new SpringComponentManager(null, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
+        SpringComponentManager scm = new SpringComponentManager(new String[] {"../../etc/db-ojb/test-*.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
        
         engine = new JetspeedEngine(config, appRoot, servletConfig, scm );
         engine.start();

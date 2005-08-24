@@ -32,14 +32,15 @@ using the MetadataManager.
 -->
 
 <!-- 
-	There is no need to specify any DB or JNDI info as the org.springframework.orm.ojb.support.LocalDataSourceConnectionFactory
-	defined in OJB.properties will be using a matching Datasource that is defined in Spring.
+	This is just a partial definition. The properties given will be merged 
+	with additional properties by a ConnectionRepositoryEntry JavaBean
+	instantiated in datasource.xml. This bean handles configuration of the
+	jndi name of this connection descriptor and all properties that can
+	dynamically be derived from the data source.
 	-->
     <jdbc-connection-descriptor
         jcd-alias="JetspeedDS"
-        platform="@PLATFORM@"
         default-connection="true"
-        jdbc-level="2.0"
         batch-mode="false"
      >
         <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">

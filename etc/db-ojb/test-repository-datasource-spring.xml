@@ -3,7 +3,7 @@
 <beans>		
 
   <!-- datasource bean -->
-  <bean id="JetspeedDS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  <bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry">
     <property name="driverClassName">
       <value>${org.apache.jetspeed.database.driver}</value>
     </property>
@@ -16,11 +16,8 @@
     <property name="password">
       <value>${org.apache.jetspeed.database.password}</value>
     </property>
-  </bean>      
+  </bean>     
      
-  <!-- OJB configurer -->
-  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/>    	
-
   <!-- properties configurer used to pick up system properties -->
   <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 
