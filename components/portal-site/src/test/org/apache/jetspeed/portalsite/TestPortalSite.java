@@ -722,7 +722,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(breadcrumbsMenu);
         assertFalse(breadcrumbsMenu.isEmpty());
         assertEquals("You are here:", breadcrumbsMenu.getTitle());
-        assertEquals("\u00bb", breadcrumbsMenu.getTitle(Locale.JAPANESE));
+        assertEquals("\u73fe\u5728\u30d1\u30b9\uff1a", breadcrumbsMenu.getTitle(Locale.JAPANESE));
         Menu navigationsMenu = requestContext.getMenu("navigations");
         assertNotNull(navigationsMenu);
         assertFalse(navigationsMenu.isEmpty());
