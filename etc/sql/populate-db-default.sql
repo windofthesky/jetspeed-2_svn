@@ -394,7 +394,7 @@ insert into PROFILING_RULE values ('j2',
    'The default profiling rule for users and mediatype minus language and country.');
 insert into RULE_CRITERION values (18, 'j2', 0, 'path.session', 'page', 'default-page', 0);
 insert into RULE_CRITERION values (19, 'j2', 1, 'group.role.user', 'user', null, 0);
-insert into RULE_CRITERION values (20, 'j2', 2, 'mediatype', 'mediatype', null, 0);
+insert into RULE_CRITERION values (20, 'j2', 2, 'mediatype', 'mediatype', null, 1);
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
