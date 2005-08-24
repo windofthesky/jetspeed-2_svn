@@ -30,7 +30,6 @@ org.apache.jetspeed.test.database.password =
 
 org.apache.jetspeed.test.jdbc.drivers.path=
 org.apache.jetspeed.test.database.default.name=hsql
-org.apache.jetspeed.test.database.ojb.platform=Hsqldb
 
 org.apache.jetspeed.production.database.url = jdbc:hsqldb:hsql://127.0.0.1:9001
 org.apache.jetspeed.production.database.driver = org.hsqldb.jdbcDriver
@@ -39,4 +38,3 @@ org.apache.jetspeed.production.database.password =
 
 org.apache.jetspeed.production.jdbc.drivers.path=
 org.apache.jetspeed.production.database.default.name=hsql
-org.apache.jetspeed.production.database.ojb.platform=Hsqldb

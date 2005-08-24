@@ -31,7 +31,6 @@ org.apache.jetspeed.test.database.password =j2t
 
 org.apache.jetspeed.test.jdbc.drivers.path=/portal/lib/oracle/ojdbc14.jar;/portal/lib/oracle/nls_charset12.jar
 org.apache.jetspeed.test.database.default.name=oracle
-org.apache.jetspeed.test.database.ojb.platform=oracle9i
 
 org.apache.jetspeed.production.database.url = jdbc:oracle:thin:@localhost:1521:orcl
 #org.apache.jetspeed.production.database.driver = com.p6spy.engine.spy.P6SpyDriver
@@ -41,4 +40,3 @@ org.apache.jetspeed.production.database.password =j2p
 
 org.apache.jetspeed.production.jdbc.drivers.path=/portal/lib/oracle/ojdbc14.jar;/portal/lib/oracle/nls_charset12.jar
 org.apache.jetspeed.production.database.default.name=oracle
-org.apache.jetspeed.production.database.ojb.platform=oracle9i

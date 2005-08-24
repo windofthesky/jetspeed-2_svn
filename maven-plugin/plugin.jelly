@@ -193,9 +193,6 @@
     <mkdir dir="${portal.target.dir}/WEB-INF/classes"/>
     <copy todir="${portal.target.dir}/WEB-INF/classes" overwrite="true">
       <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/db-ojb"/>
-      <filterset begintoken="@" endtoken="@">
-        <filter token="PLATFORM" value="${org.apache.jetspeed.production.database.ojb.platform}"/>
-      </filterset>
     </copy>
   </goal>
   

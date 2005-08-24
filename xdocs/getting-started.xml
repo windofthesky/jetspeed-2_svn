@@ -373,29 +373,6 @@
           </tr>
           <tr>
             <td>
-              <code>
-                org.apache.jetspeed.production.database.ojb.platform
-              </code>
-            </td>
-            <td>
-              The type of database you are using as understood by OJB
-              <a href="http://db.apache.org/ojb/docu/guides/platforms.html#Selecting+a+platform+profile">
-                (the platform property)
-              </a>
-              <br />
-              Currently supported values:
-              <ul>
-                <li>Hsqldb</li>
-                <li>Oracle or Oracle9i</li>
-                <li>MySQL</li>
-                <li>PostgreSQL</li>
-                <li>MsSQLServer</li>
-              </ul>
-            </td>
-            <td>Hsqldb</td>
-          </tr>
-          <tr>
-            <td>
               <code>org.apache.jetspeed.production.database.url</code>
             </td>
             <td>The jdbc connection url</td>
@@ -622,7 +599,6 @@ org.apache.jetspeed.portal.home = ${org.apache.jetspeed.project.home}]]>
           database properties as described <a href="#Optional_Database_Server_Properties">above</a>:
           <ul>
             <li><code>org.apache.jetspeed.test.database.default.name</code></li>
-            <li><code>org.apache.jetspeed.test.database.ojb.platform</code></li>
             <li><code>org.apache.jetspeed.test.database.url</code></li>
             <li><code>org.apache.jetspeed.test.database.user</code></li>
             <li><code>org.apache.jetspeed.test.database.password</code></li>

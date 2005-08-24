@@ -227,21 +227,6 @@
         <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}" />
         <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}" />
 
-        <!-- make sure OJB platform property is translated/filtered: 
-             @PLATFORM@ -> org.apache.jetspeed.test.database.ojb.platform
-        -->
-        <available property="_found" file="${maven.test.dest}/repository_database.xml" />
-        <j:if test="${_found}">
-          <tempfile destdir="${maven.test.dest}" prefix="tmp" suffix=".xml" property="temp.file"/>
-          <copy file="${maven.test.dest}/repository_database.xml" tofile="${temp.file}" overwrite="true" failonerror="true">
-            <filterset begintoken="@" endtoken="@">
-              <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}" />
-            </filterset>
-          </copy>
-          <copy file="${temp.file}" tofile="${maven.test.dest}/repository_database.xml" overwrite="true" failonerror="true"/>
-          <delete file="${temp.file}"/>
-        </j:if>
-
         <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}" />
         <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path" />
     </goal>
