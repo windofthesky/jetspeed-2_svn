@@ -85,7 +85,8 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
                     if ( request.getSessionAttribute(CHECKED_KEY) == null  )
                     {
                         request.setSessionAttribute(CHECKED_KEY,Boolean.TRUE);
-                        if ( pwdCredential.getPreviousAuthenticationDate() != null )
+                        if ( pwdCredential.getPreviousAuthenticationDate() != null && 
+                                pwdCredential.getExpirationDate() != null )
                         {
                             long expirationTime = pwdCredential.getExpirationDate().getTime();
                             long lastAuthTime = pwdCredential.getLastAuthenticationDate().getTime();
