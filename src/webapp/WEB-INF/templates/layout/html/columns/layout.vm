@@ -62,7 +62,7 @@ limitations under the License.
 
 	  #set ($sizeIndex = $sizeIndex + 1)  
 	  <div class="portal-layout-column" style="width:${columnWidth}%;">
-		  <div class="portal-layout-colum-gutter"> 
+		  <div class="portal-layout-column-gutter"> 
 	     #foreach($f in $column)
   	     
            ## Set up coordinates for this fragment
