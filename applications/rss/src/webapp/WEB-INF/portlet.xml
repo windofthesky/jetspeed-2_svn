@@ -56,6 +56,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>	  
 	</supports>	
     <supported-locale>en</supported-locale>
+    <supported-locale>es</supported-locale>
     <supported-locale>fr</supported-locale>
     <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
     <portlet-info>
@@ -87,6 +88,10 @@ limitations under the License.
 		<preference>
 			<name>showtextinput</name>
 			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>minrefresh</name>
+			<value>3600</value>		
 		</preference>	
 	</portlet-preferences>				
 </portlet>
