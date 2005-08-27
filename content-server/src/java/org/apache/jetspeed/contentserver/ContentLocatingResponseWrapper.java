@@ -18,9 +18,6 @@ package org.apache.jetspeed.contentserver;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -113,6 +110,22 @@ public class ContentLocatingResponseWrapper extends HttpServletResponseWrapper
                 locationAttempted = true;
                 setContentLength((int) contentLocator.writeToOutputStream(getOutputStream()));
                 setStatus(SC_OK);
+            }
+            catch (IllegalStateException ise)
+            {
+                // on WebSphere this occurs all the time, killing most of the content:
+                // java.lang.IllegalStateException: ERROR: Cannot set header. Response already committed. 
+                // Note: This is a temporary workaround. The real cause still has to be found.
+                try
+                {
+                    super.sendError(SC_NOT_FOUND, message);
+                }
+                catch (Exception unexpected)
+                {
+                    // and still, on WebSphere just sending the error (as requested from within a WebSphere
+                    // SimpleFileServlet fails most of the time.
+                    // So, killing the error is the last resort.
+                }
             }
             catch (FileNotFoundException e)
             {
