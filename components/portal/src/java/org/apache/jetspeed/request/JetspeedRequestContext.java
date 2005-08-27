@@ -15,12 +15,9 @@
  */
 package org.apache.jetspeed.request;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -28,6 +25,7 @@ import java.util.WeakHashMap;
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.Jetspeed;
@@ -41,7 +39,6 @@ import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
@@ -83,9 +80,6 @@ public class JetspeedRequestContext implements RequestContext
     private Map requestsForWindows;
     private Map responsesForWindows;
     
-    private Fragment rootFragment;
-    private Map fragments;
-    
     /**
      * Create a new Request Context
      * 
@@ -103,15 +97,34 @@ public class JetspeedRequestContext implements RequestContext
         this.userInfoMgr = userInfoMgr;
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
-        this.fragments = new LinkedHashMap();
 
         // set context in Request for later use
         if (null != this.request)
         {
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
+            PortalRequestFactory prf = null;
+            try
+            {
+                prf = (PortalRequestFactory)Jetspeed.getComponentManager().getComponent(PortalRequestFactory.class);
+            }
+            catch (Throwable t)
+            {
+                // allow undefined
+            }
+            if ( prf != null )
+            {
+                this.request = prf.createPortalRequest(this.request);
+            }
+            else
+            {
+                // Simply wrap the current request so we maintain the same
+                // level of wrapping.
+                // This is needed in the ServletPortletInvoker to get back
+                // to the original request.
+                this.request = new HttpServletRequestWrapper(this.request);
+            }
         }
     }
-
 
     public HttpServletRequest getRequest()
     {

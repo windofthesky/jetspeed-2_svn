@@ -175,7 +175,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         String portletApplicationName = webApplicationDefinition.getContextRoot();
 
         // gather all required data from request and response
-        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest();
+        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest()).getRequest();
 
         ServletResponse servletResponse = ((HttpServletResponseWrapper) portletResponse).getResponse();
 
