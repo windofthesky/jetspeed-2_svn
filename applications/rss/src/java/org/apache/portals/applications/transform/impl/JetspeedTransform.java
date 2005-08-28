@@ -142,7 +142,7 @@ public class JetspeedTransform implements Transform
         {
             try
             { // if no stylesheet specified simply drain the stream
-                Streams.drain(inputSource.getByteStream(), writer);
+                Streams.drain(inputSource.getCharacterStream(), writer);
             }
             catch (IOException e)
             {

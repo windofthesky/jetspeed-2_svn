@@ -78,6 +78,12 @@ public class Streams
 
   }
 
+  /**
+   * @deprecated encoding?
+   * @param r character reader
+   * @param os byte stream
+   * @throws IOException
+   */
   public static void drain(Reader r,OutputStream os) throws IOException
   {
         Writer w=new OutputStreamWriter(os);
@@ -85,6 +91,12 @@ public class Streams
         w.flush();
   }
 
+  /**
+   * @deprecated how can it know the encoding?
+   * @param is input stream (encoding?)
+   * @param w  writer
+   * @throws IOException
+   */
   public static void drain(InputStream is, Writer w) throws IOException
   {
       Reader r = new InputStreamReader(is);
@@ -99,6 +111,11 @@ public class Streams
         return bytes.toByteArray();
   }
 
+  /**
+   * @deprecated encoding?
+   * @param is input stream
+   * @return
+   */
   public static String getAsString(InputStream is)
   {
       int c=0;
