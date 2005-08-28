@@ -41,8 +41,8 @@ import org.apache.jetspeed.om.page.Fragment;
  * <h2>Characteristics:</h2>
  * <ul>
  *   <li>Columns and rows always start at 0.</li>
- *   <li>Unless otherwise noted, assume all Collections returned are immutbale.</li>
- *   <li>Unless otherwies noted, assume that no public method will ever return <code>null</code>.</li>
+ *   <li>Unless otherwise noted, assume all Collections returned are immutable.</li>
+ *   <li>Unless otherwise noted, assume that no public method will ever return <code>null</code>.</li>
  * </ul>
  *  
  * 
@@ -91,7 +91,7 @@ public class ColumnLayout implements Serializable
     private final Map coordinates;
     
     /** All of the LayoutEventListeners registered to this layout */
-    private final List eventListeners;    
+    private final List eventListeners;
 
     /**
      * 
@@ -236,7 +236,7 @@ public class ColumnLayout implements Serializable
     {
         return Collections.unmodifiableCollection(getColumnMap(columnNumber).values());
     }
-    
+
     /**
      * returns the width to be used with the specified column.  If
      * there is no specific column setting sfor the specified column
@@ -540,7 +540,7 @@ public class ColumnLayout implements Serializable
                 try
                 {
                     // now move the fragment above down one level.
-                    Fragment fragmentAbove = getFragmentAt(aboveLayoutCoordinate);
+                    /*Fragment fragmentAbove =*/ getFragmentAt(aboveLayoutCoordinate);
                     doMove(fragment, coordinate, newCoordinate);
                     processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragment, coordinate, newCoordinate));                
                 }
