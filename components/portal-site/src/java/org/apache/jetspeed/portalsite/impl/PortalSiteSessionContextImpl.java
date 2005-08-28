@@ -791,7 +791,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             }
 
             // compare control and navigation locator properties
-            if ((properties0 != null) && (properties1 != null))
+            try
             {
                 for (int i = 0, limit = properties0.length; (i < limit); i++)
                 {
@@ -806,6 +806,9 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         return false;
                     }
                 }
+            } catch(Throwable t) {
+            	t.printStackTrace();
+            	return false;
             }
         }
         return true;
