@@ -174,40 +174,34 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         if (prefs != null)
         {
             String absViewPage = null;
+            String viewPage = null;
             try
             {
                 JetspeedPowerTool jpt = getJetspeedPowerTool(request);
                 if (maximized)
                 {
-                    String viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
+                    viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
                     if (viewPage == null)
                     {
                         viewPage = this.getInitParameter(PARAM_MAX_PAGE);
                         if (viewPage == null)
                             viewPage = "maximized";
                     }
-
-                    // TODO: Need to retreive layout.properties instead of
-                    // hard-coding ".vm"
-                    absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
-                            JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 }
                 else
                 {
-                    String viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
+                    viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
                     if (viewPage == null)
                     {
                         viewPage = this.getInitParameter(PARAM_VIEW_PAGE);
                         if (viewPage == null)
                             viewPage = "columns";
                     }
-                    
-
-                    // TODO: Need to retreive layout.properties instead of
-                    // hard-coding ".vm"
-                    absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
-                            JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 }
+                // TODO: Need to retrieve layout.properties instead of
+                // hard-coding ".vm"
+                absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
+                        JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 log.debug("Path to view page for LayoutPortlet " + absViewPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
             }
@@ -253,7 +247,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 }
                 catch (Exception e)
                 {
-                    log.error("failed to add user to role: " + portlet);
+                    log.error("failed to add portlet to page: " + portlet);
                 }
             }
             
@@ -272,7 +266,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         }
         catch (Exception e)
         {
-            log.error("failed to remove portlet " + fragmentId + " to page: " + pageId);
+            log.error("failed to remove portlet " + fragmentId + " from page: " + pageId);
         }
             
     }
@@ -380,7 +374,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         else
         {
             throw new IllegalStateException(
-                    "getRequestContext() failed as it appears that now RenderRequest is available within the RenderRequest");
+                    "getRequestContext() failed as it appears that no RenderRequest is available within the RenderRequest");
         }
     }
 
