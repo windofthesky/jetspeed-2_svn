@@ -144,11 +144,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("folder0", ((Folder)foldersIter.next()).getName());
         assertEquals("folder1", ((Folder)foldersIter.next()).getName());
         assertEquals("folder2", ((Folder)foldersIter.next()).getName());
-        assertEquals(3, rootFolderProxy.getPages().size());
+        assertEquals(4, rootFolderProxy.getPages().size());
         Iterator pagesIter = rootFolderProxy.getPages().iterator();
         assertEquals("page2.psml", ((Page)pagesIter.next()).getName());
         assertEquals("page1.psml", ((Page)pagesIter.next()).getName());
         assertEquals("page0.psml", ((Page)pagesIter.next()).getName());
+        assertEquals("hidden.psml", ((Page)pagesIter.next()).getName());
         assertEquals(2, rootFolderProxy.getLinks().size());
         Iterator linksIter = rootFolderProxy.getLinks().iterator();
         assertEquals("link1.link", ((Link)linksIter.next()).getName());
@@ -158,6 +159,10 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(rootFolderProxy, rootPage0Proxy.getParent());
         assertEquals("page0.psml", rootPage0Proxy.getName());
         assertEquals("/page0.psml", extractFileSystemPathFromId(rootPage0Proxy.getId()));
+        Page rootHiddenProxy = rootFolderProxy.getPage("hidden.psml");
+        assertNotNull(rootHiddenProxy);
+        assertEquals("hidden.psml", rootHiddenProxy.getName());
+        assertTrue(rootHiddenProxy.isHidden());
         Link rootLink0Proxy = rootFolderProxy.getLink("link0.link");
         assertNotNull(rootLink0Proxy);
         assertEquals(rootFolderProxy, rootLink0Proxy.getParent());
@@ -211,7 +216,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("user root", rootFolderProxy.getTitle());
         assertEquals("/_user/user", extractFileSystemPathFromId(rootFolderProxy.getId()));
         assertEquals(3, rootFolderProxy.getFolders().size());
-        assertEquals(3, rootFolderProxy.getPages().size());
+        assertEquals(4, rootFolderProxy.getPages().size());
         assertEquals(2, rootFolderProxy.getLinks().size());
         rootPage0Proxy = rootFolderProxy.getPage("page0.psml");
         assertNotNull(rootPage0Proxy);
@@ -671,7 +676,6 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu breadCrumbsMenu2 = requestContext.getMenu("bread-crumbs");
         assertNotNull(breadCrumbsMenu2);
         assertTrue(breadCrumbsMenu != breadCrumbsMenu2);
-        assertNotNull(breadCrumbsMenu2);
         assertEquals("bread-crumbs", breadCrumbsMenu2.getName());
         assertEquals("/folder0", breadCrumbsMenu2.getUrl());
         assertFalse(breadCrumbsMenu2.isEmpty());
@@ -684,6 +688,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/folder0", ((MenuOption)breadCrumbsElements.get(1)).getUrl());
         assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)breadCrumbsElements.get(1)).getType());
         assertTrue(((MenuImpl)breadCrumbsMenu2).isElementRelative());
+        Menu hiddenMenu = requestContext.getMenu("override-hidden");
+        assertNotNull(hiddenMenu);
+        assertTrue(hiddenMenu.isEmpty());
+        Menu navigationsMenu = requestContext.getMenu("navigations");
+        assertNotNull(navigationsMenu);
+        assertTrue(navigationsMenu.isEmpty());
 
         // third request at /page1.psml
         locator = new JetspeedProfileLocator();
@@ -723,7 +733,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(breadcrumbsMenu.isEmpty());
         assertEquals("You are here:", breadcrumbsMenu.getTitle());
         assertEquals("\u73fe\u5728\u30d1\u30b9\uff1a", breadcrumbsMenu.getTitle(Locale.JAPANESE));
-        Menu navigationsMenu = requestContext.getMenu("navigations");
+        navigationsMenu = requestContext.getMenu("navigations");
         assertNotNull(navigationsMenu);
         assertFalse(navigationsMenu.isEmpty());
         List navigationsElements = navigationsMenu.getElements();
@@ -1039,6 +1049,141 @@ public class TestPortalSite extends AbstractSpringTestCase
                 fail("Unexpected menu element type/title: "+element.getElementType()+"/"+element.getTitle());
             }            
         }
+    }
+
+    /**
+     * testPortalSiteHiddenPageMenus - Test PortalSite menu generation for hidden pages
+     *
+     * @throws Exception
+     */
+    public void testPotalSiteHiddenPageMenus() throws Exception
+    {
+        assertNotNull(portalSite);
+        PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
+        assertNotNull(sessionContext);
+
+        // first request at /: hidden page suppressed
+        JetspeedProfileLocator locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("user", true, false, "user");
+        Map locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        Menu topMenu = requestContext.getMenu("top");
+        assertNotNull(topMenu);
+        assertFalse(topMenu.isEmpty());
+        List topMenuElements = topMenu.getElements();
+        assertNotNull(topMenuElements);
+        Iterator menuElementsIter = topMenuElements.iterator();
+        boolean hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertFalse(hiddenElement);
+        Menu pagesMenu = requestContext.getMenu("pages");
+        assertNotNull(pagesMenu);
+        assertFalse(pagesMenu.isEmpty());
+        List pagesElements = pagesMenu.getElements();
+        assertNotNull(pagesElements);
+        menuElementsIter = pagesElements.iterator();
+        hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertFalse(hiddenElement);
+
+        // second request at /hidden.psml: hidden page visible
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/hidden.psml");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        topMenu = requestContext.getMenu("top");
+        assertNotNull(topMenu);
+        assertFalse(topMenu.isEmpty());
+        topMenuElements = topMenu.getElements();
+        assertNotNull(topMenuElements);
+        menuElementsIter = topMenuElements.iterator();
+        hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertTrue(hiddenElement);
+        pagesMenu = requestContext.getMenu("pages");
+        assertNotNull(pagesMenu);
+        assertFalse(pagesMenu.isEmpty());
+        pagesElements = pagesMenu.getElements();
+        assertNotNull(pagesElements);
+        menuElementsIter = pagesElements.iterator();
+        hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertTrue(hiddenElement);
+
+        // third request at /: hidden page suppressed
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        topMenu = requestContext.getMenu("top");
+        assertNotNull(topMenu);
+        assertFalse(topMenu.isEmpty());
+        topMenuElements = topMenu.getElements();
+        assertNotNull(topMenuElements);
+        menuElementsIter = topMenuElements.iterator();
+        hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertFalse(hiddenElement);
+        pagesMenu = requestContext.getMenu("pages");
+        assertNotNull(pagesMenu);
+        assertFalse(pagesMenu.isEmpty());
+        pagesElements = pagesMenu.getElements();
+        assertNotNull(pagesElements);
+        menuElementsIter = pagesElements.iterator();
+        hiddenElement = false;
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
+            {
+                hiddenElement = true;
+            }
+        }
+        assertFalse(hiddenElement);
     }
 
     /**

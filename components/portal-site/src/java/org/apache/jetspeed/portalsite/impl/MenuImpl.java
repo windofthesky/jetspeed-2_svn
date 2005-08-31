@@ -124,8 +124,29 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 {
                     if ((optionProxy instanceof Folder) && !definition.isPaths() && (definition.getDepth() != 0))
                     {
-                        // override menu options with visible folder contents i
-                        List folderChildren = view.getNodeProxies("*", optionProxy, true, true);
+                        // assemble folder children path using wildcard
+                        String folderChildrenPath = null;
+                        if (!options.endsWith(Folder.PATH_SEPARATOR))
+                        {
+                            folderChildrenPath = options + Folder.PATH_SEPARATOR + "*";
+                        }
+                        else
+                        {
+                            folderChildrenPath = options + "*";
+                        }
+
+                        // override menu options with visible folder contents
+                        List folderChildren = null;
+                        try
+                        {
+                            folderChildren = view.getNodeProxies(folderChildrenPath, context.getPage(), true, true);
+                        }
+                        catch (NodeNotFoundException nnfe)
+                        {
+                        }
+                        catch (SecurityException se)
+                        {
+                        }
                         if ((folderChildren != null) && !folderChildren.isEmpty())
                         {
                             overrideOptionProxies = folderChildren;

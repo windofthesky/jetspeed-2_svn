@@ -397,11 +397,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         {
                             try
                             {
-                                // save last visited page for folder proxy
-                                // path, (proxies are hashed by their path),
-                                // and return default page
+                                // save last visited non-hidden page for folder proxy
+                                // path, (proxies are hashed by their path), and
+                                // return default page
                                 requestPage = requestFolder.getPage(defaultPageName);
-                                folderPageHistory.put(requestFolder, requestPage);
+                                if (!requestPage.isHidden())
+                                {
+                                    folderPageHistory.put(requestFolder, requestPage);
+                                }
 
                                 // log selected request page
                                 if (log.isDebugEnabled())
@@ -420,13 +423,15 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         }
                     }
                     
-                    // default page not available, select first
-                    // page proxy in request folder; save last
-                    // visited page for folder proxy path,
-                    // (proxies are hashed by their path), and
-                    // return default page
+                    // default page not available, select first page
+                    // proxy in request folder; save last visited
+                    // non-hidden page for folder proxy path, (proxies
+                    // are hashed by their path), and return default page
                     requestPage = (Page)requestFolderPages.iterator().next();
-                    folderPageHistory.put(requestFolder, requestPage);
+                    if (!requestPage.isHidden())
+                    {
+                        folderPageHistory.put(requestFolder, requestPage);
+                    }
 
                     // log selected request page
                     if (log.isDebugEnabled())
@@ -440,11 +445,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             {
                 Page requestPage = (Page)requestNode;
                 
-                // save last visited page for folder proxy
-                // path, (proxies are hashed by their path),
-                // and return matched page
+                // save last visited non-hidden page for folder proxy
+                // path, (proxies are hashed by their path), and
+                // return matched page
                 Folder requestFolder = (Folder)requestPage.getParent();
-                folderPageHistory.put(requestFolder, requestPage);
+                if (!requestPage.isHidden())
+                {
+                    folderPageHistory.put(requestFolder, requestPage);
+                }
 
                 // log selected request page
                 if (log.isDebugEnabled())
@@ -783,32 +791,26 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // returned by the locator iterator
             ProfileLocatorProperty [] properties0 = (ProfileLocatorProperty [])locator0.iterator().next();
             ProfileLocatorProperty [] properties1 = (ProfileLocatorProperty [])locator1.iterator().next();
-            if (((properties0 == null) && (properties1 != null)) ||
-                ((properties0 != null) && (properties1 == null)) ||
-                (properties0.length != properties1.length))
+            if ((properties0 != null) || (properties1 != null))
             {
-                return false;
-            }
-
-            // compare control and navigation locator properties
-            try
-            {
+                if ((properties0 == null) || (properties1 == null) || (properties0.length != properties1.length))
+                {
+                    return false;
+                }
+                
+                // compare ordered locator properties
                 for (int i = 0, limit = properties0.length; (i < limit); i++)
                 {
-                    // compare names for all properties and control
-                    // and navigation property types and values
+                    // compare property names, control flags, navigation flags, and values
                     if (!properties0[i].getName().equals(properties1[i].getName()) ||
-                        (properties0[i].isControl() && (!properties1[i].isControl() ||
-                                                        !properties0[i].getValue().equals(properties1[i].getValue()))) ||
-                        (properties0[i].isNavigation() && (!properties1[i].isNavigation() ||
-                                                           !properties0[i].getValue().equals(properties1[i].getValue()))))
+                        (properties0[i].isControl() && !properties1[i].isControl()) ||
+                        (properties0[i].isNavigation() && !properties1[i].isNavigation()) ||
+                        ((properties0[i].getValue() == null) && (properties1[i].getValue() != null)) ||
+                        ((properties0[i].getValue() != null) && !properties0[i].getValue().equals(properties1[i].getValue())))
                     {
                         return false;
                     }
                 }
-            } catch(Throwable t) {
-            	t.printStackTrace();
-            	return false;
             }
         }
         return true;

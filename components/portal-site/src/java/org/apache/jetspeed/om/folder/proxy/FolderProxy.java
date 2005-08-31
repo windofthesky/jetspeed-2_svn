@@ -176,7 +176,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      */
     private FolderProxy(SiteView view, String locatorName, Folder parentFolder, Folder folder)
     {
-        super(view, locatorName, parentFolder, folder.getName());
+        super(view, locatorName, parentFolder, folder.getName(), folder.isHidden());
         this.defaultFolder = selectDefaultFromAggregateFolders(folder);
         this.titledFolder = selectTitledFromAggregateFolders(this.defaultFolder);
     }
@@ -273,6 +273,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         else if (m.equals(HASH_CODE_METHOD))
         {
             return new Integer(hashCode());
+        }
+        else if (m.equals(IS_HIDDEN_METHOD))
+        {
+            return new Boolean(isHidden());
         }
         else if (m.equals(TO_STRING_METHOD))
         {

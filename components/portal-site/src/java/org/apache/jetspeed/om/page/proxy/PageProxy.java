@@ -70,7 +70,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      */
     private PageProxy(SiteView view, String locatorName, Folder parentFolder, Page page)
     {
-        super(view, locatorName, parentFolder, page.getName());
+        super(view, locatorName, parentFolder, page.getName(), page.isHidden());
         this.page = page;
     }
     
@@ -110,6 +110,10 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         else if (m.equals(HASH_CODE_METHOD))
         {
             return new Integer(hashCode());
+        }
+        else if (m.equals(IS_HIDDEN_METHOD))
+        {
+            return new Boolean(isHidden());
         }
         else if (m.equals(TO_STRING_METHOD))
         {

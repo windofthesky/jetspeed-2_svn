@@ -45,6 +45,7 @@ public abstract class NodeProxy extends SiteViewProxy
     protected static final Method GET_PATH_METHOD = reflectMethod(Node.class, "getPath", null);
     protected static final Method GET_URL_METHOD = reflectMethod(Node.class, "getUrl", null);
     protected static final Method HASH_CODE_METHOD = reflectMethod(Object.class, "hashCode", null);
+    protected static final Method IS_HIDDEN_METHOD = reflectMethod(Node.class, "isHidden", null);
     protected static final Method TO_STRING_METHOD = reflectMethod(Object.class, "toString", null);
 
     /**
@@ -56,6 +57,11 @@ public abstract class NodeProxy extends SiteViewProxy
      * path - view path
      */
     private String path;
+
+    /**
+     * hidden - hidden status of this or parent node
+     */
+    private boolean hidden;
 
     /**
      * menuDefinitionLocators - menu definitions aggregated by name saved in
@@ -89,8 +95,9 @@ public abstract class NodeProxy extends SiteViewProxy
      *                    the site view
      * @param parent view parent proxy folder
      * @param name name of node to proxy
+     * @param hidden hidden status of node to proxy
      */
-    protected NodeProxy(SiteView view, String locatorName, Folder parent, String name)
+    protected NodeProxy(SiteView view, String locatorName, Folder parent, String name, boolean hidden)
     {
         super(view, locatorName);
         this.parent = parent;
@@ -106,10 +113,12 @@ public abstract class NodeProxy extends SiteViewProxy
             {
                 this.path = parentPath + Folder.PATH_SEPARATOR + name;
             }
+            this.hidden = (hidden || parentProxy.isHidden());
         }
         else
         {
             this.path = Folder.PATH_SEPARATOR;
+            this.hidden = hidden;
         }
     }
     
@@ -131,6 +140,16 @@ public abstract class NodeProxy extends SiteViewProxy
     public String getPath()
     {
         return path;
+    }
+
+    /**
+     * getPath - proxy implementation of Node.isHidden()
+     * 
+     * @return hidden status of node or parent
+     */
+    public boolean isHidden()
+    {
+        return hidden;
     }
 
     /**

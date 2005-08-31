@@ -438,6 +438,10 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                 }
 
                 // lookup and return cached absolute/session menus
+                // if current page is not hidden; hidden pages generate
+                // menus that should be considered relative since
+                // explicitly addressed hidden pages are added to
+                // menus for display purposes
                 if (sessionContext.getMenuDefinitionLocatorCache() != null)
                 {
                     MenuImpl menu = (MenuImpl)sessionContext.getMenuDefinitionLocatorCache().get(locator);
@@ -453,9 +457,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                 MenuImpl menu = new MenuImpl(locator.getMenuDefinition(), this, names);
  
                 // determine whether menu definition locator is
-                // relative/request or absolute/session cachable
-                // and cache accordingly
-                if (menu.isElementRelative())
+                // relative/request, based on hidden page, or
+                // absolute/session cachable and cache accordingly
+                if (page.isHidden() || menu.isElementRelative())
                 {
                     // cache relative menu for request
                     if (menuDefinitionLocatorCache == null)

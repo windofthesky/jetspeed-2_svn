@@ -23,4 +23,8 @@ limitations under the License.
 
   <default-page>page0.psml</default-page>
 
+  <menu name="override-hidden">
+    <options>/folder0,/folder1</options>
+  </menu>
+
 </folder>

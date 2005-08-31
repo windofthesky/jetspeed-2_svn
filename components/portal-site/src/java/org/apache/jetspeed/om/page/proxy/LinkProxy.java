@@ -64,7 +64,7 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
      */
     private LinkProxy(SiteView view, String locatorName, Folder parentFolder, Link link)
     {
-        super(view, locatorName, parentFolder, link.getName());
+        super(view, locatorName, parentFolder, link.getName(), link.isHidden());
         this.link = link;
     }
     
@@ -96,6 +96,10 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
         else if (m.equals(HASH_CODE_METHOD))
         {
             return new Integer(hashCode());
+        }
+        else if (m.equals(IS_HIDDEN_METHOD))
+        {
+            return new Boolean(isHidden());
         }
         else if (m.equals(TO_STRING_METHOD))
         {
