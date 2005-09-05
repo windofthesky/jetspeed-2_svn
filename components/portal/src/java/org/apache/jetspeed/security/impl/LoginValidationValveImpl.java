@@ -84,6 +84,10 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_DISABLED);
                                     }
+                                    else if ( pwdCredential.isExpired() )
+                                    {
+                                        request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_EXPIRED);
+                                    }
                                     else if ( maxNumberOfAuthenticationFailures > 1 && pwdCredential.getAuthenticationFailures() == maxNumberOfAuthenticationFailures -1  )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_FINAL_LOGIN_ATTEMPT);

@@ -35,4 +35,5 @@ public final class LoginConstants
     public final static Integer ERROR_USER_DISABLED = new Integer(3);
     public final static Integer ERROR_FINAL_LOGIN_ATTEMPT = new Integer(4);
     public final static Integer ERROR_CREDENTIAL_DISABLED = new Integer(5);
+    public final static Integer ERROR_CREDENTIAL_EXPIRED = new Integer(6);
 }
