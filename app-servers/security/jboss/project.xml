@@ -56,7 +56,7 @@
 
         <dependency>
             <id>ojb:db-ojb</id>
-            <version>1.0.1</version>
+            <version>1.0.3</version>
             <properties>
                 <sar.bundle>true</sar.bundle>
             </properties>
@@ -153,5 +153,28 @@
             <version>1.2.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>src/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>${basedir}/../../../etc/db-ojb</directory>
+                <includes>
+                    <include>repository.xml</include>
+                    <include>repository_database.xml</include>
+                    <include>repository_internal.xml</include>
+                    <include>*.dtd</include>
+                    <include>*.properties</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
 
 </project>

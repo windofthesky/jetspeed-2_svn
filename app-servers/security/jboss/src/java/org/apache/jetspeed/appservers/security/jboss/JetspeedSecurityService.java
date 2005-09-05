@@ -14,8 +14,6 @@
  */
 package org.apache.jetspeed.appservers.security.jboss;
 
-import java.util.Iterator;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -23,22 +21,20 @@ import javax.sql.DataSource;
 
 import org.apache.jetspeed.security.UserManager;
 import org.apache.ojb.broker.PBKey;
-import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl;
-import org.apache.ojb.broker.accesslayer.ConnectionManagerFactory;
 import org.apache.ojb.broker.metadata.ConnectionPoolDescriptor;
 import org.apache.ojb.broker.metadata.ConnectionRepository;
 import org.apache.ojb.broker.metadata.JdbcConnectionDescriptor;
+import org.apache.ojb.broker.metadata.JdbcMetadataUtils;
 import org.apache.ojb.broker.metadata.MetadataManager;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.ojb.OjbFactoryUtils;
 
 public class JetspeedSecurityService implements JetspeedSecurityServiceMBean
 {
 
-    private final String JCD_ALIAS = "jetspeed-security-service";
+    private final String JCD_ALIAS = "JetspeedSecurityServiceDS";
 
     private GenericApplicationContext ctx;
 
@@ -62,7 +58,7 @@ public class JetspeedSecurityService implements JetspeedSecurityServiceMBean
             ConnectionRepository cr = MetadataManager.getInstance().connectionRepository();
             cr.addDescriptor(jcd);
         }
-        // Instatiate application
+        // Instatiating application
         ctx = new GenericApplicationContext();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
         xmlReader.loadBeanDefinitions(new ClassPathResource("META-INF/jboss-secsvc/jboss-security-service.xml"));
@@ -83,7 +79,6 @@ public class JetspeedSecurityService implements JetspeedSecurityServiceMBean
      */
     public void setDataSourceJndiName(String jndiName)
     {
-        boolean newJcd = false;
         JdbcConnectionDescriptor jcd = findJcd();
         try
         {
@@ -119,7 +114,6 @@ public class JetspeedSecurityService implements JetspeedSecurityServiceMBean
      */
     public UserManager getUserManager()
     {
-        // TODO Auto-generated method stub
         UserManager um = (UserManager) ctx.getBean("org.apache.jetspeed.security.UserManager");
         return um;
     }

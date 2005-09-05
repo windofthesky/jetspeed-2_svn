@@ -18,11 +18,10 @@ limitations under the License.
 
     <goal name="sar:sar" description="Create the deliverable jar file." prereqs="test:test">
 
-        <copy todir="${maven.build.dest}/classes/META-INF/jboss-secsvc" overwrite="true">
+        <copy todir="${maven.build.dest}/META-INF/jboss-secsvc" overwrite="true">
         	<fileset dir="../../../src/webapp/WEB-INF/assembly">
-            	<include name="security-providers.xml" />
-            	<include name="security-spi.xml" />            	
-            	<include name="transaction.xml" />             	
+            	<include name="security-spi-atn.xml" />
+            	<include name="security-spi-atz.xml" />
         	</fileset>
         </copy>
         
