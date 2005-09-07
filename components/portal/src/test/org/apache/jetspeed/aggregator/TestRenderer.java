@@ -20,6 +20,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractPortalContainerTestCase;
 import org.apache.jetspeed.aggregator.impl.PortletRendererImpl;
+import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
 
 /**
  * TestPortletRenderer
@@ -45,8 +46,10 @@ public class TestRenderer extends AbstractPortalContainerTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        WorkerMonitor monitor = new WorkerMonitorImpl(5, 20, 5, 10);
+        monitor.start();
         
-        renderer = new PortletRendererImpl(portletContainer, windowAccessor);       
+        renderer = new PortletRendererImpl(portletContainer, windowAccessor, monitor);       
     }
 
     /**

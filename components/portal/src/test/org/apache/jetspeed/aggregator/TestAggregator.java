@@ -20,8 +20,11 @@ import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl;
 import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl;
 import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl;
+import org.apache.jetspeed.headerresource.HeaderResourceFactory;
+import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
 
 /**
  * <P>Test the aggregation service</P>
@@ -49,13 +52,16 @@ public class TestAggregator extends TestRenderer
     {
         super.setUp();
         
-        ArrayList pathes = new ArrayList(4);
-        pathes.add("portlet/{mediaType}/jetspeed");
-        pathes.add("portlet/{mediaType}");
-        pathes.add("generic/{mediaType}");
-        pathes.add("/{mediaType}");
-
-        pageAggregator = new PageAggregatorImpl(renderer, pathes);
+        ArrayList paths = new ArrayList(4);
+        paths.add("portlet/{mediaType}/jetspeed");
+        paths.add("portlet/{mediaType}");
+        paths.add("generic/{mediaType}");
+        paths.add("/{mediaType}");
+        
+        HeaderResourceFactory headerFactory = new HeaderResourceFactoryImpl();
+        ContentServerAdapter contentServer = new ContentServerAdapterImpl(headerFactory, paths);
+        
+        pageAggregator = new PageAggregatorImpl(renderer, contentServer);
         portletAggregator = new PortletAggregatorImpl(renderer);
         
     }
