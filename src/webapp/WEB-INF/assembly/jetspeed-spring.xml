@@ -50,8 +50,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- Aggregation: Portlet -->
-    <!-- Aggregation: Portlet -->
     <bean id="Powertools" class="org.apache.jetspeed.velocity.JetspeedPowerToolFactory">
         <constructor-arg>
             <value>org.apache.jetspeed.velocity.JetspeedPowerToolImpl</value>
@@ -132,46 +130,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- Portlet Renderer -->
-    <bean id="org.apache.jetspeed.aggregator.PortletRenderer" class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start"
-        destroy-method="stop">
-        <constructor-arg>
-            <ref bean="org.apache.pluto.PortletContainer" />
-        </constructor-arg>
-        <constructor-arg>
-            <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
-        </constructor-arg>
-    </bean>
-
-    <!-- Aggregation: Page -->
-    <bean id="org.apache.jetspeed.aggregator.PageAggregator" class="org.apache.jetspeed.aggregator.impl.PageAggregatorImpl">
-        <constructor-arg index="0">
-            <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
-        </constructor-arg>
-        <!-- Aggregation Strategies:
-            0 = PageAggregatorImpl.STRATEGY_SEQUENTIAL
-            1 = PageAggregatorImpl.STRATEGY_PARALLEL
-        -->
-        <constructor-arg index="1">
-            <value>0</value>
-        </constructor-arg>
-        <constructor-arg index="2">
-            <list>
-                <!--  	   		<value>portlet/{mediaType}/jetspeed</value> -->
-                <value>portlet/{mediaType}</value>
-                <value>layout/{mediaType}</value>
-                <value>generic/{mediaType}</value>
-                <value>{mediaType}</value>
-            </list>
-        </constructor-arg>
-    </bean>
-
-    <!-- Aggregation: Portlet -->
-    <bean id="org.apache.jetspeed.aggregator.PortletAggregator" class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
-        <constructor-arg>
-            <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
-        </constructor-arg>
-    </bean>
 
     <!-- Adds jetspeed.properties as our configuration object to support ${...} vars -->
     <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
