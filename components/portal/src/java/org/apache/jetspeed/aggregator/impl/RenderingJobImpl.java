@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
@@ -36,10 +37,10 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
  * @version $Id$
  */
-public class RenderingJob implements Runnable
+public class RenderingJobImpl implements RenderingJob
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(RenderingJob.class);
+    protected final static Log log = LogFactory.getLog(RenderingJobImpl.class);
 
     /** WorkerMonitor used to flush the queue */
     private PortletWindow window = null;
@@ -52,7 +53,7 @@ public class RenderingJob implements Runnable
 
     private PortletContent portletContent;
     
-    public RenderingJob(PortletContainer container, PortletContent portletContent, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
+    public RenderingJobImpl(PortletContainer container, PortletContent portletContent, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
     {
         this.container = container;
         
@@ -95,7 +96,7 @@ public class RenderingJob implements Runnable
      *
      * 
      */
-    protected void execute()
+    public void execute()
     {
         
         try

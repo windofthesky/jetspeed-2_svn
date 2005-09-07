@@ -22,6 +22,9 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.util.Queue;
 import org.apache.jetspeed.util.FIFOQueue;
 
@@ -33,12 +36,21 @@ import org.apache.jetspeed.util.FIFOQueue;
  * which is flushed periodically by a QueueMonitor.
  *
  * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class WorkerMonitor
+public class WorkerMonitorImpl implements WorkerMonitor
 {
+    public WorkerMonitorImpl(int minWorkers, int maxWorkers, int spareWorkers, int maxJobsPerWorker)
+    {
+        this.minWorkers = minWorkers;
+        this.maxWorkers = maxWorkers;
+        this.spareWorkers = spareWorkers;
+        this.maxJobsPerWorker = maxJobsPerWorker;
+    }
+    
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(WorkerMonitor.class);
+    protected final static Log log = LogFactory.getLog(WorkerMonitorImpl.class);
 
     /** Static counters for identifying workers */
     private static long sCount = 0;
@@ -64,12 +76,16 @@ public class WorkerMonitor
     /** Job queue */
     private Queue queue;
 
-    public void init()
+    public void start()
     {
         addWorkers(this.minWorkers);
         setQueue(new FIFOQueue());
     }
 
+    public void stop()
+    {        
+    }
+    
     public void setQueue(Queue queue)
     {
         this.queue = queue;
@@ -96,7 +112,7 @@ public class WorkerMonitor
 
             for (int i = 0; i < wCount; ++i)
             {
-                Worker worker = new Worker(this, this.tg, "WORKER_" + (++sCount));
+                Worker worker = new WorkerImpl(this, this.tg, "WORKER_" + (++sCount));
                 worker.start();
                 workers.push(worker);
             }

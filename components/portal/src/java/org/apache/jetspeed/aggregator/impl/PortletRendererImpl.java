@@ -26,7 +26,9 @@ import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
+import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
@@ -53,21 +55,22 @@ public class PortletRendererImpl implements PortletRenderer
 {
     protected final static Log log = LogFactory.getLog(PortletRendererImpl.class);
 
-    private WorkerMonitor monitor;
-
+    private WorkerMonitor workMonitor;
     private PortletContainer container;
     private PortletWindowAccessor windowAccessor;
 
-    public PortletRendererImpl( PortletContainer container, PortletWindowAccessor windowAccessor )
+    public PortletRendererImpl(PortletContainer container, 
+                               PortletWindowAccessor windowAccessor,
+                               WorkerMonitor workMonitor)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
+        this.workMonitor = workMonitor;
     }
 
     public void start()
     {
-        this.monitor = new WorkerMonitor();
-        this.monitor.init();
+        // workMonitor.start();
     }
 
     public void stop()
@@ -167,7 +170,7 @@ public class PortletRendererImpl implements PortletRenderer
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
             RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
-            monitor.process(rJob);            
+            workMonitor.process(rJob);            
         }
         catch (Exception e1)
         {
@@ -241,7 +244,7 @@ public class PortletRendererImpl implements PortletRenderer
         
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
-        return new RenderingJob(container, portletContent, fragment, request, response, requestContext, portletWindow);
+        return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow);
 
     }
 }

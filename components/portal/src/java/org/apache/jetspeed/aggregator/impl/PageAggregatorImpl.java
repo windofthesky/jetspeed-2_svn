@@ -16,23 +16,18 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.aggregator.ContentServerAdapter;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.contentserver.ContentFilter;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
@@ -54,19 +49,19 @@ public class PageAggregatorImpl implements PageAggregator
 
     private int strategy = STRATEGY_SEQUENTIAL;
     private PortletRenderer renderer;
+    private ContentServerAdapter contentServer;
 
-    private List fallBackContentPathes;
 
-    public PageAggregatorImpl( PortletRenderer renderer, int strategy, List fallBackContentPathes )
+    public PageAggregatorImpl( PortletRenderer renderer, int strategy, ContentServerAdapter contentServer)
     {
         this.renderer = renderer;
         this.strategy = strategy;
-        this.fallBackContentPathes = fallBackContentPathes;
+        this.contentServer = contentServer;
     }
 
-    public PageAggregatorImpl( PortletRenderer renderer, List fallBackContentPathes )
+    public PageAggregatorImpl( PortletRenderer renderer, ContentServerAdapter contentServer)
     {
-        this(renderer, STRATEGY_SEQUENTIAL, fallBackContentPathes);
+        this(renderer, STRATEGY_SEQUENTIAL, contentServer);
     }
 
     /**
@@ -95,52 +90,7 @@ public class PageAggregatorImpl implements PageAggregator
             layoutDecorator = page.getDefaultDecorator(root.getType());
         }
 
-        String defaultPortletDecorator = page.getDefaultDecorator(ContentFragment.PORTLET);
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        //TODO: Remove hard coding of locations and use CM + TL
-        //      DST: Im going to encapsulate this into a class, which can be accessed
-        // by
-        //           the PowerTool when aggregating content, and make sure to modify the
-        // search path
-        //           according to the current decorator. Assigned issue to JiRa JS2-24
-        List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
-
-        if (contentPathes == null)
-        {
-            contentPathes = new ArrayList(2);
-            context.setSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR, contentPathes);
-        }
-        String mediaType = context.getCapabilityMap().getPreferredMediaType().getName();
-        if (contentPathes.size() < 1)
-        {
-            // define the lookup order
-
-            contentPathes.add(root.getType() + "/" + mediaType + "/" + layoutDecorator);
-            // Start added by jamesliao, 27-05-2005
-            contentPathes.add(ContentFragment.PORTLET + "/" + mediaType + "/" + defaultPortletDecorator);
-            // End
-            
-            Iterator defaults = fallBackContentPathes.iterator();
-            while (defaults.hasNext())
-            {
-                String path = (String) defaults.next();
-                contentPathes.add(path.replaceAll("\\{mediaType\\}", mediaType));
-            }
-
-        }
-        else
-        {
-            contentPathes.set(0, root.getType() + "/" + mediaType + "/" + layoutDecorator);
-            // Start added by jamesliao, 27-05-2005, override the previous portlet-decorator
-            contentPathes.set(1, ContentFragment.PORTLET + "/" + mediaType + "/" + defaultPortletDecorator);
-            // End
-        }
-
-        if (layoutDecorator != null)
-        {
-            addStyle(context, layoutDecorator, ContentFragment.LAYOUT);
-        }
+        contentServer.prepareContentPaths(context, page);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
@@ -193,13 +143,13 @@ public class PageAggregatorImpl implements PageAggregator
             if (maxedContentFragment.getDecorator() != null)
             {
                 log.debug("decorator=" + layoutContentFragment.getDecorator());
-                addStyle(context, maxedContentFragment.getDecorator(), ContentFragment.PORTLET);
+                contentServer.addStyle(context, maxedContentFragment.getDecorator(), ContentFragment.PORTLET);
             }
             else
             {
                 log.debug("no decorator for defined for portlet fragement," + layoutContentFragment.getId()
                         + ".  So using page default, " + defaultPortletDecorator);
-                addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
+                contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
             }
             try
             {
@@ -214,21 +164,6 @@ public class PageAggregatorImpl implements PageAggregator
             }
 
 
-        }
-    }
-
-    private void addStyle( RequestContext context, String decoratorName, String decoratorType )
-    {
-        HeaderResourceFactory headerResourceFactory=(HeaderResourceFactory)Jetspeed.getComponentManager().getComponent(HeaderResourceFactory.class);
-        HeaderResource headerResource=headerResourceFactory.getHeaderResouce(context);
-
-        if (decoratorType.equals(ContentFragment.LAYOUT))
-        {
-            headerResource.addStyleSheet("content/css/styles.css");
-        }
-        else
-        {
-            headerResource.addStyleSheet("content/" + decoratorName + "/css/styles.css");
         }
     }
 
@@ -271,13 +206,13 @@ public class PageAggregatorImpl implements PageAggregator
         if (f.getDecorator() != null && f.getType().equals(ContentFragment.PORTLET))
         {
             log.debug("decorator=" + f.getDecorator());
-            addStyle(context, f.getDecorator(), ContentFragment.PORTLET);
+            contentServer.addStyle(context, f.getDecorator(), ContentFragment.PORTLET);
         }
         else if (f.getDecorator() == null && f.getType().equals(ContentFragment.PORTLET))
         {
             log.debug("no decorator for defined for portlet fragement," + f.getId() + ".  So using page default, "
                     + defaultPortletDecorator);
-            addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
+            contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
         }
     }
 }

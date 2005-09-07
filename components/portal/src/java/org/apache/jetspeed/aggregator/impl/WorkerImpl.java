@@ -23,6 +23,9 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.WorkerMonitor;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -32,10 +35,10 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
  * @version $Id$
  */
-public class Worker extends Thread
+public class WorkerImpl extends Thread implements Worker
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(Worker.class);
+    protected final static Log log = LogFactory.getLog(WorkerImpl.class);
 
     /** Running status of this worker */
     private boolean running = true;
@@ -53,14 +56,14 @@ public class Worker extends Thread
     /** Monitor for this Worker */
     private WorkerMonitor monitor = null;
 
-    public Worker(WorkerMonitor monitor)
+    public WorkerImpl(WorkerMonitor monitor)
     {
         super();
         this.setMonitor(monitor);
         this.setDaemon(true);
     }
 
-    public Worker(WorkerMonitor monitor, ThreadGroup tg, String name)
+    public WorkerImpl(WorkerMonitor monitor, ThreadGroup tg, String name)
     {
         super(tg, name);
         this.setMonitor(monitor);
@@ -168,7 +171,7 @@ public class Worker extends Thread
                             {
                                 try 
                                 {
-                                    Worker.this.job.run();
+                                    WorkerImpl.this.job.run();
                                 }
                                 catch (Throwable t)
                                 {                        
