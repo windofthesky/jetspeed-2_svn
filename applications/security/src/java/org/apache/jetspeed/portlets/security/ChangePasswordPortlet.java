@@ -30,7 +30,6 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.InvalidNewPasswordException;
@@ -39,9 +38,7 @@ import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.pluto.core.impl.PortletRequestImpl;
-import org.apache.portals.
-bridges.common.GenericServletPortlet;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**
  * This portlet allows a logged on user to change its password.
@@ -79,11 +76,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
 
         if ( request.getUserPrincipal() != null )
         {
-            // TODO 2004-11-18: Hack around PLUTO-83 bug which fix should be availabe in 1.0.1-rc2 
-            //                  After the fix, the RequestContext should be retrieved from the RenderRequest
-            //                  and the pluto depedency removed from this project project.xml
-            HttpServletRequest req = (HttpServletRequest)((PortletRequestImpl)request).getRequest();
-            RequestContext requestContext = (RequestContext)req.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            RequestContext requestContext = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             Integer passwordDaysValid = (Integer)requestContext.getAttribute(PasswordCredential.PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY);
             
             if ( passwordDaysValid != null )

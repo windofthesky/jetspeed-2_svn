@@ -246,10 +246,7 @@ limitations under the License.
 	      </properties>
 	    </dependency>
 		
-		<!-- needed for hack around PLUTO-83 bug in ChangePasswordPortlet
-	         TODO: should be removed again when rc2 is release -->
-	      
-	    <!-- Pluto Container -->
+	  <!-- Pluto Container needed to be able to compile against jetspeed-api provided extensions of Pluto -->
 		<dependency>
 		  <id>pluto</id>
 		  <version>${pluto.version}</version>
