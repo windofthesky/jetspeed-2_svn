@@ -141,6 +141,15 @@ limitations under the License.
    	<ref bean="AJAXService"/>
    </constructor-arg>
   </bean> 
+
+  <bean id="loginViewValve"
+        class="org.apache.jetspeed.login.impl.LoginJSPViewValve"
+        init-method="initialize"
+  >
+    <constructor-arg>
+      <value>/WEB-INF/templates/login</value>
+    </constructor-arg>
+  </bean> 
   
   <bean id="jetspeed-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
@@ -166,6 +175,22 @@ limitations under the License.
     </constructor-arg>
   </bean> 
   
+  <bean id="login-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+   	<value>LoginPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+      <ref bean="capabilityValve"/>
+      <ref bean="localizationValve"/>
+      <ref bean="loginViewValve"/>
+    </list>
+    </constructor-arg>
+  </bean> 
+
   <bean id="action-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
