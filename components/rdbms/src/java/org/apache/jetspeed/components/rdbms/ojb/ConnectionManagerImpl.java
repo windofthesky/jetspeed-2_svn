@@ -17,6 +17,7 @@ package org.apache.jetspeed.components.rdbms.ojb;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.apache.ojb.broker.OJBRuntimeException;
 import org.apache.ojb.broker.PBKey;
@@ -70,34 +71,50 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
     private boolean batchMode;
     private BatchConnection batchCon = null;
 
+    private static HashMap connectionFactories = new HashMap();
+    
     public ConnectionManagerImpl(PersistenceBroker broker)
     {
         this.broker = broker;
         this.pbKey = broker.getPBKey();
-        this.jcd = MetadataManager.getInstance().connectionRepository().getDescriptor(pbKey);
-        ConnectionPoolDescriptor cpd = jcd.getConnectionPoolDescriptor();
+        this.jcd = MetadataManager.getInstance().connectionRepository().getDescriptor(pbKey);        
+        ConnectionPoolDescriptor cpd = jcd.getConnectionPoolDescriptor();        
         if (cpd != null && cpd.getConnectionFactory() != null)
         {
-            try
+            connectionFactory = (ConnectionFactory)connectionFactories.get(cpd.getConnectionFactory());
+            if ( connectionFactory == null )
             {
-                connectionFactory = (ConnectionFactory)
-                    ClassHelper.newInstance (cpd.getConnectionFactory(), true);
-            }
-            catch (InstantiationException e)
-            {
-                String err = "Can't instantiate class " + cpd.getConnectionFactory();
-                log.error(err, e);
-                throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
-            }
-            catch (IllegalAccessException e)
-            {
-                String err = "Can't instantiate class " + cpd.getConnectionFactory();
-                log.error(err, e);
-                throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
+                try
+                {
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();                
+                    try
+                    {
+                        Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                        connectionFactory = (ConnectionFactory)
+                            ClassHelper.newInstance (cpd.getConnectionFactory(), true);
+                        connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
+                    }
+                    finally
+                    {
+                        Thread.currentThread().setContextClassLoader(cl);
+                    }
+                }
+                catch (InstantiationException e)
+                {
+                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
+                    log.error(err, e);
+                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
+                }
+                catch (IllegalAccessException e)
+                {
+                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
+                    log.error(err, e);
+                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
+                }
             }
         }
         else 
-        {
+        {                
             this.connectionFactory = ConnectionFactoryFactory.getInstance().createConnectionFactory();
         }
         this.platform = PlatformFactory.getPlatformFor(jcd);
@@ -155,7 +172,17 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
         }
         if (con == null)
         {
-            con = this.connectionFactory.lookupConnection(jcd);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try
+            {
+                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                con = this.connectionFactory.lookupConnection(jcd);
+            }
+            finally
+            {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
+            
             if (con == null) throw new PersistenceBrokerException("Cannot get connection for " + jcd);
             if (jcd.getUseAutoCommit() == JdbcConnectionDescriptor.AUTO_COMMIT_SET_TRUE_AND_TEMPORARY_FALSE)
             {
