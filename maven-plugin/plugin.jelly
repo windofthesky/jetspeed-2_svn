@@ -694,6 +694,10 @@
         <j:set var="org.apache.jetspeed.target.rdbms.name" value="postgresql"/>
         <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
       </j:when>
+      <j:when test="${dbase == 'sapdb'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="sapdb"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
+      </j:when>
       <j:otherwise>
         <fail message="unsupported target database: ${org.apache.jetspeed.target.rdbms}"/>
       </j:otherwise>

@@ -124,24 +124,6 @@ limitations under the License.
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="PARAMETER_VALUE" required="true" type="LONGVARCHAR"/>
     </table>
-    
-    <!--
-      Preference and Preference Values
-    -->
-    
-    <table name="PREFERENCE_VALUE">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PREFERENCE_ID" type="INTEGER"/>
-        <column name="VALUE" type="LONGVARCHAR"/>
-    </table>
-    
-    <table name="PORTLET_PREFERENCE">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PARENT_ID" required="true" type="INTEGER"/>
-        <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="CLASS_NAME" required="true" size="255" type="VARCHAR"/>
-        <column default="1" name="READ_ONLY" size="1" type="CHAR"/>
-    </table>
 
     <!--
        Portlet Entity
