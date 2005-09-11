@@ -86,17 +86,25 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
             {
                 try
                 {
-                    ClassLoader cl = Thread.currentThread().getContextClassLoader();                
-                    try
-                    {
-                        Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                        connectionFactory = (ConnectionFactory)
-                            ClassHelper.newInstance (cpd.getConnectionFactory(), true);
-                        connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
+                    if (Boolean.getBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
+                        ClassLoader cl = Thread.currentThread().getContextClassLoader();                
+                        try
+                        {
+                            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                            connectionFactory = (ConnectionFactory)
+                                ClassHelper.newInstance (cpd.getConnectionFactory(), true);
+                            connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
+                        }
+                        finally
+                        {
+                            Thread.currentThread().setContextClassLoader(cl);
+                            connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
+                        }
                     }
-                    finally
+                    else
                     {
-                        Thread.currentThread().setContextClassLoader(cl);
+                        connectionFactory = (ConnectionFactory)
+                        ClassHelper.newInstance (cpd.getConnectionFactory(), true);
                     }
                 }
                 catch (InstantiationException e)
@@ -172,15 +180,21 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
         }
         if (con == null)
         {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            try
-            {
-                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                con = this.connectionFactory.lookupConnection(jcd);
+            if (Boolean.getBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                try
+                {
+                    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                    con = this.connectionFactory.lookupConnection(jcd);
+                }
+                finally
+                {
+                    Thread.currentThread().setContextClassLoader(cl);
+                }
             }
-            finally
+            else
             {
-                Thread.currentThread().setContextClassLoader(cl);
+                con = this.connectionFactory.lookupConnection(jcd);
             }
             
             if (con == null) throw new PersistenceBrokerException("Cannot get connection for " + jcd);

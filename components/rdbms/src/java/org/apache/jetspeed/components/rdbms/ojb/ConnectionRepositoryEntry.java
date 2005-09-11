@@ -94,6 +94,7 @@ public class ConnectionRepositoryEntry
     private String url = null;
     private String username = null;
     private String password = null;
+    private boolean jetspeedEngineScoped = true;
 
     /**
      * @see org.springframework.beans.factory.BeanNameAware#setBeanName(java.lang.String)
@@ -206,6 +207,26 @@ public class ConnectionRepositoryEntry
         this.platform = platform;
     }
 
+    /**
+     * @see setJetspeedEngineScoped
+     * @return Returns if Jetspeed engine's ENC is used for JNDI lookups.
+     */
+    public boolean isJetspeedEngineScoped() {
+        return jetspeedEngineScoped;
+    }
+
+    /**
+     * Sets the attribute "<code>org.apache.jetspeed.engineScoped</code>"
+     * of the JDBC connection descriptor to "<code>true</code>" or
+     * "<code>false</code>". If set, JNDI lookups of the connection will
+     * be done using the environment naming context (ENC) of the Jetspeed 
+     * engine.
+     * @param jetspeedEngineScoped whether to use Jetspeed engine's ENC.
+     */
+    public void setJetspeedEngineScoped(boolean jetspeedEngineScoped) {
+        this.jetspeedEngineScoped = jetspeedEngineScoped;
+    }
+
     public void afterPropertiesSet () throws Exception 
     {
         // Try to find JCD
@@ -275,6 +296,10 @@ public class ConnectionRepositoryEntry
         } else {
             platform = jcd.getDbms();
         }
+        
+        // special attributes
+        jcd.addAttribute("org.apache.jetspeed.engineScoped", 
+                         Boolean.toString(jetspeedEngineScoped));
     }
 
     /**
@@ -414,4 +439,5 @@ public class ConnectionRepositoryEntry
         public void setLogWriter(PrintWriter out) throws SQLException {
         }
     }
+
 }
