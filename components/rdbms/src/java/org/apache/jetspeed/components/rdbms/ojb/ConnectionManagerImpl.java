@@ -86,7 +86,7 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
             {
                 try
                 {
-                    if (Boolean.getBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
+                    if (Boolean.parseBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
                         ClassLoader cl = Thread.currentThread().getContextClassLoader();                
                         try
                         {
@@ -180,7 +180,7 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
         }
         if (con == null)
         {
-            if (Boolean.getBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
+            if (Boolean.parseBoolean(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false"))) {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try
                 {
