@@ -180,7 +180,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(userPrincipal.getName()));
+            addUserPrincipal(userPrincipal, providerName);
         }
     }
 
