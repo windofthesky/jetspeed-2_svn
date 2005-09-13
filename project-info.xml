@@ -141,78 +141,80 @@ limitations under the License.
 
     <build> 
         <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-	    <sourceDirectory>${basedir}/src/java</sourceDirectory>
-	    <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
-	
-	    <resources>
-	      <resource>
-	        <directory>${basedir}/src/java</directory>
-	        <excludes>
-	          <exclude>**/*.java</exclude>
-	        </excludes>
-	      </resource>
-	    </resources>
-	    
-	    <unitTest>
-		    <excludes>
-	          <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
-	          <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
-	          <exclude>**/TestJMX*.java</exclude>
-	          <exclude>**/TestEngine.java</exclude>
-	        </excludes>
-		    <resource>
-	          <directory>${basedir}/src/test</directory>
-	          <excludes>
-	           <exclude>**/*.java</exclude>
-	          </excludes>
-	        </resource>
-	        <resource>
-	          <directory>${basedir}/src/java</directory>
-	          <excludes>
-	           <exclude>**/*.java</exclude>
-			   <!--
-	           <exclude>**/JETSPEED-INF/**</exclude>
-			   -->
-	          </excludes>
-	        </resource>
-			<resource>
-				<directory>../etc/log4j</directory>
-			    <includes>
-			    	<include>*.properties</include>
-			    </includes>
-			</resource>
-			<resource>
-				<directory>../etc/db-ojb</directory>
-			    <includes>
-			    	<include>*.xml</include>
-			        <include>*.dtd</include>
-			        <include>*.properties</include>
-			    </includes>
-			</resource>	
-		</unitTest>
-	
-	</build>
-	
-	<reports>
-		<report>maven-jdepend-plugin</report>
-		<!--
-		<report>maven-checkstyle-plugin</report>
-		-->
-		<report>maven-pmd-plugin</report>
-		<report>maven-changelog-plugin</report>
-		<report>maven-file-activity-plugin</report>
-		<report>maven-developer-activity-plugin</report>
-		<report>maven-license-plugin</report>
-		<report>maven-javadoc-plugin</report>
-		<report>maven-jxr-plugin</report>
-		<report>maven-junit-report-plugin</report>
-		<report>maven-jcoverage-plugin</report>
-<!--		
-		<report>maven-linkcheck-plugin</report>
--->		
-		<report>maven-tasklist-plugin</report>
+        <sourceDirectory>${basedir}/src/java</sourceDirectory>
+        <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+    
+        <resources>
+          <resource>
+            <directory>${basedir}/src/java</directory>
+            <excludes>
+              <exclude>**/*.java</exclude>
+            </excludes>
+          </resource>
+        </resources>
+        
+        <unitTest>
+          <resources>        
+            <resource>
+              <directory>${basedir}/src/test</directory>
+              <excludes>
+               <exclude>**/*.java</exclude>
+              </excludes>
+            </resource>
+            <resource>
+              <directory>${basedir}/src/java</directory>
+              <excludes>
+               <exclude>**/*.java</exclude>
+               <!--
+               <exclude>**/JETSPEED-INF/**</exclude>
+               -->
+              </excludes>
+            </resource>
+            <resource>
+                <directory>../etc/log4j</directory>
+                <includes>
+                    <include>*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../etc/db-ojb</directory>
+                <includes>
+                    <include>*.xml</include>
+                    <include>*.dtd</include>
+                    <include>*.properties</include>
+                </includes>
+             </resource>    
+            </resources>
+            <excludes>
+              <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
+              <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
+              <exclude>**/TestJMX*.java</exclude>
+              <exclude>**/TestEngine.java</exclude>
+            </excludes>
+        </unitTest>
+    
+    </build>
+    
+    <reports>
+        <report>maven-jdepend-plugin</report>
+        <!--
+        <report>maven-checkstyle-plugin</report>
+        -->
+        <report>maven-pmd-plugin</report>
+        <report>maven-changelog-plugin</report>
+        <report>maven-file-activity-plugin</report>
+        <report>maven-developer-activity-plugin</report>
+        <report>maven-license-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-junit-report-plugin</report>
+        <report>maven-jcoverage-plugin</report>
+<!--        
+        <report>maven-linkcheck-plugin</report>
+-->        
+        <report>maven-tasklist-plugin</report>
     <report>maven-dashboard-plugin</report>
     <report>maven-multiproject-plugin</report>
     <report>maven-multichanges-plugin</report>
-	</reports>
+    </reports>
 </project>
