@@ -732,16 +732,19 @@
   </goal>
   
   <goal name="j2:_copy.rdbms.sql.scripts" >
-    <!-- Copy specific DB scripts possibly also overriding the Torque-generated ones -->      
-    <copy todir="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}"
-          overwrite="true"
-          verbose="true"
-          failonerror="false"
-          flatten="false">
-      <fileset dir="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}">
-        <include name="**/*.sql"/>
-      </fileset>
-    </copy>        
+    <util:file var="targetRdbmsScriptsDir" name="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}" /> 
+    <j:if test="${targetRdbmsScriptsDir.exists()}">
+      <!-- Copy specific DB scripts possibly also overriding the Torque-generated ones -->      
+      <copy todir="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}"
+            overwrite="true"
+            verbose="true"
+            failonerror="false"
+            flatten="false">
+        <fileset dir="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}">
+          <include name="**/*.sql"/>
+        </fileset>
+      </copy>
+    </j:if>
   </goal>
 
   <!-- Use this uility goal to process all of the .sql scripts in the specified path using the specified goal -->
