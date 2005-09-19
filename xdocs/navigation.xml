@@ -56,7 +56,7 @@
             <item name="Site" href="site.html" />
         </menu>
         <menu name='Components'>
-            <item name="Profiler" href="components/profiler.html" />
+            <item name="Profiler" href="profiler.html" />
         </menu>
         <menu name="Support">
             <item name="Mailing List" href="mail-lists.html" />
