@@ -63,7 +63,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                 {
                     // we have a login attempt failure
                     String userName = (String)request.getSessionAttribute(LoginConstants.USERNAME);
-                    if ( userName != null )
+                    if ( userName != null && !userName.equals(""))
                     {
                         UserManager um = (UserManager)Jetspeed.getComponentManager().getComponent(UserManager.class);
                         if ( um != null )
