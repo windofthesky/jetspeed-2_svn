@@ -82,8 +82,8 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
-     * @param oldPwdCredential The old {@link PasswordCredential}.
-     * @param newPwdCredential The new {@link PasswordCredential}.
+     * @param oldPassword The old password value.
+     * @param newPassword The new password value.
      * @param authenticationProvider The authentication provider name.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
@@ -95,7 +95,7 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      * Set the update required state of the user password credential in a given authentication provider.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param updateRequired The update required state.
      * @param authenticationProvider The authentication provider name.
      * @throws Throws a security exception.
@@ -108,7 +108,7 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      * Set the enabled state of the user password credential in a given authentication provider.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param enabled The enabled state.
      * @param authenticationProvider The authentication provider name.
      * @throws Throws a security exception.
