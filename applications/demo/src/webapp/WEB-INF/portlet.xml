@@ -692,5 +692,28 @@ limitations under the License.
     </portlet-preferences>        
   </portlet>
 
+<portlet>        
+    <description>Content Viewer portlet</description>		
+    <portlet-name>ContentViewer</portlet-name>	
+    <display-name>Content Viewer</display-name>
+    <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>	        
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>      	
+	<portlet-info>
+        <title>Content Viewer</title>
+        <short-title>Content</short-title>
+		<keywords>content,viewer,file</keywords>
+    </portlet-info>
+    <portlet-preferences>
+        <preference>                            
+            <name>file</name>                    
+            <value>/WEB-INF/content/menu.html</value>    
+        </preference>         
+    </portlet-preferences>                      		
+</portlet> 
+
 </portlet-app>
 
