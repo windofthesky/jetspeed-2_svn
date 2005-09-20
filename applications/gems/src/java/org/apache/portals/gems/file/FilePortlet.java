@@ -15,6 +15,7 @@
  */
 package org.apache.portals.gems.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +25,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.PortletPreferences;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 
 
@@ -36,22 +38,42 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
 public class FilePortlet extends GenericServletPortlet
 {
     
-    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    public void doView(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
     {
         response.setContentType("text/html");
-        PortletPreferences prefs = request.getPreferences();
-        String fileName = prefs.getValue("file", null);
-        if (fileName != null)
+        
+        // NOTE: this is Jetspeed specific
+        String path = (String)request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
+        
+        if (path != null && path.endsWith(".html"))
         {
-            InputStream is = this.getPortletContext().getResourceAsStream(fileName);
-            drain(is, response.getPortletOutputStream());
-            is.close();
+            File temp = new File(path);             
+            renderFile(response, "/WEB-INF/content/" + temp.getPath());
         }
         else
         {
-            response.getWriter().println("Could not find file preference ");
+            PortletPreferences prefs = request.getPreferences();
+            String fileName = prefs.getValue("file", null);
+            if (fileName != null)
+            {
+                renderFile(response, fileName);
+            }
+            else
+            {
+                response.getWriter().println("Could not find file preference ");
+            }
         }
     }
+    
+    protected void renderFile(RenderResponse response, String fileName)
+    throws PortletException, IOException
+    {
+        InputStream is = this.getPortletContext().getResourceAsStream(fileName);
+        drain(is, response.getPortletOutputStream());
+        is.close();        
+    }
+    
     
     static final int BLOCK_SIZE=4096;
 
