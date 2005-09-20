@@ -20,7 +20,7 @@
 ##
 ## Portlet Title Bar
 ##
-<div class="PTitleContent">$jetspeed.getTitle($myPE, $myF)
+<div class="PTitleContent">$!jetspeed.getTitle($myPE, $myF)
 #foreach ($action in $actions)
 <a href="${action.Action}" title="${action.Name}"><img src="${action.Link}" alt="${action.Alt}" class="noborder"/></a>
 #end

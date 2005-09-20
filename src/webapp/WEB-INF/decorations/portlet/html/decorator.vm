@@ -34,7 +34,7 @@ the root of your decortaion.  This will be used instead of the default.
 <div id="${myF.id}" class="${decoratorId}">
   <div class="PTitle" >
     <div class="PTitleContent">
-      $jetspeed.getTitle($myPE, $myF)
+      $!jetspeed.getTitle($myPE, $myF)
     </div>
     
     <div class="PActionBar">
