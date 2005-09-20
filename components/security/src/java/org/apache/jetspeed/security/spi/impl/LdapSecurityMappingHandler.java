@@ -119,7 +119,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipals(java.lang.String,
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipal(java.lang.String,
      *      java.lang.String)
      */
     public void setRolePrincipal(String username, String roleFullPathName) throws SecurityException

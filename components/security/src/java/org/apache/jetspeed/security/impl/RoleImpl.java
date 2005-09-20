@@ -35,7 +35,7 @@ public class RoleImpl implements Role
 
     /**
      * <p>{@link Role} constructor given a role principal and preferences.</p>
-     * @param subject The role principal.
+     * @param rolePrincipal The role principal.
      * @param preferences The preferences.
      */
     public RoleImpl(Principal rolePrincipal, Preferences preferences)

@@ -191,7 +191,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
      * Converts a list of principals to an array of principals.
      * </p>
      * 
-     * @param userPrincipals The list of principals.
+     * @param principals The list of principals.
      * @return The array of principals.
      */
     private Principal[] convertPrincipalListToArray(Collection principals)
@@ -205,7 +205,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
      * </p>
      * 
      * @param searchResults The {@link NamingEnumeration} of results.
-     * @param userPrincipals The collection of user principals.
+     * @param principals The collection of user principals.
      * @throws NamingException Throws a {@link NamingException}.
      */
     private void enumerateOverSearchResults(NamingEnumeration searchResults, Collection principals)

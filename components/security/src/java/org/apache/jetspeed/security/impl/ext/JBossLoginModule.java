@@ -85,7 +85,7 @@ public class JBossLoginModule extends DefaultLoginModule
     /**
      * Create a new JBoss login module that uses the given user manager.
      * @param userManager
-     * @see DefaultLoginModule(UserManager)
+     * @see DefaultLoginModule#DefaultLoginModule(UserManager)
      */
     protected JBossLoginModule (UserManager userManager) {
         super (userManager);

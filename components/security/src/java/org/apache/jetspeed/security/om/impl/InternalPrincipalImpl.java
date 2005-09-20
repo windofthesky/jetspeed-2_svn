@@ -99,7 +99,7 @@ public class InternalPrincipalImpl implements InternalPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.InternalPrincipal#setPrincipalId(int)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setPrincipalId(long)
      */
     public void setPrincipalId(long principalId)
     {

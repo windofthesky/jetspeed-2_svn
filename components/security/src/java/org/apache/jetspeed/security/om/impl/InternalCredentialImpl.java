@@ -229,7 +229,7 @@ public class InternalCredentialImpl implements InternalCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.InternalCredential#setExpirationDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setExpirationDate(java.sql.Date)
      */
     public void setExpirationDate(Date expirationDate)
     {

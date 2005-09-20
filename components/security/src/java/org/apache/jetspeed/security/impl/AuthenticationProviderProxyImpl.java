@@ -262,8 +262,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     }
 
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#setPublicPasswordCredential(org.apache.jetspeed.security.PasswordCredential,
-     *      org.apache.jetspeed.security.PasswordCredential, java.lang.String)
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#setPassword(String, String, String, String)
      */
     public void setPassword(String userName, String oldPassword, String newPassword, String authenticationProvider) throws SecurityException
     {
@@ -376,7 +375,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     }
 
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#authenticate(java.lang.String, char[], java.lang.String)
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#authenticate(String, String, String)
      */
     public boolean authenticate(String userName, String password, String authenticationProvider) throws SecurityException
     {

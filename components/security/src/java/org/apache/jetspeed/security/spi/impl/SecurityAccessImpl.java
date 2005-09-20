@@ -202,7 +202,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
      * Returns the {@link InternalRolePrincipal}from the role full path name.
      * </p>
      * 
-     * @param username The role full path name.
+     * @param roleFullPathName The role full path name.
      * @return The {@link InternalRolePrincipal}.
      */
     public InternalRolePrincipal getInternalRolePrincipal(String roleFullPathName)
@@ -280,7 +280,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
      * Returns the {@link InternalGroupPrincipal}from the group full path name.
      * </p>
      * 
-     * @param username The group full path name.
+     * @param groupFullPathName The group full path name.
      * @return The {@link InternalGroupPrincipal}.
      */
     public InternalGroupPrincipal getInternalGroupPrincipal(String groupFullPathName)
@@ -297,7 +297,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
      * Sets the given {@link InternalGroupPrincipal}.
      * </p>
      * 
-     * @param internalGroup The {@link internalGroupPrincipal}.
+     * @param internalGroup The {@link InternalGroupPrincipal}.
      * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */

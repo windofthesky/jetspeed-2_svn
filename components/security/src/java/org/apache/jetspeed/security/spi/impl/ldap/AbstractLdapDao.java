@@ -93,8 +93,8 @@ public abstract class AbstractLdapDao
      * Binds to the ldap server.
      * </p>
      * 
-     * @param userDn
-     * @param password
+     * @param rootDn
+     * @param rootPassword
      * @throws NamingException
      */
     protected void bindToServer(String rootDn, String rootPassword) throws SecurityException,
@@ -159,7 +159,7 @@ public abstract class AbstractLdapDao
      * Valiate the users password.
      * </p>
      * 
-     * @param userDn The user.
+     * @param password The user.
      */
     protected void validatePassword(final String password)
     {

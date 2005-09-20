@@ -65,7 +65,7 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
     /**
      * <p>Gets the principal name from the principal implementation full path.</p>
      * <p>Remove prepended PREFS_ROLE_ROOT if present.</p>        
-     * @param name The principal full path.
+     * @param fullPath The principal full path.
      * @return The principal name.
      */
     public static String getPrincipalNameFromFullPath(String fullPath)

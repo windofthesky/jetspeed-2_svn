@@ -48,7 +48,7 @@ public class AggregationHierarchyResolver extends BaseHierarchyResolver implemen
     private static final Log log = LogFactory.getLog(AggregationHierarchyResolver.class);
 
     /**
-     * @see org.apache.jetspeed.security.HierarchyResolver#resolve()
+     * @see org.apache.jetspeed.security.HierarchyResolver#resolve(Preferences)
      */
     public String[] resolve(Preferences prefs)
     {

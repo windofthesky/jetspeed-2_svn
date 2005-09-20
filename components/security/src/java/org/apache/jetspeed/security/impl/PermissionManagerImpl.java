@@ -408,10 +408,10 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
 
     /**
      * <p>
-     * Returns the {@link InternalPermission}from the full path.
+     * Returns the {@link InternalPermission} from a Permission.
      * </p>
      * 
-     * @param fullPath The full path.
+     * @param permission The permission.
      * @return The {@link InternalPermission}.
      */
     InternalPermission getInternalPermission(Permission permission)

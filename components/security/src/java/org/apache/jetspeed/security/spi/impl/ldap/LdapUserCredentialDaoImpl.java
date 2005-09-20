@@ -204,7 +204,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * improved to do proper unicode conversion.
      * </p>
      * 
-     * @param The {@link Attribute}.  
+     * @param attr The {@link Attribute}.  
      */
     private char[] convertRawPassword(Attribute attr) throws NamingException
     {
@@ -234,7 +234,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * </p>
      * 
      * @param results The results to find the user in.
-     * @return The {@param Attributes}.
+     * @return The Attributes.
      * @throws NamingException Throws a {@link NamingException}.
      */
     private Attributes getFirstUser(NamingEnumeration results) throws NamingException

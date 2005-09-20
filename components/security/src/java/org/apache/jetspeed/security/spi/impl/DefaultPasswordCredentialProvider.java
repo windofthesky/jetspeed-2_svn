@@ -46,7 +46,7 @@ public class DefaultPasswordCredentialProvider implements PasswordCredentialProv
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#getPasswordCredentailClass()
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#getPasswordCredentialClass()
      */
     public Class getPasswordCredentialClass()
     {

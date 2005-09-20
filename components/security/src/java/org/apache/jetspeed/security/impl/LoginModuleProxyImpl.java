@@ -36,7 +36,6 @@ public class LoginModuleProxyImpl implements LoginModuleProxy
      * manager.
      * </p>
      * 
-     * @param loginConfig The login module config.
      * @param userMgr The user manager.
      *  
      */

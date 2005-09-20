@@ -42,7 +42,7 @@ public class SimpleCredentialPasswordValidator implements CredentialPasswordVali
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialPasswordValidator#validate(char[])
+     * @see org.apache.jetspeed.security.spi.CredentialPasswordValidator#validate(String)
      */
     public void validate(String clearTextPassword) throws SecurityException
     {

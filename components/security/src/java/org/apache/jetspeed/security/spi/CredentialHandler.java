@@ -62,8 +62,8 @@ public interface CredentialHandler
      * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
-     * @param oldPwdCredential The old {@link PasswordCredential}.
-     * @param newPwdCredential The new {@link PasswordCredential}.
+     * @param oldPassword The old password.
+     * @param newPassword The new password.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
     void setPassword(String userName, String oldPassword, String newPassword) throws SecurityException;
@@ -73,7 +73,7 @@ public interface CredentialHandler
      * Set the update required state of the user password credential.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param updateRequired The update required state.
      * @throws Throws a security exception.
      */
@@ -84,7 +84,7 @@ public interface CredentialHandler
      * Set the enabled state of the user password credential.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @param enabled The enabled state.
      * @throws Throws a security exception.
      */

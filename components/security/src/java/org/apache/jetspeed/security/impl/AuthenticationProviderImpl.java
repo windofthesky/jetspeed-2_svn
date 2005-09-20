@@ -158,7 +158,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
     }
 
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#setCredentialHandler()
+     * @see org.apache.jetspeed.security.AuthenticationProvider#setCredentialHandler(CredentialHandler)
      */
     public void setCredentialHandler(CredentialHandler credHandler)
     {
@@ -166,7 +166,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
     }
 
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#setUserSecurityHandler()
+     * @see org.apache.jetspeed.security.AuthenticationProvider#setUserSecurityHandler(UserSecurityHandler)
      */
     public void setUserSecurityHandler(UserSecurityHandler userSecurityHandler)
     {

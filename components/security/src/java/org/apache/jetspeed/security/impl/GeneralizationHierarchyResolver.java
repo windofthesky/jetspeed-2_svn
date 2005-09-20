@@ -42,7 +42,7 @@ public class GeneralizationHierarchyResolver extends BaseHierarchyResolver imple
 {
 
     /**
-     * @see org.apache.jetspeed.security.HierarchyResolver#resolve()
+     * @see org.apache.jetspeed.security.HierarchyResolver#resolve(Preferences)
      */
     public String[] resolve(Preferences prefs)
     {

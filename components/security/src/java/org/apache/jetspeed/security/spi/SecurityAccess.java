@@ -68,7 +68,7 @@ public interface SecurityAccess
 
     /**
      * <p>
-     * Returns a collection of {@link Principal}given the filter.
+     * Returns a {@link InternalUserPrincipal} collection given the filter.
      * </p>
      * 
      * @param filter The filter.
@@ -102,7 +102,7 @@ public interface SecurityAccess
      * Returns the {@link InternalRolePrincipal}from the role full path name.
      * </p>
      * 
-     * @param username The role full path name.
+     * @param roleFullPathName The role full path name.
      * @return The {@link InternalRolePrincipal}.
      */
     InternalRolePrincipal getInternalRolePrincipal( String roleFullPathName );
@@ -133,7 +133,7 @@ public interface SecurityAccess
      * Returns the {@link InternalGroupPrincipal}from the group full path name.
      * </p>
      * 
-     * @param username The group full path name.
+     * @param groupFullPathName The group full path name.
      * @return The {@link InternalGroupPrincipal}.
      */
     InternalGroupPrincipal getInternalGroupPrincipal( String groupFullPathName );
@@ -143,7 +143,7 @@ public interface SecurityAccess
      * Sets the given {@link InternalGroupPrincipal}.
      * </p>
      * 
-     * @param internalGroup The {@link internalGroupPrincipal}.
+     * @param internalGroup The {@link InternalGroupPrincipal}.
      * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
@@ -162,7 +162,7 @@ public interface SecurityAccess
 
     /**
      * <p>
-     * Returns a collection of Role {@link Principal} given the filter.
+     * Returns a {@link InternalRolePrincipal} collection given the filter.
      * </p>
      * 
      * @param filter The filter.
@@ -172,7 +172,7 @@ public interface SecurityAccess
     
     /**
      * <p>
-     * Returns a collection of Group {@link Principal} given the filter.
+     * Returns a {@link InternalGroupPrincipal} collection of Group given the filter.
      * </p>
      * 
      * @param filter The filter.

@@ -44,7 +44,7 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     private LdapPrincipalDao ldap;
 
     /**
-     * @param ldap The {@link LdapUserSecurityDao}.
+     * @param ldap The LdapPrincipalDao.
      */
     public LdapUserSecurityHandler(LdapPrincipalDao ldap)
     {
