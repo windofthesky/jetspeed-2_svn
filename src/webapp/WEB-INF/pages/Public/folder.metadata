@@ -4,6 +4,10 @@
   <metadata name="title" xml:lang="ja">公開フォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpetas públicas</metadata>
 
+  <document-order>public.psml</document-order>
+  <document-order>db-browser.psml</document-order>
+  <document-order>content.psml</document-order>
+
   <security-constraints>
     <security-constraints-ref>public-edit</security-constraints-ref>
   </security-constraints>
