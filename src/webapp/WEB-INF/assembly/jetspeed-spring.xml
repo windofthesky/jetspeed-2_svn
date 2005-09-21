@@ -142,4 +142,10 @@
 
     <!-- HeaderResource Factory -->
     <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory" class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl"></bean>
+    
+    <!-- required for websphere, uncomment if running under websphere
+         see:  http://issues.apache.org/jira/browse/JS2-355
+    <bean id="org.apache.jetspeed.request.PortalRequestFactory" class="org.apache.jetspeed.request.PortalRequestFactoryImpl"/>        
+     -->
+    
 </beans>
