@@ -19,6 +19,7 @@
         <title>Jetspeed 2 Security Services Configuration</title>
         <authors>
             <person name="David Le Strat" email="dlestrat@apache.org" />
+            <person name="Ate Douma" email="ate@douma.nu" />
         </authors>
     </properties>
     <body>
@@ -125,8 +126,9 @@
                             <i>PasswordCredentialProvider</i>
                             ; as well as lifecycle management of credentials through
                             <i>InternalPasswordCredentialInterceptor</i>
-                            which manages parameters such as maximum number of authentication failures, maximum life span of a credential in days and how much
-                            history to retain for a given credential.
+                            which can be configured to manages parameters such as maximum number of authentication
+                            failures, maximum life span of a credential in days and how much history to retain for a
+                            given credential.
                         </td>
                     </tr>
                     <tr>
@@ -139,40 +141,148 @@
                     </tr>
                 </table>
                 <p>
-                    A sample
-                    <code>CredentialHandler</code>
-                    configuration could be:
-                    <source>
-                        <![CDATA[
+                    The following simple <code>CredentialHandler</code> configuration is currently provided
+                    by default with Jetspeed:</p>
+                    <source><![CDATA[
+<!-- require a non-empty password -->
 <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator" 
- class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator"/>
+     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator"/>
 
+<!-- MessageDigest encode passwords using SHA-1 -->
 <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" 
-      class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
-   <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
+     class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
+     <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
 </bean>       
+
+<!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler --> 
+<bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
+     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
+     <constructor-arg index="0">
+       <list>
+         <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
+         <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor"/>
+
+         <!-- ensure preset cleartext passwords in the persistent store  will be encoded on first use -->
+         <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor"/>
+       </list>
+     </constructor-arg>
+</bean>
 
 <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider" 
- class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
-   <constructor-arg index="0">
-      <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator"/>
-   </constructor-arg>       
-   <constructor-arg index="1">
-      <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"/>
-   </constructor-arg>       
+     class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
+     <constructor-arg index="0">
+       <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator"/>
+     </constructor-arg>       
+     <constructor-arg index="1">
+       <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"/>
+     </constructor-arg>       
 </bean>       
 
-<bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor" 
- class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialHistoryHandlingInterceptor">
-   <!-- maxNumberOfAuthenticationFailures -->
-   <constructor-arg index="0"><value>3</value></constructor-arg>  
-   <!-- maxLifeSpanInDays -->     
-   <constructor-arg index="1"><value>60</value></constructor-arg>       
-   <!-- historySize -->     
-   <constructor-arg index="2"><value>3</value></constructor-arg>       
+<bean id="org.apache.jetspeed.security.spi.CredentialHandler" 
+     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler">       
+     <constructor-arg index="0">
+       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/>
+     </constructor-arg>       
+     <constructor-arg index="1">
+       <ref bean="org.apache.jetspeed.security.spi.PasswordCredentialProvider"/>
+     </constructor-arg>       
+     <constructor-arg index="2">
+       <ref bean="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"/>
+     </constructor-arg>
 </bean>]]>
-                    </source>
-                </p>
+                  </source>
+                <p>
+                The above configuration requires not much more than that a password should not be
+                empty and MessageDigest encode it using SHA-1.</p>
+                <p>
+                Before the 2.0-M4 release, Jetspeed came configured with a much stricter configuration, but for
+                first time users of the Portal this was a bit overwelming and also quite difficult to configure
+                differently.</p>
+                <p>
+                With the 2.0-M4 release, the previously provided, and rather complex, 
+                <code>InternalPasswordCredentialInterceptor</code> implementations are split up in single atomic
+                interceptors which can much easier be configured indepedently.</p>
+                <p>
+                An overview of the new interceptors and how related request processing pipeline valves can be
+                configured to provide feedback to the user is provided in the <a href="credentials.html">
+                Credentials Management</a> document.</p>
+                <p>
+                Since the "old" (pre 2.0-M4) interceptors are no longer provided with Jetspeed, the example below
+                shows how to "restore" the old setup using the new interceptors:</p>
+                  <source><![CDATA[
+<!-- require a password of minimum length 6 and at least two numeric characters -->
+<bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator" 
+     class="org.apache.jetspeed.security.spi.impl.SimpleCredentialPasswordValidator">
+     <constructor-arg index="0"><value>6</value></constructor-arg>       
+     <constructor-arg index="1"><value>2</value></constructor-arg>       
+</bean>
+
+<!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler --> 
+<bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
+     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
+     <constructor-arg index="0">
+       <list>
+         <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
+         <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor"/>
+
+         <!-- ensure preset cleartext passwords in the persistent store  will be encoded on first use -->
+         <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor"/>
+
+         <!-- remember the last 3 passwords used and require a new password to be different from those -->
+         <bean class="org.apache.jetspeed.security.spi.impl.PasswordHistoryInterceptor">
+           <constructor-arg index="0"><value>3</value></constructor-arg>       
+         </bean>
+
+         <!-- Automatically expire a password after 60 days -->
+         <bean class="org.apache.jetspeed.security.spi.impl.PasswordExpirationInterceptor">
+           <constructor-arg index="0"><value>60</value></constructor-arg>       
+         </bean>
+
+         <!-- Automatically disable a password after 3 invalid authentication attempts in a row --> 
+         <bean class="org.apache.jetspeed.security.spi.impl.MaxPasswordAuthenticationFailuresInterceptor">
+           <constructor-arg index="0"><value>3</value></constructor-arg>       
+         </bean>
+       </list>
+     </constructor-arg>
+</bean>]]>
+                  </source>
+                <p>
+                And, make sure something like the following configuration is set for the security related valves in
+                pipelines.xml:</p>
+                  <source><![CDATA[
+<bean id="passwordCredentialValve"
+      class="org.apache.jetspeed.security.impl.PasswordCredentialValveImpl"
+      init-method="initialize">
+ <constructor-arg>
+   <!-- expirationWarningDays -->
+   <list>
+     <value>2</value>
+     <value>3</value>
+     <value>7</value>
+   </list>
+ </constructor-arg>
+</bean> 
+
+<bean id="loginValidationValve"
+      class="org.apache.jetspeed.security.impl.LoginValidationValveImpl"
+      init-method="initialize">
+  <!-- maxNumberOfAuthenticationFailures
+       This value should be in sync with the value for
+       org.apache.jetspeed.security.spi.impl.MaxPasswordAuthenticationFailuresInterceptor
+       (if used) to make sense.
+       Any value < 2 will suppress the LoginConststants.ERROR_FINAL_LOGIN_ATTEMPT
+       error code when only one last attempt is possible before the credential
+       will be disabled after the next authentication failure.
+  -->
+  <constructor-arg index="0"><value>3</value></constructor-arg>  
+</bean>]]>
+                  </source>
+                <p>
+                Also, make sure the above valves are configured in the <code>jetspeed-pipeline</code> bean.</p>
+                <p>
+                See the <a href="credentials.html#User_interaction">User Interaction</a> section in the
+                Credentials Management document for a description of these valves and their relation to the
+                interceptors configuration.</p>
             </subsection>
             <subsection name="security-spi-atz.xml">
                 <p>This configuration file contains all the configurations for configuring the authorization SPI.</p>
