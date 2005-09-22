@@ -18,9 +18,12 @@ limitations under the License.
 <beans>
 
   <!-- ************** Security SPI Handlers ************** -->
+
+  <!-- require a non-empty password -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator" 
        class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator"/>
 
+  <!-- MessageDigest encode passwords using SHA-1 -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" 
        class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
        <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
@@ -32,14 +35,18 @@ limitations under the License.
        <constructor-arg index="1"><ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"/></constructor-arg>       
   </bean>       
 
-  <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor" 
-       class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialHistoryHandlingInterceptor">
-       <!-- maxNumberOfAuthenticationFailures -->
-       <constructor-arg index="0"><value>3</value></constructor-arg>  
-       <!-- maxLifeSpanInDays -->     
-       <constructor-arg index="1"><value>60</value></constructor-arg>       
-       <!-- historySize -->     
-       <constructor-arg index="2"><value>3</value></constructor-arg>       
+  <!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler --> 
+  <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
+       class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
+       <constructor-arg index="0">
+         <list>
+           <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
+           <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor"/>
+
+           <!-- ensure preset cleartext passwords in the persistent store  will be encoded on first use -->
+           <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor"/>
+         </list>
+       </constructor-arg>
   </bean>
 
   <!-- Security SPI: CredentialHandler -->
