@@ -34,7 +34,7 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public class TestInternalPasswordCredentialStateHandlingInterceptor extends AbstractSecurityTestcase
+public class TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor extends AbstractSecurityTestcase
 {
     private InternalUserPrincipal internalUser;
     private InternalCredential credential;
@@ -55,10 +55,10 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
 
     public static Test suite()
     {
-        return new TestSuite(TestInternalPasswordCredentialStateHandlingInterceptor.class);
+        return new TestSuite(TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.class);
     }
 
-    public void testExpired() throws Exception
+    public void testExpirationAndMaxAuthenticationFailures() throws Exception
     {
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
         credential.setExpirationDate(new Date(new java.util.Date().getTime()));
@@ -102,7 +102,7 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("JETSPEED-INF/spring/sipcshi.xml");
+        confList.add("JETSPEED-INF/spring/TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

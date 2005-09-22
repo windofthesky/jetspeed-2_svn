@@ -22,8 +22,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -34,11 +32,8 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends AbstractSecurityTestcase
+public class TestPasswordHistoryInterceptor extends AbstractSecurityTestcase
 {
-    private InternalUserPrincipal internalUser;
-    private InternalCredentialImpl credential;
-    
     protected void setUp() throws Exception
     {
         super.setUp(); 
@@ -55,7 +50,7 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
 
     public static Test suite()
     {
-        return new TestSuite(TestInternalPasswordCredentialHistoryHandlingInterceptor.class);
+        return new TestSuite(TestPasswordHistoryInterceptor.class);
     }
 
     public void testPasswordHistory() throws Exception
@@ -103,7 +98,7 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("JETSPEED-INF/spring/sipchhi.xml");
+        confList.add("JETSPEED-INF/spring/TestPasswordHistoryInterceptor.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

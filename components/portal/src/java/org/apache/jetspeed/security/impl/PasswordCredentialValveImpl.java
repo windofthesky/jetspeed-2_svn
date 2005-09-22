@@ -45,6 +45,22 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
     //private PageManager pageManager;
     private int[] expirationWarningDays;
     
+    /**
+     * Create a PasswordCredentialValveImpl which only checks and handles PasswordCredential.isUpdateRequired().
+     *
+     */
+    public PasswordCredentialValveImpl()
+    {     
+        expirationWarningDays = new int[]{};
+    }
+    
+    /**
+     * <p>
+     * Creates a PasswordCredentialValveImpl which, besides checking and handling PasswordCredential.isUpdateRequired(),
+     * also provides a warning when a password is about to be expired according to the provided list of
+     * expirationWarningDays.</p>
+     * @param expirationWarningDays the list of days before password expiration when a warning should be presented 
+     */
     public PasswordCredentialValveImpl(List expirationWarningDays)
     {
         if ( expirationWarningDays != null )

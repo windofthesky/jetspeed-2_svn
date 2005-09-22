@@ -40,11 +40,25 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
 {
     private static final Log log = LogFactory.getLog(LoginValidationValveImpl.class);
     
-    // This value should be in sync with that of InternalPasswordCredentialStateHandlingInterceptor (if used)
-    // to make any sense.
-    // Providing value < 2 will disable the LoginConstants.ERROR_FINAL_LOGIN_ATTEMPT warning 
     private int maxNumberOfAuthenticationFailures;
     
+    /**
+     * Creates a LoginValidationValveImpl instance which doesn't evaluate the maxNumberOfAuthenticationFailures 
+     * for LoginConstant.ERROR_FINAL_LOGIN_ATTEMPT error reporting.
+     */
+    public LoginValidationValveImpl()
+    {
+    }
+
+    /**
+     * <p>
+     * Creates a LoginValidationValveImpl instance which can evaluate {@link PasswordCredential#getAuthenticationFailures()}
+     * to determine if a user only has one login attempt available before the maxNumberOfAuthenticationFailures parameter
+     * value is reached and the credential will be disabled.</p>
+     * <p>
+     * The provided maxNumberOfAuthenticationFailures value should be equal to the value configured for the
+     * MaxPasswordAuthenticationFailuresInterceptor (and > 2 to be useful).</p>
+     */
     public LoginValidationValveImpl(int maxNumberOfAuthenticationFailures)
     {
         this.maxNumberOfAuthenticationFailures = maxNumberOfAuthenticationFailures;

@@ -36,7 +36,7 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public class TestDefaultInternalPasswordCredentialInterceptor extends AbstractSecurityTestcase
+public class TestCredentialPasswordEncoder extends AbstractSecurityTestcase
 {
     protected void setUp() throws Exception
     {
@@ -54,7 +54,7 @@ public class TestDefaultInternalPasswordCredentialInterceptor extends AbstractSe
 
     public static Test suite()
     {
-        return new TestSuite(TestDefaultInternalPasswordCredentialInterceptor.class);
+        return new TestSuite(TestCredentialPasswordEncoder.class);
     }
 
     public void testEncodedPassword() throws Exception
@@ -91,7 +91,7 @@ public class TestDefaultInternalPasswordCredentialInterceptor extends AbstractSe
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("JETSPEED-INF/spring/defipci.xml");
+        confList.add("JETSPEED-INF/spring/TestCredentialPasswordEncoder.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

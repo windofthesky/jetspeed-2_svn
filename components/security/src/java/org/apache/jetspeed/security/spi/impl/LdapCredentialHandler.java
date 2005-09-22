@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -142,6 +143,15 @@ public class LdapCredentialHandler implements CredentialHandler
     public void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException
     {
         // TODO Implement this.
+    }    
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordExpiration(java.lang.String, java.sql.Date)
+     */
+    public void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException
+    {
+        // TODO Implement this
+        
     }
 
     /**

@@ -223,6 +223,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         {
             credential.setValue(newPassword);
             credential.setEncoded(encoded);
+            credential.setUpdateRequired(false);
         }
                 
         internalUser.setModifiedDate(new Timestamp(new Date().getTime()));

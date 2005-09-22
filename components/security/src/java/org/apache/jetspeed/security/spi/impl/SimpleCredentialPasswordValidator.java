@@ -47,6 +47,10 @@ public class SimpleCredentialPasswordValidator implements CredentialPasswordVali
     public void validate(String clearTextPassword) throws SecurityException
     {
         int digits = 0;
+        if ( clearTextPassword == null )
+        {
+            clearTextPassword = "";
+        }
         char[] pwd = clearTextPassword.toCharArray();
 
         if ( minPasswordLength > 0 && pwd.length < minPasswordLength )

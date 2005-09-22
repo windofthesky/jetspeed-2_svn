@@ -154,7 +154,7 @@ public class TestPasswordCredentialProvider extends AbstractSecurityTestcase
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("JETSPEED-INF/spring/spcpv.xml");
+        confList.add("JETSPEED-INF/spring/TestPasswordCredentialProvider.xml");
         return (String[]) confList.toArray(new String[1]);
     }    
 }
