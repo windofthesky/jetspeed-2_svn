@@ -592,7 +592,7 @@ maven j2:portal.genapp]]>
           </i>
         </p>
       </subsection>
-      <subsection name="4.5 Further customization of the portal">
+      <subsection name="4.4 Further customization of the portal">
         <p>
           This section doesn't specify anything to do. After the portal project is generated you can adapt and customize
           it to your taste by overriding and merging your own configurations and extensions.
@@ -602,10 +602,11 @@ maven j2:portal.genapp]]>
           described in the previous section or use its subgoals directly. 
         </p>
       </subsection>
-      <subsection name="4.4 Build the portal">
+      <subsection name="4.5 Build the portal">
         <p>
           Once your portal configuration and setup is ready, you can build and install the portal application in your
-          local maven repository (as needed for deployment) using the standard maven goal:
+          local maven repository (as needed for deployment) using the following standard maven goal from your custom
+          portal project directory (in ${org.apache.jetspeed.portal.home}):
           <source>
             <![CDATA[
 maven war:install]]>
