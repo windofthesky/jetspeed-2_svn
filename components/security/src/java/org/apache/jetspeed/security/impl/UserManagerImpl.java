@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -503,5 +504,21 @@ public class UserManagerImpl implements UserManager
             userPrincipal.setEnabled(enabled);
             atnProviderProxy.updateUserPrincipal(userPrincipal);
         }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#setPasswordExpiration(java.lang.String, java.sql.Date)
+     */
+    public void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[]
+        { userName,}, new String[]
+        { "userName"}, "setPasswordExpiration(java.lang.String, java.sql.Date)");
+
+        if (getAnonymousUser().equals(userName)) 
+        { 
+            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED.create(userName)); 
+        }
+        atnProviderProxy.setPasswordExpiration(userName, expirationDate);
     }
 }

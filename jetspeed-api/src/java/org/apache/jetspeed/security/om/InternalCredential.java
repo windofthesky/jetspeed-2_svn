@@ -42,6 +42,14 @@ public interface InternalCredential extends Serializable, Cloneable
     public static final int PRIVATE = 0;
     /** Public credentials type. */
     public static final int PUBLIC = 1;
+    
+    /**
+     * Maximum allowed java.sql.Date value (according to the specs).
+     * <em>Note:</em><br>
+     * The concrete value is default time zone dependent and should <em>only</em>
+     * be used for setting Date fields, not to <em>compare<em> against.
+     */
+    public static final Date MAX_DATE = Date.valueOf("8099-01-01");
 
     /**
      * <p>Getter for the credential id.</p>

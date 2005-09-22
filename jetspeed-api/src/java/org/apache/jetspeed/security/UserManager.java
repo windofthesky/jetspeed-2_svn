@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -179,4 +180,17 @@ public interface UserManager
      * @param enabled enabled flag for the user
      */
     void setUserEnabled(String userName, boolean enabled) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the expiration date and the expired flag of the password credential.</p>
+     * <p>
+     * If a date equal or before the current date is provided, the expired flag will be set to true,
+     * otherwise to false.</p>
+     * 
+     * @param userName The user name.
+     * @param expirationDate The expiration date to set.
+     * @throws Throws a security exception.
+     */
+    void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException;
 }

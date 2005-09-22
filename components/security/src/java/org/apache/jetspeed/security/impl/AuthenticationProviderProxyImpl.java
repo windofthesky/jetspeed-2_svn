@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -367,6 +368,38 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         if ( providerName != null )
         {
             setPasswordUpdateRequired(userName, updateRequired, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#setPasswordExpiration(java.lang.String, java.sql.Date, java.lang.String)
+     */
+    public void setPasswordExpiration(String userName, Date expirationDate, String authenticationProvider) throws SecurityException
+    {
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
+        {
+            provider.getCredentialHandler().setPasswordExpiration(userName,expirationDate);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordExpiration(java.lang.String, java.sql.Date)
+     */
+    public void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException
+    {
+        String providerName = getAuthenticationProvider(userName);
+        if ( providerName != null )
+        {
+            setPasswordExpiration(userName, expirationDate, providerName);
         }
         else
         {

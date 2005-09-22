@@ -291,6 +291,39 @@ public class DefaultCredentialHandler implements CredentialHandler
     }
     
     /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordExpiration(java.lang.String, java.sql.Date)
+     */
+    public void setPasswordExpiration(String userName, java.sql.Date expirationDate) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
+        if (null != internalUser)
+        {
+            InternalCredential credential = getPasswordCredential(internalUser, userName );
+            if ( credential != null )
+            {
+                long time = new Date().getTime();
+                if ( expirationDate != null && new java.sql.Date(time).after(expirationDate))
+                {
+                    credential.setExpired(true);
+                }
+                else
+                {
+                    credential.setExpired(false);
+                }
+                credential.setExpirationDate(expirationDate);
+                
+                credential.setModifiedDate(new Timestamp(time));
+                internalUser.setModifiedDate(new Timestamp(time));
+                securityAccess.setInternalUserPrincipal(internalUser, false);
+            }
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
+        }
+    }
+
+    /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#authenticate(java.lang.String, java.lang.String)
      */
     public boolean authenticate(String userName, String password) throws SecurityException

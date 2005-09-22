@@ -201,6 +201,14 @@ limitations under the License.
         <value>false</value>
       </preference>
       <preference>
+        <name>showPasswordExpiration</name>
+        <value>false</value>
+      </preference>
+      <preference>
+        <name>showChangePasswordRequiredForAddUser</name>
+        <value>true</value>
+      </preference>      
+      <preference>
         <name>showRoleForAddUser</name>
         <value>true</value>
       </preference>      
@@ -208,6 +216,10 @@ limitations under the License.
         <name>showProfileForAddUser</name>
         <value>true</value>
       </preference>      
+      <preference>
+        <name>defaultChangePasswordRequired</name>
+        <value>false</value>
+      </preference>
       <preference>
         <name>defaultRole</name>
         <value>user</value>

@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.sql.Date;
 import java.util.Set;
 
 import org.apache.jetspeed.security.PasswordCredential;
@@ -89,6 +90,19 @@ public interface CredentialHandler
      * @throws Throws a security exception.
      */
     void setPasswordEnabled(String userName, boolean enabled) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the expiration date and the expired flag of the password credential.</p>
+     * <p>
+     * If a date equal or before the current date is provided, the expired flag will be set to true,
+     * otherwise to false.</p>
+     * 
+     * @param userName The user name.
+     * @param expirationDate The expiration date to set.
+     * @throws Throws a security exception.
+     */
+    void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException;
 
     /**
      * <p>

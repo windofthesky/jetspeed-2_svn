@@ -35,13 +35,13 @@ limitations under the License.
 <form action="<portlet:actionURL/>" method="post">
 <c:set var="prefs" value="${renderRequest.preferences.map}"/>
 <table border="0" cellspacing="2" cellpadding="3">
-  <c:forEach var="prefName" items="showUserTab,showAttributesTab,showPasswordTab,showRoleTab,showGroupTab,showProfileTab,showPasswordOnUserTab,showRoleForAddUser,showProfileForAddUser">
+  <c:forEach var="prefName" items="showUserTab,showAttributesTab,showPasswordTab,showPasswordExpiration,showRoleTab,showGroupTab,showProfileTab,showPasswordOnUserTab,showChangePasswordRequiredForAddUser,showRoleForAddUser,showProfileForAddUser,defaultChangePasswordRequired">
   <tr>
     <c:set var="prefValue" value='${prefs[prefName][0]}'/>
-    <th class="portlet-section-alternate">
+    <td class="portlet-section-alternate">
       <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
-    </th>
-    <td>
+    </td>
+    <td class="portlet-section-body">
       <input type="hidden" name="<c:out value="${prefName}"/>" value="<c:out value="${prefValue}"/>"/>
       <input type="checkbox" <c:if test="${prefValue}">checked</c:if> 
              onclick="t(this,<c:out value="${prefName}"/>)" class="portlet-form-field-label" />
@@ -51,10 +51,10 @@ limitations under the License.
   <tr>
     <c:set var="prefName" value="defaultRole"/>
     <c:set var="prefValue" value='${prefs[prefName][0]}'/>
-    <th class="portlet-section-alternate">
+    <td class="portlet-section-alternate">
       <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
-    </th>
-    <td>
+    </td>
+    <td class="portlet-section-body">
       <select name="<c:out value="${prefName}"/>" class="portlet-form-field-label">     
               <option value=""/>                
               <c:forEach var="item" items="${jetspeedRoles}">
@@ -68,10 +68,10 @@ limitations under the License.
   <tr>
     <c:set var="prefName" value="defaultProfile"/>
     <c:set var="prefValue" value='${prefs[prefName][0]}'/>
-    <th class="portlet-section-alternate">
+    <td class="portlet-section-alternate">
       <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
-    </th>
-    <td>
+    </td>
+    <td class="portlet-section-body">
       <select name="<c:out value="${prefName}"/>" class="portlet-form-field-label">     
               <option value=""/>                
               <c:forEach var="item" items="${jetspeedRules}">

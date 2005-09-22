@@ -79,6 +79,7 @@ limitations under the License.
       <c:set var="canUpdate" value="true"/>
 			<tr>
 				<th class="portlet-section-header" colspan="2"><fmt:message key="user.attributes.header"/></th>
+				<td colspan="2"></td>
 			</tr>
 	  </c:if>
     <c:forEach var="attr" items="${requestScope.paUserAttributes}">
@@ -96,11 +97,11 @@ limitations under the License.
 
     <c:if test='${prefs["showPasswordOnUserTab"][0]}'>
       <c:if test="${canUpdate}">
-        <tr><td colspan="5">&nbsp;</td></tr>
+        <tr><td colspan="4">&nbsp;</td></tr>
       </c:if>
       <c:set var="canUpdate" value="true"/>
 			<tr>
-				<th class="portlet-section-header" colspan="5"><fmt:message key="user.password.header"/></th>
+				<th class="portlet-section-header" colspan="4"><fmt:message key="user.password.header"/></th>
 			</tr>
       <tr>
         <td class="portlet-section-alternate" >
@@ -118,8 +119,6 @@ limitations under the License.
                  <c:if test="${credential.updateRequired}">checked</c:if>
                  onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
            class="portlet-form-field-label" />
-        </td>
-        <td class="portlet-section-body" >
           <fmt:message key="security.credential.update.required"/>
         </td>
       </tr>
@@ -128,7 +127,7 @@ limitations under the License.
           <fmt:message key="security.credential.last.logon"/>
         </td>
         <td class="portlet-section-body" >
-          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="short" timeStyle="long"/>
+          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="long" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
@@ -139,28 +138,49 @@ limitations under the License.
                  <c:if test="${credential.enabled}">checked</c:if>
                  onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
            class="portlet-form-field-label" />
-        </td>
-        <td class="portlet-section-body" >
           <fmt:message key="security.enabled"/>
         </td>
       </tr>
+      <c:if test='${prefs["showPasswordExpiration"][0]}'>
       <tr>
         <td class="portlet-section-alternate" >
           <fmt:message key="security.credential.expires"/>
         </td>
-        <td class="portlet-section-body" >
-          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="short" timeStyle="long"/>
+        <td class="portlet-section-body" nowrap>
+          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="long" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
         </td>
-        <td class="portlet-section-body" >
-          <input type="checkbox" disabled <c:if test="${credential.expired}">checked</c:if>/>
-        </td>
-        <td class="portlet-section-body" >
-          <fmt:message key="security.expired"/>
-        </td>
+        <td class="portlet-section-body">
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+              <c:if test="${!credential.expired}">
+                <input type="radio" name="user_expired_flag" value="active" checked>
+                <fmt:message key="security.active"/>
+                &nbsp;
+              </c:if>
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="expired" <c:if test="${credential.expired}">checked</c:if>>
+                <fmt:message key="security.expired"/>
+                &nbsp;
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="extend">
+                <fmt:message key="security.Extend"/>
+                &nbsp;
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="unlimited">
+                <fmt:message key="security.Extend.Unlimited"/>
+              </td>
+            </tr>
+          </table>
+        </td>        
       </tr>
+      </c:if>
     </c:if>		
     </table>
     <c:if test="${canUpdate}">
@@ -275,8 +295,6 @@ limitations under the License.
                  <c:if test="${credential.updateRequired}">checked</c:if>
                  onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
            class="portlet-form-field-label" />
-        </td>
-        <td class="portlet-section-body" >
           <fmt:message key="security.credential.update.required"/>
         </td>
       </tr>
@@ -285,7 +303,7 @@ limitations under the License.
           <fmt:message key="security.credential.last.logon"/>
         </td>
         <td class="portlet-section-body" >
-          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="short" timeStyle="long"/>
+          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="long" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
@@ -296,28 +314,49 @@ limitations under the License.
                  <c:if test="${credential.enabled}">checked</c:if>
                  onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
            class="portlet-form-field-label" />
-        </td>
-        <td class="portlet-section-body" >
           <fmt:message key="security.enabled"/>
         </td>
       </tr>
+      <c:if test='${prefs["showPasswordExpiration"][0]}'>      
       <tr>
         <td class="portlet-section-alternate" >
           <fmt:message key="security.credential.expires"/>
         </td>
         <td class="portlet-section-body" >
-          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="short" timeStyle="long"/>
+          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="long" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
         </td>
         <td class="portlet-section-body" >
-          <input type="checkbox" disabled <c:if test="${credential.expired}">checked</c:if>/>
-        </td>
-        <td class="portlet-section-body" >
-          <fmt:message key="security.expired"/>
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+              <c:if test="${!credential.expired}">
+                <input type="radio" name="user_expired_flag" value="active" checked>
+                <fmt:message key="security.active"/>
+                &nbsp;
+              </c:if>
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="expired" <c:if test="${credential.expired}">checked</c:if>>
+                <fmt:message key="security.expired"/>
+                &nbsp;
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="extend">
+                <fmt:message key="security.Extend"/>
+                &nbsp;
+              </td>
+              <td>
+                <input type="radio" name="user_expired_flag" value="unlimited">
+                <fmt:message key="security.Extend.Unlimited"/>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
+      </c:if>
     </table>
     <input type="submit" value="<fmt:message key="security.update"/>" class="portlet-form-button" />
   </form>
@@ -544,6 +583,7 @@ limitations under the License.
 
 <%-- Add New User --%>
 <c:if test="${user == null}">
+<script language="JavaScript">function t(i,f){if(i.checked) f.value='true';else f.value='false';}</script>
 
 <h3 class="portlet-section-header">Add User</h3>
 
@@ -576,6 +616,26 @@ limitations under the License.
   <c:set var="defaultRole" value='${prefs["defaultRole"][0]}'/>
   <c:set var="defaultProfile" value='${prefs["defaultProfile"][0]}'/>
   
+  <c:set var="prefName" value="showChangePasswordRequiredForAddUser"/>
+  <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+  <c:choose>
+    <c:when test='${prefs[prefName][0]}'>
+      <tr colspan="2" align="right">
+        <td nowrap class="portlet-section-alternate" align="right">Change Password on first Login:&nbsp;</td>
+        <td class="portlet-section-body" align="left">
+          <c:set var="prefName" value="defaultChangePasswordRequired"/>
+          <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+          <input type="hidden" name="user_cred_updreq" value="<c:out value="${prefValue}"/>"/>
+          <input type="checkbox" <c:if test="${prefValue}">checked</c:if> 
+             onclick="t(this,user_cred_updreq)" class="portlet-form-field-label" />
+        </td>
+      </tr>
+    </c:when>
+    <c:otherwise>
+      <input type="hidden" name="jetspeedRoles" value="<c:out value="${defaultRole}"/>">
+    </c:otherwise>
+  </c:choose>
+
   <c:choose>
     <c:when test='${prefs["showRoleForAddUser"][0]}'>
       <!-- Select Roles -->

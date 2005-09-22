@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -64,6 +65,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.portals.bridges.beans.TabBean;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.portals.bridges.util.PreferencesHelper;
@@ -85,7 +87,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String VIEW_RULES = "rules";
     private final String VIEW_CREDENTIAL = "credential"; 
     private final String VIEW_ALL_RULES = "prules";
-    private final String VIEW_SELECTED_RULE = "selectedRule";
     private final String VIEW_PA_USER_ATTRIBUTES = "paUserAttributes";
     
     private final String USER_ACTION_PREFIX = "security_user.";
@@ -567,7 +568,9 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 
                 Folder folder = pageManager.getFolder(Folder.USER_FOLDER + userName);
                 pageManager.removeFolder(folder);
-                                
+                            
+                // remove selected user from USERS_TOPIC
+                PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
                 // TODO: send message to site manager portlet
                 
             }
@@ -606,11 +609,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
             try
             {
                 String password = actionRequest.getParameter("user_cred_value");
-                boolean updated = false;
+                boolean passwordSet = false;
                 if ( password != null && password.trim().length() > 0 )
                 {
                     userManager.setPassword(userName, null, password);
-                    updated = true;
+                    passwordSet = true;
                 }
                 PasswordCredential credential = getCredential(userName);
                 if ( credential != null )
@@ -622,7 +625,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (updateRequired != credential.isUpdateRequired())
                         {
                             userManager.setPasswordUpdateRequired(userName,updateRequired);
-                            updated = true;
                         }
                     }
                     String enabledStr = actionRequest.getParameter("user_cred_enabled");
@@ -632,7 +634,23 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (enabled != credential.isEnabled())
                         {
                             userManager.setPasswordEnabled(userName,enabled);
-                            updated = true;
+                        }
+                    }
+                    String expiredFlagStr = actionRequest.getParameter("user_expired_flag");
+                    if (expiredFlagStr != null)
+                    {
+                        if ( !passwordSet && expiredFlagStr.equals("expired"))
+                        {
+                            java.sql.Date today = new java.sql.Date(new Date().getTime());
+                            userManager.setPasswordExpiration(userName,today);
+                        }
+                        else if (expiredFlagStr.equals("extend"))
+                        {
+                            userManager.setPasswordExpiration(userName,null);
+                        }
+                        else if (expiredFlagStr.equals("unlimited"))
+                        {
+                            userManager.setPasswordExpiration(userName,InternalCredential.MAX_DATE);
                         }
                     }
                 }
@@ -723,7 +741,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
-        List deletes = new LinkedList();
         
         User user = lookupUser(userName);
         if (user != null)
@@ -893,10 +910,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
         return new LinkedList();
     }
     
-    private PasswordCredential getCredential(String userName)
+    private PasswordCredential getCredential(User user)
     {
         PasswordCredential credential = null;
-        Set credentials = lookupUser(userName).getSubject().getPrivateCredentials();
+        
+        Set credentials = user.getSubject().getPrivateCredentials();
         Iterator iter = credentials.iterator();
         while (iter.hasNext())
         {
@@ -908,6 +926,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
         }
         return credential;
+    }
+    private PasswordCredential getCredential(String userName)
+    {
+        return getCredential(lookupUser(userName));
     }
     
     private User lookupUser(String userName)
@@ -1016,6 +1038,21 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
                                 
                 User user = userManager.getUser(userName);
+                
+                PasswordCredential credential = getCredential(user);
+                if ( credential != null )
+                {
+                    String updateRequiredStr = actionRequest.getParameter("user_cred_updreq");
+                    if (updateRequiredStr != null)
+                    {
+                        boolean updateRequired = Boolean.valueOf(updateRequiredStr).booleanValue();
+                        if (updateRequired != credential.isUpdateRequired())
+                        {
+                            userManager.setPasswordUpdateRequired(userName,updateRequired);
+                        }
+                    }                    
+                }
+
                 String role = actionRequest.getParameter(ROLES_CONTROL);
                 if (!SecurityUtil.isEmpty(role) && user != null) 
                 {

@@ -14,6 +14,8 @@
  */
 package org.apache.jetspeed.security;
 
+import java.sql.Date;
+
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
@@ -114,6 +116,21 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      * @throws Throws a security exception.
      */
     void setPasswordEnabled(String userName, boolean enabled, 
+            String authenticationProvider) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the expiration date and the expired flag of the password credential in a given authentication provider</p>
+     * <p>
+     * If a date equal or before the current date is provided, the expired flag will be set to true,
+     * otherwise to false.</p>
+     * 
+     * @param userName The user name.
+     * @param expirationDate The expiration date to set.
+     * @param authenticationProvider The authentication provider name.
+     * @throws Throws a security exception.
+     */
+    void setPasswordExpiration(String userName, Date expirationDate, 
             String authenticationProvider) throws SecurityException;
 
     /**
