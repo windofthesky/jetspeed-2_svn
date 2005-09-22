@@ -44,7 +44,8 @@ public class PathSessionResolver implements RuleCriterionResolver
         else
         {
             path = context.getPath();
-            path = mapPath(context, path);            
+            if (path != null)
+                path = mapPath(context, path);            
         }
         
         if ((path == null) || path.equals("/"))
