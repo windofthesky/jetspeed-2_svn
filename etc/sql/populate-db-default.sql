@@ -364,7 +364,7 @@ insert into PROFILING_RULE values ('role-fallback',
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 role-based fallback');
 insert into RULE_CRITERION values (6, 'role-fallback', 0, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (7, 'role-fallback', 1, 'request.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values (7, 'role-fallback', 1, 'path.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('path', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
@@ -382,7 +382,7 @@ insert into PROFILING_RULE values ('group-fallback',
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 group-based fallback');
 insert into RULE_CRITERION values (15, 'group-fallback', 0, 'group', 'group', null, 2);
-insert into RULE_CRITERION values (16, 'group-fallback', 1, 'request.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values (16, 'group-fallback', 1, 'path.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('security', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
