@@ -24,22 +24,28 @@
     <body>
         <section name="Overview of JAAS Authorization">
             <p>
-                A good overview of JAAS authorization is provided on 
-                <a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/spec/security-spec.doc2.html">Sun's web site</a>.
-                At a high level, JAAS authorization leverages:
+                A good overview of JAAS authorization is provided on
+                <a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/spec/security-spec.doc2.html">Sun's web site</a>
+                . At a high level, JAAS authorization leverages:
                 <ul>
-                    <li><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Permission.html">Permission</a>
-                    that associates actions to resources.</li>
-                    <li><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Principal.html">Principal</a>
-                    that represents an entity in the system.  In Jetspeed 2, 3 principals are used to represent users,
-                    roles and groups.</li>
-                    <li><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Policy.html">Policy</a>
-                    that associates principals to permissions.</li>
+                    <li>
+                        <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Permission.html">Permission</a>
+                        that associates actions to resources.
+                    </li>
+                    <li>
+                        <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Principal.html">Principal</a>
+                        that represents an entity in the system. In Jetspeed 2, 3 principals are used to represent users, roles and groups.
+                    </li>
+                    <li>
+                        <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/Policy.html">Policy</a>
+                        that associates principals to permissions.
+                    </li>
                 </ul>
-            </p>   
+            </p>
             <p>
                 Jetspeed 2 provides a custom policy implemention that allow the portal to secure resources as follow:
-                <source><![CDATA[
+                <source>
+                    <![CDATA[
 grant principal o.a.j.security.UserPrincipal "theUserPrincipal" {
   permission o.a.j.security.PagePermission "mypage", "view";
   permission o.a.j.security.PortletPermission "myportlet", "view,edit,minimize,maximize";
@@ -58,57 +64,112 @@ grant principal o.a.j.security.GroupPrincipal "theGroupPrincipal" {
   permission o.a.j.security.TabPermission "mytab", "view";
 };]]>
                 </source>
-            </p> 
+            </p>
             <p>
-                The custom security policy provides a <code>java.security.Policy</code> implementation that
-                stores the association between principals and permissions in a relational database as opposed to
-                leveraging the default JDK policy.  In the case of Sun's JDK, the default policy is 
+                The custom security policy provides a
+                <code>java.security.Policy</code>
+                implementation that stores the association between principals and permissions in a relational database as opposed to leveraging the default JDK
+                policy. In the case of Sun's JDK, the default policy is
                 <a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/PolicyFiles.html#DefaultImpl">sun.security.provider.PolicyFile</a>
                 a file based policy.
             </p>
             <p>
-                In the code sample above, the <code>UserPrincipal</code> identify with the <code>Principal.getName()</code> 
-                &quot;theUserPrincipal&quot; has permission to &quot;view&quot; the page called &quot;mypage&quot;, to
-                &quot;view,edit,minimize,maximize&quot; the portlet portlet called &quot;myportlet&quot;      
+                In the code sample above, the
+                <code>UserPrincipal</code>
+                identify with the
+                <code>Principal.getName()</code>
+                &quot;theUserPrincipal&quot; has permission to &quot;view&quot; the page called &quot;mypage&quot;, to &quot;view,edit,minimize,maximize&quot;
+                the portlet portlet called &quot;myportlet&quot;
             </p>
             <p>
-                The <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/AccessController.html">AccessController</a>
-                validates a <code>Subject</code> permissions.  For instance, a page permission check would perform the following
-                check:
-                <source><![CDATA[
+                The
+                <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/security/AccessController.html">AccessController</a>
+                validates a
+                <code>Subject</code>
+                permissions. For instance, a page permission check would perform the following check:
+                <source>
+                    <![CDATA[
 PagePermission permission = new PagePermission(path, actions);
 AccessController.checkPermission(permission);                
-                ]]></source>
+                ]]>
+                </source>
             </p>
         </section>
         <section name="Jetspeed JAAS Policy">
             <p>
-                The <code>RdbmsPolicy</code> implements <code>java.security.Policy</code>.  It leverages the 
-                <code>PermissionManager</code> to get the permissions associated with a given <code>Subject</code>
+                The
+                <code>RdbmsPolicy</code>
+                implements
+                <code>java.security.Policy</code>
+                . It leverages the
+                <code>PermissionManager</code>
+                to get the permissions associated with a given
+                <code>Subject</code>
                 principals.
-                <source><![CDATA[
+                <source>
+                    <![CDATA[
 pms.getPermissions(user.getPrincipals());
-                ]]></source>
-                The class diagram below illustrate the association between the <code>RdbmsPolicy</code> and 
-                the <code>PermissionManager</code>.
+                ]]>
+                </source>
+                The class diagram below illustrate the association between the
+                <code>RdbmsPolicy</code>
+                and the
+                <code>PermissionManager</code>
+                .
             </p>
             <p>
-                A good article on custom policies implementation is available on 
-                <a href="http://www-106.ibm.com/developerworks/library/j-jaas/?n-j-442">IBM web site</a>.
+                A good article on custom policies implementation is available on
+                <a href="http://www-106.ibm.com/developerworks/library/j-jaas/?n-j-442">IBM web site</a>
+                .
             </p>
             <p>
-                <img src="images/rdbms-policy-c.gif" border="0"/>
+                <img src="images/rdbms-policy-c.gif" border="0" />
             </p>
             <p>
-                To get more detail about the implementation of the <code>PermissionManager</code>, see 
-                <a href="permission.html">PermissionManager Overview</a>.
+                To get more detail about the implementation of the
+                <code>PermissionManager</code>
+                , see
+                <a href="permission.html">PermissionManager Overview</a>
+                .
             </p>
             <p>
-                <u>Note:</u> The current <code>RdbmsPolicy</code> manages the policies to apply.  It applies <code>RdbmsPolicy</code>
-                in conjunction with the default policy configured in the runtime environment. 
-                Jetspeed 2 should explore providing
-                <a href="http://java.sun.com/j2ee/javaacc/index.html">JACC</a> adapters for its custom policy for
-                specific application servers.
+                <u>Note:</u>
+                The current
+                <code>RdbmsPolicy</code>
+                manages the policies to apply. It applies
+                <code>RdbmsPolicy</code>
+                in conjunction with the default policy configured in the runtime environment. Jetspeed 2 should explore providing
+                <a href="http://java.sun.com/j2ee/javaacc/index.html">JACC</a>
+                adapters for its custom policy for specific application servers.
+            </p>
+        </section>
+        <section name="Authorization Provider and Policy Configuration">
+            <p>
+                The
+                <code>AuthorizationProvider</code>
+                configures the authorization policies to be used by Jetspeed 2 and keeps the list of such policies in the
+                <code>SecurityPolicies</code>
+                singleton. The
+                <code>RdbmsPolicy</code>
+                when getting the permissions for access control will execute its policy as well as all the policies configured in
+                <code>SecurityPolicies</code>
+                . If the
+                <code>AuthorizationProvider</code>
+                was constructed with
+                <code>useDefaultPolicy</code>
+                set to true, the default JDK or application server policy will be applied when getting the permissions.
+            </p>
+            <p>
+                <u>Note:</u>
+                The
+                <code>RbmsPolicy</code>
+                permission check is concerned about the principals associated to the
+                <code>Subject</code>, therefore where performing an access control check, 
+                the check should be performed with the following call:
+                <code>doAsPrivileged(theSubject, anAction, null)</code>.  By passing a null
+                <code>AccessContolContext</code>, the caller is essentially saying: 
+                "I don't care who called me, the only important thing is whether I have permission when associated with the
+                given subject".
             </p>
         </section>
     </body>

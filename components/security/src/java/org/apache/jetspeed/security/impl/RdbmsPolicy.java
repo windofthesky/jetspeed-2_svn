@@ -14,48 +14,61 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.AccessController;
-import java.security.AccessControlContext;
+import java.security.AllPermission;
 import java.security.CodeSource;
-import java.security.Permissions;
+import java.security.Permission;
 import java.security.PermissionCollection;
+import java.security.Permissions;
 import java.security.Policy;
-
-import javax.security.auth.Subject;
+import java.security.Principal;
+import java.security.ProtectionDomain;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SecurityPolicies;
 
 /**
- * <p>Policy implementation using a relational database as persistent datastore.</p>
- * <p>This code was partially inspired from articles from:<br>
+ * <p>
+ * Policy implementation using a relational database as persistent datastore.
+ * </p>
+ * <p>
+ * This code was partially inspired from articles from:<br>
  * <ul>
- *    <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
- *    Extend JAAS for class instance-level authorization.</a></li>
- *    <li><a href="http://www.javageeks.com/Papers/JavaPolicy/index.html">
- *    When "java.policy" Just Isn't Good Enough.</li>
- * </ul></p>
+ * <li><a href="http://www.ibm.com/developerworks/library/j-jaas/"> Extend JAAS for class
+ * instance-level authorization.</a></li>
+ * <li><a href="http://www.javageeks.com/Papers/JavaPolicy/index.html"> When "java.policy" Just
+ * Isn't Good Enough.</li>
+ * </ul>
+ * </p>
+ * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
- *
  */
 public class RdbmsPolicy extends Policy
 {
     private static final Log log = LogFactory.getLog(RdbmsPolicy.class);
 
-    /** <p>Default Policy.</p> */
-    private static String defaultPolicy = "sun.security.provider.PolicyFile";
-
-    /** <p>InternalPermission Manager Service.</p> */
+    /**
+     * <p>
+     * InternalPermission Manager Service.
+     * </p>
+     */
     private PermissionManager pms = null;
 
     /**
-     * <p>Default constructor.</p>
+     * <p>
+     * Default constructor.
+     * </p>
      */
     public RdbmsPolicy(PermissionManager pms)
     {
-        if (log.isDebugEnabled()) log.debug("RdbmsPolicy constructed.");
+        if (log.isDebugEnabled())
+        {
+            log.debug("RdbmsPolicy constructed.");
+        }
         this.pms = pms;
     }
 
@@ -64,97 +77,134 @@ public class RdbmsPolicy extends Policy
      */
     public void refresh()
     {
-        if (log.isDebugEnabled()) log.debug("RdbmsPolicy refresh called.");
+        if (log.isDebugEnabled())
+        {
+            log.debug("RdbmsPolicy refresh called.");
+        }
     }
 
     /**
-     * <p>Get permissions will check for permissions against the configured
-     * RDBMS.  If no permissions is found for the {@link AccessControlContext}
-     * {@link Subject} principals or if the {@link Subject} is null, the default
-     * policy will be used.</p>
-     * <p>The default policy defaults to {@link sun.security.provider.PolicyFile}.
-     * If the system uses a different <code>policy.provider</code>, the default policy
-     * should be set using <code>RdbmsPolicy.setDefaultPolicy()</code> when the
-     * application start/initializes.</p>
-     * @param codeSource The codeSource.
+     * <p>
+     * Check that the permission is implied for the protection domain. This will check for
+     * permissions against the configured RDBMS and all {@link SecurityPolicies} configured through
+     * the AuthorizationProvider.
+     * </p>
+     * <p>
+     * The default policy is by default part of the {@link SecurityPolicies} and will only if
+     * configured through assembly.
+     * </p>
+     * 
+     * @see java.security.Policy#implies(java.security.ProtectionDomain, java.security.Permission)
+     */
+    public boolean implies(ProtectionDomain protectionDomain, Permission permission)
+    {
+        Principal[] principals = protectionDomain.getPrincipals();
+        PermissionCollection perms = new Permissions();
+        boolean permImplied = false;
+        if ((null != principals) && (principals.length > 0))
+        {
+            // We need to authorize java permissions.
+            // Without this check, we get a ClassCircularityError in Tomcat.
+            if (permission.getClass().getName().startsWith("java"))
+            {
+                perms.add(new AllPermission());
+            }
+            else
+            {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Implying permission [class, " + permission.getClass().getName() + "], " + "[name, "
+                            + permission.getName() + "], " + "[actions, " + permission.getActions() + "] for: ");
+                    log.debug("\tCodeSource:" + protectionDomain.getCodeSource().getLocation().getPath());
+                    for (int i = 0; i < principals.length; i++)
+                    {
+                        log.debug("\tPrincipal[" + i + "]: [name, " + principals[i].getName() + "], [class, "
+                                + principals[i].getClass() + "]");
+                    }
+                }
+                perms = pms.getPermissions(Arrays.asList(principals));
+            }
+        }
+        else
+        {
+            // No principal is returned from the subject.
+            // For security check, be sure to use doAsPrivileged(theSubject, anAction, null)...
+            // We grant access when no principal is associated to the subject.
+            perms.add(new AllPermission());
+        }
+        if (null != perms)
+        {
+            permImplied = perms.implies(permission);
+        }
+        return permImplied;
+    }
+
+    /**
+     * @see java.security.Policy#getPermissions(java.security.ProtectionDomain)
+     */
+    public PermissionCollection getPermissions(ProtectionDomain domain)
+    {
+        PermissionCollection otherPerms = new Permissions();
+        if (null != domain)
+        {
+            otherPerms = getPermissions(domain.getCodeSource());
+        }
+        return otherPerms;
+    }
+
+    /**
+     * <p>
+     * The RdbmsPolicy does not protect code source per say, but will return the protected code
+     * source from the other configured policies.
+     * </p>
+     * 
      * @see java.security.Policy#getPermissions(java.security.CodeSource)
      */
     public PermissionCollection getPermissions(CodeSource codeSource)
     {
-        if (log.isDebugEnabled()) log.debug("getPermissions called for '" + codeSource + "'.");
-
-        Permissions perms = null;
-
-        // In the policy, the Subject should come from the context?
-        AccessControlContext context = AccessController.getContext();
-        Subject user = Subject.getSubject(context);
-        if (null != user)
+        if (log.isDebugEnabled())
         {
-            // Add permission associated with the Subject Principals to Permissions.
-            // Get the permissions
-            perms = pms.getPermissions(user.getPrincipals());
+            log.debug("getPermissions called for '" + codeSource + "'.");
         }
-        if (null != perms)
-        {         
-            return perms;
-        }
-        else
-        {
-            // TODO Is there a better way to do this?
-            // If the permission is not found here then delegate it
-            // to the standard java Policy class instance.
-            Policy.setPolicy(RdbmsPolicy.getDefaultPolicy());
-            Policy policy = Policy.getPolicy();
-            policy.refresh();
-            PermissionCollection defaultPerms = policy.getPermissions(codeSource);
-            // Revert back to the current policy.
-            Policy.setPolicy(this);
-            // Return the default permission collection.
-            return defaultPerms;
-        }
+        PermissionCollection otherPerms = getOtherPoliciesPermissions(codeSource);
+
+        return otherPerms;
     }
 
     /**
-     * <p>Utility method to set the default policy when initializing the application
-     * using the security service.</p>
-     * <p>This can be useful if the default java policy is not {@link sun.security.provider.PolicyFile}.
-     * This way the <code>RdbmsPolicy</code> will check credentials against the default policy if no permissions
-     * are returned when checking againt the <code>RdbmsPolicy</code>.</p>
-     * @param policy The default policy.
+     * <p>
+     * Gets all the permissions that should be enforced through the other policies configured.
+     * </p>
+     * 
+     * @param codeSource The CodeSource.
+     * @return A collection of permissions as a {@link PermissionCollection}
      */
-    public static void setDefaultPolicy(Policy policy)
+    private PermissionCollection getOtherPoliciesPermissions(CodeSource codeSource)
     {
-        RdbmsPolicy.defaultPolicy = policy.getClass().getName();
-    }
+        if (log.isDebugEnabled())
+        {
+            log.debug("Checking other policies permissions.");
+        }
+        log.debug("CodeSource: " + codeSource.getLocation().getPath());
 
-    /**
-     * <p>Utility method to get the system default policy.</p>
-     * <p>This can be useful if the default java policy is not {@link sun.security.provider.PolicyFile}.
-     * This way the <code>RdbmsPolicy</code> will check credentials against the default policy if no permissions
-     * are returned when checking againt the <code>RdbmsPolicy</code>.</p>
-     * @return The default policy.
-     */
-    public static Policy getDefaultPolicy()
-    {
-        try
+        List securityPolicies = SecurityPolicies.getInstance().getUsedPolicies();
+        PermissionCollection otherPerms = new Permissions();
+        for (int i = 0; i < securityPolicies.size(); i++)
         {
-            Class policyClass = Class.forName(RdbmsPolicy.defaultPolicy);
-            return (Policy) policyClass.newInstance();
-        }
-        catch (ClassNotFoundException cnfe)
-        {
-            cnfe.printStackTrace();
-        }
-        catch (InstantiationException ie)
-        {
-            ie.printStackTrace();
-        }
-        catch (IllegalAccessException iae)
-        {
-            iae.printStackTrace();
+            Policy currPolicy = (Policy) securityPolicies.get(i);
+            if (!currPolicy.getClass().equals(getClass()))
+            {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Checking policy: " + currPolicy.getClass().getName());
+                }
+                PermissionCollection currPerms = currPolicy.getPermissions(codeSource);
+                SecurityHelper.addPermissions(otherPerms, currPerms);
+            }
         }
 
-        return null;
+        // Return the default permission collection.
+        return otherPerms;
     }
 
 }

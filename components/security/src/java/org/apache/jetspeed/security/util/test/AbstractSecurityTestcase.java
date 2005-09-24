@@ -41,6 +41,7 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  *  
  */
@@ -109,15 +110,9 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
         ums = (UserManager) ctx.getBean("org.apache.jetspeed.security.UserManager");
         gms = (GroupManager) ctx.getBean("org.apache.jetspeed.security.GroupManager");
         rms = (RoleManager) ctx.getBean("org.apache.jetspeed.security.RoleManager");
-        
-        // Login module.
-        //new LoginModuleProxyImpl(ums);
-
-        
+                
         // Authorization.
         pms = (PermissionManager) ctx.getBean("org.apache.jetspeed.security.PermissionManager");
-        //Policy policy = new RdbmsPolicy(pms);
-        //new AuthorizationProviderImpl(policy);
     }
 
     /**

@@ -14,7 +14,10 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Permission;
+import java.security.PermissionCollection;
 import java.security.Principal;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,20 +26,30 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
- * <p>Security helper.</p>
+ * <p>
+ * Security helper.
+ * </p>
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public class SecurityHelper
 {
+    private static final Log log = LogFactory.getLog(SecurityHelper.class);
+
     /**
-     * <p>Given a subject, finds the first principal of the given classe for that subject.
-     * If a principal of the given classe is not found, null is returned.</p>
+     * <p>
+     * Given a subject, finds the first principal of the given classe for that subject. If a
+     * principal of the given classe is not found, null is returned.
+     * </p>
+     * 
      * @param subject The subject supplying the principals.
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
@@ -58,9 +71,12 @@ public class SecurityHelper
     }
 
     /**
-     * <p>Given a subject, finds the first principal of the given classe for that subject.
-     * If a principal of the given classe is not found, then the first
-     * other principal is returned. If the list is empty, null is returned.</p>
+     * <p>
+     * Given a subject, finds the first principal of the given classe for that subject. If a
+     * principal of the given classe is not found, then the first other principal is returned. If
+     * the list is empty, null is returned.
+     * </p>
+     * 
      * @param subject The subject supplying the principals.
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
@@ -88,10 +104,45 @@ public class SecurityHelper
         }
         return principal;
     }
+    
+    /**
+     * <p>
+     * Returns the first matching principal of a given type.
+     * </p>
+     * 
+     * @param principals The array of pricinpals
+     * @param classe The class of Principal
+     * @return The principal.
+     */
+    public static Principal getBestPrincipal(Principal[] principals, Class classe)
+    {
+
+        Principal principal = null;
+        for (int i = 0; i < principals.length; i++)
+        {
+            Principal p = (Principal) principals[i];
+            if (classe.isInstance(p))
+            {
+                principal = p;
+                break;
+            }
+            else
+            {
+                if (principal == null)
+                {
+                    principal = p;
+                }
+            }
+        }
+        return principal;
+    }
 
     /**
-     * <p>Utility method used to retrieve the Preferences API absolute/full
-     * path from a given principal.</p>
+     * <p>
+     * Utility method used to retrieve the Preferences API absolute/full path from a given
+     * principal.
+     * </p>
+     * 
      * @param principal The principal.
      * @return The Preferences absolute/full path.
      */
@@ -117,7 +168,10 @@ public class SecurityHelper
     }
 
     /**
-     * <p>Utility method to create a subject.</p>
+     * <p>
+     * Utility method to create a subject.
+     * </p>
+     * 
      * @param principalName The user principal name.
      * @return The subject.
      */
@@ -128,10 +182,13 @@ public class SecurityHelper
         principals.add(principal);
         return new Subject(true, principals, new HashSet(), new HashSet());
     }
-    
+
     /**
-     * <p>Given a subject, finds all principals of the given classe for that subject.
-     * If no principals of the given class is not found, null is returned.</p>
+     * <p>
+     * Given a subject, finds all principals of the given classe for that subject. If no principals
+     * of the given class is not found, null is returned.
+     * </p>
+     * 
      * @param subject The subject supplying the principals.
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return A List of all principals of type Principal matching a principal classe parameter.
@@ -150,10 +207,12 @@ public class SecurityHelper
         }
         return result;
     }
-    
-    /** 
-     * <p>Given a subject, find the (first) PasswordCredential from the
-     * private credentials</p>
+
+    /**
+     * <p>
+     * Given a subject, find the (first) PasswordCredential from the private credentials
+     * </p>
+     * 
      * @param subject The subject
      * @return the PasswordCredential or null if not found.
      */
@@ -165,9 +224,41 @@ public class SecurityHelper
             Object o = iter.next();
             if (o instanceof PasswordCredential)
             {
-                return (PasswordCredential)o;
+                return (PasswordCredential) o;
             }
         }
         return null;
+    }
+
+    /**
+     * <p>
+     * Adds a collection of permsToAdd to a collection of existing permissions.
+     * </p>
+     * 
+     * @param perms The existing permissions.
+     * @param permsToAdd The permissions to add.
+     */
+    public static void addPermissions(PermissionCollection perms, PermissionCollection permsToAdd)
+    {
+        int permsAdded = 0;
+        if (null != permsToAdd)
+        {
+            Enumeration permsToAddEnum = permsToAdd.elements();
+            while (permsToAddEnum.hasMoreElements())
+            {
+                permsAdded++;
+                Permission currPerm = (Permission) permsToAddEnum.nextElement();
+                perms.add(currPerm);
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Adding the permission: [class, " + currPerm.getClass().getName() + "], " + "[name, "
+                            + currPerm.getName() + "], " + "[actions, " + currPerm.getActions() + "]");
+                }
+            }
+        }
+        if ((permsAdded == 0) && log.isDebugEnabled())
+        {
+            log.debug("No permissions to add...");
+        }
     }
 }

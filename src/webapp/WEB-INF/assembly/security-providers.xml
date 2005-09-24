@@ -55,7 +55,9 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.AuthorizationProvider" 
   	   class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>   
+  	   <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>
+  	   <!-- Does not use the default policy as a default behavior -->
+  	   <constructor-arg index="1"><value>false</value></constructor-arg>   
   </bean>
 
 </beans>

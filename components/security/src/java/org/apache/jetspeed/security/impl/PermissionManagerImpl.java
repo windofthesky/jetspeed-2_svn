@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RolePrincipal;
@@ -68,6 +70,8 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  */
 public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implements PermissionManager 
 {
+    private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
+    
     /**
      * @see org.apache.jetspeed.security.PermissionManager#getPermissions(java.security.Principal)
      */
@@ -168,6 +172,11 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                 permission = (Permission) permissionConstructor.newInstance(initArgs);
                 if(!Collections.list(permissions.elements()).contains(permission))
                 {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Adding permimssion: [class, " + permission.getClass().getName() + "], " + "[name, "
+                                + permission.getName() + "], " + "[actions, " + permission.getActions() + "]");
+                    }                   
                     permissions.add(permission);
                 }
             }
@@ -273,7 +282,6 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         ArgUtil.notNull(new Object[] { fullPath, permission }, new String[] { "fullPath", "permission" },
                 "grantPermission(java.security.Principal, java.security.Permission)");
 
-        boolean createPermission = true;
         Collection internalPermissions = new ArrayList();
 
         InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);

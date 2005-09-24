@@ -16,6 +16,7 @@ package org.apache.jetspeed.security;
 
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.Policy;
 import java.security.PrivilegedAction;
 
 import javax.security.auth.Subject;
@@ -34,7 +35,11 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestRdbmsPolicy extends AbstractSecurityTestcase
 {
-    /** <p>The JAAS login context.</p> */
+    /**
+     * <p>
+     * The JAAS login context.
+     * </p>
+     */
     private LoginContext loginContext = null;
 
     /**
@@ -42,7 +47,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
      */
     public void setUp() throws Exception
     {
-        super.setUp();      
+        super.setUp();
         initUser();
 
         // Let's login in.
@@ -66,7 +71,6 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        
 
         // Logout.
         try
@@ -82,26 +86,33 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         super.tearDown();
     }
 
-   public static Test suite()
+    public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestRdbmsPolicy.class);
     }
-    
+
     /**
-     * <p>Executing this test requires adding an entry to java.policy.</p>
-     * <p>A possible entry would be to grant for all principals:</p>
+     * <p>
+     * Executing this test requires adding an entry to java.policy.
+     * </p>
+     * <p>
+     * A possible entry would be to grant for all principals:
+     * </p>
+     * 
      * <pre><code>
-     * grant
-     * {
-     *     permission org.apache.jetspeed.security.auth.PortletPermission "myportlet", "view";
-     * }
+     *  grant
+     *  {
+     *      permission org.apache.jetspeed.security.auth.PortletPermission &quot;myportlet&quot;, &quot;view&quot;;
+     *  }
      * </code></pre>
-     * <p>Such an entry would also test the Rdbms defaulting behavior if no
-     * entry is provided in the database for the tested Subject InternalUserPrincipal.</p>
+     * 
+     * <p>
+     * Such an entry would also test the Rdbms defaulting behavior if no entry is provided in the
+     * database for the tested Subject InternalUserPrincipal.
+     * </p>
      */
-    /*
-    public void testPermissionWithSubjectInContructor()
+    /*public void testPermissionWithSubjectInContructor()
     {
         // InternalPermission should be granted.
         PortletPermission perm1 = new PortletPermission("myportlet", "view", loginContext.getSubject());
@@ -113,7 +124,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         {
             assertTrue("did not authorize view permission on the portlet.", false);
         }
-    
+
         // InternalPermission should be denied.
         PortletPermission perm2 = new PortletPermission("myportlet", "edit", loginContext.getSubject());
         try
@@ -124,34 +135,42 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         catch (AccessControlException ace)
         {
         }
-    
+
         // Subject is omitted. InternalPermission should be denied.
         PortletPermission perm3 = new PortletPermission("myportlet", "view");
         try
         {
             AccessController.checkPermission(perm3);
-            //assertTrue("did not deny permission with no subject passed.", false);
+            // assertTrue("did not deny permission with no subject passed.", false);
         }
         catch (AccessControlException ace)
         {
         }
-    }
-    */
-
+    }*/
+    
+    /**
+     * <p>
+     * Test the policy with the default spring setting where the default underlying policy is not
+     * applied.
+     * </p>
+     */
     public void testPermissionWithSubjectInAccessControlContext()
     {
+        
         // InternalPermission should be granted.
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            Subject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
                     PortletPermission perm1 = new PortletPermission("myportlet", "view");
+                    System.out.println("\t\t[TestRdbmsPolicy] Check access control for permission: [myportlet, view]");
+                    System.out.println("\t\t                  with policy: " + Policy.getPolicy().getClass().getName());
                     AccessController.checkPermission(perm1);
                     return null;
                 }
-            });
+            }, null);
         }
         catch (AccessControlException ace)
         {
@@ -161,24 +180,41 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         // Should be denied.
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            Subject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
                     PortletPermission perm2 = new PortletPermission("myportlet", "secure");
+                    System.out.println("\t\t[TestRdbmsPolicy] Check access control for permission: [myportlet, secure]");
+                    System.out.println("\t\t                  with policy: " + Policy.getPolicy().getClass().getName());
                     AccessController.checkPermission(perm2);
                     return null;
                 }
-            });
-            assertTrue("did not deny delete permission on the portlet.", false);
+            }, null);
+            assertTrue("did not deny secure permission on the portlet.", false);
         }
         catch (AccessControlException ace)
         {
         }
     }
+    
+    /**
+     * <p>
+     * Test the policy with the default policy being evaluated as well.
+     * </p>
+     */
+    public void testPermissionWithSubjectInAccessControlContextAndDefaultPolicy()
+    {
+        System.out.println("\n\n\t\t[TestRdbmsPolicy] Test with default Policy enabled.");
+        AuthorizationProvider atzProvider = (AuthorizationProvider) ctx.getBean("org.apache.jetspeed.security.AuthorizationProvider");
+        atzProvider.useDefaultPolicy(true);
+        testPermissionWithSubjectInAccessControlContext();
+    }
 
     /**
-     * <p>Initialize user test object.</p>
+     * <p>
+     * Initialize user test object.
+     * </p>
      */
     protected void initUser()
     {
@@ -196,22 +232,24 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         {
             pms.addPermission(perm1);
             pms.addPermission(perm2);
-            
+
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
         }
         catch (SecurityException sex)
         {
             sex.printStackTrace();
-        }      
+        }
     }
 
     /**
-     * <p>Destroy user test object.</p>
+     * <p>
+     * Destroy user test object.
+     * </p>
      */
     protected void destroyUser() throws Exception
     {
-        ums.removeUser("anon");       
+        ums.removeUser("anon");
         // Remove permissions.
         PortletPermission perm1 = new PortletPermission("myportlet", "view");
         PortletPermission perm2 = new PortletPermission("myportlet", "view, edit");

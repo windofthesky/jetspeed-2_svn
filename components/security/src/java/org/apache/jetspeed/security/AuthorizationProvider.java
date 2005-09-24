@@ -18,7 +18,9 @@ import java.util.List;
 
 /**
  * <p>
- * Configures the policies.
+ * Configures the policies.  Instantiates the <code>SecurityPolicies</code> with the security policies
+ * that need to be enforced.  It will add the default policy already configured as well as the engine policies
+ * used to enforce permission checks.
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
@@ -34,4 +36,13 @@ public interface AuthorizationProvider
      */
     List getPolicies();
     
+    
+    /**
+     * <p>
+     * Whether to use the default policy or not in addition to the Policies configured for the AuthorizationProvider.
+     * </p>
+     * 
+     * @param whetherToUseDefaultPolicy Boolean false: does not use the default policy, true: does.
+     */
+    void useDefaultPolicy(boolean whetherToUseDefaultPolicy);
 }

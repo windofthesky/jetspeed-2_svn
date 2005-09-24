@@ -72,7 +72,7 @@
                     </li>
                     <li>
                         <code>AuthenticationProvider</code>
-                        : Configure the authentication providers for the current portal implementation. The example below configures the default authenticator
+                        : Configures the authentication providers for the current portal implementation. The example below configures the default authenticator
                         that uses the RDBMS to manage/store user information.
                         <source>
                             <![CDATA[
@@ -87,6 +87,25 @@
    <constructor-arg index="4">
       <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/>
    </constructor-arg>
+</bean>]]>
+                        </source>
+                    </li>
+                    <li>
+                        <code>AuthorizationProvider</code>
+                        : Configures the policies and instantiates the
+                        <code>SecurityPolicies</code>
+                        that are used for enforcing permissions.  By default, Jetspeed 2 does not load any other 
+                        security policies that may have been configured.  In order to use default policies, set
+                        <code>useDefaultPolicy</code> to <code>true</code>
+                        <source>
+                            <![CDATA[
+<bean id="org.apache.jetspeed.security.AuthorizationProvider" 
+  	  class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl">  	   
+    <constructor-arg index="0">
+        <ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/>
+    </constructor-arg>
+    <!-- Does not use the default policy as a default behavior -->
+    <constructor-arg index="1"><value>false</value></constructor-arg>   
 </bean>]]>
                         </source>
                     </li>

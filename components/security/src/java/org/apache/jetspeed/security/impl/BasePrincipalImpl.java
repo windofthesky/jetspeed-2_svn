@@ -17,16 +17,29 @@ package org.apache.jetspeed.security.impl;
 import org.apache.jetspeed.security.BasePrincipal;
 
 /**
- * <p>{@link BasePrincipal} interface implementation.</p>
+ * <p>
+ * {@link BasePrincipal} interface implementation.
+ * </p>
+ * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class BasePrincipalImpl implements BasePrincipal
 {
+    
+    /** The version uid. */
+    private static final long serialVersionUID = 5687385387290144541L;
+
+    /** The principal name. */
     private final String name;
+
+    /** The full path. */
     private final String fullPath;
 
     /**
-     * <p>Principal constructor given a name and preferences root.</p>
+     * <p>
+     * Principal constructor given a name and preferences root.
+     * </p>
+     * 
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
      */
@@ -59,9 +72,12 @@ public class BasePrincipalImpl implements BasePrincipal
     {
         return this.name.hashCode();
     }
-    
+
     /**
-     * <p>Returns a string representation of this principal.</p>
+     * <p>
+     * Returns a string representation of this principal.
+     * </p>
+     * 
      * @return A string representation of this principal.
      */
     public String toString()
@@ -70,10 +86,17 @@ public class BasePrincipalImpl implements BasePrincipal
     }
 
     /**
-     * <p>Gets the principal implementation full path from the principal name.</p>
-     * <p>Hierarchical principal names should follow: {principal}.{subprincipal}.
-     * "." is used as the separator for hierarchical elements.</p>
-     * <p>The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.</p>        
+     * <p>
+     * Gets the principal implementation full path from the principal name.
+     * </p>
+     * <p>
+     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
+     * separator for hierarchical elements.
+     * </p>
+     * <p>
+     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
+     * </p>
+     * 
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
      * @return The preferences full path / principal name.
@@ -89,10 +112,17 @@ public class BasePrincipalImpl implements BasePrincipal
     }
 
     /**
-     * <p>Gets the principal name from the principal implementation full path.</p>
-     * <p>Hierarchical principal names should follow: {principal}.{subprincipal}.
-     * "." is used as the separator for hierarchical elements.</p>
-     * <p>The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.</p>        
+     * <p>
+     * Gets the principal name from the principal implementation full path.
+     * </p>
+     * <p>
+     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
+     * separator for hierarchical elements.
+     * </p>
+     * <p>
+     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
+     * </p>
+     * 
      * @param fullPath The principal full path.
      * @param prefsRoot The preferences root node.
      * @return The principal name.
@@ -116,20 +146,20 @@ public class BasePrincipalImpl implements BasePrincipal
     }
 
     private boolean enabled = true;
-    
-    /** 
+
+    /**
      * @see org.apache.jetspeed.security.BasePrincipal#isEnabled()
      */
     public boolean isEnabled()
     {
         return enabled;
     }
-    
-    /** 
+
+    /**
      * @see org.apache.jetspeed.security.BasePrincipal#setEnabled(boolean)
      */
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
-    }    
+    }
 }

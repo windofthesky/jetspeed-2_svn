@@ -21,8 +21,8 @@ limitations under the License.
   <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 
   	   class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl"
   >
-     <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	     	   
-     <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
+     <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	     	   
+     <constructor-arg index="1"><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
   </bean>
 
 
