@@ -27,7 +27,7 @@ limitations under the License.
 <c:choose>
 
   <c:when test="${empty renderRequest.userPrincipal}">
-	  <fmt:message key="userinfo.label.LoginToSeeTheUserAttributesAvailable"/>
+	 <p><fmt:message key="userinfo.label.LoginToSeeTheUserAttributesAvailable"/></p>
   </c:when>
 
   <c:otherwise>
@@ -76,4 +76,4 @@ limitations under the License.
 
 </c:choose>
 <br>
-<fmt:message key="userinfo.label.ForHelpOnUserAttributesConfigurationSelectTheHelpIcon"/>
+<p><fmt:message key="userinfo.label.ForHelpOnUserAttributesConfigurationSelectTheHelpIcon"/></p>
