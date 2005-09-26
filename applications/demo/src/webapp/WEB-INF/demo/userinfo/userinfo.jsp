@@ -27,12 +27,12 @@ limitations under the License.
 <c:choose>
 
   <c:when test="${empty renderRequest.userPrincipal}">
-	 <p><fmt:message key="userinfo.label.LoginToSeeTheUserAttributesAvailable"/></p>
+	  <fmt:message key="userinfo.label.LoginToSeeTheUserAttributesAvailable"/>
   </c:when>
 
   <c:otherwise>
-    <b><fmt:message key="userinfo.label.UserAttributeForUser"/></b> <c:out value='${renderRequest.userPrincipal.name}'/><br>
-    <br>
+    <b><fmt:message key="userinfo.label.UserAttributeForUser"/></b> <c:out value='${renderRequest.userPrincipal.name}'/><br />
+    <br />
 
 	<table border="1">
       <tr>
@@ -52,7 +52,7 @@ limitations under the License.
 
     </table>    
 
-	<br>
+	<br />
 	
 	<table border="1">
       <tr>
@@ -75,5 +75,5 @@ limitations under the License.
   </c:otherwise>
 
 </c:choose>
-<br>
-<p><fmt:message key="userinfo.label.ForHelpOnUserAttributesConfigurationSelectTheHelpIcon"/></p>
+<br />
+<fmt:message key="userinfo.label.ForHelpOnUserAttributesConfigurationSelectTheHelpIcon"/>
