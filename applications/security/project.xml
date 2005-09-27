@@ -163,19 +163,19 @@ limitations under the License.
       <id>log4j</id>
       <version>${log4j.version}</version>
       <properties>
-        <war.bundle>true</war.bundle>
+        <war.bundle>${log4j.include}</war.bundle>
       </properties>
     </dependency>  
     
     <dependency>
-	    <id>myfaces:myfaces</id>
+	    <id>myfaces:myfaces-impl</id>
 	    <version>${myfaces.version}</version>
 	    <properties>
 			<war.bundle>true</war.bundle>
 		</properties>
     </dependency>
 	<dependency>
-	    <id>myfaces:myfaces-jsf-api</id>
+	    <id>myfaces:myfaces-api</id>
 	    <version>${myfaces.version}</version>
 	    <properties>
 			<war.bundle>true</war.bundle>
@@ -195,7 +195,7 @@ limitations under the License.
       <version>${commons.logging.version}</version>
       <url>http://jakarta.apache.org/commons/logging.html</url>
       <properties>
-        <war.bundle>true</war.bundle>
+        <war.bundle>${commons.logging.include}</war.bundle>
       </properties>
     </dependency>    
     <dependency>
