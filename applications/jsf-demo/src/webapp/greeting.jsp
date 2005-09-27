@@ -29,11 +29,12 @@ limitations under the License.
      <h:commandButton id="submit" action="success" value="Submit" />
          <p>
      <h:message style="color: red; font-family: 'New Century Schoolbook', serif; font-style: oblique; text-decoration: overline" id="errors1" for="userNo"/>
+         </p>
 
-    </h:form>
+     </h:form>
     
     <h2>Wanna see a tree?</h2>
-    <br>
+    <br />
     <h:commandLink id="treeLink" action="treeView">
         <h:outputText value="Click Here for Tree"/>
     </h:commandLink>

@@ -21,7 +21,7 @@ limitations under the License.
     <h:graphicImage id="waveImg" url="/wave.med.gif" />
     <h2><h:outputText id="result" 
     			value="#{UserNumberBean.response}"/></h2>   
-    <h:commandButton id="back" value="Back" action="success"/><p>
+    <h:commandButton id="back" value="Back" action="success"/>
 
 </h:form>
 </f:view>

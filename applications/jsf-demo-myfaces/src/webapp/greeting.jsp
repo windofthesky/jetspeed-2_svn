@@ -29,6 +29,7 @@ limitations under the License.
      <h:commandButton id="submit" action="success" value="Submit" />
          <p>
      <h:message style="color: red; font-family: 'New Century Schoolbook', serif; font-style: oblique; text-decoration: overline" id="errors1" for="userNo"/>
+         </p>
 
     </h:form>
     
