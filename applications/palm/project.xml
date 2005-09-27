@@ -106,19 +106,19 @@ limitations under the License.
       
       <dependency>
           <id>log4j</id>
-          <version>1.2.8</version>
+          <version>${log4j.version}</version>
           <type>jar</type>
           <properties>
-              <war.bundle>true</war.bundle>
+              <war.bundle>${log4j.include}</war.bundle>
           </properties>
       </dependency>
       <dependency>
           <id>commons-logging</id>
-          <version>1.0.3</version>
+          <version>${commons.logging.version}</version>
           <type>jar</type>
           <url>http://jakarta.apache.org/commons/logging.html</url>
           <properties>
-              <war.bundle>true</war.bundle>
+              <war.bundle>${commons.logging.include}</war.bundle>
           </properties>
       </dependency>
     </dependencies>

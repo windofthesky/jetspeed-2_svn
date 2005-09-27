@@ -90,7 +90,7 @@ limitations under the License.
             <version>${commons.logging.version}</version>
             <type>jar</type>
             <properties>
-                <war.bundle>true</war.bundle>
+                <war.bundle>${commons.logging.include}</war.bundle>
             </properties>
         </dependency>
 		<dependency>
