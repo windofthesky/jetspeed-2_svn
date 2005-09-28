@@ -1,5 +1,6 @@
 package org.apache.jetspeed.om.page.psml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -432,7 +433,7 @@ public class ContentFragmentImpl implements ContentFragment
     }
     
     
-    protected final class ContentFragmentList implements List
+    protected final class ContentFragmentList implements List, Serializable
     {
         private List baseList = fragment.getFragments();
 
