@@ -68,11 +68,64 @@
         <dependency>
             <id>jetspeed2:jetspeed-profiler</id>
             <version>${jetspeed.version}</version>
-        </dependency>
+        </dependency>        
         <!-- Testing only -->
+        <dependency>
+            <id>jetspeed2:jetspeed-portal-site</id>
+            <version>${jetspeed.version}</version>
+        </dependency>
+        <dependency>
+          <id>jetspeed-cm</id>
+          <groupId>jetspeed2</groupId>
+          <version>${jetspeed.version}</version>
+        </dependency>  	  	                
         <dependency>
             <id>jetspeed2:jetspeed-rdbms</id>
             <version>${jetspeed.version}</version>
         </dependency>
     </dependencies>
+    
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+	<unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+
+        <unitTest>
+            <resources>
+                <resource>
+                    <directory>${basedir}/src/test</directory>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                </resource>
+                <resource>
+                    <directory>${basedir}/src/java</directory>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                        <exclude>**/JETSPEED-INF/**</exclude>
+                    </excludes>
+                </resource>
+                <resource>
+                    <directory>${basedir}/../../etc/log4j</directory>
+                </resource>
+                <resource>
+                    <directory>${basedir}/../../etc/db-ojb</directory>
+                </resource>
+                <resource>
+                    <directory>${basedir}/../../src/webapp/WEB-INF/assembly</directory>
+                </resource>
+            </resources>
+        </unitTest>
+    
+    
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    
+  </build>
+    
 </project>

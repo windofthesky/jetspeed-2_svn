@@ -16,13 +16,11 @@
 package org.apache.jetspeed.page.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
@@ -35,10 +33,8 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
-import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * DatabasePageManagerService
@@ -46,32 +42,23 @@ import org.apache.jetspeed.page.document.NodeSet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class DatabasePageManager extends AbstractPageManager implements PageManager
+public class OldDatabasePageManager extends AbstractPageManager implements PageManager
 {
     protected final static Log log = LogFactory.getLog(DatabasePageManager.class);
-    private PersistenceStore persistenceStore;
+    
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
 
     /**
-     * 
-     * @param pContainer
-     *            PersistenceStoreContainer that will be used to look up the
-     *            <code>PersistenceStore</code> to use for persistence
-     *            operations
      * @param generator
      *            ID generator that will be used to generate unique page ids
-     * @param storeName
-     *            Name of the <code>PersistenceStore</code> that will be used
-     *            by the
-     *            <code>PersistenceStoreContainer.getStoreForThread(String)</code>
-     *            method to obtain the current persistence for this thread.
      */
-    public DatabasePageManager( PersistenceStore persistenceStore, IdGenerator generator )
+    public OldDatabasePageManager(
+            IdGenerator generator, 
+            boolean isPermissionsSecurity, 
+            boolean isConstraintsSecurity)
     {
-        super(generator, false, false);
-        this.persistenceStore = persistenceStore;
-
+        super(generator, isPermissionsSecurity, isConstraintsSecurity);
     }
 
     /*
@@ -87,18 +74,18 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
         else
         {
-            Filter filter = persistenceStore.newFilter();
-            filter.addEqualTo("id", id);
-            Object q = persistenceStore.newQuery(pageClass, filter);
-            persistenceStore.getTransaction().begin();
-            Page page = (Page) persistenceStore.getObjectByQuery(q);
-            if (page == null)
-            {
-                throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
-            }
+//            Filter filter = persistenceStore.newFilter();
+//            filter.addEqualTo("id", id);
+//            Object q = persistenceStore.newQuery(pageClass, filter);
+//            persistenceStore.getTransaction().begin();
+//            Page page = (Page) persistenceStore.getObjectByQuery(q);
+//            if (page == null)
+//            {
+//                throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
+//            }
 
-            pageCache.put(id, page);
-            return page;
+//            pageCache.put(id, page);
+            return null;
         }
     }
 
@@ -134,9 +121,9 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         // update page
         try
         {
-            persistenceStore.getTransaction().begin();
-            persistenceStore.lockForWrite(page);
-            persistenceStore.getTransaction().commit();
+//            persistenceStore.getTransaction().begin();
+//            persistenceStore.lockForWrite(page);
+//            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {
@@ -166,9 +153,9 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
         try
         {
-            persistenceStore.getTransaction().begin();
-            persistenceStore.deletePersistent(page);
-            persistenceStore.getTransaction().commit();
+//            persistenceStore.getTransaction().begin();
+//            persistenceStore.deletePersistent(page);
+//            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {

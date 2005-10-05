@@ -16,7 +16,7 @@
 -->
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define">
 
-    <property name='testcase' value='org.apache.jetspeed.components.portletentity.TestPortletEntityAccessComponent' />
+    <property name='testcase' value='org.apache.jetspeed.page.TestDatabasePageManager' />
 
     <preGoal name="test:test">
         <copy todir="target/testdata">
