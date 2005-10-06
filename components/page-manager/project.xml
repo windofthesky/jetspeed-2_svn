@@ -71,10 +71,6 @@
         </dependency>        
         <!-- Testing only -->
         <dependency>
-            <id>jetspeed2:jetspeed-portal-site</id>
-            <version>${jetspeed.version}</version>
-        </dependency>
-        <dependency>
           <id>jetspeed-cm</id>
           <groupId>jetspeed2</groupId>
           <version>${jetspeed.version}</version>
