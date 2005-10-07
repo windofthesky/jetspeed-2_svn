@@ -136,6 +136,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         }
 
                         // override menu options with visible folder contents
+                        // or create empty menu if no contents exist
                         List folderChildren = null;
                         try
                         {
@@ -151,6 +152,10 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         {
                             overrideOptionProxies = folderChildren;
                         }
+                        else
+                        {
+                            return;
+                        }
                     }
                     else
                     {
@@ -159,11 +164,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         overrideOptionProxies.add(optionProxy);
                     }
                     
-                    if (overrideOptionProxies != null)
-                    {
-                        // set relative element flag if options path is relative
-                        elementRelative = (elementRelative || !options.startsWith(Folder.PATH_SEPARATOR));
-                    }
+                    // set relative element flag if options path is relative
+                    this.elementRelative = (this.elementRelative || !options.startsWith(Folder.PATH_SEPARATOR));
                 }
 
                 // menu defined only with menu definition options
@@ -273,7 +275,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         appendMenuElement(nestedMenu, separatedElements);
 
                         // set relative element flag if nested menu is relative
-                        elementRelative = (elementRelative || nestedMenu.isElementRelative());
+                        this.elementRelative = (this.elementRelative || nestedMenu.isElementRelative());
                     }
                     else if (menuElement instanceof MenuIncludeDefinition)
                     {
@@ -383,7 +385,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                 }
 
                                 // set relative element flag if included menu is relative
-                                elementRelative = (elementRelative || includeMenu.isElementRelative());
+                                this.elementRelative = (this.elementRelative || includeMenu.isElementRelative());
                             }
                         }
                     }
@@ -418,7 +420,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                     removeMenuElements(excludeMenu.getElements(), separatedElements);
 
                                     // set relative element flag if excluded menu is relative
-                                    elementRelative = (elementRelative || excludeMenu.isElementRelative());
+                                    this.elementRelative = (this.elementRelative || excludeMenu.isElementRelative());
                                 }
                             }
                         }
@@ -633,7 +635,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     }
                 }
 
-                // retrun if no proxies available
+                // return if no proxies available
                 if (elementProxies == null)
                 {
                     return null;

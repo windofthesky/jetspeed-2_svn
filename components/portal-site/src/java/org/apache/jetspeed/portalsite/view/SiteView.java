@@ -751,8 +751,8 @@ public class SiteView
                     if (children != null)
                     {
                         Node node = children.get(currentPath);
-                        if ((node != null) && (!onlyViewable || isProxyViewable(node)) &&
-                            (!onlyVisible || !node.isHidden() || (node == currentPage)))
+                        if ((node != null) && (!onlyVisible || !node.isHidden() || (node == currentPage)) &&
+                            (!onlyViewable || isProxyViewable(node, onlyVisible)))
                         {
                             return node;
                         }
@@ -770,7 +770,8 @@ public class SiteView
 
         // path maps to current folder; return if viewable/visible
         // or visibility not required
-        if ((!onlyViewable || isProxyViewable(currentFolder)) && (!onlyVisible || !currentFolder.isHidden()))
+        if ((!onlyVisible || !currentFolder.isHidden()) &&
+            (!onlyViewable || isProxyViewable(currentFolder, onlyVisible)))
         {
             return currentFolder;
         }
@@ -970,8 +971,8 @@ public class SiteView
                                 while (childrenIter.hasNext())
                                 {
                                     Node child = (Node)childrenIter.next(); 
-                                    if ((!onlyViewable || isProxyViewable(child)) &&
-                                        (!onlyVisible || !child.isHidden() || (child == currentPage)))
+                                    if ((!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                                        (!onlyViewable || isProxyViewable(child, onlyVisible)))
                                     {
                                         if (proxies == null)
                                         {
@@ -989,8 +990,8 @@ public class SiteView
                             // node proxy; return null if not found or not
                             // viewable and visiblity is required
                             Node child = children.get(currentRegexpPath);
-                            if ((child != null) && (!onlyViewable || isProxyViewable(child)) &&
-                                (!onlyVisible || !child.isHidden() || (child == currentPage)))
+                            if ((child != null) && (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                                (!onlyViewable || isProxyViewable(child, onlyVisible)))
                             {
                                 List proxies = new ArrayList(1);
                                 proxies.add(currentFolder);
@@ -1014,7 +1015,8 @@ public class SiteView
 
         // path maps to current folder; return if viewable/visible
         // or visibility not required
-        if ((!onlyViewable || isProxyViewable(currentFolder)) && (!onlyVisible || !currentFolder.isHidden()))
+        if ((!onlyVisible || !currentFolder.isHidden()) &&
+            (!onlyViewable || isProxyViewable(currentFolder, onlyVisible)))
         {
             List proxies = new ArrayList(1);
             proxies.add(currentFolder);
@@ -1081,15 +1083,17 @@ public class SiteView
     }
 
     /**
-     * isProxyViewable - tests for node proxy visibilty in view
+     * isProxyViewable - tests for node proxy visibility in view
      *
      * @param nodeProxy test node proxy
+     * @param onlyVisible nodes required to be visible
      * @return - viewable flag
      */
-    private static boolean isProxyViewable(Node nodeProxy)
+    private static boolean isProxyViewable(Node nodeProxy, boolean onlyVisible)
     {
         // pages and links are always considered viewable;
-        // folders must be tested for viewable child nodes
+        // folders must be tested for viewable and visibile
+        // child nodes
         if (nodeProxy instanceof Folder)
         {
             try
@@ -1100,7 +1104,8 @@ public class SiteView
                     Iterator childrenIter = children.iterator();
                     while (childrenIter.hasNext())
                     {
-                        if (isProxyViewable((Node)childrenIter.next()))
+                        Node child = (Node)childrenIter.next();
+                        if ((!onlyVisible || !child.isHidden()) && isProxyViewable(child, onlyVisible))
                         {
                             return true;
                         }
