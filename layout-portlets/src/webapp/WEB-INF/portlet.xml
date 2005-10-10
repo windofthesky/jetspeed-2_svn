@@ -165,6 +165,43 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityThreeColumnsTable">
+    <portlet-name>VelocityThreeColumnsTable</portlet-name>
+    <display-name>Three Columns Layout Using Velocity Tables</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>tcolumns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>3</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>33%,33%,33%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>ThreeColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>VelocityThreeColumns</title>
+      <short-title>ThreeColumns</short-title>
+    </portlet-info>
+</portlet>
+
 <portlet id="VelocityOneColumnNoActions">
     <portlet-name>VelocityOneColumnNoActions</portlet-name>
     <display-name>One Column Layout Using Velocity with No Page Actions allowed</display-name>
