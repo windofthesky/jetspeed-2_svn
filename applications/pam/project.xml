@@ -31,14 +31,14 @@ limitations under the License.
         <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/pam/</url>
     </repository>
     <dependencies>
-		<dependency>
-		  <id>commons-validator</id>
-		  <version>1.1.3</version>
-		  <url>http://jakarta.apache.org/commons/validator/</url>
-		  <properties>
-			<war.bundle>true</war.bundle>
-		  </properties>    
-		</dependency>
+                <dependency>
+                  <id>commons-validator</id>
+                  <version>1.1.3</version>
+                  <url>http://jakarta.apache.org/commons/validator/</url>
+                  <properties>
+                        <war.bundle>true</war.bundle>
+                  </properties>    
+                </dependency>
         <dependency>
             <id>jetspeed2:jetspeed-api</id>  
             <version>${jetspeed.version}</version>
@@ -49,23 +49,23 @@ limitations under the License.
         </dependency>
       
         <!-- Pluto Container -->
-		<dependency>
-		  <id>pluto</id>
-		  <version>${pluto.version}</version>
-		  <type>jar</type>
-		  <properties>
-		    <war.bundle>false</war.bundle>
-		  </properties>
-		</dependency>
+                <dependency>
+                  <id>pluto</id>
+                  <version>${pluto.version}</version>
+                  <type>jar</type>
+                  <properties>
+                    <war.bundle>false</war.bundle>
+                  </properties>
+                </dependency>
 
-	    <dependency>
-	        <id>portals-gems</id>
-	        <version>${jetspeed.version}</version>
-	        <type>jar</type>
-	        <properties>
-	            <war.bundle>true</war.bundle>
-	        </properties>
-	    </dependency>
+            <dependency>
+                <id>portals-gems</id>
+                <version>${jetspeed.version}</version>
+                <type>jar</type>
+                <properties>
+                    <war.bundle>true</war.bundle>
+                </properties>
+            </dependency>
       
         <dependency>
             <id>portlet-api</id>
@@ -141,28 +141,35 @@ limitations under the License.
             </properties>
         </dependency>
         
-	    <dependency>
-		    <id>myfaces:myfaces-impl</id>
-		    <version>${myfaces.version}</version>
-		    <properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-	    </dependency>
-		<dependency>
-		    <id>myfaces:myfaces-api</id>
-		    <version>${myfaces.version}</version>
-		    <properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-		</dependency>
-        
-	    <dependency>
-		    <id>portals-bridges:portals-bridges-jsf</id>
-		    <version>${portals.bridges.jsf.version}</version>
-		    <properties>
-				<war.bundle>true</war.bundle>
-		    </properties>
-	    </dependency>
+        <dependency>
+            <id>myfaces:myfaces-impl</id>
+	    <version>${myfaces.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>myfaces:myfaces-api</id>
+            <version>${myfaces.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+	<dependency>
+            <id>myfaces:tomahawk</id>
+            <version>${myfaces.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+
+        <dependency>
+            <id>portals-bridges:portals-bridges-jsf</id>
+            <version>${portals.bridges.jsf.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
         
         <dependency>
             <id>commons-el</id>
@@ -208,51 +215,51 @@ limitations under the License.
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-	    <dependency>
-	      <id>portals-bridges:portals-bridges-frameworks</id>
-	      <version>${portals.bridges.frameworks.version}</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>	
-	      <id>portals-bridges:portals-bridges-common</id>
-	      <version>${portals.bridges.common.version}</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>	
-	    <dependency>
-	      <id>springframework:spring</id>
-	      <version>${spring.version}</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency> 
+            <dependency>
+              <id>portals-bridges:portals-bridges-frameworks</id>
+              <version>${portals.bridges.frameworks.version}</version>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>
+            </dependency>
+            <dependency>        
+              <id>portals-bridges:portals-bridges-common</id>
+              <version>${portals.bridges.common.version}</version>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>
+            </dependency>       
+            <dependency>
+              <id>springframework:spring</id>
+              <version>${spring.version}</version>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>
+            </dependency> 
 
-	    <dependency>
-	      <id>velocity</id>
-	      <version>1.4</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>      
-	    </dependency>
-	    <dependency>
-	      <id>velocity-tools</id>
-	      <version>1.1</version>
-	      <url>http://jakarta.apache.org/velocity</url>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>      
-	    </dependency>    
-	    <dependency>
-	      <id>portals-bridges:portals-bridges-velocity</id>
-	      <version>${portals.bridges.velocity.version}</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-    				
+            <dependency>
+              <id>velocity</id>
+              <version>1.4</version>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>      
+            </dependency>
+            <dependency>
+              <id>velocity-tools</id>
+              <version>1.1</version>
+              <url>http://jakarta.apache.org/velocity</url>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>      
+            </dependency>    
+            <dependency>
+              <id>portals-bridges:portals-bridges-velocity</id>
+              <version>${portals.bridges.velocity.version}</version>
+              <properties>
+                <war.bundle>true</war.bundle>
+              </properties>
+            </dependency>
+                                
     </dependencies>
 
 </project>
