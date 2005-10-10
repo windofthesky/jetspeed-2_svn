@@ -197,8 +197,8 @@ limitations under the License.
       <portlet-mode>help</portlet-mode>      
     </supports>
     <portlet-info>
-      <title>VelocityThreeColumns</title>
-      <short-title>ThreeColumns</short-title>
+      <title>VelocityThreeColumnsTable</title>
+      <short-title>ThreeColumnsTable</short-title>
     </portlet-info>
 </portlet>
 
@@ -445,6 +445,43 @@ limitations under the License.
     <portlet-info>
       <title>Frame Layout Portlet</title>
       <short-title>Frame Layout</short-title>
+    </portlet-info>
+</portlet>
+
+<portlet id="VelocityTwoColumnsTable">
+    <portlet-name>VelocityTwoColumnsTable</portlet-name>
+    <display-name>Two Columns Layout Using Velocity Table</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>tcolumns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>50%,50%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>TwoColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>VelocityTwoColumnsTable</title>
+      <short-title>TwoColumnsTable</short-title>
     </portlet-info>
 </portlet>
 
