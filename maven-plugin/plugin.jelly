@@ -323,22 +323,35 @@
   <!-- =============================================== -->
   
   <goal name="j2:deploy">
+      <j:set var="j2.war.groupId" value="${plugin.groupId}"/>
+      <j:set var="j2.war.version" value="${jetspeed.version}"/>
+      <attainGoal name="j2:warDeploy"/>
+  </goal>
+  <!-- warDeploy allows you to deploy arbitrary wars to the portal deploy folder,
+       optionally downloading it from remote repositories if not available yet
+       Required properties to set:
+       - maven.war.final.name
+       - j2.war.groupId
+       - j2.war.version
+    -->
+  <goal name="j2:warDeploy">
+    <j:set var="depGroup" value="${j2.war.groupId}"/>
+    <j:set var="depType" value="wars"/>
+    <j:set var="depVersion" value="${j2.war.version}"/>
+    <j:set var="depName" value="${maven.war.final.name}-${depVersion}.war"/>
+    <j:if test="${depVersion.endsWith('SNAPSHOT')}">
+      <j:set var="depSnapshot" value="true"/>
+    </j:if>
     <j:set var="online" value="${maven.mode.online}"/>
     <j:if test="${online}">
-      <j:set var="depGroup" value="${plugin.groupId}"/>
-      <j:set var="depType" value="wars"/>
-      <j:set var="depName" value="${maven.war.final.name}-${jetspeed.version}.war"/>
-      <j:set var="depVersion" value="${jetspeed.version}"/>
-      <j:if test="${depVersion.endsWith('SNAPSHOT')}">
-        <j:set var="depSnapshot" value="true"/>
-      </j:if>
       <attainGoal name="j2:_check.dep"/>
     </j:if>
-    <copy file="${maven.repo.local}/${plugin.groupId}/wars/${maven.war.final.name}-${jetspeed.version}.war"
+    <copy file="${maven.repo.local}/${depGroup}/${depType}/${depName}"
           tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"
           overwrite="true"
           failonerror="true"/>
   </goal>
+
 
   <goal name="j2:pam.layoutdeploy">
     <j:set var="maven.war.final.name" value="jetspeed-layouts"/>
