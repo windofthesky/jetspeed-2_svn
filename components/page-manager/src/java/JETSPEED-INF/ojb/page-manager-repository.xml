@@ -13,11 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!--
-    - Folder
--->
 
 <descriptor-repository version="1.0">
+
+   <!-- Folder mapping -->
 
    <class-descriptor
       class="org.apache.jetspeed.om.folder.impl.FolderImpl"
@@ -31,25 +30,60 @@ limitations under the License.
          autoincrement="false"
       />
 
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="VARCHAR"
+        access="anonymous"
+      />
+
       <reference-descriptor
           name="parent"
           class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
-          auto-delete="true"
-          auto-update = "false"
-          auto-retrieve = "false"
+          auto-delete="false"
+          auto-update="false"
+          auto-retrieve="false"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
+
+      <collection-descriptor
+          name="folders"
+          element-class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="pages"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageImpl"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
 
       <field-descriptor
          name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
       />
-    </class-descriptor>
+   </class-descriptor>
+
+   <!-- Page mapping -->
 
    <class-descriptor
-      class="org.apache.jetspeed.om.page.psml.PageImpl"
+      class="org.apache.jetspeed.om.page.impl.PageImpl"
       table="PAGE"
    >
       <field-descriptor
@@ -61,11 +95,176 @@ limitations under the License.
       />
 
       <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="VARCHAR"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-delete="false"
+          auto-update="false"
+          auto-retrieve="false"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <collection-descriptor
+          name="fragments"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="decorators"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageDecorator"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
          name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
       />
-    </class-descriptor>
 
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageDecorator"
+      table="PAGE_DECORATOR"
+   >
+      <field-descriptor
+         name="id"
+         column="DECORATOR_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="VARCHAR"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="decorator"
+         column="DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <!-- Fragment mapping -->
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.FragmentImpl"
+      table="FRAGMENT"
+   >
+      <field-descriptor
+         name="id"
+         column="FRAGMENT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
+          auto-delete="false"
+          auto-update="false"
+          auto-retrieve="false"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <collection-descriptor
+          name="fragments"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="VARCHAR"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="decorator"
+         column="DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="state"
+         column="STATE"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
 
 </descriptor-repository>

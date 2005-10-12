@@ -33,7 +33,7 @@ import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.page.document.NodeSetImpl;
+import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.PagePermission;

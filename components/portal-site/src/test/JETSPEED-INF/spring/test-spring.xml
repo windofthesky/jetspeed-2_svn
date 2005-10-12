@@ -44,7 +44,7 @@ limitations under the License.
     
   <!-- DocumentHandlerFactory -->
   <bean id="PsmlDocumentHandler"      
-       class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>.psml</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.Page</value></constructor-arg>       
@@ -53,7 +53,7 @@ limitations under the License.
   </bean>
   
   <bean id="LinkDocumentHandler"       
-       class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>.link</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.Link</value></constructor-arg>       
@@ -62,7 +62,7 @@ limitations under the License.
   </bean>
   
   <bean id="FolderMetaDataDocumentHandler"         
-       class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>folder.metadata</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.folder.FolderMetaData</value></constructor-arg>       
@@ -71,7 +71,7 @@ limitations under the License.
   </bean>
   
   <bean id="PageSecurityDocumentHandler"       
-       class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >         
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="1"><value>page.security</value></constructor-arg>
        <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.PageSecurity</value></constructor-arg>       
@@ -80,7 +80,7 @@ limitations under the License.
   </bean>
   
   <bean id="DocumentHandlerFactory"        
-       class="org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl" >      
+       class="org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl" >      
         <constructor-arg>
         <map>
           <entry key=".psml">
@@ -101,7 +101,7 @@ limitations under the License.
   
   <!-- FolderHandler -->
   <bean id="FolderHandler"         
-       class="org.apache.jetspeed.page.document.FileSystemFolderHandler" >         
+       class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler" >         
        <constructor-arg index="0"><value>target/testdata/pages</value></constructor-arg>
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="PageFileCache"/></constructor-arg>        
@@ -110,7 +110,7 @@ limitations under the License.
   <!-- PageManager -->
   <bean id="org.apache.jetspeed.page.PageManager" 
        name="pageManager"
-       class="org.apache.jetspeed.page.impl.CastorXmlPageManager">         
+       class="org.apache.jetspeed.page.psml.CastorXmlPageManager">         
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>

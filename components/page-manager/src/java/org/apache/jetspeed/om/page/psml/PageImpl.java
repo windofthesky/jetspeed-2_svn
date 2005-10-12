@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
 import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.document.AbstractNode;
+import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 /**
  * @version $Id$

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.page.impl;
+package org.apache.jetspeed.page.psml;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -30,7 +30,7 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
-import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -45,8 +45,9 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
+import org.apache.jetspeed.page.document.psml.NodeSetImpl;
+import org.apache.jetspeed.page.impl.AbstractPageManager;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to

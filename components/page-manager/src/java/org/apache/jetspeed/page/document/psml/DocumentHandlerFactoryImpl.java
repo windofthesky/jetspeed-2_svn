@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page.document;
+package org.apache.jetspeed.page.document.psml;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +25,8 @@ import org.apache.jetspeed.page.document.DocumentTypeAlreadyRegisteredException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.util.ArgUtil;
+
+import org.apache.jetspeed.page.document.Node;
 
 /**
  * <p>

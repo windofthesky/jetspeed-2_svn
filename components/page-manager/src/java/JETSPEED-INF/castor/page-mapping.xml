@@ -41,7 +41,7 @@
     </field>
 
 	<field name="menuDefinitions"
-           type="org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl" 
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
            collection="collection">
       <bind-xml name="menu"/>
     </field>
@@ -150,7 +150,7 @@
     </field>
   </class>
   
-  <class name="org.apache.jetspeed.om.folder.impl.FolderMetaDataImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl">
     <map-to xml="folder"/>
 
     <field name="hidden" type="boolean">
@@ -187,13 +187,13 @@
     </field>
 
 	<field name="menuDefinitions"
-           type="org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl" 
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
            collection="collection">
       <bind-xml name="menu"/>
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl">
     <map-to xml="menu"/>
 
     <field name="name" type="java.lang.String">
@@ -243,42 +243,42 @@
     </field>
 
 	<field name="menuElementImpls"
-           type="org.apache.jetspeed.om.folder.impl.MenuElementImpl" 
+           type="org.apache.jetspeed.om.folder.psml.MenuElementImpl" 
            collection="collection">
       <bind-xml name="menu-element"/>
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuElementImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuElementImpl">
     <map-to xml="menu-element"/>
 
     <field name="options"
-           type="org.apache.jetspeed.om.folder.impl.MenuOptionsDefinitionImpl">
+           type="org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl">
       <bind-xml name="options"/>
     </field>
 
     <field name="menu"
-           type="org.apache.jetspeed.om.folder.impl.MenuDefinitionImpl">
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl">
       <bind-xml name="menu"/>
     </field>
 
     <field name="separator"
-           type="org.apache.jetspeed.om.folder.impl.MenuSeparatorDefinitionImpl">
+           type="org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl">
       <bind-xml name="separator"/>
     </field>
 
     <field name="include"
-           type="org.apache.jetspeed.om.folder.impl.MenuIncludeDefinitionImpl">
+           type="org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl">
       <bind-xml name="include"/>
     </field>
 
     <field name="exclude"
-           type="org.apache.jetspeed.om.folder.impl.MenuExcludeDefinitionImpl">
+           type="org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl">
       <bind-xml name="exclude"/>
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuOptionsDefinitionImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl">
     <map-to xml="options"/>
 
     <field name="options" type="java.lang.String">
@@ -310,7 +310,7 @@
     </field>    
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuSeparatorDefinitionImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl">
     <map-to xml="separator"/>
 
     <field name="skin" type="java.lang.String">
@@ -336,7 +336,7 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuIncludeDefinitionImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl">
     <map-to xml="include"/>
 
     <field name="name" type="java.lang.String">
@@ -348,7 +348,7 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.folder.impl.MenuExcludeDefinitionImpl">
+  <class name="org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl">
     <map-to xml="exclude"/>
 
     <field name="name" type="java.lang.String">

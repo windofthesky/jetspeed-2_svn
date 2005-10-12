@@ -103,11 +103,10 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             Folder folder = pageManager.newFolder("/");
             folder.setTitle("Root");
             pageManager.updateFolder(folder);
-            
         }
         catch (Exception e)
         {
-            fail("could not add root folder");
+            fail("could not add root folder: "+e);
         }
     }
     
@@ -118,11 +117,10 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             Folder root = pageManager.getFolder("/");
             assertNotNull("folder should be found", root);
             pageManager.removeFolder(root);
-            
         }
         catch (Exception e)
         {
-            fail("could not remove root folder");
+            fail("could not remove root folder: "+e);
         }
         
     }

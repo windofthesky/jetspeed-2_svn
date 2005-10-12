@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page.document;
+package org.apache.jetspeed.page.document.psml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,8 +30,21 @@ import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.Reset;
-import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
+
+import org.apache.jetspeed.page.document.DocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToDeleteFolderException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateFolderException;
+import org.apache.jetspeed.page.document.FolderHandler;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 /**
  * <p>

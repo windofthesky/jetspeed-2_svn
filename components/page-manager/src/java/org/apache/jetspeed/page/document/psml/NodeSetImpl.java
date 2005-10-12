@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page.document;
+package org.apache.jetspeed.page.document.psml;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,6 +21,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * <p>

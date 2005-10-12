@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.page.document.AbstractNode;
+import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 
 /**

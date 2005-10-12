@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder.impl;
+package org.apache.jetspeed.om.folder.psml;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.jetspeed.om.folder.FolderMetaData;
-import org.apache.jetspeed.page.document.AbstractNode;
+import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 /**
  * <p>

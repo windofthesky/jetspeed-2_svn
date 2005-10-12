@@ -16,7 +16,7 @@
 package org.apache.jetspeed.om.page.psml;
 
 import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.page.document.AbstractNode;
+import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 
 /**

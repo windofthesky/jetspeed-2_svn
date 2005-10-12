@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder.impl;
+package org.apache.jetspeed.om.folder.psml;
 
 import java.security.AccessController;
 import java.io.File;
@@ -35,17 +35,17 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.AbstractNode;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.document.NodeOrderCompartaor;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
+import org.apache.jetspeed.page.document.psml.AbstractNode;
+import org.apache.jetspeed.page.document.psml.NodeOrderCompartaor;
+import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.FolderPermission;
 
 /**

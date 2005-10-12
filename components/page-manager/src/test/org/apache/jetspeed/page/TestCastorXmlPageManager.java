@@ -48,15 +48,15 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
-import org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteFolderException;
-import org.apache.jetspeed.page.document.FileSystemFolderHandler;
 import org.apache.jetspeed.page.document.FolderHandler;
-import org.apache.jetspeed.page.impl.CastorXmlPageManager;
+import org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler;
+import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
+import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
+import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 
 /**
