@@ -121,16 +121,6 @@ limitations under the License.
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
 
-      <collection-descriptor
-          name="decorators"
-          element-class-ref="org.apache.jetspeed.om.page.impl.PageDecorator"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
-      >
-         <inverse-foreignkey field-ref="pageId"/>
-      </collection-descriptor>
-
       <field-descriptor
          name="name"
          column="NAME"
@@ -148,36 +138,16 @@ limitations under the License.
          column="SKIN"
          jdbc-type="VARCHAR"
       />
-   </class-descriptor>
-
-   <class-descriptor
-      class="org.apache.jetspeed.om.page.impl.PageDecorator"
-      table="PAGE_DECORATOR"
-   >
-      <field-descriptor
-         name="id"
-         column="DECORATOR_ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-      />
-
-      <field-descriptor
-        name="pageId"
-        column="PAGE_ID"
-        jdbc-type="VARCHAR"
-        access="anonymous"
-      />
-
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
 
       <field-descriptor
          name="decorator"
          column="DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultFragmentDecorator"
+         column="DEFAULT_FRAGMENT_DECORATOR"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>
@@ -223,6 +193,16 @@ limitations under the License.
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
+      <collection-descriptor
+          name="properties"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PropertyImpl"
+          auto-delete="true"
+          auto-update="false"
+          auto-retrieve="false"
+      >
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
       <field-descriptor
         name="pageId"
         column="PAGE_ID"
@@ -263,6 +243,44 @@ limitations under the License.
       <field-descriptor
          name="state"
          column="STATE"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PropertyImpl"
+      table="FRAGMENT_PROPERTY"
+   >
+      <field-descriptor
+         name="id"
+         column="PROPERTY_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="fragmentId"
+        column="FRAGMENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="layout"
+         column="LAYOUT"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>

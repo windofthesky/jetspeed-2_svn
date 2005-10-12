@@ -31,6 +31,8 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
 public class PageImpl extends NodeImpl implements Page
 {
     private String skin;
+    private String decorator;
+    private String defaultFragmentDecorator;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getDefaultSkin()
