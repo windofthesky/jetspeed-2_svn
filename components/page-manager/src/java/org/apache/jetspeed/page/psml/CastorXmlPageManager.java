@@ -17,7 +17,9 @@
 package org.apache.jetspeed.page.psml;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,13 +33,22 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
+import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.ContentPageImpl;
+import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.psml.PropertyImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -64,31 +75,30 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     protected final static String PROFILE_PROPERTY_FOLDER_PREFIX = "_";
     protected final static String PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX = "__";
 
+    private static Map modelClasses = new HashMap();
+    static
+    {
+        modelClasses.put("FragmentImpl.class", FragmentImpl.class);
+        modelClasses.put("PageImpl.class", PageImpl.class);
+        modelClasses.put("FolderImpl.class", FolderImpl.class);
+        modelClasses.put("LinkImpl.class", LinkImpl.class);
+        modelClasses.put("PropertyImpl.class", PropertyImpl.class);
+        modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
+        modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
+        modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);
+        modelClasses.put("MenuOptionsDefinitionImpl.class", MenuOptionsDefinitionImpl.class);
+        modelClasses.put("MenuSeparatorDefinitionImpl.class", MenuSeparatorDefinitionImpl.class);
+        modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
+        modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
+    }
+
     private DocumentHandlerFactory handlerFactory;
-
     private FolderHandler folderHandler;
-
     private FileCache fileCache;
-
-    // default configuration values
 
     public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
                                  FolderHandler folderHandler, FileCache fileCache,
                                  boolean permissionsEnabled, boolean constraintsEnabled ) throws FileNotFoundException
-    {
-        super(generator, permissionsEnabled, constraintsEnabled);
-        handlerFactory.setPermissionsEnabled(permissionsEnabled);
-        handlerFactory.setConstraintsEnabled(constraintsEnabled);
-        this.handlerFactory = handlerFactory;
-        this.folderHandler = folderHandler;
-        this.fileCache = fileCache;
-        this.fileCache.addListener(this);
-    }
-
-    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
-                                 FolderHandler folderHandler, FileCache fileCache,
-                                 boolean permissionsEnabled, boolean constraintsEnabled,
-                                 List modelClasses ) throws FileNotFoundException
     {
         super(generator, permissionsEnabled, constraintsEnabled, modelClasses);
         handlerFactory.setPermissionsEnabled(permissionsEnabled);

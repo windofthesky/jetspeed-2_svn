@@ -1,5 +1,8 @@
 package org.apache.jetspeed.page.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
@@ -13,13 +16,15 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.impl.FragmentImpl;
+import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.page.FolderNotRemovedException;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.LinkNotRemovedException;
@@ -36,7 +41,6 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
-
 /**
  * DatabasePageManager
  * 
@@ -47,6 +51,23 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
         implements PageManager
 {
+    private static Map modelClasses = new HashMap();
+    static
+    {
+        modelClasses.put("FragmentImpl.class", FragmentImpl.class);
+        modelClasses.put("PageImpl.class", PageImpl.class);
+        modelClasses.put("FolderImpl.class", FolderImpl.class);
+        //modelClasses.put("LinkImpl.class", LinkImpl.class);
+        //modelClasses.put("PropertyImpl.class", PropertyImpl.class);
+        //modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
+        //modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
+        //modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);
+        //modelClasses.put("MenuOptionsDefinitionImpl.class", MenuOptionsDefinitionImpl.class);
+        //modelClasses.put("MenuSeparatorDefinitionImpl.class", MenuSeparatorDefinitionImpl.class);
+        //modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
+        //modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
+    }
+
     private DelegatingPageManager delegator;
     
     public DatabasePageManager(
@@ -58,7 +79,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     {
         super(repositoryPath);
         System.out.println("Page Manager repo = " + repositoryPath);
-        delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity);
+        delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
     }
 
     /* (non-Javadoc)

@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,22 +34,10 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
-import org.apache.jetspeed.om.folder.psml.FolderImpl;
-import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.FragmentImpl;
-import org.apache.jetspeed.om.page.psml.LinkImpl;
-import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.PropertyImpl;
-import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
-import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
 import org.apache.jetspeed.page.PageNotUpdatedException;
@@ -66,18 +55,18 @@ public abstract class AbstractPageManager
 {
     private final static Log log = LogFactory.getLog(AbstractPageManager.class);
     
-    protected Class fragmentClass = FragmentImpl.class;
-    protected Class pageClass = PageImpl.class;
-    protected Class folderClass = FolderImpl.class;
-    protected Class linkClass = LinkImpl.class;
-    protected Class propertyClass = PropertyImpl.class;
-    protected Class menuDefinitionClass = MenuDefinitionImpl.class;
-    protected Class menuExcludeDefinitionClass = MenuExcludeDefinitionImpl.class;
-    protected Class menuIncludeDefinitionClass = MenuIncludeDefinitionImpl.class;
-    protected Class menuOptionsDefinitionClass = MenuOptionsDefinitionImpl.class;
-    protected Class menuSeparatorDefinitionClass = MenuSeparatorDefinitionImpl.class;
-    protected Class securityConstraintsClass = SecurityConstraintsImpl.class;
-    protected Class securityConstraintClass = SecurityConstraintImpl.class;
+    protected Class fragmentClass;
+    protected Class pageClass;
+    protected Class folderClass;
+    protected Class linkClass;
+    protected Class propertyClass;
+    protected Class menuDefinitionClass;
+    protected Class menuExcludeDefinitionClass;
+    protected Class menuIncludeDefinitionClass;
+    protected Class menuOptionsDefinitionClass;
+    protected Class menuSeparatorDefinitionClass;
+    protected Class securityConstraintsClass;
+    protected Class securityConstraintClass;
 
     protected IdGenerator generator = null;
 
@@ -94,23 +83,22 @@ public abstract class AbstractPageManager
         this.constraintsEnabled = constraintsEnabled;
     }
     
-    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, List modelClasses)
+    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
     {
-        this.generator = generator;     
-        if (modelClasses.size() > 0)
-        {
-            this.fragmentClass = (Class)modelClasses.get(0);
-            if (modelClasses.size() > 1)
-            {
-                this.pageClass  = (Class)modelClasses.get(1);
-                if (modelClasses.size() > 2)
-                {
-                    this.propertyClass  = (Class)modelClasses.get(2);
-                }                
-            }
-        }                                 
-        this.permissionsEnabled = permissionsEnabled;
-        this.constraintsEnabled = constraintsEnabled;
+        this(generator, permissionsEnabled, constraintsEnabled);     
+
+        this.fragmentClass = (Class)modelClasses.get("FragmentImpl.class");
+        this.pageClass = (Class)modelClasses.get("PageImpl.class");
+        this.folderClass = (Class)modelClasses.get("FolderImpl.class");
+        this.linkClass = (Class)modelClasses.get("LinkImpl.class");
+        this.propertyClass = (Class)modelClasses.get("PropertyImpl.class");
+        this.menuDefinitionClass = (Class)modelClasses.get("MenuDefinitionImpl.class");
+        this.menuExcludeDefinitionClass = (Class)modelClasses.get("MenuExcludeDefinitionImpl.class");
+        this.menuIncludeDefinitionClass = (Class)modelClasses.get("MenuIncludeDefinitionImpl.class");
+        this.menuOptionsDefinitionClass = (Class)modelClasses.get("MenuOptionsDefinitionImpl.class");
+        this.menuSeparatorDefinitionClass = (Class)modelClasses.get("MenuSeparatorDefinitionImpl.class");
+        this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl.class");
+        this.securityConstraintClass = (Class)modelClasses.get("SecurityConstraintImpl.class");
     }
     
     /**
