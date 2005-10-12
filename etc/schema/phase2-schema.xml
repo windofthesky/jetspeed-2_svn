@@ -45,29 +45,14 @@ limitations under the License.
         <column name="NAME" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
+        <column name="DECORATOR" size="80" type="VARCHAR"/>
+        <column name="DEFAULT_FRAGMENT_DECORATOR" size="80" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
 			<reference foreign="FOLDER_ID" local="PARENT_ID"/>
 		</foreign-key>
 		<index name="IX_PAGE_1">
 			<index-column name="PARENT_ID"/>
 		</index>        
-    </table>
-    
-    <table name="PAGE_DECORATOR">
-        <column name="DECORATOR_ID" primaryKey="true" required="true" type="INTEGER"/>
-		<column name="PAGE_ID" type="VARCHAR" size="255" required="true"/>
-        <column name="NAME" size="80" type="VARCHAR"/>
-        <column name="DECORATOR" size="80" type="VARCHAR"/>
-		<foreign-key foreignTable="PAGE" onDelete="cascade">
-			<reference foreign="PAGE_ID" local="PAGE_ID"/>
-		</foreign-key>
-		<index name="IX_PAGE_DECORATOR_1">
-			<index-column name="PAGE_ID"/>
-		</index>        
-        <unique name="UN_PAGE_DECORATOR_1">
-          <unique-column name="PAGE_ID"/>
-          <unique-column name="NAME"/>
-        </unique>
     </table>
     
     <!--
@@ -96,6 +81,25 @@ limitations under the License.
 		<unique name="UN_FRAGMENT_1">
 			<unique-column name="PAGE_ID"/>
 		</unique>
+    </table>
+    
+    <table name="FRAGMENT_PROPERTY">
+        <column name="PROPERTY_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="FRAGMENT_ID" required="true" type="INTEGER"/>
+        <column name="LAYOUT" required="true" size="80" type="VARCHAR"/>
+        <column name="NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="80" type="VARCHAR"/>
+		<foreign-key foreignTable="FRAGMENT" onDelete="cascade">
+			<reference foreign="FRAGMENT_ID" local="FRAGMENT_ID"/>
+		</foreign-key>
+		<index name="IX_FRAGMENT_PROPERTY_1">
+			<index-column name="FRAGMENT_ID"/>
+		</index>        
+        <unique name="UN_FRAGMENT_PROPERTY_1">
+          <unique-column name="FRAGMENT_ID"/>
+          <unique-column name="LAYOUT"/>
+          <unique-column name="NAME"/>
+        </unique>
     </table>
     
     <!--
