@@ -39,6 +39,9 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
  */
 public class FolderImpl extends NodeImpl implements Folder
 {
+    private List folders;
+    private List pages;
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
      */

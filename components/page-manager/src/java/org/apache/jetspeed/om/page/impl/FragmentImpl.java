@@ -28,10 +28,18 @@ import org.apache.jetspeed.om.page.Property;
  */
 public class FragmentImpl extends BaseElementImpl implements Fragment
 {
+    private List fragments;
     private String type;
     private String skin;
     private String decorator;
     private String state;
+    private int layoutRowProperty;
+    private int layoutColumnProperty;
+    private int layoutWidthProperty;
+    private String extendedPropertyName1;
+    private String extendedPropertyValue1;
+    private String extendedPropertyName2;
+    private String extendedPropertyValue2;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getType()

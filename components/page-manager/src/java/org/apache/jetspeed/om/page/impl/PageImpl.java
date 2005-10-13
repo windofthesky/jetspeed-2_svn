@@ -30,6 +30,7 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
  */
 public class PageImpl extends NodeImpl implements Page
 {
+    private List fragments;
     private String skin;
     private String decorator;
     private String defaultFragmentDecorator;

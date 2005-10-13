@@ -193,16 +193,6 @@ limitations under the License.
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
-      <collection-descriptor
-          name="properties"
-          element-class-ref="org.apache.jetspeed.om.page.impl.PropertyImpl"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
-      >
-         <inverse-foreignkey field-ref="fragmentId"/>
-      </collection-descriptor>
-
       <field-descriptor
         name="pageId"
         column="PAGE_ID"
@@ -245,42 +235,46 @@ limitations under the License.
          column="STATE"
          jdbc-type="VARCHAR"
       />
-   </class-descriptor>
 
-   <class-descriptor
-      class="org.apache.jetspeed.om.page.impl.PropertyImpl"
-      table="FRAGMENT_PROPERTY"
-   >
       <field-descriptor
-         name="id"
-         column="PROPERTY_ID"
+         name="layoutRowProperty"
+         column="LAYOUT_ROW"
          jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
       />
 
       <field-descriptor
-        name="fragmentId"
-        column="FRAGMENT_ID"
-        jdbc-type="INTEGER"
-        access="anonymous"
+         name="layoutColumnProperty"
+         column="LAYOUT_COLUMN"
+         jdbc-type="INTEGER"
       />
 
       <field-descriptor
-         name="layout"
-         column="LAYOUT"
+         name="layoutWidthProperty"
+         column="LAYOUT_WIDTH"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="extendedPropertyName1"
+         column="EXT_PROPERTY_NAME_1"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="name"
-         column="NAME"
+         name="extendedPropertyValue1"
+         column="EXT_PROPERTY_VALUE_1"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="value"
-         column="VALUE"
+         name="extendedPropertyName2"
+         column="EXT_PROPERTY_NAME_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyValue2"
+         column="EXT_PROPERTY_VALUE_2"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>
