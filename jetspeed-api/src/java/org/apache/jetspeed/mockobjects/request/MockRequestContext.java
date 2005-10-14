@@ -483,8 +483,7 @@ public class MockRequestContext implements RequestContext
      */
     public void setPath( String path )
     {
-        // TODO Auto-generated method stub
-
+        this.path = path;
     }
     
 
