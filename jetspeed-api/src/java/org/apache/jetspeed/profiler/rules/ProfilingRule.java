@@ -142,5 +142,7 @@ public interface ProfilingRule extends Serializable
      */
     void setClassname(String classname);
     
+    ProfileResolvers getResolvers();
+    void setResolvers(ProfileResolvers resolvers);
                            
 }
