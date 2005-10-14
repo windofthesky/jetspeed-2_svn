@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
@@ -37,9 +38,18 @@ public class StandardProfilingRule
     extends AbstractProfilingRule
     implements ProfilingRule
 {
-    protected final static Log log = LogFactory.getLog(StandardProfilingRule.class);
-        
+    protected final static Log log = LogFactory.getLog(StandardProfilingRule.class);            
+    private static final long serialVersionUID = 1;    
             
+    public StandardProfilingRule()
+    {        
+    }
+    
+    public StandardProfilingRule(ProfileResolvers resolvers) 
+    {
+        super(resolvers);
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.Profiler)
      */    

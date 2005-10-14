@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
@@ -34,36 +35,28 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public abstract class AbstractProfilingRule implements ProfilingRule
 {
+    private static final long serialVersionUID = 1;    
     protected Collection criteria = new Vector();
     protected String id;
     protected String title;
     protected String ojbConcreteClass;
     
     /** Map of profile locators kept around for reuse TODO: evict entries after max size reached */    
-    static Map locators = new HashMap();
+    protected Map locators = new HashMap();
     
     /** Map of resolver rules for criteria. The map goes from criterion name to resolver class */
-    static Map resolvers = new HashMap();
-    
-    static 
-    {
-        resolvers.put(RuleCriterionResolver.REQUEST, new StandardResolver());
-        resolvers.put(RuleCriterionResolver.REQUEST_SESSION, new RequestSessionResolver());
-        resolvers.put(RuleCriterionResolver.PATH, new PathResolver());        
-        resolvers.put(RuleCriterionResolver.PATH_SESSION, new PathSessionResolver());                
-        resolvers.put(RuleCriterionResolver.HARD_CODED, new HardCodedResolver());
-        resolvers.put(RuleCriterionResolver.USER, new UserCriterionResolver());
-        resolvers.put(RuleCriterionResolver.ROLE, new RoleCriterionResolver()); 
-        resolvers.put(RuleCriterionResolver.GROUP, new GroupCriterionResolver());          
-        resolvers.put(RuleCriterionResolver.MEDIATYPE, new MediatypeCriterionResolver());
-        resolvers.put(RuleCriterionResolver.LANGUAGE, new LanguageCriterionResolver());
-        resolvers.put(RuleCriterionResolver.COUNTRY, new CountryCriterionResolver());
-        resolvers.put(RuleCriterionResolver.GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());
-        resolvers.put(RuleCriterionResolver.USER_ATTRIBUTE, new UserAttributeResolver());
-        resolvers.put(RuleCriterionResolver.NAVIGATION, new NavigationCriterionResolver());
-        resolvers.put(RuleCriterionResolver.USER_AGENT, new UserAgentCriterionResolver());        
+    protected ProfileResolvers resolvers;
+
+    public AbstractProfilingRule()
+    {        
     }
     
+    public AbstractProfilingRule(ProfileResolvers resolvers) 
+    {
+        this.resolvers = resolvers;
+    }
+    
+     
     protected ProfileLocator getLocatorFromCache(String key)
     {
         return (ProfileLocator)locators.get(key);
@@ -162,4 +155,18 @@ public abstract class AbstractProfilingRule implements ProfilingRule
         return this.getClass().toString();
     }
     
+    /**
+     * @return Returns the resolvers.
+     */
+    public ProfileResolvers getResolvers()
+    {
+        return resolvers;
+    }
+    /**
+     * @param resolvers The resolvers to set.
+     */
+    public void setResolvers(ProfileResolvers resolvers)
+    {
+        this.resolvers = resolvers;
+    }
 }

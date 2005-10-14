@@ -31,6 +31,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
+import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
@@ -76,9 +77,12 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
 
     private Map rulesPerPrincipal = new HashMap();
 
-    public JetspeedProfilerImpl(String repositoryPath)
+    private ProfileResolvers resolvers;
+    
+    public JetspeedProfilerImpl(String repositoryPath, ProfileResolvers resolvers)
     {
         super(repositoryPath);
+        this.resolvers = resolvers;
     }
 
     /**
@@ -93,17 +97,17 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      *             if any the implementation classes defined within the <code>properties</code> argument could not be
      *             found.
      */
-    public JetspeedProfilerImpl(String repositoryPath, String defaultRule) throws ClassNotFoundException
+    public JetspeedProfilerImpl(String repositoryPath, String defaultRule, ProfileResolvers resolvers) 
+    throws ClassNotFoundException
     {
-        this(repositoryPath);
+        this(repositoryPath, resolvers);
         this.defaultRule = defaultRule;
-        // start()
     }
 
-    public JetspeedProfilerImpl(String repositoryPath, String defaultRule, Properties properties)
+    public JetspeedProfilerImpl(String repositoryPath, String defaultRule, Properties properties, ProfileResolvers resolvers)
             throws ClassNotFoundException
     {
-        this(repositoryPath, defaultRule);
+        this(repositoryPath, defaultRule, resolvers);
         initModelClasses(properties); // TODO: move this to
         // start()
     }
@@ -279,6 +283,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
             pr.setLocatorName(locatorName);
             pr.setProfilingRule(rule);
         }
+        rule.setResolvers(resolvers);        
         pr.setProfilingRule(rule);
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
@@ -310,8 +315,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
 
         pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(principalRuleClass, c));
-
+        
         principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
+        if (pr != null)
+            pr.getProfilingRule().setResolvers(resolvers);
         return pr;
     }
 
@@ -332,8 +339,15 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      */
     public Collection getRules()
     {
-        return getPersistenceBrokerTemplate().getCollectionByQuery(
+        Collection rules = getPersistenceBrokerTemplate().getCollectionByQuery(
                 QueryFactory.newQuery(profilingRuleClass, new Criteria()));
+        Iterator r = rules.iterator();
+        while (r.hasNext())
+        {
+            ProfilingRule rule = (ProfilingRule)r.next();
+            rule.setResolvers(resolvers);
+        }
+        return rules;
     }
 
     /*
@@ -343,12 +357,16 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      */
     public ProfilingRule getRule(String id)
     {
-        // TODO: implement caching
         Criteria c = new Criteria();
         c.addEqualTo("id", id);
 
-        return (ProfilingRule) getPersistenceBrokerTemplate().getObjectByQuery(
+        ProfilingRule rule = (ProfilingRule)getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(profilingRuleClass, c));
+        if (rule != null)
+        {
+            rule.setResolvers(resolvers);
+        }
+        return rule;
     }
 
     /*
@@ -375,6 +393,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         {
             PrincipalRule pr = (PrincipalRule) it.next();
             names[ix] = pr.getLocatorName();
+            pr.getProfilingRule().setResolvers(resolvers);
             ix++;
         }
         return names;
@@ -393,6 +412,14 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
         rules = getPersistenceBrokerTemplate().getCollectionByQuery(QueryFactory.newQuery(principalRuleClass, c));
+        Iterator r = rules.iterator();
+        while (r.hasNext())
+        {
+            PrincipalRule pr = (PrincipalRule)r.next();
+            ProfilingRule rule = pr.getProfilingRule();
+            if (rule != null)
+                rule.setResolvers(resolvers);
+        }        
         this.rulesPerPrincipal.put(principal.getName(), rules);
         return rules;
     }

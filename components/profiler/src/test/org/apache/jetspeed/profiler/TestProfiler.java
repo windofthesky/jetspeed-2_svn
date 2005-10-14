@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
+import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
@@ -44,7 +45,8 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 public class TestProfiler extends AbstractSpringTestCase
 {
     private Profiler profiler = null;
-
+    private ProfileResolvers resolvers = null;
+    
     protected static final Properties TEST_PROPS = new Properties();
 
     static
@@ -83,6 +85,9 @@ public class TestProfiler extends AbstractSpringTestCase
         super.setUp();
         this.profiler = (Profiler) ctx.getBean("profiler");
         JetspeedProfilerImpl profilerImpl = (JetspeedProfilerImpl) ctx.getBean("profilerImpl");
+        assertNotNull("profiler not found ", profiler);
+        ProfileResolvers resolvers = (ProfileResolvers) ctx.getBean("ProfileResolvers");
+        assertNotNull("resolvers not found ", resolvers);
         profilerImpl.setDefaultRule(JetspeedProfilerImpl.DEFAULT_RULE);
     }
 
@@ -373,7 +378,7 @@ public class TestProfiler extends AbstractSpringTestCase
     {
         System.out.println("Maintenance tests commencing....");
         assertNotNull("profiler service is null", profiler);
-        ProfilingRule rule = new StandardProfilingRule();
+        ProfilingRule rule = new StandardProfilingRule(resolvers);
         rule.setClassname("org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule");
         rule.setId("testmo");
         rule.setTitle("The Grand Title");
