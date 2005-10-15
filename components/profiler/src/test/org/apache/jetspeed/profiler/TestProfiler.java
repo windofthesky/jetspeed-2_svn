@@ -16,10 +16,14 @@
 package org.apache.jetspeed.profiler;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+
+import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -34,7 +38,9 @@ import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.impl.PrincipalsSet;
 
 /**
  * TestProfiler
@@ -107,6 +113,66 @@ public class TestProfiler extends AbstractSpringTestCase
 
     private static final String DEFAULT_PAGE = "default-page";
 
+    private static final String URF_CRITERIA [] =
+    {
+        "user",
+        "navigation",
+        "role",
+        "path.session"
+    };
+
+    public void testUserRoleFallback() 
+    throws Exception
+    {
+        assertNotNull("profiler service is null", profiler);
+        System.out.println("START: running test user role fallback...");
+        
+        // make sure rule is set correctly
+        ProfilingRule rule = profiler.getRule("user-role-fallback");
+        assertNotNull("rule is null ", rule);
+        Iterator c = rule.getRuleCriteria().iterator();
+        int ix = 0;
+        while (c.hasNext())
+        {
+            RuleCriterion rc = (RuleCriterion)c.next();
+            assertTrue("criterion type check " + rc.getType(), rc.getType().equals(URF_CRITERIA[ix]));
+            System.out.println(rc.getType());
+            ix++;
+        }
+        
+        // test applying it
+        RequestContext context = new MockRequestContext();
+        Subject subject = createSubject();
+        context.setPath("/homepage.psml");        
+        context.setSubject(subject);
+        ProfileLocator locator = rule.apply(context, profiler);
+        System.out.println("locator = " + locator);
+        assertTrue("locator string " + locator.toString(), locator.toString().equals("/homepage.psml:user:david:navigation:/:role:ATP:role:NB:role:ATP-NB:page:/homepage.psml"));
+        
+        System.out.println("COMPLETED: running test user role fallback.");
+    }
+    
+    protected Subject createSubject()
+    {
+        Set principals = new PrincipalsSet();
+        Set publicCredentials = new HashSet();
+        Set privateCredentials = new HashSet();
+        
+        principals.add(new UserPrincipalImpl("david"));
+        principals.add(new RolePrincipalImpl("ATP"));
+        principals.add(new RolePrincipalImpl("NB"));        
+        principals.add(new RolePrincipalImpl("ATP-NB"));        
+        Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
+        return subject;
+    }
+    
+    private static final String TEST_ROLES [] =
+    {
+        "ATP",
+        "NB",
+        "ATP-NB",
+    };
+    
     /**
      * Tests
      * 
