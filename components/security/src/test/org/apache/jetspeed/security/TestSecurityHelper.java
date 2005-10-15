@@ -23,6 +23,7 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
@@ -43,7 +44,7 @@ public class TestSecurityHelper extends AbstractSecurityTestcase
     public void testHelpers() throws Exception
     {
         Principal principal = new UserPrincipalImpl("anon");
-        Set principals = new HashSet();
+        Set principals = new PrincipalsSet();
         principals.add(principal);
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
         System.out.println("subject = " + subject);
