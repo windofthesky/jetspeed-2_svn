@@ -65,7 +65,6 @@ INSERT INTO PRINCIPAL_PERMISSION VALUES(10,8);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(10,11);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(10,12);
 
-
 INSERT INTO SECURITY_PRINCIPAL VALUES(50,'org.apache.jetspeed.security.JetspeedUserPrincipalImpl',0,1,'/user/subsite','2005-01-01 00:00:00.000','2005-01-01 00:00:00.000');
 INSERT INTO SECURITY_PRINCIPAL VALUES(51,'org.apache.jetspeed.security.JetspeedUserPrincipalImpl',0,1,'/user/subsite2','2005-01-01 00:00:00.000','2005-01-01 00:00:00.000');
 INSERT INTO SECURITY_CREDENTIAL VALUES(50,50,'subsite',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2005-01-01 00:00:00.000','2005-01-01 00:00:00.000',null,null,null);
@@ -79,22 +78,6 @@ INSERT INTO SECURITY_USER_ROLE VALUES(50,53);
 INSERT INTO SECURITY_USER_ROLE VALUES(51,52);
 INSERT INTO SECURITY_USER_ROLE VALUES(51,53);
 
-insert into PROFILING_RULE values ('subsite-role-fallback-home',
-     'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
-     'A rule based on role fallback algorithm with specified subsite and home page');
-insert into RULE_CRITERION values (50, 'subsite-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
-insert into RULE_CRITERION values (51, 'subsite-role-fallback-home', 1, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (52, 'subsite-role-fallback-home', 2, 'path', 'path', 'subsite-default-page', 0);
-
-insert into PROFILING_RULE values ('subsite2-role-fallback-home', 
-     'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
-     'A rule based on role fallback algorithm with specified subsite and home page');
-insert into RULE_CRITERION values (53, 'subsite2-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
-insert into RULE_CRITERION values (54, 'subsite2-role-fallback-home', 1, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (55, 'subsite2-role-fallback-home', 2, 'path', 'path', 'subsite2-default-page', 0);
-
-insert into PRINCIPAL_RULE_ASSOC values ('subsite', 'page', 'subsite-role-fallback-home');
-insert into PRINCIPAL_RULE_ASSOC values ('subsite2', 'page', 'subsite2-role-fallback-home');
 
 INSERT INTO SECURITY_PERMISSION VALUES(50,'org.apache.jetspeed.security.FolderPermission','/__subsite-root','view','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_PERMISSION VALUES(51,'org.apache.jetspeed.security.FolderPermission','/__subsite-root/-','view','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
