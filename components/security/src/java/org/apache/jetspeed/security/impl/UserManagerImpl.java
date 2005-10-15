@@ -331,7 +331,7 @@ public class UserManagerImpl implements UserManager
             return guest;
         }
         
-        Set principals = new HashSet();
+        Set principals = new PrincipalsSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
