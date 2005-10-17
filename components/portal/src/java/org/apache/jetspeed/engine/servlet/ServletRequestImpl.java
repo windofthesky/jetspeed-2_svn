@@ -141,6 +141,14 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 }
             }
 
+            boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
+                    && getCharacterEncoding() != null;
+            if (decode)
+            {
+                getRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
+                        new Boolean(true));
+            }
+
             //get servlet params
             for (Enumeration parameters = getRequest().getParameterNames(); parameters.hasMoreElements();)
             {
@@ -148,7 +156,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 String[] paramValues = (String[]) getRequest().getParameterValues(paramName);
                 String[] values = (String[]) portletParameters.get(paramName);
 
-                if (getCharacterEncoding() != null)
+                if (decode)
                 {
                     for (int i = 0; i < paramValues.length; i++)
                     {

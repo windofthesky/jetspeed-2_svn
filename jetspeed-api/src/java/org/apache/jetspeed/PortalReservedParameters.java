@@ -48,4 +48,5 @@ public interface PortalReservedParameters
     public static final String OVERRIDE_PORTLET_TITLE_ATTR = "org.apache.jetspeed.portlet.title";
     public static final String HEADER_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headerresource";
     public static final String PATH_ATTRIBUTE = "org.apache.jetspeed.Path";
+    public static final String PARAMETER_ALREADY_DECODED_ATTRIBUTE = "org.apache.jetspeed.parameterAlreadyDecoded";
 }
