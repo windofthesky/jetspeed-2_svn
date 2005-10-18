@@ -22,9 +22,10 @@ limitations under the License.
     -->
 
     <table name="FOLDER">
-        <column name="FOLDER_ID" primaryKey="true" required="true" size="255" type="VARCHAR"/>
-		<column name="PARENT_ID" type="VARCHAR" size="255"/>
-        <column name="NAME" size="80" type="VARCHAR"/>
+        <column name="FOLDER_ID" primaryKey="true" required="true" type="INTEGER"/>
+		<column name="PARENT_ID" type="INTEGER"/>
+        <column name="PATH" required="true" size="255" type="VARCHAR"/>
+        <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
 			<reference foreign="FOLDER_ID" local="PARENT_ID"/>
@@ -39,19 +40,37 @@ limitations under the License.
     -->
 
     <table name="PAGE">
-        <column name="PAGE_ID" primaryKey="true" required="true" size="255" type="VARCHAR"/>
-		<column name="PARENT_ID" type="VARCHAR" size="255"/>
-        <column name="NAME" size="80" type="VARCHAR"/>
+        <column name="PAGE_ID" primaryKey="true" required="true" type="INTEGER"/>
+		<column name="PARENT_ID" type="INTEGER"/>
+        <column name="PATH" required="true" size="255" type="VARCHAR"/>
+        <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DECORATOR" size="80" type="VARCHAR"/>
         <column name="DEFAULT_FRAGMENT_DECORATOR" size="80" type="VARCHAR"/>
+        <column name="SUBSITE" size="40" type="VARCHAR"/>
+        <column name="PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="PRINCIPAL_TYPE" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" size="40" type="VARCHAR"/>
+        <column name="LOCALE" size="40" type="VARCHAR"/>
+        <column name="EXT_LOCATOR_NAME" size="40" type="VARCHAR"/>
+        <column name="EXT_LOCATOR_VALUE" size="40" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
 			<reference foreign="FOLDER_ID" local="PARENT_ID"/>
 		</foreign-key>
 		<index name="IX_PAGE_1">
 			<index-column name="PARENT_ID"/>
-		</index>        
+		</index>
+		<unique name="UN_PAGE_1">
+			<unique-column name="PATH"/>
+			<unique-column name="SUBSITE"/>
+			<unique-column name="PRINCIPAL"/>
+			<unique-column name="PRINCIPAL_TYPE"/>
+			<unique-column name="MEDIATYPE"/>
+			<unique-column name="LOCALE"/>
+			<unique-column name="EXT_LOCATOR_NAME"/>
+			<unique-column name="EXT_LOCATOR_VALUE"/>
+		</unique>
     </table>
     
     <!--
@@ -71,9 +90,9 @@ limitations under the License.
         <column name="LAYOUT_ROW" type="INTEGER"/>
         <column name="LAYOUT_COLUMN" type="INTEGER"/>
         <column name="LAYOUT_WIDTH" type="INTEGER"/>
-        <column name="EXT_PROPERTY_NAME_1" size="80" type="VARCHAR"/>
+        <column name="EXT_PROPERTY_NAME_1" size="40" type="VARCHAR"/>
         <column name="EXT_PROPERTY_VALUE_1" size="80" type="VARCHAR"/>
-        <column name="EXT_PROPERTY_NAME_2" size="80" type="VARCHAR"/>
+        <column name="EXT_PROPERTY_NAME_2" size="40" type="VARCHAR"/>
         <column name="EXT_PROPERTY_VALUE_2" size="80" type="VARCHAR"/>
 		<foreign-key foreignTable="FRAGMENT" onDelete="cascade">
 			<reference foreign="FRAGMENT_ID" local="PARENT_ID"/>
