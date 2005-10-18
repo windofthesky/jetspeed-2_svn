@@ -275,7 +275,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             FolderMetaData metadata = folder.getFolderMetaData();
             metadata.setPath(path + Folder.PATH_SEPARATOR + FolderMetaData.DOCUMENT_TYPE);
-            metadata.setId(metadata.getPath());
             metadataDocHandler.updateDocument(metadata);
         }
         catch (Exception e)

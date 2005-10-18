@@ -227,6 +227,60 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         this.properties = props;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
+     */
+    public int getLayoutRow()
+    {
+        // return first valid row layout property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if ((p.getLayout() != null) && (p.getLayout().length() > 0) && ROW_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
+            {
+                return p.getIntValue();
+            }
+        }
+        return -1;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
+     */
+    public int getLayoutColumn()
+    {
+        // return first valid column layout property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if ((p.getLayout() != null) && (p.getLayout().length() > 0) && COLUMN_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
+            {
+                return p.getIntValue();
+            }
+        }
+        return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
+     */
+    public String getLayoutSizes()
+    {
+        // return first valid sizes property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if (SIZES_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
+            {
+                return p.getValue();
+            }
+        }
+        return null;
+    }
+
     public Object clone() throws java.lang.CloneNotSupportedException
     {
         Object cloned = super.clone();

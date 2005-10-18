@@ -3,7 +3,6 @@ package org.apache.jetspeed.page.impl;
 import java.util.Map;
 
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -34,12 +33,11 @@ public class DelegatingPageManager extends AbstractPageManager
 {
 
     DelegatingPageManager(
-            IdGenerator generator, 
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity,
             Map modelClasses)
     {
-        super(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        super(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
     }
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)

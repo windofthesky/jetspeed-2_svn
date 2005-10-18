@@ -17,22 +17,6 @@ limitations under the License.
 -->
 <beans>
 
-    <!-- ID Generator -->
-    <bean id="IdGenerator" class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start" destroy-method="stop">
-        <!-- ID Start value -->
-        <constructor-arg index="0">
-            <value>65536</value>
-        </constructor-arg>
-        <!-- ID Prefix -->
-        <constructor-arg index="1">
-            <value>P-</value>
-        </constructor-arg>
-        <!-- ID Suffix -->
-        <constructor-arg index="2">
-            <value></value>
-        </constructor-arg>
-    </bean>
-
   <bean 
        id="org.apache.jetspeed.page.PageManagerImpl" 
        name="pageManagerImpl"
@@ -41,11 +25,10 @@ limitations under the License.
         <constructor-arg index="0">
             <value>JETSPEED-INF/ojb/page-manager-repository.xml</value>
         </constructor-arg>       
-       <constructor-arg index="1"><ref bean="IdGenerator"/></constructor-arg>
        <!-- permissions security enabled flag, default=false -->
-       <constructor-arg index="2"><value>false</value></constructor-arg>
+       <constructor-arg index="1"><value>false</value></constructor-arg>
        <!-- constraints security enabled flag, default=true -->
-       <constructor-arg index="3"><value>false</value></constructor-arg>
+       <constructor-arg index="2"><value>false</value></constructor-arg>
   </bean>
 
     <!-- Proxying -->

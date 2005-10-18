@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -72,14 +71,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     
     public DatabasePageManager(
             String repositoryPath,
-            IdGenerator generator, 
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity)
 
     {
         super(repositoryPath);
         System.out.println("Page Manager repo = " + repositoryPath);
-        delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        delegator = new DelegatingPageManager(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
     }
 
     /* (non-Javadoc)

@@ -37,7 +37,6 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -74,7 +73,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     
     protected PortletRegistry registry;
     protected PageManager pageManager;
-    protected IdGenerator generator;
     protected JetspeedPowerToolFactory jptFactory;
     protected TemplateLocator templateLocator;
     protected PortletEntityAccessComponent entityAccess;
@@ -93,11 +91,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         if (null == pageManager)
         {
             throw new PortletException("Failed to find the Page Manager on portlet initialization");
-        }        
-        generator = (IdGenerator)getPortletContext().getAttribute(CommonPortletServices.CPS_ID_GENERATOR_COMPONENT);
-        if (null == generator)
-        {
-            throw new PortletException("Failed to find the ID Generator on portlet initialization");
         }        
         jptFactory = (JetspeedPowerToolFactory)getPortletContext().getAttribute(CommonPortletServices.CPS_JETSPEED_POWERTOOL_FACTORY);
         if (null == jptFactory)
@@ -277,7 +270,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             Fragment fragment = pageManager.newFragment();
             fragment.setType(Fragment.PORTLET);
-            fragment.setId(generator.getNextPeid());
             fragment.setName(portletId);
             
             Page page = pageManager.getContentPage(pageId);

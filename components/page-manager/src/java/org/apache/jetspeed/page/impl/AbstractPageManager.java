@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -68,24 +67,21 @@ public abstract class AbstractPageManager
     protected Class securityConstraintsClass;
     protected Class securityConstraintClass;
 
-    protected IdGenerator generator = null;
-
     private boolean permissionsEnabled;
 
     private boolean constraintsEnabled;
 
     private List listeners = new LinkedList();
 
-    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled)
+    public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled)
     {    
-        this.generator = generator;
         this.permissionsEnabled = permissionsEnabled;
         this.constraintsEnabled = constraintsEnabled;
     }
     
-    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
+    public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
     {
-        this(generator, permissionsEnabled, constraintsEnabled);     
+        this(permissionsEnabled, constraintsEnabled);     
 
         this.fragmentClass = (Class)modelClasses.get("FragmentImpl.class");
         this.pageClass = (Class)modelClasses.get("PageImpl.class");
@@ -146,13 +142,9 @@ public abstract class AbstractPageManager
                 path += Page.DOCUMENT_TYPE;
             }
             page.setPath(path);
-            page.setId(path);
             
             // create the default fragment
-            Fragment fragment = (Fragment)createObject(this.fragmentClass);
-            fragment.setId(generator.getNextPeid());
-            fragment.setType(Fragment.LAYOUT);
-            page.setRootFragment(fragment);            
+            page.setRootFragment(newFragment());            
         }
         catch (ClassCastException e)
         {
@@ -177,7 +169,6 @@ public abstract class AbstractPageManager
                 path = Folder.PATH_SEPARATOR + path;
             }
             folder.setPath(path);
-            folder.setId(path);
         }
         catch (ClassCastException e)
         {
@@ -206,7 +197,6 @@ public abstract class AbstractPageManager
                 path += Link.DOCUMENT_TYPE;
             }
             link.setPath(path);
-            link.setId(path);
         }
         catch (ClassCastException e)
         {
@@ -225,9 +215,7 @@ public abstract class AbstractPageManager
         try
         {
             fragment = (Fragment)createObject(this.fragmentClass);
-            fragment.setId(generator.getNextPeid());
             fragment.setType(Fragment.LAYOUT);          
-            
         }
         catch (ClassCastException e)
         {

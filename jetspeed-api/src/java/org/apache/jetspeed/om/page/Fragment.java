@@ -58,6 +58,21 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      public String LAYOUT = "layout";
 
     /**
+     * row standard layout property name
+     */
+     public String ROW_PROPERTY_NAME = "row";
+
+    /**
+     * column standard layout property name
+     */
+     public String COLUMN_PROPERTY_NAME = "column";
+
+    /**
+     * widths standard layout property name
+     */
+     public String SIZES_PROPERTY_NAME = "sizes";
+
+    /**
      * Returns the administrative name of this fragment. This name should map
      * to a component name in the component repository defined by the type
      * attribute.
@@ -198,6 +213,27 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      * @param layoutName the layout for which to remove the properties
      */
     public void clearProperties(String layoutName);
+
+    /**
+     * get layout row property
+     *
+     * @return row layout property
+     **/
+    public int getLayoutRow();
+    
+    /**
+     * get layout column property
+     *
+     * @return column layout property
+     **/
+    public int getLayoutColumn();
+
+    /**
+     * get layout sizes property, (i.e. "25%,75%")
+     *
+     * @return sizes layout property
+     **/
+    public String getLayoutSizes();
 
     /**
      * Test if this fragment is actually a reference to an external fragment.

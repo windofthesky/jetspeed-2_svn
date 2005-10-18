@@ -75,7 +75,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         this.metadata = metadata;
         this.metadata.setParent(this);
         this.folderHandler = folderHandler;
-        setId(path);
         setPath(path);
         setReservedType();
         setHandlerFactory(handlerFactory);
@@ -88,7 +87,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         this.metadata = new FolderMetaDataImpl();
         this.metadata.setParent(this);
         this.folderHandler = folderHandler;
-        setId(path);
         setPath(path);
         setReservedType();
         setHandlerFactory(handlerFactory);

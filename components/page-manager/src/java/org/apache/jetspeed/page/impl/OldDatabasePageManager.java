@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
@@ -54,11 +53,10 @@ public class OldDatabasePageManager extends AbstractPageManager implements PageM
      *            ID generator that will be used to generate unique page ids
      */
     public OldDatabasePageManager(
-            IdGenerator generator, 
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity)
     {
-        super(generator, isPermissionsSecurity, isConstraintsSecurity);
+        super(isPermissionsSecurity, isConstraintsSecurity);
     }
 
     /*
@@ -113,9 +111,9 @@ public class OldDatabasePageManager extends AbstractPageManager implements PageM
         String id = page.getId();
         if (id == null)
         {
-            page.setId(generator.getNextPeid());
-            id = page.getId();
-            log.warn("Page with no Id, created new Id : " + id);
+            String msg = "Page with no Id.";
+            log.error(msg);
+            throw new PageNotUpdatedException(msg);
         }
 
         // update page

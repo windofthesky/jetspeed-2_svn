@@ -25,24 +25,25 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="FOLDER_ID"
-         jdbc-type="VARCHAR"
+         jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="false"
+         autoincrement="true"
       />
 
       <field-descriptor
         name="parentId"
         column="PARENT_ID"
-        jdbc-type="VARCHAR"
+        jdbc-type="INTEGER"
         access="anonymous"
       />
 
       <reference-descriptor
           name="parent"
           class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
-          auto-delete="false"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="none"
+          auto-update="none"
+          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -50,9 +51,10 @@ limitations under the License.
       <collection-descriptor
           name="folders"
           element-class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="link"
+          proxy="true"
       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
@@ -60,12 +62,19 @@ limitations under the License.
       <collection-descriptor
           name="pages"
           element-class-ref="org.apache.jetspeed.om.page.impl.PageImpl"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="link"
+          proxy="true"
       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
+
+      <field-descriptor
+         name="path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
 
       <field-descriptor
          name="name"
@@ -89,37 +98,44 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="PAGE_ID"
-         jdbc-type="VARCHAR"
+         jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="false"
+         autoincrement="true"
       />
 
       <field-descriptor
         name="parentId"
         column="PARENT_ID"
-        jdbc-type="VARCHAR"
+        jdbc-type="INTEGER"
         access="anonymous"
       />
 
       <reference-descriptor
           name="parent"
           class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
-          auto-delete="false"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="none"
+          auto-update="none"
+          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
 
       <collection-descriptor
           name="fragments"
-          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          proxy="true"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
+
+      <field-descriptor
+         name="path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
 
       <field-descriptor
          name="name"
@@ -150,6 +166,48 @@ limitations under the License.
          column="DEFAULT_FRAGMENT_DECORATOR"
          jdbc-type="VARCHAR"
       />
+
+      <field-descriptor
+         name="subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="principal"
+         column="PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="principalType"
+         column="PRINCIPAL_TYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extLocatorName"
+         column="EXT_LOCATOR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extLocatorValue"
+         column="EXT_LOCATOR_VALUE"
+         jdbc-type="VARCHAR"
+      />
    </class-descriptor>
 
    <!-- Fragment mapping -->
@@ -176,9 +234,10 @@ limitations under the License.
       <reference-descriptor
           name="parent"
           class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
-          auto-delete="false"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="none"
+          auto-update="none"
+          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -186,9 +245,10 @@ limitations under the License.
       <collection-descriptor
           name="fragments"
           element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
-          auto-delete="true"
-          auto-update="false"
-          auto-retrieve="false"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          proxy="true"
       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
@@ -196,7 +256,7 @@ limitations under the License.
       <field-descriptor
         name="pageId"
         column="PAGE_ID"
-        jdbc-type="VARCHAR"
+        jdbc-type="INTEGER"
         access="anonymous"
       />
 
@@ -249,8 +309,8 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="layoutWidthProperty"
-         column="LAYOUT_WIDTH"
+         name="layoutSizesProperty"
+         column="LAYOUT_SIZES"
          jdbc-type="INTEGER"
       />
 

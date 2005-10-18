@@ -65,10 +65,6 @@ import org.apache.jetspeed.om.page.Fragment;
  */
 public class ColumnLayout implements Serializable
 {
-    private static final String COLUMN = "column";
-
-    private static final String ROW = "row";
-   
     /** Constrains the columns for this layout */
     private final int numberOfColumns;
     
@@ -734,7 +730,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getRow(int currentColumn, Fragment fragment)
     {
-        String propertyValue = fragment.getPropertyValue(layoutType, ROW);
+        String propertyValue = fragment.getPropertyValue(layoutType, Fragment.ROW_PROPERTY_NAME);
 
         if (propertyValue != null)
         {
@@ -761,7 +757,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getColumn(Fragment fragment)
     {
-        String propertyValue = fragment.getPropertyValue(layoutType, COLUMN);
+        String propertyValue = fragment.getPropertyValue(layoutType, Fragment.COLUMN_PROPERTY_NAME);
         if (propertyValue != null)
         {
             int columnNumber = Integer.parseInt(propertyValue);

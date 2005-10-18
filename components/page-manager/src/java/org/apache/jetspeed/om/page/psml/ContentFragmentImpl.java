@@ -264,6 +264,30 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
+     */
+    public int getLayoutRow()
+    {
+        return fragment.getLayoutRow();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
+     */
+    public int getLayoutColumn()
+    {
+        return fragment.getLayoutColumn();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
+     */
+    public String getLayoutSizes()
+    {
+        return fragment.getLayoutSizes();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setSkin(java.lang.String)
      */
     public void setSkin(String skinName)
@@ -315,15 +339,6 @@ public class ContentFragmentImpl implements ContentFragment
     {
         
         return fragment.getTitle();
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.BaseElement#setId(java.lang.String)
-     */
-    public void setId(String id)
-    {
-        
-        fragment.setId(id);
     }
 
     /* (non-Javadoc)

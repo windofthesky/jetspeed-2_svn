@@ -291,7 +291,10 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public void setPath( String path )
     {
+        // PSML id is always kept in sync with path, despite how the
+        // id may be loaded from the persistent store
         this.path = path;
+        setId(path);
     }
 
     /**

@@ -33,9 +33,9 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private String skin;
     private String decorator;
     private String state;
-    private int layoutRowProperty;
-    private int layoutColumnProperty;
-    private int layoutWidthProperty;
+    private int layoutRowProperty = -1;
+    private int layoutColumnProperty = -1;
+    private String layoutSizesProperty;
     private String extendedPropertyName1;
     private String extendedPropertyValue1;
     private String extendedPropertyName2;
@@ -167,6 +167,30 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     public void clearProperties(String layoutName)
     {
         // NYI
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     */
+    public int getLayoutRow()
+    {
+        return layoutRowProperty;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     */
+    public int getLayoutColumn()
+    {
+        return layoutColumnProperty;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
+     */
+    public String getLayoutSizes()
+    {
+        return layoutSizesProperty;
     }
 
     /* (non-Javadoc)

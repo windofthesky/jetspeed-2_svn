@@ -30,6 +30,7 @@ import org.apache.jetspeed.page.document.Node;
 public abstract class NodeImpl extends BaseElementImpl implements Node
 {
     private NodeImpl parent;
+    private String path;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getParent()
@@ -52,7 +53,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getPath()
     {
-        return null; // NYI
+        return path;
     }
     
     /* (non-Javadoc)
@@ -60,7 +61,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setPath(String path)
     {
-        // NYI
+        this.path = path;
     }
 
     /* (non-Javadoc)

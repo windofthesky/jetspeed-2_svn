@@ -464,7 +464,6 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                     }
                 });
 
-            document.setId(path);
             document.setPath(path);
             AbstractBaseElement documentImpl = (AbstractBaseElement)document;
             documentImpl.setHandlerFactory(handlerFactory);

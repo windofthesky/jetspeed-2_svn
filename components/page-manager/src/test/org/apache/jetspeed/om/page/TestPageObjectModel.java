@@ -76,7 +76,7 @@ public class TestPageObjectModel extends TestCase
         PageImpl page = new PageImpl();
         page.setId("MyPageID");
 
-        Fragment frag = new FragmentImpl();
+        FragmentImpl frag = new FragmentImpl();
         frag.setId("Frag1");
         frag.setType(Fragment.LAYOUT);
 
@@ -107,19 +107,19 @@ public class TestPageObjectModel extends TestCase
         Fragment root = page.getRootFragment();
         assertNotNull(root.getFragments());
 
-        Fragment frag1 = new FragmentImpl();
+        FragmentImpl frag1 = new FragmentImpl();
         frag1.setId("F1");
         frag1.setType(Fragment.PORTLET);
         frag1.setName("Portlet1");
         root.getFragments().add(frag1);
 
-        Fragment frag2 = new FragmentImpl();
+        FragmentImpl frag2 = new FragmentImpl();
         frag2.setId("F2");
         frag2.setType(Fragment.LAYOUT);
         frag2.setName("TwoColumns");
         frag2.setDecorator("test");
 
-        Fragment frag3 = new FragmentImpl();
+        FragmentImpl frag3 = new FragmentImpl();
         frag3.setId("F3");
         frag3.setType(Fragment.PORTLET);
         frag3.setName("Portlet3");
@@ -131,7 +131,7 @@ public class TestPageObjectModel extends TestCase
         //Check the construct
         assertTrue(root.getFragments().size()==2);
         Iterator i = root.getFragments().iterator();
-        Fragment f = (Fragment)i.next();
+        FragmentImpl f = (FragmentImpl)i.next();
         assertNotNull(f);
         assertTrue(f.getName().equals("Portlet1"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
@@ -140,7 +140,7 @@ public class TestPageObjectModel extends TestCase
         assertNull(f.getDecorator());
         assertNull(f.getState());
         assertTrue(f.getFragments().size()==0);
-        f = (Fragment)i.next();
+        f = (FragmentImpl)i.next();
         assertNotNull(f);
         assertTrue(f.getName().equals("TwoColumns"));
         assertTrue(f.getType().equals(Fragment.LAYOUT));
@@ -148,7 +148,7 @@ public class TestPageObjectModel extends TestCase
         assertTrue(f.getDecorator().equals("test"));
         assertTrue(f.getFragments().size()==1);
         i = f.getFragments().iterator();
-        frag1 = (Fragment)i.next();
+        frag1 = (FragmentImpl)i.next();
         assertNotNull(frag1);
         assertTrue(frag1.getName().equals("Portlet3"));
         assertTrue(frag1.getType().equals(Fragment.PORTLET));
@@ -159,14 +159,14 @@ public class TestPageObjectModel extends TestCase
         frag2.setType(Fragment.PORTLET);
         frag2.setName("P4");
 
-        frag3 = page.getFragmentById("F3");
+        frag3 = (FragmentImpl)page.getFragmentById("F3");
         assertNotNull(frag3);
         f.getFragments().remove(frag3);
-        frag3 = page.getFragmentById("F3");
+        frag3 = (FragmentImpl)page.getFragmentById("F3");
         assertNull(frag3);
         f.getFragments().add(frag2);
         assertTrue(f.getFragments().size()==1);
-        f = (Fragment)f.getFragments().get(0);
+        f = (FragmentImpl)f.getFragments().get(0);
         assertNotNull(f);
         assertTrue(f.getName().equals("P4"));
     }

@@ -341,15 +341,6 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.BaseElement#setId(java.lang.String)
-     */
-    public void setId(String id)
-    {
-        
-        page.setId(id);
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseElement#setShortTitle(java.lang.String)
      */
     public void setShortTitle(String title)

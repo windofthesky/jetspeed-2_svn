@@ -26,7 +26,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
  */
 public abstract class BaseElementImpl implements BaseElement
 {
-    private String id;
+    private int id;
     private String name;
     private String title;
 
@@ -111,15 +111,7 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public String getId()
     {
-        return id;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.BaseElement#setId(java.lang.String)
-     */
-    public void setId(String id)
-    {
-        this.id = id;
+        return Integer.toString(id);
     }
 
     /* (non-Javadoc)

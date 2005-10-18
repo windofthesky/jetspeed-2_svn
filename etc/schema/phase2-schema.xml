@@ -92,7 +92,7 @@ limitations under the License.
         <column name="STATE" size="40" type="VARCHAR"/>
         <column name="LAYOUT_ROW" type="INTEGER"/>
         <column name="LAYOUT_COLUMN" type="INTEGER"/>
-        <column name="LAYOUT_WIDTHS" size="20" type="VARCHAR"/>
+        <column name="LAYOUT_SIZES" size="20" type="VARCHAR"/>
         <column name="EXT_PROPERTY_NAME_1" size="40" type="VARCHAR"/>
         <column name="EXT_PROPERTY_VALUE_1" size="80" type="VARCHAR"/>
         <column name="EXT_PROPERTY_NAME_2" size="40" type="VARCHAR"/>

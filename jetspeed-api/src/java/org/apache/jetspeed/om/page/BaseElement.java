@@ -34,14 +34,6 @@ public interface BaseElement extends SecuredResource
     public String getId();
 
     /**
-     * Modifies the id of this element. This id must not be null and must be unique
-     * for the portal.
-     *
-     * @param id the new id for this element
-     */
-    public void setId(String id);
-
-    /**
      * Returns the title in the default Locale
      *
      * @return the page title
