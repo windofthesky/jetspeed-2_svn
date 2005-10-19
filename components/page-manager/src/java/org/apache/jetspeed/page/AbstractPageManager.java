@@ -222,6 +222,23 @@ public abstract class AbstractPageManager
         }
         return fragment;        
     }
+
+    public Fragment newPortletFragment()
+    {
+        Fragment fragment = null;
+        try
+        {
+            fragment = (Fragment)createObject(this.fragmentClass);
+            fragment.setType(Fragment.PORTLET);          
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create page object for " + this.pageClass;
+            log.error(message, e);
+            // throw new JetspeedException(message, e);
+        }
+        return fragment;        
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newProperty()
