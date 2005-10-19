@@ -71,7 +71,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public void setSkin(String skinName)
     {
-        this.skin = skin;
+        this.skin = skinName;
     }
 
     /* (non-Javadoc)
@@ -183,6 +183,16 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return layoutRowProperty;
     }
     
+    public void setLayoutRow(int row)
+    {
+        this.layoutRowProperty = row;
+    }
+    
+    public void setLayoutColumn(int column)
+    {
+        this.layoutColumnProperty = column;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
      */
@@ -199,6 +209,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return layoutSizesProperty;
     }
 
+    public void setLayoutSizes(String sizes)
+    {
+        this.layoutSizesProperty = sizes;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#isReference()
      */
