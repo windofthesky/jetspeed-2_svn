@@ -301,7 +301,7 @@ limitations under the License.
       <field-descriptor
          name="layoutSizesProperty"
          column="LAYOUT_SIZES"
-         jdbc-type="INTEGER"
+         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
