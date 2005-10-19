@@ -89,12 +89,19 @@ public interface PageManager
     public Link newLink(String path);
 
     /**
-     * Creates a new empty Fragment instance
+     * Creates a new empty Layout Fragment instance
      *
      * @return a newly created Fragment object
      */
     public Fragment newFragment();
 
+    /**
+     * Creates a new empty Portlet Fragment instance
+     *
+     * @return a newly created Fragment object
+     */    
+    public Fragment newPortletFragment();
+    
     /**
      * Creates a new empty Property instance
      *
