@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -47,6 +48,88 @@ public class FolderImpl extends NodeImpl implements Folder
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
+
+    /**
+     * addFolder
+     *
+     * Adds a folder to the persistent collection and resets cached node sets.
+     *
+     * @param folder new folder impl
+     */
+    public void addFolder(FolderImpl newFolder)
+    {
+        // add to folders collection
+        if (folders == null)
+        {
+            folders = new ArrayList();
+        }
+        folders.add(newFolder);
+
+        // reset cached node sets
+        allNodeSet = null;
+        foldersNodeSet = null;
+    }
+    
+    /**
+     * removeFolder
+     *
+     * Removes a folder to the persistent collection and resets cached node sets.
+     *
+     * @param folder remove folder impl
+     */
+    public void removeFolder(FolderImpl removeFolder)
+    {
+        // remove from folders collection
+        if (folders != null)
+        {
+            folders.remove(removeFolder);
+        }
+
+        // reset cached node sets
+        allNodeSet = null;
+        foldersNodeSet = null;
+    }
+
+    /**
+     * addPage
+     *
+     * Adds a page to the persistent collection and resets cached node sets.
+     *
+     * @param page new page impl
+     */
+    public void addPage(PageImpl newPage)
+    {
+        // add to pages collection
+        if (pages == null)
+        {
+            pages = new ArrayList();
+        }
+        pages.add(newPage);
+
+        // reset cached node sets
+        allNodeSet = null;
+        pagesNodeSet = null;
+    }
+    
+    /**
+     * removePage
+     *
+     * Removes a page to the persistent collection and resets cached node sets.
+     *
+     * @param page remove page impl
+     */
+    public void removePage(PageImpl removePage)
+    {
+        // remove from pages collection
+        if (pages != null)
+        {
+            pages.remove(removePage);
+        }
+
+        // reset cached node sets
+        allNodeSet = null;
+        pagesNodeSet = null;
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)

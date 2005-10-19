@@ -265,7 +265,39 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
             PageNotUpdatedException
     {
         System.out.println("storing page " + page.getPath());
-        getPersistenceBrokerTemplate().store(page);
+
+        // look up and set parent folder if necessary
+        if (page.getParent() == null)
+        {
+            // access folder by path
+            String pagePath = page.getPath();
+            String parentPath = pagePath.substring(0, pagePath.lastIndexOf(Folder.PATH_SEPARATOR));
+            if (parentPath.length() == 0)
+            {
+                parentPath = Folder.PATH_SEPARATOR;
+            }
+            FolderImpl parent = null;
+            try
+            {
+                parent = (FolderImpl)getFolder(parentPath);
+            }
+            catch (FolderNotFoundException fnfe)
+            {
+                throw new PageNotUpdatedException("Missing parent folder: " + parentPath);
+            }
+
+            // update page and parent folder
+            parent.addPage((PageImpl)page);
+            page.setParent(parent);
+            getPersistenceBrokerTemplate().store(parent);
+            getPersistenceBrokerTemplate().store(page);
+        }
+        else
+        {
+            // update page
+            getPersistenceBrokerTemplate().store(page);
+        }
+
         System.out.println("**** stored page " + page.getPath());        
     }
 
@@ -276,7 +308,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
             PageNotRemovedException
     {
         System.out.println("deleting page " + page.getPath());
-        getPersistenceBrokerTemplate().delete(page);
+
+        // look up and update parent folder if necessary
+        if (page.getParent() != null)
+        {
+            // delete page and update parent folder
+            FolderImpl parent = (FolderImpl)page.getParent();
+            parent.removePage((PageImpl)page);
+            getPersistenceBrokerTemplate().store(parent);
+            getPersistenceBrokerTemplate().delete(page);
+        }
+        else
+        {
+            // delete page
+            getPersistenceBrokerTemplate().delete(page);
+        }
+
         System.out.println("**** deleted page " + page.getPath());        
     }
 
@@ -287,7 +334,39 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
             FolderNotUpdatedException
     {
         System.out.println("storing folder " + folder.getPath());
-        getPersistenceBrokerTemplate().store(folder);
+
+        // look up and set parent folder if necessary
+        if ((folder.getParent() == null) && !folder.getPath().equals(Folder.PATH_SEPARATOR))
+        {
+            // access folder by path
+            String folderPath = folder.getPath();
+            String parentPath = folderPath.substring(0, folderPath.lastIndexOf(Folder.PATH_SEPARATOR));
+            if (parentPath.length() == 0)
+            {
+                parentPath = Folder.PATH_SEPARATOR;
+            }
+            FolderImpl parent = null;
+            try
+            {
+                parent = (FolderImpl)getFolder(parentPath);
+            }
+            catch (FolderNotFoundException fnfe)
+            {
+                throw new FolderNotUpdatedException("Missing parent folder: " + parentPath);
+            }
+
+            // update folder and parent folder
+            parent.addFolder((FolderImpl)folder);
+            folder.setParent(parent);
+            getPersistenceBrokerTemplate().store(parent);
+            getPersistenceBrokerTemplate().store(folder);
+        }
+        else
+        {
+            // update folder
+            getPersistenceBrokerTemplate().store(folder);
+        }
+
         System.out.println("**** stored folder " + folder.getPath());        
     }
 
@@ -298,7 +377,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
             FolderNotRemovedException
     {
         System.out.println("deleting folder " + folder.getPath());
-        getPersistenceBrokerTemplate().delete(folder);
+
+        // look up and update parent folder if necessary
+        if (folder.getParent() != null)
+        {
+            // delete folder and update parent folder
+            FolderImpl parent = (FolderImpl)folder.getParent();
+            parent.removeFolder((FolderImpl)folder);
+            getPersistenceBrokerTemplate().store(parent);
+            getPersistenceBrokerTemplate().delete(folder);
+        }
+        else
+        {
+            // delete folder
+            getPersistenceBrokerTemplate().delete(folder);
+        }
+
         System.out.println("**** deleted folder " + folder.getPath());        
     }
 
