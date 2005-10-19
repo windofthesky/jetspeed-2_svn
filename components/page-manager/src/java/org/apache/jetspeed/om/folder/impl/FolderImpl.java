@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.Folder;
@@ -30,6 +31,7 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
+import org.apache.jetspeed.page.document.impl.NodeSetImpl;
 
 /**
  * FolderImpl
@@ -41,6 +43,10 @@ public class FolderImpl extends NodeImpl implements Folder
 {
     private List folders;
     private List pages;
+
+    private NodeSet allNodeSet;
+    private NodeSet foldersNodeSet;
+    private NodeSet pagesNodeSet;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
@@ -79,7 +85,18 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getFolders() throws FolderNotFoundException, DocumentException
     {
-        return null; // NYI
+        if (foldersNodeSet != null)
+        {
+            if (folders != null)
+            {
+                foldersNodeSet = new NodeSetImpl(folders);
+            }
+            else
+            {
+                foldersNodeSet = new NodeSetImpl();
+            }
+        }
+        return foldersNodeSet;
     }
     
     /* (non-Javadoc)
@@ -87,7 +104,12 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Folder getFolder(String name) throws FolderNotFoundException, DocumentException
     {
-        return null; // NYI
+        Folder folder = (Folder)getFolders().get(name);
+        if (folder == null)
+        {
+            throw new FolderNotFoundException("Folder not found: " + name);
+        }
+        return folder;
     }
     
     /* (non-Javadoc)
@@ -95,7 +117,18 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getPages() throws NodeException
     {
-        return null; // NYI
+        if (pagesNodeSet != null)
+        {
+            if (pages != null)
+            {
+                pagesNodeSet = new NodeSetImpl(pages);
+            }
+            else
+            {
+                pagesNodeSet = new NodeSetImpl();
+            }
+        }
+        return pagesNodeSet;
     }
     
     /* (non-Javadoc)
@@ -103,7 +136,12 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Page getPage(String name) throws PageNotFoundException, NodeException
     {
-        return null; // NYI
+        Page page = (Page)getPages().get(name);
+        if (page == null)
+        {
+            throw new PageNotFoundException("Page not found: " + name);
+        }
+        return page;
     }
     
     /* (non-Javadoc)
@@ -135,7 +173,27 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getAll() throws FolderNotFoundException, DocumentException
     {
-        return null; // NYI
+        if (allNodeSet == null)
+        {
+            List all = new ArrayList();
+            if (folders != null)
+            {
+                all.addAll(folders);
+            }
+            if (pages != null)
+            {
+                all.addAll(pages);
+            }
+            if (!all.isEmpty())
+            {
+                allNodeSet = new NodeSetImpl(all);
+            }
+            else
+            {
+                allNodeSet = new NodeSetImpl();
+            }
+        }
+        return allNodeSet;
     }
     
     /* (non-Javadoc)

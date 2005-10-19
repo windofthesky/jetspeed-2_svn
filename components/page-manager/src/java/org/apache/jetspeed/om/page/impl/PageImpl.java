@@ -15,7 +15,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
@@ -79,7 +82,12 @@ public class PageImpl extends NodeImpl implements Page
      */
     public Fragment getRootFragment()
     {
-        return null; //NYI
+        // get singleton fragment
+        if ((fragments != null) && !fragments.isEmpty())
+        {
+            return (Fragment)fragments.get(0);
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -87,7 +95,26 @@ public class PageImpl extends NodeImpl implements Page
      */
     public void setRootFragment(Fragment fragment)
     {
-        // NYI
+        // delete existing fragments if required
+        if ((fragments != null) && !fragments.isEmpty())
+        {
+            Iterator removeIter = fragments.iterator();
+            while (removeIter.hasNext())
+            {
+                removeIter.next();
+                removeIter.remove();
+            }
+        }
+
+        // add new singleton fragment
+        if (fragment != null)
+        {
+            if (fragments == null)
+            {
+                fragments = new ArrayList(1);
+            }
+            fragments.add(fragment);
+        }
     }
 
     /* (non-Javadoc)
@@ -95,7 +122,34 @@ public class PageImpl extends NodeImpl implements Page
      */
     public Fragment getFragmentById(String id)
     {
-        return null; // NYI
+        // search for fragment recursively from
+        // root singleton fragment using a local stack
+        Stack stack = new Stack();
+        Fragment fragment = getRootFragment();
+        while ((fragment != null) && !fragment.getId().equals(id))
+        {
+            // push any fragment fragments onto the local stack
+            List fragments = fragment.getFragments();
+            if (!fragments.isEmpty())
+            {
+                Iterator pushIter = fragments.iterator();
+                while (pushIter.hasNext())
+                {
+                    stack.push(pushIter.next());
+                }
+            }
+
+            // pop next fragment from local stack if available
+            if (stack.size() > 0)
+            {
+                fragment = (Fragment) stack.pop();
+            }
+            else
+            {
+                fragment = null;
+            }
+        }
+        return fragment;
     }
 
     /* (non-Javadoc)

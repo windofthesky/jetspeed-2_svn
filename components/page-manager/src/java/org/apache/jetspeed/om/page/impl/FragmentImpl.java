@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.page.Fragment;
@@ -110,7 +111,12 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public List getFragments()
     {
-        return null; // NYI
+        // fragments collection must be defined
+        if (fragments == null)
+        {
+            fragments = new ArrayList();
+        }
+        return fragments;
     }
     
     /* (non-Javadoc)

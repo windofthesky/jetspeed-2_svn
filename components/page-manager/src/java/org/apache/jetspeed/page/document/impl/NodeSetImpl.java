@@ -15,7 +15,11 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -28,12 +32,43 @@ import org.apache.jetspeed.page.document.NodeSet;
  */
 public class NodeSetImpl implements NodeSet
 {
+    private List nodes;
+    private Map nodesByName;
+
+    public NodeSetImpl()
+    {
+    }
+    public NodeSetImpl(List nodes)
+    {
+        this.nodes = new ArrayList(nodes.size());
+        this.nodesByName = new HashMap((nodes.size() / 2) + 1);
+        Iterator addIter = nodes.iterator();
+        while (addIter.hasNext())
+        {
+            Node node = (Node)addIter.next();
+            this.nodes.add(node);
+            if (!this.nodesByName.containsKey(node.getName()))
+            {
+                this.nodesByName.put(node.getName(), node);
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.NodeSet#add(org.apache.jetspeed.page.document.Node)
      */
     public void add(Node node)
     {
-        // NYI
+        if (nodes != null)
+        {
+            nodes = new ArrayList(8);
+            nodesByName = new HashMap(5);
+        }
+        nodes.add(node);
+        if (!nodesByName.containsKey(node.getName()))
+        {
+            nodesByName.put(node.getName(), node);
+        }
     }
     
     /* (non-Javadoc)
@@ -41,7 +76,11 @@ public class NodeSetImpl implements NodeSet
      */
     public Node get(String name)
     {
-        return null; // NYI
+        if (nodesByName != null)
+        {
+            return (Node)nodesByName.get(name);
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -49,7 +88,11 @@ public class NodeSetImpl implements NodeSet
      */
     public Iterator iterator()
     {
-        return null; // NYI
+        if (nodes != null)
+        {
+            return nodes.iterator();
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -81,7 +124,11 @@ public class NodeSetImpl implements NodeSet
      */
     public int size()
     {
-        return -1; // NYI
+        if (nodes != null)
+        {
+            return nodes.size();
+        }
+        return 0;
     }
     
     /* (non-Javadoc)
@@ -89,7 +136,11 @@ public class NodeSetImpl implements NodeSet
      */
     public boolean contains(Node node)
     {
-        return false; // NYI
+        if (nodes != null)
+        {
+            return nodes.contains(node);
+        }
+        return false;
     }
     
     /* (non-Javadoc)
@@ -97,6 +148,10 @@ public class NodeSetImpl implements NodeSet
      */
     public boolean isEmpty()
     {
-        return true; // NYI
+        if (nodes != null)
+        {
+            return nodes.isEmpty();
+        }
+        return true;
     }
 }
