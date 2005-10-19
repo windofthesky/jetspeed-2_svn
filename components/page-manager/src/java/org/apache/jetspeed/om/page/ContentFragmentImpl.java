@@ -284,6 +284,21 @@ public class ContentFragmentImpl implements ContentFragment
         return fragment.getLayoutSizes();
     }
 
+    public void setLayoutRow(int row)
+    {
+        fragment.setLayoutRow(row);
+    }
+    
+    public void setLayoutColumn(int column)
+    {
+        fragment.setLayoutColumn(column);
+    }
+    
+    public void setLayoutSizes(String sizes)
+    {
+        fragment.setLayoutSizes(sizes);
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setSkin(java.lang.String)
      */
