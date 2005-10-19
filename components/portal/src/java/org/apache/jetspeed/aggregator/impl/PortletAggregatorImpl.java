@@ -299,6 +299,21 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
         }
         
+        public void setLayoutRow(int row)
+        {
+            // ?
+        }
+        
+        public void setLayoutColumn(int column)
+        {
+            // ?
+        }
+        
+        public void setLayoutSizes(String sizes)
+        {
+            // ?
+        }
+        
         /* (non-Javadoc)
          * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
          */
