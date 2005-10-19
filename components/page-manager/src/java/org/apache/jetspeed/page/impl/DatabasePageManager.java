@@ -129,6 +129,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
         return delegator.newFragment();    
     }
 
+    public Fragment newPortletFragment()
+    {
+        return delegator.newPortletFragment();
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newProperty()
      */

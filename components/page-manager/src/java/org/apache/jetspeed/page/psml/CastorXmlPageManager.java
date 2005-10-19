@@ -128,6 +128,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return fragment;
     }
 
+    public Fragment newPortletFragment()
+    {
+        // FragmentImpl requires generated ids
+        FragmentImpl fragment = (FragmentImpl)super.newFragment();
+        fragment.setType(Fragment.PORTLET);
+        fragment.setId(generator.getNextPeid());
+        return fragment;
+    }
+        
     /**
      * <p>
      * getPage
