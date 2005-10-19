@@ -30,7 +30,7 @@ import org.apache.jetspeed.page.document.Node;
  */
 public abstract class NodeImpl extends BaseElementImpl implements Node
 {
-    private NodeImpl parent;
+    private Node parent;
     private String path;
 
     /**
@@ -71,6 +71,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setParent(Node parent)
     {
+        // cast to check type
         this.parent = (NodeImpl)parent;
     }
 

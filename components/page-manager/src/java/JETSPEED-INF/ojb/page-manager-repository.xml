@@ -232,17 +232,6 @@ limitations under the License.
         access="anonymous"
       />
 
-      <reference-descriptor
-          name="parent"
-          class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
-          auto-retrieve="true"
-          auto-delete="none"
-          auto-update="none"
-          proxy="true"
-          >
-         <foreignkey field-ref="parentId"/>
-      </reference-descriptor>
-
       <collection-descriptor
           name="fragments"
           element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
