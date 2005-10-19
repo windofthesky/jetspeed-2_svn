@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
+import org.apache.jetspeed.page.DelegatingPageManager;
 import org.apache.jetspeed.page.FolderNotRemovedException;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.LinkNotRemovedException;
@@ -195,15 +196,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
      */
-    public Page getPage(String id) throws PageNotFoundException, NodeException
+    public Page getPage(String path) throws PageNotFoundException, NodeException
     {
-        Criteria filter = new Criteria();        
-        filter.addEqualTo("id", id);
+        Criteria filter = new Criteria();
+        filter.addEqualTo("path", path);
         QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
         Page page = (Page) getPersistenceBrokerTemplate().getObjectByQuery(query);
         if (page == null)
         {
-            throw new PageNotFoundException("Page " + id + " not found.");
+            throw new PageNotFoundException("Page " + path + " not found.");
         }
         return page;
     }
@@ -246,8 +247,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     public Folder getFolder(String folderPath) throws FolderNotFoundException,
             InvalidFolderException, NodeException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Criteria filter = new Criteria();
+        filter.addEqualTo("path", folderPath);
+        QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
+        Folder folder = (Folder) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (folder == null)
+        {
+            throw new FolderNotFoundException("Folder " + folderPath + " not found.");
+        }
+        return folder;
     }
 
     /* (non-Javadoc)
@@ -267,8 +275,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     public void removePage(Page page) throws JetspeedException,
             PageNotRemovedException
     {
-        // TODO Auto-generated method stub
-
+        System.out.println("deleting page " + page.getPath());
+        getPersistenceBrokerTemplate().delete(page);
+        System.out.println("**** deleted page " + page.getPath());        
     }
 
     /* (non-Javadoc)
@@ -288,7 +297,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport
     public void removeFolder(Folder folder) throws JetspeedException,
             FolderNotRemovedException
     {
+        System.out.println("deleting folder " + folder.getPath());
         getPersistenceBrokerTemplate().delete(folder);
+        System.out.println("**** deleted folder " + folder.getPath());        
     }
 
     /* (non-Javadoc)

@@ -29,7 +29,7 @@ import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;

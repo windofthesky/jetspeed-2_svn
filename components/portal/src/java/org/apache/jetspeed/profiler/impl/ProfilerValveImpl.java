@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.page.psml.ContentPageImpl;
+import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;

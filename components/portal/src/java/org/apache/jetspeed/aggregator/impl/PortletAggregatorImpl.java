@@ -34,7 +34,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.request.RequestContext;
 
 /**

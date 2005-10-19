@@ -1,4 +1,4 @@
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.om.page;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +7,6 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Defaults;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.Node;
 
 public class ContentPageImpl implements ContentPage

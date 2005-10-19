@@ -1,4 +1,4 @@
-package org.apache.jetspeed.page.impl;
+package org.apache.jetspeed.page;
 
 import java.util.Map;
 
@@ -10,13 +10,6 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.page.FolderNotRemovedException;
-import org.apache.jetspeed.page.FolderNotUpdatedException;
-import org.apache.jetspeed.page.LinkNotRemovedException;
-import org.apache.jetspeed.page.LinkNotUpdatedException;
-import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.PageNotRemovedException;
-import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
@@ -31,14 +24,14 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 public class DelegatingPageManager extends AbstractPageManager
 {
-
-    DelegatingPageManager(
+    public DelegatingPageManager(
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity,
             Map modelClasses)
     {
         super(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
     }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
      */

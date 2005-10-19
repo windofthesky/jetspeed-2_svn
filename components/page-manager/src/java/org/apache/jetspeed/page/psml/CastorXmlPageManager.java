@@ -39,17 +39,18 @@ import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.psml.ContentPageImpl;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
+import org.apache.jetspeed.page.AbstractPageManager;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -59,7 +60,6 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
-import org.apache.jetspeed.page.impl.AbstractPageManager;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to

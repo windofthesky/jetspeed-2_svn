@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page.impl;
+package org.apache.jetspeed.page;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,9 +37,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageManagerEventListener;
-import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.MenuElement;
 

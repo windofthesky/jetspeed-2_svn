@@ -123,6 +123,7 @@ limitations under the License.
 
       <collection-descriptor
           name="fragments"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
@@ -198,13 +199,13 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="extLocatorName"
+         name="extendedLocatorName"
          column="EXT_LOCATOR_NAME"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="extLocatorValue"
+         name="extendedLocatorValue"
          column="EXT_LOCATOR_VALUE"
          jdbc-type="VARCHAR"
       />

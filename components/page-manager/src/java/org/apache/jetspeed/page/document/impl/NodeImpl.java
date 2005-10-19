@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.document.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.page.document.Node;
 
@@ -31,6 +32,31 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
 {
     private NodeImpl parent;
     private String path;
+
+    /**
+     * setName
+     *
+     * @param name element name
+     */
+    public void setName(String name)
+    {
+        // set path based on name
+        if (name != null)
+        {
+            if (path != null)
+            {
+                if (!name.equals(Folder.PATH_SEPARATOR))
+                {
+                    path = path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name;
+                }
+                else
+                {
+                    path = Folder.PATH_SEPARATOR;
+                }
+            }
+            super.setName(name);
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getParent()
@@ -61,7 +87,30 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setPath(String path)
     {
+        // cleanup paths
+        if ((path == null) || (path.length() == 0))
+        {
+            path = Folder.PATH_SEPARATOR;
+        }
+        if (!path.startsWith(Folder.PATH_SEPARATOR))
+        {
+            path = Folder.PATH_SEPARATOR + path;
+        }
+        if (path.endsWith(Folder.PATH_SEPARATOR) && !path.equals(Folder.PATH_SEPARATOR))
+        {
+            path = path.substring(0, path.length() - 1);
+        }
         this.path = path;
+
+        // set name based on path
+        if (!path.equals(Folder.PATH_SEPARATOR))
+        {
+            super.setName(path.substring(path.lastIndexOf(Folder.PATH_SEPARATOR) + 1));
+        }
+        else
+        {
+            super.setName(Folder.PATH_SEPARATOR);
+        }
     }
 
     /* (non-Javadoc)

@@ -17,6 +17,7 @@ package org.apache.jetspeed.page;
 
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Page;
 
 import junit.framework.Test;
@@ -43,6 +44,13 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
     {
         super.setUp();        
         pageManager = (PageManager)ctx.getBean("pageManager");        
+        createTestData();
+    }
+
+    protected void tearDown() throws Exception
+    {
+        dropTestData();
+        super.tearDown();
     }
     
     public static Test suite()
@@ -63,38 +71,40 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         { "test-repository-datasource-spring.xml" };
     }
 
-    public void testPages()
-    throws Exception
+    public void testPages() throws Exception
     {
-        System.out.println("************ creating test data");
-        createTestData();
+        boolean pageNotFound = false;
         try
         {
             Page page = pageManager.getPage("/notfound.psml");
         }
         catch (PageNotFoundException e)
         {
-            System.out.println("Page " + "/notfound.psml");
-            return;
+            pageNotFound = true;
         }
-        fail("should have got a page not found error");
+        assertTrue("should have got a page not found error", pageNotFound);
         
+        try
+        {
+            Page page = pageManager.getPage("/default-page.psml");
+        }
+        catch (PageNotFoundException e)
+        {
+            fail("should have found root default page");                    
+        }
+    }
+    
+    public void testFolders() throws Exception
+    {
         try
         {
             Folder folder = pageManager.getFolder("/");
         }
-        catch (PageNotFoundException e)
+        catch (FolderNotFoundException e)
         {
-            fail("should have found root page");                    
+            fail("should have found root folder");                    
         }
-        dropTestData();        
     }
-    
-//    public void testFolders()
-//    throws Exception
-//    {
-//        Folder folder = pageManager.getFolder("/");
-//    }
     
     private void createTestData()
     {
@@ -103,10 +113,13 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             Folder folder = pageManager.newFolder("/");
             folder.setTitle("Root");
             pageManager.updateFolder(folder);
+            Page page = pageManager.newPage("/default-page.psml");
+            page.setTitle("Default Page");
+            pageManager.updatePage(page);
         }
         catch (Exception e)
         {
-            fail("could not add root folder: "+e);
+            fail("could not create test data: "+e);
         }
     }
     
@@ -114,14 +127,13 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
     {
         try
         {
-            Folder root = pageManager.getFolder("/");
-            assertNotNull("folder should be found", root);
-            pageManager.removeFolder(root);
+            Folder folder = pageManager.getFolder("/");
+            assertNotNull("folder should be found", folder);
+            pageManager.removeFolder(folder);
         }
         catch (Exception e)
         {
-            fail("could not remove root folder: "+e);
+            fail("could not remove test data: "+e);
         }
-        
     }
 }
