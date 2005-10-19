@@ -119,6 +119,8 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             folder.setShortTitle("Root");
             pageManager.updateFolder(folder);
             
+            assertNull(folder.getParent());
+
             Page page = pageManager.newPage("/default-page.psml");
             page.setTitle("Default Page");
             page.setDefaultDecorator("tigris", Fragment.LAYOUT);
@@ -126,22 +128,27 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             page.setDefaultSkin("skin-1");
             page.setShortTitle("Default");
             
-            Fragment root = pageManager.newFragment();
+            Fragment root = page.getRootFragment();
             root.setDecorator("blue-gradient");
             root.setName("jetspeed-layouts::VelocityTwoColumns");
             root.setShortTitle("Root");
             root.setTitle("Root Fragment");
             root.setState("Normal");
-            root.setLayoutColumn(88);
-            root.setLayoutColumn(99);
             root.setLayoutSizes("50%,50%");
             
-            page.setRootFragment(root);          
+            Fragment portlet = pageManager.newPortletFragment();
+            portlet.setName("security::LoginPortlet");
+            portlet.setShortTitle("Portlet");
+            portlet.setTitle("Portlet Fragment");
+            portlet.setState("Normal");
+            portlet.setLayoutRow(88);
+            portlet.setLayoutColumn(99);
+            root.getFragments().add(portlet);
             
-            //root.set
-            
-            pageManager.updatePage(page);            
-            
+            pageManager.updatePage(page);
+
+            assertNotNull(page.getParent());
+            assertEquals(page.getParent().getId(), folder.getId());
             
             try
             {
