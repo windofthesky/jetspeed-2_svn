@@ -229,6 +229,27 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     public int getLayoutColumn();
 
     /**
+     * set the layout column property
+     * 
+     * @param column
+     */
+    public void setLayoutColumn(int column);
+    
+    /**
+     * set the layout row property
+     * 
+     * @param row
+     */
+    public void setLayoutRow(int row);
+    
+    /**
+     * set the layout sizes
+     * 
+     * @param sizes
+     */
+    public void setLayoutSizes(String sizes);
+    
+    /**
      * get layout sizes property, (i.e. "25%,75%")
      *
      * @return sizes layout property
