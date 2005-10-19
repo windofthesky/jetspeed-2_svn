@@ -244,6 +244,20 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         }
         return -1;
     }
+
+    public void setLayoutRow(int row)
+    {
+        // return first valid sizes property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if (ROW_PROPERTY_NAME.equals(p.getName()))
+            {
+                p.setValue(String.valueOf(row));
+            }
+        }
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
@@ -263,6 +277,20 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return -1;
     }
 
+    public void setLayoutColumn(int size)
+    {
+        // return first valid sizes property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if (COLUMN_PROPERTY_NAME.equals(p.getName()))
+            {
+                p.setValue(String.valueOf(size));
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
      */
@@ -280,7 +308,21 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         }
         return null;
     }
-
+    
+    public void setLayoutSizes(String sizes)
+    {
+        // return first valid sizes property
+        Iterator i = this.properties.iterator();
+        while (i.hasNext())
+        {
+            Property p = (Property) i.next();
+            if (SIZES_PROPERTY_NAME.equals(p.getName()))
+            {
+                p.setValue(sizes);
+            }
+        }
+    }
+    
     public Object clone() throws java.lang.CloneNotSupportedException
     {
         Object cloned = super.clone();
