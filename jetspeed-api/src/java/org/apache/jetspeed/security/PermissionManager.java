@@ -136,8 +136,9 @@ public interface PermissionManager
      * 
      * @param subject The Java subject.
      * @param permission The permission, usually a portlet, page or folder type permission.
-     * @throws Throws a security exception.
+     * @return true if the subject has access to the permission protected resource, false
+     *         if the subject does not have access.
      */
-    void checkPermission(Subject subject, Permission permission) throws SecurityException;
+    boolean checkPermission(Subject subject, Permission permission);
     
 }
