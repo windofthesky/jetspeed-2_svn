@@ -438,20 +438,24 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         return internalPermission;
     }
     
-    public void checkPermission(Subject subject, final Permission permission) 
-    throws SecurityException
+    public boolean checkPermission(Subject subject, final Permission permission) 
     {
-        //Subject.doAs(subject, new PrivilegedAction()
-        Subject.doAsPrivileged(subject, new PrivilegedAction()                
+        try
         {
-            public Object run()
+            //Subject.doAs(subject, new PrivilegedAction()
+            Subject.doAsPrivileged(subject, new PrivilegedAction()                
             {
-                AccessController.checkPermission(permission);
-                System.out.println("tst with policy: " + 
-                        Policy.getPolicy().getClass().getName());                
-                return null;
-            }
-        }, null);
-        System.out.println("Did not deny access for perm " + permission);         
+                public Object run()
+                {
+                    AccessController.checkPermission(permission);
+                    return null;
+                }
+            }, null);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;         
     }
 }

@@ -108,21 +108,22 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         principals.add(user);
         principals.add(role1);
         principals.add(role2);
-        boolean failNow = true;
+
         try
         {
             Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
-            pms.checkPermission(subject, perm1);
-            pms.checkPermission(subject, perm2);
-            pms.checkPermission(subject, perm3);
-            failNow = false;
-            pms.checkPermission(subject, perm3a);
-            fail("should have failed permission check on perm3a");
+            boolean access = pms.checkPermission(subject, perm1);
+            assertTrue("access to perm1 should be granted ", access);
+            access = pms.checkPermission(subject, perm2);
+            assertTrue("access to perm2 should be granted ", access);
+            access = pms.checkPermission(subject, perm3);
+            assertTrue("access to perm3 should be granted ", access);
+            access = pms.checkPermission(subject, perm3a);
+            assertFalse("access to perm3a should be denied ", access);
         }
         catch (AccessControlException e)
         {
-            if (failNow)
-                fail("failed permission check");
+            fail("failed permission check");
         }
         finally
         {
