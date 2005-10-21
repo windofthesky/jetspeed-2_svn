@@ -15,14 +15,19 @@
 package org.apache.jetspeed.security.impl;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
 import java.security.Permission;
 import java.security.Permissions;
+import java.security.Policy;
 import java.security.Principal;
+import java.security.PrivilegedAction;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -432,5 +437,21 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         InternalPermission internalPermission = (InternalPermission) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalPermission;
     }
-
+    
+    public void checkPermission(Subject subject, final Permission permission) 
+    throws SecurityException
+    {
+        //Subject.doAs(subject, new PrivilegedAction()
+        Subject.doAsPrivileged(subject, new PrivilegedAction()                
+        {
+            public Object run()
+            {
+                AccessController.checkPermission(permission);
+                System.out.println("tst with policy: " + 
+                        Policy.getPolicy().getClass().getName());                
+                return null;
+            }
+        }, null);
+        System.out.println("Did not deny access for perm " + permission);         
+    }
 }
