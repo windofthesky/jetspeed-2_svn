@@ -151,7 +151,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test remove principal and associated permissions.</p>
      */
-    public void xtestRemovePrincipalPermissions()
+    public void testRemovePrincipalPermissions()
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("test");
@@ -194,7 +194,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test remove permission.</p>
      */
-    public void xtestPermissionExists()
+    public void testPermissionExists()
     {
         PortletPermission perm1 = new PortletPermission("removepermission1", "view, edit, secure, minimized, maximized");
         PortletPermission perm2 = new PortletPermission("removepermission2", "view, edit, minimized, maximized");
@@ -223,7 +223,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test remove permission.</p>
      */
-    public void xtestRemovePermission()
+    public void testRemovePermission()
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("removepermission");
@@ -287,7 +287,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test grant permission to principal.</p>
      */
-    public void xtestGrantPermission()
+    public void testGrantPermission()
     {
         // Init test.
         UserPrincipal user1 = new UserPrincipalImpl("testgrantpermission1");
@@ -367,7 +367,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test get permissions from a principal.</p>
      */
-    public void xtestGetPrincipalPermissions()
+    public void testGetPrincipalPermissions()
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("anon");
@@ -420,7 +420,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test get permissions from a collection of principals.</p>
      */
-    public void xtestGetPermissions()
+    public void testGetPermissions()
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("anon");
@@ -517,7 +517,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test revoke permission.</p>
      */
-    public void xtestRevokePermission()
+    public void testRevokePermission()
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("revokepermission");
