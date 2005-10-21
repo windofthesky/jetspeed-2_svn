@@ -19,6 +19,8 @@ import java.security.Permissions;
 import java.security.Principal;
 import java.util.Collection;
 
+import javax.security.auth.Subject;
+
 /**
  * <p>
  * Describe the interface for managing {@link Permission}and permission
@@ -126,4 +128,16 @@ public interface PermissionManager
      */
     void revokePermission(Principal principal, Permission permission) throws SecurityException;
 
+    /**
+     * <p>
+     * Check permission for the given subject's access to the resource protected by the permission
+     * This is an abstraction introduced in M4 for Permission Manager implementations NOT
+     * founded upon the a Java security policy.
+     * 
+     * @param subject The Java subject.
+     * @param permission The permission, usually a portlet, page or folder type permission.
+     * @throws Throws a security exception.
+     */
+    void checkPermission(Subject subject, Permission permission) throws SecurityException;
+    
 }
