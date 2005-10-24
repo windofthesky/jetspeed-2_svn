@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portlet-api/src/java"/>
+	<classpathentry kind="src" path="components/statistics/src/java"/>
+	<classpathentry kind="src" path="components/statistics/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/java"/>
