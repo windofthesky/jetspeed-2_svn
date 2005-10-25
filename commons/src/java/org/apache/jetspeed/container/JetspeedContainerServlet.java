@@ -221,7 +221,14 @@ public class JetspeedContainerServlet extends HttpServlet
                 // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
                 ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
 
-                portlet.render(renderRequest, renderResponse);
+                if (null == portlet)
+                {
+                    throw new Exception("Content is not available.");
+                }
+                else
+                {
+                    portlet.render(renderRequest, renderResponse);
+                }
             }
 
             // if we get this far we are home free
