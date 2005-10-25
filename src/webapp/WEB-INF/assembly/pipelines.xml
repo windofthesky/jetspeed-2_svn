@@ -238,6 +238,9 @@ limitations under the License.
             <entry key='/ajax'>
                 <value>ajax-pipeline</value>
             </entry>
+            <entry key='/login'>
+                <value>jetspeed-pipeline</value>
+            </entry>            
         </map>        
     </constructor-arg>        
   </bean>

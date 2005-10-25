@@ -196,16 +196,16 @@ public class JetspeedEngine implements Engine
             String targetPipeline = context
                     .getRequestParameter(PortalReservedParameters.PIPELINE);
             if (null == targetPipeline)
-            {                
-                targetPipeline = context.getRequest().getServletPath();
+            {
+                targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
                 if (null == targetPipeline)
                 {
-                    targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);
-                }
-                else
-                {
-                    targetPipeline = (String)pipelineMapper.get(targetPipeline); 
-                    System.out.println("pipeline = " + targetPipeline);
+                    targetPipeline = context.getRequest().getServletPath();                    
+                    if (null != targetPipeline)
+                    {
+                        targetPipeline = (String)pipelineMapper.get(targetPipeline); 
+                        // System.out.println("pipeline = " + targetPipeline);
+                    }
                 }
             }
             // tlRequestContext.set(context);
