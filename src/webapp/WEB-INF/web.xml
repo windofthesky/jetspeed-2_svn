@@ -180,6 +180,22 @@ limitations under the License.
           jetspeed
        </servlet-name>
        <url-pattern>
+         /ajax/*
+       </url-pattern>
+    </servlet-mapping>    
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /portlet/*
+       </url-pattern>
+    </servlet-mapping>            
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
          /jetspeed/*
        </url-pattern>
     </servlet-mapping>
