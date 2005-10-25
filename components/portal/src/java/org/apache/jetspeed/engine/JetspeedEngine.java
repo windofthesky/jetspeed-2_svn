@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.NamingException;
@@ -69,6 +70,7 @@ public class JetspeedEngine implements Engine
     private final ComponentManager componentManager;
     private final Configuration configuration;
     private final String applicationRoot;
+    private Map pipelineMapper ; 
     
     protected static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);        
@@ -89,7 +91,7 @@ public class JetspeedEngine implements Engine
         
         // Make these availble as beans to Spring
         componentManager.addComponent("Engine", this);
-        componentManager.addComponent("PortalContext", context);
+        componentManager.addComponent("PortalContext", context);        
     }  
     
     
@@ -136,6 +138,8 @@ public class JetspeedEngine implements Engine
             
             //Start the ComponentManager
             componentManager.start();               
+            pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
+            
         }
         catch (Throwable e)
         {
@@ -188,12 +192,21 @@ public class JetspeedEngine implements Engine
 
     public void service( RequestContext context ) throws JetspeedException
     {
-
+        
             String targetPipeline = context
                     .getRequestParameter(PortalReservedParameters.PIPELINE);
             if (null == targetPipeline)
             {                
-                targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
+                targetPipeline = context.getRequest().getServletPath();
+                if (null == targetPipeline)
+                {
+                    targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);
+                }
+                else
+                {
+                    targetPipeline = (String)pipelineMapper.get(targetPipeline); 
+                    System.out.println("pipeline = " + targetPipeline);
+                }
             }
             // tlRequestContext.set(context);
             Pipeline pipeline = getPipeline();
