@@ -225,4 +225,21 @@ limitations under the License.
     </constructor-arg>
   </bean> 
   
+  <bean id='pipeline-map'
+        class='java.util.HashMap'>
+    <constructor-arg>
+        <map>
+            <entry key='/portlet'>
+                <value>portlet-pipeline</value>
+            </entry>            
+            <entry key='/portal'>
+                <value>jetspeed-pipeline</value>
+            </entry>
+            <entry key='/ajax'>
+                <value>ajax-pipeline</value>
+            </entry>
+        </map>        
+    </constructor-arg>        
+  </bean>
+  
 </beans>
