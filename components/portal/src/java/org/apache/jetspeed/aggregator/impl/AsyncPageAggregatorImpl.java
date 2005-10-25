@@ -191,7 +191,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         {
             // TODO: remove this when I get the monitor/sync in place (again)
             // need to dig thru old code in cvs if its still there
-            Thread.sleep(1000);
+            Thread.sleep(4000);
         }
         catch (Exception e)
         {}
