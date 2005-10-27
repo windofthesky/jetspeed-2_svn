@@ -17,6 +17,7 @@ package org.apache.jetspeed.container;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Timer;
@@ -221,14 +222,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
                 ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
 
-                if (null == portlet)
-                {
-                    throw new Exception("Content is not available.");
-                }
-                else
-                {
-                    portlet.render(renderRequest, renderResponse);
-                }
+                portlet.render(renderRequest, renderResponse);
             }
 
             // if we get this far we are home free
@@ -276,8 +270,17 @@ public class JetspeedContainerServlet extends HttpServlet
     private void displayPortletNotAvailableMessage(Throwable t, HttpServletResponse response, String portletName)
     throws IOException
     {
-        getServletContext().log(JCS + "Error rendering JetspeedContainerServlet error page: " + t.toString(), t);                
-        PrintWriter directError = new PrintWriter(response.getWriter());
+        getServletContext().log(JCS + "Error rendering JetspeedContainerServlet error page: " + t.toString(), t);
+        PrintWriter directError;
+        try
+        {
+            directError = new PrintWriter(response.getWriter());
+        }
+        catch (IllegalStateException e)
+        {
+            // Happens if get writer is already been called.
+            directError = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));            
+        }
         directError.write("Portlet is Not Available: " + portletName + "<br/>Reason: " + t.getMessage());
         //t.printStackTrace(directError); 
         directError.close();        
