@@ -18,7 +18,6 @@ package org.apache.jetspeed.engine.servlet;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
@@ -32,13 +31,11 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class ServletRequestFactoryImpl
     implements ServletRequestFactory
-{
-    private ServletConfig servletConfig;
+{    
     
     public void init(javax.servlet.ServletConfig config, Map properties) 
     throws Exception
-    {
-        servletConfig = config;
+    {        
     }
     
     public void destroy()
@@ -53,23 +50,31 @@ public class ServletRequestFactoryImpl
     
     public HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
     {
-        HttpServletRequest servletRequest = createRequest(request, window);
-        
-        // Set page encoding in order to parse the form data correctly        
-        String preferedEnc = (String) request.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-        if (preferedEnc != null)
+        // May have already been wrapped, no need to re-wrap.
+        if (!(request instanceof ServletRequestImpl))
         {
-            try
-            {
-                servletRequest.setCharacterEncoding(preferedEnc);
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                ;
-            }
-        }
+            HttpServletRequest servletRequest = createRequest(request, window);
 
-        return servletRequest;
+            // Set page encoding in order to parse the form data correctly
+            String preferedEnc = (String) request
+                    .getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+            if (preferedEnc != null)
+            {
+                try
+                {
+                    servletRequest.setCharacterEncoding(preferedEnc);
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                    ;
+                }
+            }
+            return servletRequest;
+        }
+        else
+        {
+            return request;
+        }        
     }
     
 }

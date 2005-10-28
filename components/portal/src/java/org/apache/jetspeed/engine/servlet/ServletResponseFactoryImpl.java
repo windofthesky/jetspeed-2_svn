@@ -16,37 +16,39 @@
 package org.apache.jetspeed.engine.servlet;
 
 import java.util.Map;
-import javax.servlet.ServletConfig;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * Factory implementation for creating HTTP Response Wrappers
- *
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: ServletResponseFactoryImpl.java 185962 2004-03-08 01:03:33Z
+ *          jford $
  */
-public class ServletResponseFactoryImpl
-    implements ServletResponseFactory
+public class ServletResponseFactoryImpl implements ServletResponseFactory
 {
-    private ServletConfig servletConfig;
-    
-    public void init(ServletConfig config, Map properties) 
-    throws Exception
-    {
-        servletConfig = config;
-    }
-    
-    public void destroy()
-    throws Exception
-    {
 
+    public void init(ServletConfig config, Map properties) throws Exception
+    {
     }
 
-    public javax.servlet.http.HttpServletResponse getServletResponse(HttpServletResponse response)
+    public void destroy() throws Exception
     {
-        HttpServletResponse servletResponse = new ServletResponseImpl(response);
-        return servletResponse;
     }
-    
+
+    public HttpServletResponse getServletResponse(HttpServletResponse response)
+    {
+        if (!(response instanceof ServletResponseImpl))
+        {
+            return new ServletResponseImpl(response);
+            
+        }
+        else
+        {
+            return response;
+        }
+    }
+
 }
