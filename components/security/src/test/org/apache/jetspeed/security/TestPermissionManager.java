@@ -65,6 +65,101 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         return new TestSuite(TestPermissionManager.class);
     }
 
+    public void testWildcardPermissionCheck()
+    throws Exception
+    {
+        //////////////////////////////////////////////////////////////////////////
+        // setup
+        ////////////
+        UserPrincipal adminUser = new UserPrincipalImpl("admin");
+        UserPrincipal userUser = new UserPrincipalImpl("user");
+        PortletPermission adminPerm = new PortletPermission("admin::*", "view, edit");
+        PortletPermission userPerm = new PortletPermission("demo::*", "view, edit");
+        RolePrincipal adminRole = new RolePrincipalImpl("admin");
+        RolePrincipal userRole = new RolePrincipalImpl("user");
+        
+        try
+        {
+            ums.addUser(adminUser.getName(), "password");
+            ums.addUser(userUser.getName(), "password");            
+            rms.addRole(adminRole.getName());
+            rms.addRole(userRole.getName());            
+            rms.addRoleToUser(adminUser.getName(), adminRole.getName());
+            rms.addRoleToUser(userUser.getName(), userRole.getName());
+            rms.addRoleToUser(adminUser.getName(), userRole.getName());            
+            pms.addPermission(adminPerm);
+            pms.addPermission(userPerm);
+            pms.grantPermission(adminRole, adminPerm);
+            pms.grantPermission(userRole, userPerm);                        
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to init testRemovePrincipalPermissions(), " + sex, false);
+        }
+        
+        //////////////////////////////////////////////////////////////////////////
+        // Run Test
+        ////////////        
+        Set adminPrincipals = new PrincipalsSet();
+        Set adminPublicCredentials = new HashSet();
+        Set adminPrivateCredentials = new HashSet();
+        Set userPrincipals = new PrincipalsSet();
+        Set userPublicCredentials = new HashSet();
+        Set userPrivateCredentials = new HashSet();
+        
+        adminPrincipals.add(adminUser);
+        adminPrincipals.add(adminRole);
+        adminPrincipals.add(userRole);
+
+        userPrincipals.add(userUser);
+        userPrincipals.add(userRole);
+        
+        try
+        {
+            Subject adminSubject = new Subject(true, adminPrincipals, adminPublicCredentials, adminPrivateCredentials);
+            Subject userSubject = new Subject(true, userPrincipals, userPublicCredentials, userPrivateCredentials);                    
+            
+            boolean access = pms.checkPermission(adminSubject, adminPerm);
+            assertTrue("access to admin Perm should be granted to Admin ", access);
+            
+            access = pms.checkPermission(adminSubject, userPerm);
+            assertTrue("access to user should NOT be granted to Admin ", access);
+
+            access = pms.checkPermission(userSubject, userPerm);
+            assertTrue("access to User Perm should be granted to User ", access);
+            
+            access = pms.checkPermission(userSubject, adminPerm);
+            assertFalse("access to Admin Perm should NOT be granted to User ", access);
+            
+        }
+        catch (AccessControlException e)
+        {
+            fail("failed permission check");
+        }
+        finally
+        {
+            //////////////////////////////////////////////////////////////////////////
+            // cleanup
+            ////////////
+            try
+            {
+                ums.removeUser(adminUser.getName());
+                ums.removeUser(userUser.getName());
+                rms.removeRole(adminRole.getName());
+                rms.removeRole(userRole.getName());
+                
+                pms.removePermission(adminPerm);
+                pms.removePermission(userPerm);
+            }
+            catch (SecurityException sex)
+            {
+                assertTrue("could not remove user and permission. exception caught: " + sex, false);
+            }            
+        }
+        
+        
+    }
+    
     public void testPermissionCheck()
     throws Exception
     {
