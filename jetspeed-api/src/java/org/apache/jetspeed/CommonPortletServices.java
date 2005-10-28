@@ -38,4 +38,5 @@ public interface CommonPortletServices
     public final static String CPS_ID_GENERATOR_COMPONENT = "cps:IdGenerator";
     public final static String CPS_JETSPEED_POWERTOOL_FACTORY = "cps:Powertools";
     public final static String CPS_HEADER_RESOURCE_FACTORY = "cps:HeaderResource";
+    public final static String CPS_PERMISSION_MANAGER = "cps:PermissionManager";
 }
