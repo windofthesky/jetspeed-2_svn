@@ -175,12 +175,7 @@ public class PortletSelector extends BrowserPortlet
                         new PortletPermission(portlet.getUniqueName(), 
                         SecuredResource.VIEW_ACTION, subject )))
                     {
-                        System.out.println("PM Check: GOOD: " + uniqueName);                        
                         list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
-                    }
-                    else
-                    {
-                        System.out.println("PM Check: Failed: " + uniqueName);
                     }
                 }
             }            
