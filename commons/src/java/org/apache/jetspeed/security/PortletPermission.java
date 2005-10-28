@@ -63,12 +63,22 @@ public class PortletPermission extends PortalResourcePermission
             return false;
         }
 
-        // The portlet name must be the same.
-        if (!(permission.getName().equals(getName())))
+        String name = getName(); 
+        if (name != null)            
         {
-            return false;
+            int index = name.indexOf('*'); 
+            if (index > -1)
+            {
+                boolean test = permission.getName().startsWith(name.substring(0, index));
+                return test;
+            }
+            // The portlet name must be the same.
+            if (!(permission.getName().equals(name)))
+            {
+                return false;
+            }
         }
-
+        
         PortletPermission portletPerm = (PortletPermission) permission;
 
         // Get the subject.
