@@ -27,10 +27,13 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
@@ -38,8 +41,10 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 
 import java.io.IOException;
 
+import java.security.Permission;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * PortletApplicationManager
@@ -58,18 +63,26 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PortletWindowAccessor windowAccess;
     protected SearchEngine          searchEngine;
     protected RoleManager           roleManager;
+    protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
+    protected List                  permissionRoles;
 
     /**
 	 * Creates a new PortletApplicationManager object.
 	 */
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
-		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess)
+		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
+        PermissionManager permissionManager, SearchEngine searchEngine,
+        RoleManager roleManager, List permissionRoles)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
 		this.entityAccess	    = entityAccess;
 		this.windowAccess	    = windowAccess;
+        this.permissionManager  = permissionManager;
+        this.searchEngine       = searchEngine;
+        this.roleManager        = roleManager;        
+        this.permissionRoles    = permissionRoles;
 	}
     
     public void setRoleManager(RoleManager roleManager)
@@ -275,6 +288,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
 				log.info("Registered the portlet application in the search engine... " + paName);
 			}
             
+            // grant default permissions to portlet application
+			grantDefaultPermissions(paName);
+            
             if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getSecurityRoles() != null )
             {
                 try
@@ -437,5 +453,60 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 		// todo keep (User)Prefs?
 		registry.removeApplication(pa);
+        revokeDefaultPermissions(pa.getName());
 	}
+    
+    protected void grantDefaultPermissions(String paName)
+    {
+        try
+        {
+            // create a default permission for this portlet app, granting configured roles to the portlet application 
+            Iterator roles = permissionRoles.iterator();
+            while (roles.hasNext())
+            {
+                String roleName = (String)roles.next();
+                Role userRole = roleManager.getRole(roleName);
+                if (userRole != null)
+                {
+                    Permission permission = new PortletPermission(paName + "::*", "view, edit");
+                    if (!permissionManager.permissionExists(permission))
+                    {
+                        permissionManager.addPermission(permission);
+                        permissionManager.grantPermission(userRole.getPrincipal(), permission);
+                    }                    
+                }
+            }
+        }
+        catch (SecurityException e)
+        {
+            log.error("Error granting default permissions for " + paName, e);
+        }        
+    }
+    
+    protected void revokeDefaultPermissions(String paName)
+    {
+        try
+        {
+            Iterator roles = permissionRoles.iterator();
+            while (roles.hasNext())
+            {
+                String roleName = (String)roles.next();
+                Role userRole = roleManager.getRole(roleName);
+                if (userRole != null)
+                {
+                    Permission permission = new PortletPermission(paName + "::*", "view, edit");
+                    if (permissionManager.permissionExists(permission))
+                    {
+                        permissionManager.removePermission(permission);
+                    }                    
+                    
+                }
+            }
+        }
+        catch (SecurityException e)
+        {
+            log.error("Error revoking default permissions for " + paName, e);
+        }
+    }
+    
 }
