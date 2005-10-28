@@ -29,14 +29,20 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.PortletPermission;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
 import org.apache.portals.gems.util.StatusMessage;
@@ -52,6 +58,7 @@ public class PortletSelector extends BrowserPortlet
 {
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
+    protected PermissionManager permissionManager;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -67,7 +74,13 @@ public class PortletSelector extends BrowserPortlet
         if (null == searchEngine)
         {
             throw new PortletException("Failed to find the Search Engine on portlet initialization");
+        }
+        permissionManager = (PermissionManager)context.getAttribute(CommonPortletServices.CPS_PERMISSION_MANAGER);
+        if (null == permissionManager)
+        {
+            throw new PortletException("Failed to find the Permission Manager on portlet initialization");
         }        
+        
     }
           
     public void doView(RenderRequest request, RenderResponse response)
@@ -130,6 +143,13 @@ public class PortletSelector extends BrowserPortlet
             resultSetTitleList.add("Description");            
             Locale locale = request.getLocale();
             List list = new ArrayList();
+            
+            // get subject
+            RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);            
+            Subject subject = null;
+            if (requestContext != null)
+                subject = requestContext.getSubject();
+            
             while (portlets.hasNext())
             {
                 PortletDefinitionComposite portlet = null;
@@ -141,15 +161,28 @@ public class PortletSelector extends BrowserPortlet
                 if (portlet == null)
                     continue;
                 
-                // TODO: from edit mode, check boxes for standard filters
-                // one good default filter would be to filter layout portlets
-                // TODO: security filtering
                 MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
                 String appName = muta.getName();
                 if (appName != null && appName.equals("jetspeed-layouts"))
-                    continue;
+                    continue;                
                 
-                list.add(new PortletInfo(appName + "::" + portlet.getName(), portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+                // SECURITY filtering
+                String uniqueName = appName + "::" + portlet.getName();
+                System.out.println("PM: checking " + portlet.getUniqueName());
+                if (subject != null)
+                {
+                    if (permissionManager.checkPermission(subject, 
+                        new PortletPermission(portlet.getUniqueName(), 
+                        SecuredResource.VIEW_ACTION, subject )))
+                    {
+                        System.out.println("PM Check: GOOD: " + uniqueName);                        
+                        list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+                    }
+                    else
+                    {
+                        System.out.println("PM Check: Failed: " + uniqueName);
+                    }
+                }
             }            
             BrowserIterator iterator = new PortletIterator(
                     list, resultSetTitleList, resultSetTypeList,
