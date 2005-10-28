@@ -168,7 +168,6 @@ public class PortletSelector extends BrowserPortlet
                 
                 // SECURITY filtering
                 String uniqueName = appName + "::" + portlet.getName();
-                System.out.println("PM: checking " + portlet.getUniqueName());
                 if (subject != null)
                 {
                     if (permissionManager.checkPermission(subject, 
