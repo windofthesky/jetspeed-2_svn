@@ -25,7 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
+import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
+import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.window.PortletWindow;
@@ -46,6 +47,9 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
     private final Properties properties;
     private final PortletContainerEnvironment environment;
     private final ServletConfig servletConfig;
+    
+    private ServletRequestFactory requestFactory;
+    private ServletResponseFactory responseFactory;
 
     public JetspeedPortletContainerWrapper(PortletContainer pluto, String containerId, 
             ServletConfig servletConfig, PortletContainerEnvironment env, Properties properties)
@@ -135,8 +139,8 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
     {
         pluto.portletLoad(
             portletWindow,
-            ServletObjectAccess.getServletRequest(servletRequest, portletWindow),
-            ServletObjectAccess.getServletResponse(servletResponse, portletWindow));
+            requestFactory.getServletRequest(servletRequest, portletWindow),
+            responseFactory.getServletResponse(servletResponse));
     }
 
     /**
@@ -150,6 +154,16 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
     public boolean isInitialized()
     {
         return initialized;
+    }
+
+    public void setRequestFactory(ServletRequestFactory requestFactory)
+    {
+        this.requestFactory = requestFactory;
+    }
+
+    public void setResponseFactory(ServletResponseFactory responseFactory)
+    {
+        this.responseFactory = responseFactory;
     }
 
 }

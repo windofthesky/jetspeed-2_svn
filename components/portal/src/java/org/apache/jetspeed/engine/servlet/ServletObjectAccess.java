@@ -31,6 +31,7 @@ import org.apache.pluto.services.factory.FactoryManager;
  * Provides access to servlet request and response wrappers
  * 
  *
+ * @deprecated Please use Spring to access request and response factories.
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
