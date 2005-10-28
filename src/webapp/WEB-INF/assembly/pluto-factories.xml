@@ -201,19 +201,14 @@
   </bean>
  
    
-  <bean id="javax.servlet.http.HttpServletRequest"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
+  <bean id="ServletRequestFactory" 
+	    name="javax.servlet.http.HttpServletRequest" 
+	    class="org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl" />
   
-  <bean id="javax.servlet.http.HttpServletResponse"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
+   <bean id="ServletResponseFactory" 
+	    name="javax.servlet.http.HttpServletResponse" 
+	    class="org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl" />
+
   
   <bean id="org.apache.pluto.om.ControllerFactory"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"

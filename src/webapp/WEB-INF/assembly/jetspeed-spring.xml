@@ -128,6 +128,12 @@
         <constructor-arg>
             <ref bean="Engine" />
         </constructor-arg>
+		<property name="requestFactory">
+			<ref bean="ServletRequestFactory" />
+		</property>
+		<property name="responseFactory">
+			<ref bean="ServletResponseFactory" />
+		</property>
     </bean>
 
 
