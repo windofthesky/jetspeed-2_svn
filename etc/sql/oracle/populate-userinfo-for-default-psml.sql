@@ -96,9 +96,9 @@ INSERT INTO PRINCIPAL_PERMISSION VALUES(53,3);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(53,50);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(53,51);
 
-INSERT INTO SECURITY_PERMISSION VALUES(100,'org.apache.jetspeed.security.PortletPermission','security::*','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(101,'org.apache.jetspeed.security.PortletPermission','palm::*','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_PERMISSION VALUES(102,'org.apache.jetspeed.security.PortletPermission','pam::*','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
+INSERT INTO SECURITY_PERMISSION VALUES(100,'org.apache.jetspeed.security.PortletPermission','security::*','view, edit','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572');
+INSERT INTO SECURITY_PERMISSION VALUES(101,'org.apache.jetspeed.security.PortletPermission','palm::*','view, edit','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572');
+INSERT INTO SECURITY_PERMISSION VALUES(102,'org.apache.jetspeed.security.PortletPermission','pam::*','view, edit','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572','to_date('2004-05-22 16:27:12','YYYY-MM-DD HH24:MI:SS').572');
 
 INSERT INTO PRINCIPAL_PERMISSION VALUES(6,100);
 INSERT INTO PRINCIPAL_PERMISSION VALUES(6,101);
