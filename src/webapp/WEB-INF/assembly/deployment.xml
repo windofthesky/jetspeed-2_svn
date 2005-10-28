@@ -42,9 +42,17 @@ limitations under the License.
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>
-  	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>       
+  	   <constructor-arg><ref bean="org.apache.jetspeed.search.SearchEngine"/></constructor-arg>              
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.RoleManager"/></constructor-arg>                     
+       <!-- role principals to assign a default permission(s) during deployment of a Portlet Application -->
+       <constructor-arg >
+         <list>
+            <value>user</value>
+         </list>
+       </constructor-arg>
+
    <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
-       <property name="roleManager"><ref bean="org.apache.jetspeed.security.RoleManager"/></property>
        <property name="autoCreateRoles"><value>true</value></property>
    -->      
   </bean>
