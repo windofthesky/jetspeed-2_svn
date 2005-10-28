@@ -16,13 +16,11 @@
 package org.apache.jetspeed.engine;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
@@ -32,7 +30,6 @@ import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
@@ -191,8 +188,7 @@ public class JetspeedEngine implements Engine
     }
 
     public void service( RequestContext context ) throws JetspeedException
-    {
-        
+    {        
             String targetPipeline = context
                     .getRequestParameter(PortalReservedParameters.PIPELINE);
             if (null == targetPipeline)
@@ -200,16 +196,22 @@ public class JetspeedEngine implements Engine
                 targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
                 if (null == targetPipeline)
                 {
-                    targetPipeline = context.getRequest().getServletPath();                    
-                    if (null != targetPipeline)
+                    String pipelineKey = context.getRequest().getServletPath();                    
+                    if (null != pipelineKey)
                     {
-                        targetPipeline = (String)pipelineMapper.get(targetPipeline); 
+                        if (pipelineKey.equals("/portal"))
+                            targetPipeline = this.defaultPipelineName;
+                        else
+                            targetPipeline = (String)pipelineMapper.get(targetPipeline); 
                         // System.out.println("pipeline = " + targetPipeline);
+                    }
+                    else
+                    {
+                        targetPipeline = this.defaultPipelineName;
                     }
                 }
             }
-            // tlRequestContext.set(context);
-            Pipeline pipeline = getPipeline();
+            Pipeline pipeline = null;
             if (targetPipeline != null)
             {
                 Pipeline specificPipeline = getPipeline(targetPipeline);
@@ -218,6 +220,9 @@ public class JetspeedEngine implements Engine
                     pipeline = specificPipeline;
                 }
             }
+            else
+                pipeline = getPipeline();
+            
             pipeline.invoke(context);
    
     }
