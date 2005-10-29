@@ -250,9 +250,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             return f.getType();
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see java.lang.Object#hashCode()
          */
         public int hashCode()
@@ -282,14 +280,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
         public void setDecorator(String decoratorName)
         {
             f.setDecorator(decoratorName);
-        }
-
-        /**
-         * @param id
-         */
-        public void setId(String id)
-        {
-            f.setId(id);
         }
 
         /**
@@ -358,9 +348,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             f.setType(type);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see java.lang.Object#toString()
          */
         public String toString()
@@ -373,9 +361,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             return f.clone();
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see org.apache.jetspeed.om.page.ContentFragment#getContentFragments()
          */
         public List getContentFragments()
@@ -384,9 +370,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see org.apache.jetspeed.om.page.ContentFragment#getRenderedContent()
          */
         public String getRenderedContent() throws IllegalStateException
@@ -395,9 +379,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see org.apache.jetspeed.om.page.ContentFragment#overrideRenderedContent(java.lang.String)
          */
         public void overrideRenderedContent(String contnent)
@@ -406,9 +388,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
 
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see org.apache.jetspeed.om.page.ContentFragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
          */
         public void setPortletContent(PortletContent portletContent)
@@ -416,6 +396,62 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             // TODO Auto-generated method stub
 
         }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
+         */
+        public int getLayoutColumn()
+        {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
+         */
+        public int getLayoutRow()
+        {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
+         */
+        public String getLayoutSizes()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+         */
+        public void setLayoutColumn(int column)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
+         */
+        public void setLayoutRow(int row)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
+         */
+        public void setLayoutSizes(String sizes)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+        
     }
 
     private static final String TEST_APP = "EntityTestApp";

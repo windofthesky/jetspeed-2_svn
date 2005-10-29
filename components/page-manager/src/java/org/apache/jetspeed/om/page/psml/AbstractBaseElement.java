@@ -573,7 +573,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      */
     public int hashCode()
     {
-        return id.hashCode();
+        return ((null != id) ? id.hashCode() : -1);
     }
     
     /**

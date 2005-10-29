@@ -344,15 +344,16 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public boolean equals( Object obj )
     {
+        boolean isEqual = false;
         if (obj != null && obj instanceof Fragment)
         {
             Fragment aFragment = (Fragment) obj;
-            return getId().equals(aFragment.getId());
+            if ((null != aFragment.getId()) && (null != getId()) && (getId().equals(aFragment.getId())))
+            {
+                isEqual = true;
+            }
         }
-        else
-        {
-            return false;
-        }
+        return isEqual;
     }
 
     /**

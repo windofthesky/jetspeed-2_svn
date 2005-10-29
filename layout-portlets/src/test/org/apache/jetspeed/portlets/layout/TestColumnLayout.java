@@ -288,7 +288,7 @@ public class TestColumnLayout extends MockObjectTestCase
 
         // This is a test to make sure the next row pointer is being decremented
         // correctly
-        Fragment f7 = new FragmentImpl();
+        FragmentImpl f7 = new FragmentImpl();
         f7.setId("f7");
         f7.setPropertyValue("test", "row", "0");
         f7.setPropertyValue("test", "column", "1");

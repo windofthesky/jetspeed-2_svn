@@ -165,38 +165,7 @@ limitations under the License.
       <properties>
         <war.bundle>${log4j.include}</war.bundle>
       </properties>
-    </dependency>  
-    
-    <dependency>
-       <id>myfaces:myfaces-impl</id>
-       <version>${myfaces.version}</version>
-       <properties>
-         <war.bundle>true</war.bundle>
-       </properties>
-    </dependency>
-    <dependency>
-       <id>myfaces:myfaces-api</id>
-       <version>${myfaces.version}</version>
-       <properties>
-         <war.bundle>true</war.bundle>
-       </properties>
-     </dependency>
-     <dependency>
-       <id>myfaces:tomahawk</id>
-       <version>${myfaces.version}</version>
-       <properties>
-         <war.bundle>true</war.bundle>
-       </properties>
-     </dependency>
- 
-    <dependency>
-	    <id>portals-bridges:portals-bridges-jsf</id>
-	    <version>${portals.bridges.jsf.version}</version>
-	    <properties>
-			<war.bundle>true</war.bundle>
-	    </properties>
-    </dependency>
-      
+    </dependency>      
     <dependency>
       <id>commons-logging</id>
       <version>${commons.logging.version}</version>

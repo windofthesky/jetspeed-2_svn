@@ -46,6 +46,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="content-server/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="taglibs/treecontrol/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="app-servers/security/jboss/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/demo/src/java"/>
@@ -56,7 +57,6 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/security/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="applications/security/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar"/>
