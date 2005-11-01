@@ -16,11 +16,12 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
 
 /**
  * PortletAggregator Fragment implementation for rendering.
@@ -219,55 +220,27 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutProperties()
+     * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
-    public List getLayoutProperties()
+    public Map getProperties()
     {
-        return new ArrayList(0);
+        return new HashMap(0);
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperties(java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
      */
-    public List getProperties(String layoutName)
-    {
-        return new ArrayList(0);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPropertyValue(java.lang.String,java.lang.String)
-     */
-    public String getPropertyValue(String layout, String propName)
+    public String getProperty(String propName)
     {
         return null;
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPropertyValue(java.lang.String,java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
      */
-    public void setPropertyValue(String layout, String propName, String value)
+    public int getIntProperty(String propName)
     {
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#addProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void addProperty(Property p)
-    {
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#removeProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void removeProperty(Property p)
-    {
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#clearProperties(java.lang.String)
-     */
-    public void clearProperties(String layoutName)
-    {
+        return -1;
     }
     
     /* (non-Javadoc)

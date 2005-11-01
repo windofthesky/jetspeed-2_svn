@@ -31,29 +31,75 @@ import org.apache.jetspeed.page.document.Node;
 public abstract class NodeImpl extends BaseElementImpl implements Node
 {
     private Node parent;
-    private String path;
+    private NodeAttributes attributes;
+
+    public NodeImpl()
+    {
+        super();
+        attributes = new NodeAttributes();
+    }
 
     /**
-     * setName
+     * isRootNode
      *
-     * @param name element name
+     * Test whether node attributes base path is a root node
+     * path, regardless of parent setting.
+     *
+     * @return root node flag
+     */
+    public boolean isRootNode()
+    {
+        return attributes.getPath().equals(Folder.PATH_SEPARATOR);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getName()
+     */
+    public String getName()
+    {
+        // get name or compute from path
+        String name = super.getName();
+        if (name == null)
+        {
+            String path = attributes.getPath();
+            if (path != null)
+            {
+                if (!path.equals(Folder.PATH_SEPARATOR))
+                {
+                    name = path.substring(path.lastIndexOf(Folder.PATH_SEPARATOR) + 1);
+                }
+                else
+                {
+                    name = Folder.PATH_SEPARATOR;
+                }
+                super.setName(name);
+            }
+
+        }
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#setName(java.lang.String)
      */
     public void setName(String name)
     {
         // set path based on name
         if (name != null)
         {
+            String path = attributes.getPath();
             if (path != null)
             {
                 if (!name.equals(Folder.PATH_SEPARATOR))
                 {
-                    path = path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name;
+                    attributes.setPath(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name);
                 }
                 else
                 {
-                    path = Folder.PATH_SEPARATOR;
+                    attributes.setPath(Folder.PATH_SEPARATOR);
                 }
             }
+
             super.setName(name);
         }
     }
@@ -73,6 +119,20 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     {
         // cast to check type
         this.parent = (NodeImpl)parent;
+
+        // update path if required
+        if (parent != null)
+        {
+            String parentPath = parent.getPath();
+            String path = getPath();
+            if ((parentPath.equals(Folder.PATH_SEPARATOR) &&
+                 (path.lastIndexOf(Folder.PATH_SEPARATOR) > 0)) ||
+                (!parentPath.equals(Folder.PATH_SEPARATOR) &&
+                 !parentPath.equals(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR)))))
+            {
+                setPath(parentPath + Folder.PATH_SEPARATOR + getName());
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -80,7 +140,8 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getPath()
     {
-        return path;
+        // return path from attributes and base path
+        return attributes.getCanonicalPath();
     }
     
     /* (non-Javadoc)
@@ -88,22 +149,11 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setPath(String path)
     {
-        // cleanup paths
-        if ((path == null) || (path.length() == 0))
-        {
-            path = Folder.PATH_SEPARATOR;
-        }
-        if (!path.startsWith(Folder.PATH_SEPARATOR))
-        {
-            path = Folder.PATH_SEPARATOR + path;
-        }
-        if (path.endsWith(Folder.PATH_SEPARATOR) && !path.equals(Folder.PATH_SEPARATOR))
-        {
-            path = path.substring(0, path.length() - 1);
-        }
-        this.path = path;
+        // set attributes and base path
+        attributes.setCanonicalPath(path);
 
         // set name based on path
+        path = attributes.getPath();
         if (!path.equals(Folder.PATH_SEPARATOR))
         {
             super.setName(path.substring(path.lastIndexOf(Folder.PATH_SEPARATOR) + 1));
@@ -111,6 +161,19 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         else
         {
             super.setName(Folder.PATH_SEPARATOR);
+        }
+
+        // reset parent if required
+        if (parent != null)
+        {
+            String parentPath = parent.getPath();
+            if ((parentPath.equals(Folder.PATH_SEPARATOR) &&
+                 (path.lastIndexOf(Folder.PATH_SEPARATOR) > 0)) ||
+                (!parentPath.equals(Folder.PATH_SEPARATOR) &&
+                 !parentPath.equals(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR)))))
+            {
+                setParent(null);
+            }
         }
     }
 

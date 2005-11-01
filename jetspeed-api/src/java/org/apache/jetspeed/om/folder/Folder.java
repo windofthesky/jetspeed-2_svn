@@ -40,10 +40,45 @@ public interface Folder extends Node
 
     String FALLBACK_DEFAULT_PAGE = "default-page.psml";
     String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
-    String USER_FOLDER = "/_user/";
-    String ROLE_FOLDER = "/_role/";
-    String GROUP_FOLDER = "/_group/";
     
+    String RESERVED_SUBSITE_FOLDER_PREFIX = "__";
+    String RESERVED_SUBSITE_FOLDER_NAME = RESERVED_SUBSITE_FOLDER_PREFIX + "subsite-root";
+    String RESERVED_FOLDER_PREFIX = "_";
+    String RESERVED_USER_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "user";
+    String RESERVED_ROLE_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "role";
+    String RESERVED_GROUP_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "group";
+    String RESERVED_MEDIATYPE_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "mediatype";
+    String RESERVED_LANGUAGE_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "language";
+    String RESERVED_COUNTRY_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "country";
+    
+    String SUBSITE_FOLDER = PATH_SEPARATOR + RESERVED_SUBSITE_FOLDER_NAME + PATH_SEPARATOR;
+    String USER_FOLDER = PATH_SEPARATOR + RESERVED_USER_FOLDER_NAME + PATH_SEPARATOR;
+    String ROLE_FOLDER = PATH_SEPARATOR + RESERVED_ROLE_FOLDER_NAME + PATH_SEPARATOR;
+    String GROUP_FOLDER = PATH_SEPARATOR + RESERVED_GROUP_FOLDER_NAME + PATH_SEPARATOR;
+    String MEDIATYPE_FOLDER = PATH_SEPARATOR + RESERVED_MEDIATYPE_FOLDER_NAME + PATH_SEPARATOR;
+    String LANGUAGE_FOLDER = PATH_SEPARATOR + RESERVED_LANGUAGE_FOLDER_NAME + PATH_SEPARATOR;
+    String COUNTRY_FOLDER = PATH_SEPARATOR + RESERVED_COUNTRY_FOLDER_NAME + PATH_SEPARATOR;
+
+    int RESERVED_FOLDER_NONE = 0;    
+    int RESERVED_FOLDER_SUBSITES = 1;
+    int RESERVED_FOLDER_USERS = 2;
+    int RESERVED_FOLDER_ROLES = 3;
+    int RESERVED_FOLDER_GROUPS = 4;
+    int RESERVED_FOLDER_MEDIATYPE = 5;
+    int RESERVED_FOLDER_LANGUAGE = 6;
+    int RESERVED_FOLDER_COUNTRY = 7;
+    int RESERVED_FOLDER_OTHER = 9999;
+    
+    /**
+     * isRootFolder
+     *
+     * Tests whether this folder's path is a root folder based on the
+     * rules associated with the folder implementation;
+     *
+     * @return flag indicating whether folder path is a root path
+     */
+    boolean isRootFolder();
+
     /**
      * 
      * <p>
@@ -235,15 +270,4 @@ public interface Folder extends Node
      * @return one of the valid reserved folder types
      */
     int getReservedType();
-
-    int RESERVED_FOLDER_NONE = 0;    
-    int RESERVED_FOLDER_SUBSITES = 1;
-    int RESERVED_FOLDER_USERS = 2;
-    int RESERVED_FOLDER_ROLES = 3;
-    int RESERVED_FOLDER_GROUPS = 4;
-    int RESERVED_FOLDER_MEDIATYPE = 5;
-    int RESERVED_FOLDER_LANGUAGE = 6;
-    int RESERVED_FOLDER_COUNTRY = 7;
-    int RESERVED_FOLDER_OTHER = 9999;
-    
 }

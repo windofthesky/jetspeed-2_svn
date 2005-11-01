@@ -762,8 +762,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     // accessed only via SiteView search path
                     // aggregation that directly utilizes the
                     // current view page manager
-                    if (!(child instanceof Folder) || (!childName.startsWith(SiteView.PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX) &&
-                                                       !childName.startsWith(SiteView.PROFILING_PROPERTY_FOLDER_PREFIX)))
+                    if (!(child instanceof Folder) || (!childName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX) &&
+                                                       !childName.startsWith(Folder.RESERVED_FOLDER_PREFIX)))
                     {
                         // test child name uniqueness
                         boolean childUnique = true ;

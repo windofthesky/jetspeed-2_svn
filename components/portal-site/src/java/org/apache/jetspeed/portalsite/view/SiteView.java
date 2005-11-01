@@ -50,16 +50,6 @@ import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 public class SiteView
 {
     /**
-     * PROFILING_PROPERTY_FOLDER_PREFIX - folder name prefix for profiling folders
-     */
-    public final static String PROFILING_PROPERTY_FOLDER_PREFIX = "_";
-
-    /**
-     * PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX - folder name prefix for profiling navigating folders
-     */
-    public final static String PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX = "__";
-
-    /**
      * CURRENT_PAGE_PATH - expression used to match the current page
      */
     public final static String CURRENT_PAGE_PATH = "~";
@@ -404,9 +394,9 @@ public class SiteView
                             int folderIndex = 1;
                             do
                             {
-                                if (!pathRoot.regionMatches(folderIndex, PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX, 0, PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX.length()))
+                                if (!pathRoot.regionMatches(folderIndex, Folder.RESERVED_SUBSITE_FOLDER_PREFIX, 0, Folder.RESERVED_SUBSITE_FOLDER_PREFIX.length()))
                                 {
-                                    pathRoot = pathRoot.substring(0, folderIndex) + PROFILING_NAVIGATION_PROPERTY_FOLDER_PREFIX + pathRoot.substring(folderIndex);
+                                    pathRoot = pathRoot.substring(0, folderIndex) + Folder.RESERVED_SUBSITE_FOLDER_PREFIX + pathRoot.substring(folderIndex);
                                 }
                                 folderIndex = pathRoot.indexOf(Folder.PATH_SEPARATOR, folderIndex) + 1;
                             }
@@ -475,7 +465,7 @@ public class SiteView
                             while (pathsIter.hasNext())
                             {
                                 StringBuffer path = (StringBuffer) pathsIter.next();
-                                path.append(PROFILING_PROPERTY_FOLDER_PREFIX);
+                                path.append(Folder.RESERVED_FOLDER_PREFIX);
                                 path.append(propertyName);
                                 path.append(Folder.PATH_SEPARATOR_CHAR);
                                 path.append(propertyValue);

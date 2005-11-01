@@ -104,6 +104,16 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     /*
      * (non-Javadoc)
      * 
+     * @see org.apache.jetspeed.om.folder.Folder#isRootFolder()
+     */
+    public boolean isRootFolder()
+    {
+        return getPath().equals(PATH_SEPARATOR);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
      */
     public String getDefaultPage(boolean allowDefaulting)
@@ -113,7 +123,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             String defaultPage = metadata.getDefaultPage();
             if(defaultPage == null)
             {
-                defaultPage = Folder.FALLBACK_DEFAULT_PAGE;
+                defaultPage = FALLBACK_DEFAULT_PAGE;
             }
             return getPage(defaultPage, false).getName();
         }
@@ -130,12 +140,12 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                     }
                     else
                     {
-                        return Folder.PAGE_NOT_FOUND_PAGE;
+                        return PAGE_NOT_FOUND_PAGE;
                     }
                 }
                 catch (NodeException e1)
                 {
-                    return Folder.PAGE_NOT_FOUND_PAGE;
+                    return PAGE_NOT_FOUND_PAGE;
                 }
             }
         }
@@ -185,7 +195,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public NodeSet getFolders(boolean checkAccess) throws FolderNotFoundException, DocumentException
     {
         // get list of all folders
-        NodeSet folders = getAllNodes().subset(Folder.FOLDER_TYPE);
+        NodeSet folders = getAllNodes().subset(FOLDER_TYPE);
 
         // filter node set by access
         if (checkAccess)
@@ -220,7 +230,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public Folder getFolder(String name, boolean checkAccess) throws FolderNotFoundException, DocumentException
     {
         // get folder
-        Folder folder = (Folder) getAllNodes().subset(Folder.FOLDER_TYPE).get(name);
+        Folder folder = (Folder) getAllNodes().subset(FOLDER_TYPE).get(name);
         if (folder == null)
         {
             throw new FolderNotFoundException("Jetspeed PSML folder not found: " + name);
@@ -813,15 +823,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         return reservedType;
     }
     
-    private static final String RESERVED_FOLDER_PREFIX = "_";
-    private static final String RESERVED_USER_FOLDER_NAME = "_user";
-    private static final String RESERVED_ROLE_FOLDER_NAME = "_role";
-    private static final String RESERVED_GROUP_FOLDER_NAME = "_group";
-    private static final String RESERVED_SUBSITES_FOLDER_NAME = "__subsite-root";
-    private static final String RESERVED_MEDIATYPE_FOLDER_NAME = "_mediatype";
-    private static final String RESERVED_LANGUAGE_FOLDER_NAME = "_language";
-    private static final String RESERVED_COUNTRY_FOLDER_NAME = "_country";
-    
     private void setReservedType()
     {
         String name = getName();
@@ -833,7 +834,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                 reservedType = RESERVED_FOLDER_ROLES;
             else if (name.equals(RESERVED_GROUP_FOLDER_NAME))
                 reservedType = RESERVED_FOLDER_GROUPS;
-            else if (name.equals(RESERVED_SUBSITES_FOLDER_NAME))
+            else if (name.equals(RESERVED_SUBSITE_FOLDER_NAME))
                 reservedType = RESERVED_FOLDER_SUBSITES;
             else if (name.equals(RESERVED_MEDIATYPE_FOLDER_NAME))
                 reservedType = RESERVED_FOLDER_MEDIATYPE;

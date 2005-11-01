@@ -27,6 +27,14 @@ limitations under the License.
         <column name="PATH" required="true" size="160" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="10" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
 			<reference foreign="FOLDER_ID" local="PARENT_ID"/>
 		</foreign-key>
@@ -35,6 +43,14 @@ limitations under the License.
 		</index>
 		<unique name="UN_FOLDER_1">
 			<unique-column name="PATH"/>
+			<unique-column name="SUBSITE"/>
+			<unique-column name="USER_PRINCIPAL"/>
+			<unique-column name="ROLE_PRINCIPAL"/>
+			<unique-column name="GROUP_PRINCIPAL"/>
+			<unique-column name="MEDIATYPE"/>
+			<unique-column name="LOCALE"/>
+			<unique-column name="EXT_ATTR_NAME"/>
+			<unique-column name="EXT_ATTR_VALUE"/>
 		</unique>
     </table>
     
@@ -51,13 +67,14 @@ limitations under the License.
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DECORATOR" size="80" type="VARCHAR"/>
         <column name="DEFAULT_FRAGMENT_DECORATOR" size="80" type="VARCHAR"/>
-        <column name="SUBSITE" size="40" type="VARCHAR"/>
-        <column name="PRINCIPAL" size="40" type="VARCHAR"/>
-        <column name="PRINCIPAL_TYPE" size="15" type="VARCHAR"/>
-        <column name="MEDIATYPE" size="15" type="VARCHAR"/>
-        <column name="LOCALE" size="10" type="VARCHAR"/>
-        <column name="EXT_LOCATOR_NAME" size="15" type="VARCHAR"/>
-        <column name="EXT_LOCATOR_VALUE" size="40" type="VARCHAR"/>
+        <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="10" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
 			<reference foreign="FOLDER_ID" local="PARENT_ID"/>
 		</foreign-key>
@@ -67,12 +84,13 @@ limitations under the License.
 		<unique name="UN_PAGE_1">
 			<unique-column name="PATH"/>
 			<unique-column name="SUBSITE"/>
-			<unique-column name="PRINCIPAL"/>
-			<unique-column name="PRINCIPAL_TYPE"/>
+			<unique-column name="USER_PRINCIPAL"/>
+			<unique-column name="ROLE_PRINCIPAL"/>
+			<unique-column name="GROUP_PRINCIPAL"/>
 			<unique-column name="MEDIATYPE"/>
 			<unique-column name="LOCALE"/>
-			<unique-column name="EXT_LOCATOR_NAME"/>
-			<unique-column name="EXT_LOCATOR_VALUE"/>
+			<unique-column name="EXT_ATTR_NAME"/>
+			<unique-column name="EXT_ATTR_VALUE"/>
 		</unique>
     </table>
     
@@ -93,10 +111,10 @@ limitations under the License.
         <column name="LAYOUT_ROW" type="INTEGER"/>
         <column name="LAYOUT_COLUMN" type="INTEGER"/>
         <column name="LAYOUT_SIZES" size="20" type="VARCHAR"/>
-        <column name="EXT_PROPERTY_NAME_1" size="40" type="VARCHAR"/>
-        <column name="EXT_PROPERTY_VALUE_1" size="80" type="VARCHAR"/>
-        <column name="EXT_PROPERTY_NAME_2" size="40" type="VARCHAR"/>
-        <column name="EXT_PROPERTY_VALUE_2" size="80" type="VARCHAR"/>
+        <column name="EXT_PROP_NAME_1" size="40" type="VARCHAR"/>
+        <column name="EXT_PROP_VALUE_1" size="80" type="VARCHAR"/>
+        <column name="EXT_PROP_NAME_2" size="40" type="VARCHAR"/>
+        <column name="EXT_PROP_VALUE_2" size="80" type="VARCHAR"/>
 		<foreign-key foreignTable="FRAGMENT" onDelete="cascade">
 			<reference foreign="FRAGMENT_ID" local="PARENT_ID"/>
 		</foreign-key>

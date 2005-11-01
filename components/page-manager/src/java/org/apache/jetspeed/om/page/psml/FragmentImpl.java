@@ -17,14 +17,15 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
 
 /**
  * @version $Id$
@@ -42,7 +43,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private List fragments = new Vector();
 
-    private List properties = new Vector();
+    private List propertiesList = new Vector();
+
+    private Map propertiesMap = new HashMap();
 
     private String name;
 
@@ -102,129 +105,38 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return this.fragments;
     }
 
-    public List getLayoutProperties()
+    public Vector getPropertiesList()
     {
-        List layouts = new ArrayList();
-        Iterator i = this.properties.iterator();
-
-        while (i.hasNext())
-        {
-            Property p = (Property) i.next();
-            if (!layouts.contains(p.getLayout()))
-            {
-                layouts.add(p.getLayout());
-            }
-        }
-
-        return layouts;
+        return (Vector) this.propertiesList;
     }
 
-    public List getProperties( String layoutName )
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     */
+    public String getProperty(String propName)
     {
-        List props = new ArrayList();
-        Iterator i = this.properties.iterator();
-
-        if (layoutName == null)
-        {
-            layoutName = "";
-        }
-
-        while (i.hasNext())
-        {
-            Property p = (Property) i.next();
-            if (layoutName.equals(p.getLayout()))
-            {
-                props.add(p);
-            }
-        }
-
-        return props;
+        return (String)propertiesMap.get(propName);
     }
 
-    public String getPropertyValue( String layout, String propName )
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     */
+    public int getIntProperty(String propName)
     {
-        Iterator itr = getProperties(layout).iterator();
-        while (itr.hasNext())
+        String prop = (String)propertiesMap.get(propName);
+        if (prop != null)
         {
-            Property aProp = (Property) itr.next();
-            if (aProp.getName().equals(propName))
-            {
-                return aProp.getValue();
-            }
+            return Integer.parseInt(prop);
         }
-
-        return null;
+        return -1;
     }
 
-    public void setPropertyValue( String layout, String propName, String value )
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperties()
+     */
+    public Map getProperties()
     {
-        Iterator itr = getProperties(layout).iterator();
-        while (itr.hasNext())
-        {
-            Property aProp = (Property) itr.next();
-            if (aProp.getName().equals(propName))
-            {
-                aProp.setValue(value);
-                return;
-            }
-        }
-
-        PropertyImpl newProp = new PropertyImpl();
-        newProp.setLayout(layout);
-        newProp.setName(propName);
-        newProp.setValue(value);
-        addProperty(newProp);
-    }
-
-    public void addProperty( Property p )
-    {
-        this.properties.add(p);
-    }
-
-    public void removeProperty( Property p )
-    {
-        Iterator i = this.properties.iterator();
-
-        while (i.hasNext())
-        {
-            Property p2 = (Property) i.next();
-
-            if (p2.equals(p))
-            {
-                i.remove();
-            }
-        }
-    }
-
-    public void clearProperties( String layoutName )
-    {
-        if (layoutName == null)
-        {
-            this.properties.clear();
-            return;
-        }
-
-        Iterator i = this.properties.iterator();
-
-        while (i.hasNext())
-        {
-            Property p = (Property) i.next();
-
-            if (layoutName.equals(p.getLayout()))
-            {
-                i.remove();
-            }
-        }
-    }
-
-    public Vector getProperties()
-    {
-        return (Vector) this.properties;
-    }
-
-    public void setProperties( Vector props )
-    {
-        this.properties = props;
+        return propertiesMap;
     }
 
     /* (non-Javadoc)
@@ -232,30 +144,26 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public int getLayoutRow()
     {
-        // return first valid row layout property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
+        String prop = (String)propertiesMap.get(ROW_PROPERTY_NAME);
+        if (prop != null)
         {
-            Property p = (Property) i.next();
-            if ((p.getLayout() != null) && (p.getLayout().length() > 0) && ROW_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
-            {
-                return p.getIntValue();
-            }
+            return Integer.parseInt(prop);
         }
         return -1;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
+     */
     public void setLayoutRow(int row)
     {
-        // return first valid sizes property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
+        if (row >= 0)
         {
-            Property p = (Property) i.next();
-            if (ROW_PROPERTY_NAME.equals(p.getName()))
-            {
-                p.setValue(String.valueOf(row));
-            }
+            propertiesMap.put(ROW_PROPERTY_NAME, String.valueOf(row));
+        }
+        else
+        {
+            propertiesMap.remove(ROW_PROPERTY_NAME);
         }
     }
     
@@ -264,30 +172,26 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public int getLayoutColumn()
     {
-        // return first valid column layout property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
+        String prop = (String)propertiesMap.get(COLUMN_PROPERTY_NAME);
+        if (prop != null)
         {
-            Property p = (Property) i.next();
-            if ((p.getLayout() != null) && (p.getLayout().length() > 0) && COLUMN_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
-            {
-                return p.getIntValue();
-            }
+            return Integer.parseInt(prop);
         }
         return -1;
     }
 
-    public void setLayoutColumn(int size)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     */
+    public void setLayoutColumn(int column)
     {
-        // return first valid sizes property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
+        if (column >= 0)
         {
-            Property p = (Property) i.next();
-            if (COLUMN_PROPERTY_NAME.equals(p.getName()))
-            {
-                p.setValue(String.valueOf(size));
-            }
+            propertiesMap.put(COLUMN_PROPERTY_NAME, String.valueOf(column));
+        }
+        else
+        {
+            propertiesMap.remove(COLUMN_PROPERTY_NAME);
         }
     }
     
@@ -296,30 +200,21 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public String getLayoutSizes()
     {
-        // return first valid sizes property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
-        {
-            Property p = (Property) i.next();
-            if (SIZES_PROPERTY_NAME.equals(p.getName()) && (p.getValue() != null))
-            {
-                return p.getValue();
-            }
-        }
-        return null;
+        return (String)propertiesMap.get(SIZES_PROPERTY_NAME);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
+     */
     public void setLayoutSizes(String sizes)
     {
-        // return first valid sizes property
-        Iterator i = this.properties.iterator();
-        while (i.hasNext())
+        if (sizes != null)
         {
-            Property p = (Property) i.next();
-            if (SIZES_PROPERTY_NAME.equals(p.getName()))
-            {
-                p.setValue(sizes);
-            }
+            propertiesMap.put(SIZES_PROPERTY_NAME, sizes);
+        }
+        else
+        {
+            propertiesMap.remove(SIZES_PROPERTY_NAME);
         }
     }
     
@@ -401,5 +296,76 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     {
         this.name = name;
 
+    }
+
+    /**
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
+     */
+    public void unmarshalled()
+    {
+        // notify super class implementation
+        super.unmarshalled();
+
+        // propagate unmarshalled notification
+        // to all fragments
+        Iterator fragmentIter = fragments.iterator();
+        while (fragmentIter.hasNext())
+        {
+            ((FragmentImpl)fragmentIter.next()).unmarshalled();
+        }
+
+        // load the properties map from list
+        propertiesMap.clear();
+        Iterator propsIter = propertiesList.iterator();
+        while (propsIter.hasNext())
+        {
+            PropertyImpl prop = (PropertyImpl) propsIter.next();
+            propertiesMap.put(prop.getName(), prop.getValue());
+        }
+    }
+
+    /**
+     * marshalling - notification that this instance is to
+     *               be saved to the persistent store
+     */
+    public void marshalling()
+    {
+        // update the properties list from the map
+        // if change/edit detected
+        boolean changed = (propertiesMap.size() != propertiesList.size());
+        if (!changed)
+        {
+            Iterator propsIter = propertiesList.iterator();
+            while (!changed && propsIter.hasNext())
+            {
+                PropertyImpl prop = (PropertyImpl) propsIter.next();
+                changed = (prop.getValue() != propertiesMap.get(prop.getName()));
+            }
+        }
+        if (changed)
+        {
+            propertiesList.clear();
+            Iterator propsIter = propertiesMap.entrySet().iterator();
+            while (propsIter.hasNext())
+            {
+                Map.Entry prop = (Map.Entry) propsIter.next();
+                PropertyImpl listProp = new PropertyImpl();
+                listProp.setName((String)prop.getKey());
+                listProp.setValue((String)prop.getValue());
+                propertiesList.add(listProp);
+            }
+        }
+
+        // propagate marshalling notification
+        // to all fragments
+        Iterator fragmentIter = fragments.iterator();
+        while (fragmentIter.hasNext())
+        {
+            ((FragmentImpl)fragmentIter.next()).marshalling();
+        }
+
+        // notify super class implementation
+        super.marshalling();
     }
 }

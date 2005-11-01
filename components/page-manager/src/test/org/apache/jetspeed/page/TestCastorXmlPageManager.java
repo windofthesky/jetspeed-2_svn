@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -47,7 +48,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -182,11 +182,6 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(f.getType().equals(Fragment.LAYOUT));
     }
 
-    public void testNewProperty()
-    {
-        // TODO: Fix Property manipulation API, too clumsy right now
-    }
-
     public void testNewFolder()
     {
         Folder testfolder = pageManager.newFolder(this.testFolder3);
@@ -237,26 +232,22 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(f.getName().equals("HelloPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
-        List properties = f.getProperties(root.getName());
+        Map properties = f.getProperties();
         assertNotNull(properties);
         assertTrue(properties.size() == 2);
-        assertTrue(((Property) properties.get(0)).getName().equals("row"));
-        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
-        assertTrue(((Property) properties.get(1)).getName().equals("column"));
-        assertTrue(((Property) properties.get(1)).getValue().equals("0"));
+        assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
+        assertEquals(0, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
         f = (Fragment) children.get(1);
         assertTrue(f.getId().equals("pe002"));
         assertTrue(f.getName().equals("JMXPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
-        properties = f.getProperties(root.getName());
+        properties = f.getProperties();
         assertNotNull(properties);
         assertTrue(properties.size() == 2);
-        assertTrue(((Property) properties.get(0)).getName().equals("row"));
-        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
-        assertTrue(((Property) properties.get(1)).getName().equals("column"));
-        assertTrue(((Property) properties.get(1)).getValue().equals("1"));
+        assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
+        assertEquals(1, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
         f = testpage.getFragmentById("f002");
         assertNotNull(f);
@@ -283,16 +274,9 @@ public class TestCastorXmlPageManager extends TestCase
         Fragment f = pageManager.newFragment();
         f.setType(Fragment.PORTLET);
         f.setName("TestPortlet");
-        Property p = pageManager.newProperty();
-        p.setLayout("TestLayout");
-        p.setName("row");
-        p.setValue("0");
-        f.addProperty(p);
-        p = pageManager.newProperty();
-        p.setLayout("TestLayout");
-        p.setName("column");
-        p.setValue("0");
-        f.addProperty(p);
+        Map properties = f.getProperties();
+        properties.put(Fragment.ROW_PROPERTY_NAME, "0");
+        properties.put(Fragment.COLUMN_PROPERTY_NAME, "0");
         root.getFragments().add(f);
 
         SecurityConstraints constraints = pageManager.newSecurityConstraints();
@@ -332,8 +316,8 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(page.getRootFragment().getFragments().size() == 1);
 
         f = (Fragment) page.getRootFragment().getFragments().get(0);
-        assertNotNull(f.getProperties("TestLayout"));
-        assertTrue(((Property) f.getProperties("TestLayout").get(0)).getValue().equals("0"));
+        assertNotNull(f.getProperties());
+        assertEquals(0, f.getIntProperty(Fragment.ROW_PROPERTY_NAME));
     }
 
     public void testCreateFolder() throws Exception
@@ -896,15 +880,13 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(cf.getName().equals("HelloPortlet"));
         assertTrue(cf.getType().equals(Fragment.PORTLET));
 
-        List properties = f.getProperties(root.getName());
-        List cloneProperties = cf.getProperties(cloneRoot.getName());
-        
+        Map properties = f.getProperties();
+        Map cloneProperties = cf.getProperties();
+
         assertNotNull(cloneProperties);
         assertTrue(cloneProperties.size() == 2);
-        assertTrue(((Property) cloneProperties.get(0)).getName().equals("row"));
-        assertTrue(((Property) cloneProperties.get(0)).getValue().equals("0"));
-        assertTrue(((Property) cloneProperties.get(1)).getName().equals("column"));
-        assertTrue(((Property) cloneProperties.get(1)).getValue().equals("0"));
+        assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
+        assertEquals(0, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
         cf = (Fragment) cloneChildren.get(1);
         f = (Fragment) children.get(1);
@@ -913,13 +895,11 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(cf.getName().equals("JMXPortlet"));
         assertTrue(cf.getType().equals(Fragment.PORTLET));
 
-        properties = cf.getProperties(root.getName());        
+        properties = cf.getProperties();
         assertNotNull(properties);
         assertTrue(properties.size() == 2);
-        assertTrue(((Property) properties.get(0)).getName().equals("row"));
-        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
-        assertTrue(((Property) properties.get(1)).getName().equals("column"));
-        assertTrue(((Property) properties.get(1)).getValue().equals("1"));
+        assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
+        assertEquals(1, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
         f = testpage.getFragmentById("f002");
         cf = (Fragment) cloneChildren.get(2);

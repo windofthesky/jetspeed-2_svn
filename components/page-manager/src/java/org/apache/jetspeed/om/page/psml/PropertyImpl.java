@@ -16,8 +16,6 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.om.page.Property;
-
 /**
  * Bean like implementation of the Parameter interface suitable for
  * Castor serialization.
@@ -26,12 +24,10 @@ import org.apache.jetspeed.om.page.Property;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PropertyImpl implements Property, java.io.Serializable
+public class PropertyImpl implements java.io.Serializable
 {
-
     private String name;
     private String value;
-    private String layout;
 
     public PropertyImpl()
     {
@@ -39,12 +35,13 @@ public class PropertyImpl implements Property, java.io.Serializable
 
     public String getLayout()
     {
-        return this.layout;
+        // property layout name deprecated
+        return null;
     }
 
     public void setLayout(String layout)
     {
-        this.layout = layout;
+        // property layout name deprecated
     }
 
     public String getName()
@@ -67,53 +64,12 @@ public class PropertyImpl implements Property, java.io.Serializable
         this.value = value;
     }
 
-
-    public boolean equals(Object object)
-    {
-        boolean isEqual = true;
-
-        if (object instanceof Property)
-        {
-            if (this.name!=null)
-            {
-                isEqual&=this.name.equals(((Property)object).getName());
-            }
-            else
-            {
-                isEqual&=((Property)object).getName()==null;
-            }
-
-            if (this.value!=null)
-            {
-                isEqual&=this.value.equals(((Property)object).getValue());
-            }
-            else
-            {
-                isEqual&=((Property)object).getValue()==null;
-            }
-
-            if (this.layout!=null)
-            {
-                isEqual&=this.layout.equals(((Property)object).getLayout());
-            }
-            else
-            {
-                isEqual&=((Property)object).getLayout()==null;
-            }
-        }
-        else
-        {
-            isEqual = false;
-        }
-
-        return isEqual;
-    }
-
     public Object clone()
         throws java.lang.CloneNotSupportedException
     {
         return super.clone();
     }
+
     /**
      * <p>
      * getIntValue

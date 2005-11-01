@@ -53,7 +53,7 @@ limitations under the License.
           element-class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
           auto-retrieve="true"
           auto-delete="object"
-          auto-update="link"
+          auto-update="object"
           proxy="true"
       >
          <inverse-foreignkey field-ref="parentId"/>
@@ -64,14 +64,14 @@ limitations under the License.
           element-class-ref="org.apache.jetspeed.om.page.impl.PageImpl"
           auto-retrieve="true"
           auto-delete="object"
-          auto-update="link"
+          auto-update="object"
           proxy="true"
       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
       <field-descriptor
-         name="path"
+         name="attributes::path"
          column="PATH"
          jdbc-type="VARCHAR"
       />
@@ -85,6 +85,54 @@ limitations under the License.
       <field-descriptor
          name="title"
          column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::user"
+         column="USER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::role"
+         column="ROLE_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::extendedAttributeName"
+         column="EXT_ATTR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>
@@ -133,7 +181,7 @@ limitations under the License.
       </collection-descriptor>
 
       <field-descriptor
-         name="path"
+         name="attributes::path"
          column="PATH"
          jdbc-type="VARCHAR"
       />
@@ -169,44 +217,50 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="subsite"
+         name="attributes::subsite"
          column="SUBSITE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="principal"
-         column="PRINCIPAL"
+         name="attributes::user"
+         column="USER_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="principalType"
-         column="PRINCIPAL_TYPE"
+         name="attributes::role"
+         column="ROLE_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="mediatype"
+         name="attributes::group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::mediatype"
          column="MEDIATYPE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="locale"
+         name="attributes::locale"
          column="LOCALE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="extendedLocatorName"
-         column="EXT_LOCATOR_NAME"
+         name="attributes::extendedAttributeName"
+         column="EXT_ATTR_NAME"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="extendedLocatorValue"
-         column="EXT_LOCATOR_VALUE"
+         name="attributes::extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>
@@ -306,25 +360,25 @@ limitations under the License.
 
       <field-descriptor
          name="extendedPropertyName1"
-         column="EXT_PROPERTY_NAME_1"
+         column="EXT_PROP_NAME_1"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
          name="extendedPropertyValue1"
-         column="EXT_PROPERTY_VALUE_1"
+         column="EXT_PROP_VALUE_1"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
          name="extendedPropertyName2"
-         column="EXT_PROPERTY_NAME_2"
+         column="EXT_PROP_NAME_2"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
          name="extendedPropertyValue2"
-         column="EXT_PROPERTY_VALUE_2"
+         column="EXT_PROP_VALUE_2"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>

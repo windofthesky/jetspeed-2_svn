@@ -37,13 +37,6 @@ public class PageImpl extends NodeImpl implements Page
     private String skin;
     private String decorator;
     private String defaultFragmentDecorator;
-    private String subsite;
-    private String principal;
-    private String principalType;
-    private String mediatype;
-    private String locale;
-    private String extendedLocatorName;
-    private String extendedLocatorValue;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getDefaultSkin()

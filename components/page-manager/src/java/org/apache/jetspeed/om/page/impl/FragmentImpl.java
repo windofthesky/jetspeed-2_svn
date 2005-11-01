@@ -16,10 +16,15 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * FragmentImpl
@@ -27,7 +32,7 @@ import org.apache.jetspeed.om.page.Property;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentImpl extends BaseElementImpl implements Fragment
+public class FragmentImpl extends BaseElementImpl implements Fragment, PersistenceBrokerAware
 {
     private List fragments;
     private String type;
@@ -41,6 +46,8 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private String extendedPropertyValue1;
     private String extendedPropertyName2;
     private String extendedPropertyValue2;
+
+    private Map properties;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getType()
@@ -120,98 +127,119 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutProperties()
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
      */
-    public List getLayoutProperties()
+    public String getProperty(String propName)
     {
-        return null; // NYI
+        if (properties != null)
+        {
+            return (String)properties.get(propName);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     */
+    public int getIntProperty(String propName)
+    {
+        if (properties != null)
+        {
+            String propValue = (String)properties.get(propName);
+            if (propValue != null)
+            {
+                return Integer.parseInt(propValue);
+            }
+        }
+        return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperties()
+     */
+    public Map getProperties()
+    {
+        // initialize and return writable properties map
+        if (properties == null)
+        {
+            properties = new HashMap(4);
+        }
+        return properties;
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperties(java.lang.String)
-     */
-    public List getProperties(String layoutName)
-    {
-        return null; // NYI
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPropertyValue(java.lang.String,java.lang.String)
-     */
-    public String getPropertyValue(String layout, String propName)
-    {
-        return null; // NYI
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPropertyValue(java.lang.String,java.lang.String,java.lang.String)
-     */
-    public void setPropertyValue(String layout, String propName, String value)
-    {
-        // NYI
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#addProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void addProperty(Property p)
-    {
-        // NYI
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#removeProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void removeProperty(Property p)
-    {
-        // NYI
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#clearProperties(java.lang.String)
-     */
-    public void clearProperties(String layoutName)
-    {
-        // NYI
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
      */
     public int getLayoutRow()
     {
-        return layoutRowProperty;
-    }
-    
-    public void setLayoutRow(int row)
-    {
-        this.layoutRowProperty = row;
-    }
-    
-    public void setLayoutColumn(int column)
-    {
-        this.layoutColumnProperty = column;
+        // get standard int property
+        return getIntProperty(ROW_PROPERTY_NAME);
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
+     */
+    public void setLayoutRow(int row)
+    {
+        // set standard int property
+        if (row >= 0)
+        {
+            getProperties().put(ROW_PROPERTY_NAME, String.valueOf(row));
+        }
+        else if (properties != null)
+        {
+            properties.remove(ROW_PROPERTY_NAME);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
      */
     public int getLayoutColumn()
     {
-        return layoutColumnProperty;
+        // get standard int property
+        return getIntProperty(COLUMN_PROPERTY_NAME);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     */
+    public void setLayoutColumn(int column)
+    {
+        // set standard int property
+        if (column >= 0)
+        {
+            getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(column));
+        }
+        else if (properties != null)
+        {
+            properties.remove(COLUMN_PROPERTY_NAME);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
      */
     public String getLayoutSizes()
     {
-        return layoutSizesProperty;
+        // get standard string property
+        return getProperty(SIZES_PROPERTY_NAME);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
+     */
     public void setLayoutSizes(String sizes)
     {
-        this.layoutSizesProperty = sizes;
+        // set standard string property
+        if (sizes != null)
+        {
+            getProperties().put(SIZES_PROPERTY_NAME, sizes);
+        }
+        else if (properties != null)
+        {
+            properties.remove(SIZES_PROPERTY_NAME);
+        }
     }
     
     /* (non-Javadoc)
@@ -229,4 +257,124 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     {
         return null; // NYI
     }    
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeInsert(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // execute update hook
+        beforeUpdate(broker);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterInsert(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // execute update hook
+        afterUpdate(broker);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeUpdate(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // update concrete fields with properties
+        layoutRowProperty = -1;
+        layoutColumnProperty = -1;
+        layoutSizesProperty = null;
+        extendedPropertyName1 = null;
+        extendedPropertyValue1 = null;
+        extendedPropertyName2 = null;
+        extendedPropertyValue2 = null;
+        if ((properties != null) && !properties.isEmpty())
+        {
+            Iterator propsIter = properties.entrySet().iterator();
+            while (propsIter.hasNext())
+            {
+                Map.Entry prop = (Map.Entry)propsIter.next();
+                String propName = (String)prop.getKey();
+                String propValue = (String)prop.getValue();
+                if (propValue != null)
+                {
+                    if (propName.equals(ROW_PROPERTY_NAME))
+                    {
+                        layoutRowProperty = Integer.parseInt(propValue);
+                    }
+                    else if (propName.equals(COLUMN_PROPERTY_NAME))
+                    {
+                        layoutColumnProperty = Integer.parseInt(propValue);
+                    }
+                    else if (propName.equals(SIZES_PROPERTY_NAME))
+                    {
+                        layoutSizesProperty = propValue;
+                    }
+                    else if (extendedPropertyName1 == null)
+                    {
+                        extendedPropertyName1 = propName;
+                        extendedPropertyValue1 = propValue;
+                    }
+                    else if (extendedPropertyName2 == null)
+                    {
+                        extendedPropertyName2 = propName;
+                        extendedPropertyValue2 = propValue;
+                    }
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterUpdate(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeDelete(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterDelete(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // load properties from concrete fields
+        if (layoutRowProperty >= 0)
+        {
+            getProperties().put(ROW_PROPERTY_NAME, String.valueOf(layoutRowProperty));
+        }
+        if (layoutColumnProperty >= 0)
+        {
+            getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(layoutColumnProperty));
+        }
+        if (layoutSizesProperty != null)
+        {
+            getProperties().put(SIZES_PROPERTY_NAME, layoutSizesProperty);
+        }
+        if ((extendedPropertyName1 != null) && (extendedPropertyValue1 != null))
+        {
+            getProperties().put(extendedPropertyName1, extendedPropertyValue1);
+        }
+        if ((extendedPropertyName2 != null) && (extendedPropertyValue2 != null))
+        {
+            getProperties().put(extendedPropertyName2, extendedPropertyValue2);
+        }
+    }
 }

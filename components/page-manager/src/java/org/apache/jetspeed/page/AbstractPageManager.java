@@ -36,7 +36,6 @@ import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.MenuElement;
 
@@ -84,7 +83,6 @@ public abstract class AbstractPageManager
         this.pageClass = (Class)modelClasses.get("PageImpl.class");
         this.folderClass = (Class)modelClasses.get("FolderImpl.class");
         this.linkClass = (Class)modelClasses.get("LinkImpl.class");
-        this.propertyClass = (Class)modelClasses.get("PropertyImpl.class");
         this.menuDefinitionClass = (Class)modelClasses.get("MenuDefinitionImpl.class");
         this.menuExcludeDefinitionClass = (Class)modelClasses.get("MenuExcludeDefinitionImpl.class");
         this.menuIncludeDefinitionClass = (Class)modelClasses.get("MenuIncludeDefinitionImpl.class");
@@ -240,26 +238,6 @@ public abstract class AbstractPageManager
         return fragment;        
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newProperty()
-     */
-    public Property newProperty()
-    {
-        Property property = null;
-        try
-        {
-            property = (Property)createObject(this.propertyClass);
-            
-        }
-        catch (ClassCastException e)
-        {
-            String message = "Failed to create fragment-property object for " + this.propertyClass;
-            log.error(message, e);
-            // throw new JetspeedException(message, e);
-        }
-        return property;        
-    }
-
     /**
      * newMenuDefinition - creates a new empty menu definition
      *
@@ -516,20 +494,11 @@ public abstract class AbstractPageManager
         clone.setState(source.getState());
         
         // clone properties
-        Iterator names = source.getLayoutProperties().iterator();
-        while (names.hasNext())
+        Iterator props = source.getProperties().entrySet().iterator();
+        while (props.hasNext())
         {
-            String name = (String)names.next();
-            Iterator props = source.getProperties(name).iterator();
-            while (props.hasNext())
-            {
-                Property srcProp = (Property)props.next();
-                Property dstProp = newProperty();
-                dstProp.setLayout(name);
-                dstProp.setName(srcProp.getName());
-                dstProp.setValue(srcProp.getValue());
-                clone.addProperty(dstProp);
-            }            
+            Map.Entry prop = (Map.Entry)props.next();
+            clone.getProperties().put(prop.getKey(), prop.getValue());
         }
         
         // clone security constraints

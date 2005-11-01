@@ -32,8 +32,8 @@ public class PageManagerLayoutEventListener implements LayoutEventListener
             {
                 Fragment fragment = event.getFragment();
                 LayoutCoordinate coordinate = event.getNewCoordinate();
-                fragment.setPropertyValue(layoutType, "column", String.valueOf(coordinate.getX()));
-                fragment.setPropertyValue(layoutType, "row", String.valueOf(coordinate.getY()));
+                fragment.getProperties().put(Fragment.COLUMN_PROPERTY_NAME, String.valueOf(coordinate.getX()));
+                fragment.getProperties().put(Fragment.ROW_PROPERTY_NAME, String.valueOf(coordinate.getY()));
                 pageManager.updatePage(page);
             }
         }

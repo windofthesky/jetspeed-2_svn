@@ -730,8 +730,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getRow(int currentColumn, Fragment fragment)
     {
-        String propertyValue = fragment.getPropertyValue(layoutType, Fragment.ROW_PROPERTY_NAME);
-
+        String propertyValue = fragment.getProperty(Fragment.ROW_PROPERTY_NAME);
         if (propertyValue != null)
         {
             return Integer.parseInt(propertyValue);
@@ -757,7 +756,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getColumn(Fragment fragment)
     {
-        String propertyValue = fragment.getPropertyValue(layoutType, Fragment.COLUMN_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(Fragment.COLUMN_PROPERTY_NAME);
         if (propertyValue != null)
         {
             int columnNumber = Integer.parseInt(propertyValue);

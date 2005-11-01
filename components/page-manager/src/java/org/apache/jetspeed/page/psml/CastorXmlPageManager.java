@@ -47,7 +47,6 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
@@ -73,9 +72,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 {
     private final static Log log = LogFactory.getLog(CastorXmlPageManager.class);
 
-    protected final static String PROFILE_PROPERTY_FOLDER_PREFIX = "_";
-    protected final static String PROFILE_NAVIGATION_PROPERTY_FOLDER_PREFIX = "__";
-
     private static Map modelClasses = new HashMap();
     static
     {
@@ -83,7 +79,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("PageImpl.class", PageImpl.class);
         modelClasses.put("FolderImpl.class", FolderImpl.class);
         modelClasses.put("LinkImpl.class", LinkImpl.class);
-        modelClasses.put("PropertyImpl.class", PropertyImpl.class);
         modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
         modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
         modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);

@@ -234,6 +234,13 @@ public class PageImpl extends AbstractNode implements Page
             }
         }
 
+        // propagate unmarshalled notification
+        // to root fragment
+        if (root != null)
+        {
+            ((FragmentImpl)root).unmarshalled();
+        }
+
         // default title of pages to name
         if (getTitle() == null)
         {
@@ -247,6 +254,13 @@ public class PageImpl extends AbstractNode implements Page
      */
     public void marshalling()
     {
+        // propagate marshalling notification
+        // to root fragment
+        if (root != null)
+        {
+            ((FragmentImpl)root).marshalling();
+        }
+
         // propagate marshalling notification
         // to all menu definitions
         if (menuDefinitions != null)

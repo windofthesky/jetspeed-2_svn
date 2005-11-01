@@ -32,7 +32,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
@@ -102,13 +101,6 @@ public interface PageManager
      */    
     public Fragment newPortletFragment();
     
-    /**
-     * Creates a new empty Property instance
-     *
-     * @return a newly created Property object
-     */
-    public Property newProperty();
-
     /**
      * newMenuDefinition - creates a new empty menu definition
      *

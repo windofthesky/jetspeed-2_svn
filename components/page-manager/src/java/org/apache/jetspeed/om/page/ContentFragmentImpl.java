@@ -117,24 +117,6 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#addProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void addProperty(Property p)
-    {
-        
-        fragment.addProperty(p);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#clearProperties(java.lang.String)
-     */
-    public void clearProperties(String layoutName)
-    {
-        
-        fragment.clearProperties(layoutName);
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#clone()
      */
     public Object clone() throws CloneNotSupportedException
@@ -153,15 +135,6 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutProperties()
-     */
-    public List getLayoutProperties()
-    {
-        
-        return fragment.getLayoutProperties();
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getName()
      */
     public String getName()
@@ -171,21 +144,30 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperties(java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
-    public List getProperties(String layoutName)
+    public Map getProperties()
     {
-        
-        return fragment.getProperties(layoutName);
+
+        return fragment.getProperties();
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPropertyValue(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
      */
-    public String getPropertyValue(String layout, String propName)
+    public String getProperty(String propName)
     {
         
-        return fragment.getPropertyValue(layout, propName);
+        return fragment.getProperty(propName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
+     */
+    public int getIntProperty(String propName)
+    {
+        
+        return fragment.getIntProperty(propName);
     }
 
     /* (non-Javadoc)
@@ -225,15 +207,6 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#removeProperty(org.apache.jetspeed.om.page.Property)
-     */
-    public void removeProperty(Property p)
-    {
-        
-        fragment.removeProperty(p);
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setDecorator(java.lang.String)
      */
     public void setDecorator(String decoratorName)
@@ -249,15 +222,6 @@ public class ContentFragmentImpl implements ContentFragment
     {
         
         fragment.setName(name);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setPropertyValue(java.lang.String, java.lang.String, java.lang.String)
-     */
-    public void setPropertyValue(String layout, String propName, String value)
-    {
-        
-        fragment.setPropertyValue(layout, propName, value);
     }
 
     /* (non-Javadoc)

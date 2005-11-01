@@ -109,7 +109,7 @@
       <bind-xml name="fragment"/>
     </field>
 
-    <field name="properties"
+    <field name="propertiesList"
            type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="vector">
       <bind-xml name="property"/>
     </field>

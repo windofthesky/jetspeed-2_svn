@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>A <code>Fragment</code> is the basic element handled by the aggregation
@@ -37,8 +38,7 @@ import java.util.List;
  * the fragment also stores contextual information used for rendering:</p>
  * <p>Finally the fragment also holds layout and rendering properties that
  *   may be used by a parent fragment to layout all its inner fragments in
- *   an appropriate fashion. These properties are always defined for a
- *   specific named component.</p>
+ *   an appropriate fashion.</p>
  *
  * @version $Id$
  */
@@ -152,67 +152,33 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     public List getFragments();
 
     /**
-     * Returns all layout names for which properties have
-     * been defined.
+     * getProperty
      *
-     * @return a list of layout names Strings
-     */
-    public List getLayoutProperties();
-
-    /**
-     * Returns a list of all properties defined
-     * for the layoutName specified. You can update the properties
-     * but not add or remove them
+     * Get named property value.
      *
-     * @return an immutable List of Property objects
+     * @param propName property name
+     * @return value
      */
-    public List getProperties(String layoutName);
+    public String getProperty(String propName);
     
     /**
-     * 
-     * <p>
-     * getPropertyValue
-     * </p>
+     * getIntProperty
      *
-     * @param layout
-     * @param propName
-     * @return
+     * Get named property value as integer.
+     *
+     * @param propName property name
+     * @return int value
      */
-    public String getPropertyValue(String layout, String propName);
+    public int getIntProperty(String propName);
     
     /**
-     * 
-     * <p>
-     * setPropertyValue
-     * </p>
+     * getProperties
      *
-     * @param layout
-     * @param propName
-     * @param value
-     */
-    public void setPropertyValue(String layout, String propName, String value);
-
-    /**
-     * Adds a new property to this fragment
+     * Get writable Map of properties by name.
      *
-     * @param p the new Property to add
+     * @return properties map
      */
-    public void addProperty(Property p);
-
-    /**
-     * Removes a new property from this fragment
-     *
-     * @param p the Property to remove
-     */
-    public void removeProperty(Property p);
-
-    /**
-     * Clear all the properties for a specific layout,
-     * if layoutName is null, clear all properties.
-     *
-     * @param layoutName the layout for which to remove the properties
-     */
-    public void clearProperties(String layoutName);
+    public Map getProperties();
 
     /**
      * get layout row property
@@ -220,6 +186,13 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      * @return row layout property
      **/
     public int getLayoutRow();
+    
+    /**
+     * set the layout row property
+     * 
+     * @param row
+     */
+    public void setLayoutRow(int row);
     
     /**
      * get layout column property
@@ -236,12 +209,12 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     public void setLayoutColumn(int column);
     
     /**
-     * set the layout row property
-     * 
-     * @param row
-     */
-    public void setLayoutRow(int row);
-    
+     * get layout sizes property, (i.e. "25%,75%")
+     *
+     * @return sizes layout property
+     **/
+    public String getLayoutSizes();
+
     /**
      * set the layout sizes
      * 
@@ -249,13 +222,6 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      */
     public void setLayoutSizes(String sizes);
     
-    /**
-     * get layout sizes property, (i.e. "25%,75%")
-     *
-     * @return sizes layout property
-     **/
-    public String getLayoutSizes();
-
     /**
      * Test if this fragment is actually a reference to an external fragment.
      *

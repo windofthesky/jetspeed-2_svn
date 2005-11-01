@@ -109,7 +109,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         List columnSizes = this.columnSizes;
 
         // Determine custom column sizes in the psml
-        String customSizes = f.getPropertyValue(this.layoutType, Fragment.SIZES_PROPERTY_NAME);
+        String customSizes = f.getProperty(Fragment.SIZES_PROPERTY_NAME);
         if ( customSizes != null && customSizes.trim().length() > 0 )
         {
             columnSizes = getCellSizes(customSizes);

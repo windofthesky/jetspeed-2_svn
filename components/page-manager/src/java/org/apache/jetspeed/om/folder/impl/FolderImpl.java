@@ -132,6 +132,15 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#isRootFolder()
+     */
+    public boolean isRootFolder()
+    {
+        // test using Node implementation
+        return super.isRootNode();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
      */
     public String getDefaultPage(boolean allowDefaulting)
