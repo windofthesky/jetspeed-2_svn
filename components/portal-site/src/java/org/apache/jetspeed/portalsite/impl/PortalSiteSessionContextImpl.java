@@ -392,34 +392,37 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     // page is available to choose from
                     if (requestFolderPages.size() > 1)
                     {
-                        String defaultPageName = requestFolder.getDefaultPage(false);
-                        if (defaultPageName != null)
+                        String defaultPageName = requestFolder.getDefaultPage();
+                        if (defaultPageName == null)
                         {
-                            try
+                            // use fallback default if default page
+                            // not explicitly specified
+                            defaultPageName = Folder.FALLBACK_DEFAULT_PAGE;
+                        }
+                        try
+                        {
+                            // save last visited non-hidden page for folder proxy
+                            // path, (proxies are hashed by their path), and
+                            // return default page
+                            requestPage = requestFolder.getPage(defaultPageName);
+                            if (!requestPage.isHidden())
                             {
-                                // save last visited non-hidden page for folder proxy
-                                // path, (proxies are hashed by their path), and
-                                // return default page
-                                requestPage = requestFolder.getPage(defaultPageName);
-                                if (!requestPage.isHidden())
-                                {
-                                    folderPageHistory.put(requestFolder, requestPage);
-                                }
-
-                                // log selected request page
-                                if (log.isDebugEnabled())
-                                {
-                                    log.debug("Selected folder default page: path=" + view.getManagedPage(requestPage).getPath());
-                                }
-                                return requestPage;
+                                folderPageHistory.put(requestFolder, requestPage);
                             }
-                            catch (NodeException ne)
+                            
+                            // log selected request page
+                            if (log.isDebugEnabled())
                             {
+                                log.debug("Selected folder default page: path=" + view.getManagedPage(requestPage).getPath());
                             }
-                            catch (SecurityException se)
-                            {
-                                accessException = se;
-                            }
+                            return requestPage;
+                        }
+                        catch (NodeException ne)
+                        {
+                        }
+                        catch (SecurityException se)
+                        {
+                            accessException = se;
                         }
                     }
                     

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2005 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.om.page;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +31,18 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public class PageMetadataImpl extends GenericMetadataImpl
 {
+    private Class fieldImplClass = PageLocalizedFieldImpl.class;
+
+    public PageMetadataImpl()
+    {
+    }
+
+    public PageMetadataImpl(Class fieldImplClass)
+    {
+        this();
+        this.fieldImplClass = fieldImplClass;
+    }
+
     /**
      * localizedText - cached text metadata
      */
@@ -41,7 +53,14 @@ public class PageMetadataImpl extends GenericMetadataImpl
      */
     public LocalizedField createLocalizedField()
     {
-        return new PageLocalizedFieldImpl();
+        try
+        {
+            return (LocalizedField)fieldImplClass.newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Failed to create LocalizedField object: " + fieldImplClass.getName(), e);
+        }
     }
 
     /**

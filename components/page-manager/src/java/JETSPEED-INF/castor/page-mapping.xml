@@ -35,7 +35,7 @@
     </field>
 
 	<field name="metadataFields"
-           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
@@ -47,7 +47,7 @@
     </field>
   </class>
   
-  <class name="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl">
+  <class name="org.apache.jetspeed.om.page.PageLocalizedFieldImpl">
     <map-to xml="metadata"/>
 
 	<field name="name" type="java.lang.String">
@@ -144,7 +144,7 @@
     </field>
     
  	<field name="metadataFields"
-           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
@@ -181,7 +181,7 @@
     </field>    
 
 	<field name="metadataFields"
-           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
@@ -237,7 +237,7 @@
     </field>
     
 	<field name="metadataFields"
-           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
@@ -330,7 +330,7 @@
     </field>
     
 	<field name="metadataFields"
-           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>

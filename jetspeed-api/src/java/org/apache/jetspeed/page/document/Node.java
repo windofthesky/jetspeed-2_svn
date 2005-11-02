@@ -155,8 +155,19 @@ public interface Node extends BaseElement
      *  the presence of this node in terms of being returned in 
      *  {@link NodeSets org.apache.jetspeed.page.document.NodeSet}. 
      * </p>
-     * @return
+     * @return hidden flag
      */
     boolean isHidden();
 
+    /**
+     * 
+     * <p>
+     * setHidden
+     * </p>
+     * <p>
+     *  Whether or not this Node should be hidden in terms of the view.
+     * </p>
+     * @param hidden flag
+     */
+    void setHidden(boolean hidden);
 }

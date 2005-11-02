@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 
 /**
  * This class implements metadata protocols for menu

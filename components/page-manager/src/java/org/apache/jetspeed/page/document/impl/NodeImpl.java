@@ -15,10 +15,13 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.page.document.Node;
 
@@ -31,7 +34,11 @@ import org.apache.jetspeed.page.document.Node;
 public abstract class NodeImpl extends BaseElementImpl implements Node
 {
     private Node parent;
+    private boolean hidden;
     private NodeAttributes attributes;
+    private List metadataFields;
+
+    private PageMetadataImpl pageMetadata;
 
     public NodeImpl()
     {
@@ -50,6 +57,36 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     public boolean isRootNode()
     {
         return attributes.getPath().equals(Folder.PATH_SEPARATOR);
+    }
+
+    /**
+     * newPageMetadata
+     *
+     * Construct page manager specific metadata implementation.
+     *
+     * @param fields mutable fields collection
+     * @return page metadata
+     */
+    public abstract PageMetadataImpl newPageMetadata(List fields);
+
+    /**
+     * getPageMetadata
+     *
+     * Get page manager specific metadata implementation.
+     *
+     * @return page metadata
+     */
+    public PageMetadataImpl getPageMetadata()
+    {
+        if (pageMetadata == null)
+        {
+            if (metadataFields == null)
+            {
+                metadataFields = new ArrayList(4);
+            }
+            pageMetadata = newPageMetadata(metadataFields);
+        }
+        return pageMetadata;
     }
 
     /* (non-Javadoc)
@@ -178,11 +215,11 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.document.Node#getmetadata()
+     * @see org.apache.jetspeed.page.document.Node#getMetadata()
      */
     public GenericMetadata getMetadata()
     {
-        return null; // NYI
+        return getPageMetadata();
     }
     
     /* (non-Javadoc)
@@ -190,7 +227,13 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getTitle(Locale locale)
     {
-        return null; // NYI
+        // get title from metadata or use default title
+        String title = getPageMetadata().getText("title", locale);
+        if (title == null)
+        {
+            title = getTitle();
+        }
+        return title;
     }
     
     /* (non-Javadoc)
@@ -198,23 +241,35 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getShortTitle(Locale locale)
     {
-        return null; // NYI
+        // get short title from metadata or use title from metadata,
+        // default short title, or default title
+        String shortTitle = getPageMetadata().getText("short-title", locale);
+        if (shortTitle == null)
+        {
+            shortTitle = getPageMetadata().getText("title", locale);
+            if (shortTitle == null)
+            {
+                shortTitle = getShortTitle();
+                if (shortTitle == null)
+                {
+                    shortTitle = getTitle();
+                }
+            }
+        }
+        return shortTitle;
     }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getType()
      */
-    public String getType()
-    {
-        return null; // NYI
-    }
+    public abstract String getType();
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getUrl()
      */
     public String getUrl()
     {
-        return null; // NYI
+        return getPath();
     }
     
     /* (non-Javadoc)
@@ -222,6 +277,14 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public boolean isHidden()
     {
-        return false; // NYI
+        return hidden;
+    }    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.Node#setHidden(boolean)
+     */
+    public void setHidden(boolean hidden)
+    {
+        this.hidden = hidden;
     }    
 }

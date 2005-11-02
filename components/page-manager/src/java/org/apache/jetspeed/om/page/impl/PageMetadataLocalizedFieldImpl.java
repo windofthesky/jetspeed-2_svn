@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2005 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.om.page.impl;
 
-import org.apache.jetspeed.om.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.om.page.PageLocalizedFieldImpl;
 
 /**
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * PageMetadataLocalizedFieldImpl
+ *
+ * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageLocalizedFieldImpl extends LocalizedFieldImpl
+public class PageMetadataLocalizedFieldImpl extends PageLocalizedFieldImpl
 {
-
+    // new class defined only to facilitate OJB table/class mapping
 }

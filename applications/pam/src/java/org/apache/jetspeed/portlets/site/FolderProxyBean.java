@@ -119,7 +119,7 @@ public class FolderProxyBean
                 this.folder = pageManager.getFolder(key);    
                 setTitle(folder.getTitle());                
                 setShortTitle(folder.getShortTitle());
-                setDefaultPage(folder.getDefaultPage(true));
+                setDefaultPage(folder.getDefaultPage());
                 setKey(key);
                 isNew = false;
             }

@@ -23,6 +23,7 @@ import java.util.Stack;
 import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 
 /**
@@ -35,8 +36,18 @@ public class PageImpl extends NodeImpl implements Page
 {
     private List fragments;
     private String skin;
-    private String decorator;
-    private String defaultFragmentDecorator;
+    private String defaultLayoutDecorator;
+    private String defaultPortletDecorator;
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.List)
+     */
+    public PageMetadataImpl newPageMetadata(List fields)
+    {
+        PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMetadataLocalizedFieldImpl.class);
+        pageMetadata.setFields(fields);
+        return pageMetadata;
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getDefaultSkin()
@@ -59,7 +70,19 @@ public class PageImpl extends NodeImpl implements Page
      */
     public String getDefaultDecorator(String fragmentType)
     {
-        return null; // NYI
+        // retrieve supported decorator types
+        if (fragmentType != null)
+        {
+            if (fragmentType.equals(Fragment.LAYOUT))
+            {
+                return defaultLayoutDecorator; 
+            }
+            if (fragmentType.equals(Fragment.PORTLET))
+            {
+                return defaultPortletDecorator; 
+            }
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -67,7 +90,18 @@ public class PageImpl extends NodeImpl implements Page
      */
     public void setDefaultDecorator(String decoratorName, String fragmentType)
     {
-        // NYI
+        // save supported decorator types
+        if (fragmentType != null)
+        {
+            if (fragmentType.equals(Fragment.LAYOUT))
+            {
+                defaultLayoutDecorator = decoratorName; 
+            }
+            if (fragmentType.equals(Fragment.PORTLET))
+            {
+                defaultPortletDecorator = decoratorName; 
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -176,4 +210,12 @@ public class PageImpl extends NodeImpl implements Page
     {
         return null; // NYI
     }    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.Node#getType()
+     */
+    public String getType()
+    {
+        return DOCUMENT_TYPE;
+    }
 }

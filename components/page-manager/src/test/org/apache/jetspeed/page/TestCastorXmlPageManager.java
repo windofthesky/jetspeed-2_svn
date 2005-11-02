@@ -460,12 +460,11 @@ public class TestCastorXmlPageManager extends TestCase
         Iterator childItr = folder1.getFolders().iterator();
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
-        assertEquals("default-page.psml", folder2.getDefaultPage(true));
         assertEquals("/folder1/folder2", folder2.getPath());
         assertEquals("folder2", folder2.getName());
         Folder folder3 = (Folder) childItr.next();
         assertEquals("/folder1/folder3", folder3.getPath());
-        assertEquals("test001.psml", folder3.getDefaultPage(true));
+        assertEquals("test001.psml", folder3.getDefaultPage());
 
         assertEquals(1, folder2.getPages().size());
         assertEquals(2, folder3.getPages().size());

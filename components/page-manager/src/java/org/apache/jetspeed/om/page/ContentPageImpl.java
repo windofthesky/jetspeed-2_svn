@@ -228,6 +228,15 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.Node#setHidden(boolean)
+     */
+    public void setHidden(boolean hidden)
+    {
+        
+        page.setHidden(hidden);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#setParent(org.apache.jetspeed.page.document.Node)
      */
     public void setParent(Node parent)

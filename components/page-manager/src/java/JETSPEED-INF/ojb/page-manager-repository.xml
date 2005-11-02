@@ -70,6 +70,17 @@ limitations under the License.
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
+      <collection-descriptor
+          name="metadataFields"
+          element-class-ref="org.apache.jetspeed.om.folder.impl.FolderMetadataLocalizedFieldImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          proxy="true"
+      >
+         <inverse-foreignkey field-ref="folderId"/>
+      </collection-descriptor>
+
       <field-descriptor
          name="attributes::path"
          column="PATH"
@@ -85,6 +96,25 @@ limitations under the License.
       <field-descriptor
          name="title"
          column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="hidden"
+         column="IS_HIDDEN"
+         jdbc-type="INTEGER"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
+      <field-descriptor
+         name="defaultPage"
+         column="DEFAULT_PAGE_NAME"
          jdbc-type="VARCHAR"
       />
 
@@ -137,6 +167,45 @@ limitations under the License.
       />
    </class-descriptor>
 
+   <class-descriptor
+      class="org.apache.jetspeed.om.folder.impl.FolderMetadataLocalizedFieldImpl"
+      table="FOLDER_METADATA"
+   >
+      <field-descriptor
+         name="id"
+         column="METADATA_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="folderId"
+        column="FOLDER_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
    <!-- Page mapping -->
 
    <class-descriptor
@@ -180,6 +249,17 @@ limitations under the License.
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
 
+      <collection-descriptor
+          name="metadataFields"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMetadataLocalizedFieldImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          proxy="true"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
       <field-descriptor
          name="attributes::path"
          column="PATH"
@@ -199,20 +279,33 @@ limitations under the License.
       />
 
       <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="hidden"
+         column="IS_HIDDEN"
+         jdbc-type="INTEGER"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
+      <field-descriptor
          name="skin"
          column="SKIN"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="decorator"
-         column="DECORATOR"
+         name="defaultLayoutDecorator"
+         column="DEFAULT_LAYOUT_DECORATOR"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="defaultFragmentDecorator"
-         column="DEFAULT_FRAGMENT_DECORATOR"
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
          jdbc-type="VARCHAR"
       />
 
@@ -261,6 +354,45 @@ limitations under the License.
       <field-descriptor
          name="attributes::extendedAttributeValue"
          column="EXT_ATTR_VALUE"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageMetadataLocalizedFieldImpl"
+      table="PAGE_METADATA"
+   >
+      <field-descriptor
+         name="id"
+         column="METADATA_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>
@@ -313,6 +445,12 @@ limitations under the License.
       <field-descriptor
          name="title"
          column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
          jdbc-type="VARCHAR"
       />
 

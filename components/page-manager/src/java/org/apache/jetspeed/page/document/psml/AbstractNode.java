@@ -23,8 +23,8 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
-import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
 

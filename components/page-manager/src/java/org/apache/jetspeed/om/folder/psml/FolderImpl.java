@@ -111,47 +111,14 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         return getPath().equals(PATH_SEPARATOR);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
      */
-    public String getDefaultPage(boolean allowDefaulting)
+    public String getDefaultPage()
     {
-        try
-        {   
-            String defaultPage = metadata.getDefaultPage();
-            if(defaultPage == null)
-            {
-                defaultPage = FALLBACK_DEFAULT_PAGE;
-            }
-            return getPage(defaultPage, false).getName();
-        }
-        catch (NodeException e)
-        {
-            if (allowDefaulting)
-            {
-                try
-                {
-                    Iterator pagesIter = getPages(false).iterator();
-                    if (pagesIter.hasNext())
-                    {
-                        return ((Page) pagesIter.next()).getName();
-                    }
-                    else
-                    {
-                        return PAGE_NOT_FOUND_PAGE;
-                    }
-                }
-                catch (NodeException e1)
-                {
-                    return PAGE_NOT_FOUND_PAGE;
-                }
-            }
-        }
-        return null;
+        return metadata.getDefaultPage();
     }
-
+    
     /*
      * (non-Javadoc)
      * 

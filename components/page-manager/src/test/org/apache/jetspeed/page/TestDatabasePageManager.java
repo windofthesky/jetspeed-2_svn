@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.page;
 
+import java.util.Locale;
+
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -118,6 +120,8 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             folder.setDefaultPage("default-page.psml");
             folder.setDefaultTheme("Blue Theme");
             folder.setShortTitle("Root");
+            GenericMetadata metadata = folder.getMetadata();
+            metadata.addField(Locale.FRENCH, "title", "[fr] Root Folder");
             pageManager.updateFolder(folder);
             
             assertNull(folder.getParent());
@@ -128,6 +132,9 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             page.setDefaultDecorator("blue-gradient", Fragment.PORTLET);
             page.setDefaultSkin("skin-1");
             page.setShortTitle("Default");
+            metadata = page.getMetadata();
+            metadata.addField(Locale.FRENCH, "title", "[fr] Default Page");
+            metadata.addField(Locale.JAPANESE, "title", "[ja] Default Page");
 
             Fragment root = page.getRootFragment();
             root.setDecorator("blue-gradient");

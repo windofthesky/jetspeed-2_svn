@@ -27,12 +27,15 @@ limitations under the License.
         <column name="PATH" required="true" size="160" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
+        <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
+        <column name="DEFAULT_PAGE_NAME" size="80" type="VARCHAR"/>
         <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
         <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="10" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
         <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
         <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
@@ -54,25 +57,44 @@ limitations under the License.
 		</unique>
     </table>
     
+    <table name="FOLDER_METADATA">
+        <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
+		<column name="FOLDER_ID" type="INTEGER" required="true"/>
+        <column name="NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+		<foreign-key foreignTable="FOLDER" onDelete="cascade">
+			<reference foreign="FOLDER_ID" local="FOLDER_ID"/>
+		</foreign-key>
+		<unique name="UN_FOLDER_METADATA_1">
+			<unique-column name="FOLDER_ID"/>
+			<unique-column name="NAME"/>
+			<unique-column name="LOCALE"/>
+			<unique-column name="VALUE"/>
+		</unique>
+    </table>
+
     <!--
        Page Definition
     -->
 
     <table name="PAGE">
         <column name="PAGE_ID" primaryKey="true" required="true" type="INTEGER"/>
-		<column name="PARENT_ID" type="INTEGER"/>
+		<column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="160" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
+        <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
-        <column name="DECORATOR" size="80" type="VARCHAR"/>
-        <column name="DEFAULT_FRAGMENT_DECORATOR" size="80" type="VARCHAR"/>
+        <column name="DEFAULT_LAYOUT_DECORATOR" size="80" type="VARCHAR"/>
+        <column name="DEFAULT_PORTLET_DECORATOR" size="80" type="VARCHAR"/>
         <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
         <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
         <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="10" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
         <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
         <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
 		<foreign-key foreignTable="FOLDER" onDelete="cascade">
@@ -94,6 +116,23 @@ limitations under the License.
 		</unique>
     </table>
     
+    <table name="PAGE_METADATA">
+        <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
+		<column name="PAGE_ID" type="INTEGER" required="true"/>
+        <column name="NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+		<foreign-key foreignTable="PAGE" onDelete="cascade">
+			<reference foreign="PAGE_ID" local="PAGE_ID"/>
+		</foreign-key>
+		<unique name="UN_PAGE_METADATA_1">
+			<unique-column name="PAGE_ID"/>
+			<unique-column name="NAME"/>
+			<unique-column name="LOCALE"/>
+			<unique-column name="VALUE"/>
+		</unique>
+    </table>
+
     <!--
        Fragment Definitions (portlets, layouts)
     -->
@@ -104,6 +143,7 @@ limitations under the License.
 		<column name="PAGE_ID" type="INTEGER"/>
         <column name="NAME" size="100" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="TYPE" size="40" type="VARCHAR"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DECORATOR" size="80" type="VARCHAR"/>

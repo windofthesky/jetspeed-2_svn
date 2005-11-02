@@ -29,6 +29,7 @@ public abstract class BaseElementImpl implements BaseElement
     private int id;
     private String name;
     private String title;
+    private String shortTitle;
 
     /**
      * getName
@@ -135,7 +136,7 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public String getShortTitle()
     {
-        return null; // NYI
+        return shortTitle;
     }
 
     /* (non-Javadoc)
@@ -143,6 +144,6 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public void setShortTitle(String title)
     {
-        // NYI
+        shortTitle = title;
     }
 }

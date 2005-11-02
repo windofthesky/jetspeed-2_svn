@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.Folder;
@@ -23,6 +24,7 @@ import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -42,6 +44,7 @@ import org.apache.jetspeed.page.document.impl.NodeSetImpl;
  */
 public class FolderImpl extends NodeImpl implements Folder
 {
+    private String defaultPage;
     private List folders;
     private List pages;
 
@@ -132,6 +135,16 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.List)
+     */
+    public PageMetadataImpl newPageMetadata(List fields)
+    {
+        PageMetadataImpl pageMetadata = new PageMetadataImpl(FolderMetadataLocalizedFieldImpl.class);
+        pageMetadata.setFields(fields);
+        return pageMetadata;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#isRootFolder()
      */
     public boolean isRootFolder()
@@ -141,11 +154,11 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
      */
-    public String getDefaultPage(boolean allowDefaulting)
+    public String getDefaultPage()
     {
-        return null; // NYI
+        return defaultPage;
     }
     
     /* (non-Javadoc)
@@ -153,7 +166,7 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public void setDefaultPage(String defaultPage)
     {
-        // NYI
+        this.defaultPage = defaultPage;
     }
 
     /* (non-Javadoc)
@@ -317,7 +330,8 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public boolean isReserved()
     {
-        return false; // NYI
+        // folders are always concrete in this implementation
+        return false;
     }
     
     /* (non-Javadoc)
@@ -325,6 +339,15 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public int getReservedType()
     {
-        return -1; // NYI
+        // folders are always concrete in this implementation
+        return RESERVED_FOLDER_NONE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.Node#getType()
+     */
+    public String getType()
+    {
+        return FOLDER_TYPE;
     }
 }
