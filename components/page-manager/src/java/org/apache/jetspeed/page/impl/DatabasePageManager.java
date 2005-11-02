@@ -54,6 +54,7 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.impl.NodeAttributes;
+import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -524,13 +525,23 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#clonePage(org.apache.jetspeed.om.page.Page, java.lang.String)
-     */
-    public Page clonePage(Page source, String path) throws JetspeedException, PageNotUpdatedException
+
+    public Page copyPage(Page source, String path)
+    throws JetspeedException, PageNotUpdatedException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.delegator.copyPage(source, path);
     }
 
+    public Folder copyFolder(Folder source, String path)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        return this.delegator.copyFolder(source, path);
+    }
+
+    public Fragment copyFragment(Fragment source, String name)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        return this.delegator.copyFragment(source, name);
+    }
+    
 }

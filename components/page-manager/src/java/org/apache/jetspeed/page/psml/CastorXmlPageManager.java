@@ -572,4 +572,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return new ContentPageImpl(getPage(path));
     } 
 
+    public Page copy(Page source)
+    {
+        return null;
+    }
 }

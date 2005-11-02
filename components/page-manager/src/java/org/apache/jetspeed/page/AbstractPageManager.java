@@ -25,6 +25,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -481,145 +483,160 @@ public abstract class AbstractPageManager
             }
         }
     }
-    
-    protected Fragment cloneFragment(Fragment source)
-    {
-        Fragment clone = newFragment();
-        clone.setDecorator(source.getDecorator());
-        clone.setName(source.getName());
-        clone.setShortTitle(source.getShortTitle());
-        clone.setSkin(source.getSkin());
-        clone.setTitle(source.getTitle());
-        clone.setType(source.getType());
-        clone.setState(source.getState());
         
-        // clone properties
-        Iterator props = source.getProperties().entrySet().iterator();
-        while (props.hasNext())
-        {
-            Map.Entry prop = (Map.Entry)props.next();
-            clone.getProperties().put(prop.getKey(), prop.getValue());
-        }
-        
-        // clone security constraints
-        SecurityConstraints srcSecurity = source.getSecurityConstraints();
-        if (srcSecurity != null)
-        {
-            SecurityConstraints dstSecurity = cloneSecurityConstraints(srcSecurity);
-            clone.setSecurityConstraints(dstSecurity);
-        }            
-        
-        // recursively clone fragments
-        Iterator fragments = source.getFragments().iterator();
-        while (fragments.hasNext())
-        {
-            Fragment fragment = (Fragment)fragments.next();
-            Fragment clonedFragment = cloneFragment(fragment);
-            clone.getFragments().add(clonedFragment);
-        }
-        
-        return clone;
-    }
-    
-    public Page clonePage(Page source, String path)
+    public Folder copyFolder(Folder source, String path)
     throws JetspeedException, PageNotUpdatedException
     {
-        // create the new page and clone attributes
+        Folder folder = newFolder(path);
+        folder.setDefaultPage(source.getDefaultPage()); 
+        folder.setDefaultTheme(source.getDefaultTheme());
+        folder.setShortTitle(source.getShortTitle());
+        folder.setTitle(source.getTitle());
+        
+        // TODO: menu definitions
+        
+        // TODO: security constraints
+        
+        return folder;
+    }
+    
+    public Page copyPage(Page source, String path)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        // create the new page and copy attributes
         Page page = newPage(path);
         page.setTitle(source.getTitle());
         page.setShortTitle(source.getShortTitle());
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
         page.setDefaultSkin(source.getDefaultSkin());
-            
-        // TODO: clone the metadata
-//        if (source.getMetadata() != null)
-//        {
-//            Collection fields = source.getMetadata().getFields();
-//            if (fields != null)
-//            {
-//                Iterator fieldsIterator = fields.iterator();
-//                while (fieldsIterator.hasNext())
-//                {
-//                    // LEFT OFF HERE Field srcField = (Field)fieldIterator.next();
-//                }
-//            }
-//        }
         
-        // create the root fragment and clone attributes and all subfragments
-        Fragment root = cloneFragment(source.getRootFragment());
+        // metadata
+        copyMetadata(source, page);
+        
+        // fragments
+        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName());
         page.setRootFragment(root);
         
-        // clone menus
-        List menus = page.getMenuDefinitions();
-        if (menus != null)
-        {
-            List clonedMenus = cloneMenuDefinitions(page.getMenuDefinitions());
-            page.setMenuDefinitions(clonedMenus);
-        }
+        // copy security constraints
+//        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+//        if (srcSecurity != null)
+//        {
+//            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+//            page.setSecurityConstraints(copiedSecurity);
+//        }    
+
+        // menus
+//        List menus = page.getMenuDefinitions();
+//        if (menus != null)
+//        {
+//            List copiedMenus = copyMenuDefinitions(page.getMenuDefinitions());
+//            page.setMenuDefinitions(copiedMenus);
+//        }        
         
-        // clone security constraints
-        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
-        if (srcSecurity != null)
-        {
-            SecurityConstraints clonedSecurity = cloneSecurityConstraints(srcSecurity);
-            page.setSecurityConstraints(clonedSecurity);
-        }    
-        
-        updatePage(page);
         return page;
     }
 
-    protected List cloneMenuDefinitions(List srcMenus)
+    public Fragment copyFragment(Fragment source, String name)
     {
-        List clonedMenus = new ArrayList(4); 
+        Fragment copy = newFragment();
+        copy.setDecorator(source.getDecorator());
+        copy.setName(name);
+        copy.setShortTitle(source.getShortTitle());
+        copy.setSkin(source.getSkin());
+        copy.setTitle(source.getTitle());
+        copy.setType(source.getType());
+        copy.setState(source.getState());
+
+        // recursively copy fragments
+        Iterator fragments = source.getFragments().iterator();
+        while (fragments.hasNext())
+        {
+            Fragment fragment = (Fragment)fragments.next();
+            Fragment copiedFragment = copyFragment(fragment, fragment.getName());
+            copy.getFragments().add(copiedFragment);
+        }
+        
+        
+        // copy properties
+        Iterator props = source.getProperties().entrySet().iterator();
+        while (props.hasNext())
+        {
+            Map.Entry prop = (Map.Entry)props.next();
+            copy.getProperties().put(prop.getKey(), prop.getValue());
+        }
+                       
+        return copy;
+    }
+    
+    
+    public void copyMetadata(Page source, Page dest)
+    {
+        if (source.getMetadata() != null)
+        {
+            Collection fields = source.getMetadata().getFields();
+            if (fields != null)
+            {
+                Iterator fieldsIterator = fields.iterator();
+                while (fieldsIterator.hasNext())
+                {
+                    LocalizedField field = (LocalizedField)fieldsIterator.next();                    
+                    dest.getMetadata().addField(field.getLocale(), field.getName(), field.getValue());
+                }
+            }
+        }       
+    }
+    
+    protected List copyMenuDefinitions(List srcMenus)
+    {
+        List copiedMenus = new ArrayList(4); 
         Iterator menus = srcMenus.iterator();
         while (menus.hasNext())
         {
             MenuDefinition srcMenu = (MenuDefinition)menus.next();
-            MenuDefinition clonedMenu = newMenuDefinition();
-            clonedMenu.setDepth(srcMenu.getDepth());
-            clonedMenu.setName(srcMenu.getName());
-            clonedMenu.setOptions(srcMenu.getOptions());
-            clonedMenu.setOrder(srcMenu.getOrder());
-            clonedMenu.setPaths(srcMenu.isPaths());
-            clonedMenu.setProfile(srcMenu.getProfile());
-            clonedMenu.setRegexp(srcMenu.isRegexp());
+            MenuDefinition copiedMenu = newMenuDefinition();
+            copiedMenu.setDepth(srcMenu.getDepth());
+            copiedMenu.setName(srcMenu.getName());
+            copiedMenu.setOptions(srcMenu.getOptions());
+            copiedMenu.setOrder(srcMenu.getOrder());
+            copiedMenu.setPaths(srcMenu.isPaths());
+            copiedMenu.setProfile(srcMenu.getProfile());
+            copiedMenu.setRegexp(srcMenu.isRegexp());
             
-            // TODO: how do I clone all localized short titles?
-            clonedMenu.setShortTitle(srcMenu.getShortTitle());
+            // TODO: how do I copy all localized short titles?
+            copiedMenu.setShortTitle(srcMenu.getShortTitle());
             
-            clonedMenu.setSkin(srcMenu.getSkin());
+            copiedMenu.setSkin(srcMenu.getSkin());
             
-            // TODO: how do I clone all localized titles?            
-            clonedMenu.setTitle(srcMenu.getTitle());
+            // TODO: how do I copy all localized titles?            
+            copiedMenu.setTitle(srcMenu.getTitle());
             
-            // TODO: clone metadata
-            clonedMenu.getMetadata();
+            // TODO: copy metadata
+            copiedMenu.getMetadata();
             
-            List srcElements = clonedMenu.getMenuElements();
+            List srcElements = copiedMenu.getMenuElements();
             if (srcElements != null)
             {
-                List clonedElements = cloneMenuElements(srcElements);
-                clonedMenu.setMenuElements(clonedElements);
+                List copiedElements = copyMenuElements(srcElements);
+                copiedMenu.setMenuElements(copiedElements);
             }
         }
-        return clonedMenus;
+        return copiedMenus;
     }
     
-    protected List cloneMenuElements(List srcElements)
+    protected List copyMenuElements(List srcElements)
     {
-        List clonedElements = new ArrayList(8);
+        List copiedElements = new ArrayList(8);
         Iterator elements = srcElements.iterator();
         while (elements.hasNext())
         {
             MenuElement srcElement = (MenuElement)elements.next();
-            // MenuElement clonedElement = newMenuElement();
+            // MenuElement copiedElement = newMenuElement();
         }
-        return clonedElements;
+        return copiedElements;
     }
     
-    protected SecurityConstraints cloneSecurityConstraints(SecurityConstraints source)
+    protected SecurityConstraints copySecurityConstraints(SecurityConstraints source)
     {
         SecurityConstraints security = newSecurityConstraints();
         if (source.getOwner() != null)        
@@ -628,7 +645,7 @@ public abstract class AbstractPageManager
         }
         if (source.getSecurityConstraints() != null)
         {
-            List clonedConstraints = new ArrayList(8);
+            List copiedConstraints = new ArrayList(8);
             Iterator constraints = source.getSecurityConstraints().iterator();
             while (constraints.hasNext())
             {
@@ -638,20 +655,20 @@ public abstract class AbstractPageManager
                 dstConstraint.setRoles(srcConstraint.getRoles());
                 dstConstraint.setGroups(srcConstraint.getGroups());
                 dstConstraint.setPermissions(srcConstraint.getPermissions());
-                clonedConstraints.add(dstConstraint);
+                copiedConstraints.add(dstConstraint);
             }
-            security.setSecurityConstraints(clonedConstraints);
+            security.setSecurityConstraints(copiedConstraints);
         }
         if (source.getSecurityConstraintsRefs() != null)
         {
-            List clonedRefs = new ArrayList(8);
+            List copiedRefs = new ArrayList(8);
             Iterator refs = source.getSecurityConstraintsRefs().iterator();
             while (refs.hasNext())
             {                
                 String constraintsRef = (String)refs.next();                
-                clonedRefs.add(constraintsRef);
+                copiedRefs.add(constraintsRef);
             }
-            security.setSecurityConstraintsRefs(clonedRefs);            
+            security.setSecurityConstraintsRefs(copiedRefs);            
         }
         return security;
     }
