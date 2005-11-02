@@ -275,14 +275,39 @@ public interface PageManager
     public void removeListener(PageManagerEventListener listener);
     
     /** 
-     * Clone the source page creating and returning a new cloned page  
+     * Copy the source page creating and returning a new copy of the page  
      * with the same portlet and fragment collection as the source
      * All fragments are created with new fragment ids
      * 
-     * @param source The source Page object to be cloned 
+     * @param source The source Page object to be copied 
      * @param path a PSML normalized path to the new page to be created
-     * @return a new Page object cloned from the source, with new fragment ids
+     * @return a new Page object copied from the source, with new fragment ids
      */
-    public Page clonePage(Page source, String path) 
+    public Page copyPage(Page source, String path) 
         throws JetspeedException, PageNotUpdatedException;;
+
+    /** 
+     * Copy the source folder creating and returning a new copy of the folder  
+     * with the same content as the source
+     * All subobjects are created with new ids
+     * 
+     * @param source The source Folder object to be copied 
+     * @param path a PSML normalized path to the new folder to be created
+     * @return a new Folder object copied from the source, with new subobject ids
+     */
+    public Folder copyFolder(Folder source, String path) 
+        throws JetspeedException, PageNotUpdatedException;;
+
+    /** 
+     * Copy the source fragment creating and returning a new copy of the fragment  
+     * with the parameter collection as the source
+     * The fragment is created with a new fragment id
+     * 
+     * @param source The source Fragment object to be copied 
+     * @param the new fragment name, can be the same as source fragment name
+     * @return a new Fragment object copied from the source
+     */
+    public Fragment copyFragment(Fragment source, String name) 
+        throws JetspeedException, PageNotUpdatedException;;
+        
 }
