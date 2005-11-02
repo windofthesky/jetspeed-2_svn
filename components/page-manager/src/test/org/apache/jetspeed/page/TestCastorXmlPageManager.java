@@ -846,7 +846,7 @@ public class TestCastorXmlPageManager extends TestCase
     {
         Page testpage = pageManager.getPage("/clonetest.psml");
         assertNotNull(testpage);
-        Page clone = pageManager.clonePage(testpage, "/cloned.psml");
+        Page clone = pageManager.copyPage(testpage, "/cloned.psml");
         assertNotNull(clone);
         
         assertTrue(clone.getId().equals("/cloned.psml"));
