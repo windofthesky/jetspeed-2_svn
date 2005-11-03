@@ -79,7 +79,8 @@ public class NodeAttributes
             StringBuffer newPath = new StringBuffer();
             if ((subsite != NONE) && (subsite.length() > 0))
             {
-                newPath.append(Folder.SUBSITE_FOLDER);
+                newPath.append(Folder.PATH_SEPARATOR);
+                newPath.append(Folder.RESERVED_SUBSITE_FOLDER_PREFIX);
                 newPath.append(subsite.toLowerCase());
             }
             if ((user != NONE) && (user.length() > 0))
@@ -231,20 +232,20 @@ public class NodeAttributes
                         locale = pathElement.toLowerCase();
                     }
                 }
-                else if (attributeName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX))
-                {
-                    subsite = pathElement.toLowerCase();
-                }
                 else if (attributeName.startsWith(Folder.RESERVED_FOLDER_PREFIX))
                 {
-                    extendedAttributeName = attributeName.substring(1);
+                    extendedAttributeName = attributeName.substring(Folder.RESERVED_FOLDER_PREFIX.length());
                     extendedAttributeValue = pathElement.toLowerCase();
                 }
 
                 // reset attribute name
                 attributeName = null;
             }
-            else if (pathElement.startsWith(Folder.RESERVED_FOLDER_PREFIX) || pathElement.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX))
+            else if (pathElement.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX))
+            {
+                subsite = pathElement.substring(Folder.RESERVED_SUBSITE_FOLDER_PREFIX.length()).toLowerCase();
+            }
+            else if (pathElement.startsWith(Folder.RESERVED_FOLDER_PREFIX))
             {
                 // save attribute name
                 attributeName = pathElement.toLowerCase();

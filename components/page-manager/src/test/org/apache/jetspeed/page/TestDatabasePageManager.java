@@ -118,7 +118,6 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             Folder folder = pageManager.newFolder("/");
             folder.setTitle("Root Folder");
             folder.setDefaultPage("default-page.psml");
-            folder.setDefaultTheme("Blue Theme");
             folder.setShortTitle("Root");
             GenericMetadata metadata = folder.getMetadata();
             metadata.addField(Locale.FRENCH, "title", "[fr] Root Folder");
@@ -192,8 +191,8 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             pageManager.removeFolder(folder);
 
             // test folder/page creation with attributes
-            String testAttributesPath = "/__custom/subsiteX/_user/userX/_role/roleX/_group/groupX/_mediatype/xhtml/_language/en/_country/us/_custom/customX";
-            String verifyTestAttributesPath = "/__subsite-root/subsitex/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
+            String testAttributesPath = "/__subsite-rootX/_user/userX/_role/roleX/_group/groupX/_mediatype/xhtml/_language/en/_country/us/_custom/customX";
+            String verifyTestAttributesPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
             folder = pageManager.newFolder(testAttributesPath);
             pageManager.updateFolder(folder);
             assertNull(folder.getParent());
