@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
@@ -99,7 +100,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     public PortletEntityImpl(Fragment fragment)
     {
-        this.fragment = fragment;
+        setFragment(fragment);
     }
 
     public PortletEntityImpl()
@@ -212,8 +213,10 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         if(this.portletDefinition == null)
         {
             setPortletDefinition(registry.getPortletDefinitionByIdentifier(getPortletUniqueName()));
-        }
-        return this.portletDefinition;
+        }        
+        
+        // Wrap the portlet defintion every request
+        return new FragmentPortletDefinition(this.portletDefinition, fragment);
     }
 
     public PortletApplicationEntity getPortletApplicationEntity()

@@ -148,7 +148,7 @@ public class ContentFragmentImpl implements ContentFragment
      */
     public Map getProperties()
     {
-
+        
         return fragment.getProperties();
     }
 
@@ -663,6 +663,12 @@ public class ContentFragmentImpl implements ContentFragment
         
         
 
+    }
+
+
+    public List getPreferences()
+    {
+        return fragment.getPreferences();
     }
     
 }

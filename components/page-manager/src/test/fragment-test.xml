@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fragment id="test" type="portlet" name="demo::BookmarkPortlet">
+    <property name="row" value="2" layout="TwoColumns"/>
+    <property name="column" value="1" layout="TwoColumns"/>
+    <preference name="Google" readOnly="false">
+       <value>http://www.google.com</value>
+    </preference>
+</fragment>

@@ -302,5 +302,11 @@ public class PortletAggregatorFragmentImpl implements Fragment
     public Object clone() throws CloneNotSupportedException
     {
         return null;
+    }
+
+    public List getPreferences()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }    
 }

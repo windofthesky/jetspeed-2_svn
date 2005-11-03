@@ -44,7 +44,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private List fragments = new Vector();
 
     private List propertiesList = new Vector();
-
+    
+    private List preferences = new ArrayList();
+    
     private Map propertiesMap = new HashMap();
 
     private String name;
@@ -108,7 +110,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public Vector getPropertiesList()
     {
         return (Vector) this.propertiesList;
-    }
+            }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
@@ -116,20 +118,20 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public String getProperty(String propName)
     {
         return (String)propertiesMap.get(propName);
-    }
+        }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
      */
     public int getIntProperty(String propName)
-    {
+        {
         String prop = (String)propertiesMap.get(propName);
         if (prop != null)
-        {
+            {
             return Integer.parseInt(prop);
-        }
+            }
         return -1;
-    }
+        }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getProperties()
@@ -137,7 +139,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public Map getProperties()
     {
         return propertiesMap;
-    }
+            }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
@@ -148,7 +150,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         if (prop != null)
         {
             return Integer.parseInt(prop);
-        }
+            }
         return -1;
     }
 
@@ -162,10 +164,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(ROW_PROPERTY_NAME, String.valueOf(row));
         }
         else
-        {
+            {
             propertiesMap.remove(ROW_PROPERTY_NAME);
+            }
         }
-    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
@@ -176,7 +178,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         if (prop != null)
         {
             return Integer.parseInt(prop);
-        }
+            }
         return -1;
     }
 
@@ -190,10 +192,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(COLUMN_PROPERTY_NAME, String.valueOf(column));
         }
         else
-        {
+            {
             propertiesMap.remove(COLUMN_PROPERTY_NAME);
+            }
         }
-    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
@@ -201,7 +203,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public String getLayoutSizes()
     {
         return (String)propertiesMap.get(SIZES_PROPERTY_NAME);
-    }
+            }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
@@ -213,10 +215,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(SIZES_PROPERTY_NAME, sizes);
         }
         else
-        {
+            {
             propertiesMap.remove(SIZES_PROPERTY_NAME);
+            }
         }
-    }
     
     public Object clone() throws java.lang.CloneNotSupportedException
     {
@@ -298,7 +300,17 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     }
 
-    /**
+    public List getPreferences()
+    {
+        return preferences;
+    }
+
+    public void setPreferences(List preferences)
+    {
+        this.preferences = preferences;  
+    } 
+    
+        /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
      */

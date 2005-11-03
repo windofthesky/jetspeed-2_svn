@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
@@ -62,7 +63,8 @@ public class RenderingJobImpl implements RenderingJob
         this.response = response;
         this.requestContext = requestContext; 
         this.window = window;
-        this.portletContent = portletContent;     
+        this.portletContent = portletContent; 
+        ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
         
     }
 

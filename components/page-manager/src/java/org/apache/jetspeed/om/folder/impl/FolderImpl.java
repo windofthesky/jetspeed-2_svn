@@ -142,7 +142,7 @@ public class FolderImpl extends NodeImpl implements Folder
         pageMetadata.setFields(fields);
         return pageMetadata;
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#isRootFolder()
      */
@@ -157,7 +157,7 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public List getDocumentOrder()
     {
-        return null; //NYI
+        return null; // NYI
     }
     
     /* (non-Javadoc)
@@ -340,5 +340,5 @@ public class FolderImpl extends NodeImpl implements Folder
     public String getType()
     {
         return FOLDER_TYPE;
-    }
+}
 }

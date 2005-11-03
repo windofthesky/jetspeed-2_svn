@@ -25,11 +25,12 @@ limitations under the License.
   <body>
 <section name="PSML">
 <ul>
-	 <li><a href="#Page">Page</a></li>	      
-	 <li><a href="#Defaults">Defaults</a></li>	 
+     <li><a href="#Page">Page</a></li>          
+     <li><a href="#Defaults">Defaults</a></li>     
     <li><a href="#Title_and_Metadata">Title and Metadata</a></li>
     <li><a href="#Layout_Fragments">Layout Fragments</a></li>    
     <li><a href="#Portlet_Fragments">Portlet Fragments</a></li>    
+    <li><a href="#Preferences">Portlet Preferences</a></li>
     <li><a href="#PSML_Security_Constraints">Security Constraints</a></li>        
 </ul>
     
@@ -51,10 +52,10 @@ Here is an example PSML file:
   />
   <title>Welcome to Jetspeed 2</title>
   <metadata name="title" xml:lang="fr">
-		Ma Premiere Page de PSML
+        Ma Premiere Page de PSML
   </metadata>
   <metadata name="title" xml:lang="ja">
-		Jetspeed 2 へようこそ
+        Jetspeed 2 へようこそ
   </metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed::VelocityTwoColumns">
@@ -221,6 +222,49 @@ There are three valid attributes on the defaults element:
 </table>
 <p>Example:</p>  
 <source><![CDATA[
+
+]]></source>
+</section>
+
+<section name='Preferences'>
+<p>
+    The &lt;preference&gt; elements allows for the defining of portlet preferences.  
+	This provides an eaiser avenue for the setting of default portlet prefences for a portlet
+    instance on a page without having to duplicate a portlet definition within
+    the portlet application's portlet.xml.
+	<br/><br/>
+	A fragment can contain 0..n &lt;preference&gt; elements.
+	<br/><br/>
+	Preference precedence: User Defined > Fragment Defined > portlet.xml Defined.
+</p>
+<table>
+    <tr>
+    <th>Attribute: name</th>
+    <th>Attribute: readOnly</th>
+    <th>Element: value</th>    
+    </tr>
+    <tr>
+    <td>The name of the preference.</td>
+    <td>Whether or not the user can change the value of this preference.</td>
+    <td>There can be 1..n <i>&lt;value&gt;</i> elements assigned to a single preference.</td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+
+    <fragment id="uhtemp-1012" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="1" />
+      <preference name="Google" readOnly="false">
+        <value>http://www.google.com</value>
+      </preference>
+    </fragment>
+
 ]]></source>
 </section>
 

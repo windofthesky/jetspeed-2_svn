@@ -163,7 +163,7 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     
     /**
      * getIntProperty
-     *
+     * 
      * Get named property value as integer.
      *
      * @param propName property name
@@ -173,7 +173,7 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     
     /**
      * getProperties
-     *
+     * 
      * Get writable Map of properties by name.
      *
      * @return properties map
@@ -186,14 +186,14 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      * @return row layout property
      **/
     public int getLayoutRow();
-    
+
     /**
      * set the layout row property
-     * 
+     *
      * @param row
      */
     public void setLayoutRow(int row);
-    
+
     /**
      * get layout column property
      *
@@ -210,11 +210,11 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     
     /**
      * get layout sizes property, (i.e. "25%,75%")
-     *
+     * 
      * @return sizes layout property
      **/
     public String getLayoutSizes();
-
+    
     /**
      * set the layout sizes
      * 
@@ -234,5 +234,11 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      */
     public Object clone()
         throws java.lang.CloneNotSupportedException;
+    
+    /**
+     * 
+     * @return
+     */
+    List getPreferences();
     
 }

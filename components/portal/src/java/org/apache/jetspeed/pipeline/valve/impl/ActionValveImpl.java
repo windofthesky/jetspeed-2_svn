@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ActionValve;
@@ -69,6 +72,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {
+                initWindow(actionWindow, request);
                 HttpServletResponse response = request.getResponseForWindow(actionWindow);
                 HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
                 requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
@@ -127,6 +131,19 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     {
         // TODO Auto-generated method stub
         return "ActionValveImpl";
+    }
+    
+    /**
+     * Makes sure that this PortletWindow's PortletEntity is set to have the
+     * current requests fragment.
+     * @param window
+     * @param request
+     */
+    protected void initWindow(PortletWindow window, RequestContext request)
+    {
+        Page page = request.getPage();
+        Fragment fragment = page.getFragmentById(window.getId().toString());
+        ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
     }
 
 }

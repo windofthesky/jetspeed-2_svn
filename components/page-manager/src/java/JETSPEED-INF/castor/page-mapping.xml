@@ -34,13 +34,13 @@
       <bind-xml name="fragment"/>
     </field>
 
-	<field name="metadataFields"
+    <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
 
-	<field name="menuDefinitions"
+    <field name="menuDefinitions"
            type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
            collection="collection">
       <bind-xml name="menu"/>
@@ -50,7 +50,7 @@
   <class name="org.apache.jetspeed.om.page.PageLocalizedFieldImpl">
     <map-to xml="metadata"/>
 
-	<field name="name" type="java.lang.String">
+    <field name="name" type="java.lang.String">
       <bind-xml name="name" node="attribute"/>
     </field>
 
@@ -113,6 +113,11 @@
            type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="vector">
       <bind-xml name="property"/>
     </field>
+    
+    <field name="preferences"
+           type="org.apache.jetspeed.om.preference.impl.FragmentPreference" collection="arraylist">
+      <bind-xml name="preference"/>
+    </field>
   </class>
     
   <class name="org.apache.jetspeed.om.page.psml.LinkImpl">
@@ -143,7 +148,7 @@
       <bind-xml name="short-title"/>
     </field>
     
- 	<field name="metadataFields"
+     <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
@@ -180,13 +185,13 @@
       <bind-xml name="document-order"/>
     </field>    
 
-	<field name="metadataFields"
+    <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
 
-	<field name="menuDefinitions"
+    <field name="menuDefinitions"
            type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
            collection="collection">
       <bind-xml name="menu"/>
@@ -236,13 +241,13 @@
       <bind-xml name="short-title"/>
     </field>
     
-	<field name="metadataFields"
+    <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
     </field>
 
-	<field name="menuElementImpls"
+    <field name="menuElementImpls"
            type="org.apache.jetspeed.om.folder.psml.MenuElementImpl" 
            collection="collection">
       <bind-xml name="menu-element"/>
@@ -329,7 +334,7 @@
       <bind-xml node="text"/>
     </field>
     
-	<field name="metadataFields"
+    <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
@@ -391,7 +396,7 @@
   <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
     <map-to xml="security-constraints"/>
 
-	<field name="owner" type="java.lang.String">
+    <field name="owner" type="java.lang.String">
       <bind-xml name="owner"/>
     </field>
 
@@ -411,15 +416,15 @@
   <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintImpl">
     <map-to xml="security-constraint"/>
 
-	<field name="users" type="java.lang.String">
+    <field name="users" type="java.lang.String">
       <bind-xml name="users"/>
     </field>
 
-	<field name="roles" type="java.lang.String">
+    <field name="roles" type="java.lang.String">
       <bind-xml name="roles"/>
     </field>
 
-	<field name="groups" type="java.lang.String">
+    <field name="groups" type="java.lang.String">
       <bind-xml name="groups"/>
     </field>
 
@@ -447,7 +452,7 @@
   <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl">
     <map-to xml="security-constraints-def"/>
 
-	<field name="name" type="java.lang.String">
+    <field name="name" type="java.lang.String">
       <bind-xml name="name" node="attribute"/>
     </field>
 
@@ -455,6 +460,25 @@
            type="org.apache.jetspeed.om.page.psml.SecurityConstraintImpl"
            collection="collection">
       <bind-xml name="security-constraint"/>
+    </field>
+  </class>
+  
+
+  <class name="org.apache.jetspeed.om.preference.impl.FragmentPreference">
+    <map-to xml="preference"/>
+
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+    
+    <field name="readOnly" type="boolean">
+      <bind-xml name="readOnly" node="attribute"/>
+    </field>
+    
+    <field name="valueList"
+           type="java.lang.String" 
+           collection="arraylist" >
+      <bind-xml name="value" node="element" />
     </field>
   </class>
 

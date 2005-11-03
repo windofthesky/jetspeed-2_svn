@@ -32,6 +32,7 @@ import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -217,7 +218,7 @@ public class PortletRendererImpl implements PortletRenderer
                         + fragment.getId() + ", " + fragment.getName());
             }
             PortletEntity portletEntity = portletWindow.getPortletEntity();
-
+            ((MutablePortletEntity)portletEntity).setFragment(fragment);
             return portletWindow;
 
     }

@@ -134,10 +134,10 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (properties != null)
         {
             return (String)properties.get(propName);
-        }
+    }
         return null;
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
      */
@@ -149,11 +149,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
             if (propValue != null)
             {
                 return Integer.parseInt(propValue);
-            }
+    }
         }
         return -1;
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
@@ -163,7 +163,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (properties == null)
         {
             properties = new HashMap(4);
-        }
+    }
         return properties;
     }
     
@@ -175,7 +175,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         // get standard int property
         return getIntProperty(ROW_PROPERTY_NAME);
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
      */
@@ -185,13 +185,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (row >= 0)
         {
             getProperties().put(ROW_PROPERTY_NAME, String.valueOf(row));
-        }
+    }
         else if (properties != null)
         {
             properties.remove(ROW_PROPERTY_NAME);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
      */
@@ -210,13 +210,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (column >= 0)
         {
             getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(column));
-        }
+    }
         else if (properties != null)
         {
             properties.remove(COLUMN_PROPERTY_NAME);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
      */
@@ -225,7 +225,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         // get standard string property
         return getProperty(SIZES_PROPERTY_NAME);
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
      */
@@ -235,7 +235,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (sizes != null)
         {
             getProperties().put(SIZES_PROPERTY_NAME, sizes);
-        }
+    }
         else if (properties != null)
         {
             properties.remove(SIZES_PROPERTY_NAME);
@@ -249,14 +249,14 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     {
         return false; // NYI
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {
         return null; // NYI
-    }    
+    }
 
     /* (non-Javadoc)
      * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
@@ -275,7 +275,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         // execute update hook
         afterUpdate(broker);
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
      */
@@ -302,7 +302,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
                     if (propName.equals(ROW_PROPERTY_NAME))
                     {
                         layoutRowProperty = Integer.parseInt(propValue);
-                    }
+    }
                     else if (propName.equals(COLUMN_PROPERTY_NAME))
                     {
                         layoutColumnProperty = Integer.parseInt(propValue);
@@ -333,7 +333,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     {
         // nothing to do by default
     }
-
+    
+    public List getPreferences()
+    {
+      // TODO This needs to be implemented in the DB version
+      throw new UnsupportedOperationException("Not Yet Implemented"); // NYI
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
      */
@@ -341,6 +347,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     {
         // nothing to do by default
     }
+    
 
     /* (non-Javadoc)
      * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
