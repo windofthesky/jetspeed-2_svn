@@ -16,196 +16,481 @@
 
 package org.apache.jetspeed.statistics.impl;
 
-
-
-// javax stuff
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.pluto.om.portlet.PortletDefinition;
-
-// java stuff
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.PortalStatistics;
+import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
- * Simple implementation of the PortletStatsService. This implementation
- * uses <A HREF="http://httpd.apache.org/docs/logs.html">Apache Common Log Format (CLF)</A> as its default log format.
- * This format uses the following pattern string: "%h %l %u %t \"%r\" %>s %b",
- * where:
- * <UL>
- * <LI><B>%h</B> - remote host</LI>
- * <LI><B>%l</B> - remote log name</LI>
- * <LI><B>%u</B> - remote user</LI>
- * <LI><B>%t</B> - time in common log time format</LI>
- * <LI><B>%r</B> - first line of request</LI>
- * <LI><B>%s</B> - status (either 200 or 401)</LI>
- * <LI><B>%b</B> - bytes sent (always "-" for no bytes sent). Optionally, portlet load time may be logged (see logLoadTime property)</LI>
- * </UL>
- * <P>
- * Here's an example log entry:
- * <P>
- * <CODE>127.0.0.1 - turbine [26/Aug/2002:11:44:40 -0500] "GET /jetspeed/DatabaseBrowserTest HTTP/1.1" 200 -</CODE>
- * <P>
- * TODO:
- * <UL>
- * <LI>Statistics cache (by portlet and by user)</LI>
- * <LI>Portlet exclusion</LI>
- * <LI>Configurable format pattern</LI>
- * </UL>
+ * <p>
+ * PortalStatisticsImpl
+ * </p>
  * 
- * @author <a href="mailto:morciuch@apache.org">Mark Orciuch</a>
- * @author <a href="mailto:rklein@bluesunrise.com">Richard Klein</a>
- * @version $Id: $
+ * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
  */
-public class PortalStatisticsImpl implements PortalStatistics
+public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
+        PortalStatistics
 {
-    /**
-     * Static initialization of the logger for this class
-     */    
-    protected final static Log logger = LogFactory.getLog(PortalStatisticsImpl.class);
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.statistics.PortalStatistics#forceFlush()
+     */
+    public void forceFlush()
+    {
+        if (pageBatch != null)
+        {
+            this.pageBatch.flush();
+        }
+        if (portletBatch != null)
+        {
+            this.portletBatch.flush();
+        }
+        if (userBatch != null)
+        {
+            this.userBatch.flush();
+        }
+    }
+
+    /* CLF logger */
+    protected final static Log logger = LogFactory
+            .getLog(PortalStatisticsImpl.class);
+
+    /* batch of portlet statistics */
+    private BatchedStatistics portletBatch;
+
+    /* batch if page statistics */
+    private BatchedStatistics pageBatch;
+
+    /* batch of user statistics */
+    private BatchedStatistics userBatch;
+
+    /* format string for a portlet access log entry */
+    protected static final String portletLogFormat = "{0} {1} {2} [{3}] \"{4} {5} {6}\" {7} {8}";
+
+    /* format string for a page access log entry */
+    protected static final String pageLogFormat = "{0} {1} {2} [{3}] \"{4} {5}\" {6} {7}";
+
+    /* Format string for a User Logout log entry */
+    protected static final String logoutLogFormat = "{0} {1} {2} [{3}] \"{4}\" {5} {6}";
+
+    private static final int STATUS_LOGGED_IN = 1;
+
+    private static final int STATUS_LOGGED_OUT = 2;
+
+    /* the following fields should be settable with Spring injection */
+    private boolean logToCLF = true;
+
+    private boolean logToDatabase = true;
+
+    private int maxRecordToFlush_Portlet = 30;
+
+    private int maxRecordToFlush_User = 30;
+
+    private int maxRecordToFlush_Page = 30;
+
+    private long maxTimeMsToFlush_Portlet = 10 * 1000;
+
+    private long maxTimeMsToFlush_User = 10 * 1000;
+
+    private long maxTimeMsToFlush_Page = 10 * 1000;
+
+    ConnectionRepositoryEntry jetspeedDSEntry;
     
-    /**
-     * The default log format pattern string to use with the following elements:
-     * <OL START="0">
-     * <LI>remote address</LI>
-     * <LI>always "-"</LI>
-     * <LI>user name</LI>
-     * <LI>timestamp</LI>
-     * <LI>request method</LI>
-     * <LI>context</LI>     
-     * <LI>portlet name</LI>
-     * <LI>request protocol</LI>
-     * <LI>status code</LI>
-     * <LI>always "-" unless logLoadTime is true</LI>
-     * </OL>
-     */
-    protected static final String defaultLogFormat = "{0} {1} {2} [{3}] \"{4} {5}/{6} {7}\" {8} {9}";
+    /* after this is NOT for injection */
 
-    /**
-     * Logging enabled flag. If TRUE, the logging will occur. To improve performance,
-     * the application should use isEnabled() method before calling logAccess().
-     */
-    private boolean enabled = false;
+    DataSource ds;
 
-    /**
-     * Date format to use in the log entry. Should conform to standard
-     * format used by the SimpleDateFormat class.
-     */
-    protected String dateFormat = null;
+    private int currentUsers = 0;
 
-    /** Date formatter */
+    /* date formatter */
     protected SimpleDateFormat formatter = null;
 
-    /** Log portlet load time instead of bytes sent (which is always zero) */
-    protected boolean logLoadTime = false;
-
-    public PortalStatisticsImpl(boolean enabled, String dateFormat, boolean logLoadTime) 
-    {
-        this.enabled = enabled;
-        this.dateFormat = dateFormat; //"dd/MM/yyyy:hh:mm:ss z");
-        this.formatter = new SimpleDateFormat(this.dateFormat);
-        this.logLoadTime = logLoadTime;
-    }
-            
-    /**
-     * @see org.apache.jetspeed.services.portletstats.PortletStatsService#isEnabled
-     */
-    public boolean isEnabled()
-    {
-        return this.enabled;
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.portletstats.PortletStatsService#setEnabled
-     */
-    public boolean setEnabled(boolean state)
-    {
-        boolean oldState = this.enabled;
-        this.enabled = state;
-
-        return oldState;
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.portletstats.PortletStatsService#logAccess
-     */
-    public void logAccess(RequestContext request, PortletDefinition portlet, String statusCode, long time)
+    public PortalStatisticsImpl(
+             boolean logToCLF,
+             boolean logToDatabase,
+             int maxRecordToFlush_Portal,
+             int maxRecordToFlush_User,
+             int maxRecordToFlush_Page,
+             long maxTimeMsToFlush_Portal,
+             long maxTimeMsToFlush_User,
+             long maxTimeMsToFlush_Page,
+            ConnectionRepositoryEntry jetspeedDSEntry
+            )
     {
         
-        if (!this.isEnabled())
-        {
-            return;
-        }
+        this.logToCLF = logToCLF;
+        this.logToDatabase = logToDatabase;
+        this.maxRecordToFlush_Portlet = maxRecordToFlush_Portal;
+        this.maxRecordToFlush_User = maxRecordToFlush_User;
+        this.maxRecordToFlush_Page = maxRecordToFlush_Page;
+        this.maxTimeMsToFlush_Portlet = maxTimeMsToFlush_Portal;
+        this.maxTimeMsToFlush_User = maxTimeMsToFlush_User;
+        this.maxTimeMsToFlush_Page = maxTimeMsToFlush_Page;
+        this.jetspeedDSEntry = jetspeedDSEntry;
         
-        try 
+    }
+
+    public void springInit() throws NamingException
+    {
+        formatter = new SimpleDateFormat("dd/MM/yyyy:hh:mm:ss z");
+
+        if (jetspeedDSEntry != null )
         {
-            logger.info(this.getLogMessage(request, portlet, statusCode, time));
-        }
-        catch (Exception e)
+            if (jetspeedDSEntry.getJndiName() != null) {
+                try
+                {
+                    Context initialContext = new InitialContext();
+                    ds = (DataSource) initialContext.lookup(jetspeedDSEntry.getJndiName());
+                } catch (NamingException e)
+                {
+                    e.printStackTrace();
+                    throw e;
+                }
+            }
+            else
+            {
+                BasicDataSource bds = new BasicDataSource();
+                bds.setDriverClassName(jetspeedDSEntry.getDriverClassName());
+                bds.setUrl(jetspeedDSEntry.getUrl());
+                bds.setUsername(jetspeedDSEntry.getUsername());
+                bds.setPassword(jetspeedDSEntry.getPassword());
+                ds = (DataSource) bds;
+            }
+        } 
+        
+        
+        currentUsers = 0;
+
+    }
+
+    public DataSource getDataSource()
+    {
+        return ds;
+    }
+
+    public void logPortletAccess(RequestContext request, String portletName,
+            String statusCode, long msElapsedTime)
+    {
+
+        try
+        {
+            HttpServletRequest req = request.getRequest();
+            Principal principal = req.getUserPrincipal();
+            String userName = (principal != null) ? principal.getName()
+                    : "guest";
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            PortletLogRecord record = new PortletLogRecord();
+
+            record.setPortletName(portletName);
+            record.setUserName(userName);
+            record.setIpAddress(req.getRemoteAddr());
+            record.setPagePath(req.getPathInfo());
+            record.setStatus(Integer.parseInt(statusCode));
+            record.setTimeStamp(timestamp);
+            record.setMsElapsedTime(msElapsedTime);
+
+            if (logToCLF)
+            {
+                saveAccessToCLF(record);
+            }
+            if (logToDatabase)
+            {
+                storeAccessToStats(record);
+            }
+        } catch (Exception e)
         {
             logger.error("Exception", e);
         }
     }
 
-    /**
-     * Formats log message
-     * 
-     * @param data
-     * @param portlet
-     * @param statusCode
-     * @param time
-     * @return Formatted message
-     * @exception Exception
-     */
-    protected String getLogMessage(RequestContext rc, PortletDefinition portlet, String statusCode, long time) 
-    throws Exception
-    {        
-        HttpServletRequest req = rc.getRequest();
-        Principal principal = req.getUserPrincipal();
-        String userName = "guest";
-        String portletName = "unknown";
-        if (portlet != null)
-        {
-            portletName = portlet.getName();
-        }
-        if (principal != null)
-        {
-            userName = principal.getName();
-        }
-        Object[] args = {
-            req.getRemoteAddr(),
-            "-",
-            userName,
-            this.formatter.format(new Date()),
-            req.getMethod(),
-            req.getContextPath(),
-            portletName,
-            req.getProtocol(),
-            statusCode,
-            this.logLoadTime == true ? String.valueOf(time) : "-"
-        }; 
-
-        return MessageFormat.format(defaultLogFormat, args).toString();
-
-    }
-
-    /**
-     * Formats log message using default load time
-     * 
-     * @param data
-     * @param portlet
-     * @param statusCode
-     */
-    public void logAccess(RequestContext request, PortletDefinition portlet, String statusCode) 
+    protected void storeAccessToStats(LogRecord record)
     {
-        logAccess(request, portlet, statusCode, 0);
+
+        if (record instanceof PortletLogRecord)
+        {
+            if (portletBatch == null)
+            {
+                portletBatch = new BatchedPortletStatistics(ds, this.maxRecordToFlush_Portlet, this.maxTimeMsToFlush_Portlet,
+                        "portletLogBatcher");
+            }
+            portletBatch.addStatistic(record);
+
+        }
+        if (record instanceof PageLogRecord)
+        {
+            if (pageBatch == null)
+            {
+                pageBatch = new BatchedPageStatistics(ds, this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
+                        "pageLogBatcher");
+            }
+            pageBatch.addStatistic(record);
+
+        }
+        if (record instanceof UserLogRecord)
+        {
+            if (userBatch == null)
+            {
+                userBatch = new BatchedUserStatistics(ds, this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
+                        "userLogBatcher");
+            }
+            userBatch.addStatistic(record);
+
+        }
     }
+
+    protected void saveAccessToCLF(LogRecord record)
+    {
+        Object[] args =
+        { ""};
+        String logMessage = "";
+        if (record instanceof PortletLogRecord)
+        {
+            PortletLogRecord rec = (PortletLogRecord) record;
+            Object[] args1 =
+            { rec.getIpAddress(), "-", rec.getUserName(), rec.getTimeStamp(),
+                    rec.getLogType(), formatter.format(rec.getTimeStamp()),
+                    rec.getPortletName(),
+                    new Integer(rec.getStatus()).toString(),
+                    new Long(rec.getMsElapsedTime())};
+            args = args1;
+            logMessage = MessageFormat.format(portletLogFormat, args)
+                    .toString();
+        }
+        if (record instanceof PageLogRecord)
+        {
+            PageLogRecord rec = (PageLogRecord) record;
+            Object[] args1 =
+            { rec.getIpAddress(), "-", rec.getUserName(), rec.getTimeStamp(),
+                    rec.getLogType(), formatter.format(rec.getTimeStamp()),
+                    new Integer(rec.getStatus()).toString(),
+                    new Long(rec.getMsElapsedTime())};
+            args = args1;
+            logMessage = MessageFormat.format(pageLogFormat, args).toString();
+        }
+        if (record instanceof UserLogRecord)
+        {
+            UserLogRecord rec = (UserLogRecord) record;
+            Object[] args1 =
+            { rec.getIpAddress(), "-", rec.getUserName(), rec.getTimeStamp(),
+                    rec.getLogType(), formatter.format(rec.getTimeStamp()),
+                    new Integer(rec.getStatus()).toString(),
+                    new Long(rec.getMsElapsedTime())};
+            args = args1;
+            logMessage = MessageFormat.format(logoutLogFormat, args).toString();
+        }
+        logger.info(logMessage);
+    }
+
+    public void logPageAccess(RequestContext request, String statusCode,
+            long msElapsedTime)
+    {
+        try
+        {
+            HttpServletRequest req = request.getRequest();
+            Principal principal = req.getUserPrincipal();
+            String userName = (principal != null) ? principal.getName()
+                    : "guest";
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            PageLogRecord record = new PageLogRecord();
+
+            record.setUserName(userName);
+            record.setIpAddress(req.getRemoteAddr());
+            record.setPagePath(req.getPathInfo());
+            record.setStatus(Integer.parseInt(statusCode));
+            record.setTimeStamp(timestamp);
+            record.setMsElapsedTime(msElapsedTime);
+
+            if (logToCLF)
+            {
+                saveAccessToCLF(record);
+            }
+            if (logToDatabase)
+            {
+                storeAccessToStats(record);
+            }
+
+        } catch (Exception e)
+        {
+            logger.error("Exception", e);
+        }
+    }
+
+    public void logUserLogout(RequestContext request, long msElapsedTime)
+    {
+        try
+        {
+            currentUsers = currentUsers - 1;
+
+            HttpServletRequest req = request.getRequest();
+            Principal principal = req.getUserPrincipal();
+            String userName = (principal != null) ? principal.getName()
+                    : "guest";
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            UserLogRecord record = new UserLogRecord();
+
+            record.setUserName(userName);
+            record.setIpAddress(req.getRemoteAddr());
+            record.setStatus(STATUS_LOGGED_OUT);
+            record.setTimeStamp(timestamp);
+            record.setMsElapsedTime(msElapsedTime);
+
+            if (logToCLF)
+            {
+                saveAccessToCLF(record);
+            }
+            if (logToDatabase)
+            {
+                storeAccessToStats(record);
+            }
+
+        } catch (Exception e)
+        {
+            logger.error("Exception", e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.statistics.PortalStatistics#logUserLogin(org.apache.jetspeed.request.RequestContext,
+     *      long)
+     */
+    public void logUserLogin(RequestContext request, long msElapsedLoginTime)
+    {
+        try
+        {
+            currentUsers = currentUsers + 1;
+
+            HttpServletRequest req = request.getRequest();
+            Principal principal = req.getUserPrincipal();
+            String userName = (principal != null) ? principal.getName()
+                    : "guest";
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            UserLogRecord record = new UserLogRecord();
+
+            record.setUserName(userName);
+            record.setIpAddress(req.getRemoteAddr());
+            record.setStatus(STATUS_LOGGED_IN);
+            record.setTimeStamp(timestamp);
+            record.setMsElapsedTime(msElapsedLoginTime);
+
+            if (logToCLF)
+            {
+                saveAccessToCLF(record);
+            }
+            if (logToDatabase)
+            {
+                storeAccessToStats(record);
+            }
+
+        } catch (Exception e)
+        {
+            logger.error("Exception", e);
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.beans.factory.DisposableBean#destroy()
+     */
+    public void springDestroy()
+    {
+        long start = System.currentTimeMillis();
+        if (portletBatch != null)
+        {
+            portletBatch.tellThreadToStop();
+            synchronized(portletBatch.thread) {
+                portletBatch.thread.notify();
+            }
+            
+        }
+        if (userBatch != null)
+        {
+            userBatch.tellThreadToStop();
+            synchronized(userBatch.thread) {
+                userBatch.thread.notify();
+            }
+        }
+        if (pageBatch != null)
+        {
+            pageBatch.tellThreadToStop();
+            synchronized(pageBatch.thread) {
+                pageBatch.thread.notify();
+            }
+        }
+
+        if (this.currentUsers != 0)
+        {
+            System.out.println("destroying while users are logged in");
+        }
+        boolean done = false;
+        while (!done)
+        {
+            done = true;
+            if (portletBatch != null)
+            {
+                if (!portletBatch.isDone())
+                {
+                    done = false;
+                }
+            }
+            if (userBatch != null)
+            {
+                if (!userBatch.isDone())
+                {
+                    done = false;
+                }
+            }
+            if (pageBatch != null)
+            {
+                if (!pageBatch.isDone())
+                {
+                    done = false;
+                }
+            }
+
+            try
+            {
+                Thread.sleep(2);
+            } catch (InterruptedException ie)
+            {
+            }
+        }
+        long end = System.currentTimeMillis();
+        // new we're done
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.statistics.PortalStatistics#getNumberOfCurrentUsers()
+     */
+    public int getNumberOfCurrentUsers()
+    {
+        // TODO Auto-generated method stub
+        return currentUsers;
+    }
+
     
 }
-
