@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Page;
 
 
@@ -41,6 +42,23 @@ public class TestPageImporter extends AbstractSpringTestCase
 {
     private PageManager dbManager;
     private PageManager castorManager;    
+    private boolean overwriteFolders = false;
+    private boolean overwritePages = true;
+    
+    /**
+     * @return Returns the overwritePages.
+     */
+    public boolean isOverwritePages()
+    {
+        return overwritePages;
+    }
+    /**
+     * @param overwritePages The overwritePages to set.
+     */
+    public void setOverwritePages(boolean overwritePages)
+    {
+        this.overwritePages = overwritePages;
+    }
     
     public static void main(String args[])
     {
@@ -78,6 +96,28 @@ public class TestPageImporter extends AbstractSpringTestCase
         { "test-repository-datasource-spring.xml" };
     }
      
+    public void xtestImporter()
+    throws Exception
+    {
+        System.out.println("Importer Test");
+        assertNotNull("db manager is null", dbManager);
+        assertNotNull("castor manager is null", castorManager);
+
+        // create root folder
+        Folder fsRoot = dbManager.getFolder("/");
+        assertNotNull("root is null", fsRoot);
+        System.out.println("fs root = " + fsRoot);
+        
+        Folder fs = dbManager.getFolder("/_user/admin");
+        assertNotNull("admin is null", fs);
+        System.out.println("admin root = " + fs);
+        
+        Page p = dbManager.getPage("/_user/user/p003.psml");
+        assertNotNull("def is null", p);
+        System.out.println("def page = " + p);
+        
+    }
+    
     public void testImporter()
     throws Exception
     {
@@ -99,23 +139,57 @@ public class TestPageImporter extends AbstractSpringTestCase
     
     private int folderCount = 0;
     private int pageCount = 0;
-    
+        
     private Folder importFolder(Folder srcFolder)
     throws Exception
     {
-        System.out.println("copying folder " + srcFolder.getPath());
-        Folder dstFolder = dbManager.copyFolder(srcFolder, srcFolder.getPath());
-        dbManager.updateFolder(dstFolder);
-        folderCount++;
-        
+        Folder dstFolder = lookupFolder(srcFolder.getPath());        
+        if (null != dstFolder)
+        {
+            if (isOverwriteFolders())
+            {
+                System.out.println("overwriting folder " + srcFolder.getPath());                            
+                dbManager.removeFolder(dstFolder);                
+                dstFolder = dbManager.copyFolder(srcFolder, srcFolder.getPath());
+                dbManager.updateFolder(dstFolder);
+                folderCount++;
+                
+            }
+            else            
+                System.out.println("skipping folder " + srcFolder.getPath());            
+        }
+        else
+        {
+            System.out.println("importing new folder " + srcFolder.getPath());            
+            dstFolder = dbManager.copyFolder(srcFolder, srcFolder.getPath());
+            dbManager.updateFolder(dstFolder);
+            folderCount++;
+        }
         Iterator pages = srcFolder.getPages().iterator();
         while (pages.hasNext())
         {
             Page srcPage = (Page)pages.next();
-            System.out.println("copying page " + srcPage.getPath());
-            Page dstPage = dbManager.copyPage(srcPage, srcPage.getPath());
-            dbManager.updatePage(dstPage);
-            pageCount++;
+            Page dstPage = lookupPage(srcPage.getPath());
+            if (null != dstPage)
+            {
+                if (isOverwritePages())
+                {
+                    System.out.println("overwriting page " + srcPage.getPath());                            
+                    dbManager.removePage(dstPage);
+                    dstPage = dbManager.copyPage(srcPage, srcPage.getPath());
+                    dbManager.updatePage(dstPage);
+                    pageCount++;                    
+                }
+                else
+                    System.out.println("skipping page " + srcPage.getPath());                
+            }
+            else            
+            {
+                System.out.println("importing new page " + srcPage.getPath());
+                dstPage = dbManager.copyPage(srcPage, srcPage.getPath());
+                dbManager.updatePage(dstPage);
+                pageCount++;
+            }
         }
         
         Iterator folders = srcFolder.getFolders().iterator();
@@ -126,5 +200,44 @@ public class TestPageImporter extends AbstractSpringTestCase
         }
         
         return dstFolder;
+    }
+    
+    private Page lookupPage(String path)
+    {
+        try
+        {
+            return dbManager.getPage(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
+    private Folder lookupFolder(String path)
+    {
+        try
+        {
+            return dbManager.getFolder(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
+    /**
+     * @return Returns the overwrite.
+     */
+    public boolean isOverwriteFolders()
+    {
+        return overwriteFolders;
+    }
+    /**
+     * @param overwrite The overwrite to set.
+     */
+    public void setOverwriteFolders(boolean overwrite)
+    {
+        this.overwriteFolders = overwrite;
     }
 }
