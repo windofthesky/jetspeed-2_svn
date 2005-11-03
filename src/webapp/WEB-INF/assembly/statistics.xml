@@ -18,19 +18,35 @@
 <beans>
     <!-- Statistics Implementation -->
     <bean id="PortalStatistics" 
-          class="org.apache.jetspeed.statistics.impl.PortalStatisticsImpl">
-        <!-- enabled -->
-        <constructor-arg index="0" type="boolean">
-            <value>true</value>
-        </constructor-arg>
-        <!-- date format -->
-        <constructor-arg index="1">
-            <value>dd/MM/yyyy:hh:mm:ss z</value>
-        </constructor-arg>
-        <!-- log performance times -->
-        <constructor-arg index="2" type="boolean">
-            <value>true</value>
-        </constructor-arg>
-    </bean>
-
+          class="org.apache.jetspeed.statistics.impl.PortalStatisticsImpl"
+          init-method="springInit"
+          destroy-method="springDestroy"
+          >
+        <!-- logToCLF -->
+      	<constructor-arg index='0' type="boolean"><value>false</value></constructor-arg>
+		
+		<!-- logToDatabase -->
+      	<constructor-arg  index='1'  type="boolean"><value>true</value></constructor-arg>
+		
+		<!-- maxRecordToFlush_Portal -->
+      	<constructor-arg   index='2' ><value>300</value></constructor-arg>
+		
+		<!-- maxRecordToFlush_User -->
+      	<constructor-arg   index='3'><value>50</value></constructor-arg>
+		
+		<!-- maxRecordToFlush_Page -->
+      	<constructor-arg   index='4' ><value>100</value></constructor-arg>
+		
+		<!-- maxTimeMsToFlush_Portal -->
+      	<constructor-arg  index='5'  ><value>300000</value></constructor-arg>
+		
+		<!-- maxTimeMsToFlush_User -->
+      	<constructor-arg  index='6'  ><value>5000</value></constructor-arg>
+		
+		<!-- maxTimeMsToFlush_Page -->
+      	<constructor-arg  index='7' ><value>60000</value></constructor-arg>
+		
+		<!-- jetspeedDSEntry -->
+      	<constructor-arg  index='8' ><ref bean="JetspeedDS" /></constructor-arg>
+	</bean>
 </beans>
