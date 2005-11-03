@@ -55,6 +55,7 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.impl.NodeAttributes;
 import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -327,6 +328,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
+            // dereference page in case proxy is supplied
+            page = (Page)ProxyHelper.getRealObject(page);
+
             // look up and set parent folder if necessary
             if (page.getParent() == null)
             {
@@ -377,11 +381,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
+            // dereference page in case proxy is supplied
+            page = (Page)ProxyHelper.getRealObject(page);
+
             // look up and update parent folder if necessary
             if (page.getParent() != null)
             {
                 // update parent folder with removed page; deletes page
-                FolderImpl parent = (FolderImpl)page.getParent();
+                FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(page.getParent());
                 parent.removePage((PageImpl)page);
                 getPersistenceBrokerTemplate().store(parent);
             }
@@ -407,6 +414,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
+            // dereference folder in case proxy is supplied
+            folder = (Folder)ProxyHelper.getRealObject(folder);
+
             // look up and set parent folder if necessary
             if ((folder.getParent() == null) && !folder.isRootFolder())
             {
@@ -457,11 +467,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
+            // dereference folder in case proxy is supplied
+            folder = (Folder)ProxyHelper.getRealObject(folder);
+
             // look up and update parent folder if necessary
             if (folder.getParent() != null)
             {
                 // update parent folder with removed folder; deep deletes folder
-                FolderImpl parent = (FolderImpl)folder.getParent();
+                FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(folder.getParent());
                 parent.removeFolder((FolderImpl)folder);
                 getPersistenceBrokerTemplate().store(parent);
             }
