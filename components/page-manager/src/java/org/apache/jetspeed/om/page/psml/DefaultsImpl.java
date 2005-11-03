@@ -16,75 +16,100 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-// Java imports
 import java.util.Map;
 import java.util.HashMap;
 
-import org.apache.jetspeed.om.page.Defaults;
+import org.apache.jetspeed.om.page.Fragment;
 
 /**
  * @version $Id$
  */
-public class DefaultsImpl implements Defaults
+public class DefaultsImpl
 {
 
     private String skin = null;
     private Map decoratorMap = new HashMap();
 
-    public DefaultsImpl()
-    {
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getSkin()
+    /**
+     * getSkin
+     *
+     * @return skin name used in decorators
      */
     public String getSkin()
     {
         return this.skin;
     }
 
+    /**
+     * setSkin
+     *
+     * @param skin name used in decorators
+     */
     public void setSkin(String skin)
     {
         this.skin = skin;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getDecorator(java.lang.String)
+    /**
+     * getDecorator
+     *
+     * @param type Fragment.LAYOUT or Fragment.PORTLET constants
+     * @return decorator name
      */
     public String getDecorator(String type)
     {
         return (String)decoratorMap.get(type);
     }
 
+    /**
+     * setDecorator
+     *
+     * @param type Fragment.LAYOUT or Fragment.PORTLET constants
+     * @param decorator decorator name
+     */
     public void setDecorator(String type, String decorator)
     {
         decoratorMap.put(type,decorator);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getLayoutDecorator()
+    /**
+     * getLayoutDecorator
+     *
+     * @return Fragment.LAYOUT decorator name
      */
     public String getLayoutDecorator()
     {
-        return getDecorator("layout");
+        return getDecorator(Fragment.LAYOUT);
     }
 
+    /**
+     * setLayoutDecorator
+     *
+     * @param decorator Fragment.LAYOUT decorator name
+     */
     public void setLayoutDecorator(String decorator)
     {
-        setDecorator("layout",decorator);
+        setDecorator(Fragment.LAYOUT,decorator);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.psml.DefaultsIf#getPortletDecorator()
+    /**
+     * getPortletDecorator
+     *
+     * @return Fragment.PORTLET decorator name
      */
     public String getPortletDecorator()
     {
-        return getDecorator("portlet");
+        return getDecorator(Fragment.PORTLET);
     }
 
+    /**
+     * setPortletDecorator
+     *
+     * @param decorator Fragment.PORTLET decorator name
+     */
     public void setPortletDecorator(String decorator)
     {
-        setDecorator("portlet",decorator);
+        setDecorator(Fragment.PORTLET,decorator);
     }
 
 }

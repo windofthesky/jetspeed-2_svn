@@ -42,7 +42,6 @@ public interface Folder extends Node
     String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
     
     String RESERVED_SUBSITE_FOLDER_PREFIX = "__";
-    String RESERVED_SUBSITE_FOLDER_NAME = RESERVED_SUBSITE_FOLDER_PREFIX + "subsite-root";
     String RESERVED_FOLDER_PREFIX = "_";
     String RESERVED_USER_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "user";
     String RESERVED_ROLE_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "role";
@@ -51,7 +50,6 @@ public interface Folder extends Node
     String RESERVED_LANGUAGE_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "language";
     String RESERVED_COUNTRY_FOLDER_NAME = RESERVED_FOLDER_PREFIX + "country";
     
-    String SUBSITE_FOLDER = PATH_SEPARATOR + RESERVED_SUBSITE_FOLDER_NAME + PATH_SEPARATOR;
     String USER_FOLDER = PATH_SEPARATOR + RESERVED_USER_FOLDER_NAME + PATH_SEPARATOR;
     String ROLE_FOLDER = PATH_SEPARATOR + RESERVED_ROLE_FOLDER_NAME + PATH_SEPARATOR;
     String GROUP_FOLDER = PATH_SEPARATOR + RESERVED_GROUP_FOLDER_NAME + PATH_SEPARATOR;
@@ -80,6 +78,20 @@ public interface Folder extends Node
     boolean isRootFolder();
 
     /**
+     * getDocumentOrder
+     *
+     * @return list of ordered document names in folder
+     */
+    List getDocumentOrder();
+    
+    /**
+     * setDocumentOrder
+     *
+     * @param docIndexes list of ordered document names in folder
+     */
+    void setDocumentOrder(List docIndexes);
+
+    /**
      * 
      * <p>
      * getDefaultPage
@@ -98,27 +110,7 @@ public interface Folder extends Node
      * @param defaultPage
      */
     void setDefaultPage(String defaultPage);
-    
-    /**
-     * 
-     * <p>
-     * getDefaultTheme
-     * </p>
-     *
-     * @return A String representing the default theme for this Folder
-     */
-    String getDefaultTheme();
-    
-    /**
-     * 
-     * <p>
-     * setDefaultTheme
-     * </p>
-     *
-     * @param defaultTheme
-     */
-    void setDefaultTheme(String defaultTheme);
-    
+
     /**
      * 
      * <p>
@@ -222,16 +214,6 @@ public interface Folder extends Node
      * @throws DocumentException
      */
     NodeSet getAll() throws FolderNotFoundException, DocumentException;
-
-    /**
-     * 
-     * <p>
-     * getFolderMetaData
-     * </p>
-     *
-     * @return folder metadata
-     */
-    FolderMetaData getFolderMetaData();
 
     /**
      * getMenuDefinitions - get list of menu definitions

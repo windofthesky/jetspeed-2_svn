@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -57,7 +56,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * *_METHOD - Folder method constants
      */
     protected static final Method GET_ALL_METHOD = reflectMethod(Folder.class, "getAll", null);
-    protected static final Method GET_DEFAULT_PAGE_METHOD = reflectMethod(Folder.class, "getDefaultPage", new Class[]{Boolean.TYPE});
+    protected static final Method GET_DEFAULT_PAGE_METHOD = reflectMethod(Folder.class, "getDefaultPage", null);
     protected static final Method GET_FOLDERS_METHOD = reflectMethod(Folder.class, "getFolders", null);
     protected static final Method GET_FOLDER_METHOD = reflectMethod(Folder.class, "getFolder", new Class[]{String.class});
     protected static final Method GET_LINKS_METHOD = reflectMethod(Folder.class, "getLinks", null);
@@ -200,7 +199,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         }
         else if (m.equals(GET_DEFAULT_PAGE_METHOD))
         {
-            return getDefaultPage(proxy, ((Boolean)args[0]).booleanValue());
+            return getDefaultPage(proxy);
         }
         else if (m.equals(GET_FOLDERS_METHOD))
         {
@@ -317,40 +316,15 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * getDefaultPage - proxy implementation of Folder.getDefaultPage()
      *
      * @param proxy this folder proxy
-     * @param allowDefaulting flag to enable defaulting logic
-     * @return default page path
+     * @return default page name
      */
-    public String getDefaultPage(Object proxy, boolean allowDefaulting)
+    public String getDefaultPage(Object proxy)
     {
         // attempt to get explicitly specified default page
         Page defaultPage = selectDefaultPageFromAggregateFolders(proxy);
         if (defaultPage != null)
         {
             return defaultPage.getName();
-        }
-
-        // if defaulting allowed, use first page child in folder
-        if (allowDefaulting)
-        {
-            // return first page in folder
-            try
-            {
-                NodeSet pages = getPages(proxy);
-                if ((pages != null) && !pages.isEmpty())
-                {
-                    return ((Page)pages.iterator().next()).getName();
-                }
-            }
-            catch (NodeException ne)
-            {
-            }
-            catch (SecurityException se)
-            {
-            }
-
-            // no default page fallback default available, return
-            // non existing page name
-            return Folder.PAGE_NOT_FOUND_PAGE;
         }
 
         // no default page available
@@ -686,7 +660,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             {
                 // get folder default page name or look for fallback default name
                 Folder folder = ((SearchFolder)foldersIter.next()).folder;
-                String defaultPageName = folder.getFolderMetaData().getDefaultPage();
+                String defaultPageName = folder.getDefaultPage();
                 if (defaultPageName != null)
                 {
                     // validate and return default page if it exists
@@ -795,14 +769,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // capture most specific document ordering
                 if (folderDocumentOrder == null)
                 {
-                    FolderMetaData metadata = folder.getFolderMetaData();
-                    if (metadata != null)
+                    List documentOrder = folder.getDocumentOrder();
+                    if ((documentOrder != null) && !documentOrder.isEmpty()) 
                     {
-                        List documentOrder = metadata.getDocumentOrder();
-                        if ((documentOrder != null) && !documentOrder.isEmpty()) 
-                        {
-                            folderDocumentOrder = documentOrder;
-                        }
+                        folderDocumentOrder = documentOrder;
                     }
                 }
             }

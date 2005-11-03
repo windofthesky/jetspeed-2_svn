@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
-import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
@@ -162,7 +161,7 @@ public class PageImpl extends AbstractNode implements Page
         return f;
     }
 
-    public Defaults getDefaults()
+    public DefaultsImpl getDefaults()
     {
         return this.defaults;
     }

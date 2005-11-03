@@ -107,11 +107,5 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @param definitions definition list
      */
     void setMenuDefinitions(List definitions);    
-    
-    /**
-     * Returns the defaults object defined for this page.
-     * @return
-     */
-    Defaults getDefaults();
 }
 

@@ -36,18 +36,21 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.psml.LinkImpl;
+import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -99,10 +102,10 @@ public class TestCastorXmlPageManager extends TestCase
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
         
-        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
-        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
-        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
-        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurity.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
+        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, "target/testdata/pages", cache);
+        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, "target/testdata/pages", cache);
+        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, "target/testdata/pages", cache);
+        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
         
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
         handlerFactory.registerDocumentHandler(psmlHandler);

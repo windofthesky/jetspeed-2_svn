@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -154,6 +153,22 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
+     */
+    public List getDocumentOrder()
+    {
+        return null; //NYI
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#setDocumentOrder(java.util.List)
+     */
+    public void setDocumentOrder(List docIndexes)
+    {
+        // NYI
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
      */
     public String getDefaultPage()
@@ -167,22 +182,6 @@ public class FolderImpl extends NodeImpl implements Folder
     public void setDefaultPage(String defaultPage)
     {
         this.defaultPage = defaultPage;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.folder.Folder#getDefaultTheme()
-     */
-    public String getDefaultTheme()
-    {
-        return null; // NYI
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.folder.Folder#setDefaultTheme(java.lang.String)
-     */
-    public void setDefaultTheme(String defaultTheme)
-    {
-        // NYI
     }
 
     /* (non-Javadoc)
@@ -299,14 +298,6 @@ public class FolderImpl extends NodeImpl implements Folder
             }
         }
         return allNodeSet;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.folder.Folder#getFolderMetaData()
-     */
-    public FolderMetaData getFolderMetaData()
-    {
-        return null; // NYI
     }
     
     /* (non-Javadoc)

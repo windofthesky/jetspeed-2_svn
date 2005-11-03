@@ -26,11 +26,11 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
+import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.om.page.Document;
 
 import org.apache.jetspeed.page.document.DocumentHandler;
@@ -104,7 +104,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         this.documentRootDir = new File(documentRoot);
         verifyPath(documentRootDir);
         this.handlerFactory = handlerFactory;
-        this.metadataDocHandler = handlerFactory.getDocumentHandler(FolderMetaData.DOCUMENT_TYPE);
+        this.metadataDocHandler = handlerFactory.getDocumentHandler(FolderMetaDataImpl.DOCUMENT_TYPE);
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
     }
@@ -188,7 +188,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             try
             {
                 // look for metadata
-                FolderMetaData metadata = (FolderMetaData) metadataDocHandler.getDocument(path + Folder.PATH_SEPARATOR + FolderMetaData.DOCUMENT_TYPE);
+                FolderMetaDataImpl metadata = (FolderMetaDataImpl) metadataDocHandler.getDocument(path + Folder.PATH_SEPARATOR + FolderMetaDataImpl.DOCUMENT_TYPE);
                 folder = new FolderImpl(path, metadata, handlerFactory, this);
             }
             catch (DocumentNotFoundException e)
@@ -273,8 +273,8 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         // update metadata
         try
         {
-            FolderMetaData metadata = folder.getFolderMetaData();
-            metadata.setPath(path + Folder.PATH_SEPARATOR + FolderMetaData.DOCUMENT_TYPE);
+            FolderMetaDataImpl metadata = folderImpl.getFolderMetaData();
+            metadata.setPath(path + Folder.PATH_SEPARATOR + FolderMetaDataImpl.DOCUMENT_TYPE);
             metadataDocHandler.updateDocument(metadata);
         }
         catch (Exception e)
@@ -319,9 +319,10 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         // (other than metadata document)
         File folderFile = new File(this.documentRootDir, path);
         File metadataFile = null;
-        if ((folder.getFolderMetaData() != null) && (folder.getFolderMetaData().getPath() != null))
+        FolderImpl folderImpl = (FolderImpl)folder;
+        if ((folderImpl.getFolderMetaData() != null) && (folderImpl.getFolderMetaData().getPath() != null))
         {
-            metadataFile = new File(this.documentRootDir, folder.getFolderMetaData().getPath());
+            metadataFile = new File(this.documentRootDir, folderImpl.getFolderMetaData().getPath());
         }
         if (folderFile.exists() && folderFile.isDirectory())
         {
@@ -640,7 +641,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         else if(entry.getDocument() instanceof Document)
         {
             Document doc = (Document) entry.getDocument();
-            if (doc.getType().equals(FolderMetaData.DOCUMENT_TYPE))
+            if (doc.getType().equals(FolderMetaDataImpl.DOCUMENT_TYPE))
             {
                 FileCacheEntry folderEntry = fileCache.get(((AbstractNode)doc).getParent().getPath());
                 refresh(folderEntry);

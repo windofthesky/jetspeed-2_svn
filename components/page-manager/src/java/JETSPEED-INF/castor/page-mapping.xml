@@ -176,7 +176,7 @@
 
     <field name="documentOrder"
            type="java.lang.String" 
-           collection="vector">
+           collection="collection">
       <bind-xml name="document-order"/>
     </field>    
 

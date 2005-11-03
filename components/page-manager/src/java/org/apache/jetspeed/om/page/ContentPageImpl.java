@@ -370,9 +370,4 @@ public class ContentPageImpl implements ContentPage
     {
         return page;
     }
-
-    public Defaults getDefaults()
-    {
-        return page.getDefaults();
-    }
 }

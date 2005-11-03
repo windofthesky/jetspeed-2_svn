@@ -27,7 +27,6 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
@@ -60,16 +59,15 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
 {
     private final static String FOLDER_PERMISSION_WILD_CHAR = new String(new char[]{FolderPermission.WILD_CHAR});
     
-    private String defaultTheme;
     private NodeSet allNodes;
     private File directory;
-    private FolderMetaData metadata;
+    private FolderMetaDataImpl metadata;
     private FolderHandler folderHandler;
     private int reservedType = RESERVED_FOLDER_NONE;
     
     private static final Log log = LogFactory.getLog(FolderImpl.class);
 
-    public FolderImpl( String path, FolderMetaData metadata, DocumentHandlerFactory handlerFactory,
+    public FolderImpl( String path, FolderMetaDataImpl metadata, DocumentHandlerFactory handlerFactory,
                        FolderHandler folderHandler )
     {
         this.metadata = metadata;
@@ -112,6 +110,22 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
+     */
+    public List getDocumentOrder()
+    {
+        return metadata.getDocumentOrder();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#setDocumentOrder(java.util.List)
+     */
+    public void setDocumentOrder(List docIndexes)
+    {
+        metadata.setDocumentOrder(docIndexes);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
      */
     public String getDefaultPage()
@@ -127,26 +141,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public void setDefaultPage( String defaultPage )
     {
         metadata.setDefaultPage(defaultPage);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getDefaultTheme()
-     */
-    public String getDefaultTheme()
-    {
-        return defaultTheme;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#setDefaultTheme()
-     */
-    public void setDefaultTheme( String defaultTheme )
-    {
-        this.defaultTheme = defaultTheme;
     }
 
     /**
@@ -537,11 +531,10 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * <p>
      * getFolderMetaData
      * </p>
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getFolderMetaData()
-     * @return
+     *
+     * @return implementation specific folder metadata
      */
-    public FolderMetaData getFolderMetaData()
+    public FolderMetaDataImpl getFolderMetaData()
     {
         return metadata;
     }
@@ -793,24 +786,29 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     private void setReservedType()
     {
         String name = getName();
-        if (name != null && name.startsWith(RESERVED_FOLDER_PREFIX))            
+        if (name != null)
         {
-            if (name.equals(RESERVED_USER_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_USERS;
-            else if (name.equals(RESERVED_ROLE_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_ROLES;
-            else if (name.equals(RESERVED_GROUP_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_GROUPS;
-            else if (name.equals(RESERVED_SUBSITE_FOLDER_NAME))
+            if (name.startsWith(RESERVED_SUBSITE_FOLDER_PREFIX))
+            {
                 reservedType = RESERVED_FOLDER_SUBSITES;
-            else if (name.equals(RESERVED_MEDIATYPE_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_MEDIATYPE;
-            else if (name.equals(RESERVED_LANGUAGE_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_LANGUAGE;
-            else if (name.equals(RESERVED_COUNTRY_FOLDER_NAME))
-                reservedType = RESERVED_FOLDER_COUNTRY;
-            else
-                reservedType = RESERVED_FOLDER_OTHER;            
+            }
+            else if (name.startsWith(RESERVED_FOLDER_PREFIX))            
+            {
+                if (name.equals(RESERVED_USER_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_USERS;
+                else if (name.equals(RESERVED_ROLE_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_ROLES;
+                else if (name.equals(RESERVED_GROUP_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_GROUPS;
+                else if (name.equals(RESERVED_MEDIATYPE_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_MEDIATYPE;
+                else if (name.equals(RESERVED_LANGUAGE_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_LANGUAGE;
+                else if (name.equals(RESERVED_COUNTRY_FOLDER_NAME))
+                    reservedType = RESERVED_FOLDER_COUNTRY;
+                else
+                    reservedType = RESERVED_FOLDER_OTHER;            
+            }
         }
     }
     

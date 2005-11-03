@@ -489,10 +489,11 @@ public abstract class AbstractPageManager
     {
         Folder folder = newFolder(path);
         folder.setDefaultPage(source.getDefaultPage()); 
-        folder.setDefaultTheme(source.getDefaultTheme());
         folder.setShortTitle(source.getShortTitle());
         folder.setTitle(source.getTitle());
         
+        // TODO: document orders
+
         // TODO: menu definitions
         
         // TODO: security constraints

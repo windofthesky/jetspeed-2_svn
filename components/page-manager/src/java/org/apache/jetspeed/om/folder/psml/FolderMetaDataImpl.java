@@ -15,11 +15,11 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import org.apache.jetspeed.om.folder.FolderMetaData;
+import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 /**
@@ -34,9 +34,11 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
  * @version $Id$
  *  
  */
-public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
+public class FolderMetaDataImpl extends AbstractNode implements Document
 {
-    private Vector docOrder;
+    public static String DOCUMENT_TYPE = "folder.metadata";
+
+    private List docOrder;
     private String defaultPage;
 
     /**
@@ -46,7 +48,7 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     
     public FolderMetaDataImpl()
     {
-        docOrder = new Vector();
+        docOrder = new ArrayList(4);
     }
        
     /**
@@ -54,49 +56,49 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
      * getType
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.Document#getType()
-     * @return
+     * @return document type
      */
     public String getType()
     {
         return DOCUMENT_TYPE;
     }
+
     /**
      * <p>
      * getUrl
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.Document#getUrl()
-     * @return
+     * @return url of folder
      */
     public String getUrl()
     {
         return getParent(false).getPath() + PATH_SEPARATOR + getType();
     }
+
     /**
      * <p>
      * getDocumentOrder
      * </p>
      *
-     * @see org.apache.jetspeed.om.folder.FolderMetaData#getDocumentOrder()
-     * @return
+     * @return document order
      */
-    public Vector getDocumentOrder()
+    public List getDocumentOrder()
     {
         return docOrder;
     }
+
     /**
      * <p>
      * setDocumentOrder
      * </p>
      *
-     * @see org.apache.jetspeed.om.folder.FolderMetaData#setDocumentOrder(java.util.List)
      * @param docIndexes
      */
-    public void setDocumentOrder( Vector docIndexes )
+    public void setDocumentOrder(List docIndexes)
     {
         docOrder = docIndexes;
     }
+
     /**
      * @return Returns the defaultPage.
      */
@@ -104,6 +106,7 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     {
         return defaultPage;
     }
+
     /**
      * @param defaultPage The defaultPage to set.
      */

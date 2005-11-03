@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.jetspeed.om.page.Defaults;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
@@ -202,14 +201,6 @@ public class PageImpl extends NodeImpl implements Page
     {
         // NYI
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#getDefaults()
-     */
-    public Defaults getDefaults()
-    {
-        return null; // NYI
-    }    
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getType()
