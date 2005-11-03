@@ -1,4 +1,4 @@
-/* Copyright 2004 Apache Software Foundation
+/* Copyright 2005 Apache Software Foundation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,34 +14,44 @@
 */
 package org.apache.jetspeed.statistics;
 
+import javax.sql.DataSource;
+
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * Simple implementation of the PortletStatsService. This implementation
- * uses <A HREF="http://httpd.apache.org/docs/logs.html">Apache Common Log Format (CLF)</A> as its default log format.
- * This format uses the following pattern string: "%h %l %u %t \"%r\" %>s %b",
+ * The PortletStatistics interface provides an API for logging portlet statistics.
+ * Each log entry is formatted in the <A HREF="http://httpd.apache.org/docs/logs.html">
+ * Apache Common Log Format (CLF)</A>.  Each CLF log entry has the following form:
+ * <P>
+ * "%h %l %u %t \"%r\" %>s %b"
+ * <P>
  * where:
  * <UL>
  * <LI><B>%h</B> - remote host</LI>
  * <LI><B>%l</B> - remote log name</LI>
  * <LI><B>%u</B> - remote user</LI>
  * <LI><B>%t</B> - time in common log time format</LI>
- * <LI><B>%r</B> - first line of request</LI>
- * <LI><B>%s</B> - status (either 200 or 401)</LI>
- * <LI><B>%b</B> - bytes sent (always "-" for no bytes sent). Optionally, portlet load time may be logged (see logLoadTime property)</LI>
+ * <LI><B>%r</B> - first line of HTTP request</LI>
+ * <LI><B>%s</B> - HTTP status code</LI>
+ * <LI><B>%b</B> - number of bytes sent ("-" if no bytes sent).
  * </UL>
  * <P>
- * Here's an example log entry:
+ * Here's an example of a CLF log entry:
  * <P>
- * <CODE>127.0.0.1 - turbine [26/Aug/2002:11:44:40 -0500] "GET /jetspeed/DatabaseBrowserTest HTTP/1.1" 200 -</CODE>
+ * <PRE>
+ * 192.168.2.3 - johndoe [25/Oct/2005:11:44:40 PDT] "GET /jetspeed/DatabaseBrowserTest HTTP/1.1" 200 -
+ * </PRE>
  * <P>
- * TODO:
- * <UL>
- * <LI>Statistics cache (by portlet and by user)</LI>
- * <LI>Portlet exclusion</LI>
- * <LI>Configurable format pattern</LI>
- * </UL>
+ * The PortletStatistics interface overloads the %r field of the CLF format,
+ * depending on the type of information being logged:
+ * <P>
+ * <PRE>
+ * LOG TYPE             FORMAT OF %r FIELD
+ * --------------       ----------------------------
+ * Portlet access       "PORTLET <page-path> <portlet-name>"
+ * Page access          "PAGE <page-path>"
+ * User logout          "LOGOUT"
+ * </PRE>
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @author <a href="mailto:morciuch@apache.org">Mark Orciuch</a>
@@ -51,37 +61,62 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public interface PortalStatistics
 {
     /**
-     * Returns sevice enabled state
+     * Logs an access to a portlet.
      * 
-     * @return true if service is enabled
+     * @param request           current request info object
+     * @param portlet           portlet being logged
+     * @param statusCode        HTTP status code.
+     * @param msElapsedTime     elapsed time the portlet took to render
      */
-    public boolean isEnabled();
-
+    public void logPortletAccess(RequestContext request,
+                                String portlet, 
+                                String statusCode,
+                                long msElapsedTime);
+ 
     /**
-     * Sets service enabled state
+     * Logs an access to a page.
      * 
-     * @param state  new state
-     * @return original service enabled state
+     * @param request           current request info object
+     * @param statusCode        HTTP status code
+     * @param msElapsedTime     elapsed time the page took to render
      */
-    public boolean setEnabled(boolean state);
-
-    /**
-     * Logs portlet access using default load time.
-     * 
-     * @param data       Current request info object
-     * @param portlet    Portlet being logged
-     * @param statusCode HTTP status code. For now, either 200 (successfull) or 401 (unauthorized)
-     */
-    public void logAccess(RequestContext request, PortletDefinition portlet, String statusCode);
-
-    /**
-     * Logs portlet access.
-     * 
-     * @param data       Current request info object
-     * @param portlet    Portlet being logged
-     * @param statusCode HTTP status code. For now, either 200 (successfull) or 401 (unauthorized)
-     */
-    public void logAccess(RequestContext request, PortletDefinition portlet, String statusCode, long time);
+    public void logPageAccess(RequestContext request, 
+            String statusCode, 
+            long msElapsedTime);
     
-    // TODO: define remaining APIs for Pages, User access
+    
+    /**
+     * Logs a user logout event.  The %s (HTTP status code)
+     * field of the log entry will be set to 200 (OK).
+     * 
+     * @param request           current request info object
+     * @param msElapsedTime     elapsed time that the user was logged in
+     */
+    public void logUserLogout(RequestContext request, 
+            long msElapsedTime);
+    /**
+     * Logs a user logout event.  The %s (HTTP status code)
+     * field of the log entry will be set to 200 (OK).
+     * 
+     * @param request           current request info object
+     * @param msElapsedLoginTime     time it took the user to login
+     */
+    public void logUserLogin(RequestContext request, long msElapsedLoginTime);
+    
+    /**
+     * @return   returns the current number of logged in users
+     */
+    public int getNumberOfCurrentUsers();
+    
+    /**
+     * force the database loggers to flush out
+     */
+    public void forceFlush();
+    
+    /**
+     * @return  DataSource in use by the logger
+     *   useful for writing decent tests
+     */
+    public DataSource getDataSource();
+    
 }
