@@ -60,6 +60,11 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface PortalStatistics
 {
+    public static final String HTTP_OK = "200";
+    public static final String HTTP_UNAUTHORIZED = "401";
+    public static final String HTTP_NOT_FOUND = "404";
+    public static final String HTTP_INTERNAL_ERROR = "500";
+    
     /**
      * Logs an access to a portlet.
      * 
