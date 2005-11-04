@@ -45,20 +45,25 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
     {
         this.preferenceSet = preferenceSet;
         this.fragment = fragment;
-        this.prefs = new HashMap(fragment.getPreferences().size());
-        Iterator itr = fragment.getPreferences().iterator();
-        
-        while(itr.hasNext())
+        if (fragment.getPreferences() != null)
         {
-            Preference pref = (Preference) itr.next();
-            prefs.put(pref.getName(), pref);
+            this.prefs = new HashMap(fragment.getPreferences().size());
+            Iterator itr = fragment.getPreferences().iterator();        
+            while(itr.hasNext())
+            {
+                Preference pref = (Preference) itr.next();
+                prefs.put(pref.getName(), pref);
+            }
+        }
+        else
+        {
+            this.prefs = new HashMap();
         }
         
-        
-        itr = preferenceSet.iterator();
-        while(itr.hasNext())
+        Iterator iterator = preferenceSet.iterator();
+        while(iterator.hasNext())
         {
-            Preference pref = (Preference) itr.next();
+            Preference pref = (Preference) iterator.next();
             prefs.put(pref.getName(), pref);
         }        
     }
