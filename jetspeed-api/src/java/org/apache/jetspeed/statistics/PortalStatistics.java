@@ -118,5 +118,7 @@ public interface PortalStatistics
      *   useful for writing decent tests
      */
     public DataSource getDataSource();
+
+    public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria) throws InvalidCriteriaException;
     
 }
