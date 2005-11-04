@@ -80,6 +80,9 @@ limitations under the License.
 		  <entry key="PermissionManager">
             <ref bean="org.apache.jetspeed.security.PermissionManager"/>
           </entry>		            
+		  <entry key="PortalStatistics">
+            <ref bean="PortalStatistics"/>
+          </entry>		            
   	   	</map>
   	   </constructor-arg>
   </bean>
