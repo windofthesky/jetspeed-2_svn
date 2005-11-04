@@ -34,6 +34,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.util.IsolatedLog4JLogger;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
@@ -67,7 +68,8 @@ public class JetspeedEngine implements Engine
     private final ComponentManager componentManager;
     private final Configuration configuration;
     private final String applicationRoot;
-    private Map pipelineMapper ; 
+    private Map pipelineMapper ;
+    private PortalStatistics statistics;
     
     protected static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);        
@@ -107,7 +109,7 @@ public class JetspeedEngine implements Engine
      *                   when the engine fails to initilialize
      */
     public void start() throws JetspeedException
-    {
+    {        
         DateFormat format = DateFormat.getInstance();
         Date startTime = new Date();        
         try
@@ -136,6 +138,7 @@ public class JetspeedEngine implements Engine
             //Start the ComponentManager
             componentManager.start();               
             pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
+            statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");
             
         }
         catch (Throwable e)
@@ -189,42 +192,45 @@ public class JetspeedEngine implements Engine
 
     public void service( RequestContext context ) throws JetspeedException
     {        
-            String targetPipeline = context
-                    .getRequestParameter(PortalReservedParameters.PIPELINE);
+        long start = System.currentTimeMillis();
+        String targetPipeline = context
+                .getRequestParameter(PortalReservedParameters.PIPELINE);
+        if (null == targetPipeline)
+        {
+            targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
             if (null == targetPipeline)
             {
-                targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
-                if (null == targetPipeline)
+                String pipelineKey = context.getRequest().getServletPath();                    
+                if (null != pipelineKey)
                 {
-                    String pipelineKey = context.getRequest().getServletPath();                    
-                    if (null != pipelineKey)
-                    {
-                        if (pipelineKey.equals("/portal"))
-                            targetPipeline = this.defaultPipelineName;
-                        else
-                            targetPipeline = (String)pipelineMapper.get(targetPipeline); 
-                        // System.out.println("pipeline = " + targetPipeline);
-                    }
-                    else
-                    {
+                    if (pipelineKey.equals("/portal"))
                         targetPipeline = this.defaultPipelineName;
-                    }
+                    else
+                        targetPipeline = (String)pipelineMapper.get(targetPipeline); 
+                    // System.out.println("pipeline = " + targetPipeline);
                 }
-            }
-            Pipeline pipeline = null;
-            if (targetPipeline != null)
-            {
-                Pipeline specificPipeline = getPipeline(targetPipeline);
-                if (specificPipeline != null)
+                else
                 {
-                    pipeline = specificPipeline;
+                    targetPipeline = this.defaultPipelineName;
                 }
             }
-            else
-                pipeline = getPipeline();
-            
-            pipeline.invoke(context);
+        }
+        Pipeline pipeline = null;
+        if (targetPipeline != null)
+        {
+            Pipeline specificPipeline = getPipeline(targetPipeline);
+            if (specificPipeline != null)
+            {
+                pipeline = specificPipeline;
+            }
+        }
+        else
+            pipeline = getPipeline();
+        
+        pipeline.invoke(context);
    
+        long end = System.currentTimeMillis();
+        statistics.logPageAccess(context, PortalStatistics.HTTP_OK, end - start);
     }
 
     /**
