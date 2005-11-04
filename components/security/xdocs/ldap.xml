@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Security Services Configuration</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+            <person name="Ate Douma" email="ate@douma.nu" />
+        </authors>
+    </properties>
+    <body>
+
+        <section name="LDAP Configuration">
+            <p>
+                Jetspeed 2 provides LDAP support for authentication. Configuring LDAP authentication can be done by replacing the configuration files located
+                under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>
+                by the files located under as indicated
+                <i>${jetspeed-source-home}/components/security/etc/</i>
+                . below.
+            </p>
+            <p>
+                Jetspeed 2
+                <b>does not currently provide an embedded LDAP directory</b>
+                . A external LDAP directory must be configured in order to leverage this functionality.
+            </p>
+            <p>
+                <i>security-spi-atn.xml</i>
+                should be replaced by
+                <i>security-spi-ldap-atn.xml</i>
+                and
+                <i>security-spi-ldap.xml</i>
+                should be copied to the assembly directory as well.
+            </p>
+            <p>
+                The
+                <i>security-spi-ldap-atn.xml</i>
+                preforms the same functions as the
+                <i>security-spi-atn.xml</i>
+                described above. It replaces the default implementation for
+                <i>CredentialHandler</i>
+                and
+                <i>UserSecurityHandler</i>
+                with an LDAP specific implementation.
+            </p>
+            <p>
+                Additionally,
+                <i>ldap.properties</i>
+                located under
+                <i>${jetspeed-source-home}/components/security/etc/</i>
+                should be copied under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/conf/</i>
+                .
+            </p>
+            <subsection name="ldap.properties">
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.ldapServerName</td>
+                        <td>
+                            The LDAP server name to connect to. E.g.
+                            <i>localhost</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootDn</td>
+                        <td>
+                            The root domain name. E.g.
+                            <i>cn=Manager,dc=proto,dc=dataline,dc=com</i>
+                            . In properties files the "=" in the value should be escaped, i.e.
+                            <i>cn\=Manager,dc\=proto,dc\=dataline,dc\=com</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootPassword</td>
+                        <td>The root password.</td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.rootContext</td>
+                        <td>
+                            The root context. E.g.
+                            <i>dc=proto,dc=dataline,dc=com</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>org.apache.jetspeed.ldap.defaultDnSuffix</td>
+                        <td>
+                            The default suffix. E.g.
+                            <i>ou=Norfolk,o=Dataline</i>
+                        </td>
+                    </tr>
+                </table>
+            </subsection>
+        </section>
+    </body>
+</document>

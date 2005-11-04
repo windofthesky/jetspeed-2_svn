@@ -37,6 +37,7 @@
             </item>
             <item name="High Level Security Services" href="high-level-services.html" />
             <item name="Security Services Configuration" href="config.html" />
+            <item name="LDAP Configuration" href="ldap.html" />            
         </menu>
         <menu name="Misc.">
             <item name="Tasks" href="tasks.html" />
