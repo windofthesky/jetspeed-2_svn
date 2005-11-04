@@ -27,6 +27,7 @@ import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -53,11 +54,19 @@ public class RenderingJobImpl implements RenderingJob
     private RequestContext requestContext = null;
 
     private PortletContent portletContent;
+    private PortalStatistics statistics;
     
-    public RenderingJobImpl(PortletContainer container, PortletContent portletContent, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
+    public RenderingJobImpl(PortletContainer container, 
+                            PortletContent portletContent, 
+                            ContentFragment fragment, 
+                            HttpServletRequest request, 
+                            HttpServletResponse response, 
+                            RequestContext requestContext, 
+                            PortletWindow window,
+                            PortalStatistics statistics)
     {
         this.container = container;
-        
+        this.statistics = statistics;
         this.fragment = fragment;
         this.request = request;
         this.response = response;
@@ -100,9 +109,9 @@ public class RenderingJobImpl implements RenderingJob
      */
     public void execute()
     {
-        
+        long start = System.currentTimeMillis();       
         try
-        {           
+        {
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);            
             this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
@@ -120,6 +129,11 @@ public class RenderingJobImpl implements RenderingJob
         finally
         {
             portletContent.complete();
+            if (fragment.getType().equals(ContentFragment.PORTLET))
+            {
+                long end = System.currentTimeMillis();            
+                statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
+            }
         }
 
     }

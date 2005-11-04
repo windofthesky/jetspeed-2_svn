@@ -35,6 +35,7 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.common.ObjectID;
@@ -59,14 +60,17 @@ public class PortletRendererImpl implements PortletRenderer
     private WorkerMonitor workMonitor;
     private PortletContainer container;
     private PortletWindowAccessor windowAccessor;
+    private PortalStatistics statistics;
 
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
-                               WorkerMonitor workMonitor)
+                               WorkerMonitor workMonitor,
+                               PortalStatistics statistics)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
         this.workMonitor = workMonitor;
+        this.statistics = statistics;
     }
 
     public void start()
@@ -245,7 +249,7 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
-        return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow);
+        return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
 
     }
 }
