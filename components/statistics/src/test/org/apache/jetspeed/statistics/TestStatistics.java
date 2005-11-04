@@ -28,6 +28,7 @@ import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -138,9 +139,11 @@ public class TestStatistics extends AbstractSpringTestCase
         return new TestSuite(TestStatistics.class);
     }
     
+    
     public void testPortletStatistics() 
     throws Exception
     {
+        System.out.println("testing one of each ");
         statistics.forceFlush();
         clearDBs();
         
@@ -173,6 +176,7 @@ public class TestStatistics extends AbstractSpringTestCase
     public void testLotsOfPortletStatistics() 
     throws Exception
     {
+        System.out.println("testing Multiple portlet stats");
         statistics.forceFlush();
         clearDBs();
         
@@ -206,6 +210,24 @@ public class TestStatistics extends AbstractSpringTestCase
         
     }
 
+    
+    public void testQuerySystem() 
+    throws Exception
+    {
+        System.out.println("testing Query System");
+        StatisticsQueryCriteria sqc = new StatisticsQueryCriteriaImpl();
+        sqc.setQueryType("user");
+        AggregateStatistics as = statistics.queryStatistics( sqc    );
+        System.out.println("user = "+as);
+        sqc.setQueryType("portlet");
+        as = statistics.queryStatistics( sqc );
+        System.out.println("user = "+as);
+        sqc.setQueryType("page");
+        as = statistics.queryStatistics( sqc );
+        System.out.println("user = "+as);
+        
+    }
+    
     private RequestContext initRequestContext()
     {
         MockHttpServletRequest request = new MockHttpServletRequest();

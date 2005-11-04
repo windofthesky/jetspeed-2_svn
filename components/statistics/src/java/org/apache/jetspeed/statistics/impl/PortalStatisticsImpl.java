@@ -17,6 +17,10 @@
 package org.apache.jetspeed.statistics.impl;
 
 import java.security.Principal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +36,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.AggregateStatistics;
+import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
+import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -493,4 +500,55 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     }
 
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
+     */
+    public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria) throws InvalidCriteriaException
+    {
+        AggregateStatistics as = new AggregateStatisticsImpl();
+        String query;
+        query= "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from ? ";
+        //String query = "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME),? from ? group by ?";
+        String tableName;
+        String groupColumn;
+        
+        String queryType = criteria.getQueryType();
+        if ("user".equals(queryType))
+        {
+            tableName = "USER_STATISTICS";
+            groupColumn = "USER_NAME";
+        } else if ("portlet".equals(queryType))
+        {
+            tableName = "PORTLET_STATISTICS";
+            groupColumn = "PORTLET";
+        } else if ("page".equals(queryType))
+        {
+            tableName = "PAGE_STATISTICS";
+            groupColumn = "PAGE";
+        } else {
+            throw new InvalidCriteriaException(" invalid queryType passed to queryStatistics");
+        }
+        query= "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "+tableName;
+        
+        try
+        {
+            Connection con = ds.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(query);
+            //pstmt.setString(1,groupColumn);
+            //pstmt.setString(2,groupColumn);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                as.setHitCount(rs.getInt("count"));
+                as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
+                as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
+                as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
+                as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
+            }
+        } catch (SQLException e)
+        {
+            throw new InvalidCriteriaException(e.toString());
+        }
+        
+        return as;
+    }
 }
