@@ -293,4 +293,28 @@ limitations under the License.
       <keywords>applications,apps,entity,manager</keywords>
     </portlet-info>
   </portlet>
+
+<portlet id="StatisticsPortlet">
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+            <value>/WEB-INF/view/statistics/statistics.vm</value>
+     </init-param>
+    <portlet-name>StatisticsPortlet</portlet-name>
+    <display-name>Portal Statistics</display-name>
+    <description>Provides statistics about portal access by page, portlet, user</description>
+    <portlet-class>org.apache.jetspeed.portlets.statistics.StatisticsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Portal Statistics</title>
+      <short-title>Statistics</short-title>
+      <keywords>statistics,portlets,pages,access</keywords>
+    </portlet-info>
+  </portlet>
+  
 </portlet-app>

@@ -116,6 +116,14 @@ limitations under the License.
             </properties>
         </dependency>
         <dependency>
+            <id>jetspeed2:jetspeed-statistics</id> 
+            <version>${jetspeed.version}</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
             <id>jetspeed2:jetspeed2-taglib-treecontrol</id>
             <version>${jetspeed.version}</version>
             <type>jar</type>

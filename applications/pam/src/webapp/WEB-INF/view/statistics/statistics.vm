@@ -1,0 +1,23 @@
+<h3 class="portlet-section-header">Portal Statistics</h3>
+
+<div id="StatisticsPortlet"  class="portlet-section-text"> 
+	<form action="$renderResponse.createActionURL()" method="post"
+	<table>
+	<tr><td>
+	 query type is 
+	 $criteria.queryType
+	 
+	 <input type="submit" name="Save" value="Save" />
+	 
+	</td></tr>
+	</table>
+	</form>
+	<table class="class="portlet-section-body" >
+	<tr class="portlet-section-subheader"><TH><b>stat name</b></TH><TH><b>value</b></TH></TR>
+	<tr class="portlet-section-alternate"><TD>total hits</TD><TD>$!results.hitCount</TD></TD>
+	<tr class="portlet-section-body"><TD>max processing time</TD><TD>$!results.maxProcessingTime</TD></TD>
+	<tr class="portlet-section-alternate"><TD>avg processing time</TD><TD>$!results.avgProcessingTime</TD></TD>
+	<tr class="portlet-section-body"><TD>stdev from avg time</TD><TD>$!results.stdDevProcessingTime</TD></TD>
+	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TD>
+    </table>
+</div>
