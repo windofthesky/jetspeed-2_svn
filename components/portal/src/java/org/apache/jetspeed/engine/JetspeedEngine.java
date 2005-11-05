@@ -206,7 +206,7 @@ public class JetspeedEngine implements Engine
                     if (pipelineKey.equals("/portal"))
                         targetPipeline = this.defaultPipelineName;
                     else
-                        targetPipeline = (String)pipelineMapper.get(targetPipeline); 
+                        targetPipeline = (String)pipelineMapper.get(pipelineKey); 
                     // System.out.println("pipeline = " + targetPipeline);
                 }
                 else
