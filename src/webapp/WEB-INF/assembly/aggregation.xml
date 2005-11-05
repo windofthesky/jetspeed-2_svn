@@ -21,7 +21,7 @@
     <bean id="org.apache.jetspeed.aggregator.PortletAggregator" class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
         <constructor-arg>
             <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
-        </constructor-arg>
+        </constructor-arg>        
     </bean>
     
     <!-- Portlet Renderer -->
@@ -36,6 +36,9 @@
         <constructor-arg>
             <ref bean="org.apache.jetspeed.aggregator.WorkerMonitor" />
         </constructor-arg>        
+        <constructor-arg>
+            <ref bean="PortalStatistics" />
+        </constructor-arg>                        
     </bean>
 
     <!-- Aggregation: Page Leave in place until new development completed -->
@@ -52,7 +55,7 @@
         </constructor-arg>
         <constructor-arg index='2'>
             <ref bean="org.apache.jetspeed.aggregator.ContentServerAdapter" />
-        </constructor-arg>        
+        </constructor-arg>
     </bean>
 
 <!-- REFACTORING: this bean is not currently used, experimental -->
@@ -65,8 +68,7 @@
         </constructor-arg>
         <constructor-arg index='1'>
             <ref bean="org.apache.jetspeed.aggregator.ContentServerAdapter" />
-        </constructor-arg>
-        
+        </constructor-arg>        
     </bean>
 
     <!-- Header Resource Factory TODO: do we really need the factory? -->
