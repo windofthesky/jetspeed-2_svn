@@ -30,6 +30,13 @@
         <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/portal/</url>
     </repository>
 
+  <dependencies>
+    <dependency>
+      <id>jetspeed2:jetspeed-statistics</id>
+      <version>${jetspeed.version}</version>
+    </dependency>
+ </dependencies>
+    
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>

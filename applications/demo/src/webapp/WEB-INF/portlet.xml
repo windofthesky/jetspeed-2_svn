@@ -701,6 +701,10 @@ limitations under the License.
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
     </supports>
+    <supports>
+        <mime-type>application/pdf</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+    </supports>        
     <supported-locale>en</supported-locale>      	
 	<portlet-info>
         <title>Content Viewer</title>

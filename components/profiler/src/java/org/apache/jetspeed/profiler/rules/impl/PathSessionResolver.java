@@ -79,9 +79,10 @@ public class PathSessionResolver implements RuleCriterionResolver
     
     // TODO: configure this information externally and live
     static String[][] REGEX_MAP =
-    {
+    {     
         {".*\\.html", "/Public/content.psml"},       
-        {"/content/*", "/Public/content.psml"}
+        {".*\\.pdf", "/Public/content.psml"},        
+        {"/content.*", "/Public/content.psml"}
 //        {"/data/*", "/Public/content2.psml"},
     };
      

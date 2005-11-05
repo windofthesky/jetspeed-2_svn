@@ -121,12 +121,37 @@ public class CapabilityValveImpl implements CapabilityValve
         {
             contentType.append("; charset=" + encoding);
         }
-        request.getResponse().setContentType(contentType.toString());
+        String type =  contentType.toString(); //mapContentType(request, contentType.toString());
+        request.getResponse().setContentType(type);
 
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
     }
 
+    static String[][] MIME_MAP =
+    {     
+        {".pdf", "application/pdf"}       
+    };
+    
+    protected String mapContentType(RequestContext request, String contentType)
+    {
+        // TODO: get path from servlet request
+        // this code below fails since the path is not yet parsed
+        // to far up in the pipeline
+        String path = request.getPath();
+        if (path != null)
+        {
+            for (int ix=0; ix < MIME_MAP.length; ix++)
+            {
+                if (path.endsWith(MIME_MAP[ix][0]))
+                {
+                    return MIME_MAP[ix][1];
+                }
+            }            
+        }
+        return contentType;
+    }
+    
     public String toString()
     {
         return "CapabilityValveImpl";

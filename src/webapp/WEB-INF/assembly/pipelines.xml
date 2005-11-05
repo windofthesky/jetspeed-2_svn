@@ -98,6 +98,16 @@ limitations under the License.
    	<ref bean="org.apache.jetspeed.aggregator.PortletAggregator"/>
    </constructor-arg>
   </bean> 
+
+  <bean id="fileServerValve"
+        class="org.apache.jetspeed.aggregator.FileServerValve"
+        init-method="initialize"
+  >
+     <!-- portlet -->
+	 <constructor-arg index="0"><value>demo::ContentViewer</value></constructor-arg>    
+     <!-- entity -->
+     <constructor-arg index="1"><value>public.content.21</value></constructor-arg>    
+  </bean> 
   
   <bean id="aggregatorValve"
         class="org.apache.jetspeed.aggregator.AggregatorValve"
@@ -224,6 +234,26 @@ limitations under the License.
     </list>
     </constructor-arg>
   </bean> 
+
+  <bean id="fileserver-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+   	<value>FileServerPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="portalURLValve"/>    	    	
+    	<ref bean="securityValve"/>    	    	
+    	<ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>    	    	    	
+    	<ref bean="containerValve"/>
+    	<ref bean="fileServerValve"/>            
+    	<ref bean="portletValve"/>    
+    </list>
+    </constructor-arg>
+  </bean> 
   
   <bean id='pipeline-map'
         class='java.util.HashMap'>
@@ -241,6 +271,9 @@ limitations under the License.
             <entry key='/login'>
                 <value>jetspeed-pipeline</value>
             </entry>            
+            <entry key='/fileserver'>
+                <value>fileserver-pipeline</value>
+            </entry>                        
         </map>        
     </constructor-arg>        
   </bean>

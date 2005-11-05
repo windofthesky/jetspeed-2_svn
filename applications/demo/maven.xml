@@ -22,4 +22,17 @@
    <attainGoal name= "java:compile"/> 
   </preGoal>
 
+  <preGoal name="hotdeploywar">
+   <attainGoal name= "war"/>
+  </preGoal>
+
+  <goal name="hotdeploywar">
+    <echo message="Hot Deploying war for ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/deploy"/>
+
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/deploy" 
+		file="${maven.build.dir}/${maven.war.final.name}">
+      
+    </copy>
+  </goal>
+
 </project>

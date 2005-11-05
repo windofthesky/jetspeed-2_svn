@@ -41,28 +41,44 @@ public class FilePortlet extends GenericServletPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        response.setContentType("text/html");
-        
         // NOTE: this is Jetspeed specific
         String path = (String)request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
-        
-        if (path != null && path.endsWith(".html"))
+        if (null == path)
         {
-            File temp = new File(path);             
-            renderFile(response, "/WEB-INF/content/" + temp.getPath());
+            PortletPreferences prefs = request.getPreferences();
+            path = prefs.getValue("file", null);            
         }
         else
         {
-            PortletPreferences prefs = request.getPreferences();
-            String fileName = prefs.getValue("file", null);
-            if (fileName != null)
-            {
-                renderFile(response, fileName);
-            }
-            else
-            {
-                response.getWriter().println("Could not find file preference ");
-            }
+            // default to 'content' area
+            File temp = new File(path);             
+            path = "/WEB-INF/" + temp.getPath();            
+        }
+        if (null == path)
+        {
+            response.setContentType("text/html");
+            response.getWriter().println("Could not find source document.");            
+        }
+        else
+        {
+            setContentType(path, response);        
+            renderFile(response, path);
+        }        
+    }
+
+    protected void setContentType(String path, RenderResponse response)
+    {
+        if (path.endsWith(".html"))
+        {
+            response.setContentType("text/html");
+        }
+        else if (path.endsWith(".pdf"))
+        {
+            response.setContentType("application/pdf");
+        }
+        else
+        {
+            response.setContentType("text/html");
         }
     }
     
@@ -71,6 +87,7 @@ public class FilePortlet extends GenericServletPortlet
     {
         InputStream is = this.getPortletContext().getResourceAsStream(fileName);
         drain(is, response.getPortletOutputStream());
+        response.getPortletOutputStream().flush();
         is.close();        
     }
     
