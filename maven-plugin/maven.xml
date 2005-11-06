@@ -34,6 +34,9 @@
     <copy todir="${basedir}/target/classes/plugin-resources/sql" overwrite="true" failonerror="true">
       <fileset dir="${basedir}/../etc/sql"/>
     </copy>
+    <copy todir="${basedir}/target/classes/plugin-resources/apacheds" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../etc/apacheds"/>
+    </copy>
     <copy todir="${basedir}/target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
       <fileset dir="${basedir}/../src/webapp"/>
     </copy>

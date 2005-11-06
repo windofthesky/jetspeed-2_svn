@@ -32,6 +32,7 @@
     <attainGoal name="j2:portal.copy.webapp"/>
     <attainGoal name="j2:portal.conf.project"/>
     <attainGoal name="j2:portal.conf.sql"/>
+    <attainGoal name="j2:portal.conf.ldap"/>
     <attainGoal name="j2:portal.conf.ojb"/>
     <attainGoal name="j2:portal.conf.jetspeed"/>
     <attainGoal name="j2:portal.conf.tomcat"/>
@@ -42,6 +43,7 @@
     <attainGoal name="j2:portal.copy.webapp.minimal"/>
     <attainGoal name="j2:portal.conf.project"/>
     <attainGoal name="j2:portal.conf.sql"/>
+    <attainGoal name="j2:portal.conf.ldap"/>
     <attainGoal name="j2:portal.conf.ojb"/>
     <attainGoal name="j2:portal.conf.jetspeed"/>
     <attainGoal name="j2:portal.conf.tomcat"/>
@@ -157,7 +159,6 @@
 	</j:if>
   </goal>
  
-
   <goal name="j2:portal.conf.sql" prereqs="j2:_check.required.properties">
     <j:set var="portal.sql.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql"/>
     <j:set var="portal.sql.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
@@ -186,7 +187,19 @@
         <attainGoal name="j2:_copy.rdbms.sql.scripts"/>
       </j:if>
     </j:if>  
-  </goal> 
+  </goal>
+  
+  <goal name="j2:portal.conf.ldap" prereqs="j2:_check.required.properties">
+    <j:set var="portal.ldap.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/apacheds"/>      
+    <j:set var="portal.ldap.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.ldap.dir}"/>
+    
+    <delete dir="${portal.ldap.target.dir}" failonerror="false"/>
+    <mkdir dir="${portal.ldap.target.dir}"/>
+    
+    <copy todir="${portal.ldap.target.dir}" overwrite="true" verbose="true" failonerror="false" flatten="true">
+      <fileset dir="${portal.ldap.src.dir}" />
+    </copy>
+  </goal>
   
   <goal name="j2:portal.conf.ojb" prereqs="j2:_check.required.properties">
     <j:set var="portal.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}"/>      
@@ -317,6 +330,17 @@
         <attainGoal name="j2:_db.production.properties"/>
         <attainGoal name="j2:_db.drop"/>
     </goal>
+
+  <!-- =========================================== -->
+  <!-- ============= LDAP MANAGEMENT ============= -->
+  <!-- =========================================== -->
+
+  <goal name="j2:start.ldap.server" prereqs="j2:_check.required.properties">
+    <j:set var="maven.start.ldap.message" value="Starting Apache LDAP"/>
+    <j:set var="org.apache.jetspeed.plugin.ldap.conf" 
+           value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.ldap.dir}/apacheds-server.xml"/>
+    <attainGoal name="j2:_start.ldap"/>
+  </goal>
 
   <!-- =============================================== -->
   <!-- ========= JETSPEED PORTLET DEPLOYMENT ========= -->
@@ -887,6 +911,23 @@
     <j:set var="database.arg.script" value="${portal.sql.dir}/drop.sql"/>
     <j:set var="database.arg.onerror" value="continue"/>
     <attainGoal name="j2:_db.execute"/>
+  </goal>
+  
+  <!-- LDAP internal goals -->
+  <goal name="j2:_start.ldap">
+    <echo message="===================================="/>
+    <echo message="${maven.start.ldap.message}"/>
+    <echo message="===================================="/>
+    <delete dir="target/apacheds/logs"/>
+    <mkdir dir="target/apacheds/logs"/>
+    <echo file="target/apacheds/logs/apacheds.log">${maven.start.ldap.message}</echo>
+    <java classname="org.apache.ldap.server.ServerMain" fork="yes">
+      <classpath>
+        <pathelement path="${maven.repo.local}/${plugin.groupId}/jars/jetspeed-security-schema-${jetspeed.version}.jar"/>
+        <pathelement path="${plugin.getDependencyPath('directory:apacheds-main')}"/>
+      </classpath>
+      <arg value="${org.apache.jetspeed.plugin.ldap.conf}"/>
+    </java>
   </goal>
     
   <!-- Check for availability of a dependency in the local repository and download it from the remote repo(s)
