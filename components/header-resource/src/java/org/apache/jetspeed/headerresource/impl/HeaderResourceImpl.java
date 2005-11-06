@@ -123,7 +123,7 @@ public class HeaderResourceImpl implements HeaderResource
     public void addJavaScript(String path, boolean defer)
     {
         HashMap attrs = new HashMap();
-        attrs.put("src", path);
+        attrs.put("src", requestContext.getResponse().encodeURL( path ) );
         attrs.put("type", "text/javascript");
         if (defer)
         {
@@ -151,7 +151,7 @@ public class HeaderResourceImpl implements HeaderResource
     {
         HashMap attrs = new HashMap();
         attrs.put("rel", "stylesheet");
-        attrs.put("href", path);
+        attrs.put("href", requestContext.getResponse().encodeURL( path ) );
         attrs.put("type", "text/css");
         addHeaderInfo("link", attrs, null);
     }
