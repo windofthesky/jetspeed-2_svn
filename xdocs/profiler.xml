@@ -23,7 +23,7 @@ limitations under the License.
     </authors>
   </properties>
   <body>
-<section name="Overview">
+<section name="Profiler Overview">
 <p>
 The Jetspeed Profiler is a portal resource location rule-based engine.
 As of Jetspeed version 2.0, the profiler locates the following kinds of portal resources:
