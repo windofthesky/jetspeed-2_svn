@@ -34,14 +34,14 @@ limitations under the License.
   
   <!-- Security SPI: CredentialHandler -->
   <bean id="org.apache.jetspeed.security.spi.CredentialHandler" 
-       class="org.apache.jetspeed.security.spi.impl.ldap.LdapCredentialHandler"
+       class="org.apache.jetspeed.security.spi.impl.LdapCredentialHandler"
   >       
        <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao"/></constructor-arg>    
   </bean>
   
   <!-- Security SPI: UserSecurityHandler -->
   <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" 
-  	   class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityHandler"
+  	   class="org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao"/></constructor-arg> 	   
   </bean>
