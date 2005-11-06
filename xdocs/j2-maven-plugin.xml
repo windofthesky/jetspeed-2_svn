@@ -165,6 +165,13 @@
             </td>
           </tr>
           <tr>
+            <td><code>j2:portal.conf.ldap</code></td>
+            <td>
+              Copies the LDAP configuration, to the
+              <code>${org.apache.jetspeed.portal.target.dir}</code> folder.
+            </td>
+          </tr>   
+          <tr>
             <td><code>j2:portal.conf.jetspeed</code></td>
             <td>
               Copies the filtered <code>jetspeed.properties</code> portal configuration to the 
@@ -491,6 +498,19 @@
           <td>
             Populates the users information for the default PSML configuration configured with Jetspeed 2.
           </td>
+        </tr>
+      </table>
+    </section>
+    <section name="LDAP Management Goals">
+      <table>
+        <tr>
+          <th>Goal</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>j2:start.ldap.server</code></td>
+          <td>Starts the default Apache Directory Server and load the default
+          <i><a href="http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/etc/apacheds/apacheds-server.xml?view=markup">apacheds-server.xml</a></i> configuration.</td>
         </tr>
       </table>
     </section>
