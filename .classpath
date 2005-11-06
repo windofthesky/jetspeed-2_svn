@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.svn/*" kind="src" path="portlet-api/src/java"/>
-	<classpathentry kind="src" path="components/statistics/src/java"/>
-	<classpathentry kind="src" path="components/statistics/src/test"/>
+	<classpathentry kind="src" path="etc/log4j"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/cm/src/java"/>
@@ -41,6 +41,8 @@
 	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/security/src/test"/>
 	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/sso/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/sso/src/test"/>
+	<classpathentry kind="src" path="components/statistics/src/java"/>
+	<classpathentry kind="src" path="components/statistics/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>

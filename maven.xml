@@ -162,6 +162,12 @@
             excludes="applications/project.xml" goals="war:install" banner="Build and Install all Jetspeed 2 wars"
             postProcessing="false" ignoreFailures="false" />
     </goal>
+    
+    <goal name="jetspeed2:schema">
+        <maven:reactor basedir="${basedir}"
+            includes="components/security-schema/project.xml" goals="directory:schema" banner="Generate Jetspeed 2 schema"
+            postProcessing="false" ignoreFailures="false" />
+    </goal>
 
     <goal name="initMavenPlugin">
     	<!-- build jetspeed 2 plugin core -->
@@ -172,28 +178,30 @@
     <goal name="allBuild" description="Build all jars and war">
             
       <attainGoal name="j2:portal.conf.sql"/>
+      <attainGoal name="j2:portal.conf.ldap"/>
       <attainGoal name="j2:portal.conf.ojb"/>
 
       <attainGoal name="j2:portal.conf.jetspeed"/>
       <attainGoal name="j2:portal.conf.tomcat"/>
 
-        <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
-            <attainGoal name="j2:db.create.test" />
-        </j:if>
+      <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
+         <attainGoal name="j2:db.create.test" />
+      </j:if>
 
-        <!-- Build jars files-->
-        <attainGoal name="jetspeed2:jar:install" />
+	  <attainGoal name="jetspeed2:schema" />
+	  
+      <!-- Build jars files-->
+      <attainGoal name="jetspeed2:jar:install" />
 
       <!-- disabling testing as we're past that -->
 
       <j:set var="maven.test.skip" value="true"/>
         
       <!-- Build and install pa war files -->
-        <attainGoal name="jetspeed2:war:install" />
+      <attainGoal name="jetspeed2:war:install" />
         
       <!-- Build and install portal war file -->
       <attainGoal name="war:install"/>        
-
         <!-- build jetspeed 2 plugin with webapp -->
         <maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin"
             banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />

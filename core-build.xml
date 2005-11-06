@@ -310,6 +310,12 @@ limitations under the License.
 		   <properties>
 	          <war.bundle>${hsql.include}</war.bundle>
 	       </properties>		 
+        </dependency>
+        <!-- Not required if using other LDAP -->
+		<dependency>
+           <groupId>directory</groupId>
+           <artifactId>apacheds-main</artifactId>
+           <version>0.9.3</version>		 
         </dependency>		
 	 </dependencies>	
 </project>
