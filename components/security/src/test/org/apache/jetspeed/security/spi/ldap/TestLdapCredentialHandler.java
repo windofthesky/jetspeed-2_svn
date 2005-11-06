@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.security.spi.ldap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.impl.LdapCredentialHandler;
@@ -33,16 +31,23 @@ import java.util.Set;
  */
 public class TestLdapCredentialHandler extends AbstractLdapTest
 {
-    /** The logger. */
-    private static final Log log = LogFactory.getLog(TestLdapCredentialHandler.class);
 
     /**
-     * @see junit.framework.TestCase#setUp()
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
-        crHandler = new LdapCredentialHandler();
+        LdapDataHelper.seedUserData(uid1, password);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#tearDown()
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        LdapDataHelper.removeUserData(uid1);
     }
 
     /**
@@ -50,9 +55,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>getPrivateCredentials</code>
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testGetPrivateCredentials() throws SecurityException
+    public void testGetPrivateCredentials() throws Exception
     {
         Set credentials = crHandler.getPrivateCredentials(uid1);
 
@@ -68,9 +73,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>getPrivateCredentials</code> for a user that does not exist.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testGetPrivateCredentialsForNonExistantUser() throws SecurityException
+    public void testGetPrivateCredentialsForNonExistantUser() throws Exception
     {
         String nonExistantUser = Integer.toString(rand.nextInt());
         Set credentials = crHandler.getPrivateCredentials(nonExistantUser);
@@ -84,9 +89,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>setPassword</code>.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testSetPassword() throws SecurityException
+    public void testSetPassword() throws Exception
     {
         crHandler.setPassword(uid1, password, "freddie");
         assertTrue("Failed to change the password.", crHandler.authenticate(uid1, "freddie"));
@@ -98,9 +103,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>setPassword</code> with null password.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testVerifyNullSetPassword() throws SecurityException
+    public void testVerifyNullSetPassword() throws Exception
     {
         crHandler.setPassword(uid1, null, password);
     }
@@ -110,9 +115,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>authenticate</code> with correct login.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testGoodLogin() throws SecurityException
+    public void testGoodLogin() throws Exception
     {
         assertTrue("The login failed for user.", crHandler.authenticate(uid1, password));
     }
@@ -122,9 +127,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>authenticate</code> with no password.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testCannotAuthenticateWithNoPassword()
+    public void testCannotAuthenticateWithNoPassword() throws Exception
     {
         try
         {
@@ -142,9 +147,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>authenticate</code> with bad uid.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testBadUID() throws SecurityException
+    public void testBadUID() throws Exception
     {
         String nonExistantUser = Integer.toString(rand.nextInt());
 
@@ -165,9 +170,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * Test <code>authenticate</code> with bad password.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testBadPassword() throws SecurityException
+    public void testBadPassword() throws Exception
     {
         assertFalse("Should not have authenticated with a bad password.", crHandler
                 .authenticate(uid1, password + "123"));

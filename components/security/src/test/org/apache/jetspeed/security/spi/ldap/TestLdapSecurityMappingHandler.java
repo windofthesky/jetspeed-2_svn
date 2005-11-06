@@ -15,48 +15,75 @@
  */
 package org.apache.jetspeed.security.spi.ldap;
 
-import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.impl.LdapSecurityMappingHandler;
 
 /**
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
- *  
+ * <p>
+ * Test the LDAP implementation for the {@link SecurityMappingHandler}.
+ * </p>
+ * 
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a href="dlestrat@apache.org">David Le Strat</a>  
  */
 public class TestLdapSecurityMappingHandler extends AbstractLdapTest
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(TestLdapSecurityMappingHandler.class);
+    private static final Log logger = LogFactory.getLog(TestLdapSecurityMappingHandler.class);
 
-    /** The {@link SecurityMappingHandler}. */
-    private SecurityMappingHandler secHandler;
+    /** The group principal for gpUid1. */
+    private GroupPrincipal gp1;
+    
+    /** The group principal for gpUid2. */
+    private GroupPrincipal gp2;
 
     /**
-     * @throws NamingException A {@link NamingException}.
-     * @throws SecurityException A {@link SecurityException}.
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#setUp()
      */
-    public TestLdapSecurityMappingHandler() throws SecurityException, NamingException
+    protected void setUp() throws Exception
     {
-        this.secHandler = new LdapSecurityMappingHandler();
+        super.setUp();
+        gp1 = new GroupPrincipalImpl(gpUid1);
+        gp2 = new GroupPrincipalImpl(gpUid2);
+        LdapDataHelper.seedGroupData(gpUid1);
+        LdapDataHelper.seedGroupData(gpUid2);
+        LdapDataHelper.seedUserData(uid1, password);
+        LdapDataHelper.seedUserData(uid2, password);
     }
 
-    public void testGetUserPrincipalsInGroup() throws SecurityException
+    /**
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#tearDown()
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        LdapDataHelper.removeGroupData(gpUid1);
+        LdapDataHelper.removeGroupData(gpUid2);
+        LdapDataHelper.removeUserData(uid1);
+        LdapDataHelper.removeUserData(uid2);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetUserPrincipalsInGroup() throws Exception
     {
         secHandler.setUserPrincipalInGroup(uid1, gp1.getFullPath());
         secHandler.setUserPrincipalInGroup(uid2, gp1.getFullPath());
 
         String fullPathName = new GroupPrincipalImpl(gpUid1).getFullPath();
-        LOG.debug("Group full path name from testGetUserPrincipalsInGroup()[" + fullPathName + "]");
+        logger.debug("Group full path name from testGetUserPrincipalsInGroup()[" + fullPathName + "]");
         assertEquals("The user should have been in two groups.", 2, secHandler.getUserPrincipalsInGroup(fullPathName)
                 .size());
     }
 
-    public void testSetUserPrincipalInGroup() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testSetUserPrincipalInGroup() throws Exception
     {
         secHandler.setUserPrincipalInGroup(uid1, gp1.getFullPath());
         secHandler.setUserPrincipalInGroup(uid1, gp2.getFullPath());
@@ -64,7 +91,10 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         assertEquals("The user should have been in two groups.", 2, secHandler.getGroupPrincipals(uid1).size());
     }
 
-    public void testRemoveUserPrincipalInGroup() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testRemoveUserPrincipalInGroup() throws Exception
     {
         secHandler.setUserPrincipalInGroup(uid1, gp1.getFullPath());
         secHandler.setUserPrincipalInGroup(uid1, gp2.getFullPath());
@@ -78,7 +108,10 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         assertEquals("The user should have been in two groups.", 0, secHandler.getGroupPrincipals(uid1).size());
     }
 
-    public void testSetUserPrincipalInGroupForNonExistantUser() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testSetUserPrincipalInGroupForNonExistantUser() throws Exception
     {
         try
         {
@@ -93,7 +126,10 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         }
     }
 
-    public void testSetUserPrincipalInGroupForNonExistantGroup() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testSetUserPrincipalInGroupForNonExistantGroup() throws Exception
     {
         try
         {

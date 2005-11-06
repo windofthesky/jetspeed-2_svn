@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.security.spi.ldap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -27,31 +25,54 @@ import java.util.List;
 
 /**
  * <p>
- * LdapServerTest - This class tests the LdapServer. It assumes that the
- * following three inetOrgPerson objects exist:
- * 
- * uid:cbrewton password:maddie uid:dlong, password: uid:mlong, password:maddie
+ * LdapServerTest - This class tests the LdapServer. It assumes that the following three
+ * inetOrgPerson objects exist: uid:cbrewton password:maddie uid:dlong, password: uid:mlong,
+ * password:maddie
  * </p>
  * 
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
 public class TestLdapUserSecurityHandler extends AbstractLdapTest
 {
-    /** The logger. */
-    private static final Log log = LogFactory.getLog(TestLdapUserSecurityHandler.class);
+    /**
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#setUp()
+     */
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        LdapDataHelper.seedUserData(uid1, password);
+    }
 
-    public void testUserIsPrincipal()
+    /**
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#tearDown()
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        LdapDataHelper.removeUserData(uid1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testUserIsPrincipal() throws Exception
     {
         assertTrue("User is not principal.", userHandler.isUserPrincipal(uid1));
     }
 
-    public void testUserIsNotPrincipal()
+    /**
+     * @throws Exception
+     */
+    public void testUserIsNotPrincipal() throws Exception
     {
         assertFalse("User is principal and should not be.", userHandler.isUserPrincipal(Integer
                 .toString(rand.nextInt()).toString()));
     }
 
-    public void testAddDuplicateUserPrincipal()
+    /**
+     * @throws Exception
+     */
+    public void testAddDuplicateUserPrincipal() throws Exception
     {
         try
         {
@@ -65,18 +86,28 @@ public class TestLdapUserSecurityHandler extends AbstractLdapTest
         }
     }
 
-    public void testAddUserPrincipal() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testAddUserPrincipal() throws Exception
     {
         assertTrue("User not found.", userHandler.getUserPrincipal(uid1) != null);
     }
 
-    public void testRemoveExistantUserPrincipal() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testRemoveExistantUserPrincipal() throws Exception
     {
-        userHandler.removeUserPrincipal(up1);
+        UserPrincipal up = new UserPrincipalImpl(uid1);
+        userHandler.removeUserPrincipal(up);
         assertTrue("User was found and should have been removed.", userHandler.getUserPrincipal(uid1) == null);
     }
 
-    public void testRemoveNonExistantUserPrincipal() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testRemoveNonExistantUserPrincipal() throws Exception
     {
         String localUid = Integer.toString(rand.nextInt()).toString();
         UserPrincipal localPrin = new UserPrincipalImpl(localUid);
@@ -84,19 +115,36 @@ public class TestLdapUserSecurityHandler extends AbstractLdapTest
         userHandler.removeUserPrincipal(localPrin);
     }
 
-    public void testGetUserPrincipals() throws SecurityException
+    /**
+     * @throws Exception
+     */
+    public void testGetUserPrincipals() throws Exception
     {
-        assertTrue("getUserPrincipals should have returned more than one user.", userHandler.getUserPrincipals("*")
-                .size() > 1);
+        try
+        {
+            LdapDataHelper.seedUserData(uid2, password);
+            // With wild card search
+            assertTrue("getUserPrincipals should have returned more than one user.", userHandler.getUserPrincipals("*")
+                    .size() > 1);
+            
+            // With empty string search
+            assertTrue("getUserPrincipals should have returned more than one user.", userHandler.getUserPrincipals("")
+                    .size() > 1);
 
-        List users = userHandler.getUserPrincipals(uid1);
+            // With specific uid.
+            List users = userHandler.getUserPrincipals(uid1);
 
-        assertTrue("getUserPrincipals should have returned one user.", users.size() == 1);
-        assertTrue("List should have consisted of Principal objects.", users.get(0) instanceof Principal);
+            assertTrue("getUserPrincipals should have returned one user.", users.size() == 1);
+            assertTrue("List should have consisted of Principal objects.", users.get(0) instanceof Principal);
 
-        String localUid = Integer.toString(rand.nextInt()).toString();
+            String localUid = Integer.toString(rand.nextInt()).toString();
 
-        assertTrue("getUserPrincipals should not have found any users with the specified filter.", userHandler
-                .getUserPrincipals(localUid).isEmpty());
+            assertTrue("getUserPrincipals should not have found any users with the specified filter.", userHandler
+                    .getUserPrincipals(localUid).isEmpty());
+        }
+        finally
+        {
+            LdapDataHelper.removeUserData(uid2);
+        }
     }
 }

@@ -16,42 +16,34 @@ package org.apache.jetspeed.security.spi.ldap;
 
 import junit.framework.TestCase;
 
-import org.apache.jetspeed.security.GroupPrincipal;
-import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapCredentialHandler;
 import org.apache.jetspeed.security.spi.impl.LdapGroupSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.LdapSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.Random;
-
-import javax.naming.NamingException;
 
 /**
  * <p>
  * Abstract test case for LDAP providers.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * 
  */
 public abstract class AbstractLdapTest extends TestCase
 {
-    /** The ldap properties. */
-    private static Properties props = null;
-
     /** The {@link UserSecurityHandler}. */
     UserSecurityHandler userHandler;
 
@@ -60,32 +52,32 @@ public abstract class AbstractLdapTest extends TestCase
 
     /** The {@link GroupSecurityHandler}. */
     GroupSecurityHandler grHandler;
+    
+    /** The {@link SecurityMappingHandler}. */
+    SecurityMappingHandler secHandler;
+    
+    /** The {@link LdapUserPrincipalDao}. */
+    LdapUserPrincipalDao ldapPrincipalDao;
+    
+    /** The {@link LdapUserCredentialDao}. */
+    LdapUserCredentialDao ldapCredDao;
+    
+    /** The {@link LdapGroupDao}. */
+    LdapPrincipalDao ldapGroupDao;
 
     /** Random seed. */
     Random rand = new Random(System.currentTimeMillis());
 
-    /** Group principal.*/
-    GroupPrincipal gp1;
-
-    /** Group principal.*/
-    GroupPrincipal gp2;
-
-    /** User principal.*/
-    UserPrincipal up1;
-
-    /** User principal.*/
-    UserPrincipal up2;
-
-    /** Group uid.*/
+    /** Group uid. */
     protected String gpUid1;
 
-    /** Group uid.*/
+    /** Group uid. */
     protected String gpUid2;
 
-    /** User uid.*/
+    /** User uid. */
     protected String uid1;
 
-    /** User uid.*/
+    /** User uid. */
     protected String uid2;
 
     /** The test password. */
@@ -97,32 +89,24 @@ public abstract class AbstractLdapTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        initializeConfiguration();
-        LdapUserCredentialDao credDao = new LdapUserCredentialDaoImpl(props
-                .getProperty("org.apache.jetspeed.ldap.ldapServerName"), props
-                .getProperty("org.apache.jetspeed.ldap.rootDn"), props
-                .getProperty("org.apache.jetspeed.ldap.rootPassword"), props
-                .getProperty("org.apache.jetspeed.ldap.rootContext"), props
-                .getProperty("org.apache.jetspeed.ldap.defaultDnSuffix"));
+        LdapBindingConfig ldapConfig = new LdapBindingConfig();
+        ldapCredDao = new LdapUserCredentialDaoImpl(ldapConfig);
+        ldapPrincipalDao = new LdapUserPrincipalDaoImpl(ldapConfig);
 
-        LdapPrincipalDao userPrincDao = new LdapUserPrincipalDaoImpl(props
-                .getProperty("org.apache.jetspeed.ldap.ldapServerName"), props
-                .getProperty("org.apache.jetspeed.ldap.rootDn"), props
-                .getProperty("org.apache.jetspeed.ldap.rootPassword"), props
-                .getProperty("org.apache.jetspeed.ldap.rootContext"), props
-                .getProperty("org.apache.jetspeed.ldap.defaultDnSuffix"));
-
-        userHandler = new LdapUserSecurityHandler(userPrincDao);
-        crHandler = new LdapCredentialHandler(credDao);
+        userHandler = new LdapUserSecurityHandler(ldapPrincipalDao);
+        crHandler = new LdapCredentialHandler(ldapCredDao);
+        LdapDataHelper.setUserSecurityHandler(userHandler);
+        LdapDataHelper.setCredentialHandler(crHandler);
         uid1 = Integer.toString(rand.nextInt());
         uid2 = Integer.toString(rand.nextInt());
-        up1 = new UserPrincipalImpl(uid1);
-        userHandler.addUserPrincipal(up1);
-        crHandler.setPassword(uid1, "", password);
-        up2 = new UserPrincipalImpl(uid2);
-        userHandler.addUserPrincipal(up2);
-        crHandler.setPassword(uid2, "", password);
-        createGroupPrincipals();
+        
+        ldapGroupDao = new LdapGroupDaoImpl(ldapConfig);
+        grHandler = new LdapGroupSecurityHandler(ldapGroupDao);
+        LdapDataHelper.setGroupSecurityHandler(grHandler);
+        gpUid1 = Integer.toString(rand.nextInt());
+        gpUid2 = Integer.toString(rand.nextInt());
+        
+        secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao);
     }
 
     /**
@@ -131,62 +115,6 @@ public abstract class AbstractLdapTest extends TestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
-
-        if (up1 != null)
-        {
-            userHandler.removeUserPrincipal(up1);
-        }
-        if (up2 != null)
-        {
-            userHandler.removeUserPrincipal(up2);
-        }
-        if (gp1 != null)
-        {
-            grHandler.removeGroupPrincipal(gp1);
-        }
-        if (gp2 != null)
-        {
-            grHandler.removeGroupPrincipal(gp2);
-        }
     }
 
-    /**
-     * <p>
-     * Init ldap config.
-     * </p>
-     */
-    protected static void initializeConfiguration()
-    {
-        String testPropsPath = "./etc/ldap.properties";
-        try
-        {
-            File testFile = new File(testPropsPath);
-            if (testFile.exists())
-            {
-                FileInputStream is = new FileInputStream(testPropsPath);
-                props = new Properties();
-                props.load(is);
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @throws NamingException A {@link NamingException}.
-     * @throws SecurityException A {@link SecurityException}.
-     */
-    private void createGroupPrincipals() throws SecurityException, NamingException
-    {
-        grHandler = new LdapGroupSecurityHandler();
-        gpUid1 = Integer.toString(rand.nextInt());
-        gp1 = new GroupPrincipalImpl(gpUid1);
-        grHandler.setGroupPrincipal(gp1);
-
-        gpUid2 = Integer.toString(rand.nextInt());
-        gp2 = new GroupPrincipalImpl(gpUid2);
-        grHandler.setGroupPrincipal(gp2);
-    }
 }

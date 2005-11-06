@@ -25,14 +25,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl;
 
 /**
  * <p>
  * Test the {@link LdapUserCredentialDao}.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  *  
  */
 public class TestLdapUserCredentialDao extends AbstractLdapTest
@@ -49,16 +48,22 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
     /** The logger. */
     private static final Log log = LogFactory.getLog(TestLdapUserCredentialDao.class);
 
-    /** The {@link LdapUserCredentialDao}. */
-    private LdapUserCredentialDao ldap;
-
     /**
-     * @see junit.framework.TestCase#setUp()
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
-        ldap = new LdapUserCredentialDaoImpl();
+        LdapDataHelper.seedUserData(uid1, password);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.ldap.AbstractLdapTest#tearDown()
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        LdapDataHelper.removeUserData(uid1);
     }
 
     /**
@@ -66,11 +71,49 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * Test <code>authenticate</code> with correct login.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testGoodLogin() throws SecurityException
+    public void testGoodLogin() throws Exception
     {
-        assertTrue("The login failed for user.", ldap.authenticate(uid1, password));
+        assertTrue("The login failed for user.", ldapCredDao.authenticate(uid1, password));
+    }
+    
+    /**
+     * <p>
+     * Test regular expression to match any of the following characters: ([{\^$|)?*+.
+     * </p>
+     * 
+     * @throws Exception
+     */
+    public void testRegexForValidateUid() throws Exception
+    {
+        String pattern = ".*\\(.*|.*\\[.*|.*\\{.*|.*\\\\.*|.*\\^.*|.*\\$.*|.*\\|.*|.*\\).*|.*\\?.*|.*\\*.*|.*\\+.*|.*\\..*";
+        String s = "abcde";
+        assertFalse(s.matches(pattern));
+        s = "ba(cde";
+        assertTrue(s.matches(pattern));
+        s = "ba[cde";
+        assertTrue(s.matches(pattern));
+        s = "ba{cde";
+        assertTrue(s.matches(pattern));
+        s = "ba\\cde";
+        assertTrue(s.matches(pattern));
+        s = "ba^cde";
+        assertTrue(s.matches(pattern));
+        s = "ba$cde";
+        assertTrue(s.matches(pattern));
+        s = "ba|cde";
+        assertTrue(s.matches(pattern));
+        s = "ba)cde";
+        assertTrue(s.matches(pattern));
+        s = "ba?cde";
+        assertTrue(s.matches(pattern));
+        s = "ba*cde";
+        assertTrue(s.matches(pattern));
+        s = "ba+cde";
+        assertTrue(s.matches(pattern));
+        s = "ba.cde";
+        assertTrue(s.matches(pattern));
     }
 
     /**
@@ -78,8 +121,10 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * Test that the uid does not contain any of the following character:
      * <code>([{\^$|)?*+.</code>
      * </p>
+     * 
+     * @throws Exception An {@link Exception}.
      */
-    public void testRegularExpessionInUid()
+    public void testRegularExpessionInUid() throws Exception
     {
         // ([{\^$|)?*+.
         verifyRegularExpressionFails("(");
@@ -100,19 +145,21 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * <p>
      * Test <code>authenticate</code> with incorrect character in uid.
      * </p>
+     * 
+     * @throws Exception An {@link Exception}.
      */
-    private void verifyRegularExpressionFails(String metaCharacter)
+    private void verifyRegularExpressionFails(String metaCharacter) throws Exception
     {
         try
         {
-            ldap.authenticate(uid1 + metaCharacter, password);
-            fail("Should have thrown an IllegalArgumentException because the uid contained a regular expression meta-character.");
+            ldapCredDao.authenticate(uid1 + metaCharacter, password);
+            fail("Should have thrown an SecurityException because the uid contained a regular expression meta-character.");
         }
         catch (Exception e)
         {
             assertTrue(
-                    "Should have thrown an IllegalArgumentException  because the uid contained a regular expression meta-character.",
-                    e instanceof IllegalArgumentException);
+                    "Should have thrown an SecurityException  because the uid contained a regular expression meta-character.",
+                    e instanceof SecurityException);
         }
     }
 
@@ -120,12 +167,14 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * <p>
      * Test <code>authenticate</code> with no password.
      * </p>
+     * 
+     * @throws Exception An {@link Exception}.
      */
-    public void testCannotAuthenticateWithNoPassword()
+    public void testCannotAuthenticateWithNoPassword() throws Exception
     {
         try
         {
-            ldap.authenticate(uid1, "");
+            ldapCredDao.authenticate(uid1, "");
             fail("Should have thrown an SecurityException.");
         }
         catch (Exception e)
@@ -137,7 +186,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
 
         try
         {
-            ldap.authenticate(uid1, null);
+            ldapCredDao.authenticate(uid1, null);
             fail("Should have thrown an SecurityException.");
         }
         catch (Exception e)
@@ -151,14 +200,14 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * Test <code>authenticate</code> with bad uid.
      * </p>
      * 
-     * @throws SecurityException A {@link SecurityException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testBadUID() throws SecurityException
+    public void testBadUID() throws Exception
     {
 
         try
         {
-            ldap.authenticate(uid1 + "123", password);
+            ldapCredDao.authenticate(uid1 + "123", password);
             fail("Should have thrown an exception for a non-existant user.");
         }
         catch (Exception e)
@@ -174,11 +223,11 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * Test <code>authenticate</code> with bad password.
      * </p>
      * 
-     * @throws NamingException A {@link NamingException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testBadPassword() throws SecurityException
+    public void testBadPassword() throws Exception
     {
-        assertFalse("Should not have authenticated with bad password.", ldap.authenticate(uid1, password + "123"));
+        assertFalse("Should not have authenticated with bad password.", ldapCredDao.authenticate(uid1, password + "123"));
     }
 
     /**
@@ -186,9 +235,9 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * Test <code>authenticate</code> with concurrent logins.
      * </p>
      * 
-     * @throws InterruptedException A {@link InterruptedException}.
+     * @throws Exception An {@link Exception}.
      */
-    public void testConcurrentLogins() throws InterruptedException, SecurityException, NamingException
+    public void testConcurrentLogins() throws Exception
     {
         for (int i = 0; i < NUMBER_OF_LOGIN_THREADS; i++)
         {
@@ -265,7 +314,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
 
         public LoginThread() throws NamingException, SecurityException
         {
-            threadLdap = new LdapUserCredentialDaoImpl();
+            threadLdap = ldapCredDao;
         }
 
         /**

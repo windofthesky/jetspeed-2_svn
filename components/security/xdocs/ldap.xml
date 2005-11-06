@@ -34,9 +34,9 @@
                 . below.
             </p>
             <p>
-                Jetspeed 2
-                <b>does not currently provide an embedded LDAP directory</b>
-                . A external LDAP directory must be configured in order to leverage this functionality.
+                Jetspeed 2 provides an embedded LDAP configuration through the <a
+                href="http://directory.apache.org/subprojects/apacheds/index.html">Apache Directory Server</a>
+                . A external LDAP directory can also be onfigured in order to leverage the LDAP security functionality.
             </p>
             <p>
                 <i>security-spi-atn.xml</i>
@@ -49,13 +49,16 @@
             <p>
                 The
                 <i>security-spi-ldap-atn.xml</i>
-                preforms the same functions as the
+                peeforms the same functions as the
                 <i>security-spi-atn.xml</i>
                 described above. It replaces the default implementation for
                 <i>CredentialHandler</i>
                 and
                 <i>UserSecurityHandler</i>
                 with an LDAP specific implementation.
+            </p>
+            <p>
+            <u>The sections below are outdated.  Update to come soon...</u>
             </p>
             <p>
                 Additionally,
