@@ -77,7 +77,7 @@
             </properties>
         </dependency>
     </dependencies>
-
+    
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>

@@ -23,7 +23,8 @@ import org.apache.jetspeed.security.SecurityException;
  * Generic DAO interface for LDAP principals.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface LdapPrincipalDao extends LdapReadOnlyPrincipalDao
 {
@@ -35,7 +36,7 @@ public interface LdapPrincipalDao extends LdapReadOnlyPrincipalDao
      * @param principalUid The principal uid.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    public abstract void create(final String principalUid) throws SecurityException;
+    abstract void create(final String principalUid) throws SecurityException;
 
     /**
      * <p>
@@ -45,15 +46,26 @@ public interface LdapPrincipalDao extends LdapReadOnlyPrincipalDao
      * @param principalUid The principal uid.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    public abstract void delete(final String principalUid) throws SecurityException;
+    abstract void delete(final String principalUid) throws SecurityException;
 
     /**
      * <p>
      * Search the ldap directory for the principal.
      * </p>
      * 
-     * @param principalUid The uid value of the principal. If empty this method
+     * @param principalUid The uid value of the principal.
+     * @param principalType The type of principal.
      * @return All the objects of this LDAP class type.
      */
-    public Principal[] find(final String principalUid) throws SecurityException;
+    Principal[] find(final String principalUid, String principalType) throws SecurityException;
+
+    /**
+     * <p>
+     * Converts the uid to an ldap acceptable name.
+     * </p>
+     * 
+     * @param uid The uid.
+     * @return The converted name.
+     */
+    String convertUidToLdapAcceptableName(String uid);
 }

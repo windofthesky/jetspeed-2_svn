@@ -29,52 +29,48 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
  * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao
- * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements LdapPrincipalDao
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapPrincipalDaoImpl.class);
+    private static final Log logger = LogFactory.getLog(LdapPrincipalDaoImpl.class);
 
     /** The uid attribute name. */
     protected static final String UID_ATTR_NAME = "uid";
-    
+
     /**
      * <p>
      * Default constructor.
      * </p>
      * 
-     * @throws NamingException A {@link NamingException}.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapPrincipalDaoImpl() throws NamingException, SecurityException
+    public LdapPrincipalDaoImpl() throws SecurityException
     {
         super();
     }
-    
+
     /**
      * <p>
      * Initializes the dao.
      * </p>
      * 
-     * @param ldapServerName The server name.
-     * @param rootDn The root domain.
-     * @param rootPassword The root password.
-     * @param rootContext The root context.
-     * @param defaultDnSuffix The default suffix.
-     * 
-     * @throws NamingException A {@link NamingException}.
+     * @param ldapConfig Holds the ldap binding configuration.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapPrincipalDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix) throws NamingException, SecurityException
+    public LdapPrincipalDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
     {
-        super(ldapServerName, rootDn, rootPassword, rootContext, defaultDnSuffix);
+        super(ldapConfig);
     }
 
     /**
@@ -89,8 +85,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
 
     /**
      * <p>
-     * A template method for defining the attributes for a particular LDAP
-     * class.
+     * A template method for defining the attributes for a particular LDAP class.
      * </p>
      * 
      * @param principalUid The principal uid.
@@ -104,16 +99,29 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     public void create(final String principalUid) throws SecurityException
     {
         Attributes attrs = defineLdapAttributes(principalUid);
-
         try
         {
-            ctx.createSubcontext("uid=" + principalUid + super.defaultDnSuffix, attrs);
+            String userDn = "uid=" + principalUid + getDnSuffix();
+            ctx.createSubcontext(userDn, attrs);
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Creating user dn: " + userDn);
+            }
         }
         catch (NamingException e)
         {
             throw new SecurityException(e);
         }
     }
+
+    /**
+     * <p>
+     * Builds the dn suffix.
+     * </p>
+     * 
+     * @return The dn suffix.
+     */
+    protected abstract String getDnSuffix();
 
     /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#delete(java.lang.String)
@@ -140,35 +148,54 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     }
 
     /**
-     * <p>
-     * Converts the uid to an ldap acceptable name.
-     * </p>
-     * 
-     * @param uid The uid.
-     * @return The converted name.
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#convertUidToLdapAcceptableName(java.lang.String)
      */
-    protected String convertUidToLdapAcceptableName(String uid)
+    public String convertUidToLdapAcceptableName(String fullPath)
     {
-        return uid.replaceAll("/", "&");
+        if (logger.isErrorEnabled())
+        {
+            logger.debug("Principal fullPath:" + fullPath);
+        }
+        String ldapAcceptableName = fullPath;
+        if (null == fullPath)
+        {
+            return ldapAcceptableName;
+        }
+        else if (fullPath.indexOf(UserPrincipal.PREFS_USER_ROOT) >= 0)
+        {
+            ldapAcceptableName = convertUidWithoutSlashes(UserPrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+        }
+        else if (fullPath.indexOf(GroupPrincipal.PREFS_GROUP_ROOT) >= 0)
+        {
+            ldapAcceptableName = convertUidWithoutSlashes(GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+        }
+        if (logger.isErrorEnabled())
+        {
+            logger.debug("Ldap acceptable name:" + ldapAcceptableName);
+        }
+
+        return ldapAcceptableName;
     }
 
     /**
      * <p>
-     * Convert the uid back from the ldap acceptable name.
+     * Returns a well formed uid for LDAP.
      * </p>
      * 
      * @param uid The uid.
-     * @return The converted back name.
+     * @return The well formed uid.
      */
-    protected String convertUidFromLdapAcceptableName(String uid)
+    private String convertUidWithoutSlashes(String uid)
     {
-        return uid.replaceAll("&", "/");
+        String uidWithSlashed = uid.replaceAll("/", "&");
+        return uidWithSlashed;
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#find(java.lang.String)
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#find(java.lang.String,
+     *      java.lang.String)
      */
-    public Principal[] find(final String principalUid) throws SecurityException
+    public Principal[] find(final String principalUid, String principalType) throws SecurityException
     {
         try
         {
@@ -214,7 +241,6 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         while (searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
-
             buildPrincipal(principals, searchResult);
         }
     }

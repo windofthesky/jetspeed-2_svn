@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.aggregator.PortletContent;
@@ -33,7 +34,6 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -75,14 +75,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
         }
 
         /**
-         * @param p
-         */
-        public void addProperty(Property p)
-        {
-            f.addProperty(p);
-        }
-
-        /**
          * @param actions
          * @throws SecurityException
          */
@@ -109,17 +101,7 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             f.checkPermissions(actions);
         }
 
-        /**
-         * @param layoutName
-         */
-        public void clearProperties(String layoutName)
-        {
-            f.clearProperties(layoutName);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
+        /** 
          * @see java.lang.Object#equals(java.lang.Object)
          */
         public boolean equals(Object obj)
@@ -162,14 +144,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
         /**
          * @return
          */
-        public List getLayoutProperties()
-        {
-            return f.getLayoutProperties();
-        }
-
-        /**
-         * @return
-         */
         public String getName()
         {
             return f.getName();
@@ -183,24 +157,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
             return f.getPermissionsEnabled();
         }
 
-        /**
-         * @param layoutName
-         * @return
-         */
-        public List getProperties(String layoutName)
-        {
-            return f.getProperties(layoutName);
-        }
-
-        /**
-         * @param layout
-         * @param propName
-         * @return
-         */
-        public String getPropertyValue(String layout, String propName)
-        {
-            return f.getPropertyValue(layout, propName);
-        }
 
         /**
          * @return
@@ -267,14 +223,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
         }
 
         /**
-         * @param p
-         */
-        public void removeProperty(Property p)
-        {
-            f.removeProperty(p);
-        }
-
-        /**
          * @param decoratorName
          */
         public void setDecorator(String decoratorName)
@@ -288,16 +236,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
         public void setName(String name)
         {
             f.setName(name);
-        }
-
-        /**
-         * @param layout
-         * @param propName
-         * @param value
-         */
-        public void setPropertyValue(String layout, String propName, String value)
-        {
-            f.setPropertyValue(layout, propName, value);
         }
 
         /**
@@ -366,7 +304,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public List getContentFragments()
         {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -375,7 +312,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public String getRenderedContent() throws IllegalStateException
         {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -384,8 +320,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public void overrideRenderedContent(String contnent)
         {
-            // TODO Auto-generated method stub
-
         }
 
         /** 
@@ -393,8 +327,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public void setPortletContent(PortletContent portletContent)
         {
-            // TODO Auto-generated method stub
-
         }
 
         /**
@@ -402,7 +334,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public int getLayoutColumn()
         {
-            // TODO Auto-generated method stub
             return 0;
         }
 
@@ -411,7 +342,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public int getLayoutRow()
         {
-            // TODO Auto-generated method stub
             return 0;
         }
 
@@ -420,7 +350,6 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          */
         public String getLayoutSizes()
         {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -428,30 +357,54 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
          * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
          */
         public void setLayoutColumn(int column)
-        {
-            // TODO Auto-generated method stub
-            
+        {            
         }
 
         /**
          * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
          */
         public void setLayoutRow(int row)
-        {
-            // TODO Auto-generated method stub
-            
+        {            
         }
 
         /**
          * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
          */
         public void setLayoutSizes(String sizes)
-        {
-            // TODO Auto-generated method stub
-            
+        {            
         }
-        
-        
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
+         */
+        public int getIntProperty(String propName)
+        {
+            return 0;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
+         */
+        public List getPreferences()
+        {
+            return null;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getProperties()
+         */
+        public Map getProperties()
+        {
+            return null;
+        }
+
+        /**
+         * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
+         */
+        public String getProperty(String propName)
+        {
+            return null;
+        }        
     }
 
     private static final String TEST_APP = "EntityTestApp";

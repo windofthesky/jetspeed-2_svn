@@ -232,8 +232,7 @@ public class PortletRendererImpl implements PortletRenderer
             FailedToRenderFragmentException, PortletEntityNotStoredException
     {
         ContentDispatcher dispatcher = null;
-        RenderingJob rJob;
-
+        
         PortletWindow portletWindow = getPortletWindow(fragment);
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
         dispatcher = getDispatcher(requestContext, true);        

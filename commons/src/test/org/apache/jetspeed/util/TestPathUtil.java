@@ -54,7 +54,7 @@ public class TestPathUtil extends TestCase
         
         path = new Path("file");
         
-        assertEquals("file", path.getBaseName());
+        assertNull(path.getBaseName());
         
         Path pathNoFile = new Path("/root/sub1/sub2");
         assertEquals("root", pathNoFile.getSegment(0));

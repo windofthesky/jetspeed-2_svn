@@ -16,8 +16,6 @@ package org.apache.jetspeed.security.impl;
 
 import java.util.prefs.Preferences;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.util.ArgUtil;
 
@@ -45,8 +43,6 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public class AggregationHierarchyResolver extends BaseHierarchyResolver implements HierarchyResolver
 {
-    private static final Log log = LogFactory.getLog(AggregationHierarchyResolver.class);
-
     /**
      * @see org.apache.jetspeed.security.HierarchyResolver#resolve(Preferences)
      */

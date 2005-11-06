@@ -394,8 +394,6 @@ public class GroupManagerImpl implements GroupManager
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
                 "setGroupEnabled(java.lang.String,boolean)");
 
-        String fullPath = GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName);
-
         GroupPrincipalImpl groupPrincipal = (GroupPrincipalImpl)groupSecurityHandler.getGroupPrincipal(groupFullPathName);
         if (null == groupPrincipal)
         {

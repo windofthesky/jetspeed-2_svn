@@ -23,49 +23,44 @@ import java.util.StringTokenizer;
 /**
  * <h2>Overview</h2>
  * <p>
- * The Path object is used to standard used to standardize the creation of
- * mutation of path-like structures. For: example /foo/bar/index.html.
+ * The Path object is used to standard used to standardize the creation of mutation of path-like
+ * structures. For: example /foo/bar/index.html.
  * </p>
- * 
  * <h2>Rules for Interperting Pathes</h2>
  * <p>
- * Below are the rules for how the constructor interprets literal paths.
- * <strong>NOTE</strong> the {@link addSegment(String)} interprets string
- * pathes in a somewhat different manner. <table>
+ * Below are the rules for how the constructor interprets literal paths. <strong>NOTE</strong> the
+ * {@link addSegment(String)} interprets string pathes in a somewhat different manner. <table>
  * <tr>
  * <th>Literal Path</th>
  * <th>Interpretation</th>
  * </tr>
  * <td> <i>/foo/bar/index.html</i> </td>
- * <td> <code>foo</code> and <code>bar</code> will be considered directory
- * segments while <code>index.html</code> will be considered a file segment.
- * This means that the <code>baseName</code> will be set to <i>index</i> and
- * the <code>fileExtension</code> will be set to <i>.html</i> </td>
+ * <td> <code>foo</code> and <code>bar</code> will be considered directory segments while
+ * <code>index.html</code> will be considered a file segment. This means that the
+ * <code>baseName</code> will be set to <i>index</i> and the <code>fileExtension</code> will be
+ * set to <i>.html</i> </td>
  * <tr>
- * <td> <i>/foo/bar/</i>, <i>/foo/bar</i>, <i>foo/bar/</i> <i>foo/bar</i>
- * </td>
+ * <td> <i>/foo/bar/</i>, <i>/foo/bar</i>, <i>foo/bar/</i> <i>foo/bar</i> </td>
  * <td>
  * <p>
- * <code>foo</code> and <code>bar</code> will be considered directory
- * segments. <code>baseName</code> and <code>fileExtension</code> will be
- * left as <code>null</code>.
+ * <code>foo</code> and <code>bar</code> will be considered directory segments.
+ * <code>baseName</code> and <code>fileExtension</code> will be left as <code>null</code>.
  * <p>
- * I cases where a file has no extension you must use the
- * {@link setFileSegment(String))} to manually set the file. This causes the
- * <code>baseName</code> to be set to the file name specified and the
- * <code>fileExtension</code> will be set to the empty string ("").
+ * I cases where a file has no extension you must use the {@link setFileSegment(String))} to
+ * manually set the file. This causes the <code>baseName</code> to be set to the file name
+ * specified and the <code>fileExtension</code> will be set to the empty string ("").
  * </p>
  * </td>
  * </tr>
  * </table>
  * 
- * 
- * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- * 
  */
 public class Path implements Serializable, Cloneable
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 6890966283704092945L;
+
     public static final String PATH_SEPERATOR = "/";
 
     private String path;
@@ -91,10 +86,10 @@ public class Path implements Serializable, Cloneable
     {
         this.segments = new LinkedList();
         this.path = path.replace('\\', '/');
-        
-        if(!this.path.startsWith("/"))
+
+        if (!this.path.startsWith("/"))
         {
-            this.path ="/"+this.path;
+            this.path = "/" + this.path;
         }
 
         parsePathSegments(segments, this.path, false);
@@ -165,7 +160,7 @@ public class Path implements Serializable, Cloneable
         }
         else
         {
-            // File segement must have been removed
+            // File segment must have been removed
             fileName = null;
             baseName = null;
             fileExtension = null;
@@ -177,11 +172,9 @@ public class Path implements Serializable, Cloneable
     /**
      * Returns the segement of the path at the specified index <code>i</code>.
      * 
-     * @param i
-     *            index containing the segment to return.
+     * @param i index containing the segment to return.
      * @return Segment at index <code>i</code>
-     * @throws ArrayIndexOutOfBoundsException
-     *             if the index is not within the bounds of this Path.
+     * @throws ArrayIndexOutOfBoundsException if the index is not within the bounds of this Path.
      */
     public String getSegment(int i)
     {
@@ -190,14 +183,12 @@ public class Path implements Serializable, Cloneable
 
     /**
      * <p>
-     * Adds this segment to the end of the path but before the current file
-     * segment, if one exists. For consistency Segments added via this method
-     * are <strong>ALWAYS</strong> considered directories even when matching a
-     * standrad file pattern i.e. <i>index.html</i>
+     * Adds this segment to the end of the path but before the current file segment, if one exists.
+     * For consistency Segments added via this method are <strong>ALWAYS</strong> considered
+     * directories even when matching a standrad file pattern i.e. <i>index.html</i>
      * </p>
      * <p>
-     * If you need to set the file segment, please use the setFileSegment()
-     * method.
+     * If you need to set the file segment, please use the setFileSegment() method.
      * </p>
      * 
      * @param segment
@@ -226,9 +217,9 @@ public class Path implements Serializable, Cloneable
 
     public Path getSubPath(int beginAtSegment)
     {
-       return getSubPath(beginAtSegment, segments.size());
+        return getSubPath(beginAtSegment, segments.size());
     }
-    
+
     public Path getSubPath(int beginAtSegment, int endSegment)
     {
         StringBuffer newPathString = new StringBuffer();
@@ -355,9 +346,8 @@ public class Path implements Serializable, Cloneable
     }
 
     /**
-     * Removes the last directory segment in this path. This method <strong>WILL
-     * NOT</strong> remove the fileSegment, but path segment immediately before
-     * it.
+     * Removes the last directory segment in this path. This method <strong>WILL NOT</strong>
+     * remove the fileSegment, but path segment immediately before it.
      * 
      * @return segment removed.
      */
@@ -423,10 +413,10 @@ public class Path implements Serializable, Cloneable
         }
         rebuildPath();
     }
-    
+
     public Path getChild(String childPath)
     {
-        if(fileName != null)
+        if (fileName != null)
         {
             return getSubPath(0, (segments.size() - 1)).addSegment(childPath);
         }
@@ -434,38 +424,38 @@ public class Path implements Serializable, Cloneable
         {
             return getSubPath(0, segments.size()).addSegment(childPath);
         }
-        
+
     }
-    
+
     public Path getChild(Path childPath)
     {
         Path child = null;
-        if(fileName != null)
+        if (fileName != null)
         {
             child = getSubPath(0, (segments.size() - 1));
-            
+
         }
         else
         {
             child = getSubPath(0, segments.size());
         }
-        
+
         child.addSegment(childPath.toString());
-        return child;        
+        return child;
     }
-    
+
     public Path getParent()
     {
-        if(fileName != null)
+        if (fileName != null)
         {
-            
-           return getSubPath(0, segments.size()-1);       
+
+            return getSubPath(0, segments.size() - 1);
         }
         else
         {
-            if(segments.size() > 1)
+            if (segments.size() > 1)
             {
-                return getSubPath(0, segments.size()-1);
+                return getSubPath(0, segments.size() - 1);
             }
             else
             {

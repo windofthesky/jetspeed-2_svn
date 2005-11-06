@@ -29,6 +29,9 @@ import org.apache.jetspeed.security.om.InternalPrincipal;
  */
 public class InternalPrincipalImpl implements InternalPrincipal
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 3615655651128923549L;
+
     /** The principal id. */
     private long principalId;
 

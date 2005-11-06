@@ -414,8 +414,6 @@ public class RoleManagerImpl implements RoleManager
         ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
         "setRoleEnabled(java.lang.String,boolean)");
 
-        String fullPath = RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName);
-
         RolePrincipalImpl rolePrincipal = (RolePrincipalImpl)roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null == rolePrincipal)
         {

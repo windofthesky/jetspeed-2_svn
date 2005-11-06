@@ -25,6 +25,9 @@ import org.apache.jetspeed.security.om.InternalRolePrincipal;
  */
 public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements InternalRolePrincipal
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 4422827842052325846L;
+    
     /** <p>Role principal security class.</p> */
     static String ROLE_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalRolePrincipalImpl";
 

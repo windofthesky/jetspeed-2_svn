@@ -17,7 +17,6 @@ package org.apache.jetspeed.security.spi;
 import java.sql.Date;
 import java.util.Set;
 
-import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 
 /**

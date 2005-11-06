@@ -492,8 +492,6 @@ public class UserManagerImpl implements UserManager
             throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED.create(userName));
         }
 
-        String fullPath = (new UserPrincipalImpl(userName)).getFullPath();
-
         UserPrincipalImpl userPrincipal = (UserPrincipalImpl)atnProviderProxy.getUserPrincipal(userName);
         if (null == userPrincipal) 
         { 

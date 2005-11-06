@@ -17,13 +17,11 @@ package org.apache.jetspeed.security.spi.impl.ldap;
 
 import java.security.Principal;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 
@@ -32,32 +30,40 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
  * DAO for handling group objects.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
 {
-    /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapGroupDaoImpl.class);
-
-    /** The group class name. */
-    private static final String GROUP_CLASSNAME = "com.jetspeed.dung.GroupClassImpl";
 
     /**
      * <p>
      * Default constructor.
      * </p>
      * 
-     * @throws NamingException A {@link NamingException}.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapGroupDaoImpl() throws SecurityException, NamingException
+    public LdapGroupDaoImpl() throws SecurityException
     {
+        super();
     }
 
     /**
      * <p>
-     * A template method for defining the attributes for a particular LDAP
-     * class.
+     * Initializes the dao.
+     * </p>
+     * 
+     * @param ldapConfig Holds the ldap binding configuration.
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    public LdapGroupDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
+    {
+        super(ldapConfig);
+    }
+
+    /**
+     * <p>
+     * A template method for defining the attributes for a particular LDAP class.
      * </p>
      * 
      * @param principalUid The principal uid.
@@ -72,9 +78,26 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         classes.add("uidObject");
         classes.add("jetspeed-2-group");
         attrs.put(classes);
-        attrs.put("j2-classname", GROUP_CLASSNAME);
         attrs.put("uid", principalUid);
+        attrs.put("ou", getGroupsOu());
         return attrs;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDaoImpl#getDnSuffix()
+     */
+    protected String getDnSuffix()
+    {
+        String suffix = "";
+        if (!StringUtils.isEmpty(getGroupsOu()))
+        {
+            suffix += ",ou=" + getGroupsOu();
+        }
+        if (!StringUtils.isEmpty(getDefaultDnSuffix()))
+        {
+            suffix += getDefaultDnSuffix();
+        }
+        return suffix;
     }
 
     /**
@@ -87,7 +110,7 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
      */
     protected Principal makePrincipal(String principalUid)
     {
-        return new GroupPrincipalImpl(convertUidFromLdapAcceptableName(principalUid));
+        return new GroupPrincipalImpl(principalUid);
     }
 
     /**

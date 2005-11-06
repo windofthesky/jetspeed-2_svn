@@ -33,14 +33,13 @@ import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
 
 /**
  * @see org.apache.jetspeed.security.spi.GroupSecurityHandler
- * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a><br/>
- *         <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a><br/> <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class LdapGroupSecurityHandler implements GroupSecurityHandler
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapGroupSecurityHandler.class);
+    private static final Log logger = LogFactory.getLog(LdapGroupSecurityHandler.class);
 
     /** The {@link LdapPrincipalDao}. */
     private LdapPrincipalDao ldap;
@@ -71,7 +70,7 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
      */
     public Principal getGroupPrincipal(String groupPrincipalUid)
     {
-        String groupUidWithoutSlashes = convertUidToAcceptableName(groupPrincipalUid);
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(groupPrincipalUid);
         verifyGroupId(groupUidWithoutSlashes);
         try
         {
@@ -114,9 +113,9 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
      */
     private void logSecurityException(SecurityException e, String groupPrincipalUid)
     {
-        if (LOG.isErrorEnabled())
+        if (logger.isErrorEnabled())
         {
-            LOG.error("An LDAP error has occurred for groupId:" + groupPrincipalUid, e);
+            logger.error("An LDAP error has occurred for groupId:" + groupPrincipalUid, e);
         }
     }
 
@@ -125,32 +124,15 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
      */
     public void setGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
     {
-        System.out.println("Group Principal UID:" + groupPrincipal.getFullPath());
         verifyGroupPrincipal(groupPrincipal);
 
-        String uid = groupPrincipal.getFullPath();
-        String groupUidWithoutSlashes = convertUidToAcceptableName(uid);
-        LOG.debug("Group Principal UID:" + groupUidWithoutSlashes);
-
+        String fullPath = groupPrincipal.getFullPath();
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
         if (getGroupPrincipal(groupUidWithoutSlashes) == null)
         {
-            LOG.debug("Group Principal UID:" + groupUidWithoutSlashes);
             ldap.create(groupUidWithoutSlashes);
         }
 
-    }
-
-    /**
-     * <p>
-     * Converts the uid to an acceptable ldap name.
-     * </p>
-     * 
-     * @param uid The uid.
-     * @return The acceptable name.
-     */
-    private String convertUidToAcceptableName(String uid)
-    {
-        return uid.replaceAll("/", "&");
     }
 
     /**
@@ -175,8 +157,8 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
     {
         verifyGroupPrincipal(groupPrincipal);
 
-        String uid = groupPrincipal.getFullPath();
-        String groupUidWithoutSlashes = convertUidToAcceptableName(uid);
+        String fullPath = groupPrincipal.getFullPath();
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
 
         ldap.delete(groupUidWithoutSlashes);
     }
@@ -188,8 +170,7 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
     {
         try
         {
-            String filterWithoutSlashes = convertUidToAcceptableName(filter);
-            return Arrays.asList(ldap.find(filterWithoutSlashes));
+            return Arrays.asList(ldap.find(filter, GroupPrincipal.PREFS_GROUP_ROOT));
         }
         catch (SecurityException e)
         {

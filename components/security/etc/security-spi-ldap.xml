@@ -20,9 +20,26 @@ limitations under the License.
   <!-- ************** Ldap Configuration ************** -->
   <!-- Adds ldap.properties as our configuration object to support ${...} vars -->
   <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
-  <bean id="ldapPlaceholderConfig"
-      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location"><value>file:///${applicationRoot}/WEB-INF/conf/ldap.properties</value></property>
+  <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"
+      class="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig">
+      <!-- The LDAP initial context factory. -->
+      <constructor-arg index="0"><value>com.sun.jndi.ldap.LdapCtxFactory</value></constructor-arg>
+      <!-- The LDAP server name. -->
+      <constructor-arg index="1"><value>localhost</value></constructor-arg>
+      <!-- The LDAP server port. -->
+      <constructor-arg index="2"><value>10389</value></constructor-arg>
+      <!-- The LDAP server default dn suffix. -->
+      <constructor-arg index="3"><value></value></constructor-arg>
+      <!-- The LDAP server root context. -->
+      <constructor-arg index="3"><value>o=sevenSeas</value></constructor-arg>
+      <!-- The LDAP server root dn. -->
+      <constructor-arg index="3"><value>uid=admin,ou=system</value></constructor-arg>
+      <!-- The LDAP server root password. -->
+      <constructor-arg index="3"><value>secret</value></constructor-arg>
+      <!-- The users org unit. -->
+      <constructor-arg index="3"><value>users</value></constructor-arg>
+      <!-- The groups org unit. -->
+      <constructor-arg index="3"><value>groups</value></constructor-arg>
   </bean>
 
 </beans>

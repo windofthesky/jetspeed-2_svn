@@ -27,6 +27,9 @@ import org.apache.jetspeed.security.om.InternalCredential;
  */
 public class InternalCredentialImpl implements InternalCredential
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = -8064404995292602590L;
+
     /**
      * <p>InternalCredential implementation default constructor.</p>
      */

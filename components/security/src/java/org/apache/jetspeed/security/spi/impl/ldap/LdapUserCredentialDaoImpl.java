@@ -30,12 +30,12 @@ import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUserCredentialDao
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapUserCredentialDaoImpl.class);
+    private static final Log logger = LogFactory.getLog(LdapUserCredentialDaoImpl.class);
 
     /** The password attribute. */ 
     private static final String PASSWORD_ATTR_NAME = "userPassword";
@@ -45,10 +45,9 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * Default constructor.
      * </p>
      *
-     * @throws NamingException A {@link NamingException}.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserCredentialDaoImpl() throws NamingException, SecurityException
+    public LdapUserCredentialDaoImpl() throws SecurityException
     {
         super();
     }
@@ -58,19 +57,13 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * Initializes the dao.
      * </p>
      * 
-     * @param ldapServerName The server name.
-     * @param rootDn The root domain.
-     * @param rootPassword The root password.
-     * @param rootContext The root context.
-     * @param defaultDnSuffix The default suffix.
+     * @param ldapConfig Holds the ldap binding configuration.
      * 
-     * @throws NamingException A {@link NamingException}.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserCredentialDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix) throws NamingException, SecurityException
+    public LdapUserCredentialDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
     {
-        super(ldapServerName, rootDn, rootPassword, rootContext, defaultDnSuffix);
+        super(ldapConfig);
     }
     
     /**
@@ -193,9 +186,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
                 return attr;
             }
         }
-
         return null;
-
     }
 
     /**
@@ -213,18 +204,21 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
         for (int i = 0; i < rawPass.length; i++)
         {
-            LOG.debug(new String("password byte[" + i + "]:" + rawPass[i]));
+            if (logger.isDebugEnabled())
+            {
+                logger.debug(new String("password byte[" + i + "]:" + rawPass[i]));
+            }
 
             Byte passByte = new Byte(rawPass[i]);
 
-            LOG.debug("password byte[" + i + "] short value:" + passByte.shortValue());
-            charPass[i] = (char) rawPass[i]; //I know I lose the
-
-            // sign and this is only
-            // good for ascii text.
-            LOG.debug("passchar char[" + i + "]:" + charPass[i]);
+            logger.debug("password byte[" + i + "] short value:" + passByte.shortValue());
+            // I know I lose the sign and this is only good for ascii text.
+            charPass[i] = (char) rawPass[i];           
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("passchar char[" + i + "]:" + charPass[i]);
+            }
         }
-
         return charPass;
     }
 

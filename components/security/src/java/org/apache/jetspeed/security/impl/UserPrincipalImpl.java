@@ -24,6 +24,9 @@ import org.apache.jetspeed.security.UserPrincipal;
 public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipal
 {
 
+    /** The serial version uid. */
+    private static final long serialVersionUID = 4134905654850335230L;
+
     /**
      * <p>The user principal constructor.</p>
      * @param userName The user principal name.

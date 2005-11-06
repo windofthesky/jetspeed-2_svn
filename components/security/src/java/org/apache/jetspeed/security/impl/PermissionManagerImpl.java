@@ -18,7 +18,6 @@ import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.Permissions;
-import java.security.Policy;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.sql.Timestamp;

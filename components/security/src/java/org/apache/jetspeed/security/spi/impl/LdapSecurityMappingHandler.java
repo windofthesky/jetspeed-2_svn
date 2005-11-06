@@ -277,6 +277,10 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     {
         UserPrincipal user = getUser(username);
         GroupPrincipal group = getGroup(groupFullPathName);
+        if ((null == user) && (null == group))
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+        }
     }
 
     /**
@@ -318,7 +322,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      */
     private UserPrincipal getUser(String uid) throws SecurityException
     {
-        Principal[] user = userDao.find(uid);
+        Principal[] user = userDao.find(uid, UserPrincipal.PREFS_USER_ROOT);
         if (user.length == 1)
         {
             return (UserPrincipal) user[0];
@@ -336,7 +340,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      */
     private GroupPrincipal getGroup(String uid) throws SecurityException
     {
-        Principal[] group = groupDao.find(uid);
+        Principal[] group = groupDao.find(uid, GroupPrincipal.PREFS_GROUP_ROOT);
         if (group.length == 1)
         {
             return (GroupPrincipal) group[0];

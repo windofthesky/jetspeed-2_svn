@@ -30,57 +30,52 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements LdapUserPrincipalDao
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapUserPrincipalDaoImpl.class);
+    private static final Log logger = LogFactory.getLog(LdapUserPrincipalDaoImpl.class);
 
     /** The group attribute name. */
     private static final String GROUP_ATTR_NAME = "j2-group";
-   
+
     /**
      * <p>
      * Default constructor.
      * </p>
      * 
-     * @throws NamingException A {@link NamingException}.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserPrincipalDaoImpl() throws NamingException, SecurityException
+    public LdapUserPrincipalDaoImpl() throws SecurityException
     {
         super();
     }
-    
+
     /**
      * <p>
      * Initializes the dao.
      * </p>
      * 
-     * @param ldapServerName The server name.
-     * @param rootDn The root domain.
-     * @param rootPassword The root password.
-     * @param rootContext The root context.
-     * @param defaultDnSuffix The default suffix.
-     * 
-     * @throws NamingException A {@link NamingException}.
+     * @param ldapConfig Holds the ldap binding configuration.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserPrincipalDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix) throws NamingException, SecurityException
+    public LdapUserPrincipalDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
     {
-        super(ldapServerName, rootDn, rootPassword, rootContext, defaultDnSuffix);
+        super(ldapConfig);
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#addGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#addGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void addGroup(String userPrincipalUid, String groupPrincipalUid) throws SecurityException
     {
@@ -94,8 +89,7 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      * 
      * @param userPrincipalUid
      * @param groupPrincipalUid
-     * @param operationType whether to replace or remove the specified user
-     *            group from the user
+     * @param operationType whether to replace or remove the specified user group from the user
      * @throws SecurityException A {@link SecurityException}.
      */
     private void modifyUserGroup(String userPrincipalUid, String groupPrincipalUid, int operationType)
@@ -119,7 +113,8 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#removeGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#removeGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void removeGroup(String userPrincipalUid, String groupPrincipalUid) throws SecurityException
     {
@@ -128,8 +123,7 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
 
     /**
      * <p>
-     * A template method for defining the attributes for a particular LDAP
-     * class.
+     * A template method for defining the attributes for a particular LDAP class.
      * </p>
      * 
      * @param principalUid The principal uid.
@@ -150,7 +144,26 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
         attrs.put("cn", principalUid);
         attrs.put("uid", principalUid);
         attrs.put("sn", principalUid);
+        attrs.put("ou", getUsersOu());
+
         return attrs;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDaoImpl#getDnSuffix()
+     */
+    protected String getDnSuffix()
+    {
+        String suffix = "";
+        if (!StringUtils.isEmpty(getUsersOu()))
+        {
+            suffix += ",ou=" + getUsersOu();
+        }
+        if (!StringUtils.isEmpty(getDefaultDnSuffix()))
+        {
+            suffix += getDefaultDnSuffix();
+        }
+        return suffix;
     }
 
     /**
@@ -194,13 +207,10 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
         NamingEnumeration results;
         try
         {
-            LOG.debug("1");
             List userPrincipalUids = new ArrayList();
             results = searchUserByGroup(groupPrincipalUid, cons);
-            LOG.debug("2");
             while (results.hasMore())
             {
-                LOG.debug("3");
                 SearchResult result = (SearchResult) results.next();
                 Attributes answer = result.getAttributes();
 
@@ -229,7 +239,10 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
     {
         String query = "(&(" + GROUP_ATTR_NAME + "=" + (groupPrincipalUid) + ") (objectclass=" + getObjectClass()
                 + "))";
-        LOG.debug("query[" + query + "]");
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("query[" + query + "]");
+        }
         NamingEnumeration searchResults = ((DirContext) ctx).search("", "(&(" + GROUP_ATTR_NAME + "="
                 + (groupPrincipalUid) + ") (objectclass=" + getObjectClass() + "))", cons);
 

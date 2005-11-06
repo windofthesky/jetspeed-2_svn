@@ -22,11 +22,14 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao" 
        class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl"
   >       
-       <constructor-arg index="0"><value>${org.apache.jetspeed.ldap.ldapServerName}</value></constructor-arg>       
-       <constructor-arg index="1"><value>${org.apache.jetspeed.ldap.rootDn}</value></constructor-arg>       
-       <constructor-arg index="2"><value>${org.apache.jetspeed.ldap.rootPassword}</value></constructor-arg>
-       <constructor-arg index="3"><value>${org.apache.jetspeed.ldap.rootContext}</value></constructor-arg>  
-       <constructor-arg index="4"><value>${org.apache.jetspeed.ldap.defaultDnSuffix}</value></constructor-arg>        
+       <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"/></constructor-arg>       
+  </bean>
+  
+  <!-- Security SPI: LdapPrincipalDao -->
+  <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao" 
+       class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl"
+  >       
+       <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"/></constructor-arg>       
   </bean>
   
   <!-- Security SPI: CredentialHandler -->
@@ -40,7 +43,7 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" 
   	   class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao"/></constructor-arg> 	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao"/></constructor-arg> 	   
   </bean>
 
 </beans>

@@ -38,7 +38,7 @@ import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
 public class LdapUserSecurityHandler implements UserSecurityHandler
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapUserSecurityHandler.class);
+    private static final Log logger = LogFactory.getLog(LdapUserSecurityHandler.class);
 
     /** The {@link LdapPrincipalDao}. */
     private LdapPrincipalDao ldap;
@@ -120,9 +120,9 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
      */
     private void logSecurityException(SecurityException se, String uid)
     {
-        if (LOG.isErrorEnabled())
+        if (logger.isErrorEnabled())
         {
-            LOG.error("An LDAP error has occurred for user uid:" + uid, se);
+            logger.error("An LDAP error has occurred for user uid:" + uid, se);
         }
     }
 
@@ -133,7 +133,7 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     {
         try
         {
-            return Arrays.asList(ldap.find(filter));
+            return Arrays.asList(ldap.find(filter, UserPrincipal.PREFS_USER_ROOT));
         }
         catch (SecurityException e)
         {

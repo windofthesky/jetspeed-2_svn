@@ -28,6 +28,9 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.security.InvalidDnException;
+import org.apache.jetspeed.security.InvalidPasswordException;
+import org.apache.jetspeed.security.InvalidUidException;
 import org.apache.jetspeed.security.SecurityException;
 
 /**
@@ -35,24 +38,13 @@ import org.apache.jetspeed.security.SecurityException;
  * Abstract ldap dao.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public abstract class AbstractLdapDao
 {
-    /** The ldap server name. */
-    private String ldapServerName = null;
-
-    /** The root domain. */
-    protected String rootDn = null;
-
-    /** The root password. */
-    protected String rootPassword = null;
-
-    /** The root context. */
-    protected String rootContext = null;
-
-    /** The default suffix. */
-    protected String defaultDnSuffix = null;
+    /** The ldap binding configuration. */
+    private LdapBindingConfig ldapBindingConfig = null;
 
     /** Reference to remote server context */
     protected LdapContext ctx;
@@ -64,6 +56,7 @@ public abstract class AbstractLdapDao
      */
     public AbstractLdapDao()
     {
+        throw new UnsupportedOperationException("Must be instantiated with LDAP binding configuration.");
     }
 
     /**
@@ -71,21 +64,13 @@ public abstract class AbstractLdapDao
      * Initializes the dao.
      * </p>
      * 
-     * @param ldapServerName The server name.
-     * @param rootDn The root domain.
-     * @param rootPassword The root password.
-     * @param rootContext The root context.
-     * @param defaultDnSuffix The default suffix.
+     * @param ldapConfig Holds the ldap configuration.
+     * @throws SecurityException
      */
-    public AbstractLdapDao(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix) throws SecurityException, NamingException
+    public AbstractLdapDao(LdapBindingConfig ldapConfig) throws SecurityException
     {
-        this.ldapServerName = ldapServerName;
-        this.rootDn = rootDn;
-        this.rootPassword = rootPassword;
-        this.rootContext = rootContext;
-        this.defaultDnSuffix = defaultDnSuffix;
-        bindToServer(rootDn, rootPassword);
+        this.ldapBindingConfig = ldapConfig;
+        bindToServer(ldapConfig.getRootDn(), ldapConfig.getRootPassword());
     }
 
     /**
@@ -95,24 +80,30 @@ public abstract class AbstractLdapDao
      * 
      * @param rootDn
      * @param rootPassword
-     * @throws NamingException
+     * @throws SecurityException
      */
-    protected void bindToServer(String rootDn, String rootPassword) throws SecurityException,
-    		NamingException
+    protected void bindToServer(String rootDn, String rootPassword) throws SecurityException
     {
         validateDn(rootDn);
         validatePassword(rootPassword);
 
-        Properties env = new Properties();
-
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldap://" + this.ldapServerName + "/" + this.rootContext);
-        env.put(Context.SECURITY_PRINCIPAL, rootDn);
-        env.put(Context.SECURITY_CREDENTIALS, rootPassword);
-        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        ctx = new InitialLdapContext(env, null);
+        try
+        {
+            Properties env = new Properties();
+            env.put(Context.INITIAL_CONTEXT_FACTORY, this.ldapBindingConfig.getInitialContextFactory());
+            env.put(Context.PROVIDER_URL, "ldap://" + this.ldapBindingConfig.getLdapServerName() + ":"
+                    + this.ldapBindingConfig.getLdapServerPort() + "/" + this.ldapBindingConfig.getRootContext());
+            env.put(Context.SECURITY_PRINCIPAL, rootDn);
+            env.put(Context.SECURITY_CREDENTIALS, rootPassword);
+            env.put(Context.SECURITY_AUTHENTICATION, "simple");
+            ctx = new InitialLdapContext(env, null);
+        }
+        catch (NamingException ne)
+        {
+            throw new SecurityException(ne);
+        }
     }
-    
+
     /**
      * <p>
      * Gets the sub context name.
@@ -146,11 +137,11 @@ public abstract class AbstractLdapDao
      * 
      * @param dn The domain name.
      */
-    protected void validateDn(final String dn)
+    protected void validateDn(final String dn) throws SecurityException
     {
         if (StringUtils.isEmpty(dn))
         {
-            throw new IllegalArgumentException("The dn cannot be null or empty");
+            throw new InvalidDnException();
         }
     }
 
@@ -161,17 +152,17 @@ public abstract class AbstractLdapDao
      * 
      * @param password The user.
      */
-    protected void validatePassword(final String password)
+    protected void validatePassword(final String password) throws SecurityException
     {
         if (StringUtils.isEmpty(password))
         {
-            throw new IllegalArgumentException("The password cannot be null or empty");
+            throw new InvalidPasswordException();
         }
     }
 
     /**
-     * @return The factors that determine the scope of the search and what gets
-     *         returned as a result of the search.
+     * @return The factors that determine the scope of the search and what gets returned as a result
+     *         of the search.
      */
     protected SearchControls setSearchControls()
     {
@@ -185,8 +176,7 @@ public abstract class AbstractLdapDao
 
     /**
      * <p>
-     * Searches the LDAP server for the user with the specified userid (uid
-     * attribute).
+     * Searches the LDAP server for the user with the specified userid (uid attribute).
      * </p>
      * 
      * @return the user's DN
@@ -214,14 +204,13 @@ public abstract class AbstractLdapDao
      * </p>
      * 
      * @param searchResults The {@link NamingEnumeration}.
-     * @return the user's DN of the first use in the list. Null if no users were
-     *         found.
+     * @return the user's DN of the first use in the list. Null if no users were found.
      * @throws NamingException Throws a {@link NamingException}.
      */
     private String getFirstDnForUid(NamingEnumeration searchResults) throws NamingException
     {
         String userDn = null;
-        while (searchResults.hasMore())
+        while ((null != searchResults) && searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
 
@@ -241,12 +230,12 @@ public abstract class AbstractLdapDao
      * 
      * @param uid The uid.
      */
-    protected void validateUid(String uid)
+    protected void validateUid(String uid) throws SecurityException
     {
-        if (StringUtils.isEmpty(uid) || uid.matches("\\(\\[\\{\\^\\$\\|\\)\\?\\*\\+\\.\\\\"))
+        String pattern = ".*\\(.*|.*\\[.*|.*\\{.*|.*\\\\.*|.*\\^.*|.*\\$.*|.*\\|.*|.*\\).*|.*\\?.*|.*\\*.*|.*\\+.*|.*\\..*";
+        if (StringUtils.isEmpty(uid) || uid.matches(pattern))
         {
-            throw new IllegalArgumentException(
-                    "The uid cannot contain any regular expression meta-characters or be null or be empty ");
+            throw new InvalidUidException();
         }
     }
 
@@ -262,10 +251,59 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", "(&(uid="
-                + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass=" + getObjectClass() + "))", cons);
+        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
+                + getObjectClass() + "))";
+        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
 
         return searchResults;
+    }
+
+    /**
+     * <p>
+     * Returns the default suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String getDefaultDnSuffix()
+    {
+        return this.ldapBindingConfig.getDefaultDnSuffix();
+    }
+
+    /**
+     * <p>
+     * Returns the groups organization unit.
+     * </p>
+     * 
+     * @return The groupsOu.
+     */
+    protected String getGroupsOu()
+    {
+        return this.ldapBindingConfig.getGroupsOu();
+    }
+
+    /**
+     * <p>
+     * Returns the users organization unit.
+     * </p>
+     * 
+     * @return The usersOu.
+     */
+    protected String getUsersOu()
+    {
+        return this.ldapBindingConfig.getUsersOu();
+    }
+
+    /**
+     * <p>
+     * Returns the root context.
+     * </p>
+     * 
+     * @return The root context.
+     */
+    protected String getRootContext()
+    {
+        return this.ldapBindingConfig.getRootContext();
     }
 
     /**

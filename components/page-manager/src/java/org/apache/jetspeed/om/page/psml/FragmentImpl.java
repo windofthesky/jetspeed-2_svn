@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.page.Fragment;
 
 /**
@@ -51,8 +49,11 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private String name;
 
-    private static final Log log = LogFactory.getLog(FragmentImpl.class);
-
+    /**
+     * <p>
+     * Default Constructor.
+     * </p>
+     */
     public FragmentImpl()
     {
     }
@@ -112,7 +113,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return (Vector) this.propertiesList;
             }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
      */
     public String getProperty(String propName)
@@ -120,7 +121,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return (String)propertiesMap.get(propName);
         }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
      */
     public int getIntProperty(String propName)
@@ -133,7 +134,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return -1;
         }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
     public Map getProperties()
@@ -141,7 +142,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return propertiesMap;
             }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
      */
     public int getLayoutRow()
@@ -154,7 +155,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return -1;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
      */
     public void setLayoutRow(int row)
@@ -169,7 +170,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             }
         }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
      */
     public int getLayoutColumn()
@@ -182,7 +183,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return -1;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
      */
     public void setLayoutColumn(int column)
@@ -197,7 +198,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             }
         }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
      */
     public String getLayoutSizes()
@@ -205,7 +206,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return (String)propertiesMap.get(SIZES_PROPERTY_NAME);
             }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
      */
     public void setLayoutSizes(String sizes)

@@ -27,6 +27,9 @@ import org.apache.jetspeed.security.om.InternalPermission;
 public class InternalPermissionImpl implements InternalPermission
 {
 
+    /** The serial version uid. */
+    private static final long serialVersionUID = 251708679848856538L;
+
     /**
      * <p>InternalPermission implementation default constructor.</p>
      */

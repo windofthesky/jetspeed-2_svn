@@ -24,6 +24,9 @@ import org.apache.jetspeed.security.GroupPrincipal;
 public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrincipal
 {
 
+    /** The serial version uid. */
+    private static final long serialVersionUID = 6061115481776568899L;
+
     /**
      * <p>The group principal constructor.</p>
      * @param groupName The group principal name.

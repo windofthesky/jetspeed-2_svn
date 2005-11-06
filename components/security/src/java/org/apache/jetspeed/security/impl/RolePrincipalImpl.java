@@ -24,6 +24,9 @@ import org.apache.jetspeed.security.RolePrincipal;
 public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipal
 {
 
+    /** The serial version uid. */
+    private static final long serialVersionUID = -3521731040045006314L;
+
     /**
      * <p>The role principal constructor.</p>
      * @param roleName The role principal name.

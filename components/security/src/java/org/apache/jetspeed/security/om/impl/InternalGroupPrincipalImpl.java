@@ -25,6 +25,9 @@ import org.apache.jetspeed.security.om.InternalGroupPrincipal;
  */
 public class InternalGroupPrincipalImpl extends InternalPrincipalImpl implements InternalGroupPrincipal
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = -8236429453373927824L;
+    
     /** <p>Group principal security class.</p> */
     static String GROUP_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalGroupPrincipalImpl";
 

@@ -26,6 +26,9 @@ import org.apache.jetspeed.security.om.InternalUserPrincipal;
  */
 public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements InternalUserPrincipal
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 6713096308414915156L;
+
     /** <p>User principal security class.</p> */
     static String USER_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalUserPrincipalImpl";
     

@@ -37,6 +37,9 @@ import org.apache.jetspeed.security.om.InternalCredential;
 public class DefaultPasswordCredentialImpl implements PasswordCredential, Serializable
 {
 
+    /** The default uid. */
+    private static final long serialVersionUID = -4975305752376365096L;
+
     /** The user name. */
     private String userName;
 

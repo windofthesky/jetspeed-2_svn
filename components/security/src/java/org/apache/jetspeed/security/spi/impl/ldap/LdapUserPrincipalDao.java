@@ -22,7 +22,8 @@ import org.apache.jetspeed.security.SecurityException;
  * The ldap user principal DAO.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a
+ *         href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface LdapUserPrincipalDao extends LdapPrincipalDao
 {
@@ -50,8 +51,7 @@ public interface LdapUserPrincipalDao extends LdapPrincipalDao
 
     /**
      * <p>
-     * Return an array of the group principal UIDS that belong to a specific
-     * user.
+     * Return an array of the group principal UIDS that belong to a specific user.
      * </p>
      * 
      * @param userPrincipalUid The user principal uid.

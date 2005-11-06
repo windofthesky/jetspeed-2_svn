@@ -34,7 +34,7 @@ public interface LdapUserCredentialDao extends LdapReadOnlyPrincipalDao
      * @param password The password.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public abstract void changePassword(final String uid, final String password) throws SecurityException;
+    abstract void changePassword(final String uid, final String password) throws SecurityException;
 
     /**
      * <p>
@@ -48,12 +48,12 @@ public interface LdapUserCredentialDao extends LdapReadOnlyPrincipalDao
      * @param password The password.
      * @throws SecurityException A {@link SecurityException}.
      */
-    public abstract boolean authenticate(final String uid, final String password) throws SecurityException;
+    abstract boolean authenticate(final String uid, final String password) throws SecurityException;
 
     /**
      * @param uid The uid.
      * @return The password.
      *@throws SecurityException A {@link SecurityException}.@throws SecurityException
      */
-    public abstract char[] getPassword(final String uid) throws SecurityException;
+    abstract char[] getPassword(final String uid) throws SecurityException;
 }
