@@ -127,7 +127,7 @@
             Jetspeed 2 maven plugin provides a easy way to get started with Apache Directory Server. To start the LDAP
             server run:
             <pre>maven j2:start.ldap.server</pre>
-            See <a href="/j2-maven-plugin.html#LDAP_Management_Goals">the J2 maven plugin documentation</a> for more information.
+            See <a href="../../j2-maven-plugin.html#LDAP_Management_Goals">the J2 maven plugin documentation</a> for more information.
             </p>
             </subsection>
             <subsection name="Connecting to LDAP">
