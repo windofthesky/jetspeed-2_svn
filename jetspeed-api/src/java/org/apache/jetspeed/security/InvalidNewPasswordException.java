@@ -22,6 +22,9 @@ package org.apache.jetspeed.security;
  */
 public class InvalidNewPasswordException extends SecurityException
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = -801235816327102698L;
+
     public InvalidNewPasswordException()
     {
         super(INVALID_NEW_PASSWORD);

@@ -24,6 +24,9 @@ import org.apache.jetspeed.i18n.KeyedMessage;
  */
 public class SecurityException extends JetspeedException
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = -8823877029853488430L;
+
     /** <p>Principal does not exist exception message.</p> */
     public static final KeyedMessage PRINCIPAL_DOES_NOT_EXIST = new KeyedMessage("The principal {0} does not exist.");
 
@@ -74,7 +77,13 @@ public class SecurityException extends JetspeedException
 
     /** <p>The anonymous user is protected exception message.</p> */
     public static final KeyedMessage UNEXPECTED = new KeyedMessage("Unexpected security error at {0} from {1}: {2}");
+    
+    /** <p>The uid is invalid.</p> */
+    public static final KeyedMessage INVALID_UID = new KeyedMessage("The uid cannot contain any regular expression meta-characters or be null or be empty.");
 
+    /** <p>The dn is invalid.</p> */
+    public static final KeyedMessage INVALID_DN = new KeyedMessage("The dn cannot be null or empty.");
+    
     /**
      * <p>Default Constructor.</p>
      */

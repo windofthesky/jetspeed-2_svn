@@ -55,9 +55,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         PortalStatistics
 {
 
-    /*
-     * (non-Javadoc)
-     * 
+    /** 
      * @see org.apache.jetspeed.statistics.PortalStatistics#forceFlush()
      */
     public void forceFlush()
@@ -130,6 +128,15 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     /* date formatter */
     protected SimpleDateFormat formatter = null;
 
+    /**
+     * <p>
+     * Default Constructor.
+     * </p>
+     */
+    public PortalStatisticsImpl()
+    {
+    }
+    
     public PortalStatisticsImpl(
              boolean logToCLF,
              boolean logToDatabase,
@@ -415,14 +422,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /** 
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void springDestroy()
     {
-        long start = System.currentTimeMillis();
         if (portletBatch != null)
         {
             portletBatch.tellThreadToStop();
@@ -446,9 +450,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             }
         }
 
-        if (this.currentUsers != 0)
+        if ((this.currentUsers != 0) && logger.isDebugEnabled())
         {
-            System.out.println("destroying while users are logged in");
+            logger.debug("destroying while users are logged in");
         }
         boolean done = false;
         while (!done)
@@ -488,19 +492,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /** 
      * @see org.apache.jetspeed.statistics.PortalStatistics#getNumberOfCurrentUsers()
      */
     public int getNumberOfCurrentUsers()
     {
-        // TODO Auto-generated method stub
         return currentUsers;
     }
 
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
      */
     public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria) throws InvalidCriteriaException
@@ -517,15 +518,18 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             tableName = "USER_STATISTICS";
             groupColumn = "USER_NAME";
-        } else if ("portlet".equals(queryType))
+        }
+        else if ("portlet".equals(queryType))
         {
             tableName = "PORTLET_STATISTICS";
             groupColumn = "PORTLET";
-        } else if ("page".equals(queryType))
+        }
+        else if ("page".equals(queryType))
         {
             tableName = "PAGE_STATISTICS";
             groupColumn = "PAGE";
-        } else {
+        }
+        else {
             throw new InvalidCriteriaException(" invalid queryType passed to queryStatistics");
         }
         query= "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "+tableName;
@@ -544,7 +548,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
                 as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
             }
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             throw new InvalidCriteriaException(e.toString());
         }

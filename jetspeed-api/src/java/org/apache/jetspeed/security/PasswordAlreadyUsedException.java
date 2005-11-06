@@ -22,6 +22,9 @@ package org.apache.jetspeed.security;
  */
 public class PasswordAlreadyUsedException extends SecurityException
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 302007677387600743L;
+
     public PasswordAlreadyUsedException()
     {
         super(PASSWORD_ALREADY_USED);

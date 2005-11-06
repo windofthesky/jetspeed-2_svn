@@ -104,13 +104,15 @@ public class TestColumnLayout extends MockObjectTestCase
     {
         FragmentImpl f1 = new FragmentImpl();
         f1.setId("f1");
-        f1.setPropertyValue("test", "row", "0");
-        f1.setPropertyValue("test", "column", "0");
+        f1.setName("test");
+        f1.setLayoutRow(0);
+        f1.setLayoutColumn(0);
 
         FragmentImpl f2 = new FragmentImpl();
         f2.setId("f2");
-        f2.setPropertyValue("test", "row", "0");
-        f2.setPropertyValue("test", "column", "0");
+        f2.setName("test");
+        f2.setLayoutRow(0);
+        f2.setLayoutColumn(0);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
         layout.addFragment(f1);
@@ -136,12 +138,15 @@ public class TestColumnLayout extends MockObjectTestCase
     {
         FragmentImpl f1 = new FragmentImpl();
         f1.setId("f1");
-        f1.setPropertyValue("test", "row", "0");
-        f1.setPropertyValue("test", "column", "0");
+        f1.setName("test");
+        f1.setLayoutRow(0);
+        f1.setLayoutColumn(0);
 
         FragmentImpl f2 = new FragmentImpl();
         f2.setId("f2");
-        f2.setPropertyValue("test", "row", "0");
+        f2.setName("test");
+        f2.setLayoutRow(0);
+        f2.setLayoutColumn(0);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
         layout.addFragment(f1);
@@ -164,12 +169,15 @@ public class TestColumnLayout extends MockObjectTestCase
     {
         FragmentImpl f1 = new FragmentImpl();
         f1.setId("f1");
-        f1.setPropertyValue("test", "row", "0");
-        f1.setPropertyValue("test", "column", "0");
+        f1.setName("test");
+        f1.setLayoutRow(0);
+        f1.setLayoutColumn(0);
 
         FragmentImpl f2 = new FragmentImpl();
         f2.setId("f2");
-        f2.setPropertyValue("test", "column", "0");
+        f2.setName("test");
+        f2.setLayoutRow(0);
+        f2.setLayoutColumn(0);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
         layout.addFragment(f1);
@@ -188,8 +196,8 @@ public class TestColumnLayout extends MockObjectTestCase
     {
         FragmentImpl f1 = new FragmentImpl();
         f1.setId("f1");
-        f1.setPropertyValue("test", "row", "0");
-        f1.setPropertyValue("test", "column", "5");
+        f1.setLayoutRow(0);
+        f1.setLayoutColumn(5);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
         layout.addFragment(f1);
@@ -290,8 +298,9 @@ public class TestColumnLayout extends MockObjectTestCase
         // correctly
         FragmentImpl f7 = new FragmentImpl();
         f7.setId("f7");
-        f7.setPropertyValue("test", "row", "0");
-        f7.setPropertyValue("test", "column", "1");
+        f7.setName("test");
+        f7.setLayoutRow(0);
+        f7.setLayoutColumn(1);
 
         listenerMock.reset();
         LayoutCoordinate coordinate = new LayoutCoordinate(1, 0);
@@ -416,38 +425,45 @@ public class TestColumnLayout extends MockObjectTestCase
     {
         f1 = new FragmentImpl();
         f1.setId("f1");
-        f1.setPropertyValue("test", "row", "0");
-        f1.setPropertyValue("test", "column", "0");
+        f1.setName("test");
+        f1.setLayoutRow(0);
+        f1.setLayoutColumn(0);
 
         f2 = new FragmentImpl();
         f2.setId("f2");
-        f2.setPropertyValue("test", "row", "1");
-        f2.setPropertyValue("test", "column", "0");
+        f2.setName("test");
+        f2.setLayoutRow(1);
+        f2.setLayoutColumn(0);
 
         f3 = new FragmentImpl();
         f3.setId("f3");
-        f3.setPropertyValue("test", "row", "2");
-        f3.setPropertyValue("test", "column", "0");
-
+        f3.setName("test");
+        f3.setLayoutRow(2);
+        f3.setLayoutColumn(0);
+        
         f4 = new FragmentImpl();
         f4.setId("f4");
-        f4.setPropertyValue("test", "row", "0");
-        f4.setPropertyValue("test", "column", "1");
-
+        f4.setName("test");
+        f4.setLayoutRow(0);
+        f4.setLayoutColumn(1);
+        
         f5 = new FragmentImpl();
         f5.setId("f5");
-        f5.setPropertyValue("test", "row", "1");
-        f5.setPropertyValue("test", "column", "1");
+        f5.setName("test");
+        f5.setLayoutRow(1);
+        f5.setLayoutColumn(1);
 
         f6 = new FragmentImpl();
         f6.setId("f6");
-        f6.setPropertyValue("test", "row", "2");
-        f6.setPropertyValue("test", "column", "1");
+        f6.setName("test");
+        f6.setLayoutRow(2);
+        f6.setLayoutColumn(1);
         
         f8 = new FragmentImpl();
         f8.setId("f8");
-        f8.setPropertyValue("test", "row", "1");
-        f8.setPropertyValue("test", "column", "2");
+        f8.setName("test");
+        f8.setLayoutRow(1);
+        f8.setLayoutColumn(2);
 
         layout = new ColumnLayout(3, "test", widthes );
         layout.addFragment(f1);
