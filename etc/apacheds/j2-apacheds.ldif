@@ -1,0 +1,17 @@
+# -----------------------------------------#
+# Sample LDIF data for the Jetspeed 2      #
+# -----------------------------------------#
+version: 1
+dn: uid=admin,ou=users,o=sevenSeas
+objectclass: jetspeed-2-user
+objectclass: inetorgperson
+objectclass: organizationalPerson
+objectclass: uidObject
+objectclass: person
+objectclass: top
+cn: admin
+ou: users
+sn: admin
+uid: admin
+userPassword: admin
+
