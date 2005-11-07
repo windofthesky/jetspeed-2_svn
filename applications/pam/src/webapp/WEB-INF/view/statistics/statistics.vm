@@ -3,6 +3,9 @@
 <div id="StatisticsPortlet"  class="portlet-section-text"> 
 	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post"
 	<table>
+	<tr><td align="center">
+	total sessions in progress: $!results.totalsessions
+	</td></tr>
 	<tr><td>
 	<table class=""portlet-section-body">
 	<tr  class="portlet-section-body"><th>
@@ -114,11 +117,20 @@
 	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TR>
     </table>
     </td><td>
-<!--    
     <table class="class="portlet-section-body" >
-	<tr class="portlet-section-subheader"><TH><b>username</b></TH><TH><b>value</b></TH></TR>
-	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TR>
+	<tr class="portlet-section-subheader">
+		<TH><b>$criteria.queryType</b></TH><TH><b>count</b></TH><TH><b>max Time</b></TH><TH><b>avg Time</b></TH><TH><b>min Time</b></TH></TR>
+	#foreach ( $row in $results.statlist )
+  		<tr>
+  			<td> $row.get("groupColumn") </td>
+  			<td> $row.get("count") </td>
+  			<td> $row.get("max") </td>
+  			<td> $row.get("avg") </td>
+  			<td> $row.get("min") </td>  			
+  		<tr>
+  		
+  	#end
     </table>
--->    
+    
     </td></tr></table>
 </div>
