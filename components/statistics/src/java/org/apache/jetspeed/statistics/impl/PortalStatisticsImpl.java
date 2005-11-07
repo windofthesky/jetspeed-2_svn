@@ -194,6 +194,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return ds;
     }
 
+    
     public void logPortletAccess(RequestContext request, String portletName,
             String statusCode, long msElapsedTime)
     {
@@ -210,7 +211,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             record.setPortletName(portletName);
             record.setUserName(userName);
             record.setIpAddress(req.getRemoteAddr());
-            record.setPagePath(req.getPathInfo());
+            record.setPagePath(request.getPage().getPath());
             record.setStatus(Integer.parseInt(statusCode));
             record.setTimeStamp(timestamp);
             record.setMsElapsedTime(msElapsedTime);
@@ -324,7 +325,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
             record.setUserName(userName);
             record.setIpAddress(req.getRemoteAddr());
-            record.setPagePath(req.getPathInfo());
+            record.setPagePath(request.getPage().getPath());
             record.setStatus(Integer.parseInt(statusCode));
             record.setTimeStamp(timestamp);
             record.setMsElapsedTime(msElapsedTime);
