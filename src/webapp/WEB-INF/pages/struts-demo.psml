@@ -22,6 +22,7 @@ limitations under the License.
    <metadata name="title" xml:lang="es">Demo Lector de Correo Struts</metadata>
    <metadata name="short-title" xml:lang="es">Demo Struts</metadata>
    <metadata name="title" xml:lang="hu">Struts levelező</metadata>
+   <metadata name="title" xml:lang="zh">Struts邮件阅读器示例</metadata>
 
   <fragment id="sd-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="15" type="portlet" name="struts-demo::StrutsPortletDemo"/>

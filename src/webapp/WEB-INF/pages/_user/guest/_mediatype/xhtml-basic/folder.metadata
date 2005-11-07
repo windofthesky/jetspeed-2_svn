@@ -4,6 +4,7 @@
   <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
   <metadata name="title" xml:lang="ja">ルートフォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpeta raiz</metadata>
+  <metadata name="title" xml:lang="zh">根文件夹</metadata>
 
   <document-order>Jetspeed2.link</document-order>
   <document-order>Jetspeed2Wiki.link</document-order>
@@ -16,6 +17,7 @@
       <metadata name="text" xml:lang="fr">Page haut</metadata>
       <metadata name="text" xml:lang="ja">トップページ</metadata>
       <metadata name="text" xml:lang="es">Páginas más populares</metadata>
+      <metadata name="text" xml:lang="zh">顶层页</metadata>
     </separator>
     <options>/Administrative</options>
   </menu>

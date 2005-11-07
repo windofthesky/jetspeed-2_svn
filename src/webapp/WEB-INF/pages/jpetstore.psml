@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">JPetstore</metadata>
   <metadata name="title" xml:lang="es">Demo: tienda de animales</metadata>
   <metadata name="title" xml:lang="hu">Kisállatkereskedés (JPetstore)</metadata>
+  <metadata name="title" xml:lang="zh">宠物店</metadata>
 
   <fragment id="jp-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="jp-2" type="portlet" name="jpetstore::JPetstorePortlet"/>

@@ -4,6 +4,7 @@
   <metadata name="title" xml:lang="ja">[ユーザー] ルートフォルダ</metadata>
   <metadata name="title" xml:lang="fr">[USER] Répertoire racine</metadata>
   <metadata name="title" xml:lang="fr">Directorio raiz [USUARIO]</metadata>
+  <metadata name="title" xml:lang="zh">[用户] 根文件夹</metadata>
 
   <document-order>Google.link</document-order>
   <document-order>Jetspeed2.link</document-order>

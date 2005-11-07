@@ -22,6 +22,7 @@ limitations under the License.
   />
   <title>Welcome to Jetspeed 2</title>
   <metadata name="title" xml:lang="ja">Jetspeed 2 へようこそ</metadata>
+  <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
 
   <fragment id="dp-xhtml-basic-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="dp-xhtml-basic-11" type="portlet" name="security::LoginPortletForXHTMLBasic">

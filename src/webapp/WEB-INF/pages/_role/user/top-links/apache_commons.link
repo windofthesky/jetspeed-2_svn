@@ -3,6 +3,7 @@
  <title>[USER] Apache Commons</title>
   <metadata name="title" xml:lang="ja">[ユーザー] Apache Commons</metadata>
   <metadata name="title" xml:lang="es">Apache Commons [USUARIO]</metadata>
+  <metadata name="title" xml:lang="zh">[用户] Apache Commons</metadata>
 
  <url>http://jakarta.apache.org/commons</url>
 </link>

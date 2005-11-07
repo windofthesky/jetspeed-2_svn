@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">PHP デモ</metadata>
   <metadata name="title" xml:lang="es">Demo en PHP</metadata>
   <metadata name="title" xml:lang="hu">PHP Demo</metadata>
+  <metadata name="title" xml:lang="zh">PHP示例</metadata>
 
   <fragment id="php-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="phpdemo-1" type="portlet" name="php::php-demo">

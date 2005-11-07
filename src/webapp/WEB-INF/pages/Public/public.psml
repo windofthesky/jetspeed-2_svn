@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">一般共有</metadata>
   <metadata name="title" xml:lang="es">Carpeta compartida</metadata>
   <metadata name="title" xml:lang="hu">Nyilvános megosztás</metadata>
+  <metadata name="title" xml:lang="zh">公开共享</metadata>
 
   <fragment id="ps-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ps-1001" type="portlet" name="rss::RSS">

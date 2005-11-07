@@ -4,6 +4,7 @@
  <title>Subsite Google Web Search</title>
   <metadata name="title" xml:lang="ja">サブサイトのグーグルウェブ検索</metadata>
   <metadata name="title" xml:lang="es">Búsqueda en Google de subportal</metadata>
+  <metadata name="title" xml:lang="zh">子站点Google网络检索</metadata>
 
 
  <url>http://www.google.com/search?hl=en&amp;q=subsite</url>

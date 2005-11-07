@@ -39,6 +39,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Demo Java Server Faces</metadata>
   <metadata name="short-title" xml:lang="es">Demo JSF</metadata>
   <metadata name="title" xml:lang="hu">JSF Demo</metadata>
+  <metadata name="title" xml:lang="zh">JSF 示例</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

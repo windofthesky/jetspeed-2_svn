@@ -18,6 +18,7 @@ limitations under the License.
   <title>Group Chooser</title>
   <metadata name="title" xml:lang="ja">グループ選択</metadata>
   <metadata name="title" xml:lang="es">Selector de grupos</metadata>
+  <metadata name="title" xml:lang="zh">用户组选择器</metadata>
 
   <fragment id="chooser-groups" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="chooser-groups-1" type="portlet" name="security::GroupChooser" >

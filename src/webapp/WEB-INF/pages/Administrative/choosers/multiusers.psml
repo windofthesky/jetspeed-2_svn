@@ -18,6 +18,7 @@ limitations under the License.
   <title>User Chooser</title>
   <metadata name="title" xml:lang="ja">ユーザー選択</metadata>
   <metadata name="title" xml:lang="es">Selector de usuarios</metadata>
+  <metadata name="title" xml:lang="zh">用户选择器</metadata>
 
   <fragment id="mchooser-users" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="mchooser-users-1" type="portlet" name="security::UserMultiChooser" >

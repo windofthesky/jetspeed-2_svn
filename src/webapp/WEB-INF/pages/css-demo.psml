@@ -27,6 +27,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Demo Hojas de Estilo en Cascada</metadata>
   <metadata name="short-title" xml:lang="es">Demo CSS</metadata>
   <metadata name="title" xml:lang="hu">CSS</metadata>
+  <metadata name="title" xml:lang="zh">CSS 示例</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

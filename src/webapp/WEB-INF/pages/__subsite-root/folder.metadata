@@ -4,6 +4,7 @@
   <title>Subsite Root Folder</title>  
   <metadata name="title" xml:lang="ja">サブサイトルートフォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpeta raiz de subsite</metadata>
+  <metadata name="title" xml:lang="zh">子站点根文件夹</metadata>
 
 
   <document-order>subsite2-default-page.psml</document-order>

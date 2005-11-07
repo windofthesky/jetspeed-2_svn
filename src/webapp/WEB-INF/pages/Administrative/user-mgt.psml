@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Usuarios</metadata>
   <metadata name="title" xml:lang="es">Gestor de usuarios</metadata>
   <metadata name="title" xml:lang="hu">Felhasználók beállítása</metadata>
+  <metadata name="title" xml:lang="zh">用户管理</metadata>
 
   <fragment id="um-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="um-3" type="portlet" name="security::UserBrowserPortlet">

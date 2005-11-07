@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Gestión de credenciales (SSO)</metadata>
   <metadata name="title" xml:lang="es">Credenciales (SSO)</metadata>
   <metadata name="title" xml:lang="hu">SSO beállítások</metadata>
+  <metadata name="title" xml:lang="zh">SSO 管理</metadata>
 
   <fragment id="ssoa-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ssoa-200" type="portlet" name="security::SSOBrowserPortlet">

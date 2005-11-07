@@ -3,6 +3,7 @@
  <title>[USER] Apache Tomcat</title>
   <metadata name="title" xml:lang="ja">[ユーザー] Apache Tomcat</metadata>
   <metadata name="title" xml:lang="es">Apache Tomcat [USUARIO]</metadata>
+  <metadata name="title" xml:lang="zh">[用户] Apache Tomcat</metadata>
 
  <url>http://jakarta.apache.org/tomcat</url>
 </link>

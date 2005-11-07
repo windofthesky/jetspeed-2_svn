@@ -23,6 +23,7 @@ limitations under the License.
   <title>[USER 004] PSML Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー 004] PSML ページ</metadata>
   <metadata name="title" xml:lang="es">Página PSML [USUARIO 004]</metadata>
+  <metadata name="title" xml:lang="zh">[用户 004] PSML页</metadata>
 
   <fragment id="u4-xx1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="u4-xx3" type="portlet" name="demo::BookmarkPortlet">

@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Gestor de Páginas del Portal</metadata>
   <metadata name="short-title" xml:lang="es">Páginas</metadata>
   <metadata name="title" xml:lang="hu">Portál beállítások</metadata>
+  <metadata name="title" xml:lang="zh">Portal页面管理</metadata>
       
 
   <fragment id="js-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">

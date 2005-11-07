@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Roles</metadata>
   <metadata name="title" xml:lang="es">Gestión de roles</metadata>
   <metadata name="title" xml:lang="hu">Szerepkör beállítások</metadata>
+  <metadata name="title" xml:lang="zh">角色管理</metadata>
 
   <fragment id="rm-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="rm-3" type="portlet" name="security::RoleBrowserPortlet">

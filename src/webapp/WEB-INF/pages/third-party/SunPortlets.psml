@@ -25,6 +25,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">Sun ポートレット</metadata>
   <metadata name="title" xml:lang="es">Portlets de Sun</metadata>
   <metadata name="title" xml:lang="hu">SUN portletek</metadata>
+  <metadata name="title" xml:lang="zh">Sun Portlets</metadata>
 
   <fragment id="sunportletspage" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="showTime1" type="portlet" name="portletsamples::JSPPortlet">

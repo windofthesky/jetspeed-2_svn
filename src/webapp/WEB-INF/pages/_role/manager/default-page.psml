@@ -24,6 +24,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">マネージャロールページ</metadata>
   <metadata name="title" xml:lang="es">Página de Rol de Gestores</metadata>
   <metadata name="title" xml:lang="hu">Szerepkör beállítások</metadata>
+  <metadata name="title" xml:lang="zh">角色管理</metadata>
 
   <fragment id="mrp-xx1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="mrp-xx3" type="portlet" name="demo::BookmarkPortlet">

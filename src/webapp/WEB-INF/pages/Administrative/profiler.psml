@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Perfiles</metadata>
   <metadata name="title" xml:lang="es">Administrador de perfiles</metadata>
   <metadata name="title" xml:lang="hu">Profil beállítások</metadata>
+  <metadata name="title" xml:lang="zh">Profiler管理</metadata>
   
 
   <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns">

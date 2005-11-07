@@ -22,6 +22,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">PALM</metadata>
   <metadata name="short-title" xml:lang="hu">PALM</metadata>
   <metadata name="title" xml:lang="hu">PALM</metadata>
+  <metadata name="title" xml:lang="zh">Portlet应用生命周期管理</metadata>
 
   <fragment id="palm-layout" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="palm-app" type="portlet" name="palm::PortletApplicationLifecycleManager">
