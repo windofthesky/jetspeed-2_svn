@@ -55,8 +55,12 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         Context velocityContext = getContext(request);
         PortletSession session = request.getPortletSession();
         
-        StatisticsQueryCriteria test = new StatisticsQueryCriteriaImpl();
-        test.setQueryType("user");
+        
+        StatisticsQueryCriteria test = (StatisticsQueryCriteria) session.getAttribute(SESSION_CRITERIA);
+        if(test == null) {
+            test = new StatisticsQueryCriteriaImpl();
+            test.setQueryType("user");
+        }
         session.setAttribute(SESSION_CRITERIA,test);
         
         StatisticsQueryCriteria sqc = (StatisticsQueryCriteria)session.getAttribute(SESSION_CRITERIA);
@@ -85,8 +89,8 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         StatisticsQueryCriteria criteria = new StatisticsQueryCriteriaImpl();
         String user = request.getParameter("user");
         criteria.setUser(user);
-        String address = request.getParameter("address");
-        criteria.setIpAddress(address);
+        String timeperiod = request.getParameter("timeperiod");
+        criteria.setTimePeriod(timeperiod);
         String queryType = request.getParameter("queryType");
         
         criteria.setQueryType(queryType);
