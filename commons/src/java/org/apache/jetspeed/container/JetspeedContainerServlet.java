@@ -230,39 +230,58 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Throwable t)
         {
-            ServletContext context = getServletContext();
-            context.log(JCS + "Error rendering portlet \"" + portletName + "\": " + t.toString(), t);
-            try
+            if (method != ContainerConstants.METHOD_ACTION)
             {
-                String errorTemplate = getInitParameter("portal.error.page");
-                if (errorTemplate == null)
+                ServletContext context = getServletContext();
+                context.log(JCS + "Error rendering portlet \"" + portletName + "\": " + t.toString(), t);
+                try
                 {
-                    errorTemplate = "/WEB-INF/templates/generic/html/error.vm";
-                }
-                if (null != context.getResource(errorTemplate))
-                {
-                    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);                
-                    request.setAttribute("e", t);
-                    StringWriter stackTrace = new StringWriter();
-                    t.printStackTrace(new PrintWriter(stackTrace));
-                    request.setAttribute("stacktrace", stackTrace.toString());
-                    dispatcher.include(request, response);
-                }
-                else
-                {
-                    if (method != ContainerConstants.METHOD_ACTION)
+                    String errorTemplate = getInitParameter("portal.error.page");
+                    if (errorTemplate == null)
+                    {
+                        errorTemplate = "/WEB-INF/templates/generic/html/error.vm";
+                    }
+                    if (null != context.getResource(errorTemplate))
+                    {
+                        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);
+                        request.setAttribute("e", t);
+                        StringWriter stackTrace = new StringWriter();
+                        t.printStackTrace(new PrintWriter(stackTrace));
+                        request.setAttribute("stacktrace", stackTrace.toString());
+                        dispatcher.include(request, response);
+                    }
+                    else
                     {
                         displayPortletNotAvailableMessage(t, response, portletName);
                     }
                 }
+                catch (Throwable e)
+                {
+                    displayPortletNotAvailableMessage(t, response, portletName);
+                }
+                finally
+                {
+                    t.printStackTrace();
+                }
             }
-            catch (Throwable e)
+            else
             {
-                displayPortletNotAvailableMessage(t, response, portletName);                
-            }
-            finally
-            {
-                t.printStackTrace();
+                if ( t instanceof RuntimeException )
+                {
+                    throw (RuntimeException)t;
+                }
+                else if (t instanceof IOException )
+                {
+                    throw (IOException)t;
+                }
+                else if (t instanceof ServletException)
+                {
+                    throw (ServletException)t;
+                }
+                else
+                {
+                    throw new ServletException(t);
+                }
             }
         }
     }
