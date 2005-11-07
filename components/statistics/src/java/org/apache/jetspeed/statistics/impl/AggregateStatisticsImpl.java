@@ -14,11 +14,11 @@
 */
 package org.apache.jetspeed.statistics.impl;
 
-import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
-import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
 
 
 
@@ -37,6 +37,16 @@ public class AggregateStatisticsImpl implements AggregateStatistics
     float minProcessingTime;
     float stddevProcessingTime;
     int hitcount;
+    
+    List statlist;
+    
+    public AggregateStatisticsImpl() {
+        statlist = new ArrayList();
+    }
+    
+    public void addRow(Map row) {
+        statlist.add(row);
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.statistics.AggregateStatistics#getAvgProcessingTime()

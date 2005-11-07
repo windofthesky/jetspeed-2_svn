@@ -8,22 +8,22 @@ public class StatisticsQueryCriteriaImpl implements StatisticsQueryCriteria
 {
 
     String user;
-    String ipAddress;
+    String timePeriod;
     String queryType;
     
     /**
      * @return Returns the ipAddress.
      */
-    public String getIpAddress()
+    public String getTimePeriod()
     {
-        return ipAddress;
+        return timePeriod;
     }
     /**
      * @param ipAddress The ipAddress to set.
      */
-    public void setIpAddress(String ipAddress)
+    public void setTimePeriod(String ipAddress)
     {
-        this.ipAddress = ipAddress;
+        this.timePeriod = ipAddress;
     }
     /**
      * @return Returns the user.

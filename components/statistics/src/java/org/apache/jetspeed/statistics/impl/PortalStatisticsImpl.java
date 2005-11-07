@@ -24,6 +24,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -430,7 +435,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         if (portletBatch != null)
         {
             portletBatch.tellThreadToStop();
-            synchronized(portletBatch.thread) {
+            synchronized(portletBatch.thread) 
+            {
                 portletBatch.thread.notify();
             }
             
@@ -438,14 +444,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         if (userBatch != null)
         {
             userBatch.tellThreadToStop();
-            synchronized(userBatch.thread) {
+            synchronized(userBatch.thread) 
+            {
                 userBatch.thread.notify();
             }
         }
         if (pageBatch != null)
         {
             pageBatch.tellThreadToStop();
-            synchronized(pageBatch.thread) {
+            synchronized(pageBatch.thread) 
+            {
                 pageBatch.thread.notify();
             }
         }
@@ -483,7 +491,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             try
             {
                 Thread.sleep(2);
-            } catch (InterruptedException ie)
+            } 
+            catch (InterruptedException ie)
             {
             }
         }
@@ -500,6 +509,46 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return currentUsers;
     }
 
+    private Date getStartDateFromPeriod(String period,Date end) 
+    {
+        GregorianCalendar gcEnd = new GregorianCalendar();
+        gcEnd.setTime(end);
+        if(period != null) 
+        {
+            if(period.endsWith("m")) 
+            {
+                // months
+                String p = period.substring(0,period.length()-1);                
+                int ret = Integer.parseInt(p);
+                gcEnd.add(Calendar.MONTH,(ret * -1));
+            } 
+            else if(period.endsWith("h")) 
+            {
+                // hours
+                String p = period.substring(0,period.length()-1);
+                int ret = Integer.parseInt(p);
+                gcEnd.add(Calendar.HOUR,(ret * -1));
+            } 
+            else if(period.equals("all"))
+            {
+                gcEnd = new GregorianCalendar();
+                gcEnd.set(1968,07,15);
+            } 
+            else 
+            {
+                // minutes
+                int ret = Integer.parseInt(period);
+                gcEnd.add(Calendar.MINUTE,(ret * -1));
+            }
+        } 
+        else 
+        {
+            gcEnd = new GregorianCalendar();
+            gcEnd.set(1968,07,15);
+        
+        }
+        return gcEnd.getTime();
+    }
     
     /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
@@ -508,10 +557,14 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         AggregateStatistics as = new AggregateStatisticsImpl();
         String query;
-        query= "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from ? ";
-        //String query = "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME),? from ? group by ?";
+        String query2;
+        
         String tableName;
         String groupColumn;
+        
+        Date end = new Date();
+        Date start = getStartDateFromPeriod(criteria.getTimePeriod(),end);
+        
         
         String queryType = criteria.getQueryType();
         if ("user".equals(queryType))
@@ -529,26 +582,57 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             tableName = "PAGE_STATISTICS";
             groupColumn = "PAGE";
         }
-        else {
+        else 
+        {
             throw new InvalidCriteriaException(" invalid queryType passed to queryStatistics");
         }
-        query= "select count(*) as count ,STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "+tableName;
+        String orderColumn = "count";
         
+        //String orderColumn = "MAX(ELAPSSE_TIME)";
+        //String orderColumn = "AVG(ELAPSED_TIME)";
+        //String orderColumn = "MIN(ELAPSED_TIME)";
+        
+        String ascDesc = "DESC";
+        
+        query= "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "+tableName+" where time_stamp > ? and time_stamp < ?";
+        query2= "select count(*) as count ,"+groupColumn+", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
+                    +"from "+tableName+" where time_stamp > ? and time_stamp < ? group by "+groupColumn+"  order by "+orderColumn+" "+ascDesc+" limit 5";
         try
         {
             Connection con = ds.getConnection();
             PreparedStatement pstmt = con.prepareStatement(query);
-            //pstmt.setString(1,groupColumn);
-            //pstmt.setString(2,groupColumn);
+            pstmt.setTimestamp(1,new Timestamp(start.getTime()));
+            pstmt.setTimestamp(2,new Timestamp(end.getTime()));
             ResultSet rs = pstmt.executeQuery();
-            while(rs.next()) {
+            if(rs.next()) 
+            {
                 as.setHitCount(rs.getInt("count"));
                 as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
                 as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
                 as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
                 as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
             }
-        }
+            PreparedStatement pstmt2 = con.prepareStatement(query2);
+            pstmt2.setTimestamp(1,new Timestamp(start.getTime()));
+            pstmt2.setTimestamp(2,new Timestamp(end.getTime()));
+            ResultSet rs2 = pstmt2.executeQuery();
+            while(rs2.next()) 
+            {
+                Map row = new HashMap();
+                row.put("count",""+rs2.getInt("count"));
+                row.put("groupColumn",rs2.getString(groupColumn));
+                row.put("min",""+rs2.getFloat("min"));
+                row.put("avg",""+rs2.getFloat("avg"));
+                row.put("max",""+rs2.getFloat("max"));
+                as.addRow(row);
+                //as.setHitCount(rs.getInt("count"));
+                //as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
+                //as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
+                //as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
+                //as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
+            }
+        
+        } 
         catch (SQLException e)
         {
             throw new InvalidCriteriaException(e.toString());
