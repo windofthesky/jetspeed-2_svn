@@ -318,7 +318,7 @@ public interface PageManager
      * @return a new Page object copied from the source, with new fragment ids
      */
     public Page copyPage(Page source, String path) 
-        throws JetspeedException, PageNotUpdatedException;;
+        throws JetspeedException, PageNotUpdatedException;
 
     /** 
      * Copy the source folder creating and returning a new copy of the folder  
@@ -330,7 +330,7 @@ public interface PageManager
      * @return a new Folder object copied from the source, with new subobject ids
      */
     public Folder copyFolder(Folder source, String path) 
-        throws JetspeedException, PageNotUpdatedException;;
+        throws JetspeedException, PageNotUpdatedException;
 
     /** 
      * Copy the source fragment creating and returning a new copy of the fragment  
@@ -342,6 +342,17 @@ public interface PageManager
      * @return a new Fragment object copied from the source
      */
     public Fragment copyFragment(Fragment source, String name) 
-        throws JetspeedException, PageNotUpdatedException;;
+        throws JetspeedException, PageNotUpdatedException;
+
+    /**
+     * Copy the source page security (both global constraints and constraint references)
+     * creating and returning a new copy of the page security definition.
+     *  
+     * @param source The source PageSecurity definitions
+     * @return the new page security object
+     * @throws JetspeedException
+     */
+    public PageSecurity copyPageSecurity(PageSecurity source) 
+        throws JetspeedException;
         
 }

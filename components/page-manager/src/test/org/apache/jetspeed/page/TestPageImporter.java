@@ -17,18 +17,13 @@ package org.apache.jetspeed.page;
 
 import java.util.Iterator;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 
 
 /**
@@ -125,9 +120,15 @@ public class TestPageImporter extends AbstractSpringTestCase
         assertNotNull("db manager is null", dbManager);
         assertNotNull("castor manager is null", castorManager);
 
+        // create the root page security
+        PageSecurity rootSecurity = dbManager.copyPageSecurity(castorManager.getPageSecurity());        
+        dbManager.updatePageSecurity(rootSecurity);
+        
         // create root folder
         Folder fsRoot = castorManager.getFolder("/");
-        Folder root = importFolder(fsRoot);                        
+        Folder root = importFolder(fsRoot);         
+        
+        
         
         // NOTE: this will delete EVERYTHING
         // dbManager.removeFolder(root);
@@ -148,19 +149,18 @@ public class TestPageImporter extends AbstractSpringTestCase
         {
             if (isOverwriteFolders())
             {
-                System.out.println("overwriting folder " + srcFolder.getPath());                            
-                dbManager.removeFolder(dstFolder);                
-                dstFolder = dbManager.copyFolder(srcFolder, srcFolder.getPath());
+                System.out.println("overwriting folder " + srcFolder.getPath());
+                dbManager.removeFolder(dstFolder);
+                dstFolder = dbManager
+                        .copyFolder(srcFolder, srcFolder.getPath());
                 dbManager.updateFolder(dstFolder);
                 folderCount++;
-                
-            }
-            else            
-                System.out.println("skipping folder " + srcFolder.getPath());            
-        }
-        else
+
+            } else
+                System.out.println("skipping folder " + srcFolder.getPath());
+        } else
         {
-            System.out.println("importing new folder " + srcFolder.getPath());            
+            System.out.println("importing new folder " + srcFolder.getPath());
             dstFolder = dbManager.copyFolder(srcFolder, srcFolder.getPath());
             dbManager.updateFolder(dstFolder);
             folderCount++;

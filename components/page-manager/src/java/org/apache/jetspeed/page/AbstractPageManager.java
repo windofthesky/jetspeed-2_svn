@@ -544,13 +544,20 @@ public abstract class AbstractPageManager
         folder.setDefaultPage(source.getDefaultPage()); 
         folder.setShortTitle(source.getShortTitle());
         folder.setTitle(source.getTitle());
+        folder.setHidden(source.isHidden());
+        
+        // copy security constraints
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+        if (srcSecurity != null)
+        {
+            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            folder.setSecurityConstraints(copiedSecurity);
+        }    
         
         // TODO: document orders
 
         // TODO: menu definitions
-        
-        // TODO: security constraints
-        
+                
         return folder;
     }
     
@@ -564,6 +571,7 @@ public abstract class AbstractPageManager
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
         page.setDefaultSkin(source.getDefaultSkin());
+        page.setHidden(source.isHidden());
         
         // metadata
         copyMetadata(source, page);
@@ -726,4 +734,26 @@ public abstract class AbstractPageManager
         }
         return security;
     }
+    
+    public PageSecurity copyPageSecurity(PageSecurity source) 
+    throws JetspeedException
+    {
+        PageSecurity copy = this.newPageSecurity();
+        copy.setHidden(source.isHidden());
+        copy.setPath(source.getPath());
+//        copy.setShortTitle(source.getTitle());        
+//        copy.setTitle(source.getTitle());
+        
+        this.copySecurityConstraints(source.getSecurityConstraints());        
+        
+        Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
+        while (globals.hasNext())
+        {
+            String global = (String)globals.next();
+            copy.getGlobalSecurityConstraintsRefs().add(global);
+        }
+        
+        return copy;
+    }
+    
 }
