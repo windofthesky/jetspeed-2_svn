@@ -134,9 +134,21 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
 
         // get jetspeed component manager configuration for decorations
         ComponentManager cm = Jetspeed.getComponentManager();
-        if (null == cm)  // TODO: retry loop 
-            throw new ServletException("Could not get Jetspeed Component Manager");
+        int count =0;
+        while(cm == null) {
+            try {
+                Thread.sleep(200);
+            } catch(InterruptedException ie) {
+                
+            }
+            cm = Jetspeed.getComponentManager();
+            if( count > 5 ) {
+                if (null == cm)
+                    throw new ServletException("Could not get Jetspeed Component Manager after "+count+"tries");
+            }
+            count++;
         
+        }
         decorationLocator = (TemplateLocator) cm.getComponent("DecorationLocator");
 
         // initialize thread safe velocity engine cache
