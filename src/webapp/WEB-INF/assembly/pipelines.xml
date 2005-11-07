@@ -49,6 +49,9 @@ limitations under the License.
    <constructor-arg>
    	<ref bean="org.apache.jetspeed.security.UserManager" />
    </constructor-arg>
+   <constructor-arg>
+   	<ref bean="PortalStatistics" />
+   </constructor-arg>   
   </bean> 
   
   <bean id="passwordCredentialValve"

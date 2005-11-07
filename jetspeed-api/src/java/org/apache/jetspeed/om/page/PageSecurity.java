@@ -66,7 +66,7 @@ public interface PageSecurity extends Document
      * getGlobalSecurityConstraintsRefs
      * </p>
      *
-     * @return global security constraints references
+     * @return global security constraints references of element type String
      */
     List getGlobalSecurityConstraintsRefs();
     
