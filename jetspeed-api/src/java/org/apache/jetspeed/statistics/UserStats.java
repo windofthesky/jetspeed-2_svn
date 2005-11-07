@@ -15,43 +15,22 @@
 package org.apache.jetspeed.statistics;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
- * AggregateStatistics
+ * UserStats
  * 
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
  */
-public interface AggregateStatistics extends Serializable
+public interface UserStats extends Serializable
 {
 
-    public void addRow(Map row);
+    public String getUsername();
 
-    public int getHitCount();
+    public int getNumberOfSessions();
 
-    public float getAvgProcessingTime();
+    public void setNumberOfSession(int number);
 
-    public float getMinProcessingTime();
-
-    public float getMaxProcessingTime();
-
-    public float getStdDevProcessingTime();
-
-    public void setHitCount(int hitCount);
-
-    public void setAvgProcessingTime(float time);
-
-    public void setMinProcessingTime(float time);
-
-    public void setMaxProcessingTime(float time);
-
-    public void setStdDevProcessingTime(float time);
-
-    public List getStatlist();
-
-    public void setStatlist(List statlist);
+    public void setUsername(String username);
 }

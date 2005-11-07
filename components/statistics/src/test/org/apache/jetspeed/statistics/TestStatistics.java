@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -37,14 +38,15 @@ import com.mockrunner.mock.web.MockHttpSession;
 /**
  * TestStatistics
  * 
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
  * @version $Id: $
  */
 public class TestStatistics extends AbstractSpringTestCase
 {
+
     private PortalStatistics statistics = null;
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -65,21 +67,20 @@ public class TestStatistics extends AbstractSpringTestCase
     public static void main(String args[])
     {
         junit.awtui.TestRunner.main(new String[]
-        { TestStatistics.class.getName() });
-        
-        
+        { TestStatistics.class.getName()});
+
     }
 
-    
     protected void setUp() throws Exception
     {
         super.setUp();
         this.statistics = (PortalStatistics) ctx.getBean("PortalStatistics");
         assertNotNull("statistics not found ", statistics);
     }
-    
-    public void clearDBs() {
-        
+
+    public void clearDBs()
+    {
+
         try
         {
             Connection con = statistics.getDataSource().getConnection();
@@ -100,18 +101,19 @@ public class TestStatistics extends AbstractSpringTestCase
             fail("problem with database connection:" + e.toString());
         }
     }
-    
-    public int count(String query) {
+
+    public int count(String query)
+    {
         int val = -1;
         try
         {
             Connection con = statistics.getDataSource().getConnection();
 
-            PreparedStatement psmt = con
-                    .prepareStatement(query);
+            PreparedStatement psmt = con.prepareStatement(query);
             ResultSet rs = psmt.executeQuery();
-            
-            if(rs.next()) {
+
+            if (rs.next())
+            {
                 val = rs.getInt(1);
             }
             psmt.close();
@@ -122,33 +124,36 @@ public class TestStatistics extends AbstractSpringTestCase
         }
         return val;
     }
-    public int countPages() {
+
+    public int countPages()
+    {
         return count("SELECT count(*) from PAGE_STATISTICS");
     }
-        
-    public int countPortlets() {
+
+    public int countPortlets()
+    {
         return count("SELECT count(*) from PORTLET_STATISTICS");
     }
-    public int countUsers() {
+
+    public int countUsers()
+    {
         return count("SELECT count(*) from USER_STATISTICS");
     }
-    
+
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestStatistics.class);
     }
-    
-    
-    public void testPortletStatistics() 
-    throws Exception
+
+    public void testPortletStatistics() throws Exception
     {
         System.out.println("testing one of each ");
         statistics.forceFlush();
         clearDBs();
-        
+
         assertNotNull("statistics service is null", statistics);
-        
+
         RequestContext request = initRequestContext();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("MyApp");
@@ -157,32 +162,46 @@ public class TestStatistics extends AbstractSpringTestCase
         portlet.setName("TestPortlet");
         portlet.setPortletApplicationDefinition(app);
         long elapsedTime = 123;
-        statistics.logPortletAccess(request, portlet.getUniqueName(), "401",elapsedTime);
-        statistics.logPageAccess(request, "401",elapsedTime);
-        statistics.logUserLogin(request,elapsedTime);
-        statistics.logUserLogout(request,elapsedTime);
-        
+        statistics.logPortletAccess(request, portlet.getUniqueName(), "401",
+                elapsedTime);
+        statistics.logPageAccess(request, "401", elapsedTime);
+        statistics.logUserLogin(request, elapsedTime);
+
+        assertEquals("number of users incorrect", 1, statistics
+                .getNumberOfCurrentUsers());
+
+        List l = statistics.getListOfLoggedInUsers();
+        assertNotNull("list returned is null", l);
+        assertEquals("wrong number of users in list", 1, l.size());
+
+        statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+                elapsedTime);
+
         statistics.forceFlush();
+
+        assertEquals("number of users incorrect", statistics
+                .getNumberOfCurrentUsers(), 0);
+
         int x = 1;
         int pages = this.countPages();
         int users = this.countUsers();
         int portlets = this.countPortlets();
-        assertEquals("User Log count incorrect ",2*x,users);
-        assertEquals("Portlet Log count incorrect ",x,portlets);
-        assertEquals("Page Log count incorrect ",x,pages);
-        
+        assertEquals("User Log count incorrect ", 2 * x, users);
+        assertEquals("Portlet Log count incorrect ", x, portlets);
+        assertEquals("Page Log count incorrect ", x, pages);
+
     }
-    
-    public void testLotsOfPortletStatistics() 
-    throws Exception
+
+    public void testLotsOfPortletStatistics() throws Exception
     {
         System.out.println("testing Multiple portlet stats");
         statistics.forceFlush();
         clearDBs();
-        
+
         int x = 37;
         assertNotNull("statistics service is null", statistics);
-        for(int i = 0; i < x ; i++) {
+        for (int i = 0; i < x; i++)
+        {
             RequestContext request = initRequestContext();
             PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
             app.setName("MyApp");
@@ -190,51 +209,64 @@ public class TestStatistics extends AbstractSpringTestCase
             portlet.setPortletApplicationDefinition(app);
             portlet.setName("TestPortlet");
             portlet.setPortletApplicationDefinition(app);
-            long elapsedTime = 123+i;
+            long elapsedTime = 123 + i;
             //System.out.println("logging something, number "+i);
-            statistics.logPortletAccess(request, portlet.getUniqueName(), "401",elapsedTime);
-            statistics.logPageAccess(request, "401",elapsedTime);
-            statistics.logUserLogin(request,elapsedTime);
-            statistics.logUserLogout(request,elapsedTime);
-            try { Thread.sleep(200);} catch(InterruptedException ie) {}
+            statistics.logPortletAccess(request, portlet.getUniqueName(),
+                    "401", elapsedTime);
+            statistics.logPageAccess(request, "401", elapsedTime);
+            statistics.logUserLogin(request, elapsedTime);
+            assertEquals("number of users incorrect", 1, statistics
+                    .getNumberOfCurrentUsers());
+            List l = statistics.getListOfLoggedInUsers();
+            assertNotNull("list returned is null", l);
+            assertEquals("wrong number of users in list", 1, l.size());
+
+            statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+                    elapsedTime);
+            try
+            {
+                Thread.sleep(200);
+            } catch (InterruptedException ie)
+            {
+            }
         }
-        
+
         statistics.forceFlush();
+
+        assertEquals("number of users incorrect", statistics
+                .getNumberOfCurrentUsers(), 0);
+
         int pages = this.countPages();
         int users = this.countUsers();
         int portlets = this.countPortlets();
-        assertEquals("User Log count incorrect ",2*x,users);
-        assertEquals("Portlet Log count incorrect ",x,portlets);
-        assertEquals("Page Log count incorrect ",x,pages);
-        
-        
+        assertEquals("User Log count incorrect ", 2 * x, users);
+        assertEquals("Portlet Log count incorrect ", x, portlets);
+        assertEquals("Page Log count incorrect ", x, pages);
+
     }
 
-    
-    public void testQuerySystem() 
-    throws Exception
+    public void testQuerySystem() throws Exception
     {
         System.out.println("testing Query System");
         StatisticsQueryCriteria sqc = new StatisticsQueryCriteriaImpl();
         sqc.setQueryType("user");
-        AggregateStatistics as = statistics.queryStatistics( sqc    );
-        System.out.println("user = "+as);
+        AggregateStatistics as = statistics.queryStatistics(sqc);
+        System.out.println("user = " + as);
         sqc.setQueryType("portlet");
-        as = statistics.queryStatistics( sqc );
-        System.out.println("user = "+as);
+        as = statistics.queryStatistics(sqc);
+        System.out.println("user = " + as);
         sqc.setQueryType("page");
-        as = statistics.queryStatistics( sqc );
-        System.out.println("user = "+as);
-        
+        as = statistics.queryStatistics(sqc);
+        System.out.println("user = " + as);
+
     }
-    
+
     private RequestContext initRequestContext()
     {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockHttpSession session = new MockHttpSession();
 
-        
         request.setRemoteAddr("192.168.2.3");
         request.setSession(session);
         request.setServerName("www.sporteportal.com");
@@ -243,19 +275,21 @@ public class TestStatistics extends AbstractSpringTestCase
         request.setServletPath("/portal");
         request.setPathInfo("/news/default-page.psml");
         request.setRequestURI("/jetspeed/portal/news/default-page.psml");
-        request.setMethod("GET");    
+        request.setMethod("GET");
         RequestContext rc = new MockRequestContext(request, response);
         return rc;
     }
-    
+
     protected String[] getConfigurations()
     {
-        return new String[]{"statistics.xml"};
+        return new String[]
+        { "statistics.xml"};
     }
-    
+
     protected String[] getBootConfigurations()
     {
-        return new String[]{"test-repository-datasource-spring.xml"};
+        return new String[]
+        { "test-repository-datasource-spring.xml"};
     }
 
 }

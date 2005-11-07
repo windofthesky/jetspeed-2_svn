@@ -30,8 +30,8 @@ import javax.sql.DataSource;
  * instances added to a BatchedStatistics instance are all of the same type
  * (Portlet Access, Page Access, or User Logout).
  * 
- * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
  */
 public class BatchedPortletStatistics extends BatchedStatistics

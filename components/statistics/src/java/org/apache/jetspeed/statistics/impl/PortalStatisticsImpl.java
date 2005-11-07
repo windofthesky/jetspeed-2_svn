@@ -24,11 +24,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -45,6 +48,7 @@ import org.apache.jetspeed.statistics.AggregateStatistics;
 import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
+import org.apache.jetspeed.statistics.UserStats;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -52,15 +56,15 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  * PortalStatisticsImpl
  * </p>
  * 
- * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
  */
 public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         PortalStatistics
 {
 
-    /** 
+    /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#forceFlush()
      */
     public void forceFlush()
@@ -123,38 +127,25 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     private long maxTimeMsToFlush_Page = 10 * 1000;
 
     ConnectionRepositoryEntry jetspeedDSEntry;
-    
+
     /* after this is NOT for injection */
 
     DataSource ds;
 
-    private int currentUsers = 0;
+    private int currentUserCount = 0;
+
+    private Map currentUsers;
 
     /* date formatter */
     protected SimpleDateFormat formatter = null;
 
-    /**
-     * <p>
-     * Default Constructor.
-     * </p>
-     */
-    public PortalStatisticsImpl()
+    public PortalStatisticsImpl(boolean logToCLF, boolean logToDatabase,
+            int maxRecordToFlush_Portal, int maxRecordToFlush_User,
+            int maxRecordToFlush_Page, long maxTimeMsToFlush_Portal,
+            long maxTimeMsToFlush_User, long maxTimeMsToFlush_Page,
+            ConnectionRepositoryEntry jetspeedDSEntry)
     {
-    }
-    
-    public PortalStatisticsImpl(
-             boolean logToCLF,
-             boolean logToDatabase,
-             int maxRecordToFlush_Portal,
-             int maxRecordToFlush_User,
-             int maxRecordToFlush_Page,
-             long maxTimeMsToFlush_Portal,
-             long maxTimeMsToFlush_User,
-             long maxTimeMsToFlush_Page,
-            ConnectionRepositoryEntry jetspeedDSEntry
-            )
-    {
-        
+
         this.logToCLF = logToCLF;
         this.logToDatabase = logToDatabase;
         this.maxRecordToFlush_Portlet = maxRecordToFlush_Portal;
@@ -164,27 +155,28 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         this.maxTimeMsToFlush_User = maxTimeMsToFlush_User;
         this.maxTimeMsToFlush_Page = maxTimeMsToFlush_Page;
         this.jetspeedDSEntry = jetspeedDSEntry;
-        
+        currentUsers = new TreeMap();
     }
 
     public void springInit() throws NamingException
     {
         formatter = new SimpleDateFormat("dd/MM/yyyy:hh:mm:ss z");
 
-        if (jetspeedDSEntry != null )
+        if (jetspeedDSEntry != null)
         {
-            if (jetspeedDSEntry.getJndiName() != null) {
+            if (jetspeedDSEntry.getJndiName() != null)
+            {
                 try
                 {
                     Context initialContext = new InitialContext();
-                    ds = (DataSource) initialContext.lookup(jetspeedDSEntry.getJndiName());
+                    ds = (DataSource) initialContext.lookup(jetspeedDSEntry
+                            .getJndiName());
                 } catch (NamingException e)
                 {
                     e.printStackTrace();
                     throw e;
                 }
-            }
-            else
+            } else
             {
                 BasicDataSource bds = new BasicDataSource();
                 bds.setDriverClassName(jetspeedDSEntry.getDriverClassName());
@@ -193,11 +185,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 bds.setPassword(jetspeedDSEntry.getPassword());
                 ds = (DataSource) bds;
             }
-        } 
-        
-        
-        currentUsers = 0;
-
+        }
+        currentUserCount = 0;
     }
 
     public DataSource getDataSource()
@@ -247,8 +236,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (portletBatch == null)
             {
-                portletBatch = new BatchedPortletStatistics(ds, this.maxRecordToFlush_Portlet, this.maxTimeMsToFlush_Portlet,
-                        "portletLogBatcher");
+                portletBatch = new BatchedPortletStatistics(ds,
+                        this.maxRecordToFlush_Portlet,
+                        this.maxTimeMsToFlush_Portlet, "portletLogBatcher");
             }
             portletBatch.addStatistic(record);
 
@@ -257,7 +247,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (pageBatch == null)
             {
-                pageBatch = new BatchedPageStatistics(ds, this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
+                pageBatch = new BatchedPageStatistics(ds,
+                        this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
                         "pageLogBatcher");
             }
             pageBatch.addStatistic(record);
@@ -267,7 +258,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (userBatch == null)
             {
-                userBatch = new BatchedUserStatistics(ds, this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
+                userBatch = new BatchedUserStatistics(ds,
+                        this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
                         "userLogBatcher");
             }
             userBatch.addStatistic(record);
@@ -352,24 +344,46 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         }
     }
 
-    public void logUserLogout(RequestContext request, long msElapsedTime)
+    public void logUserLogout(String ipAddress, String userName,
+            long msSessionLength)
     {
         try
         {
-            currentUsers = currentUsers - 1;
+            currentUserCount = currentUserCount - 1;
 
-            HttpServletRequest req = request.getRequest();
-            Principal principal = req.getUserPrincipal();
-            String userName = (principal != null) ? principal.getName()
-                    : "guest";
+            if (userName == null)
+            {
+                userName = "guest";
+            }
+
+            synchronized (currentUsers)
+            {
+                UserStats userStats = (UserStats) currentUsers.get(userName);
+                if (userStats == null)
+                {
+                    //log.warn("Trying to log out a user that was never logged
+                    // in!");
+                    userStats = new UserStatsImpl();
+                    userStats.setNumberOfSession(0);
+                    userStats.setUsername(userName);
+                    currentUsers.put(userName, userStats);
+                }
+                userStats
+                        .setNumberOfSession(userStats.getNumberOfSessions() - 1);
+                if (userStats.getNumberOfSessions() <= 0)
+                {
+                    currentUsers.remove(userName);
+                }
+            }
+
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             UserLogRecord record = new UserLogRecord();
 
             record.setUserName(userName);
-            record.setIpAddress(req.getRemoteAddr());
+            record.setIpAddress(ipAddress);
             record.setStatus(STATUS_LOGGED_OUT);
             record.setTimeStamp(timestamp);
-            record.setMsElapsedTime(msElapsedTime);
+            record.setMsElapsedTime(msSessionLength);
 
             if (logToCLF)
             {
@@ -396,7 +410,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         try
         {
-            currentUsers = currentUsers + 1;
+            currentUserCount = currentUserCount + 1;
 
             HttpServletRequest req = request.getRequest();
             Principal principal = req.getUserPrincipal();
@@ -404,6 +418,23 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     : "guest";
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             UserLogRecord record = new UserLogRecord();
+
+            synchronized (currentUsers)
+            {
+                UserStats userStats = (UserStats) currentUsers.get(userName);
+                if (userStats == null)
+                {
+                    //log.warn("Trying to log out a user that was never logged
+                    // in!");
+                    userStats = new UserStatsImpl();
+                    userStats.setNumberOfSession(0);
+                    userStats.setUsername(userName);
+                    currentUsers.put(userName, userStats);
+
+                }
+                userStats
+                        .setNumberOfSession(userStats.getNumberOfSessions() + 1);
+            }
 
             record.setUserName(userName);
             record.setIpAddress(req.getRemoteAddr());
@@ -427,7 +458,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     }
 
-    /** 
+    /**
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void springDestroy()
@@ -435,16 +466,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         if (portletBatch != null)
         {
             portletBatch.tellThreadToStop();
-            synchronized(portletBatch.thread) 
+            synchronized (portletBatch.thread)
             {
                 portletBatch.thread.notify();
             }
-            
+
         }
         if (userBatch != null)
         {
             userBatch.tellThreadToStop();
-            synchronized(userBatch.thread) 
+            synchronized (userBatch.thread)
             {
                 userBatch.thread.notify();
             }
@@ -452,13 +483,13 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         if (pageBatch != null)
         {
             pageBatch.tellThreadToStop();
-            synchronized(pageBatch.thread) 
+            synchronized (pageBatch.thread)
             {
                 pageBatch.thread.notify();
             }
         }
 
-        if ((this.currentUsers != 0) && logger.isDebugEnabled())
+        if ((this.currentUserCount != 0) && logger.isDebugEnabled())
         {
             logger.debug("destroying while users are logged in");
         }
@@ -491,120 +522,131 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             try
             {
                 Thread.sleep(2);
-            } 
-            catch (InterruptedException ie)
+            } catch (InterruptedException ie)
             {
             }
         }
         long end = System.currentTimeMillis();
         // new we're done
-        
+
     }
 
-    /** 
+    /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#getNumberOfCurrentUsers()
      */
     public int getNumberOfCurrentUsers()
     {
-        return currentUsers;
+        return currentUserCount;
     }
 
-    private Date getStartDateFromPeriod(String period,Date end) 
+    private Date getStartDateFromPeriod(String period, Date end)
     {
         GregorianCalendar gcEnd = new GregorianCalendar();
         gcEnd.setTime(end);
-        if(period != null) 
+        if (period != null)
         {
-            if(period.endsWith("m")) 
+            if (period.endsWith("m"))
             {
                 // months
-                String p = period.substring(0,period.length()-1);                
+                String p = period.substring(0, period.length() - 1);
                 int ret = Integer.parseInt(p);
-                gcEnd.add(Calendar.MONTH,(ret * -1));
-            } 
-            else if(period.endsWith("h")) 
+                gcEnd.add(Calendar.MONTH, (ret * -1));
+            } else if (period.endsWith("h"))
             {
                 // hours
-                String p = period.substring(0,period.length()-1);
+                String p = period.substring(0, period.length() - 1);
                 int ret = Integer.parseInt(p);
-                gcEnd.add(Calendar.HOUR,(ret * -1));
-            } 
-            else if(period.equals("all"))
+                gcEnd.add(Calendar.HOUR, (ret * -1));
+            } else if (period.equals("all"))
             {
                 gcEnd = new GregorianCalendar();
-                gcEnd.set(1968,07,15);
-            } 
-            else 
+                gcEnd.set(1968, 07, 15);
+            } else
             {
                 // minutes
                 int ret = Integer.parseInt(period);
-                gcEnd.add(Calendar.MINUTE,(ret * -1));
+                gcEnd.add(Calendar.MINUTE, (ret * -1));
             }
-        } 
-        else 
+        } else
         {
             gcEnd = new GregorianCalendar();
-            gcEnd.set(1968,07,15);
-        
+            gcEnd.set(1968, 07, 15);
+
         }
         return gcEnd.getTime();
     }
-    
+
     /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
      */
-    public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria) throws InvalidCriteriaException
+    public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria)
+            throws InvalidCriteriaException
     {
         AggregateStatistics as = new AggregateStatisticsImpl();
         String query;
         String query2;
-        
+
         String tableName;
         String groupColumn;
-        
+
         Date end = new Date();
-        Date start = getStartDateFromPeriod(criteria.getTimePeriod(),end);
-        
-        
+        Date start = getStartDateFromPeriod(criteria.getTimePeriod(), end);
+
         String queryType = criteria.getQueryType();
         if ("user".equals(queryType))
         {
             tableName = "USER_STATISTICS";
             groupColumn = "USER_NAME";
-        }
-        else if ("portlet".equals(queryType))
+        } else if ("portlet".equals(queryType))
         {
             tableName = "PORTLET_STATISTICS";
             groupColumn = "PORTLET";
-        }
-        else if ("page".equals(queryType))
+        } else if ("page".equals(queryType))
         {
             tableName = "PAGE_STATISTICS";
             groupColumn = "PAGE";
-        }
-        else 
+        } else
         {
-            throw new InvalidCriteriaException(" invalid queryType passed to queryStatistics");
+            throw new InvalidCriteriaException(
+                    " invalid queryType passed to queryStatistics");
         }
         String orderColumn = "count";
-        
-        //String orderColumn = "MAX(ELAPSSE_TIME)";
-        //String orderColumn = "AVG(ELAPSED_TIME)";
-        //String orderColumn = "MIN(ELAPSED_TIME)";
-        
+
         String ascDesc = "DESC";
-        
-        query= "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "+tableName+" where time_stamp > ? and time_stamp < ?";
-        query2= "select count(*) as count ,"+groupColumn+", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
-                    +"from "+tableName+" where time_stamp > ? and time_stamp < ? group by "+groupColumn+"  order by "+orderColumn+" "+ascDesc+" limit 5";
+
+        if (!"user".equals(queryType))
+        {
+            query = "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+                    + tableName + " where time_stamp > ? and time_stamp < ?";
+            query2 = "select count(*) as count ,"
+                    + groupColumn
+                    + ", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
+                    + "from " + tableName
+                    + " where time_stamp > ? and time_stamp < ? group by "
+                    + groupColumn + "  order by " + orderColumn + " " + ascDesc
+                    + " limit 5";
+        } else
+        {
+            query = "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+                    + tableName
+                    + " where time_stamp > ? and time_stamp < ? and status = 2";
+            query2 = "select count(*) as count ,"
+                    + groupColumn
+                    + ", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
+                    + "from "
+                    + tableName
+                    + " where time_stamp > ? and time_stamp < ? and status = 2 group by "
+                    + groupColumn + "  order by " + orderColumn + " " + ascDesc
+                    + " limit 5";
+        }
         try
         {
             Connection con = ds.getConnection();
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setTimestamp(1,new Timestamp(start.getTime()));
-            pstmt.setTimestamp(2,new Timestamp(end.getTime()));
+            pstmt.setTimestamp(1, new Timestamp(start.getTime()));
+            pstmt.setTimestamp(2, new Timestamp(end.getTime()));
             ResultSet rs = pstmt.executeQuery();
-            if(rs.next()) 
+            if (rs.next())
             {
                 as.setHitCount(rs.getInt("count"));
                 as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
@@ -613,31 +655,52 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
             }
             PreparedStatement pstmt2 = con.prepareStatement(query2);
-            pstmt2.setTimestamp(1,new Timestamp(start.getTime()));
-            pstmt2.setTimestamp(2,new Timestamp(end.getTime()));
+            pstmt2.setTimestamp(1, new Timestamp(start.getTime()));
+            pstmt2.setTimestamp(2, new Timestamp(end.getTime()));
             ResultSet rs2 = pstmt2.executeQuery();
-            while(rs2.next()) 
+
+            while (rs2.next())
             {
                 Map row = new HashMap();
-                row.put("count",""+rs2.getInt("count"));
-                row.put("groupColumn",rs2.getString(groupColumn));
-                row.put("min",""+rs2.getFloat("min"));
-                row.put("avg",""+rs2.getFloat("avg"));
-                row.put("max",""+rs2.getFloat("max"));
+                row.put("count", "" + rs2.getInt("count"));
+                row.put("groupColumn", rs2.getString(groupColumn));
+                row.put("min", "" + rs2.getFloat("min"));
+                row.put("avg", "" + rs2.getFloat("avg"));
+                row.put("max", "" + rs2.getFloat("max"));
                 as.addRow(row);
-                //as.setHitCount(rs.getInt("count"));
-                //as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
-                //as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
-                //as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
-                //as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
             }
-        
-        } 
-        catch (SQLException e)
+
+        } catch (SQLException e)
         {
             throw new InvalidCriteriaException(e.toString());
         }
-        
+
         return as;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.statistics.PortalStatistics#getListOfLoggedInUsers()
+     */
+    public List getListOfLoggedInUsers()
+    {
+        List list = new ArrayList();
+
+        synchronized (currentUsers)
+        {
+            list.addAll(currentUsers.values());
+        }
+        return list;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.statistics.PortalStatistics#getNumberOfLoggedInUsers()
+     */
+    public int getNumberOfLoggedInUsers()
+    {
+        return this.currentUserCount;
     }
 }
