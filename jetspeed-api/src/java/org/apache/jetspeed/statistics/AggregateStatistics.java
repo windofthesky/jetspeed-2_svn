@@ -39,8 +39,6 @@ public interface AggregateStatistics extends Serializable
 
     public float getMaxProcessingTime();
 
-    public float getStdDevProcessingTime();
-
     public void setHitCount(int hitCount);
 
     public void setAvgProcessingTime(float time);
@@ -48,8 +46,6 @@ public interface AggregateStatistics extends Serializable
     public void setMinProcessingTime(float time);
 
     public void setMaxProcessingTime(float time);
-
-    public void setStdDevProcessingTime(float time);
 
     public List getStatlist();
 

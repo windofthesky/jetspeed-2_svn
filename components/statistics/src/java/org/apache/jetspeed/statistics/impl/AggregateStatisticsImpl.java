@@ -92,25 +92,6 @@ public class AggregateStatisticsImpl implements AggregateStatistics
         return this.minProcessingTime;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.statistics.AggregateStatistics#getStdDevProcessingTime()
-     */
-    public float getStdDevProcessingTime()
-    {
-        return this.stddevProcessingTime;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.statistics.AggregateStatistics#setAvgProcessingTime(float)
-     */
-    public void setAvgProcessingTime(float time)
-    {
-        this.avgProcessingTime = time;
-    }
 
     /*
      * (non-Javadoc)
@@ -119,6 +100,7 @@ public class AggregateStatisticsImpl implements AggregateStatistics
      */
     public void setHitCount(int hitCount)
     {
+        
         this.hitcount = hitCount;
     }
 
@@ -129,7 +111,7 @@ public class AggregateStatisticsImpl implements AggregateStatistics
      */
     public void setMaxProcessingTime(float time)
     {
-        this.maxProcessingTime = time;
+        this.maxProcessingTime = Math.round(time);
     }
 
     /*
@@ -139,18 +121,18 @@ public class AggregateStatisticsImpl implements AggregateStatistics
      */
     public void setMinProcessingTime(float time)
     {
-        this.minProcessingTime = time;
+        this.minProcessingTime = Math.round(time);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.statistics.AggregateStatistics#setAvgProcessingTime(float)
+     */
+    public void setAvgProcessingTime(float time)
+    {
+        this.avgProcessingTime = Math.round(time);
+
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.statistics.AggregateStatistics#setStdDevProcessingTime(float)
-     */
-    public void setStdDevProcessingTime(float time)
-    {
-        this.stddevProcessingTime = time;
-    }
 
     public String toString()
     {

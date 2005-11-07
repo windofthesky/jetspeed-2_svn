@@ -459,6 +459,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     }
 
+    
     /**
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
@@ -617,7 +618,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
         if (!"user".equals(queryType))
         {
-            query = "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+            query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
                     + tableName + " where time_stamp > ? and time_stamp < ?";
             query2 = "select count(*) as count ,"
                     + groupColumn
@@ -628,7 +629,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     + " limit 5";
         } else
         {
-            query = "select count(*) as count , STDDEV(ELAPSED_TIME),MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+            query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2";
             query2 = "select count(*) as count ,"
@@ -650,7 +651,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             if (rs.next())
             {
                 as.setHitCount(rs.getInt("count"));
-                as.setStdDevProcessingTime(rs.getFloat("STDDEV(ELAPSED_TIME)"));
                 as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
                 as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
                 as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
@@ -664,10 +664,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             {
                 Map row = new HashMap();
                 row.put("count", "" + rs2.getInt("count"));
-                row.put("groupColumn", rs2.getString(groupColumn));
-                row.put("min", "" + rs2.getFloat("min"));
-                row.put("avg", "" + rs2.getFloat("avg"));
-                row.put("max", "" + rs2.getFloat("max"));
+                String col = rs2.getString(groupColumn);
+                int maxColLen = 35;
+                if(col.length() > maxColLen ) {
+                    col = col.substring(0,maxColLen);
+                }
+                
+                row.put("groupColumn", col);
+                row.put("min", "" + floatFormatter(rs2.getFloat("min")));
+                row.put("avg", "" + floatFormatter(rs2.getFloat("avg")));
+                row.put("max", "" + floatFormatter(rs2.getFloat("max")));
                 as.addRow(row);
             }
 
@@ -679,6 +685,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return as;
     }
 
+    private String floatFormatter(float f) {
+        // for now we'll just truncate as int
+        int f2 = new Float(f).intValue();
+        return Integer.toString(f2);
+    }
     /*
      * (non-Javadoc)
      * 

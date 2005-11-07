@@ -77,11 +77,12 @@ public class StatisticsPortlet extends GenericVelocityPortlet
                 // if we get here, we're on the first startup.
                 sqc = new StatisticsQueryCriteriaImpl();
                 sqc.setQueryType("portlets");
-                sqc.setTimePeriod("all");
+                sqc.setTimePeriod("1");
                 session.setAttribute(SESSION_CRITERIA, sqc);
 
                 try
                 {
+                    statistics.forceFlush();
                     stats = statistics.queryStatistics(sqc);
                 } catch (InvalidCriteriaException e)
                 {
@@ -117,6 +118,7 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         AggregateStatistics stats = new AggregateStatisticsImpl();
         try
         {
+            statistics.forceFlush();
             stats = statistics.queryStatistics(criteria);
         } catch (InvalidCriteriaException e)
         {

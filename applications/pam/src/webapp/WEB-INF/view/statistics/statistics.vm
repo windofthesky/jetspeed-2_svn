@@ -4,13 +4,13 @@
 	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post"
 	<table>
 	<tr><td align="center">
-	total sessions in progress: $!results.totalsessions
+	total sessions in progress: $!totalsessions
 	</td></tr>
 	<tr><td>
 	<table class=""portlet-section-body">
-	<tr  class="portlet-section-body"><th>
-	 statistics <br>are for
-	 </hd></tr>
+	<tr  class="portlet-section-subheader"><th>
+	 statistics are for
+	 </hr></tr>
 	 <tr class="portlet-section-alternate"><td>
 	 <SELECT name="queryType" onChange="criteriaForm.submit();">
 	 <OPTION 
@@ -37,7 +37,7 @@
 	 </td><td>
  
 	 <table class=""portlet-section-body">
-	 <tr class="portlet-section-body"><th colspan="2" align="center" >filter on time periods </th></tr>
+	 <tr class="portlet-section-subheader"><th colspan="2" align="center" >for time periods </th></tr>
 	 <tr class="portlet-section-alternate"><td>
 	 		<input type="radio" name="timeperiod" value="1" onclick="criteriaForm.submit();"
 	 			#if($criteria.timePeriod == "1")
@@ -106,31 +106,37 @@
 	 
 	</td></tr>
 	</table>
-	</form>
 	<table><tr><td>
 	<table class="class="portlet-section-body" >
-	<tr class="portlet-section-body"><TH><b>stat name</b></TH><TH><b>value</b></TH></TR>
-	<tr class="portlet-section-alternate"><TD>total hits</TD><TD>$!results.hitCount</TD></TR>
-	<tr class="portlet-section-body"><TD>max processing time</TD><TD>$!results.maxProcessingTime</TD></TR>
-	<tr class="portlet-section-alternate"><TD>avg processing time</TD><TD>$!results.avgProcessingTime</TD></TR>
-	<tr class="portlet-section-body"><TD>stdev from avg time</TD><TD>$!results.stdDevProcessingTime</TD></TR>
-	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TR>
+	<tr class="portlet-section-subheader"><TH><b>stat name</b></TH><TH><b align="right" >value</b></TH></TR>
+	<tr class="portlet-section-alternate"><TD>total hits</TD><TD align="right" >$!results.hitCount</TD></TR>
+	<tr class="portlet-section-body"><TD>max processing time</TD><TD align="right" >$!results.maxProcessingTime</TD></TR>
+	<tr class="portlet-section-alternate"><TD>avg processing time</TD><TD align="right" >$!results.avgProcessingTime</TD></TR>
+	<tr class="portlet-section-body"><TD>min processing time</TD><TD align="right" >$!results.minProcessingTime</TD></TR>
     </table>
     </td><td>
     <table class="class="portlet-section-body" >
 	<tr class="portlet-section-subheader">
-		<TH><b>$criteria.queryType</b></TH><TH><b>count</b></TH><TH><b>max Time</b></TH><TH><b>avg Time</b></TH><TH><b>min Time</b></TH></TR>
+		<TH><b>$criteria.queryType</b>
+			</TH><TH><b>count</b></TH>
+			<TH><b>max Time</b></TH>
+			<TH><b>avg Time</b></TH>
+			<TH><b>min Time</b></TH>
+		</TR>
 	#foreach ( $row in $results.statlist )
   		<tr>
   			<td> $row.get("groupColumn") </td>
-  			<td> $row.get("count") </td>
-  			<td> $row.get("max") </td>
-  			<td> $row.get("avg") </td>
-  			<td> $row.get("min") </td>  			
+  			<td align="right" > $row.get("count") </td>
+  			<td align="right" > $row.get("max") </td>
+  			<td align="right" > $row.get("avg") </td>
+  			<td align="right" > $row.get("min") </td>  			
   		<tr>
   		
   	#end
     </table>
-    
-    </td></tr></table>
+    </td></tr>
+    <tr><td colspan="2" align="center"> <font size="-1" >all times in milliseconds</font></td></tr>
+    </table>
+    </form>
+	
 </div>
