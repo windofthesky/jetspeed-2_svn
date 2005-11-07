@@ -1,23 +1,124 @@
 <h3 class="portlet-section-header">Portal Statistics</h3>
 
 <div id="StatisticsPortlet"  class="portlet-section-text"> 
-	<form action="$renderResponse.createActionURL()" method="post"
+	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post"
 	<table>
 	<tr><td>
-	 query type is 
-	 $criteria.queryType
+	<table class=""portlet-section-body">
+	<tr  class="portlet-section-body"><th>
+	 statistics <br>are for
+	 </hd></tr>
+	 <tr class="portlet-section-alternate"><td>
+	 <SELECT name="queryType" onChange="criteriaForm.submit();">
+	 <OPTION 
+		#if($criteria.queryType == "user")
+	 		SELECTED
+	 	#end
+	 	value="user"
+	 	 >users
+	 <OPTION 
+		#if($criteria.queryType == "page")
+	 		SELECTED
+	 	#end
+	 	value="page"
+	 	 >pages
+	 <OPTION 
+		#if($criteria.queryType == "portlet")
+	 		SELECTED
+	 	#end
+	 	value="portlet"
+	 	 >portlets
+	 </SELECT>
+	 </td></tr>
+	 </table>
+	 </td><td>
+ 
+	 <table class=""portlet-section-body">
+	 <tr class="portlet-section-body"><th colspan="2" align="center" >filter on time periods </th></tr>
+	 <tr class="portlet-section-alternate"><td>
+	 		<input type="radio" name="timeperiod" value="1" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "1")
+	 				CHECKED
+	 			#end		
+	 		>last 1 minutes</td>
+	 	<td>
+	 		<input type="radio" name="timeperiod" value="1d" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "1d")
+	 				CHECKED
+	 			#end		
+	 		>last 24 hours</td></tr>
+	 <tr class="portlet-section-body"><td>
+	 		<input type="radio" name="timeperiod" value="5" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "5")
+	 				CHECKED
+	 			#end		
+	 		>last 5 minutes</td>
+	 	<td>
+	 		<input type="radio" name="timeperiod" value="7d" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "7d")
+	 				CHECKED
+	 			#end		
+	 		>last 7 days</td></tr>
+	 <tr class="portlet-section-alternate"><td>
+	 		<input type="radio" name="timeperiod" value="30" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "30")
+	 				CHECKED
+	 			#end		
+	 		>last 30 minutes</td>
+	 	<td>
+	 		<input type="radio" name="timeperiod" value="1m" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "1m")
+	 				CHECKED
+	 			#end		
+	 		>last 1 month</td></tr>
+	 <tr class="portlet-section-body"><td>
+	 		<input type="radio" name="timeperiod" value="60" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "60")
+	 				CHECKED
+	 			#end		
+	 		>last 1 hour</td>
+	 	<td>
+	 		<input type="radio" name="timeperiod" value="12m" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "12m")
+	 				CHECKED
+	 			#end		
+	 		>last 1 year</td></tr>
+	 <tr class="portlet-section-alternate"><td>
+	 		<input type="radio" name="timeperiod" value="360" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "360")
+	 				CHECKED
+	 			#end		
+	 		>last 6 hours</td>
+	 	<td><input type="radio" name="timeperiod" value="all" onclick="criteriaForm.submit();"
+	 			#if($criteria.timePeriod == "all")
+	 				CHECKED
+	 			#end		
+	 		>all time</td></tr>
 	 
-	 <input type="submit" name="Save" value="Save" />
+	 </table>
+	 
+	 <td></tr>
+	 <tr><td align="center">
+	 
 	 
 	</td></tr>
 	</table>
 	</form>
+	<table><tr><td>
 	<table class="class="portlet-section-body" >
-	<tr class="portlet-section-subheader"><TH><b>stat name</b></TH><TH><b>value</b></TH></TR>
-	<tr class="portlet-section-alternate"><TD>total hits</TD><TD>$!results.hitCount</TD></TD>
-	<tr class="portlet-section-body"><TD>max processing time</TD><TD>$!results.maxProcessingTime</TD></TD>
-	<tr class="portlet-section-alternate"><TD>avg processing time</TD><TD>$!results.avgProcessingTime</TD></TD>
-	<tr class="portlet-section-body"><TD>stdev from avg time</TD><TD>$!results.stdDevProcessingTime</TD></TD>
-	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TD>
+	<tr class="portlet-section-body"><TH><b>stat name</b></TH><TH><b>value</b></TH></TR>
+	<tr class="portlet-section-alternate"><TD>total hits</TD><TD>$!results.hitCount</TD></TR>
+	<tr class="portlet-section-body"><TD>max processing time</TD><TD>$!results.maxProcessingTime</TD></TR>
+	<tr class="portlet-section-alternate"><TD>avg processing time</TD><TD>$!results.avgProcessingTime</TD></TR>
+	<tr class="portlet-section-body"><TD>stdev from avg time</TD><TD>$!results.stdDevProcessingTime</TD></TR>
+	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TR>
     </table>
+    </td><td>
+<!--    
+    <table class="class="portlet-section-body" >
+	<tr class="portlet-section-subheader"><TH><b>username</b></TH><TH><b>value</b></TH></TR>
+	<tr class="portlet-section-alternate"><TD>min processing time</TD><TD>$!results.minProcessingTime</TD></TR>
+    </table>
+-->    
+    </td></tr></table>
 </div>
