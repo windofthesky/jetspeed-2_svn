@@ -573,12 +573,12 @@ public abstract class AbstractPageManager
         page.setRootFragment(root);
         
         // copy security constraints
-//        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
-//        if (srcSecurity != null)
-//        {
-//            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
-//            page.setSecurityConstraints(copiedSecurity);
-//        }    
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+        if (srcSecurity != null)
+        {
+            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            page.setSecurityConstraints(copiedSecurity);
+        }    
 
         // menus
 //        List menus = page.getMenuDefinitions();
