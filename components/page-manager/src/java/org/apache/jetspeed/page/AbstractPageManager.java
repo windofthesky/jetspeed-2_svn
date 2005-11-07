@@ -38,6 +38,8 @@ import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.MenuElement;
 
@@ -56,6 +58,7 @@ public abstract class AbstractPageManager
     protected Class pageClass;
     protected Class folderClass;
     protected Class linkClass;
+    protected Class pageSecurityClass;
     protected Class propertyClass;
     protected Class menuDefinitionClass;
     protected Class menuExcludeDefinitionClass;
@@ -64,6 +67,7 @@ public abstract class AbstractPageManager
     protected Class menuSeparatorDefinitionClass;
     protected Class securityConstraintsClass;
     protected Class securityConstraintClass;
+    protected Class securityConstraintsDefClass;
 
     private boolean permissionsEnabled;
 
@@ -85,6 +89,7 @@ public abstract class AbstractPageManager
         this.pageClass = (Class)modelClasses.get("PageImpl.class");
         this.folderClass = (Class)modelClasses.get("FolderImpl.class");
         this.linkClass = (Class)modelClasses.get("LinkImpl.class");
+        this.pageSecurityClass = (Class)modelClasses.get("PageSecurityImpl.class");
         this.menuDefinitionClass = (Class)modelClasses.get("MenuDefinitionImpl.class");
         this.menuExcludeDefinitionClass = (Class)modelClasses.get("MenuExcludeDefinitionImpl.class");
         this.menuIncludeDefinitionClass = (Class)modelClasses.get("MenuIncludeDefinitionImpl.class");
@@ -92,6 +97,7 @@ public abstract class AbstractPageManager
         this.menuSeparatorDefinitionClass = (Class)modelClasses.get("MenuSeparatorDefinitionImpl.class");
         this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl.class");
         this.securityConstraintClass = (Class)modelClasses.get("SecurityConstraintImpl.class");
+        this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl.class");
     }
     
     /**
@@ -201,6 +207,26 @@ public abstract class AbstractPageManager
             log.error(message, e);
         }
         return link;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageSecurity()
+     */
+    public PageSecurity newPageSecurity()
+    {
+        PageSecurity pageSecurity = null;
+        try
+        {
+            // factory create the document and set id/path
+            pageSecurity = (PageSecurity)createObject(this.pageSecurityClass);            
+            pageSecurity.setPath(Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create page security object for " + this.pageClass;
+            log.error(message, e);
+        }
+        return pageSecurity;        
     }
     
     /* (non-Javadoc)
@@ -374,6 +400,25 @@ public abstract class AbstractPageManager
     }
 
     /**
+     * newSecurityConstraintsDef - creates a new security constraints definition
+     *
+     * @return a newly created SecurityConstraintsDef object
+     */
+    public SecurityConstraintsDef newSecurityConstraintsDef()
+    {
+        try
+        {
+            return (SecurityConstraintsDef)createObject(this.securityConstraintsDefClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraints definition object for " + this.securityConstraintsDefClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
      * createObject - creates a new page manager implementation object
      *
      * @param classe implementation class
@@ -413,6 +458,14 @@ public abstract class AbstractPageManager
     {
         // remove listener from listeners list
         listeners.remove(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#reset()
+     */
+    public void reset()
+    {
+        // nothing to reset by default
     }
 
     /**

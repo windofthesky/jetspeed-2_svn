@@ -15,8 +15,11 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.page.BaseElement;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * BaseElementImpl
@@ -24,12 +27,18 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public abstract class BaseElementImpl implements BaseElement
+public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerAware
 {
     private int id;
     private String name;
     private String title;
     private String shortTitle;
+    private SecurityConstraintsImpl constraints;
+
+    protected BaseElementImpl(SecurityConstraintsImpl constraints)
+    {
+        this.constraints = constraints;
+    }
 
     /**
      * getName
@@ -64,7 +73,7 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public SecurityConstraints getSecurityConstraints()
     {
-        return null; // NYI
+        return constraints;
     }
     
     /* (non-Javadoc)
@@ -72,7 +81,13 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
     {
-        // NYI
+        // copy constraints to maintain persistent types
+        if (this.constraints != null)
+        {
+            this.constraints.setOwner(constraints.getOwner());
+            this.constraints.setSecurityConstraints(constraints.getSecurityConstraints());
+            this.constraints.setSecurityConstraintsRefs(constraints.getSecurityConstraintsRefs());
+        }
     }
 
     /* (non-Javadoc)
@@ -145,5 +160,71 @@ public abstract class BaseElementImpl implements BaseElement
     public void setShortTitle(String title)
     {
         shortTitle = title;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeInsert(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // execute update hook by default
+        beforeUpdate(broker);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterInsert(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // execute update hook by default
+        afterUpdate(broker);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeUpdate(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // update constraints to maintain mapping
+        if (constraints != null)
+        {
+            constraints.beforeUpdate();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterUpdate(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeDelete(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterDelete(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // nothing to do by default
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // update constraints to maintain mapping
+        if (constraints != null)
+        {
+            constraints.afterLookup();
+        }
     }
 }

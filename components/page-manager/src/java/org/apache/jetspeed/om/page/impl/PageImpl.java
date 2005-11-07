@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -33,15 +34,20 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
  */
 public class PageImpl extends NodeImpl implements Page
 {
-    private List fragments;
+    private Collection fragment;
     private String skin;
     private String defaultLayoutDecorator;
     private String defaultPortletDecorator;
 
+    public PageImpl()
+    {
+        super(new PageSecurityConstraintsImpl());
+    }
+
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.List)
+     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
      */
-    public PageMetadataImpl newPageMetadata(List fields)
+    public PageMetadataImpl newPageMetadata(Collection fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);
@@ -109,9 +115,9 @@ public class PageImpl extends NodeImpl implements Page
     public Fragment getRootFragment()
     {
         // get singleton fragment
-        if ((fragments != null) && !fragments.isEmpty())
+        if ((fragment != null) && !fragment.isEmpty())
         {
-            return (Fragment)fragments.get(0);
+            return (Fragment)fragment.iterator().next();
         }
         return null;
     }
@@ -122,24 +128,19 @@ public class PageImpl extends NodeImpl implements Page
     public void setRootFragment(Fragment fragment)
     {
         // delete existing fragments if required
-        if ((fragments != null) && !fragments.isEmpty())
+        if ((this.fragment != null) && !this.fragment.isEmpty())
         {
-            Iterator removeIter = fragments.iterator();
-            while (removeIter.hasNext())
-            {
-                removeIter.next();
-                removeIter.remove();
-            }
+            this.fragment.clear();
         }
 
         // add new singleton fragment
         if (fragment != null)
         {
-            if (fragments == null)
+            if (this.fragment == null)
             {
-                fragments = new ArrayList(1);
+                this.fragment = new ArrayList(1);
             }
-            fragments.add(fragment);
+            this.fragment.add(fragment);
         }
     }
 

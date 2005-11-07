@@ -38,8 +38,13 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
+import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
+import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.DelegatingPageManager;
 import org.apache.jetspeed.page.FolderNotRemovedException;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
@@ -51,6 +56,8 @@ import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.impl.NodeAttributes;
@@ -77,13 +84,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("PageImpl.class", PageImpl.class);
         modelClasses.put("FolderImpl.class", FolderImpl.class);
         //modelClasses.put("LinkImpl.class", LinkImpl.class);
+        modelClasses.put("PageSecurityImpl.class", PageSecurityImpl.class);
         //modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
         //modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
         //modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);
         //modelClasses.put("MenuOptionsDefinitionImpl.class", MenuOptionsDefinitionImpl.class);
         //modelClasses.put("MenuSeparatorDefinitionImpl.class", MenuSeparatorDefinitionImpl.class);
-        //modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
-        //modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
+        modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
+        modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
+        modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
     }
 
     private DelegatingPageManager delegator;
@@ -135,6 +144,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public Link newLink(String path)
     {
         return delegator.newLink(path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageSecurity()
+     */
+    public PageSecurity newPageSecurity()
+    {
+        return delegator.newPageSecurity();
     }
 
     /* (non-Javadoc)
@@ -207,6 +224,43 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newSecurityConstraintsDef()
+     */
+    public SecurityConstraintsDef newSecurityConstraintsDef()
+    {
+        return delegator.newSecurityConstraintsDef();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#addListener(org.apache.jetspeed.page.PageManagerEventListener)
+     */
+    public void addListener(PageManagerEventListener listener)
+    {
+        delegator.addListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removeListener(org.apache.jetspeed.page.PageManagerEventListener)
+     */
+    public void removeListener(PageManagerEventListener listener)
+    {
+        delegator.removeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#reset()
+     */
+    public void reset()
+    {
+        // propagate to delegator
+        delegator.reset();
+
+        // clean database node cache to force subsequent
+        // refreshs from persistent store
+        databaseNodeCache.clear();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
      */
     public Page getPage(String path) throws PageNotFoundException, NodeException
@@ -273,8 +327,44 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        // TODO Auto-generated method stub
-        return null;
+        // construct document attributes from path
+        String path = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
+        NodeAttributes attributes = new NodeAttributes(path);
+        path = attributes.getCanonicalPath();
+
+        // test cache with canonical path if available
+        if (databaseNodeCache.containsKey(path))
+        {
+            // return cached document or throw exception if cached as null
+            PageSecurity document = (PageSecurity) databaseNodeCache.get(path);
+            if (document == null)
+            {
+                throw new DocumentNotFoundException("Document " + path + " not found.");
+            }
+            return document;
+        }
+        
+        // retrieve document from database
+        try
+        {
+            Criteria filter = attributes.newQueryCriteria();
+            QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
+            PageSecurity document = (PageSecurity) getPersistenceBrokerTemplate().getObjectByQuery(query);
+            
+            // add to or delete entry in document cache
+            databaseNodeCache.put(path, document);
+            
+            // return page or throw exception
+            if (document == null)
+            {
+                throw new DocumentNotFoundException("Document " + path + " not found.");
+            }
+            return document;
+        }
+        catch (Exception e)
+        {
+            throw new DocumentNotFoundException("Document " + path + " not found.", e);
+        }
     }
 
     /* (non-Javadoc)
@@ -521,23 +611,90 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#addListener(org.apache.jetspeed.page.PageManagerEventListener)
+     * @see org.apache.jetspeed.page.PageManager#updatePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
-    public void addListener(PageManagerEventListener listener)
+    public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            // dereference document in case proxy is supplied
+            pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
+            // look up and set parent folder if necessary
+            if (pageSecurity.getParent() == null)
+            {
+                // access folder by path
+                String pageSecurityPath = pageSecurity.getPath();
+                String parentPath = pageSecurityPath.substring(0, pageSecurityPath.lastIndexOf(Folder.PATH_SEPARATOR));
+                if (parentPath.length() == 0)
+                {
+                    parentPath = Folder.PATH_SEPARATOR;
+                }
+                FolderImpl parent = null;
+                try
+                {
+                    parent = (FolderImpl)getFolder(parentPath);
+                }
+                catch (FolderNotFoundException fnfe)
+                {
+                    throw new FailedToUpdateDocumentException("Missing parent folder: " + parentPath);
+                }
+                
+                // update parent folder with added document
+                parent.setPageSecurity((PageSecurityImpl)pageSecurity);
+                pageSecurity.setParent(parent);
+                getPersistenceBrokerTemplate().store(parent);
+                
+                // update document cache
+                databaseNodeCache.put(pageSecurityPath, pageSecurity);
+            }
+            else
+            {
+                // update document
+                getPersistenceBrokerTemplate().store(pageSecurity);
+                
+                // update document cache
+                databaseNodeCache.put(pageSecurity.getPath(), pageSecurity);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new FailedToUpdateDocumentException("Document " + pageSecurity.getPath() + " not updated.", e);
+        }
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#removeListener(org.apache.jetspeed.page.PageManagerEventListener)
+     * @see org.apache.jetspeed.page.PageManager#removePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
-    public void removeListener(PageManagerEventListener listener)
+    public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            // dereference document in case proxy is supplied
+            pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
+            // look up and update parent folder if necessary
+            if (pageSecurity.getParent() != null)
+            {
+                // update parent folder with removed document; deletes document
+                FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(pageSecurity.getParent());
+                parent.setPageSecurity(null);
+                getPersistenceBrokerTemplate().store(parent);
+            }
+            else
+            {
+                // delete document
+                getPersistenceBrokerTemplate().delete(pageSecurity);
+            }
+            
+            // delete document cache entry
+            databaseNodeCache.put(pageSecurity.getPath(), null);
+        }
+        catch (Exception e)
+        {
+            throw new FailedToDeleteDocumentException("Document " + pageSecurity.getPath() + " not removed.", e);
+        }
     }
-
 
     public Page copyPage(Page source, String path)
     throws JetspeedException, PageNotUpdatedException

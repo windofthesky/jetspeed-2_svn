@@ -32,8 +32,11 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
@@ -86,6 +89,13 @@ public interface PageManager
      * @return a newly created Link object
      */
     public Link newLink(String path);
+
+    /**
+     * Creates a new empty PageSecurity instance
+     *
+     * @return a newly created PageSecurity object
+     */
+    public PageSecurity newPageSecurity();
 
     /**
      * Creates a new empty Layout Fragment instance
@@ -149,6 +159,13 @@ public interface PageManager
      * @return a newly created SecurityConstraint object
      */
     public SecurityConstraint newSecurityConstraint();
+
+    /**
+     * newSecurityConstraintsDef - creates a new security constraints definition
+     *
+     * @return a newly created SecurityConstraintsDef object
+     */
+    public SecurityConstraintsDef newSecurityConstraintsDef();
 
    /**
     * 
@@ -256,9 +273,21 @@ public interface PageManager
 
     /** Remove a link.
      *
-     * @param page The link to be removed.
+     * @param link The link to be removed.
      */
     public void removeLink(Link link) throws JetspeedException, LinkNotRemovedException;
+
+    /** Update a page security document in persistent storage
+     *
+     * @param pageSecurity The document to be updated.
+     */
+    public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException;
+
+    /** Remove a page security document.
+     *
+     * @param pageSecurity The document to be removed.
+     */
+    public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException;
 
     /**
      * addListener - add page manager event listener
@@ -274,6 +303,11 @@ public interface PageManager
      */
     public void removeListener(PageManagerEventListener listener);
     
+    /**
+     * reset - force subsequent refresh from persistent store 
+     */
+    public void reset();
+
     /** 
      * Copy the source page creating and returning a new copy of the page  
      * with the same portlet and fragment collection as the source

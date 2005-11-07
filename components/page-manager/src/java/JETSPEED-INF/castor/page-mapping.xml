@@ -401,7 +401,7 @@
     </field>
 
     <field name="securityConstraints"
-           type="org.apache.jetspeed.om.page.psml.SecurityConstraintImpl"
+           type="org.apache.jetspeed.om.page.SecurityConstraintImpl"
            collection="collection">
       <bind-xml name="security-constraint"/>
     </field>
@@ -413,7 +413,7 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintImpl">
+  <class name="org.apache.jetspeed.om.page.SecurityConstraintImpl">
     <map-to xml="security-constraint"/>
 
     <field name="users" type="java.lang.String">
@@ -437,7 +437,7 @@
     <map-to xml="page-security"/>
 
     <field name="securityConstraintsDefs"
-           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl"
+           type="org.apache.jetspeed.om.page.SecurityConstraintsDefImpl"
            collection="collection">
       <bind-xml name="security-constraints-def"/>
     </field>
@@ -449,7 +449,7 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl">
+  <class name="org.apache.jetspeed.om.page.SecurityConstraintsDefImpl">
     <map-to xml="security-constraints-def"/>
 
     <field name="name" type="java.lang.String">
@@ -457,7 +457,7 @@
     </field>
 
     <field name="securityConstraints"
-           type="org.apache.jetspeed.om.page.psml.SecurityConstraintImpl"
+           type="org.apache.jetspeed.om.page.SecurityConstraintImpl"
            collection="collection">
       <bind-xml name="security-constraint"/>
     </field>

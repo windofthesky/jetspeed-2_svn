@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
@@ -32,7 +31,7 @@ import org.apache.ojb.broker.PersistenceBrokerException;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentImpl extends BaseElementImpl implements Fragment, PersistenceBrokerAware
+public class FragmentImpl extends BaseElementImpl implements Fragment
 {
     private List fragments;
     private String type;
@@ -48,6 +47,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     private String extendedPropertyValue2;
 
     private Map properties;
+
+    public FragmentImpl()
+    {
+        super(new FragmentSecurityConstraintsImpl());
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getType()
@@ -127,7 +131,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
      */
     public String getProperty(String propName)
     {
@@ -139,7 +143,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
      */
     public int getIntProperty(String propName)
     {
@@ -210,7 +214,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
         if (column >= 0)
         {
             getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(column));
-    }
+        }
         else if (properties != null)
         {
             properties.remove(COLUMN_PROPERTY_NAME);
@@ -259,21 +263,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     }
 
     /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
      */
-    public void beforeInsert(PersistenceBroker broker) throws PersistenceBrokerException
+    public List getPreferences()
     {
-        // execute update hook
-        beforeUpdate(broker);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterInsert(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // execute update hook
-        afterUpdate(broker);
+        return null; // NYI
     }
     
     /* (non-Javadoc)
@@ -281,6 +275,9 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
      */
     public void beforeUpdate(PersistenceBroker broker) throws PersistenceBrokerException
     {
+        // propagate to super
+        super.beforeUpdate(broker);
+
         // update concrete fields with properties
         layoutRowProperty = -1;
         layoutColumnProperty = -1;
@@ -302,7 +299,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
                     if (propName.equals(ROW_PROPERTY_NAME))
                     {
                         layoutRowProperty = Integer.parseInt(propValue);
-    }
+                    }
                     else if (propName.equals(COLUMN_PROPERTY_NAME))
                     {
                         layoutColumnProperty = Integer.parseInt(propValue);
@@ -327,41 +324,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment, Persisten
     }
 
     /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterUpdate(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // nothing to do by default
-    }
-    
-    public List getPreferences()
-    {
-      // TODO This needs to be implemented in the DB version
-      throw new UnsupportedOperationException("Not Yet Implemented"); // NYI
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void beforeDelete(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // nothing to do by default
-    }
-    
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterDelete(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // nothing to do by default
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
      */
     public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
     {
+        // propagate to super
+        super.afterLookup(broker);
+
         // load properties from concrete fields
         if (layoutRowProperty >= 0)
         {

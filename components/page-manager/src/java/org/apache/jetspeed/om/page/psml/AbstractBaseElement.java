@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;

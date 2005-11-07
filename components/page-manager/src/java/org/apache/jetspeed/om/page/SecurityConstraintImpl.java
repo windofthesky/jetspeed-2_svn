@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.om.page;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -91,6 +91,20 @@ public class SecurityConstraintImpl implements SecurityConstraint
 
     /**
      * <p>
+     * setUsers
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecurityConstraint#setUsers(java.util.List)
+     * @param users
+     */
+    public void setUsers(List users)
+    {
+        this.users = formatCSVList(users);
+        usersList = users;
+    }
+
+    /**
+     * <p>
      * getRoles
      * </p>
      *
@@ -127,6 +141,20 @@ public class SecurityConstraintImpl implements SecurityConstraint
     {
         this.roles = roles;
         rolesList = parseCSVList(roles);
+    }
+
+    /**
+     * <p>
+     * setRoles
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecurityConstraint#setRoles(java.util.List)
+     * @param roles
+     */
+    public void setRoles(List roles)
+    {
+        this.roles = formatCSVList(roles);
+        rolesList = roles;
     }
 
     /**
@@ -171,6 +199,20 @@ public class SecurityConstraintImpl implements SecurityConstraint
 
     /**
      * <p>
+     * setGroups
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecurityConstraint#setGroups(java.util.List)
+     * @param groups
+     */
+    public void setGroups(List groups)
+    {
+        this.groups = formatCSVList(groups);
+        groupsList = groups;
+    }
+
+    /**
+     * <p>
      * getPermissions
      * </p>
      *
@@ -207,6 +249,20 @@ public class SecurityConstraintImpl implements SecurityConstraint
     {
         this.permissions = permissions;
         permissionsList = parseCSVList(permissions);
+    }
+
+    /**
+     * <p>
+     * setPermissions
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecurityConstraint#setPermissions(java.util.List)
+     * @param permissions
+     */
+    public void setPermissions(List permissions)
+    {
+        this.permissions = formatCSVList(permissions);
+        permissionsList = permissions;
     }
 
     /**
@@ -280,6 +336,36 @@ public class SecurityConstraintImpl implements SecurityConstraint
                 csvList.add(csv);
             }
             return csvList;
+        }
+        return null;
+    }
+
+    /**
+     * <p>
+     * formatCSVList
+     * </p>
+     * <p>
+     * Utility to format CSV List values into strings.
+     * </p>
+     *
+     * @param list
+     * @return formatted string value.
+     */
+    public static String formatCSVList(List list)
+    {
+        if ((list != null) && !list.isEmpty())
+        {
+            StringBuffer csv = new StringBuffer();
+            Iterator listIter = list.iterator();
+            while (listIter.hasNext())
+            {
+                if (csv.length() > 0)
+                {
+                    csv.append(",");
+                }
+                csv.append((String)listIter.next());
+            }
+            return csv.toString();
         }
         return null;
     }

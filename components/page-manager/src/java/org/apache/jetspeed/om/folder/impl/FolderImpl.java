@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.PageImpl;
+import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -46,10 +48,16 @@ public class FolderImpl extends NodeImpl implements Folder
     private String defaultPage;
     private List folders;
     private List pages;
+    private Collection pageSecurity;
 
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
+
+    public FolderImpl()
+    {
+        super(new FolderSecurityConstraintsImpl());
+    }
 
     /**
      * addFolder
@@ -133,10 +141,41 @@ public class FolderImpl extends NodeImpl implements Folder
         pagesNodeSet = null;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.List)
+    /**
+     * setPageSecurity
+     *
+     * Sets the page security singleton in the persistent collection and resets cached node sets.
+     *
+     * @param pageSecurity new page security impl
      */
-    public PageMetadataImpl newPageMetadata(List fields)
+    public void setPageSecurity(PageSecurityImpl newPageSecurity)
+    {
+        if (newPageSecurity != null)
+        {
+            // add to page security collection
+            if (pageSecurity == null)
+            {
+                pageSecurity = new ArrayList(1);
+            }
+            pageSecurity.add(newPageSecurity);            
+        }
+        else
+        {
+            // clear page security collection
+            if ((pageSecurity != null) && !pageSecurity.isEmpty())
+            {
+                pageSecurity.clear();
+            }
+        }
+
+        // reset cached node sets
+        allNodeSet = null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
+     */
+    public PageMetadataImpl newPageMetadata(Collection fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(FolderMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);
@@ -269,7 +308,12 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException
     {
-        return null; // NYI
+        // get singleton page security
+        if ((pageSecurity != null) && !pageSecurity.isEmpty())
+        {
+            return (PageSecurity)pageSecurity.iterator().next();
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -287,6 +331,10 @@ public class FolderImpl extends NodeImpl implements Folder
             if (pages != null)
             {
                 all.addAll(pages);
+            }
+            if (pageSecurity != null)
+            {
+                all.addAll(pageSecurity);
             }
             if (!all.isEmpty())
             {

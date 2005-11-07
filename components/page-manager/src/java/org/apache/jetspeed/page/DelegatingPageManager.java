@@ -11,6 +11,8 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
@@ -143,4 +145,23 @@ public class DelegatingPageManager extends AbstractPageManager
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updatePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
+     */
+    public void updatePageSecurity(PageSecurity pageSecurity) throws
+            JetspeedException, FailedToUpdateDocumentException
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
+     */
+    public void removePageSecurity(PageSecurity pageSecurity) throws
+            JetspeedException, FailedToDeleteDocumentException
+    {
+        // TODO Auto-generated method stub
+
+    }
 }

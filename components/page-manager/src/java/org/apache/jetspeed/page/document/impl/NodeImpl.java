@@ -16,13 +16,14 @@
 package org.apache.jetspeed.page.document.impl;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
+import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
 
 /**
@@ -35,15 +36,14 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
 {
     private Node parent;
     private boolean hidden;
-    private NodeAttributes attributes;
-    private List metadataFields;
+    private Collection metadataFields;
+    private NodeAttributes attributes = new NodeAttributes();
 
     private PageMetadataImpl pageMetadata;
 
-    public NodeImpl()
+    public NodeImpl(SecurityConstraintsImpl constraints)
     {
-        super();
-        attributes = new NodeAttributes();
+        super(constraints);
     }
 
     /**
@@ -67,7 +67,11 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      * @param fields mutable fields collection
      * @return page metadata
      */
-    public abstract PageMetadataImpl newPageMetadata(List fields);
+    public PageMetadataImpl newPageMetadata(Collection fields)
+    {
+        // no metadata available by default
+        return null;
+    }
 
     /**
      * getPageMetadata

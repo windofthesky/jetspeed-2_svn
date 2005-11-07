@@ -56,12 +56,25 @@ limitations under the License.
           auto-update="object"
           proxy="true"
       >
+         <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
       <collection-descriptor
           name="pages"
           element-class-ref="org.apache.jetspeed.om.page.impl.PageImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          proxy="true"
+      >
+         <orderby name="name" sort="ASC"/>
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="pageSecurity"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityImpl"
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
@@ -165,6 +178,34 @@ limitations under the License.
          column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraint"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="folderId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="folderId"/>
+      </collection-descriptor>
    </class-descriptor>
 
    <class-descriptor
@@ -206,6 +247,92 @@ limitations under the License.
       />
    </class-descriptor>
 
+   <class-descriptor
+      class="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraint"
+      table="FOLDER_SECURITY_CONSTRAINT"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="folderId"
+        column="FOLDER_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="userPrincipals"
+         column="USER_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="rolePrincipals"
+         column="ROLE_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="groupPrincipals"
+         column="GROUP_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="permissions"
+         column="PERMISSIONS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraintsRef"
+      table="FOLDER_SECURITY_CONSTRAINTS_REF"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINTS_REF_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="folderId"
+        column="FOLDER_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
    <!-- Page mapping -->
 
    <class-descriptor
@@ -239,7 +366,7 @@ limitations under the License.
       </reference-descriptor>
 
       <collection-descriptor
-          name="fragments"
+          name="fragment"
           element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
           auto-retrieve="true"
           auto-delete="object"
@@ -356,6 +483,34 @@ limitations under the License.
          column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraint"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
    </class-descriptor>
 
    <class-descriptor
@@ -397,6 +552,92 @@ limitations under the License.
       />
    </class-descriptor>
 
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageSecurityConstraint"
+      table="PAGE_SECURITY_CONSTRAINT"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="userPrincipals"
+         column="USER_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="rolePrincipals"
+         column="ROLE_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="groupPrincipals"
+         column="GROUP_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="permissions"
+         column="PERMISSIONS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
+      table="PAGE_SECURITY_CONSTRAINTS_REF"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINTS_REF_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
    <!-- Fragment mapping -->
 
    <class-descriptor
@@ -426,6 +667,7 @@ limitations under the License.
           auto-update="object"
           proxy="true"
       >
+         <orderby name="id" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
@@ -517,6 +759,328 @@ limitations under the License.
       <field-descriptor
          name="extendedPropertyValue2"
          column="EXT_PROP_VALUE_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraint"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraint"
+      table="FRAGMENT_SECURITY_CONSTRAINT"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="fragmentId"
+        column="FRAGMENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="userPrincipals"
+         column="USER_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="rolePrincipals"
+         column="ROLE_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="groupPrincipals"
+         column="GROUP_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="permissions"
+         column="PERMISSIONS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintsRef"
+      table="FRAGMENT_SECURITY_CONSTRAINTS_REF"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINTS_REF_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="fragmentId"
+        column="FRAGMENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <!-- PageSecurity mapping -->
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageSecurityImpl"
+      table="PAGE_SECURITY"
+   >
+      <field-descriptor
+         name="id"
+         column="PAGE_SECURITY_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-retrieve="true"
+          auto-delete="none"
+          auto-update="none"
+          proxy="true"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <field-descriptor
+         name="attributes::path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::user"
+         column="USER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::role"
+         column="ROLE_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::extendedAttributeName"
+         column="EXT_ATTR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="attributes::extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraintsDefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintsDef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="name" sort="ASC"/>
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageSecurityId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="globalConstraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityGlobalSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageSecurityId"/>
+      </collection-descriptor>
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintsDef"
+      table="PAGE_SECURITY_SECURITY_CONSTRAINTS_DEF"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINTS_DEF_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageSecurityId"
+        column="PAGE_SECURITY_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="userPrincipals"
+         column="USER_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="rolePrincipals"
+         column="ROLE_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="groupPrincipals"
+         column="GROUP_PRINCIPALS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+
+      <field-descriptor
+         name="permissions"
+         column="PERMISSIONS_ACL"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageSecurityGlobalSecurityConstraintsRef"
+      table="PAGE_SECURITY_GLOBAL_SECURITY_CONSTRAINTS_REF"
+   >
+      <field-descriptor
+         name="id"
+         column="CONSTRAINTS_REF_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="pageSecurityId"
+        column="PAGE_SECURITY_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="applyOrder"
+         column="APPLY_ORDER"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
          jdbc-type="VARCHAR"
       />
    </class-descriptor>

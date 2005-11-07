@@ -44,16 +44,20 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
@@ -79,6 +83,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("PageImpl.class", PageImpl.class);
         modelClasses.put("FolderImpl.class", FolderImpl.class);
         modelClasses.put("LinkImpl.class", LinkImpl.class);
+        modelClasses.put("PageSecurityImpl.class", PageSecurityImpl.class);
         modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
         modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
         modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);
@@ -86,6 +91,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("MenuSeparatorDefinitionImpl.class", MenuSeparatorDefinitionImpl.class);
         modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
         modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
+        modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
     }
 
     private IdGenerator generator = null;
@@ -374,6 +380,22 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return folder.getPageSecurity();
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updatePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
+     */
+    public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException
+    {
+        throw new FailedToUpdateDocumentException("Document " + pageSecurity.getPath() + " not updated, update not implemented.");
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
+     */
+    public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException
+    {
+        throw new FailedToDeleteDocumentException("Document " + pageSecurity.getPath() + " not removed, remove not implemented.");
+    }
+
     /**
      * <p>
      * getFolder
@@ -478,6 +500,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
         // notify page manager listeners
         notifyRemovedNode(folder);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#reset()
+     */
+    public void reset()
+    {
+        // propagate
+        super.reset();
     }
 
     /**

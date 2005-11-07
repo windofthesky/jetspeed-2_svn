@@ -63,6 +63,15 @@ public interface SecurityConstraint
 
     /**
      * <p>
+     * setUsers
+     * </p>
+     *
+     * @param users constraint list as List
+     */
+    void setUsers(List users);
+    
+    /**
+     * <p>
      * getRoles
      * </p>
      *
@@ -88,6 +97,15 @@ public interface SecurityConstraint
      */
     void setRoles(String roles);
 
+    /**
+     * <p>
+     * setRoles
+     * </p>
+     *
+     * @param roles constraint list as List
+     */
+    void setRoles(List roles);
+    
     /**
      * <p>
      * getGroups
@@ -117,6 +135,15 @@ public interface SecurityConstraint
 
     /**
      * <p>
+     * setGroups
+     * </p>
+     *
+     * @param groups constraint list as List
+     */
+    void setGroups(List groups);
+    
+    /**
+     * <p>
      * getPermissions
      * </p>
      *
@@ -138,7 +165,16 @@ public interface SecurityConstraint
      * setPermissions
      * </p>
      *
-     * @param permissions constraint list in CSV string form
+     * @param permissions constraint permissions list in CSV string form
      */
     void setPermissions(String permissions);
+
+    /**
+     * <p>
+     * setPermissions
+     * </p>
+     *
+     * @param permissions constraint permissions list as List
+     */
+    void setPermissions(List permissions);
 }

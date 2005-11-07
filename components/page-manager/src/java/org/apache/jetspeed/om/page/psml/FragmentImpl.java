@@ -111,36 +111,36 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public Vector getPropertiesList()
     {
         return (Vector) this.propertiesList;
-            }
-
+    }
+    
     /**
-     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
      */
     public String getProperty(String propName)
     {
         return (String)propertiesMap.get(propName);
-        }
-
+    }
+    
     /**
-     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
      */
     public int getIntProperty(String propName)
-        {
+    {
         String prop = (String)propertiesMap.get(propName);
         if (prop != null)
-            {
+        {
             return Integer.parseInt(prop);
-            }
-        return -1;
         }
-
+        return -1;
+    }
+    
     /**
      * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
     public Map getProperties()
     {
         return propertiesMap;
-            }
+    }
 
     /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
@@ -151,7 +151,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         if (prop != null)
         {
             return Integer.parseInt(prop);
-            }
+        }
         return -1;
     }
 
@@ -165,10 +165,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(ROW_PROPERTY_NAME, String.valueOf(row));
         }
         else
-            {
+        {
             propertiesMap.remove(ROW_PROPERTY_NAME);
-            }
         }
+    }
     
     /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
@@ -179,7 +179,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         if (prop != null)
         {
             return Integer.parseInt(prop);
-            }
+        }
         return -1;
     }
 
@@ -193,10 +193,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(COLUMN_PROPERTY_NAME, String.valueOf(column));
         }
         else
-            {
+        {
             propertiesMap.remove(COLUMN_PROPERTY_NAME);
-            }
         }
+    }
     
     /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
@@ -204,7 +204,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public String getLayoutSizes()
     {
         return (String)propertiesMap.get(SIZES_PROPERTY_NAME);
-            }
+    }
     
     /**
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
@@ -216,10 +216,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.put(SIZES_PROPERTY_NAME, sizes);
         }
         else
-            {
+        {
             propertiesMap.remove(SIZES_PROPERTY_NAME);
-            }
         }
+    }
     
     public Object clone() throws java.lang.CloneNotSupportedException
     {
