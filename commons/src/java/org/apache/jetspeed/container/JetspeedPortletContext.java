@@ -77,21 +77,47 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
     public javax.portlet.PortletRequestDispatcher getRequestDispatcher(String path)
     {
         String localizedPath = localizePath(path, this.application);
-        RequestDispatcher rd = servletContext.getRequestDispatcher(localizedPath);
-
+        RequestDispatcher rd = null;
+        
+        try
+        {
+            rd = servletContext.getRequestDispatcher(localizedPath);
+        }
+        catch (Exception e)
+        {
+            // Portlet API says: return null
+        }
 
         // TODO: factory
-        return new JetspeedRequestDispatcher(rd);
+        if ( rd != null )
+        {
+            return new JetspeedRequestDispatcher(rd);
+        }
+        return null;
     }
 
     public PortletRequestDispatcher getNamedDispatcher(String name)
     {
         // TODO: localize name
 
-        RequestDispatcher rd = servletContext.getNamedDispatcher(name);
+        RequestDispatcher rd = null;
+        
+        try
+        {
+            rd = servletContext.getNamedDispatcher(name);
+        }
+        catch (Exception e)
+        {
+            // Portlet API says: return null
+        }
+        
         // TODO: factory
 
-        return new JetspeedRequestDispatcher(rd);
+        if ( rd != null )
+        {
+            return new JetspeedRequestDispatcher(rd);
+        }
+        return null;
     }
 
     public String getMimeType(String file)
@@ -106,6 +132,11 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public java.lang.Object getAttribute(java.lang.String name)
     {
+        if ( name == null )
+        {
+            throw new IllegalArgumentException("Required parameter name is null");
+        }
+        
         if (name.startsWith("cps:"))
         {
             String serviceName = name.substring("cps:".length());
@@ -169,6 +200,10 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public java.lang.String getInitParameter(java.lang.String name)
     {
+        if ( name == null )
+        {
+            throw new IllegalArgumentException("Required parameter name is null");
+        }
         return servletContext.getInitParameter(name);
     }
 
