@@ -507,8 +507,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void reset()
     {
-        // propagate
+        // propagate to super
         super.reset();
+
+        // evict all from file cache to force subsequent
+        // refreshs from persistent store
+        fileCache.evictAll();
     }
 
     /**

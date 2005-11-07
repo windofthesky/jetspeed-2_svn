@@ -113,6 +113,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
             dumpCache(cache.getIterator());
 
             cache.addListener(this);
+
             // start the cache's scanner
             cache.startFileScanner();
 
@@ -143,13 +144,16 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
 
             files[18].setLastModified(new Date().getTime());
 
-
             Thread.sleep(9000);
 
             assertNotNull(refreshedEntry);
             System.out.println("refreshed entry = " + refreshedEntry);
 
             cache.stopFileScanner();
+
+            // evict all from cache
+            cache.evictAll();
+            assertTrue(cache.getSize() == 0);
 
             removeTestFiles();
         }

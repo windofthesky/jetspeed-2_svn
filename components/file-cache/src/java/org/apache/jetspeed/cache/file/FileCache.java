@@ -307,6 +307,49 @@ public class FileCache implements java.util.Comparator
     }
 
     /**
+     * Evicts all entries
+     *
+     */
+    public void evictAll()        
+    {
+        synchronized (cache)
+        {
+            // evict all cache entries
+            List list = new LinkedList(cache.values());
+            for (Iterator it = list.iterator(); it.hasNext(); )
+            {
+                // evict cache entry
+                FileCacheEntry entry = (FileCacheEntry) it.next();
+                // notify that eviction will soon take place
+                for (Iterator lit = this.listeners.iterator(); lit.hasNext(); )
+                {
+                    FileCacheEventListener listener = 
+                        (FileCacheEventListener) lit.next();
+                    try
+                    {
+                        listener.evict(entry);
+                    }
+                    catch (Exception e1)
+                    {
+                        log.warn("Unable to evict cache entry.  "+e1.toString(), e1);
+                    }                                    
+                }
+                // remove from cache by key
+                String key = null;
+                try
+                {
+                    key = entry.getFile().getCanonicalPath();
+                }                    
+                catch (java.io.IOException e)
+                {
+                    log.error("Exception getting file path: ", e);
+                }
+                cache.remove(key);
+            }        
+        }
+    }
+
+    /**
      * Comparator function for sorting by last accessed during eviction
      *
      */
