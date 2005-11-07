@@ -76,6 +76,10 @@ public class FilePortlet extends GenericServletPortlet
         {
             response.setContentType("application/pdf");
         }
+        else if (path.endsWith(".zip"))
+        {
+            response.setContentType("application/zip");
+        }        
         else
         {
             response.setContentType("text/html");
