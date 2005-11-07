@@ -105,7 +105,7 @@
             -->
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.UserBrowserResources</resource-bundle>
         <portlet-info>
             <title>User Browser</title>
             <short-title>Users</short-title>
@@ -144,7 +144,7 @@
             -->
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.UserDetailsResources</resource-bundle>
         <portlet-preferences>
             <preference>
                 <name>showUserTab</name>
@@ -234,7 +234,7 @@
             -->
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.GroupDetailsResources</resource-bundle>
         <portlet-info>
             <title>Group Detail Information</title>
             <short-title>Group</short-title>
@@ -262,7 +262,7 @@
             -->
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.RoleDetailsResources</resource-bundle>
         <portlet-info>
             <title>Role Detail Information</title>
             <short-title>Role</short-title>
@@ -318,7 +318,7 @@
             -->
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSOResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSODetailsResources</resource-bundle>
         <portlet-info>
             <title>SSO Details</title>
             <short-title>SSO Details</short-title>
@@ -470,7 +470,7 @@
             <portlet-mode>VIEW</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.GroupBrowserResources</resource-bundle>
         <portlet-preferences>
             <preference>
                 <name>WindowSize</name>
@@ -500,7 +500,7 @@
             <portlet-mode>VIEW</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
-        <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.RoleBrowserResources</resource-bundle>
         <portlet-preferences>
             <preference>
                 <name>WindowSize</name>
