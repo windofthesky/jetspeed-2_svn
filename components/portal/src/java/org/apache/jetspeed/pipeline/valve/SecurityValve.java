@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.pipeline.valve;
 
+import org.apache.jetspeed.security.impl.SecurityValveImpl;
+
 /**
  * Authenticates the User or redirects to Login if necessary, add
  * authenticated Subject to RequestContext
@@ -39,4 +41,5 @@ package org.apache.jetspeed.pipeline.valve;
  */
 public interface SecurityValve extends Valve
 {
+    final String IP_ADDRESS = SecurityValveImpl.class.getName() + ".ipaddress";    
 }

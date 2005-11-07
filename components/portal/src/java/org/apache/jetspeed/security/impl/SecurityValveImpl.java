@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.statistics.PortalStatistics;
 
 /**
  * SecurityValve
@@ -46,11 +47,13 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
     private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
     private Profiler profiler;
     private UserManager userMgr;
+    private PortalStatistics statistics;
 
-    public SecurityValveImpl( Profiler profiler, UserManager userMgr )
+    public SecurityValveImpl( Profiler profiler, UserManager userMgr, PortalStatistics statistics )
     {
         this.profiler = profiler;
         this.userMgr = userMgr;
+        this.statistics = statistics;
     }
 
     public String toString()
@@ -110,12 +113,17 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
                 Set principals = new HashSet();
                 principals.add(userPrincipal);
                 subject = new Subject(true, principals, new HashSet(), new HashSet());
-            }           
+            } 
+            
+            // create a new statistics *user* session
+            statistics.logUserLogin(request, 0);
+            // put IP address in session for logout
+            request.setSessionAttribute(IP_ADDRESS, request.getRequest().getRemoteAddr());
         }
         
         return subject;
     }
-    
+        
     /**
      * 
      * <p>

@@ -17,13 +17,17 @@ package org.apache.jetspeed.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 
+import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -31,13 +35,18 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.statistics.PortalStatistics;
 
 /**
  * Jetspeed Servlet entry point.
@@ -45,7 +54,9 @@ import org.apache.jetspeed.request.RequestContextComponent;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor </a>
  * @version $Id$
  */
-public class JetspeedServlet extends HttpServlet implements JetspeedEngineConstants
+public class JetspeedServlet 
+extends HttpServlet 
+implements JetspeedEngineConstants, HttpSessionListener
 {
     private final static Log log = LogFactory.getLog(JetspeedServlet.class);
     private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
@@ -310,5 +321,19 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
         SpringComponentManager cm = new SpringComponentManager(bootConfigs, appConfigs, servletContext, appRoot);      
         
         return cm;        
+    }
+    
+    public void sessionCreated(HttpSessionEvent se)
+    {
+    }
+    
+    public void sessionDestroyed(HttpSessionEvent se)
+    {
+        Subject subject = (Subject)se.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
+        Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+        PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
+        long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
+        String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);
+        statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);        
     }
 }
