@@ -76,6 +76,10 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public String getInitParameter(java.lang.String name)
     {
+        if ( name == null )
+        {
+            throw new IllegalArgumentException("Required parameter name is null");
+        }
         //if (log.isDebugEnabled()) log.debug("Getting init parameter for: " + name);
         ParameterSet parameters = portletDefinition.getInitParameterSet();
         Parameter param = parameters.get(name);
