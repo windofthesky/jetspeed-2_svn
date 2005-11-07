@@ -146,7 +146,6 @@ public class TestColumnLayout extends MockObjectTestCase
         f2.setId("f2");
         f2.setName("test");
         f2.setLayoutRow(0);
-        f2.setLayoutColumn(0);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
         layout.addFragment(f1);
@@ -162,7 +161,6 @@ public class TestColumnLayout extends MockObjectTestCase
 
         assertNotNull(layout.getFirstColumn());
         assertNotNull(layout.getLastColumn());
-
     }
 
     public void testRowNotSet() throws Exception
@@ -176,7 +174,6 @@ public class TestColumnLayout extends MockObjectTestCase
         FragmentImpl f2 = new FragmentImpl();
         f2.setId("f2");
         f2.setName("test");
-        f2.setLayoutRow(0);
         f2.setLayoutColumn(0);
 
         ColumnLayout layout = new ColumnLayout(3, "test", widthes);
