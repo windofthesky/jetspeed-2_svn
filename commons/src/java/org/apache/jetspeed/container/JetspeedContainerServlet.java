@@ -28,6 +28,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.UnavailableException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -195,6 +196,9 @@ public class JetspeedContainerServlet extends HttpServlet
     {
         String portletName = null;
         Integer method = ContainerConstants.METHOD_NOOP;
+        Portlet portlet = null;
+        boolean destroyPortlet = false;
+        
         try
         {
             method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
@@ -203,7 +207,8 @@ public class JetspeedContainerServlet extends HttpServlet
                 return;
             }
             
-            Portlet portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
+            portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
+            portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
             request.removeAttribute(ContainerConstants.PORTLET);
 
             if (method == ContainerConstants.METHOD_ACTION)
@@ -230,6 +235,12 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Throwable t)
         {
+            if ( t instanceof UnavailableException )
+            {
+                // destroy the portlet in the finally clause
+                destroyPortlet = true;
+            }
+            
             if (method != ContainerConstants.METHOD_ACTION)
             {
                 ServletContext context = getServletContext();
@@ -281,6 +292,21 @@ public class JetspeedContainerServlet extends HttpServlet
                 else
                 {
                     throw new ServletException(t);
+                }
+            }
+        }
+        finally
+        {
+            if ( destroyPortlet )
+            {
+                // portlet throwed UnavailableException: take it out of service
+                try
+                {
+                    portlet.destroy();
+                }
+                catch (Exception e)
+                {
+                    // never mind, it won't be used anymore.                 
                 }
             }
         }

@@ -40,17 +40,19 @@ public class JetspeedPortletInstance implements PortletInstance
   private Portlet portlet;
   private PortletConfig config;
   private boolean destroyed;
+  private final String portletName;
   
-  public JetspeedPortletInstance(Portlet portlet)
+  public JetspeedPortletInstance(String portletName, Portlet portlet)
   {
-    this.portlet = portlet;
+      this.portletName = portletName;
+      this.portlet = portlet;
   }
   
   private void checkAvailable() throws UnavailableException
   {
       if ( destroyed )
       {
-          throw new UnavailableException("Portlet "+portlet.getClass().getName()+" no longer available");
+          throw new UnavailableException("Portlet "+portletName+" no longer available");
       }
   }
   
@@ -58,9 +60,13 @@ public class JetspeedPortletInstance implements PortletInstance
   {
       if (!destroyed)
       {
-        destroyed = true;
+          destroyed = true;
+          if ( config != null )
+          {
+              // Portlet really has been put into service, now destroy it.
+              portlet.destroy();
+          }
       }
-      portlet.destroy();
   }
   
   public boolean equals(Object obj)

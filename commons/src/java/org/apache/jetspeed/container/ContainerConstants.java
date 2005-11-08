@@ -30,6 +30,7 @@ public class ContainerConstants
     public final static String PORTAL_CONTEXT = "org.apache.jetspeed.context";
     public final static String METHOD_ID = "org.apache.jetspeed.method";
     public final static String PORTLET = "org.apache.jetspeed.portlet";
+    public final static String PORTLET_NAME = "org.apache.jetspeed.portlet.name";
     public final static Integer METHOD_RENDER = new Integer(1);
     public final static Integer METHOD_ACTION = new Integer(3);
     public final static Integer METHOD_NOOP = new Integer(5);

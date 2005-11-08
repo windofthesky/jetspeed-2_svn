@@ -24,6 +24,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.UnavailableException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -145,10 +146,12 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
      * @throws IOException
      */
     protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method)
-        throws PortletException, IOException
+            throws PortletException, IOException
     {
-        ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader((PortletApplication)portletDefinition.getPortletApplicationDefinition());
-        PortletInstance portletInstance = portletFactory.getPortletInstance(jetspeedContext,portletDefinition);
+        ClassLoader paClassLoader = portletFactory
+                .getPortletApplicationClassLoader((PortletApplication) portletDefinition
+                        .getPortletApplicationDefinition());
+        PortletInstance portletInstance = portletFactory.getPortletInstance(jetspeedContext, portletDefinition);
 
         if (method == ContainerConstants.METHOD_NOOP)
         {
@@ -158,36 +161,67 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
 
-        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse).getResponse();
+        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse)
+                .getResponse();
 
-        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try
         {
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-            RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
+            RequestContext requestContext = (RequestContext) servletRequest
+                    .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            servletRequest
+                    .setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
             Thread.currentThread().setContextClassLoader(paClassLoader);
 
-        if (method == ContainerConstants.METHOD_ACTION)
-        {
-            ActionRequest actionRequest = (ActionRequest)portletRequest;            
-            ActionResponse actionResponse = (ActionResponse)portletResponse;
+            if (method == ContainerConstants.METHOD_ACTION)
+            {
+                ActionRequest actionRequest = (ActionRequest) portletRequest;
+                ActionResponse actionResponse = (ActionResponse) portletResponse;
 
                 portletInstance.processAction(actionRequest, actionResponse);
-        }
-        else if (method == ContainerConstants.METHOD_RENDER)
-        {
-            RenderRequest renderRequest = (RenderRequest)portletRequest;            
-            RenderResponse renderResponse = (RenderResponse)portletResponse;
-            
-            renderResponse.setContentType("text/html");            
-// TODO: ???    renderResponse.getWriter().print(portletDefinition.getName());
+            }
+            else if (method == ContainerConstants.METHOD_RENDER)
+            {
+                RenderRequest renderRequest = (RenderRequest) portletRequest;
+                RenderResponse renderResponse = (RenderResponse) portletResponse;
+
+                renderResponse.setContentType("text/html");
+                // TODO: ???
+                // renderResponse.getWriter().print(portletDefinition.getName());
 
                 portletInstance.render(renderRequest, renderResponse);
+            }
         }
+        catch (Throwable t)
+        {
+            if ( t instanceof UnavailableException )
+            {
+                // take it out of service
+                try
+                {
+                    portletInstance.destroy();
+                }
+                catch (Throwable ignore)
+                {
+                    // never mind, it won't be used anymore
+                }
+            }
+            if ( t instanceof PortletException )
+            {
+                throw (PortletException)t;
+            }
+            if ( t instanceof IOException )
+            {
+                throw (IOException)t;
+            }
+            else
+            {
+                throw new PortletException(t);
+            }
         }
         finally
         {
@@ -196,7 +230,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
             servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
             servletRequest.removeAttribute(ContainerConstants.PORTAL_CONTEXT);
 
-        Thread.currentThread().setContextClassLoader(oldLoader);                 
+            Thread.currentThread().setContextClassLoader(oldLoader);
         }
     }
 

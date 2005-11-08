@@ -66,35 +66,35 @@ public class JetspeedPortletFactory implements PortletFactory
         classLoaderMap.put(pa.getId().toString(), cl);
         }
     }
-
+    
     public void unregisterPortletApplication(PortletApplication pa)
     {
-      synchronized (classLoaderMap)
+        synchronized (classLoaderMap)
         {
-        synchronized (portletCache)
-        {
-          ClassLoader cl = (ClassLoader)classLoaderMap.remove(pa.getId().toString());
-          if ( cl != null )
-        {
-            ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
-
-            Iterator portletDefinitions = pa.getPortletDefinitions().iterator();
-            while (portletDefinitions.hasNext())
-            {                
-              PortletDefinition pd = (PortletDefinition)portletDefinitions.next();
-              Portlet portlet = (Portlet)portletCache.remove(pd.getId().toString());
-              if ( portlet != null )
+            synchronized (portletCache)
+            {
+                ClassLoader cl = (ClassLoader) classLoaderMap.remove(pa.getId().toString());
+                if (cl != null)
                 {
-                    try
-                    {                        
-                  Thread.currentThread().setContextClassLoader(cl);
-                  portlet.destroy();
-                }
-                finally
+                    ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
+
+                    Iterator portletDefinitions = pa.getPortletDefinitions().iterator();
+                    while (portletDefinitions.hasNext())
+                    {
+                        PortletDefinition pd = (PortletDefinition) portletDefinitions.next();
+                        Portlet portlet = (Portlet) portletCache.remove(pd.getId().toString());
+                        if (portlet != null)
                         {
-                  Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                            try
+                            {
+                                Thread.currentThread().setContextClassLoader(cl);
+                                portlet.destroy();
+                            }
+                            finally
+                            {
+                                Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                            }
                         }
-                    }
                     }
                 }
             }
@@ -141,7 +141,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 // wrap new Portlet inside PortletInstance which ensures the destroy
                 // method will wait for all its invocation threads to complete
                 // and thereby releasing all its ClassLoader locks as needed for local portlets.
-                portlet = new JetspeedPortletInstance((Portlet)clazz.newInstance());
+                portlet = new JetspeedPortletInstance(pd.getName(), (Portlet)clazz.newInstance());
             }
               finally
             {

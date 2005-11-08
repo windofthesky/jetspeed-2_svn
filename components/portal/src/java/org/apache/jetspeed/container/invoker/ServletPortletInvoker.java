@@ -206,6 +206,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
             servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
+            servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
             RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
@@ -226,6 +227,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
             servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
+            servletRequest.removeAttribute(ContainerConstants.PORTLET_NAME);
             servletRequest.removeAttribute(ContainerConstants.PORTAL_CONTEXT);
         }
 
