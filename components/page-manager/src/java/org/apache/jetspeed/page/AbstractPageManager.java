@@ -744,12 +744,14 @@ public abstract class AbstractPageManager
 //        copy.setShortTitle(source.getTitle());        
 //        copy.setTitle(source.getTitle());
         
-        this.copySecurityConstraints(source.getSecurityConstraints());        
+        if (source.getSecurityConstraints() != null)
+            copySecurityConstraints(source.getSecurityConstraints());        
         
         Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
         while (globals.hasNext())
         {
             String global = (String)globals.next();
+            System.out.println("copy = " + copy.getGlobalSecurityConstraintsRefs());
             copy.getGlobalSecurityConstraintsRefs().add(global);
         }
         

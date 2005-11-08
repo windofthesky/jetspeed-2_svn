@@ -714,4 +714,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         return this.delegator.copyFragment(source, name);
     }
     
+    public PageSecurity copyPageSecurity(PageSecurity source) 
+    throws JetspeedException
+    {
+        return this.delegator.copyPageSecurity(source);
+    }
+    
 }
