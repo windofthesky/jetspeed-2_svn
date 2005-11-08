@@ -44,8 +44,10 @@ import junit.framework.TestSuite;
  */
 public class TestDatabasePageManager extends AbstractSpringTestCase
 {
+    /*
     private String testAttributesPath = "/__subsite-rootX/_user/userX/_role/roleX/_group/groupX/_mediatype/xhtml/_language/en/_country/us/_custom/customX";
     private String verifyTestAttributesPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
+    */
 
     private PageManager pageManager;
     
@@ -229,6 +231,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             {
             }
 
+            /*
             // test folder/page creation with attributes
             folder = pageManager.newFolder(testAttributesPath);
             pageManager.updateFolder(folder);
@@ -239,6 +242,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
 
             assertNotNull(page.getParent());
             assertEquals(page.getParent().getId(), folder.getId());
+            */
         }
         catch (Exception e)
         {
@@ -345,6 +349,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             {
                 assertTrue("Folder / NOT FOUND", false);
             }
+            /*
             try
             {
                 Page check = pageManager.getPage(testAttributesPath + "/default-page.psml");
@@ -363,6 +368,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             {
                 assertTrue("Folder " + testAttributesPath + " NOT FOUND", false);
             }
+            */
         }
         catch (Exception e)
         {
@@ -389,6 +395,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             {
                 assertTrue("Folder / NOT FOUND", false);
             }
+            /*
             try
             {
                 Folder remove = pageManager.getFolder(testAttributesPath);
@@ -399,6 +406,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             {
                 assertTrue("Folder " + testAttributesPath + " NOT FOUND", false);
             }
+            */
 
             // reset page manager cache
             pageManager.reset();
@@ -412,6 +420,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             catch (FolderNotFoundException e)
             {
             }
+            /*
             try
             {
                 Folder check = pageManager.getFolder(testAttributesPath);
@@ -420,6 +429,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             catch (FolderNotFoundException e)
             {
             }
+            */
         }
         catch (Exception e)
         {
