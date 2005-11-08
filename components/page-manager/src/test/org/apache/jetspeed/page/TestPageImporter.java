@@ -120,15 +120,15 @@ public class TestPageImporter extends AbstractSpringTestCase
         assertNotNull("db manager is null", dbManager);
         assertNotNull("castor manager is null", castorManager);
 
-        // create the root page security
-        PageSecurity rootSecurity = dbManager.copyPageSecurity(castorManager.getPageSecurity());        
-        dbManager.updatePageSecurity(rootSecurity);
         
         // create root folder
         Folder fsRoot = castorManager.getFolder("/");
+                
         Folder root = importFolder(fsRoot);         
-        
-        
+                   
+        // create the root page security
+        PageSecurity rootSecurity = dbManager.copyPageSecurity(castorManager.getPageSecurity());        
+        dbManager.updatePageSecurity(rootSecurity);
         
         // NOTE: this will delete EVERYTHING
         // dbManager.removeFolder(root);

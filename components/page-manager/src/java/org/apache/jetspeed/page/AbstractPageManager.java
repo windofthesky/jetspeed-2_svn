@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -697,6 +696,14 @@ public abstract class AbstractPageManager
         }
         return copiedElements;
     }
+
+    protected void copyConstraint(SecurityConstraint srcConstraint, SecurityConstraint dstConstraint)
+    {
+        dstConstraint.setUsers(srcConstraint.getUsers());                
+        dstConstraint.setRoles(srcConstraint.getRoles());
+        dstConstraint.setGroups(srcConstraint.getGroups());
+        dstConstraint.setPermissions(srcConstraint.getPermissions());        
+    }
     
     protected SecurityConstraints copySecurityConstraints(SecurityConstraints source)
     {
@@ -713,10 +720,7 @@ public abstract class AbstractPageManager
             {
                 SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
                 SecurityConstraint dstConstraint = newSecurityConstraint();
-                dstConstraint.setUsers(srcConstraint.getUsers());                
-                dstConstraint.setRoles(srcConstraint.getRoles());
-                dstConstraint.setGroups(srcConstraint.getGroups());
-                dstConstraint.setPermissions(srcConstraint.getPermissions());
+                copyConstraint(srcConstraint, dstConstraint);
                 copiedConstraints.add(dstConstraint);
             }
             security.setSecurityConstraints(copiedConstraints);
@@ -739,19 +743,53 @@ public abstract class AbstractPageManager
     throws JetspeedException
     {
         PageSecurity copy = this.newPageSecurity();
+        // this is backwards
+        copy.setGlobalSecurityConstraintsRefs(new ArrayList());
+        copy.setSecurityConstraintsDefs(new ArrayList());                
+        
+        
+//        private List constraintsDefs;
+//        private List globalConstraintsRefs;
+//
+//        private List securityConstraintsDefs;
+//        private Map securityConstraintsDefsMap;
+//        private List globalSecurityConstraintsRefs;
+        
+        
         copy.setHidden(source.isHidden());
         copy.setPath(source.getPath());
 //        copy.setShortTitle(source.getTitle());        
 //        copy.setTitle(source.getTitle());
         
         if (source.getSecurityConstraints() != null)
-            copySecurityConstraints(source.getSecurityConstraints());        
+        {
+            SecurityConstraints constraints = copySecurityConstraints(source.getSecurityConstraints());
+            copy.setSecurityConstraints(constraints);
+        }            
+        
+        Iterator defs = source.getSecurityConstraintsDefs().iterator();
+        while (defs.hasNext())
+        {
+            SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
+            SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
+            defCopy.setName(def.getName());                
+            List copiedConstraints = new ArrayList();
+            defCopy.setSecurityConstraints(copiedConstraints);
+            Iterator constraints = def.getSecurityConstraints().iterator();
+            while (constraints.hasNext())
+            {
+                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
+                SecurityConstraint dstConstraint = newSecurityConstraint();
+                copyConstraint(srcConstraint, dstConstraint);
+                copiedConstraints.add(dstConstraint);
+            }                                            
+            copy.getSecurityConstraintsDefs().add(defCopy);            
+        }
         
         Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
         while (globals.hasNext())
         {
             String global = (String)globals.next();
-            System.out.println("copy = " + copy.getGlobalSecurityConstraintsRefs());
             copy.getGlobalSecurityConstraintsRefs().add(global);
         }
         
