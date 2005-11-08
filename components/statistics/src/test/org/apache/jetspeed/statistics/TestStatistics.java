@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.statistics;
 
+import java.security.Principal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,6 +30,7 @@ import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -250,12 +252,23 @@ public class TestStatistics extends AbstractSpringTestCase
         System.out.println("testing Query System");
         StatisticsQueryCriteria sqc = new StatisticsQueryCriteriaImpl();
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_USER);
+        sqc.setListsize("5");
+        sqc.setSorttype("count");
+        sqc.setSortorder("desc");
         AggregateStatistics as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
+
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_PORTLET);
+        sqc.setListsize("5");
+        sqc.setSorttype("count");
+        sqc.setSortorder("desc");
         as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
+
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_PAGE);
+        sqc.setListsize("5");
+        sqc.setSorttype("count");
+        sqc.setSortorder("desc");
         as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
 
@@ -266,6 +279,10 @@ public class TestStatistics extends AbstractSpringTestCase
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockHttpSession session = new MockHttpSession();
+
+        Principal p = new UserPrincipalImpl("anotherFaker");
+
+        request.setUserPrincipal(p);
 
         request.setRemoteAddr("192.168.2.3");
         request.setSession(session);

@@ -61,6 +61,14 @@
             </properties>
         </dependency>
         
+        <dependency>
+            <id>jetspeed-security</id>
+            <groupId>jetspeed2</groupId>
+            <version>${jetspeed.version}</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
         <!-- test only -->
         <dependency>
             <id>jetspeed-cm</id>

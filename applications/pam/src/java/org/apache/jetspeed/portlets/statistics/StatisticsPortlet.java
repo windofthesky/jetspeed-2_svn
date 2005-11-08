@@ -87,6 +87,9 @@ public class StatisticsPortlet extends GenericVelocityPortlet
                 sqc = new StatisticsQueryCriteriaImpl();
                 sqc.setQueryType(PortalStatistics.QUERY_TYPE_PORTLET);
                 sqc.setTimePeriod("1");
+                sqc.setListsize("5");
+                sqc.setSorttype("count");
+                sqc.setSortorder("desc");
                 session.setAttribute(SESSION_CRITERIA, sqc);
 
                 try
@@ -120,6 +123,10 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         {
             timeperiod = "all";
         }
+        criteria.setListsize("5");
+        criteria.setSorttype("count");
+        criteria.setSortorder("desc");
+
         criteria.setTimePeriod(timeperiod);
         String queryType = request.getParameter("queryType");
 

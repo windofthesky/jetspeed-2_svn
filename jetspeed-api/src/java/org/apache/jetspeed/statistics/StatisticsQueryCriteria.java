@@ -37,4 +37,16 @@ public interface StatisticsQueryCriteria extends Serializable
     public void setQueryType(String queryType);
 
     public String getQueryType();
+
+    public String getListsize();
+
+    public String getSorttype();
+
+    public void setListsize(String listsize);
+
+    public void setSorttype(String sorttype);
+
+    public void setSortorder(String sortorder);
+
+    public String getSortorder();
 }

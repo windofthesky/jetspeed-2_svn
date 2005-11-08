@@ -43,6 +43,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
 import org.apache.jetspeed.statistics.InvalidCriteriaException;
@@ -194,7 +195,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return ds;
     }
 
-    
     public void logPortletAccess(RequestContext request, String portletName,
             String statusCode, long msElapsedTime)
     {
@@ -210,8 +210,18 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
             record.setPortletName(portletName);
             record.setUserName(userName);
-            record.setIpAddress(req.getRemoteAddr());
-            record.setPagePath(request.getPage().getPath());
+            if (req.getRemoteAddr() != null)
+            {
+                record.setIpAddress(req.getRemoteAddr());
+            }
+            ContentPage cp = request.getPage();
+            if (cp != null)
+            {
+                if (cp.getPath() != null)
+                {
+                    record.setPagePath(cp.getPath());
+                }
+            }
             record.setStatus(Integer.parseInt(statusCode));
             record.setTimeStamp(timestamp);
             record.setMsElapsedTime(msElapsedTime);
@@ -325,7 +335,14 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
             record.setUserName(userName);
             record.setIpAddress(req.getRemoteAddr());
-            record.setPagePath(request.getPage().getPath());
+            ContentPage cp = request.getPage();
+            if (cp != null)
+            {
+                if (cp.getPath() != null)
+                {
+                    record.setPagePath(cp.getPath());
+                }
+            }
             record.setStatus(Integer.parseInt(statusCode));
             record.setTimeStamp(timestamp);
             record.setMsElapsedTime(msElapsedTime);
@@ -350,30 +367,33 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         try
         {
-            currentUserCount = currentUserCount - 1;
 
             if (userName == null)
             {
                 userName = "guest";
             }
 
-            synchronized (currentUsers)
+            if (!"guest".equals(userName))
             {
-                UserStats userStats = (UserStats) currentUsers.get(userName);
-                if (userStats == null)
+                currentUserCount = currentUserCount - 1;
+
+                synchronized (currentUsers)
                 {
-                    //log.warn("Trying to log out a user that was never logged
-                    // in!");
-                    userStats = new UserStatsImpl();
-                    userStats.setNumberOfSession(0);
-                    userStats.setUsername(userName);
-                    currentUsers.put(userName, userStats);
-                }
-                userStats
-                        .setNumberOfSession(userStats.getNumberOfSessions() - 1);
-                if (userStats.getNumberOfSessions() <= 0)
-                {
-                    currentUsers.remove(userName);
+                    UserStats userStats = (UserStats) currentUsers
+                            .get(userName);
+                    if (userStats == null)
+                    {
+                        userStats = new UserStatsImpl();
+                        userStats.setNumberOfSession(0);
+                        userStats.setUsername(userName);
+                        currentUsers.put(userName, userStats);
+                    }
+                    userStats.setNumberOfSession(userStats
+                            .getNumberOfSessions() - 1);
+                    if (userStats.getNumberOfSessions() <= 0)
+                    {
+                        currentUsers.remove(userName);
+                    }
                 }
             }
 
@@ -411,7 +431,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         try
         {
-            currentUserCount = currentUserCount + 1;
 
             HttpServletRequest req = request.getRequest();
             Principal principal = req.getUserPrincipal();
@@ -420,21 +439,24 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             UserLogRecord record = new UserLogRecord();
 
-            synchronized (currentUsers)
+            if (!"guest".equals(userName))
             {
-                UserStats userStats = (UserStats) currentUsers.get(userName);
-                if (userStats == null)
-                {
-                    //log.warn("Trying to log out a user that was never logged
-                    // in!");
-                    userStats = new UserStatsImpl();
-                    userStats.setNumberOfSession(0);
-                    userStats.setUsername(userName);
-                    currentUsers.put(userName, userStats);
+                currentUserCount = currentUserCount + 1;
 
+                synchronized (currentUsers)
+                {
+                    UserStats userStats = (UserStats) currentUsers
+                            .get(userName);
+                    if (userStats == null)
+                    {
+                        userStats = new UserStatsImpl();
+                        userStats.setNumberOfSession(0);
+                        userStats.setUsername(userName);
+                        currentUsers.put(userName, userStats);
+                    }
+                    userStats.setNumberOfSession(userStats
+                            .getNumberOfSessions() + 1);
                 }
-                userStats
-                        .setNumberOfSession(userStats.getNumberOfSessions() + 1);
             }
 
             record.setUserName(userName);
@@ -459,7 +481,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     }
 
-    
     /**
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
@@ -595,6 +616,15 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         Date start = getStartDateFromPeriod(criteria.getTimePeriod(), end);
 
         String queryType = criteria.getQueryType();
+        String listsizeStr = criteria.getListsize();
+        int listsize = 5;
+        try
+        {
+            listsize = Integer.parseInt(listsizeStr);
+        } catch (NumberFormatException e1)
+        {
+        }
+
         if (PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
             tableName = "USER_STATISTICS";
@@ -626,7 +656,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     + "from " + tableName
                     + " where time_stamp > ? and time_stamp < ? group by "
                     + groupColumn + "  order by " + orderColumn + " " + ascDesc
-                    + " limit 5";
+                    + " limit " + listsize;
         } else
         {
             query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
@@ -639,7 +669,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2 group by "
                     + groupColumn + "  order by " + orderColumn + " " + ascDesc
-                    + " limit 5";
+                    + " limit " + listsize;
         }
         try
         {
@@ -648,12 +678,23 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             pstmt.setTimestamp(1, new Timestamp(start.getTime()));
             pstmt.setTimestamp(2, new Timestamp(end.getTime()));
             ResultSet rs = pstmt.executeQuery();
+            float denominator = 1.0f;
+            if (PortalStatistics.QUERY_TYPE_USER.equals(queryType))
+            {
+                denominator = 1000f * 60f; // this should convert from mS to
+                                           // minutes
+            }
             if (rs.next())
             {
                 as.setHitCount(rs.getInt("count"));
-                as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)"));
-                as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)"));
-                as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)"));
+
+                as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)")
+                        / denominator);
+                as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)")
+                        / denominator);
+                as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)")
+                        / denominator);
+
             }
             PreparedStatement pstmt2 = con.prepareStatement(query2);
             pstmt2.setTimestamp(1, new Timestamp(start.getTime()));
@@ -666,14 +707,22 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 row.put("count", "" + rs2.getInt("count"));
                 String col = rs2.getString(groupColumn);
                 int maxColLen = 35;
-                if(col.length() > maxColLen ) {
-                    col = col.substring(0,maxColLen);
+                if (col != null)
+                {
+
+                    if (col.length() > maxColLen)
+                    {
+                        col = col.substring(0, maxColLen);
+                    }
                 }
-                
+
                 row.put("groupColumn", col);
-                row.put("min", "" + floatFormatter(rs2.getFloat("min")));
-                row.put("avg", "" + floatFormatter(rs2.getFloat("avg")));
-                row.put("max", "" + floatFormatter(rs2.getFloat("max")));
+                row.put("min", ""
+                        + floatFormatter(rs2.getFloat("min") / denominator));
+                row.put("avg", ""
+                        + floatFormatter(rs2.getFloat("avg") / denominator));
+                row.put("max", ""
+                        + floatFormatter(rs2.getFloat("max") / denominator));
                 as.addRow(row);
             }
 
@@ -685,11 +734,13 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return as;
     }
 
-    private String floatFormatter(float f) {
+    private String floatFormatter(float f)
+    {
         // for now we'll just truncate as int
         int f2 = new Float(f).intValue();
         return Integer.toString(f2);
     }
+
     /*
      * (non-Javadoc)
      * 
