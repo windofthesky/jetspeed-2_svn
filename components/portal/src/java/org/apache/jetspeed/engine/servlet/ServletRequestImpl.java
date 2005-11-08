@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -469,4 +472,60 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
        String attr = (String)super.getAttribute("javax.servlet.include.context_path");
        return (attr != null) ? attr : super.getContextPath();
   	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxiv
+     */
+    public int getContentLength()
+    {
+        return 0;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+    public String getRealPath(String arg0)
+    {
+        return null;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxii
+     */
+    public BufferedReader getReader() throws IOException
+    {
+        return null;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxii
+     */
+    public String getCharacterEncoding()
+    {
+        return null;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxii
+     */
+    public String getContentType()
+    {
+        return null;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxii
+     */
+    public ServletInputStream getInputStream() throws IOException
+    {
+        return null;
+    }
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxii
+     */
+    public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException
+    {
+    }
+
 }
