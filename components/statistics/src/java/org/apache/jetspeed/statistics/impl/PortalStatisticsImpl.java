@@ -595,15 +595,15 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         Date start = getStartDateFromPeriod(criteria.getTimePeriod(), end);
 
         String queryType = criteria.getQueryType();
-        if ("user".equals(queryType))
+        if (PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
             tableName = "USER_STATISTICS";
             groupColumn = "USER_NAME";
-        } else if ("portlet".equals(queryType))
+        } else if (PortalStatistics.QUERY_TYPE_PORTLET.equals(queryType))
         {
             tableName = "PORTLET_STATISTICS";
             groupColumn = "PORTLET";
-        } else if ("page".equals(queryType))
+        } else if (PortalStatistics.QUERY_TYPE_PAGE.equals(queryType))
         {
             tableName = "PAGE_STATISTICS";
             groupColumn = "PAGE";
@@ -616,7 +616,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
         String ascDesc = "DESC";
 
-        if (!"user".equals(queryType))
+        if (!PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
             query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
                     + tableName + " where time_stamp > ? and time_stamp < ?";

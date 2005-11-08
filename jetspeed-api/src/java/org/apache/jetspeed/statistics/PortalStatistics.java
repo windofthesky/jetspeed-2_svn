@@ -69,7 +69,10 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface PortalStatistics
 {
-
+    public static final String QUERY_TYPE_PORTLET = "portlet";
+    public static final String QUERY_TYPE_USER = "user";
+    public static final String QUERY_TYPE_PAGE = "page";
+    
     public static final String HTTP_OK = "200";
 
     public static final String HTTP_UNAUTHORIZED = "401";

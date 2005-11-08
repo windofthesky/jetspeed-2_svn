@@ -249,13 +249,13 @@ public class TestStatistics extends AbstractSpringTestCase
     {
         System.out.println("testing Query System");
         StatisticsQueryCriteria sqc = new StatisticsQueryCriteriaImpl();
-        sqc.setQueryType("user");
+        sqc.setQueryType(PortalStatistics.QUERY_TYPE_USER);
         AggregateStatistics as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
-        sqc.setQueryType("portlet");
+        sqc.setQueryType(PortalStatistics.QUERY_TYPE_PORTLET);
         as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
-        sqc.setQueryType("page");
+        sqc.setQueryType(PortalStatistics.QUERY_TYPE_PAGE);
         as = statistics.queryStatistics(sqc);
         System.out.println("user = " + as);
 
