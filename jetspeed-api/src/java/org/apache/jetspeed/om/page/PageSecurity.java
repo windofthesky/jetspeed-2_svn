@@ -38,7 +38,7 @@ public interface PageSecurity extends Document
      * getSecurityConstraintsDefs
      * </p>
      *
-     * @return security constraints definitions
+     * @return security constraints definitions of type SecurityConstraintsDef
      */
     List getSecurityConstraintsDefs();
     
