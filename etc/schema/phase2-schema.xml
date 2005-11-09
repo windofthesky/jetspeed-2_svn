@@ -108,6 +108,7 @@ limitations under the License.
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="VERSION" required="false" size="40" type="VARCHAR"/>        
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
@@ -258,6 +259,7 @@ limitations under the License.
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="VERSION" required="false" size="40" type="VARCHAR"/>                
         <column name="SUBSITE" size="40" type="VARCHAR"/>
         <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
         <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>

@@ -31,5 +31,18 @@ import org.apache.jetspeed.page.document.Node;
  */
 public interface Document extends Node
 {
+    /**
+     * Gets the version number
+     * 
+     * @return version number is a string composed of optionally point separated digits
+     */
+    String getVersion();
+    
+    /**
+     * Sets the version number
+     * 
+     * @param versionNumber version number is a string composed of optional point separated digits
+     */
+    void setVersion(String versionNumber);
     
 }
