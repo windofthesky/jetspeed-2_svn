@@ -567,6 +567,7 @@ public abstract class AbstractPageManager
         Page page = newPage(path);
         page.setTitle(source.getTitle());
         page.setShortTitle(source.getShortTitle());
+        page.setVersion(source.getVersion());
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
         page.setDefaultSkin(source.getDefaultSkin());
@@ -760,6 +761,7 @@ public abstract class AbstractPageManager
         copy.setPath(source.getPath());
 //        copy.setShortTitle(source.getTitle());        
 //        copy.setTitle(source.getTitle());
+        copy.setVersion(source.getVersion());        
         
         if (source.getSecurityConstraints() != null)
         {

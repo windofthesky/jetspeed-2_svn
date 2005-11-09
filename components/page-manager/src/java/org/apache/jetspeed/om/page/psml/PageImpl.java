@@ -23,12 +23,11 @@ import java.util.Stack;
 import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.document.psml.AbstractNode;
 
 /**
  * @version $Id$
  */
-public class PageImpl extends AbstractNode implements Page
+public class PageImpl extends DocumentImpl implements Page
 {
     private DefaultsImpl defaults = new DefaultsImpl();
 

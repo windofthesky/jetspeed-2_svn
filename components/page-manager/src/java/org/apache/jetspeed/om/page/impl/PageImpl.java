@@ -24,7 +24,7 @@ import java.util.Stack;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
-import org.apache.jetspeed.page.document.impl.NodeImpl;
+import org.apache.jetspeed.page.document.impl.DocumentImpl;
 
 /**
  * PageImpl
@@ -32,7 +32,7 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageImpl extends NodeImpl implements Page
+public class PageImpl extends DocumentImpl implements Page
 {
     private Collection fragment;
     private String skin;

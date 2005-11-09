@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.page.Document;
-import org.apache.jetspeed.page.document.psml.AbstractNode;
+import org.apache.jetspeed.om.page.psml.DocumentImpl;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
  * @version $Id$
  *  
  */
-public class FolderMetaDataImpl extends AbstractNode implements Document
+public class FolderMetaDataImpl extends DocumentImpl implements Document
 {
     public static String DOCUMENT_TYPE = "folder.metadata";
 

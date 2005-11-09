@@ -27,7 +27,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
-import org.apache.jetspeed.page.document.impl.NodeImpl;
+import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
@@ -37,7 +37,7 @@ import org.apache.ojb.broker.PersistenceBrokerException;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageSecurityImpl extends NodeImpl implements PageSecurity
+public class PageSecurityImpl extends DocumentImpl implements PageSecurity
 {
     private List constraintsDefs;
     private List globalConstraintsRefs;

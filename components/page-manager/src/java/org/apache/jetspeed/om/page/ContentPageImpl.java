@@ -370,4 +370,14 @@ public class ContentPageImpl implements ContentPage
     {
         return page;
     }
+    
+    public String getVersion()
+    {
+        return page.getVersion();
+    }
+    
+    public void setVersion(String version)
+    {
+        page.setVersion(version);
+    }
 }

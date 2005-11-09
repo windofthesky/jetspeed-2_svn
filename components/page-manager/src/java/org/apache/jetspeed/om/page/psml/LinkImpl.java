@@ -16,8 +16,6 @@
 package org.apache.jetspeed.om.page.psml;
 
 import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.page.document.psml.AbstractNode;
-
 
 /**
  * <p>
@@ -30,7 +28,7 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
  * @version $Id$
  *
  */
-public class LinkImpl extends AbstractNode implements Link 
+public class LinkImpl extends DocumentImpl implements Link 
 {
     
     private String target;

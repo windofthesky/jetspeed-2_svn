@@ -22,8 +22,6 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.page.document.psml.AbstractNode;
-
 
 /**
  * <p>
@@ -36,7 +34,7 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
  * @version $Id$
  *
  */
-public class PageSecurityImpl extends AbstractNode implements PageSecurity
+public class PageSecurityImpl extends DocumentImpl implements PageSecurity
 {
     private List constraintsDefsList;
 

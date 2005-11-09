@@ -400,6 +400,12 @@ limitations under the License.
       />
 
       <field-descriptor
+         name="version"
+         column="VERSION"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
          name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
@@ -918,6 +924,12 @@ limitations under the License.
       <field-descriptor
          name="name"
          column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="version"
+         column="VERSION"
          jdbc-type="VARCHAR"
       />
 
