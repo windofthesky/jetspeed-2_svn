@@ -536,7 +536,7 @@ limitations under the License.
 				</td>
 				<td class="portlet-section-body" >
 					<input type="text" name="locator_name" value=""/>
-					Common Locator Names: [page,docset]
+					<fmt:message key="security.common.locator.names"/>
 				</td>
 			</tr>
 			<tr>
@@ -566,14 +566,14 @@ limitations under the License.
 <portlet:actionURL var="addUser" />
 <form action="<c:out value="${addUser}"/>" method="post">
 <input type="hidden" name="portlet_action" value="add.new.user"/>
-<input type="submit" value="Add New User" class="portlet-form-button"/>
+<input type="submit" value="<fmt:message key="security.add.new.user"/>" class="portlet-form-button"/>
 </form>
 </td>
 <td>
 <portlet:actionURL var="removeUser" />
 <form action="<c:out value="${removeUser}"/>" method="post">
 <input type="hidden" name="portlet_action" value="remove.user"/>
-<input type="submit" value="Remove User" class="portlet-form-button"/>
+<input type="submit" value="<fmt:message key="security.remove.user"/>" class="portlet-form-button"/>
 </form>
 </td>
 </tr>
@@ -585,7 +585,7 @@ limitations under the License.
 <c:if test="${user == null}">
 <script language="JavaScript">function t(i,f){if(i.checked) f.value='true';else f.value='false';}</script>
 
-<h3 class="portlet-section-header">Add User</h3>
+<h3 class="portlet-section-header"><fmt:message key="security.add.user"/></h3>
 
   <c:if test="${errorMessages != null}">
     <ul>
@@ -601,13 +601,13 @@ limitations under the License.
 <input type='hidden' name='portlet_action' value='add.user'/>
 <table>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">New User Name:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.new.user.name"/>&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="jetspeed.user" size="30" value="" class="portlet-form-field-label">
     </td>
   </tr>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Password:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.password"/>&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-field-label">
     </td>
@@ -621,7 +621,7 @@ limitations under the License.
   <c:choose>
     <c:when test='${prefs[prefName][0]}'>
       <tr colspan="2" align="right">
-        <td nowrap class="portlet-section-alternate" align="right">Change Password on first Login:&nbsp;</td>
+        <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.change.password.on.first.login"/>&nbsp;</td>
         <td class="portlet-section-body" align="left">
           <c:set var="prefName" value="defaultChangePasswordRequired"/>
           <c:set var="prefValue" value='${prefs[prefName][0]}'/>
@@ -640,7 +640,7 @@ limitations under the License.
     <c:when test='${prefs["showRoleForAddUser"][0]}'>
       <!-- Select Roles -->
       <tr colspan="2" align="right">
-        <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
+        <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.default.role"/>&nbsp;</td>
         <td class="portlet-section-body" align="left">
      		<select name="jetspeedRoles" class="portlet-form-field-label">		
     			<option value=""/> 		 		
@@ -663,7 +663,7 @@ limitations under the License.
     <c:when test='${prefs["showProfileForAddUser"][0]}'>
       <!-- Select Profiling Rules -->
       <tr colspan="2" align="right">
-        <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
+        <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.profiling.rule"/>&nbsp;</td>
         <td class="portlet-section-body" align="left">
      		<select name="jetspeedRules" class="portlet-form-field-label">		
     			<option value=""/> 		
@@ -684,7 +684,7 @@ limitations under the License.
   
 </table>
 <br/>
-<input type="submit" value="Add User" class="portlet-form-button"/>
+<input type="submit" value="<fmt:message key="security.add.user.submit"/>" class="portlet-form-button"/>
 </form>
 <c:if test="${errorMessage != null}">
   <li style="color:red"><c:out value="${errorMessage}"/></li>

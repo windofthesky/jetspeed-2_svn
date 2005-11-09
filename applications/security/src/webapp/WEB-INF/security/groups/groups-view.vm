@@ -50,7 +50,7 @@
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='first' />                    
-            <input class="portlet-form-button" type="submit" value="<<">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('firstArrow')">
             <input type="hidden" name="start" value="0">
           </form>
         </div>
@@ -59,7 +59,7 @@
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='prev'/>                    
-            <input class="portlet-form-button" type="submit" value="<">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('prevArrow')">
             <input type="hidden" name="start" value="$prev">
           </form>
         </div>
@@ -75,12 +75,12 @@
       </td>  
       <td valign="middle" height="30">
         <div align="center">
-            <input type="input" readonly size='10' value="of $tableSize" class="portlet-form-field-label">            
+            <input type="input" readonly size='10' value="$MESSAGES.getString('numberseparator') $tableSize" class="portlet-form-field-label">            
         </div>
       </td>  
       <td valign="middle" height="30">
         <div align="center">
-            <input class="portlet-form-button" type="submit" value="Go">            
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('go')">            
         </div>
       </td>  
 
@@ -93,7 +93,7 @@
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='next'/>          
-            <input class="portlet-form-button" type="submit" value=">">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('nextArrow')">
             <input type="hidden" name="start" value="$next">
           </form>
         </div>
@@ -102,7 +102,7 @@
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='last'/>                    
-            <input class="portlet-form-button" type="submit" value=">>">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('lastArrow')">
             <input type="hidden" name="start" value="$tableSize">
           </form>
         </div>
@@ -113,7 +113,7 @@
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='refresh'/>
-            <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="Refresh" />
+            <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="$MESSAGES.getString('refresh')" />
           </form>
         </div>
       </td>
@@ -123,11 +123,11 @@
 <form action="$renderResponse.createActionURL()" method="post">
   	<input type='hidden' name='db.browser.action' value='search'/>                    
   	<input type='hidden' name='searchColumn' value='1'/>                      	
-    <input class="portlet-form-button" type="submit" value="Search">
+    <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')">
 	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
 	<table>
 	<tr>
-    <td nowrap class="portlet-section-alternate" align="right">Filter:&nbsp;&nbsp;&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('filter')&nbsp;&nbsp;&nbsp;</td>
     <td>	
 	<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">
 	</td>

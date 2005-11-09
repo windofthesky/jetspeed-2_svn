@@ -78,7 +78,7 @@ function openWindow(pipeline)
         <div align="center">$principal.RemotePrincipalName</div>
       </td>      
        <td class="$rowstyle" nowrap width='24' align='center'>
-         <a href="javascript:YesNoPopup('Confirm to Delete Remote:','Confirm Delete','securityform','ssoDelete','$principal.PortalPrincipalName','YesNoReturnMethod()');">
+         <a href="javascript:YesNoPopup('$MESSAGES.getString('confirmToDeleteRemote')','$MESSAGES.getString('confirmDelete')','securityform','ssoDelete','$principal.PortalPrincipalName','YesNoReturnMethod()');">
            <img src="/security/images/waste_bin.gif" width="20" height="15" border="0"/>            
          </a>
        </td>      
@@ -92,7 +92,7 @@ function openWindow(pipeline)
 <input name='ssoDelete' type='hidden' value=''/>
 <table>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Portal Principal:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('portalPrincipal')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="portal.principal" size="30" value="$!currentP" class="portlet-form-field-label">
 	 <a href="javascript:openWindow('$userChooser');">
@@ -107,12 +107,12 @@ function openWindow(pipeline)
     </td>
   </tr>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Remote Principal:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('remotePrincipal')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="remote.principal" size="30" value="$!currentR" class="portlet-form-field-label">
   </tr>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Remote Credential:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('remoteCredential')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="password" name="remote.credential" size="30" value="$!remoteCredential" class="portlet-form-field-label">      
     </td>

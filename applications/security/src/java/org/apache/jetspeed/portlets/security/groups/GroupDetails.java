@@ -151,28 +151,26 @@ public class GroupDetails extends BrowserPortlet
     {
         if (request.getPortletMode() == PortletMode.VIEW)
         {
-            String groupAction = request.getParameter("group.action");
             String users = request.getParameter("users");
             
-            System.out.println("group.action = " + groupAction);
             System.out.println("users = " + users);
             if (users != null && users.length() > 0)
             {
                 addUsersToGroup(request, users);
             }
-            else if (groupAction != null && groupAction.equals("Add New Group"))
+            else if (request.getParameter("group.action.Add_New_Group") != null)
             {
                 PortletMessaging.cancel(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED);                
             }
-            else if (groupAction != null && groupAction.equals("Remove Checked Users"))
+            else if (request.getParameter("group.action.Remove_Checked_Users") != null)
             {
                 removeUsersFromGroup(request);
             }
-            else if (groupAction != null && groupAction.equals("Remove Group"))
+            else if (request.getParameter("group.action.Remove_Group") != null)
             {
                 removeGroup(request);
             }
-            else if (groupAction != null && groupAction.equals("Save"))
+            else if (request.getParameter("group.action.Save") != null)
             {
                 addGroup(request);
             }

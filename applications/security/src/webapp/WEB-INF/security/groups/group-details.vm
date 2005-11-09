@@ -44,7 +44,7 @@ function openWindow(pipeline)
 <form name='groupForm' action="$renderResponse.createActionURL()" method="post">
 <table>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Group Name:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('groupname')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name='group' size="40" value="$!group" 
        class="portlet-form-field-label"
@@ -55,7 +55,7 @@ function openWindow(pipeline)
 </table>
 
 #if ($newGroup == "true")
-<input type="submit" name="group.action" value="Save" class="portlet-form-button"/>
+<input type="submit" name="group.action.Save" value="$MESSAGES.getString('save')" class="portlet-form-button"/>
 #end
 </form>	      
 
@@ -94,18 +94,18 @@ function openWindow(pipeline)
 <table>
 <tr>
   <td>
-   <input type="submit" name="group.action" value="Add New Group" class="portlet-form-button"  />
+   <input type="submit" name="group.action.Add_New_Group" value="$MESSAGES.getString('addNewGroup')" class="portlet-form-button"  />
   </td>
   <td>
-   <input onclick="javascript:openWindow('$userChooser')" type="submit" name="group.action" value="Add Users to Group..." class="portlet-form-button"  />
+   <input onclick="javascript:openWindow('$userChooser')" type="submit" name="group.action.Add_Users_To_Group" value="$MESSAGES.getString('adduserstogroup')" class="portlet-form-button"  />
   </td>  
 #if ($tableSize > 0)  
   <td>
-   <input type="submit" name="group.action" value="Remove Checked Users" class="portlet-form-button" />
+   <input type="submit" name="group.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" class="portlet-form-button" />
   </td>    
 #end
   <td>
-   <input type="submit" name="group.action" value="Remove Group" class="portlet-form-button" />
+   <input type="submit" name="group.action.Remove_Group" value="$MESSAGES.getString('removegroup')" class="portlet-form-button" />
   </td>  
 </tr>
 </table>

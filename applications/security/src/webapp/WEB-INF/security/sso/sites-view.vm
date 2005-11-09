@@ -67,7 +67,7 @@ limitations under the License.
         <div align="center"><a href='$action'>$ssoName</a></div>
       </td>
        <td class="$rowstyle" nowrap width='24' align='center'>
-         <a href="javascript:YesNoPopup('Confirm to Delete Site:','Confirm Delete','ssoForm','ssoDelete','$ssoUrl','YesNoReturnMethod()');">
+         <a href="javascript:YesNoPopup('$MESSAGES.getString('confirmtodeletesite')','$MESSAGES.getString('confirmdelete')','ssoForm','ssoDelete','$ssoUrl','YesNoReturnMethod()');">
            <img src="/security/images/waste_bin.gif" width="20" height="14" border="0"/>            
          </a>
        </td>      
@@ -79,13 +79,13 @@ limitations under the License.
 <form name='ssoForm' action="$renderResponse.createActionURL()" method="post">
 <table>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Site Name:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('sitename')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="site.name" size="40" value="$!currentName" class="portlet-form-field-label">
     </td>
   </tr>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Site URL:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('siteurl')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="site.url" size="40" value="$!currentUrl" class="portlet-form-field-label">
     </td>

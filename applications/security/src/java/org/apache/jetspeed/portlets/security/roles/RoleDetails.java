@@ -151,26 +151,25 @@ public class RoleDetails extends BrowserPortlet
     {
         if (request.getPortletMode() == PortletMode.VIEW)
         {
-            String roleAction = request.getParameter("role.action");
             String users = request.getParameter("users");
             
             if (users != null && users.length() > 0)
             {
                 addUsersToRole(request, users);
             }
-            else if (roleAction != null && roleAction.equals("Add New Role"))
+            else if (request.getParameter("role.action.Add_New_Role") != null)
             {
                 PortletMessaging.cancel(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);                
             }
-            else if (roleAction != null && roleAction.equals("Remove Checked Users"))
+            else if (request.getParameter("role.action.Remove_Checked_Users") != null)
             {
                 removeUsersFromRole(request);
             }
-            else if (roleAction != null && roleAction.equals("Remove Role"))
+            else if (request.getParameter("role.action.Remove_Role") != null)
             {
                 removeRole(request);
             }
-            else if (roleAction != null && roleAction.equals("Save"))
+            else if (request.getParameter("role.action.Save") != null)
             {
                 addRole(request);
             }
