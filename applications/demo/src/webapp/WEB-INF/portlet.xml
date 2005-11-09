@@ -718,7 +718,7 @@ limitations under the License.
     <portlet-preferences>
         <preference>                            
             <name>file</name>                    
-            <value>/WEB-INF/content/menu.html</value>    
+            <value>/WEB-INF/_content/menu.html</value>    
         </preference>         
     </portlet-preferences>                      		
 </portlet> 
