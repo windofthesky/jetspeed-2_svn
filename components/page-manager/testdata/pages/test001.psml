@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="test001">
+<page id="test001" version='2.77'>
   <title>Test Page</title>
   <metadata name="description">Test001 description</metadata>
   <metadata name="description" xml:lang="en">En Descr</metadata>

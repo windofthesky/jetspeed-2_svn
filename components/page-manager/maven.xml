@@ -16,9 +16,8 @@
 -->
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define">
 
-    <property name='testcase' value='org.apache.jetspeed.page.TestDatabasePageManager' /> 
-<!--    <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager' />  -->    
-<!--    <property name='testcase' value='org.apache.jetspeed.page.TestPageImporter' />  -->
+    <property name='testcase' value='org.apache.jetspeed.page.TestDatabasePageManager' />  
+<!--    <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager' />  -->
     
 
     <preGoal name="test:test">
