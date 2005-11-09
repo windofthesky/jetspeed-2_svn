@@ -60,7 +60,7 @@ import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
-import org.apache.jetspeed.page.document.impl.NodeAttributes;
+import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
@@ -266,8 +266,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public Page getPage(String path) throws PageNotFoundException, NodeException
     {
         // construct page attributes from path
-        NodeAttributes attributes = new NodeAttributes(path);
-        path = attributes.getCanonicalPath();
+        path = NodeImpl.getCanonicalNodePath(path);
 
         // test cache with canonical path if available
         if (databaseNodeCache.containsKey(path))
@@ -284,7 +283,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // retrieve page from database
         try
         {
-            Criteria filter = attributes.newQueryCriteria();
+            Criteria filter = new Criteria();
+            filter.addEqualTo("path", path);
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Page page = (Page) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
@@ -297,6 +297,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 throw new PageNotFoundException("Page " + path + " not found.");
             }
             return page;
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            throw pnfe;
         }
         catch (Exception e)
         {
@@ -329,8 +333,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         // construct document attributes from path
         String path = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
-        NodeAttributes attributes = new NodeAttributes(path);
-        path = attributes.getCanonicalPath();
 
         // test cache with canonical path if available
         if (databaseNodeCache.containsKey(path))
@@ -347,7 +349,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // retrieve document from database
         try
         {
-            Criteria filter = attributes.newQueryCriteria();
+            Criteria filter = new Criteria();
+            filter.addEqualTo("path", path);
             QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
@@ -361,6 +364,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
             return document;
         }
+        catch (DocumentNotFoundException dnfe)
+        {
+            throw dnfe;
+        }
         catch (Exception e)
         {
             throw new DocumentNotFoundException("Document " + path + " not found.", e);
@@ -373,8 +380,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException
     {
         // construct folder attributes from path
-        NodeAttributes attributes = new NodeAttributes(folderPath);
-        folderPath = attributes.getCanonicalPath();
+        folderPath = NodeImpl.getCanonicalNodePath(folderPath);
 
         // test cache with canonical path if available
         if (databaseNodeCache.containsKey(folderPath))
@@ -391,7 +397,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // retrieve folder from database
         try
         {
-            Criteria filter = attributes.newQueryCriteria();
+            Criteria filter = new Criteria();
+            filter.addEqualTo("path", folderPath);
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Folder folder = (Folder) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
@@ -404,6 +411,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 throw new FolderNotFoundException("Folder " + folderPath + " not found.");
             }
             return folder;
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+            throw fnfe;
         }
         catch (Exception e)
         {
@@ -441,10 +452,19 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new PageNotUpdatedException("Missing parent folder: " + parentPath);
                 }
                 
-                // update parent folder with added page
-                parent.addPage((PageImpl)page);
-                page.setParent(parent);
-                getPersistenceBrokerTemplate().store(parent);
+                try
+                {
+                    // update parent folder with added page
+                    parent.addPage((PageImpl)page);
+                    page.setParent(parent);
+                    getPersistenceBrokerTemplate().store(parent);
+                }
+                catch (Exception e)
+                {
+                    // cleanup parent folder on error
+                    parent.removePage((PageImpl)page);
+                    throw e;
+                }
                 
                 // update document cache
                 databaseNodeCache.put(pagePath, page);
@@ -457,6 +477,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update document cache
                 databaseNodeCache.put(page.getPath(), page);
             }
+        }
+        catch (PageNotUpdatedException pnue)
+        {
+            throw pnue;
         }
         catch (Exception e)
         {
@@ -507,8 +531,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             // dereference folder in case proxy is supplied
             folder = (Folder)ProxyHelper.getRealObject(folder);
 
-            // look up and set parent folder if necessary
-            if ((folder.getParent() == null) && !folder.isRootFolder())
+            // look up and set parent folder if required
+            if ((folder.getParent() == null) && !folder.getPath().equals(Folder.PATH_SEPARATOR))
             {
                 // access folder by path
                 String folderPath = folder.getPath();
@@ -527,13 +551,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new FolderNotUpdatedException("Missing parent folder: " + parentPath);
                 }
                 
-                // update parent folder with added folder
-                parent.addFolder((FolderImpl)folder);
-                folder.setParent(parent);
-                getPersistenceBrokerTemplate().store(parent);
-                
-                // update folder cache
-                databaseNodeCache.put(folderPath, folder);
+                try
+                {
+                    // update parent folder with added folder
+                    parent.addFolder((FolderImpl)folder);
+                    folder.setParent(parent);
+                    getPersistenceBrokerTemplate().store(parent);
+                    
+                    // update folder cache
+                    databaseNodeCache.put(folderPath, folder);
+                }
+                catch (Exception e)
+                {
+                    // cleanup parent folder on error
+                    parent.removeFolder((FolderImpl)folder);
+                    throw e;
+                }
             }
             else
             {
@@ -543,6 +576,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update folder cache
                 databaseNodeCache.put(folder.getPath(), folder);
             }
+        }
+        catch (FolderNotUpdatedException fnue)
+        {
+            throw fnue;
         }
         catch (Exception e)
         {
@@ -639,11 +676,20 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     throw new FailedToUpdateDocumentException("Missing parent folder: " + parentPath);
                 }
-                
-                // update parent folder with added document
-                parent.setPageSecurity((PageSecurityImpl)pageSecurity);
-                pageSecurity.setParent(parent);
-                getPersistenceBrokerTemplate().store(parent);
+
+                try
+                {
+                    // update parent folder with added document
+                    parent.setPageSecurity((PageSecurityImpl)pageSecurity);
+                    pageSecurity.setParent(parent);
+                    getPersistenceBrokerTemplate().store(parent);
+                }
+                catch (Exception e)
+                {
+                    // cleanup parent folder on error
+                    parent.setPageSecurity(null);
+                    throw e;
+                }
                 
                 // update document cache
                 databaseNodeCache.put(pageSecurityPath, pageSecurity);
@@ -656,6 +702,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update document cache
                 databaseNodeCache.put(pageSecurity.getPath(), pageSecurity);
             }
+        }
+        catch (FailedToUpdateDocumentException fude)
+        {
+            throw fude;
         }
         catch (Exception e)
         {

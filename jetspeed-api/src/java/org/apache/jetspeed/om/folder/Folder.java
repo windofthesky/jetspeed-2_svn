@@ -68,16 +68,6 @@ public interface Folder extends Node
     int RESERVED_FOLDER_OTHER = 9999;
     
     /**
-     * isRootFolder
-     *
-     * Tests whether this folder's path is a root folder based on the
-     * rules associated with the folder implementation;
-     *
-     * @return flag indicating whether folder path is a root path
-     */
-    boolean isRootFolder();
-
-    /**
      * getDocumentOrder
      *
      * @return list of ordered document names in folder

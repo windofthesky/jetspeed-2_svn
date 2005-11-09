@@ -99,16 +99,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         setReservedType();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#isRootFolder()
-     */
-    public boolean isRootFolder()
-    {
-        return getPath().equals(PATH_SEPARATOR);
-    }
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
      */

@@ -95,7 +95,7 @@ limitations under the License.
       </collection-descriptor>
 
       <field-descriptor
-         name="attributes::path"
+         name="path"
          column="PATH"
          jdbc-type="VARCHAR"
       />
@@ -132,49 +132,49 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="attributes::subsite"
+         name="subsite"
          column="SUBSITE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::user"
+         name="user"
          column="USER_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::role"
+         name="role"
          column="ROLE_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::group"
+         name="group"
          column="GROUP_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::mediatype"
+         name="mediatype"
          column="MEDIATYPE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::locale"
+         name="locale"
          column="LOCALE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeName"
+         name="extendedAttributeName"
          column="EXT_ATTR_NAME"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeValue"
+         name="extendedAttributeValue"
          column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
@@ -249,11 +249,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraint"
-      table="FOLDER_CNSTRNT"
+      table="FOLDER_CONSTRAINT"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNT_ID"
+         column="CONSTRAINT_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -303,11 +303,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.folder.impl.FolderSecurityConstraintsRef"
-      table="FOLDER_CNSTRNTS_REF"
+      table="FOLDER_CONSTRAINTS_REF"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNTS_REF_ID"
+         column="CONSTRAINTS_REF_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -388,7 +388,7 @@ limitations under the License.
       </collection-descriptor>
 
       <field-descriptor
-         name="attributes::path"
+         name="path"
          column="PATH"
          jdbc-type="VARCHAR"
       />
@@ -437,49 +437,49 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="attributes::subsite"
+         name="subsite"
          column="SUBSITE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::user"
+         name="user"
          column="USER_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::role"
+         name="role"
          column="ROLE_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::group"
+         name="group"
          column="GROUP_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::mediatype"
+         name="mediatype"
          column="MEDIATYPE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::locale"
+         name="locale"
          column="LOCALE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeName"
+         name="extendedAttributeName"
          column="EXT_ATTR_NAME"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeValue"
+         name="extendedAttributeValue"
          column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
@@ -554,11 +554,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecurityConstraint"
-      table="PAGE_CNSTRNT"
+      table="PAGE_CONSTRAINT"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNT_ID"
+         column="CONSTRAINT_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -608,11 +608,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
-      table="PAGE_CNSTRNTS_REF"
+      table="PAGE_CONSTRAINTS_REF"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNTS_REF_ID"
+         column="CONSTRAINTS_REF_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -793,11 +793,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraint"
-      table="FRAGMENT_CNSTRNT"
+      table="FRAGMENT_CONSTRAINT"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNT_ID"
+         column="CONSTRAINT_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -847,11 +847,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintsRef"
-      table="FRAGMENT_CNSTRNTS_REF"
+      table="FRAGMENT_CONSTRAINTS_REF"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNTS_REF_ID"
+         column="CONSTRAINTS_REF_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -881,11 +881,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecurityImpl"
-      table="PAGE_SEC"
+      table="PAGE_SECURITY"
    >
       <field-descriptor
          name="id"
-         column="PAGE_SEC_ID"
+         column="PAGE_SECURITY_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -910,7 +910,7 @@ limitations under the License.
       </reference-descriptor>
 
       <field-descriptor
-         name="attributes::path"
+         name="path"
          column="PATH"
          jdbc-type="VARCHAR"
       />
@@ -922,49 +922,49 @@ limitations under the License.
       />
 
       <field-descriptor
-         name="attributes::subsite"
+         name="subsite"
          column="SUBSITE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::user"
+         name="user"
          column="USER_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::role"
+         name="role"
          column="ROLE_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::group"
+         name="group"
          column="GROUP_PRINCIPAL"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::mediatype"
+         name="mediatype"
          column="MEDIATYPE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::locale"
+         name="locale"
          column="LOCALE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeName"
+         name="extendedAttributeName"
          column="EXT_ATTR_NAME"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="attributes::extendedAttributeValue"
+         name="extendedAttributeValue"
          column="EXT_ATTR_VALUE"
          jdbc-type="VARCHAR"
       />
@@ -995,11 +995,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintsDef"
-      table="PAGE_SEC_CNSTRNTS_DEF"
+      table="PAGE_SECURITY_CONSTRAINTS_DEF"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNTS_DEF_ID"
+         column="CONSTRAINTS_DEF_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -1007,7 +1007,7 @@ limitations under the License.
 
       <field-descriptor
         name="pageSecurityId"
-        column="PAGE_SEC_ID"
+        column="PAGE_SECURITY_ID"
         jdbc-type="INTEGER"
         access="anonymous"
       />
@@ -1055,11 +1055,11 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecurityGlobalSecurityConstraintsRef"
-      table="PAGE_SEC_CNSTRNTS_REF"
+      table="PAGE_SECURITY_CONSTRAINTS_REF"
    >
       <field-descriptor
          name="id"
-         column="CNSTRNTS_REF_ID"
+         column="CONSTRAINTS_REF_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -1067,7 +1067,7 @@ limitations under the License.
 
       <field-descriptor
         name="pageSecurityId"
-        column="PAGE_SEC_ID"
+        column="PAGE_SECURITY_ID"
         jdbc-type="INTEGER"
         access="anonymous"
       />

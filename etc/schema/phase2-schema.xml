@@ -24,20 +24,20 @@ limitations under the License.
     <table name="FOLDER">
         <column name="FOLDER_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PARENT_ID" type="INTEGER"/>
-        <column name="PATH" required="true" size="160" type="VARCHAR"/>
+        <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
         <column name="DEFAULT_PAGE_NAME" size="80" type="VARCHAR"/>
-        <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
-        <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
-        <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
+        <column name="SUBSITE" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" size="15" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" size="40" type="VARCHAR"/>
         <column name="OWNER_PRINCIPAL" size="40" type="VARCHAR"/>
         <foreign-key foreignTable="FOLDER" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="PARENT_ID"/>
@@ -70,8 +70,8 @@ limitations under the License.
         </unique>
     </table>
 
-    <table name="FOLDER_CNSTRNT">
-        <column name="CNSTRNT_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="FOLDER_CONSTRAINT">
+        <column name="CONSTRAINT_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FOLDER_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
@@ -81,20 +81,20 @@ limitations under the License.
         <foreign-key foreignTable="FOLDER" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="FOLDER_ID"/>
         </foreign-key>
-        <index name="IX_FOLDER_CNSTRNT_1">
+        <index name="IX_FOLDER_CONSTRAINT_1">
             <index-column name="FOLDER_ID"/>
         </index>
     </table>
 
-    <table name="FOLDER_CNSTRNTS_REF">
-        <column name="CNSTRNTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="FOLDER_CONSTRAINTS_REF">
+        <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FOLDER_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="NAME" size="40" type="VARCHAR" required="true"/>
         <foreign-key foreignTable="FOLDER" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="FOLDER_ID"/>
         </foreign-key>
-        <index name="IX_FOLDER_CNSTRNTS_REF_1">
+        <index name="IX_FOLDER_CONSTRAINTS_REF_1">
             <index-column name="FOLDER_ID"/>
         </index>
     </table>
@@ -106,7 +106,7 @@ limitations under the License.
     <table name="PAGE">
         <column name="PAGE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PARENT_ID" type="INTEGER" required="true"/>
-        <column name="PATH" required="true" size="160" type="VARCHAR"/>
+        <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
@@ -114,14 +114,14 @@ limitations under the License.
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DEFAULT_LAYOUT_DECORATOR" size="80" type="VARCHAR"/>
         <column name="DEFAULT_PORTLET_DECORATOR" size="80" type="VARCHAR"/>
-        <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
-        <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
-        <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
+        <column name="SUBSITE" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" size="15" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" size="40" type="VARCHAR"/>
         <column name="OWNER_PRINCIPAL" size="40" type="VARCHAR"/>
         <foreign-key foreignTable="FOLDER" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="PARENT_ID"/>
@@ -154,8 +154,8 @@ limitations under the License.
         </unique>
     </table>
 
-    <table name="PAGE_CNSTRNT">
-        <column name="CNSTRNT_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="PAGE_CONSTRAINT">
+        <column name="CONSTRAINT_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
@@ -165,20 +165,20 @@ limitations under the License.
         <foreign-key foreignTable="PAGE" onDelete="cascade">
             <reference foreign="PAGE_ID" local="PAGE_ID"/>
         </foreign-key>
-        <index name="IX_PAGE_CNSTRNT_1">
+        <index name="IX_PAGE_CONSTRAINT_1">
             <index-column name="PAGE_ID"/>
         </index>
     </table>
 
-    <table name="PAGE_CNSTRNTS_REF">
-        <column name="CNSTRNTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="PAGE_CONSTRAINTS_REF">
+        <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="NAME" size="40" type="VARCHAR" required="true"/>
         <foreign-key foreignTable="PAGE" onDelete="cascade">
             <reference foreign="PAGE_ID" local="PAGE_ID"/>
         </foreign-key>
-        <index name="IX_PAGE_CNSTRNTS_REF_1">
+        <index name="IX_PAGE_CONSTRAINTS_REF_1">
             <index-column name="PAGE_ID"/>
         </index>
     </table>
@@ -220,8 +220,8 @@ limitations under the License.
         </unique>
     </table>
 
-    <table name="FRAGMENT_CNSTRNT">
-        <column name="CNSTRNT_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="FRAGMENT_CONSTRAINT">
+        <column name="CONSTRAINT_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FRAGMENT_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
@@ -231,20 +231,20 @@ limitations under the License.
         <foreign-key foreignTable="FRAGMENT" onDelete="cascade">
             <reference foreign="FRAGMENT_ID" local="FRAGMENT_ID"/>
         </foreign-key>
-        <index name="IX_FRAGMENT_CNSTRNT_1">
+        <index name="IX_FRAGMENT_CONSTRAINT_1">
             <index-column name="FRAGMENT_ID"/>
         </index>
     </table>
 
-    <table name="FRAGMENT_CNSTRNTS_REF">
-        <column name="CNSTRNTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="FRAGMENT_CONSTRAINTS_REF">
+        <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FRAGMENT_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="NAME" size="40" type="VARCHAR" required="true"/>
         <foreign-key foreignTable="FRAGMENT" onDelete="cascade">
             <reference foreign="FRAGMENT_ID" local="FRAGMENT_ID"/>
         </foreign-key>
-        <index name="IX_FRAGMENT_CNSTRNTS_REF_1">
+        <index name="IX_FRAGMENT_CONSTRAINTS_REF_1">
             <index-column name="FRAGMENT_ID"/>
         </index>
     </table>
@@ -253,57 +253,57 @@ limitations under the License.
        Page Security Definition
     -->
 
-    <table name="PAGE_SEC">
-        <column name="PAGE_SEC_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <table name="PAGE_SECURITY">
+        <column name="PAGE_SECURITY_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PARENT_ID" type="INTEGER" required="true"/>
-        <column name="PATH" required="true" size="160" type="VARCHAR"/>
+        <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="SUBSITE" required="true" size="40" type="VARCHAR"/>
-        <column name="USER_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="ROLE_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="GROUP_PRINCIPAL" required="true" size="40" type="VARCHAR"/>
-        <column name="MEDIATYPE" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
-        <column name="EXT_ATTR_NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="EXT_ATTR_VALUE" required="true" size="40" type="VARCHAR"/>
+        <column name="SUBSITE" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" size="15" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" size="40" type="VARCHAR"/>
         <foreign-key foreignTable="FOLDER" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="PARENT_ID"/>
         </foreign-key>
-        <unique name="UN_PAGE_SEC_1">
+        <unique name="UN_PAGE_SECURITY_1">
             <unique-column name="PARENT_ID"/>
         </unique>
-        <unique name="UN_PAGE_SEC_2">
+        <unique name="UN_PAGE_SECURITY_2">
             <unique-column name="PATH"/>
         </unique>
     </table>
     
-    <table name="PAGE_SEC_CNSTRNTS_DEF">
-        <column name="CNSTRNTS_DEF_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PAGE_SEC_ID" type="INTEGER" required="true"/>
+    <table name="PAGE_SECURITY_CONSTRAINTS_DEF">
+        <column name="CONSTRAINTS_DEF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PAGE_SECURITY_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="40" type="VARCHAR"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
         <column name="ROLE_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
         <column name="GROUP_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
         <column name="PERMISSIONS_ACL" size="120" type="VARCHAR"/>
-        <foreign-key foreignTable="PAGE_SEC" onDelete="cascade">
-            <reference foreign="PAGE_SEC_ID" local="PAGE_SEC_ID"/>
+        <foreign-key foreignTable="PAGE_SECURITY" onDelete="cascade">
+            <reference foreign="PAGE_SECURITY_ID" local="PAGE_SECURITY_ID"/>
         </foreign-key>
-        <index name="IX_PAGE_SEC_CNSTRNTS_DEF_1">
-            <index-column name="PAGE_SEC_ID"/>
+        <index name="IX_PAGE_SEC_CONSTRAINTS_DEF_1">
+            <index-column name="PAGE_SECURITY_ID"/>
         </index>
     </table>
 
-    <table name="PAGE_SEC_CNSTRNTS_REF">
-        <column name="CNSTRNTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PAGE_SEC_ID" type="INTEGER" required="true"/>
+    <table name="PAGE_SECURITY_CONSTRAINTS_REF">
+        <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PAGE_SECURITY_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
         <column name="NAME" size="40" type="VARCHAR" required="true"/>
-        <foreign-key foreignTable="PAGE_SEC" onDelete="cascade">
-            <reference foreign="PAGE_SEC_ID" local="PAGE_SEC_ID"/>
+        <foreign-key foreignTable="PAGE_SECURITY" onDelete="cascade">
+            <reference foreign="PAGE_SECURITY_ID" local="PAGE_SECURITY_ID"/>
         </foreign-key>
-        <index name="IX_PAGE_SEC_CNSTRNTS_REF_1">
-            <index-column name="PAGE_SEC_ID"/>
+        <index name="IX_PAGE_SEC_CONSTRAINTS_REF_1">
+            <index-column name="PAGE_SECURITY_ID"/>
         </index>
     </table>
 

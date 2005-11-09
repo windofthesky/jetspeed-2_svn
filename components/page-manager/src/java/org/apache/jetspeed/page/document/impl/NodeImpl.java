@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.document.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
@@ -37,7 +38,15 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     private Node parent;
     private boolean hidden;
     private Collection metadataFields;
-    private NodeAttributes attributes = new NodeAttributes();
+    private String path = Folder.PATH_SEPARATOR;
+    private String subsite;
+    private String user;
+    private String role;
+    private String group;
+    private String mediatype;
+    private String locale;
+    private String extendedAttributeName;
+    private String extendedAttributeValue;
 
     private PageMetadataImpl pageMetadata;
 
@@ -47,16 +56,29 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     }
 
     /**
-     * isRootNode
+     * getCanonicalNodePath
      *
-     * Test whether node attributes base path is a root node
-     * path, regardless of parent setting.
+     * Format paths used to set and query NodeImpl instances.
      *
-     * @return root node flag
+     * @param path specified path
+     * @return canonical path
      */
-    public boolean isRootNode()
+    public static String getCanonicalNodePath(String path)
     {
-        return attributes.getPath().equals(Folder.PATH_SEPARATOR);
+        // validate and format path
+        if ((path == null) || (path.length() == 0))
+        {
+            path = Folder.PATH_SEPARATOR;
+        }
+        if (!path.startsWith(Folder.PATH_SEPARATOR))
+        {
+            path = Folder.PATH_SEPARATOR + path;
+        }
+        if (path.endsWith(Folder.PATH_SEPARATOR) && !path.equals(Folder.PATH_SEPARATOR))
+        {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
     /**
@@ -102,7 +124,6 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         String name = super.getName();
         if (name == null)
         {
-            String path = attributes.getPath();
             if (path != null)
             {
                 if (!path.equals(Folder.PATH_SEPARATOR))
@@ -115,7 +136,6 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
                 }
                 super.setName(name);
             }
-
         }
         return name;
     }
@@ -128,19 +148,17 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         // set path based on name
         if (name != null)
         {
-            String path = attributes.getPath();
             if (path != null)
             {
                 if (!name.equals(Folder.PATH_SEPARATOR))
                 {
-                    attributes.setPath(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name);
+                    path = path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name;
                 }
                 else
                 {
-                    attributes.setPath(Folder.PATH_SEPARATOR);
+                    path = Folder.PATH_SEPARATOR;
                 }
             }
-
             super.setName(name);
         }
     }
@@ -165,13 +183,12 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         if (parent != null)
         {
             String parentPath = parent.getPath();
-            String path = getPath();
             if ((parentPath.equals(Folder.PATH_SEPARATOR) &&
                  (path.lastIndexOf(Folder.PATH_SEPARATOR) > 0)) ||
                 (!parentPath.equals(Folder.PATH_SEPARATOR) &&
                  !parentPath.equals(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR)))))
             {
-                setPath(parentPath + Folder.PATH_SEPARATOR + getName());
+                path = parentPath + Folder.PATH_SEPARATOR + getName();
             }
         }
     }
@@ -182,7 +199,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     public String getPath()
     {
         // return path from attributes and base path
-        return attributes.getCanonicalPath();
+        return path;
     }
     
     /* (non-Javadoc)
@@ -190,14 +207,82 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setPath(String path)
     {
-        // set attributes and base path
-        attributes.setCanonicalPath(path);
+        // set canonical node path
+        this.path = getCanonicalNodePath(path);
+
+        // parse and set informational attributes from path
+        String attributeName = null;
+        StringTokenizer pathElements = new StringTokenizer(this.path, Folder.PATH_SEPARATOR);
+        while (pathElements.hasMoreTokens())
+        {
+            String pathElement = pathElements.nextToken();
+            if (attributeName != null)
+            {
+                // set last attribute name with attribute value
+                if (attributeName.startsWith(Folder.RESERVED_USER_FOLDER_NAME))
+                {
+                    user = pathElement.toLowerCase();
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_ROLE_FOLDER_NAME))
+                {
+                    role = pathElement.toLowerCase();
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_GROUP_FOLDER_NAME))
+                {
+                    group = pathElement.toLowerCase();
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_MEDIATYPE_FOLDER_NAME))
+                {
+                    mediatype = pathElement.toLowerCase();
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_LANGUAGE_FOLDER_NAME))
+                {
+                    if (locale != null)
+                    {
+                        // compose locale from language + country
+                        locale = pathElement.toLowerCase() + "_" + locale;
+                    }
+                    else
+                    {
+                        locale = pathElement.toLowerCase();
+                    }
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_COUNTRY_FOLDER_NAME))
+                {
+                    if (locale != null)
+                    {
+                        // compose locale from language + country
+                        locale = locale + "_" + pathElement.toLowerCase() ;
+                    }
+                    else
+                    {
+                        locale = pathElement.toLowerCase();
+                    }
+                }
+                else if (attributeName.startsWith(Folder.RESERVED_FOLDER_PREFIX))
+                {
+                    extendedAttributeName = attributeName.substring(Folder.RESERVED_FOLDER_PREFIX.length());
+                    extendedAttributeValue = pathElement.toLowerCase();
+                }
+
+                // reset attribute name
+                attributeName = null;
+            }
+            else if (pathElement.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX))
+            {
+                subsite = pathElement.substring(Folder.RESERVED_SUBSITE_FOLDER_PREFIX.length()).toLowerCase();
+            }
+            else if (pathElement.startsWith(Folder.RESERVED_FOLDER_PREFIX))
+            {
+                // save attribute name
+                attributeName = pathElement.toLowerCase();
+            }
+        }
 
         // set name based on path
-        path = attributes.getPath();
-        if (!path.equals(Folder.PATH_SEPARATOR))
+        if (!this.path.equals(Folder.PATH_SEPARATOR))
         {
-            super.setName(path.substring(path.lastIndexOf(Folder.PATH_SEPARATOR) + 1));
+            super.setName(this.path.substring(this.path.lastIndexOf(Folder.PATH_SEPARATOR) + 1));
         }
         else
         {
@@ -209,11 +294,11 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         {
             String parentPath = parent.getPath();
             if ((parentPath.equals(Folder.PATH_SEPARATOR) &&
-                 (path.lastIndexOf(Folder.PATH_SEPARATOR) > 0)) ||
+                 (this.path.lastIndexOf(Folder.PATH_SEPARATOR) > 0)) ||
                 (!parentPath.equals(Folder.PATH_SEPARATOR) &&
-                 !parentPath.equals(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR)))))
+                 !parentPath.equals(this.path.substring(0, this.path.lastIndexOf(Folder.PATH_SEPARATOR)))))
             {
-                setParent(null);
+                parent = null;
             }
         }
     }
@@ -273,7 +358,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getUrl()
     {
-        return getPath();
+        return path;
     }
     
     /* (non-Javadoc)
