@@ -212,6 +212,7 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(testpage.getDefaultSkin().equals("test-skin"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
+        assertTrue(testpage.getVersion().equals("2.77"));
 
         GenericMetadata md = testpage.getMetadata();
         Collection descriptions = md.getFields("description");

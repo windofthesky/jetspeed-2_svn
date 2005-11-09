@@ -120,6 +120,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
 
         Page page = pageManager.newPage("/default-page.psml");
         page.setTitle("Default Page");
+        page.setVersion("6.89");
         page.setDefaultDecorator("tigris", Fragment.LAYOUT);
         page.setDefaultDecorator("blue-gradient", Fragment.PORTLET);
         page.setDefaultSkin("skin-1");
@@ -290,6 +291,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertEquals("/default-page.psml", check.getPath());
             assertEquals("default-page.psml", check.getName());
             assertEquals("Default Page", check.getTitle());
+            assertEquals("6.89", check.getVersion());            
             assertEquals("tigris", check.getDefaultDecorator(Fragment.LAYOUT));
             assertEquals("blue-gradient", check.getDefaultDecorator(Fragment.PORTLET));
             assertEquals("skin-1", check.getDefaultSkin());
