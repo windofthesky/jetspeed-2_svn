@@ -15,9 +15,6 @@
  */
 package org.apache.jetspeed.services.information;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.ResourceURLProvider;
@@ -35,19 +32,11 @@ import org.apache.pluto.services.information.ResourceURLProvider;
  */
 public class ResourceURLProviderImpl implements ResourceURLProvider
 {
-    private PortletWindow portletWindow = null;
     private String stringUrl = "";
-    private String base = "";
-    private RequestContext context;
 
     public ResourceURLProviderImpl(RequestContext context, PortletWindow portletWindow)
     {
-        this.portletWindow = portletWindow;
-        this.context = context;                
-        this.base = context.getPortalURL().getBaseURL();
     }
-
-    // ResourceURLProvider implementation.
 
     public void setAbsoluteURL(String path)
     {
@@ -56,27 +45,12 @@ public class ResourceURLProviderImpl implements ResourceURLProvider
 
     public void setFullPath(String path)
     {
-        stringUrl = base + path;
+        stringUrl = path;
     }
 
     public String toString()
     {
-        URL url = null;
-
-        if (!"".equals(stringUrl))
-        {
-            try
-            {
-                url = new URL(stringUrl);
-            }
-            catch (MalformedURLException e)
-            {
-                throw new java.lang.IllegalArgumentException("A malformed URL has occured");
-            }
-        }
-
-        return ((url == null) ? "" : url.toString());
-
+        return stringUrl;
     }
 
 }
