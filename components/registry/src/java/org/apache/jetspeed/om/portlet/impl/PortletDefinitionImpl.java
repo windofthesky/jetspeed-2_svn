@@ -911,11 +911,15 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         
         if (parameter instanceof ClassLoader)
         {
+            // newly created PD from portlet.xml
             langListWrapper.setClassLoader((ClassLoader) parameter);
-        langListWrapper.postLoad(this.supportedLocales);
-    }
+            // create supported locale languages and
+            // retrieve title, shortTitle and keywords from resourceBundle if defined
+            langListWrapper.postLoad(this.supportedLocales);
+        }
         else
         {
+            // loaded from persistent store
             langListWrapper.setClassLoader(getPortletClassLoader());
         }
     }
