@@ -20,15 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
@@ -46,20 +45,22 @@ import org.apache.pluto.om.common.Language;
  * that contains a localized title and short title.
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  *  
  */
-public class LanguageImpl implements MutableLanguage, Serializable
+public class LanguageImpl extends ResourceBundle implements MutableLanguage, Serializable
 {
-
     public static final String JAVAX_PORTLET_KEYWORDS = "javax.portlet.keywords";
     public static final String JAVAX_PORTLET_SHORT_TITLE = "javax.portlet.short-title";
     public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
-    private Locale locale; // new Locale("en");
+
+    private HashSet keys;
     private String title;
     private String shortTitle;
+    private Locale locale;
+    private String keywordStr;
     private Collection keywords;
-    private ResourceBundle resourceBundle;
 
     /**
      * This field can be used by persistence tools for storing PK info Otherwise
@@ -71,39 +72,75 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
     public LanguageImpl()
     {
-        this(JetspeedLocale.getDefaultLocale(), null, "", "", "");
+        keys = new HashSet(3);
+        keys.add(JAVAX_PORTLET_TITLE);
+        keys.add(JAVAX_PORTLET_SHORT_TITLE);
+        keys.add(JAVAX_PORTLET_KEYWORDS);
+        this.locale = JetspeedLocale.getDefaultLocale();
     }
-
-    public LanguageImpl( Locale locale, String title )
+    
+    public Enumeration getKeys()
     {
-        this(locale, null, title, "", "");
+        return Collections.enumeration(keys);
     }
-
-    public LanguageImpl( Locale locale, ResourceBundle bundle, String defaultTitle, String defaultShortTitle,
-            String defaultKeyWords )
+    
+    protected Object handleGetObject(String key)
     {
-        HashMap defaults = new HashMap(3);
-        defaults.put(JAVAX_PORTLET_TITLE, defaultTitle);
-        defaults.put(JAVAX_PORTLET_SHORT_TITLE, defaultShortTitle);
-        defaults.put(JAVAX_PORTLET_KEYWORDS, defaultKeyWords);
-        this.resourceBundle = new DefaultsResourceBundle(bundle, defaults);
-
-        setLocale(locale);
-        setTitle(getResourceBundle().getString(JAVAX_PORTLET_TITLE));
-        setShortTitle(getResourceBundle().getString(JAVAX_PORTLET_SHORT_TITLE));
-        setKeywords(getResourceBundle().getString(JAVAX_PORTLET_KEYWORDS));
+        if (key.equals(JAVAX_PORTLET_TITLE))
+        {
+            return getTitle();
+        }
+        else if (key.equals(JAVAX_PORTLET_SHORT_TITLE))
+        {
+            return getShortTitle();
+        }
+        else if (key.equals(JAVAX_PORTLET_KEYWORDS))
+        {
+            return getKeywordStr();
+        }
+        return null;
     }
-
-    public LanguageImpl( Locale locale, ResourceBundle bundle )
+    
+    private String getStringValue(ResourceBundle bundle, String key, String defaultValue)
     {
-        this.resourceBundle = new DefaultsResourceBundle(bundle, new HashMap());
-
-        setLocale(locale);
-        setTitle(getResourceBundle().getString(JAVAX_PORTLET_TITLE));
-        setShortTitle(getResourceBundle().getString(JAVAX_PORTLET_SHORT_TITLE));
-        setKeywords(getResourceBundle().getString(JAVAX_PORTLET_KEYWORDS));
+        String value = defaultValue;
+        try
+        {
+            value = (String)bundle.getObject(key);
+        }
+        catch (MissingResourceException mre)
+        {            
+        }
+        catch (ClassCastException cce)
+        {            
+        }
+        return value;
     }
-
+    
+    public void setResourceBundle(ResourceBundle bundle)
+    {
+        if ( parent == null && bundle != null )
+        {
+            Enumeration parentKeys = bundle.getKeys();
+            while ( parentKeys.hasMoreElements() )
+            {
+                keys.add(parentKeys.nextElement());
+            }
+            setParent(bundle);
+        }
+    }
+    
+    public void loadDefaults()
+    {
+        ResourceBundle bundle = getParentResourceBundle();
+        if ( bundle != null )
+        {
+            setTitle(getStringValue(bundle, JAVAX_PORTLET_TITLE, getTitle()));
+            setShortTitle(getStringValue(bundle, JAVAX_PORTLET_SHORT_TITLE, getShortTitle()));
+            setKeywords(getStringValue(bundle, JAVAX_PORTLET_TITLE, getKeywordStr()));
+        }
+    }
+    
     /**
      * @see org.apache.pluto.om.common.Language#getLocale()
      */
@@ -117,11 +154,6 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public String getTitle()
     {
-        if(title == null)
-        {
-            title = resourceBundle.getString(JAVAX_PORTLET_TITLE);
-        }
-        
         return title;
     }
 
@@ -130,12 +162,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public String getShortTitle()
     {
-        if(shortTitle == null)
-        {
-            shortTitle = resourceBundle.getString(JAVAX_PORTLET_SHORT_TITLE);
-        }
-        
-        return shortTitle;        
+        return shortTitle;
     }
 
     /**
@@ -143,11 +170,10 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public Iterator getKeywords()
     {
-        if (keywords == null)
+        if ( keywords == null )
         {
-            setKeywords(resourceBundle.getString(JAVAX_PORTLET_KEYWORDS));
+            return Collections.EMPTY_LIST.iterator();
         }
-
         return keywords.iterator();
     }
 
@@ -157,16 +183,20 @@ public class LanguageImpl implements MutableLanguage, Serializable
     public ResourceBundle getResourceBundle()
     {
 
-        return resourceBundle;
+        return this;
     }
-
+    
+    public ResourceBundle getParentResourceBundle()
+    {
+        return parent;
+    }
+    
     /**
      * @see org.apache.pluto.om.common.LanguageCtrl#setLocale(java.util.Locale)
      */
     public void setLocale( Locale locale )
     {
         this.locale = locale;
-
     }
 
     /**
@@ -180,9 +210,48 @@ public class LanguageImpl implements MutableLanguage, Serializable
     /**
      * @see org.apache.pluto.om.common.LanguageCtrl#setShortTitle(java.lang.String)
      */
-    public void setShortTitle( String title )
+    public void setShortTitle( String shortTitle )
     {
-        this.shortTitle = title;
+        this.shortTitle = shortTitle;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.LanguageComposite#setKeywords(java.util.Collection)
+     */
+    public void setKeywords( Collection keywords )
+    {
+        this.keywords = keywords;
+    }
+    
+    public void setKeywords(String keywordStr)
+    {
+        if (keywords == null)
+        {
+            keywords = new ArrayList();
+        }
+        else
+        {
+            keywords.clear();
+        }
+        if ( keywordStr == null )
+        {
+            keywordStr = "";
+        }
+        StringTokenizer tok = new StringTokenizer(keywordStr, ",");
+        while (tok.hasMoreTokens())
+        {
+            keywords.add(tok.nextToken());
+        }
+        this.keywordStr = keywordStr;
+    }
+    
+    public String getKeywordStr()
+    {
+        if ( keywordStr == null )
+        {
+            keywordStr = StringUtils.join(getKeywords(),",");
+        }
+        return keywordStr;
     }
 
     /**
@@ -204,130 +273,8 @@ public class LanguageImpl implements MutableLanguage, Serializable
     public int hashCode()
     {
         HashCodeBuilder hasher = new HashCodeBuilder(19, 79);
+        Locale locale = getLocale();
         hasher.append(locale.getCountry()).append(locale.getLanguage()).append(locale.getVariant());
         return hasher.toHashCode();
     }
-
-    /**
-     * @see org.apache.jetspeed.om.common.LanguageComposite#setKeywords(java.util.Collection)
-     */
-    public void setKeywords( Collection keywords )
-    {
-        this.keywords = keywords;
-    }
-
-    /**
-     * 
-     * <p>
-     * setKeywords
-     * </p>
-     * 
-     * A comma delimited list of keywords
-     * 
-     * @param keywords
-     *  
-     */
-    public void setKeywords( String keywordStr )
-    {
-        if (keywords == null)
-        {
-            keywords = new ArrayList();
-        }
-        StringTokenizer tok = new StringTokenizer(keywordStr, ",");
-        while (tok.hasMoreTokens())
-        {
-            keywords.add(tok.nextToken());
-        }
-    }
-
-    private static class DefaultsResourceBundle extends ResourceBundle
-    {
-        private ResourceBundle baseBundle;
-        private Map defaultValues;
-
-        public DefaultsResourceBundle( ResourceBundle baseBundle, Map defaultValues )
-        {
-            this.baseBundle = baseBundle;
-            this.defaultValues = defaultValues;
-        }
-
-        /**
-         * <p>
-         * getKeys
-         * </p>
-         * 
-         * @see java.util.ResourceBundle#getKeys()
-         * @return
-         */
-        public Enumeration getKeys()
-        {
-            if (baseBundle != null)
-            {
-                Enumeration baseKeys = baseBundle.getKeys();
-                HashSet mergedKeys = new HashSet(defaultValues.keySet());
-                while (baseKeys.hasMoreElements())
-                {
-                    mergedKeys.add(baseKeys.nextElement());
-                }
-                return Collections.enumeration(mergedKeys);
-            }
-            else
-            {
-                return Collections.enumeration(defaultValues.keySet());
-            }
-        }
-
-        /**
-         * <p>
-         * handleGetObject
-         * </p>
-         * 
-         * @see java.util.ResourceBundle#handleGetObject(java.lang.String)
-         * @param key
-         * @return
-         */
-        protected Object handleGetObject( String key )
-        {
-
-            try
-            {
-                if(baseBundle != null)
-                {
-                    return baseBundle.getObject(key);
-                }
-                else
-                {
-                    return getDefaultValue(key);
-                }
-            }
-            catch (MissingResourceException e)
-            {
-                return getDefaultValue(key);
-            }
-        }
-
-        /**
-         * <p>
-         * getDefaultValue
-         * </p>
-         *
-         * @param key
-         * @return
-         */
-        protected Object getDefaultValue( String key )
-        {
-            Object value = defaultValues.get(key);
-            if (value != null)
-            {
-                return value;
-            }
-            else
-            {
-                return "";
-            }
-        }
-    }
-    
-    
-
 }
