@@ -82,7 +82,7 @@ public class PathSessionResolver implements RuleCriterionResolver
     {     
         {".*\\.html", "/Public/content.psml"},       
         {".*\\.pdf", "/Public/content.psml"},        
-        {"/content.*", "/Public/content.psml"}
+//        {"/_content.*", "/Public/content.psml"}
 //        {"/data/*", "/Public/content2.psml"},
     };
      
