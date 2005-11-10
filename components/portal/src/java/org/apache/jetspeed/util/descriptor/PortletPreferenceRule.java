@@ -54,7 +54,10 @@ public class PortletPreferenceRule extends Rule
         portlet = (PortletDefinitionComposite) peeked;
         portlet.setPortletApplicationDefinition((PortletApplicationDefinition) digester.getRoot());
         
-        values = new ArrayList();
+        // reset properties to default values
+        // as the same instance of this rule can be used multiple times
+        values = new ArrayList();        
+        readOnly = false;
         
         TempValueObject temp = new TempValueObject();
         digester.push(temp);
