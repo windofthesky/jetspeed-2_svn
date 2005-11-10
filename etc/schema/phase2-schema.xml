@@ -279,7 +279,7 @@ limitations under the License.
         </unique>
     </table>
     
-    <table name="PAGE_SECURITY_CONSTRAINTS_DEF">
+    <table name="PAGE_SEC_CONSTRAINTS_DEF">
         <column name="CONSTRAINTS_DEF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_SECURITY_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="40" type="VARCHAR"/>
@@ -296,7 +296,7 @@ limitations under the License.
         </index>
     </table>
 
-    <table name="PAGE_SECURITY_CONSTRAINTS_REF">
+    <table name="PAGE_SEC_CONSTRAINTS_REF">
         <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_SECURITY_ID" type="INTEGER" required="true"/>
         <column name="APPLY_ORDER" type="INTEGER" required="true"/>
