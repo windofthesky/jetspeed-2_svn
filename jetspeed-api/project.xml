@@ -37,7 +37,7 @@ limitations under the License.
   <dependencies>
 	<!-- Pluto Container -->
 	<dependency>
-	  <id>pluto</id>
+	  <id>org.apache.pluto:pluto</id>
 	  <version>${pluto.version}</version>
 	  <type>jar</type>
 	</dependency>

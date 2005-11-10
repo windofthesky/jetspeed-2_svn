@@ -224,7 +224,7 @@ limitations under the License.
 		
 	  <!-- Pluto Container needed to be able to compile against jetspeed-api provided extensions of Pluto -->
 		<dependency>
-		  <id>pluto</id>
+		  <id>org.apache.pluto:pluto</id>
 		  <version>${pluto.version}</version>
 		  <type>jar</type>
 		  <properties>
