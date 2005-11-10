@@ -16,10 +16,9 @@
 package org.apache.jetspeed.dispatcher;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletResponse;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.portlet.PortletRequestDispatcher;
@@ -27,8 +26,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.PortletException;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.core.impl.RenderRequestImpl;
 import org.apache.pluto.core.impl.RenderResponseImpl;
 
@@ -41,7 +38,6 @@ import org.apache.pluto.core.impl.RenderResponseImpl;
 public class JetspeedRequestDispatcher implements PortletRequestDispatcher
 {
     private RequestDispatcher requestDispatcher;
-  //  private static final Log log = LogFactory.getLog(JetspeedRequestDispatcher.class);
 
     public JetspeedRequestDispatcher(RequestDispatcher requestDispatcher)
     {
@@ -65,70 +61,34 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
             this.requestDispatcher.include(servletRequest, servletResponse);
 
         }
+        catch (RuntimeException re)
+        {
+            // PLT.16.3.4 cxlii: 
+            // RuntimeExceptions must be propagated back
+            throw re;
+        }
+        catch (IOException ioe)
+        {
+            // PLT.16.3.4 cxlii: 
+            // IOExceptions must be propagated back
+            throw ioe;
+        }
         catch (Exception e)
         {
-            PrintWriter pw = null;
-            if (servletResponse != null)
-            {
-                pw = getPrintWriter(servletResponse);
-                pw.write("JetspeedRequestDispatcher failed to include servlet resources. (details below) <br/>");
-                pw.write("Exception: " + e.getClass().getName() + " <br/>");
-                pw.write("Message: " + e.getMessage() + " <br/>");
-                writeStackTrace(e.getStackTrace(), pw);
+            // PLT.16.3.4 cxliii: 
+            // All other exceptions, including ServletExceptions must be wrapped in a PortletException 
+            // with the root cause set to the original exception before propagated back
 
-            }
-            //log.error("JetspeedRequestDispatcher failed (details below)");
-            //log.error(
-            //    "Begin: ******************************************* JetspeedRequestDispatcher Failure Report******************************************");
-            // log.error("Cause: " + e.getMessage(), e);
-            if (e.getCause() != null)
+            Throwable rootCause = null;
+            if ( e instanceof ServletException)
             {
-               // log.error("Root Cause: " + e.getCause().getMessage(), e.getCause());
-                if (pw != null)
-                {
-                    pw.write("<p>Root Cause: </p>");
-                    pw.write("Message: " + e.getCause().getMessage() + " <br/>");
-                    pw.write("Exception: " + e.getCause().getClass().getName() + " <br/>");
-                    writeStackTrace(e.getCause().getStackTrace(), pw);
-                }
-
-               // log.error(
-               //     "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
-                pw.flush();
-                throw new PortletException(e);
+                rootCause = ((ServletException)e).getRootCause();
             }
             else
             {
-                //log.error(
-                //    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
-				pw.flush();
-                throw new PortletException(e);
+                rootCause = e.getCause();
             }
+            throw new PortletException(rootCause != null ? rootCause : e);
         }
     }
-
-    protected static final void writeStackTrace(StackTraceElement[] traceArray, PrintWriter pw)
-    {
-        pw.write("<p>Stack Trace: </p>");
-        for (int i = 0; i < traceArray.length; i++)
-        {
-            pw.write("&nbsp;&nbsp;&nbsp;" + traceArray[i].toString() + "<br />");
-        }
-    }
-    
-    private static final PrintWriter getPrintWriter(ServletResponse response) throws IOException
-    {
-        PrintWriter pw = null;
-        try
-        {
-            pw = response.getWriter();
-        }
-        catch(IllegalStateException ise)
-        {
-            pw = new PrintWriter(response.getOutputStream());
-        }
-        
-        return pw;
-    }
-
 }
