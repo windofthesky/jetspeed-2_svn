@@ -1007,7 +1007,7 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintsDef"
-      table="PAGE_SECURITY_CONSTRAINTS_DEF"
+      table="PAGE_SEC_CONSTRAINTS_DEF"
    >
       <field-descriptor
          name="id"
@@ -1067,7 +1067,7 @@ limitations under the License.
 
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.PageSecurityGlobalSecurityConstraintsRef"
-      table="PAGE_SECURITY_CONSTRAINTS_REF"
+      table="PAGE_SEC_CONSTRAINTS_REF"
    >
       <field-descriptor
          name="id"
