@@ -22,6 +22,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -112,10 +113,25 @@ public class PageImporter
     throws JetspeedException
     {
         Folder fsRoot = sourceManager.getFolder(rootFolder);                
-        Folder root = importFolder(fsRoot);                            
+        Folder root = importFolder(fsRoot);
+        
+        
         // create the root page security
-        PageSecurity rootSecurity = destManager.copyPageSecurity(sourceManager.getPageSecurity());        
-        destManager.updatePageSecurity(rootSecurity);
+        PageSecurity sourcePageSecurity = null;
+        try
+        {
+            sourcePageSecurity = sourceManager.getPageSecurity();
+        }
+        catch (DocumentNotFoundException e)
+        {
+            // skip over it, not found
+        }
+        
+        if (sourcePageSecurity != null)
+        {
+            PageSecurity rootSecurity = destManager.copyPageSecurity(sourcePageSecurity);        
+            destManager.updatePageSecurity(rootSecurity);
+        }
     }
 
     public void folderTreeImport()
