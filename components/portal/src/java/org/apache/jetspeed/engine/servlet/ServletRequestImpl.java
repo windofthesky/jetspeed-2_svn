@@ -144,8 +144,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 }
             }
 
+            String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
             boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
-                    && getCharacterEncoding() != null;
+                    && encoding != null;
             if (decode)
             {
                 getRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
@@ -165,7 +166,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                     {
                         try
                         {
-                            paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), getCharacterEncoding());
+                            paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
                         }
                         catch (UnsupportedEncodingException e)
                         {

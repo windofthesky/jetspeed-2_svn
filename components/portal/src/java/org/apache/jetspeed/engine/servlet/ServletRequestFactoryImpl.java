@@ -55,20 +55,6 @@ public class ServletRequestFactoryImpl
         {
             HttpServletRequest servletRequest = createRequest(request, window);
 
-            // Set page encoding in order to parse the form data correctly
-            String preferedEnc = (String) request
-                    .getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-            if (preferedEnc != null)
-            {
-                try
-                {
-                    servletRequest.setCharacterEncoding(preferedEnc);
-                }
-                catch (UnsupportedEncodingException e)
-                {
-                    ;
-                }
-            }
             return servletRequest;
         }
         else
