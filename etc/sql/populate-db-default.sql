@@ -354,69 +354,69 @@ INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(5,6);
 insert into PROFILING_RULE values ('j1', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'The default profiling rule following the Jetspeed-1 hard-coded profiler fallback algorithm.');
-insert into RULE_CRITERION values (1, 'j1', 0, 'path.session', 'page', 'default-page', 0);
-insert into RULE_CRITERION values (2, 'j1', 1, 'group.role.user', 'user', null, 0);
-insert into RULE_CRITERION values (3, 'j1', 2, 'mediatype', 'mediatype', null, 1);
-insert into RULE_CRITERION values (4, 'j1', 3, 'language', 'language', null, 1);
-insert into RULE_CRITERION values (5, 'j1', 4, 'country', 'country', null, 1);
+insert into RULE_CRITERION values ('1', 'j1', 0, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('2', 'j1', 1, 'group.role.user', 'user', null, 0);
+insert into RULE_CRITERION values ('3', 'j1', 2, 'mediatype', 'mediatype', null, 1);
+insert into RULE_CRITERION values ('4', 'j1', 3, 'language', 'language', null, 1);
+insert into RULE_CRITERION values ('5', 'j1', 4, 'country', 'country', null, 1);
 
 insert into PROFILING_RULE values ('role-fallback', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 role-based fallback');
-insert into RULE_CRITERION values (6, 'role-fallback', 0, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (7, 'role-fallback', 1, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('6', 'role-fallback', 0, 'role', 'role', null, 2);
+insert into RULE_CRITERION values ('7', 'role-fallback', 1, 'path.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('path', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'use a path to locate.');
-insert into RULE_CRITERION values (10, 'path', 0, 'path', 'path', '/', 0);
+insert into RULE_CRITERION values ('10', 'path', 0, 'path', 'path', '/', 0);
 
 insert into PROFILING_RULE values ('role-group', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm that searches all groups and roles for a user');
-insert into RULE_CRITERION values (11, 'role-group', 0, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (12, 'role-group', 1, 'navigation', 'navigation', '/', 2);
-insert into RULE_CRITERION values (13, 'role-group', 2, 'group', 'group', null, 2);
+insert into RULE_CRITERION values ('11', 'role-group', 0, 'role', 'role', null, 2);
+insert into RULE_CRITERION values ('12', 'role-group', 1, 'navigation', 'navigation', '/', 2);
+insert into RULE_CRITERION values ('13', 'role-group', 2, 'group', 'group', null, 2);
 
 insert into PROFILING_RULE values ('group-fallback', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 group-based fallback');
-insert into RULE_CRITERION values (15, 'group-fallback', 0, 'group', 'group', null, 2);
-insert into RULE_CRITERION values (16, 'group-fallback', 1, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('15', 'group-fallback', 0, 'group', 'group', null, 2);
+insert into RULE_CRITERION values ('16', 'group-fallback', 1, 'path.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('security', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'The security profiling rule needed for credential change requirements.');
-insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my-account.psml', 0);
+insert into RULE_CRITERION values ('17', 'security', 0, 'hard.coded', 'page', '/my-account.psml', 0);
 
 insert into PROFILING_RULE values ('j2', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'The default profiling rule for users and mediatype minus language and country.');
-insert into RULE_CRITERION values (18, 'j2', 0, 'path.session', 'page', 'default-page', 0);
-insert into RULE_CRITERION values (19, 'j2', 1, 'group.role.user', 'user', null, 0);
-insert into RULE_CRITERION values (20, 'j2', 2, 'mediatype', 'mediatype', null, 1);
+insert into RULE_CRITERION values ('18', 'j2', 0, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('19', 'j2', 1, 'group.role.user', 'user', null, 0);
+insert into RULE_CRITERION values ('20', 'j2', 2, 'mediatype', 'mediatype', null, 1);
 
 insert into PROFILING_RULE values ('user-role-fallback', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 role-based fallback');
-insert into RULE_CRITERION values (30, 'user-role-fallback', 0, 'user', 'user', null, 2);
-insert into RULE_CRITERION values (31, 'user-role-fallback', 1, 'navigation', 'navigation', '/', 2);
-insert into RULE_CRITERION values (32, 'user-role-fallback', 2, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (33, 'user-role-fallback', 3, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('30', 'user-role-fallback', 0, 'user', 'user', null, 2);
+insert into RULE_CRITERION values ('31', 'user-role-fallback', 1, 'navigation', 'navigation', '/', 2);
+insert into RULE_CRITERION values ('32', 'user-role-fallback', 2, 'role', 'role', null, 2);
+insert into RULE_CRITERION values ('33', 'user-role-fallback', 3, 'path.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('subsite-role-fallback-home',
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A rule based on role fallback algorithm with specified subsite and home page');
-insert into RULE_CRITERION values (50, 'subsite-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
-insert into RULE_CRITERION values (51, 'subsite-role-fallback-home', 1, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (52, 'subsite-role-fallback-home', 2, 'path', 'path', 'subsite-default-page', 0);
+insert into RULE_CRITERION values ('50', 'subsite-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
+insert into RULE_CRITERION values ('51', 'subsite-role-fallback-home', 1, 'role', 'role', null, 2);
+insert into RULE_CRITERION values ('52', 'subsite-role-fallback-home', 2, 'path', 'path', 'subsite-default-page', 0);
 
 insert into PROFILING_RULE values ('subsite2-role-fallback-home', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A rule based on role fallback algorithm with specified subsite and home page');
-insert into RULE_CRITERION values (53, 'subsite2-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
-insert into RULE_CRITERION values (54, 'subsite2-role-fallback-home', 1, 'role', 'role', null, 2);
-insert into RULE_CRITERION values (55, 'subsite2-role-fallback-home', 2, 'path', 'path', 'subsite2-default-page', 0);
+insert into RULE_CRITERION values ('53', 'subsite2-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
+insert into RULE_CRITERION values ('54', 'subsite2-role-fallback-home', 1, 'role', 'role', null, 2);
+insert into RULE_CRITERION values ('55', 'subsite2-role-fallback-home', 2, 'path', 'path', 'subsite2-default-page', 0);
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
