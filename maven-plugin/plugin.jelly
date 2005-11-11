@@ -474,7 +474,7 @@
   <goal name="j2:catalina.base.shared" description="Copy all base jars necessary for common container">
     <echo>Deploys misc. jars shared/lib to Tomcat</echo>
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
-    <copy file="${maven.repo.local}/pluto/jars/pluto-${pluto.version}.jar"
+    <copy file="${maven.repo.local}/org.apache.pluto/jars/pluto-${pluto.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
