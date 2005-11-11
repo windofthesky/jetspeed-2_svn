@@ -17,21 +17,22 @@ limitations under the License.
 -->
 <beans>
 
-  <bean id="org.apache.jetspeed.page.PageManagerImpl" 
-        name="pageManagerImpl"
-        init-method="init"
-        class="org.apache.jetspeed.page.impl.DatabasePageManager">
-      <!-- OJB configuration file resource path -->
-      <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
-      <!-- folder/page/link cache size, default=128 -->
-      <constructor-arg index="1"><value>128</value></constructor-arg>
-      <!-- permissions security enabled flag, default=false -->
-      <constructor-arg index="2"><value>false</value></constructor-arg>
-      <!-- constraints security enabled flag, default=true -->
-      <constructor-arg index="3"><value>false</value></constructor-arg>
-  </bean>
+    <!-- Page Manager -->
+    <bean id="org.apache.jetspeed.page.PageManagerImpl" 
+          name="pageManagerImpl"
+          init-method="init"
+          class="org.apache.jetspeed.page.impl.DatabasePageManager">
+        <!-- OJB configuration file resource path -->
+        <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
+        <!-- folder/page/link cache size -->
+        <constructor-arg index="1"><value>128</value></constructor-arg>
+        <!-- permissions security enabled flag -->
+        <constructor-arg index="2"><value>false</value></constructor-arg>
+        <!-- constraints security enabled flag -->
+        <constructor-arg index="3"><value>false</value></constructor-arg>
+    </bean>
 
-    <!-- Proxying -->
+    <!-- Transaction Proxying -->
     <bean id="org.apache.jetspeed.page.PageManager" name="pageManager" parent="baseTransactionProxy">
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.page.PageManager</value>
@@ -42,8 +43,9 @@ limitations under the License.
         <property name="transactionAttributes">
             <props>
                 <prop key="*">PROPAGATION_SUPPORTS</prop>
-                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.PageNotUpdatedException</prop>                                
-                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.PageNotRemovedException</prop>                                                
+                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
             </props>
         </property>
     </bean>

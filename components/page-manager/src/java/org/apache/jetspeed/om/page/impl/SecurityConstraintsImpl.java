@@ -21,7 +21,9 @@ import java.util.List;
 
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 
 /**
  * SecurityConstraintsImpl
@@ -37,6 +39,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
 
     private List securityConstraints;
     private List securityConstraintsRefs;
+    private List allConstraints;
 
     /**
      * beforeUpdate
@@ -207,6 +210,167 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     {
         // transient by default
         return null;
+    }
+
+    /**
+     * checkConstraints
+     *
+     * @param actions actions to check
+     * @param userPrincipals principal users list
+     * @param rolePrincipals principal roles list
+     * @param groupPrincipals principal group list
+     * @param pageSecurity page security definitions
+     * @throws SecurityException
+     */
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, PageSecurity pageSecurity) throws SecurityException
+    {
+        // if owner defined, override all constraints and allow all access
+        if ((owner != null) && (userPrincipals != null) && userPrincipals.contains(owner))
+        {
+            return;
+        }
+
+        // skip missing or empty constraints: permit all access
+        List checkConstraints = getAllSecurityConstraints(pageSecurity);
+        if ((checkConstraints != null) && !checkConstraints.isEmpty())
+        {
+            // test each action, constraints check passes only
+            // if all actions are permitted for principals
+            Iterator actionsIter = actions.iterator();
+            while (actionsIter.hasNext())
+            {
+                // check each action:
+                // - if any actions explicity permitted, assume no permissions
+                //   are permitted by default
+                // - if all constraints do not specify a permission, assume
+                //   access is permitted by default
+                String action = (String)actionsIter.next();
+                boolean actionPermitted = false;
+                boolean actionNotPermitted = false;
+                boolean anyActionsPermitted = false;
+                
+                // check against constraints
+                Iterator checkConstraintsIter = checkConstraints.iterator();
+                while (checkConstraintsIter.hasNext())
+                {
+                    SecurityConstraintImpl constraint = (SecurityConstraintImpl)checkConstraintsIter.next();
+                    
+                    // if permissions specified, attempt to match constraint
+                    if (constraint.getPermissions() != null)
+                    {
+                        // explicit actions permitted
+                        anyActionsPermitted = true;
+
+                        // test action permission match and user/role/group principal match
+                        if (constraint.actionMatch(action) &&
+                            constraint.principalsMatch(userPrincipals, rolePrincipals, groupPrincipals, true))
+                        {
+                            actionPermitted = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // permissions not specified: not permitted if any principal matched
+                        if (constraint.principalsMatch(userPrincipals, rolePrincipals, groupPrincipals, false))
+                        {
+                            actionNotPermitted = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // fail if any action not permitted
+                if ((!actionPermitted && anyActionsPermitted) || actionNotPermitted)
+                {
+                    throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted.");
+                }
+            }
+        }
+    }
+
+    /**
+     * getAllSecurityConstraints
+     *
+     * @param pageSecurity page security definitions
+     * @return all security constraints
+     */
+    private List getAllSecurityConstraints(PageSecurity pageSecurity)
+    {
+        // return previously cached security constraints; note that
+        // cache is assumed valid until owning document is evicted
+        if (allConstraints != null)
+        {
+            return allConstraints;
+        }
+
+        // construct new ordered security constraints list
+        allConstraints = new ArrayList(8);
+
+        // add any defined security constraints
+        if ((securityConstraints != null) && !securityConstraints.isEmpty())
+        {
+            allConstraints.addAll(securityConstraints);
+        }
+
+        // add any security constraints references
+        if ((securityConstraintsRefs != null) && !securityConstraintsRefs.isEmpty())
+        {
+            List referencedConstraints = dereferenceSecurityConstraintsRefs(securityConstraintsRefs, pageSecurity);
+            if (referencedConstraints != null)
+            {
+                allConstraints.addAll(referencedConstraints);
+            }
+        }
+        
+        // add any global decurity constraints references
+        if (pageSecurity != null)
+        {
+            List globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
+            if ((globalConstraintsRefs != null) && !globalConstraintsRefs.isEmpty())
+            {
+                List referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, pageSecurity);
+                if (referencedConstraints != null)
+                {
+                    allConstraints.addAll(referencedConstraints);
+                }
+            }
+        }
+        
+        return allConstraints;
+    }
+
+    /**
+     * <p>
+     * dereferenceSecurityConstraintsRefs
+     * </p>
+     *
+     * @param constraintsRefs contstraints references to be dereferenced
+     * @param pageSecurity page security definitions
+     * @return security constraints
+     */
+    private List dereferenceSecurityConstraintsRefs(List constraintsRefs, PageSecurity pageSecurity)
+    {
+        List constraints = null;
+        if (pageSecurity != null)
+        {   
+            // dereference each security constraints definition
+            Iterator constraintsRefsIter = constraintsRefs.iterator();
+            while (constraintsRefsIter.hasNext())
+            {
+                String constraintsRef = (String)constraintsRefsIter.next();
+                SecurityConstraintsDef securityConstraintsDef = pageSecurity.getSecurityConstraintsDef(constraintsRef);
+                if ((securityConstraintsDef != null) && (securityConstraintsDef.getSecurityConstraints() != null))
+                {
+                    if (constraints == null)
+                    {
+                        constraints = new ArrayList(constraintsRefs.size());
+                    }
+                    constraints.addAll(securityConstraintsDef.getSecurityConstraints());
+                }
+            }
+        }
+        return constraints;
     }
 
     /* (non-Javadoc)

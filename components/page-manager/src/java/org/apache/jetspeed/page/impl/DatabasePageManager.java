@@ -16,12 +16,11 @@
 package org.apache.jetspeed.page.impl;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -34,6 +33,7 @@ import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -74,9 +74,10 @@ import org.apache.ojb.broker.query.QueryFactory;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
  */
-
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
 {
+    private static final int DEFAULT_CACHE_SIZE = 128;
+
     private static Map modelClasses = new HashMap();
     static
     {
@@ -97,13 +98,26 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
     private DelegatingPageManager delegator;
     
-    private LRUMap databaseNodeCache;
+    private int cacheSize;
+
+    private DatabasePageManagerCache cache;
 
     public DatabasePageManager(String repositoryPath, int cacheSize, boolean isPermissionsSecurity, boolean isConstraintsSecurity)
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
-        databaseNodeCache = new LRUMap(cacheSize);
+        this.cacheSize = Math.max(cacheSize, DEFAULT_CACHE_SIZE);
+        DatabasePageManagerCache.cacheInit(this);
+    }
+
+    /**
+     * getCacheSize
+     *
+     * @return configured cache size
+     */
+    public int getCacheSize()
+    {
+        return cacheSize;
     }
 
     /* (non-Javadoc)
@@ -255,9 +269,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // propagate to delegator
         delegator.reset();
 
-        // clean database node cache to force subsequent
-        // refreshs from persistent store
-        databaseNodeCache.clear();
+        // clear cache to force subsequent refreshs from persistent store
+        DatabasePageManagerCache.cacheClear();
     }
 
     /* (non-Javadoc)
@@ -268,18 +281,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // construct page attributes from path
         path = NodeImpl.getCanonicalNodePath(path);
 
-        // test cache with canonical path if available
-        if (databaseNodeCache.containsKey(path))
+        // optimized retrieval from cache by path if available
+        NodeImpl cachedNode = DatabasePageManagerCache.cacheLookup(path);
+        if (cachedNode instanceof Page)
         {
-            // return cached page or throw exception if cached as null
-            Page page = (Page) databaseNodeCache.get(path);
-            if (page == null)
-            {
-                throw new PageNotFoundException("Page " + path + " not found.");
-            }
-            return page;
+            // check for view access on page
+            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+
+            return (Page)cachedNode;
         }
-        
+
         // retrieve page from database
         try
         {
@@ -288,19 +299,24 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Page page = (Page) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
-            // add to or delete entry in document cache
-            databaseNodeCache.put(path, page);
-            
             // return page or throw exception
             if (page == null)
             {
                 throw new PageNotFoundException("Page " + path + " not found.");
             }
+
+            // check for view access on page
+            page.checkAccess(SecuredResource.VIEW_ACTION);
+
             return page;
         }
         catch (PageNotFoundException pnfe)
         {
             throw pnfe;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -313,8 +329,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException
     {
-        // TODO Auto-generated method stub
-        return null;
+        // return proxied page
+        return new ContentPageImpl(getPage(path));
     }
 
     /* (non-Javadoc)
@@ -334,18 +350,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // construct document attributes from path
         String path = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
 
-        // test cache with canonical path if available
-        if (databaseNodeCache.containsKey(path))
+        // optimized retrieval from cache by path if available
+        NodeImpl cachedNode = DatabasePageManagerCache.cacheLookup(path);
+        if (cachedNode instanceof PageSecurity)
         {
-            // return cached document or throw exception if cached as null
-            PageSecurity document = (PageSecurity) databaseNodeCache.get(path);
-            if (document == null)
-            {
-                throw new DocumentNotFoundException("Document " + path + " not found.");
-            }
-            return document;
+            // check for view access on document
+            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+
+            return (PageSecurity)cachedNode;
         }
-        
+
         // retrieve document from database
         try
         {
@@ -354,19 +368,24 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
-            // add to or delete entry in document cache
-            databaseNodeCache.put(path, document);
-            
             // return page or throw exception
             if (document == null)
             {
                 throw new DocumentNotFoundException("Document " + path + " not found.");
             }
+
+            // check for view access on document
+            document.checkAccess(SecuredResource.VIEW_ACTION);
+
             return document;
         }
         catch (DocumentNotFoundException dnfe)
         {
             throw dnfe;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -382,16 +401,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         // construct folder attributes from path
         folderPath = NodeImpl.getCanonicalNodePath(folderPath);
 
-        // test cache with canonical path if available
-        if (databaseNodeCache.containsKey(folderPath))
+        // optimized retrieval from cache by path if available
+        NodeImpl cachedNode = DatabasePageManagerCache.cacheLookup(folderPath);
+        if (cachedNode instanceof Folder)
         {
-            // return cached folder or throw exception if cached as null
-            Folder folder = (Folder) databaseNodeCache.get(folderPath);
-            if (folder == null)
-            {
-                throw new FolderNotFoundException("Folder " + folderPath + " not found.");
-            }
-            return folder;
+            // check for view access on folder
+            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+
+            return (Folder)cachedNode;
         }
 
         // retrieve folder from database
@@ -402,19 +419,24 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Folder folder = (Folder) getPersistenceBrokerTemplate().getObjectByQuery(query);
             
-            // add to or delete entry in folder cache
-            databaseNodeCache.put(folderPath, folder);
-            
             // return folder or throw exception
             if (folder == null)
             {
                 throw new FolderNotFoundException("Folder " + folderPath + " not found.");
             }
+
+            // check for view access on folder
+            folder.checkAccess(SecuredResource.VIEW_ACTION);
+
             return folder;
         }
         catch (FolderNotFoundException fnfe)
         {
             throw fnfe;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -430,6 +452,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         try
         {
             // dereference page in case proxy is supplied
+            if (page instanceof ContentPageImpl)
+            {
+                page = ((ContentPageImpl)page).getPage();
+            }
             page = (Page)ProxyHelper.getRealObject(page);
 
             // look up and set parent folder if necessary
@@ -452,6 +478,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new PageNotUpdatedException("Missing parent folder: " + parentPath);
                 }
                 
+                // check for edit access on parent folder; page
+                // access not checked on create
+                parent.checkAccess(SecuredResource.EDIT_ACTION);
+
                 try
                 {
                     // update parent folder with added page
@@ -465,22 +495,23 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     parent.removePage((PageImpl)page);
                     throw e;
                 }
-                
-                // update document cache
-                databaseNodeCache.put(pagePath, page);
             }
             else
             {
+                // check for edit access on page and parent folder
+                page.checkAccess(SecuredResource.EDIT_ACTION);
+
                 // update page
                 getPersistenceBrokerTemplate().store(page);
-                
-                // update document cache
-                databaseNodeCache.put(page.getPath(), page);
             }
         }
         catch (PageNotUpdatedException pnue)
         {
             throw pnue;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -496,7 +527,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         try
         {
             // dereference page in case proxy is supplied
+            if (page instanceof ContentPageImpl)
+            {
+                page = ((ContentPageImpl)page).getPage();
+            }
             page = (Page)ProxyHelper.getRealObject(page);
+
+            // check for edit access on page and parent folder
+            page.checkAccess(SecuredResource.EDIT_ACTION);
 
             // look up and update parent folder if necessary
             if (page.getParent() != null)
@@ -511,9 +549,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // delete page
                 getPersistenceBrokerTemplate().delete(page);
             }
-            
-            // delete document cache entry
-            databaseNodeCache.put(page.getPath(), null);
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -551,15 +590,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new FolderNotUpdatedException("Missing parent folder: " + parentPath);
                 }
                 
+                // check for edit access on parent folder; folder
+                // access not checked on create
+                parent.checkAccess(SecuredResource.EDIT_ACTION);
+
                 try
                 {
                     // update parent folder with added folder
                     parent.addFolder((FolderImpl)folder);
                     folder.setParent(parent);
                     getPersistenceBrokerTemplate().store(parent);
-                    
-                    // update folder cache
-                    databaseNodeCache.put(folderPath, folder);
                 }
                 catch (Exception e)
                 {
@@ -570,16 +610,20 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
             else
             {
+                // check for edit access on folder and parent folder
+                folder.checkAccess(SecuredResource.EDIT_ACTION);
+
                 // update folder
                 getPersistenceBrokerTemplate().store(folder);
-                
-                // update folder cache
-                databaseNodeCache.put(folder.getPath(), folder);
             }
         }
         catch (FolderNotUpdatedException fnue)
         {
             throw fnue;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -597,6 +641,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             // dereference folder in case proxy is supplied
             folder = (Folder)ProxyHelper.getRealObject(folder);
 
+            // check for edit access on folder and parent folder
+            folder.checkAccess(SecuredResource.EDIT_ACTION);
+
             // look up and update parent folder if necessary
             if (folder.getParent() != null)
             {
@@ -610,18 +657,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // deep delete folder
                 getPersistenceBrokerTemplate().delete(folder);
             }
-            
-            // delete folder and document cache entries
-            String folderPath = folder.getPath();
-            Iterator cacheIter = databaseNodeCache.entrySet().iterator();
-            while (cacheIter.hasNext())
-            {
-                Map.Entry cacheEntry = (Map.Entry)cacheIter.next();
-                if (((String)cacheEntry.getKey()).startsWith(folderPath))
-                {
-                    cacheEntry.setValue(null);
-                }
-            }
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -677,35 +716,54 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new FailedToUpdateDocumentException("Missing parent folder: " + parentPath);
                 }
 
+                // do not replace existing page security documents
                 try
                 {
-                    // update parent folder with added document
-                    parent.setPageSecurity((PageSecurityImpl)pageSecurity);
-                    pageSecurity.setParent(parent);
-                    getPersistenceBrokerTemplate().store(parent);
+                    // test for page security document
+                    parent.getPageSecurity();
+                    throw new FailedToUpdateDocumentException("Parent folder page security exists: " + parentPath);
+                }
+                catch (DocumentNotFoundException dnfe)
+                {
+                    // check for edit access on parent folder; document
+                    // access not checked on create
+                    parent.checkAccess(SecuredResource.EDIT_ACTION);
+                    
+                    try
+                    {
+                        // update parent folder with added document
+                        parent.setPageSecurity((PageSecurityImpl)pageSecurity);
+                        pageSecurity.setParent(parent);
+                        getPersistenceBrokerTemplate().store(parent);
+                    }
+                    catch (Exception e)
+                    {
+                        // clear document on error
+                        parent.setPageSecurity(null);
+                        throw e;
+                    }
                 }
                 catch (Exception e)
                 {
-                    // cleanup parent folder on error
-                    parent.setPageSecurity(null);
-                    throw e;
+                    throw new FailedToUpdateDocumentException("Parent folder page security exists: " + parentPath);
                 }
-                
-                // update document cache
-                databaseNodeCache.put(pageSecurityPath, pageSecurity);
             }
             else
             {
+                // check for edit access on document and parent folder
+                pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+
                 // update document
                 getPersistenceBrokerTemplate().store(pageSecurity);
-                
-                // update document cache
-                databaseNodeCache.put(pageSecurity.getPath(), pageSecurity);
             }
         }
         catch (FailedToUpdateDocumentException fude)
         {
             throw fude;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {
@@ -723,6 +781,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             // dereference document in case proxy is supplied
             pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
+            // check for edit access on document and parent folder
+            pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+
             // look up and update parent folder if necessary
             if (pageSecurity.getParent() != null)
             {
@@ -736,9 +797,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // delete document
                 getPersistenceBrokerTemplate().delete(pageSecurity);
             }
-            
-            // delete document cache entry
-            databaseNodeCache.put(pageSecurity.getPath(), null);
+        }
+        catch (SecurityException se)
+        {
+            throw se;
         }
         catch (Exception e)
         {

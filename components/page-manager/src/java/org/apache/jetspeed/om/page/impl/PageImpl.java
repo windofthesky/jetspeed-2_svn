@@ -114,7 +114,8 @@ public class PageImpl extends DocumentImpl implements Page
      */
     public Fragment getRootFragment()
     {
-        // get singleton fragment
+        // get singleton fragment; no access checks to
+        // be made for root fragment
         if ((fragment != null) && !fragment.isEmpty())
         {
             return (Fragment)fragment.iterator().next();
@@ -155,7 +156,8 @@ public class PageImpl extends DocumentImpl implements Page
         Fragment fragment = getRootFragment();
         while ((fragment != null) && !fragment.getId().equals(id))
         {
-            // push any fragment fragments onto the local stack
+            // push any fragment fragments onto the local stack;
+            // note that this set is already filtered for access
             List fragments = fragment.getFragments();
             if (!fragments.isEmpty())
             {

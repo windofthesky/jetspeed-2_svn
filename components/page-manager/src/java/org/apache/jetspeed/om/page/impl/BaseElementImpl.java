@@ -15,8 +15,25 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import java.security.AccessController;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.security.auth.Subject;
+
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
+import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.security.FolderPermission;
+import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -34,6 +51,9 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
     private String title;
     private String shortTitle;
     private SecurityConstraintsImpl constraints;
+
+    private boolean constraintsEnabled;
+    private boolean permissionsEnabled;
 
     protected BaseElementImpl(SecurityConstraintsImpl constraints)
     {
@@ -60,12 +80,160 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
         this.name = name;
     }
 
+    /**
+     * setConstraintsEnabled
+     *
+     * @param enabled enable/disable security constraints checks
+     */
+    public void setConstraintsEnabled(boolean enabled)
+    {
+        constraintsEnabled = enabled;
+    }
+    
+    /**
+     * setPermissionsEnabled
+     *
+     * @param enabled enable/disable security permissions checks
+     */
+    public void setPermissionsEnabled(boolean enabled)
+    {
+        permissionsEnabled = enabled;
+    }
+
+    /**
+     * grantViewActionAccess
+     *
+     * @return granted access for view action
+     */
+    public boolean grantViewActionAccess()
+    {
+        // by default, access must be checked
+        return false;
+    }
+
+    /**
+     * getEffectivePageSecurity
+     *
+     * @return effective page security object
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // no page security available by default
+        return null;
+    }
+
+    /**
+     * checkConstraints
+     *
+     * Check fully parameterized principal against specified security constraint scope.
+     *
+     * @param actions actions to check
+     * @param userPrincipals principal users list
+     * @param rolePrincipals principal roles list
+     * @param groupPrincipals principal group list
+     * @param checkNodeOnly check node scope only
+     * @param checkParentsOnly check parent folder scope only
+     * @throws SecurityException
+     */
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check node constraints if available
+        SecurityConstraints constraints = getSecurityConstraints();
+        if (constraints != null)
+        {
+            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
+        }
+    }
+
+    /**
+     * getLogicalPermissionPath
+     *
+     * @return path used for permissions checks
+     */
+    public String getLogicalPermissionPath()
+    {
+        // same as physical path by default
+        return getPhysicalPermissionPath();
+    }
+
+    /**
+     * getPhysicalPermissionPath
+     *
+     * @return path used for permissions checks
+     */
+    public String getPhysicalPermissionPath()
+    {
+        // no permissions path available by default
+        return null;
+    }
+
+    /**
+     * checkPermissions
+     *
+     * @param actions actions to check
+     * @param checkNodeOnly check node scope only
+     * @param checkParentsOnly check parent folder scope only
+     * @throws SecurityException
+     */
+    public void checkPermissions(String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check page and folder permissions
+        String physicalPermissionPath = getPhysicalPermissionPath();
+        if (physicalPermissionPath != null)
+        {
+            // check permissions using physical path
+            try
+            {
+                checkPermissions(physicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
+            }
+            catch (SecurityException physicalSE)
+            {
+                // fallback check using logical path if available and different
+                String logicalPermissionPath = getLogicalPermissionPath();
+                if ((logicalPermissionPath != null) && !logicalPermissionPath.equals(physicalPermissionPath))
+                {
+                    checkPermissions(logicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
+                }
+                else
+                {
+                    throw physicalSE;
+                }
+            }
+        }
+    }
+
+    /**
+     * checkPermissions
+     *
+     * @param path permissions path to check
+     * @param actions actions to check
+     * @param checkNodeOnly check node scope only
+     * @param checkParentsOnly check parent folder scope only
+     * @throws SecurityException
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check actions permissions
+        try
+        {
+            // check for granted page permissions
+            PagePermission permission = new PagePermission(path, actions);
+            AccessController.checkPermission(permission);
+        }
+        catch (SecurityException se)
+        {
+            // fallback check for granted folder permissions
+            FolderPermission permission = new FolderPermission(path, actions);
+            AccessController.checkPermission(permission);
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
      */
     public boolean getConstraintsEnabled()
     {
-        return false; // NYI
+        return constraintsEnabled;
     }
     
     /* (non-Javadoc)
@@ -95,7 +263,91 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
      */
     public void checkConstraints(String actions) throws SecurityException
     {
-        // NYI
+        // skip checks if not enabled
+        if (!getConstraintsEnabled())
+        {
+            return;
+        }
+
+        // validate specified actions
+        if (actions == null)
+        {
+            throw new SecurityException("BaseElementImpl.checkConstraints(): No actions specified.");
+        }
+
+        // get action names lists; separate view and other
+        // actions to mimic file system permissions logic
+        List viewActionList = SecurityConstraintImpl.parseCSVList(actions);
+        List otherActionsList = null;
+        if (viewActionList.size() == 1)
+        {
+            if (!viewActionList.contains(SecuredResource.VIEW_ACTION))
+            {
+                otherActionsList = viewActionList;
+                viewActionList = null;
+            }
+        }
+        else
+        {
+            otherActionsList = viewActionList;
+            viewActionList = null;
+            if (otherActionsList.remove(SecuredResource.VIEW_ACTION))
+            {
+                viewActionList = new ArrayList(1);
+                viewActionList.add(SecuredResource.VIEW_ACTION);
+            }
+        }
+
+        // get current request context subject
+        Subject subject = Subject.getSubject(AccessController.getContext());
+        if (subject == null)
+        {
+            throw new SecurityException("BaseElementImpl.checkConstraints(): Missing Subject.");
+        }
+
+        // get user/group/role principal names
+        List userPrincipals = null;
+        List rolePrincipals = null;
+        List groupPrincipals = null;
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal principal = (Principal) principals.next();
+            if (principal instanceof UserPrincipal)
+            {
+                if (userPrincipals == null)
+                {
+                    userPrincipals = new LinkedList();
+                }
+                userPrincipals.add(principal.getName());
+            }
+            else if (principal instanceof RolePrincipal)
+            {
+                if (rolePrincipals == null)
+                {
+                    rolePrincipals = new LinkedList();
+                }
+                rolePrincipals.add(principal.getName());
+            }
+            else if (principal instanceof GroupPrincipal)
+            {
+                if (groupPrincipals == null)
+                {
+                    groupPrincipals = new LinkedList();
+                }
+                groupPrincipals.add(principal.getName());
+            }
+        }
+
+        // check constraints using parsed action and access lists
+        if (viewActionList != null)
+        {
+            checkConstraints(viewActionList, userPrincipals, rolePrincipals, groupPrincipals, false, grantViewActionAccess());
+        }
+        if (otherActionsList != null)
+        {
+            checkConstraints(otherActionsList, userPrincipals, rolePrincipals, groupPrincipals, true, false);
+        }
     }
 
     /* (non-Javadoc)
@@ -103,7 +355,7 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
      */
     public boolean getPermissionsEnabled()
     {
-        return false; // NYI
+        return permissionsEnabled;
     }
     
     /* (non-Javadoc)
@@ -111,7 +363,50 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
      */
     public void checkPermissions(String actions) throws SecurityException
     {
-        // NYI
+        // skip checks if not enabled
+        if (getPermissionsEnabled())
+        {
+            return;
+        }
+
+        // separate view and other actions to mimic file system permissions logic
+        boolean viewAction = false;
+        String otherActions = actions.trim();
+        int viewActionIndex = otherActions.indexOf(SecuredResource.VIEW_ACTION);
+        if (viewActionIndex != -1)
+        {
+            viewAction = true;
+            if (viewActionIndex == 0)
+            {
+                if (otherActions.length() > SecuredResource.VIEW_ACTION.length())
+                {
+                    // remove view action from other actions
+                    int nextDelimIndex = otherActions.indexOf(',', viewActionIndex + SecuredResource.VIEW_ACTION.length());
+                    otherActions = otherActions.substring(nextDelimIndex + 1);
+                }
+                else
+                {
+                    // no other actions
+                    otherActions = null;
+                }
+            }
+            else
+            {
+                // remove view action from other actions
+                int prevDelimIndex = otherActions.lastIndexOf(',', viewActionIndex);
+                otherActions = otherActions.substring(0, prevDelimIndex) + otherActions.substring(viewActionIndex + SecuredResource.VIEW_ACTION.length());
+            }
+        }
+
+        // check permissions using parsed actions
+        if (viewAction)
+        {
+            checkPermissions(SecuredResource.VIEW_ACTION, false, grantViewActionAccess());
+        }
+        if (otherActions != null)
+        {
+            checkPermissions(otherActions, true, false);
+        }
     }
 
     /* (non-Javadoc)
@@ -119,7 +414,15 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
      */
     public void checkAccess(String actions) throws SecurityException
     {
-        // NYI
+        // check access permissions and constraints as enabled
+        if (getPermissionsEnabled())
+        {
+            checkPermissions(actions);
+        }
+        if (getConstraintsEnabled())
+        {
+            checkConstraints(actions);
+        }
     }
 
     /* (non-Javadoc)

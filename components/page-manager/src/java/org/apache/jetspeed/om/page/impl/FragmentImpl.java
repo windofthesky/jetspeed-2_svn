@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -53,6 +54,16 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         super(new FragmentSecurityConstraintsImpl());
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#getPermissionsEnabled()
+     */
+    public boolean getPermissionsEnabled()
+    {
+        // permission support disabled since path addressing
+        // not supported yet at the fragment level within pages
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getType()
      */
@@ -122,12 +133,16 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public List getFragments()
     {
-        // fragments collection must be defined
+        // mutable fragments collection must be defined... note
+        // that this collection is only mutable if user has full
+        // access rights to all fragments; otherwise, a copy of
+        // the list will be returned and any modifications to the
+        // set of fragments in the collection will not be preserved
         if (fragments == null)
         {
             fragments = new ArrayList();
         }
-        return fragments;
+        return filterFragmentsByAccess(fragments);
     }
     
     /* (non-Javadoc)
@@ -138,7 +153,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         if (properties != null)
         {
             return (String)properties.get(propName);
-    }
+        }
         return null;
     }
     
@@ -352,5 +367,69 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             getProperties().put(extendedPropertyName2, extendedPropertyValue2);
         }
+    }
+
+    /**
+     * filterFragmentsByAccess
+     *
+     * Filter fragments list for view access.
+     *
+     * @param nodes list containing fragments to check
+     * @return checked subset of nodes
+     */
+    private static List filterFragmentsByAccess(List fragments)
+    {
+        if ((fragments != null) && !fragments.isEmpty())
+        {
+            // check permissions and constraints, filter fragments as required
+            List filteredFragments = null;
+            Iterator checkAccessIter = fragments.iterator();
+            while (checkAccessIter.hasNext())
+            {
+                Fragment fragment = (Fragment)checkAccessIter.next();
+                try
+                {
+                    // check access
+                    fragment.checkAccess(SecuredResource.VIEW_ACTION);
+
+                    // add to filteredFragments fragments if copying
+                    if (filteredFragments != null)
+                    {
+                        // permitted, add to filteredFragments fragments
+                        filteredFragments.add(fragment);
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    // create filteredFragments fragments if not already copying
+                    if (filteredFragments == null)
+                    {
+                        // not permitted, copy previously permitted fragments
+                        // to new filteredFragments node set with same comparator
+                        filteredFragments = new ArrayList(fragments.size());
+                        Iterator copyIter = fragments.iterator();
+                        while (copyIter.hasNext())
+                        {
+                            Fragment copyFragment = (Fragment)copyIter.next();
+                            if (copyFragment != fragment)
+                            {
+                                filteredFragments.add(copyFragment);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // return filteredFragments fragments if generated
+            if (filteredFragments != null)
+            {
+                return filteredFragments;
+            }
+        }
+        return fragments;
     }
 }

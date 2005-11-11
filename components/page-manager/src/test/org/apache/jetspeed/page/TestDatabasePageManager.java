@@ -32,6 +32,8 @@ import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -47,6 +49,8 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
     private String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
     private String deepPagePath = deepFolderPath + "/default-page.psml";
 
+    private static ClassPathXmlApplicationContext context;
+
     private PageManager pageManager;
     
     public static void main(String args[])
@@ -57,8 +61,21 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
     
     protected void setUp() throws Exception
     {
-        super.setUp();        
-        pageManager = (PageManager)ctx.getBean("pageManager");
+        // reuse context between test cases below
+        // that is normally configured if null in
+        // super class setUp() implementation
+        if (context == null)
+        {
+            super.setUp();
+            context = ctx;
+        }
+        else
+        {
+            ctx = context;
+            super.setUp();
+        }
+        // lookup page manager in context
+        pageManager = (PageManager)context.getBean("pageManager");
     }
 
     protected void tearDown() throws Exception
@@ -159,10 +176,23 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         portlet.setLayoutRow(88);
         portlet.setLayoutColumn(99);
         root.getFragments().add(portlet);
+        portlet = pageManager.newPortletFragment();
+        portlet.setName("some-app::SomePortlet");
+        portlet.setShortTitle("Some Portlet");
+        portlet.setTitle("Some Portlet Fragment");
+        portlet.setState("Normal");
+        portlet.setLayoutRow(22);
+        portlet.setLayoutColumn(11);
+        SecurityConstraints fragmentConstraints = pageManager.newSecurityConstraints();
+        fragmentConstraints.setOwner("user");
+        portlet.setSecurityConstraints(fragmentConstraints);
+        root.getFragments().add(portlet);
 
         pageManager.updatePage(page);
 
         assertNotNull(page.getParent());
+        assertNotNull(folder.getPages());
+        assertEquals(1, folder.getPages().size());
         assertEquals(page.getParent().getId(), folder.getId());
 
         PageSecurity pageSecurity = pageManager.newPageSecurity();
@@ -197,6 +227,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         pageManager.updatePageSecurity(pageSecurity);
 
         assertNotNull(pageSecurity.getParent());
+        assertNotNull(folder.getPageSecurity());
         assertEquals(pageSecurity.getParent().getId(), folder.getId());
 
         // test duplicate creates
@@ -235,6 +266,8 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             folder = pageManager.newFolder(deepFolderPath.substring(0, pathIndex));
             pageManager.updateFolder(folder);
             assertNotNull(folder.getParent());
+            assertNotNull(((Folder)folder.getParent()).getFolders());
+            assertEquals(1, ((Folder)folder.getParent()).getFolders().size());
 
             if (pathIndex < deepFolderPath.length())
             {
@@ -280,6 +313,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertEquals(2, check.getGlobalSecurityConstraintsRefs().size());
             assertEquals("admin-all", (String)check.getGlobalSecurityConstraintsRefs().get(0));
             assertEquals("public-view", (String)check.getGlobalSecurityConstraintsRefs().get(1));
+            assertNotNull(check.getParent());
         }
         catch (DocumentNotFoundException e)
         {
@@ -299,6 +333,14 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertNotNull(check.getMetadata());
             assertEquals("[fr] Default Page", check.getTitle(Locale.FRENCH));
             assertEquals("[ja] Default Page", check.getTitle(Locale.JAPANESE));
+            assertNotNull(check.getSecurityConstraints());
+            assertEquals("user", check.getSecurityConstraints().getOwner());
+            assertNotNull(check.getSecurityConstraints().getSecurityConstraintsRefs());
+            assertEquals(1, check.getSecurityConstraints().getSecurityConstraintsRefs().size());
+            assertEquals("manager-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(0));
+            assertNotNull(check.getSecurityConstraints().getSecurityConstraints());
+            assertEquals(1, check.getSecurityConstraints().getSecurityConstraints().size());
+            assertEquals("jetspeed", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers());
             assertNotNull(check.getRootFragment());
             assertEquals("blue-gradient", check.getRootFragment().getDecorator());
             assertEquals("jetspeed-layouts::VelocityTwoColumns", check.getRootFragment().getName());
@@ -309,7 +351,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertNotNull(check.getRootFragment().getProperties());
             assertEquals("custom-prop-value1", check.getRootFragment().getProperty("custom-prop1"));
             assertNotNull(check.getRootFragment().getFragments());
-            assertEquals(1, check.getRootFragment().getFragments().size());
+            assertEquals(2, check.getRootFragment().getFragments().size());
             assertEquals("security::LoginPortlet", ((Fragment)check.getRootFragment().getFragments().get(0)).getName());
             assertEquals("Portlet", ((Fragment)check.getRootFragment().getFragments().get(0)).getShortTitle());
             assertEquals("Portlet Fragment", ((Fragment)check.getRootFragment().getFragments().get(0)).getTitle());
@@ -317,13 +359,15 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertEquals(88, ((Fragment)check.getRootFragment().getFragments().get(0)).getLayoutRow());
             assertEquals(88, ((Fragment)check.getRootFragment().getFragments().get(0)).getIntProperty(Fragment.ROW_PROPERTY_NAME));
             assertEquals(99, ((Fragment)check.getRootFragment().getFragments().get(0)).getLayoutColumn());
-            assertNotNull(check.getSecurityConstraints());
-            assertNotNull(check.getSecurityConstraints().getSecurityConstraintsRefs());
-            assertEquals(1, check.getSecurityConstraints().getSecurityConstraintsRefs().size());
-            assertEquals("manager-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(0));
-            assertNotNull(check.getSecurityConstraints().getSecurityConstraints());
-            assertEquals(1, check.getSecurityConstraints().getSecurityConstraints().size());
-            assertEquals("jetspeed", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers());
+            assertEquals("some-app::SomePortlet", ((Fragment)check.getRootFragment().getFragments().get(1)).getName());
+            assertEquals("Some Portlet", ((Fragment)check.getRootFragment().getFragments().get(1)).getShortTitle());
+            assertEquals("Some Portlet Fragment", ((Fragment)check.getRootFragment().getFragments().get(1)).getTitle());
+            assertEquals("Normal", ((Fragment)check.getRootFragment().getFragments().get(1)).getState());
+            assertEquals(22, ((Fragment)check.getRootFragment().getFragments().get(1)).getLayoutRow());
+            assertEquals(11, ((Fragment)check.getRootFragment().getFragments().get(1)).getLayoutColumn());
+            assertNotNull(((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints());
+            assertEquals("user", ((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints().getOwner());
+            assertNotNull(check.getParent());
         }
         catch (PageNotFoundException e)
         {
@@ -340,6 +384,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertNotNull(check.getMetadata());
             assertEquals("[fr] Root Folder", check.getTitle(Locale.FRENCH));
             assertNotNull(check.getSecurityConstraints());
+            assertEquals("admin", check.getSecurityConstraints().getOwner());
             assertNotNull(check.getSecurityConstraints().getSecurityConstraintsRefs());
             assertEquals(2, check.getSecurityConstraints().getSecurityConstraintsRefs().size());
             assertEquals("public-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(1));
@@ -347,6 +392,12 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertEquals(2, check.getSecurityConstraints().getSecurityConstraints().size());
             assertEquals("user,admin", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers());
             assertEquals("edit", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(1)).getPermissions());
+            assertNull(check.getParent());
+            assertNotNull(check.getPageSecurity());
+            assertNotNull(check.getPages());
+            assertEquals(1, check.getPages().size());
+            assertNotNull(check.getFolders());
+            assertEquals(1, check.getFolders().size());
         }
         catch (FolderNotFoundException e)
         {
@@ -357,6 +408,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         {
             Page check = pageManager.getPage(deepPagePath);
             assertEquals(deepPagePath, check.getPath());
+            assertNotNull(check.getParent());
         }
         catch (PageNotFoundException e)
         {
@@ -366,6 +418,7 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         {
             Folder check = pageManager.getFolder(deepFolderPath);
             assertEquals(deepFolderPath, check.getPath());
+            assertNotNull(check.getParent());
         }
         catch (FolderNotFoundException e)
         {

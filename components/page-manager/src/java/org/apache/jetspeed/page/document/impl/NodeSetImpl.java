@@ -59,7 +59,7 @@ public class NodeSetImpl implements NodeSet
      */
     public void add(Node node)
     {
-        if (nodes != null)
+        if (nodes == null)
         {
             nodes = new ArrayList(8);
             nodesByName = new HashMap(5);

@@ -38,22 +38,25 @@ public abstract class AbstractSpringTestCase extends TestCase
      * Provides access to the Spring ApplicationContext.
      */
     protected ClassPathXmlApplicationContext ctx;
-    
+
     /**
      * setup Spring context as part of test setup
      */
     protected void setUp() throws Exception
     {        
         super.setUp();
-        String [] bootConfigurations = getBootConfigurations();
-        if (bootConfigurations != null)
+        if (ctx == null)
         {
-            ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootConfigurations, true);
-            ctx = new ClassPathXmlApplicationContext(getConfigurations(), true, bootContext);
-        }
-        else
-        {
-            ctx = new ClassPathXmlApplicationContext(getConfigurations(), true);
+            String [] bootConfigurations = getBootConfigurations();
+            if (bootConfigurations != null)
+            {
+                ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootConfigurations, true);
+                ctx = new ClassPathXmlApplicationContext(getConfigurations(), true, bootContext);
+            }
+            else
+            {
+                ctx = new ClassPathXmlApplicationContext(getConfigurations(), true);
+            }
         }
     }
 

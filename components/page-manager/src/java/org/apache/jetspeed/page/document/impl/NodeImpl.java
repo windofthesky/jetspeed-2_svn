@@ -17,15 +17,18 @@ package org.apache.jetspeed.page.document.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
 /**
  * NodeImpl
@@ -164,6 +167,108 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getEffectivePageSecurity()
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // by default, delegate to real parent node implementation
+        NodeImpl parentNodeImpl = (NodeImpl)ProxyHelper.getRealObject(parent);
+        if (parentNodeImpl != null)
+        {
+            return parentNodeImpl.getEffectivePageSecurity();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkConstraints(java.util.List, java.util.List, java.util.List, java.util.List, boolean, boolean)
+     */
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check constraints in node hierarchy
+        if (checkNodeOnly)
+        {
+            // check node constraints if available; otherwise,
+            // recursively check parent constraints until
+            // default constraints for node are checked
+            SecurityConstraintsImpl constraintsImpl = (SecurityConstraintsImpl)getSecurityConstraints();
+            if (constraintsImpl != null)
+            {
+                constraintsImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
+            }
+            else
+            {
+                NodeImpl parentNodeImpl = (NodeImpl)ProxyHelper.getRealObject(parent);
+                if (parentNodeImpl != null)
+                {
+                    parentNodeImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, checkNodeOnly, false);
+                }
+            }
+        }
+        else
+        {
+            // check node constraints if available and not
+            // to be skipped due to explicity granted access
+            if (!checkParentsOnly)
+            {
+                SecurityConstraintsImpl constraintsImpl = (SecurityConstraintsImpl)getSecurityConstraints();
+                if (constraintsImpl != null)
+                {
+                    constraintsImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
+                }
+            }
+
+            // recursively check all parent constraints in hierarchy
+            NodeImpl parentNodeImpl = (NodeImpl)ProxyHelper.getRealObject(parent);
+            if (parentNodeImpl != null)
+            {
+                parentNodeImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, false, false);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check granted node permissions unless the check is
+        // to be skipped due to explicity granted access
+        if (!checkParentsOnly)
+        {
+            super.checkPermissions(path, actions, true, false);
+        }
+        
+        // if not checking node only, recursively check
+        // all parent permissions in hierarchy
+        if (!checkNodeOnly)
+        {
+            NodeImpl parentNodeImpl = (NodeImpl)ProxyHelper.getRealObject(parent);
+            if (parentNodeImpl != null)
+            {
+                parentNodeImpl.checkPermissions(actions, false, false);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getLogicalPermissionPath()
+     */
+    public String getLogicalPermissionPath()
+    {
+        // NYI
+        return super.getLogicalPermissionPath();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getPhysicalPermissionPath()
+     */
+    public String getPhysicalPermissionPath()
+    {
+        return path;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.Node#getParent()
      */
     public Node getParent()
@@ -176,8 +281,8 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public void setParent(Node parent)
     {
-        // cast to check type
-        this.parent = (NodeImpl)parent;
+        // set node parent
+        this.parent = parent;
 
         // update path if required
         if (parent != null)
