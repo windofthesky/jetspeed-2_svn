@@ -306,7 +306,7 @@ limitations under the License.
 		<!-- Not required if using other database -->
 		<dependency>
            <id>hsqldb</id>
-           <version>1.7.1</version>
+           <version>${hsql.version}</version>
 		   <properties>
 	          <war.bundle>${hsql.include}</war.bundle>
 	       </properties>		 
