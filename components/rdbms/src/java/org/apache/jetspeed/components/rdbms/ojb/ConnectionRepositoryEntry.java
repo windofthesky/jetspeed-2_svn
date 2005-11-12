@@ -282,7 +282,7 @@ public class ConnectionRepositoryEntry
 
         jdbcMetadataUtils.fillJCDFromDataSource(jcd, ds, null, null);
         
-        if (platform == null && jcd.getDbms().equals (JdbcMetadataUtils.PLATFORM_ORACLE)) {
+        if (platform == null && JdbcMetadataUtils.PLATFORM_ORACLE.equals(jcd.getDbms())) {
             // Postprocess to find Oracle version.
             updateOraclePlatform (jcd, ds);
         }
