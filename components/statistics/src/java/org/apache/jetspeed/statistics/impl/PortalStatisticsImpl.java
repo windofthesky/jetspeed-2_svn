@@ -651,29 +651,33 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             throw new InvalidCriteriaException(
                     " invalid queryType passed to queryStatistics");
         }
-        String orderColumn = "count";
+        String orderColumn = "int_count";
 
         String ascDesc = "DESC";
 
         if (!PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
-            query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+            query = "select count(*) as int_count, MIN(ELAPSED_TIME) as min_elapsed_time, "
+                    + "AVG(ELAPSED_TIME) as avg_elapsed_time, MAX(ELAPSED_TIME) as max_elapsed_time from "
                     + tableName + " where time_stamp > ? and time_stamp < ?";
-            query2 = "select count(*) as count ,"
+            query2 = "select count(*) as int_count ,"
                     + groupColumn
-                    + ", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
+                    + ", MIN(ELAPSED_TIME) as min_elapsed_time, AVG(ELAPSED_TIME) as avg_elapsed_time"
+                    + ", MAX(ELAPSED_TIME) as max_elapsed_time "
                     + "from " + tableName
                     + " where time_stamp > ? and time_stamp < ? group by "
                     + groupColumn + "  order by " + orderColumn + " " + ascDesc
                     + " limit " + listsize;
         } else
         {
-            query = "select count(*) as count , MIN(ELAPSED_TIME),AVG(ELAPSED_TIME),MAX(ELAPSED_TIME) from "
+            query = "select count(*) as int_count, MIN(ELAPSED_TIME) as min_elapsed_time, "
+                    + "AVG(ELAPSED_TIME) as avg_elapsed_time, MAX(ELAPSED_TIME) as max_elapsed_time from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2";
-            query2 = "select count(*) as count ,"
+            query2 = "select count(*) as int_count ,"
                     + groupColumn
-                    + ", MIN(ELAPSED_TIME) as min ,AVG(ELAPSED_TIME) as avg ,MAX(ELAPSED_TIME) as max "
+                    + ", MIN(ELAPSED_TIME) as min_elapsed_time, AVG(ELAPSED_TIME) as avg_elapsed_time"
+                    + ", MAX(ELAPSED_TIME) as max_elapsed_time "
                     + "from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2 group by "
@@ -695,13 +699,13 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             }
             if (rs.next())
             {
-                as.setHitCount(rs.getInt("count"));
+                as.setHitCount(rs.getInt("int_count"));
 
-                as.setMinProcessingTime(rs.getFloat("MIN(ELAPSED_TIME)")
+                as.setMinProcessingTime(rs.getFloat("min_elapsed_time")
                         / denominator);
-                as.setAvgProcessingTime(rs.getFloat("AVG(ELAPSED_TIME)")
+                as.setAvgProcessingTime(rs.getFloat("avg_elapsed_time")
                         / denominator);
-                as.setMaxProcessingTime(rs.getFloat("MAX(ELAPSED_TIME)")
+                as.setMaxProcessingTime(rs.getFloat("max_elapsed_time")
                         / denominator);
 
             }
@@ -713,7 +717,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             while (rs2.next())
             {
                 Map row = new HashMap();
-                row.put("count", "" + rs2.getInt("count"));
+                row.put("count", "" + rs2.getInt("int_count"));
                 String col = rs2.getString(groupColumn);
                 int maxColLen = 35;
                 if (col != null)
@@ -727,11 +731,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
                 row.put("groupColumn", col);
                 row.put("min", ""
-                        + floatFormatter(rs2.getFloat("min") / denominator));
+                        + floatFormatter(rs2.getFloat("min_elapsed_time") / denominator));
                 row.put("avg", ""
-                        + floatFormatter(rs2.getFloat("avg") / denominator));
+                        + floatFormatter(rs2.getFloat("avg_elapsed_time") / denominator));
                 row.put("max", ""
-                        + floatFormatter(rs2.getFloat("max") / denominator));
+                        + floatFormatter(rs2.getFloat("max_elapsed_time") / denominator));
                 as.addRow(row);
             }
 
