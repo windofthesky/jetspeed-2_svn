@@ -140,6 +140,15 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     /* date formatter */
     protected SimpleDateFormat formatter = null;
 
+    /**
+     * <p>
+     * Default constructor.
+     * </p>
+     */
+    public PortalStatisticsImpl()
+    {
+    }
+    
     public PortalStatisticsImpl(boolean logToCLF, boolean logToDatabase,
             int maxRecordToFlush_Portal, int maxRecordToFlush_User,
             int maxRecordToFlush_Page, long maxTimeMsToFlush_Portal,
