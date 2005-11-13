@@ -43,6 +43,26 @@
   </tr>
 #end
 
+#macro (readField $label $value $size $id $MESSAGES $ERRORS)
+#if ($ERRORS)
+#set ($eflag = "$!ERRORS.get($id)")
+#else
+#set ($eflag = "")
+#end
+  <tr colspan="4" align="right">
+  #if ($!eflag == "")
+    <td width="5%" align="left">&nbsp;</td>
+  #else
+    <td width="5%" class="portlet-msg-error" align="left">&nbsp;</td>  
+  #end
+    <td nowrap class="portlet-section-alternate" align="right">$!MESSAGES.getString($label):&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input id="$!id" disabled='true' type="text" name="$!id" size="$!size" value="$!value" class="portlet-form-field-label">
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+  </tr>
+#end
+
 #macro (ErrorMessages $ERRORS)
 #if ($ERRORS)
 #if ($ERRORS.size() > 0)

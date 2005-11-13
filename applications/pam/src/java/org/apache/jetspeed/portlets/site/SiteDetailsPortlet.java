@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.site;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,16 +25,24 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
+import org.apache.portals.bridges.frameworks.FrameworkConstants;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
 import org.apache.portals.messaging.PortletMessaging;
 
@@ -60,13 +69,14 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
 
         Map externalSupportMap = new HashMap();
         externalSupportMap.put("folderBean", pageManager);
+        externalSupportMap.put("pageBean", pageManager);
         setExternalSupport(externalSupportMap);
     }
 
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         response.setContentType("text/html");
-
+        
         // Get the messages from the browser
         String currentFolder = (String) PortletMessaging.consume(request,
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.CURRENT_FOLDER);
@@ -76,11 +86,36 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         if (currentFolder != null)
         {
             request.setAttribute("site.folder.key", currentFolder);
+            changePortletView(request, response, "folder-view");
+        }
+        if (currentPage != null)
+        {
+            request.setAttribute("site.page.key", currentPage);
+            changePortletView(request, response, "page-view");
+        }
+        
+        String parent = request.getParameter("parent");
+        if (parent != null)
+        {
+            System.out.println("parent = " + parent);            
+            PortletMessaging.publish(request,
+                    PortletApplicationResources.SITE_PORTLET, "parent", parent);                                
         }
         super.doView(request, response);
 
     }
 
+    private void changePortletView(PortletRequest request, PortletResponse response, String view)
+    {
+        //this.setDefaultViewPage("page-view");
+        PortletWindow window = (PortletWindow)request.getAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE);
+        RequestContext context = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        MutableNavigationalState state = (MutableNavigationalState)context.getPortalURL().getNavigationalState();
+        if (window != null)
+            state.clearParameters(window);            
+        this.setLogicalView(request, response, view, PortletMode.VIEW);        
+    }
+    
     public String processSaveFolderAction(ActionRequest request, ActionResponse response, Object bean) 
     throws PortletException,
            IOException
@@ -94,8 +129,7 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
             proxy.update(folder);
             pageManager.updateFolder(folder);
             
-            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
-            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
+            notifyUpdate(request, response, key);            
             
         }
         catch (JetspeedException e)
@@ -109,21 +143,41 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
     throws PortletException,
            IOException
     {
-        System.out.println("Processing SAVE action.");
         FolderProxyBean proxy = (FolderProxyBean)bean;
         String key = proxy.getKey();
         try
         {
-            Folder folder = pageManager.newFolder(key);
+            String fullKey = getFullKey(request, key);
+            System.out.println("Saving . " + fullKey);
+            Folder folder = pageManager.newFolder(fullKey);
             
             
-            //Folder folder = pageManager.getFolder(key);
             proxy.update(folder);
             pageManager.updateFolder(folder);
             
-            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
-            //PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
+            notifyUpdate(request, response, fullKey);            
+        }
+        catch (JetspeedException e)
+        {
+            e.printStackTrace();
+        }
+        return "folder-view:success";
+    }
+
+    public String processDeleteFolderAction(ActionRequest request, ActionResponse response, Object bean) 
+    throws PortletException,
+           IOException
+    {
+        FolderProxyBean proxy = (FolderProxyBean)bean;
+        String key = proxy.getKey();
+        try
+        {
+            String fullKey = getFullKey(request, key);
             
+            Folder folder = pageManager.getFolder(fullKey);
+            pageManager.removeFolder(folder);
+            
+            notifyUpdate(request, response, fullKey);            
         }
         catch (JetspeedException e)
         {
@@ -132,4 +186,53 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         return "folder-view:success";
     }
     
+    private String getFullKey(ActionRequest request, String key)
+    {
+        String parent = (String)PortletMessaging.consume(request, PortletApplicationResources.SITE_PORTLET, "parent");
+        if (parent == null)
+        {
+            return "/" + key;
+        }
+        if (!parent.endsWith("/"))
+            parent += "/";
+
+        return parent + key;        
+    }
+    
+    public String processSavePageAction(ActionRequest request, ActionResponse response, Object bean) 
+    throws PortletException,
+           IOException
+    {
+        System.out.println("Processing SAVE Page action.");
+        PageProxyBean proxy = (PageProxyBean)bean;
+        String key = proxy.getKey();
+        try
+        {            
+            Page page = pageManager.getPage(key);
+            proxy.update(page);
+            pageManager.updatePage(page);
+
+            notifyUpdate(request, response, proxy.getKey());
+            
+        }
+        catch (JetspeedException e)
+        {
+            e.printStackTrace();            
+        }
+        return "page-view:success";
+    }
+
+    private void notifyUpdate(ActionRequest request, ActionResponse response, String selected)
+    throws NotSerializableException
+    {
+        PortletMessaging.publish(request,
+                PortletApplicationResources.SITE_PORTLET,
+                PortletApplicationResources.MESSAGE_REFRESH, "true");
+//        PortletMessaging.publish(request,
+//                PortletApplicationResources.SITE_PORTLET,
+//                PortletApplicationResources.MESSAGE_SELECTED, proxy
+//                        .getLookupKey());
+        changePortletView(request, response, "folder-view");
+        
+    }
 }

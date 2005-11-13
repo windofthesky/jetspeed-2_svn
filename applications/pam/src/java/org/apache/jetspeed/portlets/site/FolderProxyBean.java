@@ -41,12 +41,28 @@ public class FolderProxyBean
     private boolean isNew = true;
 
     private String title;
+    private String name;
     private String shortTitle;
     private String defaultPage;
     private String theme;
     private String resourceType;
     private String key;
+    private String path;
     
+    /**
+     * @return Returns the path.
+     */
+    public String getPath()
+    {
+        return path;
+    }
+    /**
+     * @param path The path to set.
+     */
+    public void setPath(String path)
+    {
+        this.path = path;
+    }
     /**
      * @return Returns the defaultPage.
      */
@@ -120,7 +136,9 @@ public class FolderProxyBean
                 setTitle(folder.getTitle());                
                 setShortTitle(folder.getShortTitle());
                 setDefaultPage(folder.getDefaultPage());
+                setName(folder.getName());
                 setKey(key);
+                setPath(folder.getPath());
                 isNew = false;
             }
         }
@@ -187,5 +205,19 @@ public class FolderProxyBean
     public void setKey(String key)
     {
         this.key = key;
+    }
+    /**
+     * @return Returns the name.
+     */
+    public String getName()
+    {
+        return name;
+    }
+    /**
+     * @param name The name to set.
+     */
+    public void setName(String name)
+    {
+        this.name = name;
     }
 }

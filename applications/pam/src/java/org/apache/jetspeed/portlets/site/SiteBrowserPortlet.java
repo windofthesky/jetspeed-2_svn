@@ -68,8 +68,11 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
 
     private TreeControl prepareSiteTree(RenderRequest request)
     {
+        String refresh = (String)PortletMessaging.consume(request, 
+                PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.MESSAGE_REFRESH);
+        
         TreeControl control = (TreeControl) request.getPortletSession().getAttribute(SITE_TREE_ATTRIBUTE);
-        if (control == null)
+        if (refresh != null || control == null)
         {
             Folder root = null;
             try

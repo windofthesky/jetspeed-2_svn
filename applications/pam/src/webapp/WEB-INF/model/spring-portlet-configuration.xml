@@ -12,6 +12,12 @@
 			<value>site.folder.key</value>
 		</property>
     </bean>    
+    <bean id="pageBean" singleton='false' class="org.apache.jetspeed.portlets.site.PageProxyBean">
+        <description>Page bean</description>
+		<property name="lookupKey">
+			<value>site.page.key</value>
+		</property>
+    </bean>    
     
 <!-- Views -->
     <bean id="portlet-views" class="java.util.HashMap">
@@ -21,6 +27,9 @@
   	   	  <entry key="folder-view">
   	   	  	<value>/WEB-INF/view/site/folder-details.vm</value>
   	   	  </entry>
+  	   	  <entry key="page-view">
+  	   	  	<value>/WEB-INF/view/site/page-details.vm</value>
+  	   	  </entry>          
   	   	  <entry key="add-page">
   	   	  	<value>/WEB-INF/view/site/add-page.vm</value>
   	   	  </entry>
@@ -59,6 +68,9 @@
   	   	  <entry key="folder-view">
   	   	  	<value>folderBean</value>
   	   	  </entry>
+  	   	  <entry key="page-view">
+  	   	  	<value>pageBean</value>
+  	   	  </entry>          
   	   	</map>
   	   </constructor-arg>    	
     </bean>
@@ -71,6 +83,9 @@
   	   	  <entry key="folder-view">
   	   	  	<value>folderBean</value>
   	   	  </entry>
+  	   	  <entry key="page-view">
+  	   	  	<value>pageBean</value>
+  	   	  </entry>          
   	   	</map>
   	   </constructor-arg>    	
     </bean>
@@ -88,6 +103,9 @@
   	   	  <entry key="folder-view:success">
   	   	  	<value>folder-view,mode:view</value>
   	   	  </entry>            
+  	   	  <entry key="page-view:success">
+  	   	  	<value>page-view,mode:view</value>
+  	   	  </entry>                      
   	   	</map>  	   	
   	   </constructor-arg>    	
     </bean>    

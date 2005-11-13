@@ -10,6 +10,7 @@
 <form action="$renderResponse.createActionURL()" method="post">
 <input type='hidden' name='portlet.action' value='processSaveFolderAction'/>
 <table>
+	#readField('Name' "$!folderBean.Path" "40" 'path' $MESSAGES $ERRORS)
     #formField('Title' "$!folderBean.Title" "40" 'title' $MESSAGES $ERRORS)
     #formField('ShortTitle' "$!folderBean.ShortTitle" "40" 'shortTitle' $MESSAGES $ERRORS)
     #formField('DefaultPage' "$!folderBean.DefaultPage" "40" 'defaultPage' $MESSAGES $ERRORS)
@@ -17,8 +18,12 @@
 <br/>
 <input type="submit" name="Save" value="$MESSAGES.getString('save')" />
 <!-- <a href="#" onClick='return checkSubmit("Remove","${pa.name}")'>$MESSAGES.getString('remove')</a> -->
-<a href="$forward.getView('add-subfolder')">[$MESSAGES.getString('add.subfolder')]</a>
-<a href="$forward.getView('add-page')">[$MESSAGES.getString('add.page')]</a>
+#set ($sub = $forward.getView('add-subfolder'))
+$sub.setParameter('parent', $!folderBean.Key)
+#set ($page = $forward.getView('add-page'))
+$page.setParameter('parent', $!folderBean.Key)
+<a href="$sub">[$MESSAGES.getString('add.subfolder')]</a>
+<a href="$page">[$MESSAGES.getString('add.page')]</a>
 <a href="$forward.getView('add-link')">[$MESSAGES.getString('add.link')]</a>
 <a href="$forward.getView('doc-order')">[$MESSAGES.getString('doc.order')]</a>
 <a href="$forward.getView('menus')">[$MESSAGES.getString('menus')]</a>

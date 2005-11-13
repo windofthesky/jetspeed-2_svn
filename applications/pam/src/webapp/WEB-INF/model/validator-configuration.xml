@@ -37,5 +37,10 @@
          	   <arg key="Title"/>
          </field>    
       </form>
+      <form name="pageBean">
+         <field property="title"  depends="required">
+         	   <arg key="Title"/>
+         </field>    
+      </form>      
    </formset>   
 </form-validation>

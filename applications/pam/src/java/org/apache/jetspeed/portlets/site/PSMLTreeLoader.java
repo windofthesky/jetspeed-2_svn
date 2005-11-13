@@ -42,6 +42,7 @@ public class PSMLTreeLoader
     public static final String ROOT_DOMAIN = "ROOT_DOMAIN";
     public static final String FOLDER_DOMAIN = "FOLDER_DOMAIN";
     public static final String PAGE_DOMAIN = "PAGE_DOMAIN";
+    public static final String LINK_DOMAIN = "LINK_DOMAIN";
 	
 	public final static String PORTLET_URL = "portlet_url";
 		
@@ -63,7 +64,7 @@ public class PSMLTreeLoader
                                 PortletApplicationResources.PORTLET_URL, // action 
                                 null, // target 
                                 true, // expanded 
-                                "0"); // domain
+                                FOLDER_DOMAIN); // domain
                 
         return root;
     }    
@@ -78,7 +79,7 @@ public class PSMLTreeLoader
                     PortletApplicationResources.PORTLET_URL, // action 
                     null, // target
                     false, // expanded
-                    domain, // domain
+                    FOLDER_DOMAIN, // domain
                     "Folder", // CSS
                     true); // lazy load
         
@@ -101,7 +102,7 @@ public class PSMLTreeLoader
                     PortletApplicationResources.PORTLET_URL, // action 
                     null, // target
                     false, // expanded
-                    domain, // domain
+                    PAGE_DOMAIN, // domain
 					"Document", // css
 					true); // lazy load
     	
@@ -121,7 +122,7 @@ public class PSMLTreeLoader
                     PortletApplicationResources.PORTLET_URL, // action
                     null, // target
                     false, // expanded
-                    domain, // domain
+                    LINK_DOMAIN, // domain
 					null, // css
                     true); // lazy load
         
@@ -138,8 +139,9 @@ public class PSMLTreeLoader
         NodeSet childLinks = null;
         try
         {
-            int ilevel = ((new Integer(parent.getDomain()).intValue()) + 1);        
-            String level = Integer.toString(ilevel);
+//            int ilevel = ((new Integer(parent.getDomain()).intValue()) + 1);        
+//            String level = Integer.toString(ilevel);
+            String level = "";
             
             childFolders = folder.getFolders();
             childPages = folder.getPages();
