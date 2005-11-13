@@ -50,4 +50,6 @@ public interface PortalReservedParameters
     public static final String PATH_ATTRIBUTE = "org.apache.jetspeed.Path";
     public static final String PARAMETER_ALREADY_DECODED_ATTRIBUTE = "org.apache.jetspeed.parameterAlreadyDecoded";
     public static final String RESOVLER_CACHE_ATTR = "org.apache.jetspeed.resovler.cache";
+    public static final String PORTLET_WINDOW_ATTRIBUTE = "org.apache.jetspeed.portlet.window";
+    
 }
