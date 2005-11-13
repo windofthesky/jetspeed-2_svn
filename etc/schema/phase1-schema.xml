@@ -99,7 +99,7 @@ limitations under the License.
 		<column name='USER_NAME' type='VARCHAR' size="80"/>
 		<column name='TIME_STAMP' type='TIMESTAMP'/>
 		<column name='PAGE' type='VARCHAR' size="80"/>
-		<column name='PORTLET' type='VARCHAR' size="80"/>
+		<column name='PORTLET' type='VARCHAR' size="255"/>
 		<column name='STATUS' type='INTEGER'/>
 		<column name='ELAPSED_TIME' type='INTEGER'/>
 	</table>    
