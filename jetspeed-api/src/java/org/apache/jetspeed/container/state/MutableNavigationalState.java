@@ -65,4 +65,11 @@ public interface MutableNavigationalState extends NavigationalState
      * @param portletMode
      */
     void setMode(PortletWindow window, PortletMode portletMode);
+    
+    /**
+     * Clear the request parameters to emulate an action reset
+     * 
+     * @param window
+     */
+    void clearParameters(PortletWindow window);
 }

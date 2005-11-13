@@ -180,4 +180,18 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         return requestStates.getWindowIdIterator();
     }
+    
+    public void clearParameters(PortletWindow window)
+    {
+        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+        if (state != null)
+        {
+            Map map = state.getParametersMap();
+            if (map != null)
+            {
+                map.clear();
+                state.setClearParameters(true);
+            }
+        }
+    }
 }
