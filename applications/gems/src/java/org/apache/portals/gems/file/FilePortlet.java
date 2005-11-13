@@ -68,6 +68,7 @@ public class FilePortlet extends GenericServletPortlet
 
     protected void setContentType(String path, RenderResponse response)
     {
+        // Note these content types need to be added to the portlet.xml        
         if (path.endsWith(".html"))
         {
             response.setContentType("text/html");
@@ -79,7 +80,11 @@ public class FilePortlet extends GenericServletPortlet
         else if (path.endsWith(".zip"))
         {
             response.setContentType("application/zip");
-        }        
+        }
+        else if (path.endsWith(".csv"))
+        {
+            response.setContentType("text/csv");
+        }                
         else
         {
             response.setContentType("text/html");
@@ -90,6 +95,12 @@ public class FilePortlet extends GenericServletPortlet
     throws PortletException, IOException
     {
         InputStream is = this.getPortletContext().getResourceAsStream(fileName);
+        if (is == null)
+        {
+            byte [] bytes = ("File " + fileName + " not found.").getBytes();
+            response.getPortletOutputStream().write(bytes);
+            return;
+        }
         drain(is, response.getPortletOutputStream());
         response.getPortletOutputStream().flush();
         is.close();        
@@ -100,24 +111,23 @@ public class FilePortlet extends GenericServletPortlet
 
     public static void drain(InputStream r,OutputStream w) throws IOException
     {
-        byte[] bytes=new byte[BLOCK_SIZE];
+        byte[] bytes = new byte[BLOCK_SIZE];
         try
         {
-          int length=r.read(bytes);
-          while(length!=-1)
-          {
-              if(length!=0)
-                  {
-                      w.write(bytes,0,length);
-                  }
-              length=r.read(bytes);
-          }
-      }
-      finally
-      {
-        bytes=null;
-      }
-
+            int length = r.read(bytes);
+            while (length != -1)
+            {
+                if (length != 0)
+                {
+                    w.write(bytes, 0, length);
+                }
+                length = r.read(bytes);
+            }
+        }
+        finally
+        {
+            bytes = null;
+        }
     }
    
     
