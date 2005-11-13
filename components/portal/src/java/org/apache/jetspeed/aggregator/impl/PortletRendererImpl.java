@@ -246,6 +246,7 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);        
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
+        request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
         return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
