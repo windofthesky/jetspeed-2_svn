@@ -108,11 +108,6 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
         return pref;
     }
 
-    public void setPreferenceValidator(PreferencesValidator validator)
-    {
-        preferenceSet.setPreferenceValidator(validator);
-    }
-
     public int size()
     {
         return prefs.size();

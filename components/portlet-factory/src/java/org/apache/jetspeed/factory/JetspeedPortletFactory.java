@@ -22,6 +22,7 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PreferencesValidator;
 import javax.portlet.UnavailableException;
 import javax.servlet.ServletContext;
 
@@ -29,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -46,6 +48,8 @@ public class JetspeedPortletFactory implements PortletFactory
 {
 
     private HashMap portletCache;
+    private HashMap validatorCache;
+    
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
     private final HashMap classLoaderMap;
 
@@ -55,6 +59,7 @@ public class JetspeedPortletFactory implements PortletFactory
     public JetspeedPortletFactory()
     {
         this.portletCache = new HashMap();
+        this.validatorCache = new HashMap();
         classLoaderMap = new HashMap();
     }
 
@@ -82,7 +87,8 @@ public class JetspeedPortletFactory implements PortletFactory
                     while (portletDefinitions.hasNext())
                     {
                         PortletDefinition pd = (PortletDefinition) portletDefinitions.next();
-                        Portlet portlet = (Portlet) portletCache.remove(pd.getId().toString());
+                        String pdId = pd.getId().toString();
+                        Portlet portlet = (Portlet) portletCache.remove(pdId);
                         if (portlet != null)
                         {
                             try
@@ -95,10 +101,64 @@ public class JetspeedPortletFactory implements PortletFactory
                                 Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                             }
                         }
+                        validatorCache.remove(pdId);
                     }
                 }
             }
         }
+    }
+    
+    public PreferencesValidator getPreferencesValidator(PortletDefinition pd)
+    {
+        PreferencesValidator validator = null;
+        try
+        {
+            String pdId = pd.getId().toString();
+            
+            synchronized (validatorCache)
+            {
+                validator = (PreferencesValidator)validatorCache.get(pdId);
+                if ( validator == null )
+                {
+                    String className = ((PortletDefinitionComposite)pd).getPreferenceValidatorClassname();
+                    if ( className != null )
+                    {
+                        PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
+                        ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId().toString());
+                        if ( paCl == null )
+                        {
+                            throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
+                        }
+                        
+                        ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
+                        try
+                        {
+                            Class clazz = paCl.loadClass(className);
+                            try
+                            {
+                                Thread.currentThread().setContextClassLoader(paCl);
+                                validator = (PreferencesValidator)clazz.newInstance();
+                                validatorCache.put(pdId, validator);
+                            }
+                            finally
+                            {
+                                Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pd.getName();
+                            log.error(msg,e);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            log.error(e);
+        }
+        return validator;
     }
 
     /**
@@ -111,14 +171,14 @@ public class JetspeedPortletFactory implements PortletFactory
     public PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException
     {
         PortletInstance portlet = null;
-        String portletName = pd.getId().toString();
+        String pdId = pd.getId().toString();
         PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
 
         try
         {                        
           synchronized (portletCache)
           {
-            portlet = (PortletInstance)portletCache.get(portletName);
+            portlet = (PortletInstance)portletCache.get(pdId);
             if (null != portlet)
             {
                 return portlet;
@@ -175,7 +235,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 log.error("Failed to initialize Portlet "+pd.getClassName()+" for Portlet Application "+pa.getName(), e1);
                 throw e1;
             }            
-            portletCache.put(portletName, portlet);
+            portletCache.put(pdId, portlet);
           }
         }
         catch (PortletException pe)

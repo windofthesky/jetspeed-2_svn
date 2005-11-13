@@ -16,6 +16,7 @@
 package org.apache.jetspeed.factory;
 
 import javax.portlet.PortletException;
+import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
@@ -40,4 +41,5 @@ public interface PortletFactory
     boolean isPortletApplicationRegistered(PortletApplication pa);
     ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
+    PreferencesValidator getPreferencesValidator(PortletDefinition pd );
 }

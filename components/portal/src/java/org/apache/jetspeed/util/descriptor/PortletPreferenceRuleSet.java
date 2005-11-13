@@ -36,6 +36,7 @@ public class PortletPreferenceRuleSet extends RuleSetBase
      */
     public void addRuleInstances( Digester digester )
     {
+       digester.addBeanPropertySetter("portlet-app/portlet/portlet-preferences/preferences-validator", "preferenceValidatorClassname");
        digester.addRule("portlet-app/portlet/portlet-preferences/preference", new PortletPreferenceRule());
        digester.addBeanPropertySetter("portlet-app/portlet/portlet-preferences/preference/name", "name");
        digester.addCallMethod("portlet-app/portlet/portlet-preferences/preference/value", "addValue", 0);

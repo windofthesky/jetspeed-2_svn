@@ -27,6 +27,7 @@ import java.util.prefs.Preferences;
 import javax.portlet.PreferencesValidator;
 
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.common.preference.PreferencesValidatorFactory;
 import org.apache.pluto.om.common.Preference;
 
 /**
@@ -36,10 +37,9 @@ import org.apache.pluto.om.common.Preference;
  */
 public class PrefsPreferenceSetImpl implements PreferenceSetComposite
 {
-
     protected Preferences prefsRootNode;
-    protected PreferencesValidator validator;
     protected PreferenceSetComposite defaults;
+    protected PreferencesValidatorFactory validatorFactory;
 
     /**
      * @param portletEntity
@@ -55,6 +55,21 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
 
     }
     
+    /**
+     * @param portletEntity
+     *                  PortletEntity for which to build the PreferenceSet for.
+     * @param validatorFactory
+     *                  Factory for providing access to a PreferencesValidator instance                
+     * @throws BackingStoreException
+     *                   if an error is encountered while accessing the Preferences
+     *                   backing store.
+     */
+    public PrefsPreferenceSetImpl( Preferences prefsRootNode, PreferencesValidatorFactory validatorFactory ) throws BackingStoreException
+    {
+        this(prefsRootNode);
+        this.validatorFactory = validatorFactory;
+    }
+
     public PrefsPreferenceSetImpl( Preferences prefsRootNode,  PreferenceSetComposite defaults) throws BackingStoreException
     {
         this(prefsRootNode);        
@@ -91,20 +106,6 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             ise.initCause(e);
             throw ise;
         }
-    }
-
-    /**
-     * <p>
-     * setPreferenceValidator
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.common.preference.PreferenceSetComposite#setPreferenceValidator(javax.portlet.PreferencesValidator)
-     * @param validator
-     */
-    public void setPreferenceValidator( PreferencesValidator validator )
-    {
-        this.validator = validator;
-
     }
 
     /**
@@ -156,7 +157,11 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
      */
     public PreferencesValidator getPreferencesValidator()
     {
-        return validator;
+        if ( validatorFactory != null )
+        {
+            return validatorFactory.getPreferencesValidator();
+        }
+        return null;
     }
 
     /**

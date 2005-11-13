@@ -27,6 +27,8 @@ import java.util.StringTokenizer;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.portlet.PreferencesValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -41,6 +43,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.common.preference.PreferencesValidatorFactory;
 import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
 import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
@@ -83,7 +86,7 @@ import org.odmg.DList;
  * @version $Id$
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable, Support
+public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
     
@@ -228,7 +231,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
                 }
                 
                 Preferences prefNode = PrefsPreference.createPrefenceNode(this);
-                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
+                preferenceSet = new PrefsPreferenceSetImpl(prefNode, this);
             }
         }
         catch (BackingStoreException e)
@@ -932,5 +935,14 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public static void setPortletFactory(PortletFactory portletFactory)
     {
         PortletDefinitionImpl.portletFactory = portletFactory;
+    }
+
+    public PreferencesValidator getPreferencesValidator()
+    {
+        if ( portletFactory != null )
+        {
+            return portletFactory.getPreferencesValidator(this);
+        }
+        return null;
     }
 }
