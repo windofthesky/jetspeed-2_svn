@@ -91,6 +91,9 @@ limitations under the License.
    <constructor-arg>
    	<ref bean="org.apache.pluto.PortletContainer" />
    </constructor-arg>
+   <constructor-arg>   
+   	<ref bean="PortletWindowAccessor" />    
+   </constructor-arg>   
   </bean> 
   
   <bean id="portletValve"

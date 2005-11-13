@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.messaging.PortletMessagingImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -55,10 +57,12 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
 
     private static final Log log = LogFactory.getLog(ActionValveImpl.class);
     private PortletContainer container;
+    private PortletWindowAccessor windowAccessor;
     
-    public ActionValveImpl(PortletContainer container)
+    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor)
     {
         this.container = container;
+        this.windowAccessor = windowAccessor;
     }
 
     /**
@@ -76,12 +80,19 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 HttpServletResponse response = request.getResponseForWindow(actionWindow);
                 HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
                 requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
+                
+                //PortletMessagingImpl msg = new PortletMessagingImpl(windowAccessor);
+                
+                requestForWindow.setAttribute("JETSPEED_ACTION", request);
                 container.processPortletAction(
                     actionWindow,
                     requestForWindow,
                     response);
                 // The container redirects the client after PortletAction processing
                 // so there is no need to continue the pipeline
+                
+                //msg.processActionMessage("todo", request);
+                
                 responseCommitted = response.isCommitted();
                 request.setAttribute(PortalReservedParameters.PIPELINE, null); // clear the pipeline
             }
