@@ -63,7 +63,10 @@ public class PathSessionResolver implements RuleCriterionResolver
     private String mapPath(RequestContext context, String originalPath)
     {
         String path = originalPath;
-         
+        if (path.endsWith(".psml"))
+        {
+            return originalPath;
+        }
         for (int ix=0; ix < REGEX_MAP.length; ix++)
         {
             if (path.matches(REGEX_MAP[ix][0]))
@@ -80,8 +83,9 @@ public class PathSessionResolver implements RuleCriterionResolver
     // TODO: configure this information externally and live
     static String[][] REGEX_MAP =
     {     
-        {".*\\.html", "/Public/content.psml"},       
-        {".*\\.pdf", "/Public/content.psml"},        
+        {".*\\.(...|....)", "/Public/content.psml"}
+//        {".*\\.html", "/Public/content.psml"},       
+//        {".*\\.pdf", "/Public/content.psml"},        
 //        {"/_content.*", "/Public/content.psml"}
 //        {"/data/*", "/Public/content2.psml"},
     };
