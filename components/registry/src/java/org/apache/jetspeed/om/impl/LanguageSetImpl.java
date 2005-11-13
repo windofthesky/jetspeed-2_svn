@@ -217,13 +217,16 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     public void postLoad( Object parameter ) throws Exception
     {
         Iterator iter = ((Collection) parameter).iterator();
+        LanguageImpl language;
         while (iter.hasNext())
         {
-            LanguageImpl language = (LanguageImpl)get((Locale)iter.next());
+            language = (LanguageImpl)get((Locale)iter.next());
+            // load available resource bundle values
             language.loadDefaults();
         }
-        // ensure default locale language is created
-        get(getDefaultLocale());
+        // ensure default locale language is created and available resource bundle values are loaded
+        language = (LanguageImpl)get(getDefaultLocale());
+        language.loadDefaults();
     }
 
     protected ResourceBundle loadResourceBundle( Locale locale )

@@ -137,7 +137,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
         {
             setTitle(getStringValue(bundle, JAVAX_PORTLET_TITLE, getTitle()));
             setShortTitle(getStringValue(bundle, JAVAX_PORTLET_SHORT_TITLE, getShortTitle()));
-            setKeywords(getStringValue(bundle, JAVAX_PORTLET_TITLE, getKeywordStr()));
+            setKeywords(getStringValue(bundle, JAVAX_PORTLET_KEYWORDS, getKeywordStr()));
         }
     }
     
