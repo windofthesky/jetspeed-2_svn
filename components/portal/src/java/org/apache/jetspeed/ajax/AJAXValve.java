@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.ajax;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -28,16 +30,34 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class AJAXValve extends AbstractValve
 {
-
+    private static final Log log = LogFactory.getLog( AJAXValve.class );
+    private AjaxRequestService ajaxService;
+    
     public AJAXValve(AJAXService service)
     {
         super();
     }
-
-    public void invoke(RequestContext request, ValveContext context)
-            throws PipelineException
+        
+    public void invoke( RequestContext request, ValveContext context )
+        throws PipelineException
     {
-        System.out.println("invoking ajax valve ");
+        try
+        {
+            ajaxService.process(request);
+        }
+        catch (Exception e)
+        {
+            throw new PipelineException(e.toString(), e);
+        }
+        // Pass control to the next Valve in the Pipeline
+        context.invokeNext( request );
     }
 
+    public String toString()
+    {
+        return "AJAXValve";
+    }
+
+    
+    
 }
