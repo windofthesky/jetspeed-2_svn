@@ -138,8 +138,7 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
     public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check node constraints if available
-        SecurityConstraints constraints = getSecurityConstraints();
-        if (constraints != null)
+        if ((constraints != null) && !constraints.isEmpty())
         {
             ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
         }
@@ -347,6 +346,18 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
         if (otherActionsList != null)
         {
             checkConstraints(otherActionsList, userPrincipals, rolePrincipals, groupPrincipals, true, false);
+        }
+    }
+
+    /**
+     * resetCachedSecurityConstraints
+     */
+    public void resetCachedSecurityConstraints()
+    {
+        // propagate to constraints
+        if (constraints != null)
+        {
+            constraints.resetCachedSecurityConstraints();
         }
     }
 

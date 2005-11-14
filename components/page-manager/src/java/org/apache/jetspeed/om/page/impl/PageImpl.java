@@ -17,14 +17,15 @@ package org.apache.jetspeed.om.page.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * PageImpl
@@ -42,6 +43,20 @@ public class PageImpl extends DocumentImpl implements Page
     public PageImpl()
     {
         super(new PageSecurityConstraintsImpl());
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#resetCachedSecurityConstraints()
+     */
+    public void resetCachedSecurityConstraints()
+    {
+        // propagate to super and fragments
+        super.resetCachedSecurityConstraints();
+        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
+        if (rootFragment != null)
+        {
+            rootFragment.resetCachedSecurityConstraints();
+        }
     }
 
     /* (non-Javadoc)
@@ -135,13 +150,17 @@ public class PageImpl extends DocumentImpl implements Page
         }
 
         // add new singleton fragment
-        if (fragment != null)
+        if (fragment instanceof FragmentImpl)
         {
+            // add fragment to singleton collection
             if (this.fragment == null)
             {
                 this.fragment = new ArrayList(1);
             }
             this.fragment.add(fragment);
+
+            // set page implementation in root and children fragments
+            ((FragmentImpl)fragment).setPage(this);
         }
     }
 
@@ -150,35 +169,39 @@ public class PageImpl extends DocumentImpl implements Page
      */
     public Fragment getFragmentById(String id)
     {
-        // search for fragment recursively from
-        // root singleton fragment using a local stack
-        Stack stack = new Stack();
-        Fragment fragment = getRootFragment();
-        while ((fragment != null) && !fragment.getId().equals(id))
+        // get fragment by id and check access
+        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
+        if (rootFragment != null)
         {
-            // push any fragment fragments onto the local stack;
-            // note that this set is already filtered for access
-            List fragments = fragment.getFragments();
-            if (!fragments.isEmpty())
+            Fragment fragment = rootFragment.getFragmentById(id);
+            if (fragment != null)
             {
-                Iterator pushIter = fragments.iterator();
-                while (pushIter.hasNext())
+                try
                 {
-                    stack.push(pushIter.next());
+                    fragment.checkAccess(SecuredResource.VIEW_ACTION);
+                }
+                catch (SecurityException se)
+                {
+                    fragment = null;
                 }
             }
-
-            // pop next fragment from local stack if available
-            if (stack.size() > 0)
-            {
-                fragment = (Fragment) stack.pop();
-            }
-            else
-            {
-                fragment = null;
-            }
+            return fragment;
         }
-        return fragment;
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#getFragmentsByName(java.lang.String)
+     */
+    public List getFragmentsByName(String name)
+    {
+        // get fragments by name and filter by access
+        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
+        if (rootFragment != null)
+        {
+            return FragmentImpl.filterFragmentsByAccess(rootFragment.getFragmentsByName(name));
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -211,5 +234,21 @@ public class PageImpl extends DocumentImpl implements Page
     public String getType()
     {
         return DOCUMENT_TYPE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
+    {
+        // propagate
+        super.afterLookup(broker);
+
+        // set page implementation in root and children fragments
+        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
+        if (rootFragment != null)
+        {
+            rootFragment.setPage(this);
+        }
     }
 }

@@ -473,7 +473,7 @@ public abstract class AbstractPageManager
      *
      * @param node new managed node if known
      */
-    protected void notifyNewNode(Node node)
+    public void notifyNewNode(Node node)
     {
         Iterator listenersIter = listeners.iterator();
         while (listenersIter.hasNext())
@@ -496,7 +496,7 @@ public abstract class AbstractPageManager
      *
      * @param node updated managed node if known
      */
-    protected void notifyUpdatedNode(Node node)
+    public void notifyUpdatedNode(Node node)
     {
         Iterator listenersIter = listeners.iterator();
         while (listenersIter.hasNext())
@@ -519,7 +519,7 @@ public abstract class AbstractPageManager
      *
      * @param node removed managed node if known
      */
-    protected void notifyRemovedNode(Node node)
+    public void notifyRemovedNode(Node node)
     {
         Iterator listenersIter = listeners.iterator();
         while (listenersIter.hasNext())
@@ -547,7 +547,7 @@ public abstract class AbstractPageManager
         
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
-        if (srcSecurity != null)
+        if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
             SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
             folder.setSecurityConstraints(copiedSecurity);
@@ -582,7 +582,7 @@ public abstract class AbstractPageManager
         
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
-        if (srcSecurity != null)
+        if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
             SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
             page.setSecurityConstraints(copiedSecurity);
@@ -610,6 +610,14 @@ public abstract class AbstractPageManager
         copy.setType(source.getType());
         copy.setState(source.getState());
 
+        // copy security constraints
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+        if ((srcSecurity != null) && !srcSecurity.isEmpty())
+        {
+            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            copy.setSecurityConstraints(copiedSecurity);
+        }    
+        
         // recursively copy fragments
         Iterator fragments = source.getFragments().iterator();
         while (fragments.hasNext())
@@ -748,26 +756,8 @@ public abstract class AbstractPageManager
         copy.setGlobalSecurityConstraintsRefs(new ArrayList());
         copy.setSecurityConstraintsDefs(new ArrayList());                
         
-        
-//        private List constraintsDefs;
-//        private List globalConstraintsRefs;
-//
-//        private List securityConstraintsDefs;
-//        private Map securityConstraintsDefsMap;
-//        private List globalSecurityConstraintsRefs;
-        
-        
-        copy.setHidden(source.isHidden());
         copy.setPath(source.getPath());
-//        copy.setShortTitle(source.getTitle());        
-//        copy.setTitle(source.getTitle());
         copy.setVersion(source.getVersion());        
-        
-        if (source.getSecurityConstraints() != null)
-        {
-            SecurityConstraints constraints = copySecurityConstraints(source.getSecurityConstraints());
-            copy.setSecurityConstraints(constraints);
-        }            
         
         Iterator defs = source.getSecurityConstraintsDefs().iterator();
         while (defs.hasNext())

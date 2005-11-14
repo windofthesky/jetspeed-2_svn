@@ -261,6 +261,13 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(f.getDecorator().equals("Tab"));
         assertNotNull(f.getFragments());
         assertTrue(f.getFragments().size() == 2);
+
+        List fragments = testpage.getFragmentsByName("JMXPortlet");
+        assertNotNull(fragments);
+        assertEquals(1, fragments.size());
+        assertTrue(((Fragment)fragments.get(0)).getId().equals("pe002"));
+        assertTrue(((Fragment)fragments.get(0)).getName().equals("JMXPortlet"));
+        assertTrue(((Fragment)fragments.get(0)).getType().equals(Fragment.PORTLET));
     }
 
     public void testCreatePage() throws Exception

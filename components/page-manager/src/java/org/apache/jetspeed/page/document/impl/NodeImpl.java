@@ -52,6 +52,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     private String extendedAttributeValue;
 
     private PageMetadataImpl pageMetadata;
+    private String logicalPath;
 
     public NodeImpl(SecurityConstraintsImpl constraints)
     {
@@ -153,6 +154,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         {
             if (path != null)
             {
+                // set path
                 if (!name.equals(Folder.PATH_SEPARATOR))
                 {
                     path = path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR) + 1) + name;
@@ -161,6 +163,9 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
                 {
                     path = Folder.PATH_SEPARATOR;
                 }
+
+                // reset logicalPath
+                logicalPath = null;
             }
             super.setName(name);
         }
@@ -192,7 +197,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
             // recursively check parent constraints until
             // default constraints for node are checked
             SecurityConstraintsImpl constraintsImpl = (SecurityConstraintsImpl)getSecurityConstraints();
-            if (constraintsImpl != null)
+            if ((constraintsImpl != null) && !constraintsImpl.isEmpty())
             {
                 constraintsImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
             }
@@ -212,7 +217,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
             if (!checkParentsOnly)
             {
                 SecurityConstraintsImpl constraintsImpl = (SecurityConstraintsImpl)getSecurityConstraints();
-                if (constraintsImpl != null)
+                if ((constraintsImpl != null) && !constraintsImpl.isEmpty())
                 {
                     constraintsImpl.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
                 }
@@ -256,8 +261,63 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getLogicalPermissionPath()
     {
-        // NYI
-        return super.getLogicalPermissionPath();
+        // compute logical path if required
+        if (logicalPath == null)
+        {
+            // check for path attributes
+            if ((subsite != null) || (user != null) || (role != null) || (group != null) || (mediatype != null) ||
+                (locale != null) || (extendedAttributeName != null) || (extendedAttributeValue != null))
+            {
+                // parse path, stripping reserved folders from path
+                boolean skipAttribute = false;
+                StringBuffer logicalPathBuffer = new StringBuffer();
+                StringTokenizer pathElements = new StringTokenizer(path, Folder.PATH_SEPARATOR);
+                while (pathElements.hasMoreTokens())
+                {
+                    // classify path element
+                    String pathElement = pathElements.nextToken();
+                    if (!skipAttribute)
+                    {
+                        if (!pathElement.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX))
+                        {
+                            if (!pathElement.startsWith(Folder.RESERVED_FOLDER_PREFIX))
+                            {
+                                // append to logical path
+                                logicalPathBuffer.append(Folder.PATH_SEPARATOR);
+                                logicalPathBuffer.append(pathElement);
+                            }
+                            else
+                            {
+                                // skip next attribute path element
+                                skipAttribute = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // attribute path element skipped
+                        skipAttribute = false;
+                    }
+                }
+                
+                // set logical path
+                if (logicalPathBuffer.length() > 0)
+                {
+                    logicalPath = logicalPathBuffer.toString();
+                }
+                else
+                {
+                    logicalPath = Folder.PATH_SEPARATOR;
+                }
+            }
+            else
+            {
+                // no path attributes: logical path and physical path equivalent
+                logicalPath = path;
+            }
+        }
+
+        return logicalPath;
     }
 
     /* (non-Javadoc)
@@ -265,6 +325,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      */
     public String getPhysicalPermissionPath()
     {
+        // return path
         return path;
     }
 
@@ -293,7 +354,11 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
                 (!parentPath.equals(Folder.PATH_SEPARATOR) &&
                  !parentPath.equals(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR)))))
             {
+                // set path
                 path = parentPath + Folder.PATH_SEPARATOR + getName();
+
+                // reset logicalPath
+                logicalPath = null;
             }
         }
     }
@@ -314,6 +379,9 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     {
         // set canonical node path
         this.path = getCanonicalNodePath(path);
+
+        // reset logical path
+        logicalPath = null;
 
         // parse and set informational attributes from path
         String attributeName = null;

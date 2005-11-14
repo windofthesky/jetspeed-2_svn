@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -158,6 +159,49 @@ public class PageImpl extends DocumentImpl implements Page
         }
 
         return f;
+    }
+
+    public List getFragmentsByName( String name )
+    {
+        List fragments = null;
+
+        Stack stack = new Stack();
+        if (getRootFragment() != null)
+        {
+            stack.push(getRootFragment());
+        }
+
+        Fragment f = (Fragment) stack.pop();
+
+        while (f != null)
+        {
+            if ((f.getName() != null) && f.getName().equals(name))
+            {
+                if (fragments == null)
+                {
+                    fragments = new ArrayList(1);
+                }
+                fragments.add(f);
+            }
+
+            Iterator i = f.getFragments().iterator();
+
+            while (i.hasNext())
+            {
+                stack.push(i.next());
+            }
+
+            if (stack.size() > 0)
+            {
+                f = (Fragment) stack.pop();
+            }
+            else
+            {
+                f = null;
+            }
+        }
+
+        return fragments;
     }
 
     public DefaultsImpl getDefaults()

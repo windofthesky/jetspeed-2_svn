@@ -84,4 +84,13 @@ public interface SecurityConstraints
      * @param constraintsRefs security constraints references for resource
      */
     void setSecurityConstraintsRefs(List constraintsRefs);
+
+    /**
+     * <p>
+     * isEmpty
+     * </p>
+     *
+     * @return flag indicating whether there are constraints or owner set
+     */
+    boolean isEmpty();
 }

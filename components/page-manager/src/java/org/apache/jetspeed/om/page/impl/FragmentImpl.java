@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
@@ -35,6 +37,7 @@ import org.apache.ojb.broker.PersistenceBrokerException;
 public class FragmentImpl extends BaseElementImpl implements Fragment
 {
     private List fragments;
+    private FragmentList fragmentsList;
     private String type;
     private String skin;
     private String decorator;
@@ -48,20 +51,216 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private String extendedPropertyValue2;
 
     private Map properties;
+    private PageImpl page;
 
     public FragmentImpl()
     {
         super(new FragmentSecurityConstraintsImpl());
     }
 
+    /**
+     * getPage
+     *
+     * Get page implementation that owns fragment.
+     *
+     * @return owning page implementation
+     */
+    PageImpl getPage()
+    {
+        return page;
+    }
+
+    /**
+     * setPage
+     *
+     * Set page implementation that owns fragment and
+     * propagate to all child fragments.
+     *
+     * @param page owning page implementation
+     */
+    void setPage(PageImpl page)
+    {
+        // set page implementation
+        this.page = page;
+        // propagate to children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                ((FragmentImpl)fragmentsIter.next()).setPage(page);
+            }
+        }
+    }
+
+    /**
+     * getFragmentById
+     *
+     * Retrieve fragment with matching id from
+     * this or child fragments.
+     *
+     * @param id fragment id to retrieve.
+     * @return matched fragment
+     */
+    Fragment getFragmentById(String id)
+    {
+        // check for match
+        if (getId().equals(id))
+        {
+            return this;
+        }
+        // match children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                Fragment matchedFragment = ((FragmentImpl)fragmentsIter.next()).getFragmentById(id);
+                if (matchedFragment != null)
+                {
+                    return matchedFragment;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * getFragmentsByName
+     *
+     * Retrieve fragments with matching name including
+     * this and child fragments.
+     *
+     * @param name fragment name to retrieve.
+     * @return list of matched fragments
+     */
+    List getFragmentsByName(String name)
+    {
+        List matchedFragments = null;
+        // check for match
+        if ((getName() != null) && getName().equals(name))
+        {
+            if (matchedFragments == null)
+            {
+                matchedFragments = new ArrayList(1);
+            }
+            matchedFragments.add(this);
+        }
+        // match children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                List matchedChildFragments = ((FragmentImpl)fragmentsIter.next()).getFragmentsByName(name);
+                if (matchedChildFragments != null)
+                {
+                    if (matchedFragments == null)
+                    {
+                        matchedFragments = matchedChildFragments;
+                    }
+                    else
+                    {
+                        matchedFragments.addAll(matchedChildFragments);
+                    }
+                }
+            }
+        }
+        return matchedFragments;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getEffectivePageSecurity()
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // delegate to page implementation
+        if (page != null)
+        {
+            return page.getEffectivePageSecurity();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getLogicalPermissionPath()
+     */
+    public String getLogicalPermissionPath()
+    {
+        // use page implementation path as base and append name
+        if ((page != null) && (getName() != null))
+        {
+            return page.getLogicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getPhysicalPermissionPath()
+     */
+    public String getPhysicalPermissionPath()
+    {
+        // use page implementation path as base and append name
+        if ((page != null) && (getName() != null))
+        {
+            return page.getPhysicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#resetCachedSecurityConstraints()
+     */
+    public void resetCachedSecurityConstraints()
+    {
+        // propagate to super and sub fragments
+        super.resetCachedSecurityConstraints();
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                ((FragmentImpl)fragmentsIter.next()).resetCachedSecurityConstraints();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
+     */
+    public boolean getConstraintsEnabled()
+    {
+        if (page != null)
+        {
+            return page.getConstraintsEnabled();
+        }
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#getPermissionsEnabled()
      */
     public boolean getPermissionsEnabled()
     {
-        // permission support disabled since path addressing
-        // not supported yet at the fragment level within pages
+        if (page != null)
+        {
+            return page.getPermissionsEnabled();
+        }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#checkAccess(java.lang.String)
+     */
+    public void checkAccess(String actions) throws SecurityException
+    {
+        // check access permissions and constraints only
+        // for view access: all other permissions granted
+        // implicitly via access to page
+        if ((actions != null) && (actions.indexOf(SecuredResource.VIEW_ACTION) != -1))
+        {
+            super.checkAccess(SecuredResource.VIEW_ACTION);
+        }
     }
     
     /* (non-Javadoc)
@@ -140,9 +339,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // set of fragments in the collection will not be preserved
         if (fragments == null)
         {
-            fragments = new ArrayList();
+            fragments = new ArrayList(4);
         }
-        return filterFragmentsByAccess(fragments);
+        if (fragmentsList == null)
+        {
+            fragmentsList = new FragmentList(this, fragments);
+        }
+        return filterFragmentsByAccess(fragmentsList);
     }
     
     /* (non-Javadoc)
@@ -254,7 +457,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         if (sizes != null)
         {
             getProperties().put(SIZES_PROPERTY_NAME, sizes);
-    }
+        }
         else if (properties != null)
         {
             properties.remove(SIZES_PROPERTY_NAME);
@@ -375,9 +578,10 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      * Filter fragments list for view access.
      *
      * @param nodes list containing fragments to check
-     * @return checked subset of nodes
+     * @return original list if all elements viewable, a filtered
+     *         partial list, or null if all filtered for view access
      */
-    private static List filterFragmentsByAccess(List fragments)
+    static List filterFragmentsByAccess(List fragments)
     {
         if ((fragments != null) && !fragments.isEmpty())
         {
@@ -427,7 +631,14 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             // return filteredFragments fragments if generated
             if (filteredFragments != null)
             {
-                return filteredFragments;
+                if (!filteredFragments.isEmpty())
+                {
+                    return filteredFragments;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
         return fragments;

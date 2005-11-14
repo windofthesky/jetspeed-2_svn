@@ -384,7 +384,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             // recursively check parent constraints until
             // default constraints for node are checked
             SecurityConstraints constraints = getSecurityConstraints();
-            if (constraints != null)
+            if ((constraints != null) && !constraints.isEmpty())
             {
                 ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
             }
@@ -400,7 +400,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             if (!checkParentsOnly)
             {
                 SecurityConstraints constraints = getSecurityConstraints();
-                if (constraints != null)
+                if ((constraints != null) && !constraints.isEmpty())
                 {
                     ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
                 }

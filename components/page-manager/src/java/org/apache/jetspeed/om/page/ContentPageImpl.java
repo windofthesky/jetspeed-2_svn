@@ -2,6 +2,7 @@ package org.apache.jetspeed.om.page;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -54,6 +55,43 @@ public class ContentPageImpl implements ContentPage
     public Fragment getFragmentById(String id)
     {
         return getContentFragmentById(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getContentFragmentsByName(java.lang.String)
+     */
+    public List getContentFragmentsByName(String name)
+    {
+        // get list of fragments by name
+        List fragments = page.getFragmentsByName(name);
+        if (fragments == null)
+        {
+            return null;
+        }
+
+        // convert list elements to content fragments
+        ListIterator fragmentsIter = fragments.listIterator();
+        while (fragmentsIter.hasNext())
+        {
+            Fragment fragment = (Fragment)fragmentsIter.next();
+            String fragmentId = fragment.getId();
+            ContentFragment contentFragment = (ContentFragment)cachedFragments.get(fragmentId);
+            if (contentFragment == null)
+            {
+                contentFragment = new ContentFragmentImpl(fragment, cachedFragments);
+                cachedFragments.put(fragmentId, contentFragment);
+            }
+            fragmentsIter.set(contentFragment);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getFragmentsByName(java.lang.String)
+     */
+    public List getFragmentsByName(String name)
+    {
+        return getContentFragmentsByName(name);
     }
 
     /* (non-Javadoc)

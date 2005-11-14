@@ -39,6 +39,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
 
     private List securityConstraints;
     private List securityConstraintsRefs;
+
     private List allConstraints;
 
     /**
@@ -290,15 +291,23 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     }
 
     /**
+     * resetCachedSecurityConstraints
+     */
+    public void resetCachedSecurityConstraints()
+    {
+        // clear previously cached security constraints
+        clearAllSecurityConstraints();
+    }
+
+    /**
      * getAllSecurityConstraints
      *
      * @param pageSecurity page security definitions
      * @return all security constraints
      */
-    private List getAllSecurityConstraints(PageSecurity pageSecurity)
+    private synchronized List getAllSecurityConstraints(PageSecurity pageSecurity)
     {
-        // return previously cached security constraints; note that
-        // cache is assumed valid until owning document is evicted
+        // return previously cached security constraints
         if (allConstraints != null)
         {
             return allConstraints;
@@ -341,9 +350,16 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     }
 
     /**
-     * <p>
+     * clearAllSecurityConstraints
+     */
+    private synchronized void clearAllSecurityConstraints()
+    {
+        // clear previously cached security constraints
+        allConstraints = null;
+    }
+
+    /**
      * dereferenceSecurityConstraintsRefs
-     * </p>
      *
      * @param constraintsRefs contstraints references to be dereferenced
      * @param pageSecurity page security definitions
@@ -386,7 +402,9 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public void setOwner(String owner)
     {
+        // save new setting and reset cached security constraints
         this.owner = owner;
+        clearAllSecurityConstraints();
     }
 
     /* (non-Javadoc)
@@ -402,7 +420,9 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public void setSecurityConstraints(List constraints)
     {
+        // save new setting and reset cached security constraints
         securityConstraints = constraints;
+        clearAllSecurityConstraints();
     }
 
     /* (non-Javadoc)
@@ -418,6 +438,16 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public void setSecurityConstraintsRefs(List constraintsRefs)
     {
+        // save new setting and reset cached security constraints
         securityConstraintsRefs = constraintsRefs;
+        clearAllSecurityConstraints();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecurityConstraints#isEmpty()
+     */
+    public boolean isEmpty()
+    {
+        return ((owner == null) && (securityConstraints == null) && (securityConstraintsRefs == null));
     }
 }

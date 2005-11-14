@@ -295,8 +295,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check node constraints if available
-        SecurityConstraints constraints = getSecurityConstraints();
-        if (constraints != null)
+        if ((constraints != null) && !constraints.isEmpty())
         {
             ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, handlerFactory);
         }

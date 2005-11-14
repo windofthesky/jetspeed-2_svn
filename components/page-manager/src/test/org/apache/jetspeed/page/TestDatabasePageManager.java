@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
+import org.apache.jetspeed.page.document.Node;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -44,15 +45,19 @@ import junit.framework.TestSuite;
  * @version $Id: $
  *          
  */
-public class TestDatabasePageManager extends AbstractSpringTestCase
+public class TestDatabasePageManager extends AbstractSpringTestCase implements PageManagerEventListener
 {
     private String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
     private String deepPagePath = deepFolderPath + "/default-page.psml";
 
     private static ClassPathXmlApplicationContext context;
 
-    private PageManager pageManager;
-    
+    private static PageManager pageManager;
+
+    private static int newNodeCount;
+    private static int updatedNodeCount;
+    private static int removedNodeCount;
+
     public static void main(String args[])
     {
         junit.awtui.TestRunner.main(new String[]
@@ -66,16 +71,20 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         // super class setUp() implementation
         if (context == null)
         {
+            // new context
             super.setUp();
             context = ctx;
+
+            // lookup page manager in context
+            pageManager = (PageManager)context.getBean("pageManager");
+            pageManager.addListener(this);
         }
         else
         {
+            // recycle context
             ctx = context;
             super.setUp();
         }
-        // lookup page manager in context
-        pageManager = (PageManager)context.getBean("pageManager");
     }
 
     protected void tearDown() throws Exception
@@ -99,6 +108,30 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
     {
         return new String[]
         { "test-repository-datasource-spring.xml" };
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+     */
+    public void newNode(Node node)
+    {
+        newNodeCount++;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+     */
+    public void updatedNode(Node node)
+    {
+        updatedNodeCount++;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+     */
+    public void removedNode(Node node)
+    {
+        removedNodeCount++;
     }
 
     public void testCreates() throws Exception
@@ -367,6 +400,9 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
             assertEquals(11, ((Fragment)check.getRootFragment().getFragments().get(1)).getLayoutColumn());
             assertNotNull(((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints());
             assertEquals("user", ((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints().getOwner());
+            assertNotNull(check.getFragmentById(((Fragment)check.getRootFragment().getFragments().get(0)).getId()));
+            assertNotNull(check.getFragmentsByName("some-app::SomePortlet"));
+            assertEquals(1, check.getFragmentsByName("some-app::SomePortlet").size());
             assertNotNull(check.getParent());
         }
         catch (PageNotFoundException e)
@@ -424,6 +460,28 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         {
             assertTrue("Folder " + deepFolderPath + " NOT FOUND", false);
         }
+    }
+
+    public void testUpdates() throws Exception
+    {
+        // reset page manager cache
+        pageManager.reset();
+        
+        // update documents and folders in persisted store
+        PageSecurity pageSecurity = pageManager.getPageSecurity();
+        assertEquals("/page.security", pageSecurity.getPath());
+        pageSecurity.getGlobalSecurityConstraintsRefs().add("UPDATED");
+        pageManager.updatePageSecurity(pageSecurity);
+
+        Page page = pageManager.getPage("/default-page.psml");
+        assertEquals("/default-page.psml", page.getPath());
+        page.setTitle("UPDATED");
+        pageManager.updatePage(page);
+
+        Folder folder = pageManager.getFolder("/");
+        assertEquals("/", folder.getPath());
+        folder.setTitle("UPDATED");
+        pageManager.updateFolder(folder);
     }
 
     public void testRemoves() throws Exception
@@ -495,5 +553,13 @@ public class TestDatabasePageManager extends AbstractSpringTestCase
         catch (PageNotFoundException e)
         {
         }
+    }
+
+    public void testEvents() throws Exception
+    {
+        // verify listener functionality and operation counts
+        assertEquals(19, newNodeCount);
+        assertEquals(3, updatedNodeCount);
+        assertEquals(1, removedNodeCount);
     }
 }

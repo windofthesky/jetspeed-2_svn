@@ -16,6 +16,7 @@
 package org.apache.jetspeed.page.impl;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map;
 
@@ -130,6 +131,25 @@ public class DatabasePageManagerCache implements ObjectCache
         {
             NodeImpl node = (NodeImpl)obj;
             cacheByPath.remove(node.getPath());
+        }
+    }
+
+    /**
+     * resetCachedSecurityConstraints
+     *
+     * Reset cached security constraints in all cached node objects.
+     */
+    public synchronized static void resetCachedSecurityConstraints()
+    {
+        // reset cached objects
+        Iterator objectsIter = cacheByOID.values().iterator();
+        while (objectsIter.hasNext())
+        {
+            Object obj = objectsIter.next();
+            if (obj instanceof NodeImpl)
+            {
+                ((NodeImpl)obj).resetCachedSecurityConstraints();
+            }
         }
     }
 

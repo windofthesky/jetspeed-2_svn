@@ -509,7 +509,7 @@ public class FolderImpl extends NodeImpl implements Folder
      * @param nodes node set containing nodes to check
      * @return checked subset of nodes
      */
-    private static NodeSet filterNodeSetByAccess(NodeSet nodes)
+    static NodeSet filterNodeSetByAccess(NodeSet nodes)
     {
         if ((nodes != null) && !nodes.isEmpty())
         {

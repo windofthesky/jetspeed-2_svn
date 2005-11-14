@@ -495,6 +495,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     parent.removePage((PageImpl)page);
                     throw e;
                 }
+
+                // notify page manager listeners
+                delegator.notifyNewNode(page);
             }
             else
             {
@@ -503,6 +506,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update page
                 getPersistenceBrokerTemplate().store(page);
+
+                // notify page manager listeners
+                delegator.notifyUpdatedNode(page);
             }
         }
         catch (PageNotUpdatedException pnue)
@@ -549,6 +555,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // delete page
                 getPersistenceBrokerTemplate().delete(page);
             }
+
+            // notify page manager listeners
+            delegator.notifyRemovedNode(page);
         }
         catch (SecurityException se)
         {
@@ -607,14 +616,29 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     parent.removeFolder((FolderImpl)folder);
                     throw e;
                 }
+
+                // notify page manager listeners
+                delegator.notifyNewNode(folder);
             }
             else
             {
                 // check for edit access on folder and parent folder
                 folder.checkAccess(SecuredResource.EDIT_ACTION);
 
-                // update folder
+                // create root folder or update folder
+                boolean newFolder = folder.getId().equals("0");
                 getPersistenceBrokerTemplate().store(folder);
+                newFolder = (newFolder && !folder.getId().equals("0"));
+
+                // notify page manager listeners
+                if (newFolder)
+                {
+                    delegator.notifyNewNode(folder);
+                }
+                else
+                {
+                    delegator.notifyUpdatedNode(folder);
+                }
             }
         }
         catch (FolderNotUpdatedException fnue)
@@ -657,6 +681,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // deep delete folder
                 getPersistenceBrokerTemplate().delete(folder);
             }
+
+            // notify page manager listeners
+            delegator.notifyRemovedNode(folder);
         }
         catch (SecurityException se)
         {
@@ -747,6 +774,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     throw new FailedToUpdateDocumentException("Parent folder page security exists: " + parentPath);
                 }
+
+                // notify page manager listeners
+                delegator.notifyNewNode(pageSecurity);
             }
             else
             {
@@ -755,7 +785,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update document
                 getPersistenceBrokerTemplate().store(pageSecurity);
+
+                // notify page manager listeners
+                delegator.notifyUpdatedNode(pageSecurity);
             }
+
+            // reset all cached security constraints
+            DatabasePageManagerCache.resetCachedSecurityConstraints();
         }
         catch (FailedToUpdateDocumentException fude)
         {
@@ -797,6 +833,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // delete document
                 getPersistenceBrokerTemplate().delete(pageSecurity);
             }
+
+            // reset all cached security constraints
+            DatabasePageManagerCache.resetCachedSecurityConstraints();
+
+            // notify page manager listeners
+            delegator.notifyRemovedNode(pageSecurity);
         }
         catch (SecurityException se)
         {

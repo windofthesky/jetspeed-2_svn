@@ -1,5 +1,6 @@
 package org.apache.jetspeed.om.page;
 
+import java.util.List;
 
 /**
  * PageFragment is a volatile wrapper around a 
@@ -39,6 +40,16 @@ public interface ContentPage extends Page
 
 
 
+  /**
+   * Returns a list of ContentFragment that wrap the actual
+   * Fragment metadata represented by the name argument.
+   * @param name name of the Fragments we want to retrieve.
+   * @return
+   */
+  List getContentFragmentsByName(String name);
+
+
+
 /**
  * Overridden to to indicate that the {@link Fragment} returned
  * must also be an instance of ContentFragment.
@@ -47,6 +58,17 @@ public interface ContentPage extends Page
  * @return the found ContentFragment object or null if not found
  */
  Fragment getFragmentById(String id);
+
+
+
+/**
+ * Overridden to to indicate that the list of {@link Fragment}
+ * instances returned must also be instances of ContentFragment.
+ *
+ * @param name the fragments name to look for
+ * @return the list of found ContentFragment object or null if not found
+ */
+ List getFragmentsByName(String name);
 
 
 

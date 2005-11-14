@@ -133,6 +133,19 @@ public class SecurityConstraintsImpl implements SecurityConstraints
 
     /**
      * <p>
+     * isEmpty
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecurityConstraints#isEmpty()
+     * @return flag indicating whether there are constraints or owner set
+     */
+    public boolean isEmpty()
+    {
+        return ((owner == null) && (constraints == null) && (constraintsRefs == null));
+    }
+
+    /**
+     * <p>
      * checkConstraints
      * </p>
      *

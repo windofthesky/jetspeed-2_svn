@@ -52,6 +52,8 @@ import junit.framework.TestSuite;
 public class TestSecureDatabasePageManager extends AbstractSpringTestCase
 {
     private PageManager pageManager;
+
+    private String somePortletId;
     
     public static void main(String args[])
     {
@@ -181,7 +183,13 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         portlet.setSecurityConstraints(fragmentConstraints);
                         root.getFragments().add(portlet);
                         pageManager.updatePage(page);
-
+                        assertNotNull(page.getRootFragment());
+                        assertNotNull(page.getRootFragment().getFragments());
+                        assertEquals(2, page.getRootFragment().getFragments().size());
+                        assertEquals("some-app::SomePortlet", ((Fragment)page.getRootFragment().getFragments().get(1)).getName());
+                        assertFalse("0".equals(((Fragment)page.getRootFragment().getFragments().get(1)).getId()));
+                        TestSecureDatabasePageManager.this.somePortletId = ((Fragment)page.getRootFragment().getFragments().get(1)).getId();
+                        
                         page = pageManager.newPage("/user-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         inlineConstraints = new ArrayList(1);
@@ -192,7 +200,7 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         constraints.setSecurityConstraints(inlineConstraints);
                         page.setSecurityConstraints(constraints);
                         pageManager.updatePage(page);
-                        
+
                         return null;
                     }
                     catch (Exception e)
@@ -223,6 +231,9 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         assertNotNull(page0.getRootFragment());
                         assertNotNull(page0.getRootFragment().getFragments());
                         assertEquals(2, page0.getRootFragment().getFragments().size());
+                        assertNotNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
+                        assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                        assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                         Page page1 = pageManager.getPage("/user-page.psml");
                         // test edit access
                         pageManager.updateFolder(folder);
@@ -259,6 +270,9 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         assertNotNull(page0.getRootFragment());
                         assertNotNull(page0.getRootFragment().getFragments());
                         assertEquals(2, page0.getRootFragment().getFragments().size());
+                        assertNotNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
+                        assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                        assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                         Page page1 = pageManager.getPage("/user-page.psml");
                         // test edit access
                         try
@@ -315,8 +329,9 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         Page page0 = pageManager.getPage("/default-page.psml");
                         assertNotNull(page0.getRootFragment());
                         assertNotNull(page0.getRootFragment().getFragments());
-                        // Fragment access bug: assertEquals(1, page0.getRootFragment().getFragments().size());
-                        assertEquals(2, page0.getRootFragment().getFragments().size());
+                        assertEquals(1, page0.getRootFragment().getFragments().size());
+                        assertNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
+                        assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
                         try
                         {
                             Page page1 = pageManager.getPage("/user-page.psml");
@@ -372,8 +387,9 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
                         Page page0 = pageManager.getPage("/default-page.psml");
                         assertNotNull(page0.getRootFragment());
                         assertNotNull(page0.getRootFragment().getFragments());
-                        // Fragment access bug: assertEquals(1, page0.getRootFragment().getFragments().size());
-                        assertEquals(2, page0.getRootFragment().getFragments().size());
+                        assertEquals(1, page0.getRootFragment().getFragments().size());
+                        assertNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
+                        assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
                         try
                         {
                             Page page1 = pageManager.getPage("/user-page.psml");

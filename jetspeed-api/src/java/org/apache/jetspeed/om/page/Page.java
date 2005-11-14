@@ -90,6 +90,15 @@ public interface Page extends Document, java.io.Serializable, Cloneable
     Fragment getFragmentById(String id);
 
     /**
+     * Retrieves the fragments contained within this page, with the
+     * specified name.
+     *
+     * @param name the fragment name to look for
+     * @return the list of found Fragment objects or null if not found
+     */
+    List getFragmentsByName(String name);
+
+    /**
      * Create a clone of this object
      */
     Object clone() throws java.lang.CloneNotSupportedException;
