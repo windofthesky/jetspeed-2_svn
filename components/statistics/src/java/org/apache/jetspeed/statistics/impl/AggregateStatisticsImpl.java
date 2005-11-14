@@ -15,6 +15,7 @@
 package org.apache.jetspeed.statistics.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -141,6 +142,20 @@ public class AggregateStatisticsImpl implements AggregateStatistics
         s = s + "min time = " + this.minProcessingTime + "\n";
         s = s + "avg time = " + this.avgProcessingTime + "\n";
         s = s + "stddev   = " + this.stddevProcessingTime + "\n";
+        String listStr ="";
+        Iterator it = this.statlist.iterator();
+        int count = 0;
+        int size = statlist.size();
+        int max = 5;
+        while((it.hasNext()) && (count++<max)) {
+            Object o = it.next();
+            listStr = listStr+"\t"+o+"\n";
+        }
+        if(size > max) {
+            s = s + "\tlist (top "+max+"):\n"+listStr;
+        } else {
+            s = s + "\tlist ("+size+" entries):\n"+listStr;
+        }
         return s;
     }
 

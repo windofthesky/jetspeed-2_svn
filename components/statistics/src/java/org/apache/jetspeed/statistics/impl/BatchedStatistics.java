@@ -49,7 +49,13 @@ public abstract class BatchedStatistics implements Runnable
         }
         msLastFlushTime = System.currentTimeMillis();
         thread = new Thread(this, name);
+        
+    }
+    
+    public void startThread() {
+        
         thread.start();
+        
         // give a quick break until the thread is running
         // we know thread is running when done is false
         while (this.done)
@@ -61,7 +67,6 @@ public abstract class BatchedStatistics implements Runnable
             {
             }
         }
-
     }
 
     protected Connection getConnection() throws SQLException

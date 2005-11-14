@@ -42,6 +42,15 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+	
+	<dependency>
+            <id>derby</id>
+            <groupId>org.apache.derby</groupId>
+            <version>10.1.1.0</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
 
         <dependency>
             <id>jetspeed-registry</id>

@@ -259,6 +259,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 portletBatch = new BatchedPortletStatistics(ds,
                         this.maxRecordToFlush_Portlet,
                         this.maxTimeMsToFlush_Portlet, "portletLogBatcher");
+                portletBatch.startThread();
             }
             portletBatch.addStatistic(record);
 
@@ -270,6 +271,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 pageBatch = new BatchedPageStatistics(ds,
                         this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
                         "pageLogBatcher");
+                pageBatch.startThread();
             }
             pageBatch.addStatistic(record);
 
@@ -281,6 +283,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 userBatch = new BatchedUserStatistics(ds,
                         this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
                         "userLogBatcher");
+                userBatch.startThread();
             }
             userBatch.addStatistic(record);
 
@@ -608,6 +611,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return gcEnd.getTime();
     }
 
+    
     /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
      */
@@ -625,14 +629,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         Date start = getStartDateFromPeriod(criteria.getTimePeriod(), end);
 
         String queryType = criteria.getQueryType();
-        String listsizeStr = criteria.getListsize();
-        int listsize = 5;
-        try
-        {
-            listsize = Integer.parseInt(listsizeStr);
-        } catch (NumberFormatException e1)
-        {
-        }
+        
 
         if (PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
@@ -651,42 +648,37 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             throw new InvalidCriteriaException(
                     " invalid queryType passed to queryStatistics");
         }
-        String orderColumn = "int_count";
+        String orderColumn = "itemcount";
 
         String ascDesc = "DESC";
 
         if (!PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
-            query = "select count(*) as int_count, MIN(ELAPSED_TIME) as min_elapsed_time, "
-                    + "AVG(ELAPSED_TIME) as avg_elapsed_time, MAX(ELAPSED_TIME) as max_elapsed_time from "
+            query = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin ,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
                     + tableName + " where time_stamp > ? and time_stamp < ?";
-            query2 = "select count(*) as int_count ,"
+            query2 = "select count(*) as itemcount ,"
                     + groupColumn
-                    + ", MIN(ELAPSED_TIME) as min_elapsed_time, AVG(ELAPSED_TIME) as avg_elapsed_time"
-                    + ", MAX(ELAPSED_TIME) as max_elapsed_time "
+                    + ", MIN(ELAPSED_TIME) as amin ,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax "
                     + "from " + tableName
                     + " where time_stamp > ? and time_stamp < ? group by "
-                    + groupColumn + "  order by " + orderColumn + " " + ascDesc
-                    + " limit " + listsize;
+                    + groupColumn + "  order by " + orderColumn + " " + ascDesc;
         } else
         {
-            query = "select count(*) as int_count, MIN(ELAPSED_TIME) as min_elapsed_time, "
-                    + "AVG(ELAPSED_TIME) as avg_elapsed_time, MAX(ELAPSED_TIME) as max_elapsed_time from "
+            query = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2";
-            query2 = "select count(*) as int_count ,"
+            query2 = "select count(*) as itemcount ,"
                     + groupColumn
-                    + ", MIN(ELAPSED_TIME) as min_elapsed_time, AVG(ELAPSED_TIME) as avg_elapsed_time"
-                    + ", MAX(ELAPSED_TIME) as max_elapsed_time "
+                    + ", MIN(ELAPSED_TIME) as amin ,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax "
                     + "from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2 group by "
-                    + groupColumn + "  order by " + orderColumn + " " + ascDesc
-                    + " limit " + listsize;
+                    + groupColumn + "  order by " + orderColumn + " " + ascDesc;
         }
+        Connection con = null;
         try
         {
-            Connection con = ds.getConnection();
+            con = ds.getConnection();
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setTimestamp(1, new Timestamp(start.getTime()));
             pstmt.setTimestamp(2, new Timestamp(end.getTime()));
@@ -699,14 +691,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             }
             if (rs.next())
             {
-                as.setHitCount(rs.getInt("int_count"));
+                as.setHitCount(rs.getInt("itemcount"));
 
-                as.setMinProcessingTime(rs.getFloat("min_elapsed_time")
-                        / denominator);
-                as.setAvgProcessingTime(rs.getFloat("avg_elapsed_time")
-                        / denominator);
-                as.setMaxProcessingTime(rs.getFloat("max_elapsed_time")
-                        / denominator);
+                as.setMinProcessingTime(rs.getFloat("amin") / denominator);
+                as.setAvgProcessingTime(rs.getFloat("aavg") / denominator);
+                as.setMaxProcessingTime(rs.getFloat("amax") / denominator);
 
             }
             PreparedStatement pstmt2 = con.prepareStatement(query2);
@@ -714,10 +703,22 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             pstmt2.setTimestamp(2, new Timestamp(end.getTime()));
             ResultSet rs2 = pstmt2.executeQuery();
 
-            while (rs2.next())
+            int rowCount = 0;
+            int totalRows = 5;
+            String listsizeStr = criteria.getListsize();
+            int temp = -1;
+            try {
+                temp = Integer.parseInt(listsizeStr);
+            } catch (NumberFormatException e) {
+            }
+            if(temp != -1) {
+                totalRows = temp;
+            }
+            
+            while ((rs2.next()) && (rowCount < totalRows))
             {
                 Map row = new HashMap();
-                row.put("count", "" + rs2.getInt("int_count"));
+                row.put("count", "" + rs2.getInt("itemcount"));
                 String col = rs2.getString(groupColumn);
                 int maxColLen = 35;
                 if (col != null)
@@ -731,17 +732,27 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
                 row.put("groupColumn", col);
                 row.put("min", ""
-                        + floatFormatter(rs2.getFloat("min_elapsed_time") / denominator));
+                        + floatFormatter(rs2.getFloat("amin") / denominator));
                 row.put("avg", ""
-                        + floatFormatter(rs2.getFloat("avg_elapsed_time") / denominator));
+                        + floatFormatter(rs2.getFloat("aavg") / denominator));
                 row.put("max", ""
-                        + floatFormatter(rs2.getFloat("max_elapsed_time") / denominator));
+                        + floatFormatter(rs2.getFloat("amax") / denominator));
                 as.addRow(row);
+                rowCount++;
             }
 
         } catch (SQLException e)
         {
             throw new InvalidCriteriaException(e.toString());
+        }
+        finally {
+            try {
+                if(con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                logger.error("error releasing the connection",e);
+            }
         }
 
         return as;

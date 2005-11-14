@@ -17,6 +17,7 @@ package org.apache.jetspeed.statistics;
 
 import java.security.Principal;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.statistics.impl.PortalStatisticsImpl;
 import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -76,6 +78,7 @@ public class TestStatistics extends AbstractSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        
         this.statistics = (PortalStatistics) ctx.getBean("PortalStatistics");
         assertNotNull("statistics not found ", statistics);
     }
@@ -83,8 +86,14 @@ public class TestStatistics extends AbstractSpringTestCase
     public void clearDBs()
     {
 
+        
         try
         {
+            DatabaseMetaData dmd = statistics.getDataSource().getConnection().getMetaData();        
+            System.out.println("Oh... just for reference we're running against "+dmd.getDatabaseProductName());
+            System.out.println("with the driver = "+dmd.getDriverName());
+            System.out.println("   with the url = "+dmd.getURL());
+            
             Connection con = statistics.getDataSource().getConnection();
 
             PreparedStatement psmt = con
@@ -247,30 +256,41 @@ public class TestStatistics extends AbstractSpringTestCase
 
     }
 
+    
     public void testQuerySystem() throws Exception
     {
         System.out.println("testing Query System");
         StatisticsQueryCriteria sqc = new StatisticsQueryCriteriaImpl();
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_USER);
-        sqc.setListsize("5");
+        int desired = 5;
+        sqc.setListsize(""+desired);
         sqc.setSorttype("count");
         sqc.setSortorder("desc");
         AggregateStatistics as = statistics.queryStatistics(sqc);
+        assertNotNull(as);
         System.out.println("user = " + as);
+        int size = as.getStatlist().size();
+        assertTrue( (size <=desired));
 
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_PORTLET);
-        sqc.setListsize("5");
+        sqc.setListsize(""+desired);
         sqc.setSorttype("count");
         sqc.setSortorder("desc");
         as = statistics.queryStatistics(sqc);
-        System.out.println("user = " + as);
+        assertNotNull(as);
+        System.out.println("portlet = " + as);
+        size = as.getStatlist().size();
+        assertTrue( (size <=desired));
 
         sqc.setQueryType(PortalStatistics.QUERY_TYPE_PAGE);
-        sqc.setListsize("5");
+        sqc.setListsize(""+desired);
         sqc.setSorttype("count");
         sqc.setSortorder("desc");
         as = statistics.queryStatistics(sqc);
-        System.out.println("user = " + as);
+        assertNotNull(as);
+        System.out.println("page = " + as);
+        size = as.getStatlist().size();
+        assertTrue( (size <=desired));
 
     }
 
