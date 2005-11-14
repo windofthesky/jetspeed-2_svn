@@ -305,12 +305,13 @@ limitations under the License.
 		
 		<!-- Not required if using other database -->
 		<dependency>
-           <id>hsqldb</id>
-           <version>${hsql.version}</version>
-		   <properties>
-	          <war.bundle>${hsql.include}</war.bundle>
-	       </properties>		 
-        </dependency>
+                   <groupId>org.apache.derby</groupId>
+                      <artifactId>derby</artifactId>
+        	   <version>${derby.version}</version>
+                   <properties>
+                   <war.bundle>false</war.bundle>
+                   </properties>
+       	         </dependency>
         <!-- Not required if using other LDAP -->
 		<dependency>
            <groupId>directory</groupId>

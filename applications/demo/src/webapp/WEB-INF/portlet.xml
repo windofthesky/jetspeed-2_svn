@@ -655,15 +655,15 @@ limitations under the License.
       </preference>                               
       <preference>                            
         <name>JdbcDriver</name>                    
-        <value>org.hsqldb.jdbcDriver</value>    
+        <value>org.apache.derby.jdbc.EmbeddedDriver</value>    
       </preference>                               
       <preference>                            
         <name>JdbcConnection</name>                    
-        <value>jdbc:hsqldb:hsql://127.0.0.1:9001</value>    
+        <value>jdbc:derby:/tmp/productiondb</value>    
       </preference>                               
       <preference>                            
         <name>JdbcUsername</name>                    
-        <value>sa</value>    
+        <value></value>    
       </preference>                               
       <preference>                            
         <name>JdbcPassword</name>                    
@@ -671,11 +671,11 @@ limitations under the License.
       </preference>     
       <preference>                            
         <name>SSOJdbcDriver</name>                    
-        <value>org.hsqldb.jdbcDriver</value>    
+        <value>org.apache.derby.jdbc.EmbeddedDriver</value>    
       </preference>                               
       <preference>                            
-        <name>SSOJdbcConnection</name>                    
-        <value>jdbc:hsqldb:hsql://127.0.0.1:9001</value>    
+        <name>SSOJdbcConnection</name>                   
+        <value>jdbc:derby:/tmp/productiondb</value>    
       </preference>                                
       <preference>                            
         <name>SSOSite</name>                    

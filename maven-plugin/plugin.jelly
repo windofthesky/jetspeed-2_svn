@@ -99,7 +99,7 @@
       <filter token="{commons.logging.include" value="${commons.logging.include}"/>
       <filter token="{log4j.include" value="${log4j.include}"/>
       <filter token="{jta.include" value="${jta.include}"/>
-      <filter token="{hsql.include" value="${hsql.include}"/>
+      <filter token="{derby.include" value="${derby.include}"/>
     </filterset>
 
     <!-- Note: keep already existing project-info.xml allowing custom modifications -->
@@ -478,6 +478,8 @@
           todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/org.apache.derby/jars/derby-${derby.version}.jar"
+          todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
   <goal name="j2:catalina.shared" description="Copy all jars necessary for common container">
@@ -735,6 +737,10 @@
         <j:set var="org.apache.jetspeed.target.rdbms.name" value="sapdb"/>
         <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
       </j:when>
+      <j:when test="${dbase == 'derby'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="derby"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
+      </j:when>
       <j:otherwise>
         <fail message="unsupported target database: ${org.apache.jetspeed.target.rdbms}"/>
       </j:otherwise>
@@ -771,7 +777,7 @@
   <goal name="j2:_copy.rdbms.sql.scripts" >
     <util:file var="targetRdbmsScriptsDir" name="${portal.sql.src.dir}/${org.apache.jetspeed.target.rdbms}" /> 
     <j:if test="${targetRdbmsScriptsDir.exists()}">
-      <!-- Copy specific DB scripts possibly also overriding the Torque-generated ones -->      
+      <!-- Copy specific DB scripts possibly also overriding the Torque-generated ones --> 
       <copy todir="${portal.sql.target.dir}/${org.apache.jetspeed.target.rdbms}"
             overwrite="true"
             verbose="true"
@@ -858,13 +864,28 @@
          increases by at least 30 seconds for each level of inheritance.
          Note: the project generated with genapp has an inheritance level of 4!
          Hopefully, these kind of problems are solved when we move to maven 2 ...
-    -->      
+    --> 
+
+    <j:set var="webinflocation" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}" />
     <j:set var="parentScope" scope="parent" value=""/>
-    <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
+    <j:set var="tempvarA" value="${org.apache.jetspeed.database.driver}" />
+<!--
+    leave this section out for now.  Ultimately we'd like to find a way to install the derby DB somewhere path relative
+    at run time, but for now leave it with /tmp  it works on both platforms, but doesn't confuse things with 
+    build/install  orders.   Specifically the DB during j2:quickStart, after the WAR files are created, so the DB is not
+    copied into WEB-INF, unless things are run twice without a clean.
+
+
+    <j:if test="${tempvarA == 'org.apache.derby.jdbc.EmbeddedDriver'}">
+      <j:set var="org.apache.jetspeed.database.url" value="jdbc:derby:${webinflocation}/WEB-INF/productiondb;create=true" /> 
+   </j:if>
+-->
+   <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
          userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}"
          onerror="${database.arg.onerror}">
       <classpath>
+        <pathelement path="${plugin.getDependencyPath('org.apache.derby:derby')}"/>
         <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
         <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
       </classpath>
