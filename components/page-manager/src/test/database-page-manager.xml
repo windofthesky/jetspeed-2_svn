@@ -24,12 +24,14 @@ limitations under the License.
           class="org.apache.jetspeed.page.impl.DatabasePageManager">
         <!-- OJB configuration file resource path -->
         <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
-        <!-- folder/page/link cache size -->
+        <!-- folder/page/link cache size, default=128, min=128 -->
         <constructor-arg index="1"><value>128</value></constructor-arg>
-        <!-- permissions security enabled flag -->
-        <constructor-arg index="2"><value>false</value></constructor-arg>
-        <!-- constraints security enabled flag -->
+        <!-- folder/page/link cache expires seconds, default=150, infinite=0, min=30 -->
+        <constructor-arg index="2"><value>0</value></constructor-arg>
+        <!-- permissions security enabled flag, default=false -->
         <constructor-arg index="3"><value>false</value></constructor-arg>
+        <!-- constraints security enabled flag, default=true -->
+        <constructor-arg index="4"><value>false</value></constructor-arg>
     </bean>
 
     <!-- Transaction Proxying -->

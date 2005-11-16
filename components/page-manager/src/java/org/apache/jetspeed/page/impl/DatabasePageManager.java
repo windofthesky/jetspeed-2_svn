@@ -77,6 +77,8 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
 {
     private static final int DEFAULT_CACHE_SIZE = 128;
+    private static final int MIN_CACHE_EXPIRES_SECONDS = 30;
+    private static final int DEFAULT_CACHE_EXPIRES_SECONDS = 150;
 
     private static Map modelClasses = new HashMap();
     static
@@ -100,13 +102,27 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     private int cacheSize;
 
+    private int cacheExpiresSeconds;
+
     private DatabasePageManagerCache cache;
 
-    public DatabasePageManager(String repositoryPath, int cacheSize, boolean isPermissionsSecurity, boolean isConstraintsSecurity)
+    public DatabasePageManager(String repositoryPath, int cacheSize, int cacheExpiresSeconds, boolean isPermissionsSecurity, boolean isConstraintsSecurity)
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
         this.cacheSize = Math.max(cacheSize, DEFAULT_CACHE_SIZE);
+        if (cacheExpiresSeconds < 0)
+        {
+            this.cacheExpiresSeconds = DEFAULT_CACHE_EXPIRES_SECONDS;
+        }
+        else if (cacheExpiresSeconds == 0)
+        {
+            this.cacheExpiresSeconds = 0;
+        }
+        else
+        {
+            this.cacheExpiresSeconds = Math.max(cacheExpiresSeconds, MIN_CACHE_EXPIRES_SECONDS);
+        }
         DatabasePageManagerCache.cacheInit(this);
     }
 
@@ -118,6 +134,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public int getCacheSize()
     {
         return cacheSize;
+    }
+
+    /**
+     * getCacheExpiresSeconds
+     *
+     * @return configured cache expiration in seconds
+     */
+    public int getCacheExpiresSeconds()
+    {
+        return cacheExpiresSeconds;
     }
 
     /* (non-Javadoc)

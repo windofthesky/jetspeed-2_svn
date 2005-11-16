@@ -36,6 +36,7 @@ public class DatabasePageManagerCache implements ObjectCache
 {
     private static LRUMap cacheByOID;
     private static LRUMap cacheByPath;
+    private static int cacheExpiresSeconds;
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
 
@@ -52,6 +53,7 @@ public class DatabasePageManagerCache implements ObjectCache
         {
             cacheByOID = new LRUMap(pageManager.getCacheSize());
             cacheByPath = new LRUMap(pageManager.getCacheSize());
+            cacheExpiresSeconds = pageManager.getCacheExpiresSeconds();
             constraintsEnabled = pageManager.getConstraintsEnabled();
             permissionsEnabled = pageManager.getPermissionsEnabled();
         }
@@ -67,9 +69,7 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static NodeImpl cacheLookup(String path)
     {
-        Identity oid = (Identity)cacheByPath.get(path);
-        NodeImpl node = (NodeImpl)cacheByOID.get(oid);
-        return node;
+        return (NodeImpl)cacheLookup((Identity)cacheByPath.get(path));
     }
 
     /**
@@ -83,7 +83,15 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheAdd(Identity oid, Object obj)
     {
-        cacheByOID.put(oid, obj);
+        Entry entry = (Entry)cacheByOID.get(oid);
+        if (entry != null)
+        {
+            entry.put(obj);
+        }
+        else
+        {
+            cacheByOID.put(oid, new Entry(obj));
+        }
         if (obj instanceof NodeImpl)
         {
             NodeImpl node = (NodeImpl)obj;
@@ -114,7 +122,15 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static Object cacheLookup(Identity oid)
     {
-        return cacheByOID.get(oid);
+        if (oid != null)
+        {
+            Entry entry = (Entry)cacheByOID.get(oid);
+            if (entry != null)
+            {
+                return entry.get();
+            }
+        }
+        return null;
     }
 
     /**
@@ -126,11 +142,14 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheRemove(Identity oid)
     {
-        Object obj = cacheByOID.remove(oid);
-        if (obj instanceof NodeImpl)
+        Entry entry = (Entry)cacheByOID.remove(oid);
+        if (entry != null)
         {
-            NodeImpl node = (NodeImpl)obj;
-            cacheByPath.remove(node.getPath());
+            Object obj = entry.get();
+            if (obj instanceof NodeImpl)
+            {
+                cacheByPath.remove(((NodeImpl)obj).getPath());
+            }
         }
     }
 
@@ -145,11 +164,54 @@ public class DatabasePageManagerCache implements ObjectCache
         Iterator objectsIter = cacheByOID.values().iterator();
         while (objectsIter.hasNext())
         {
-            Object obj = objectsIter.next();
+            Object obj = ((Entry)objectsIter.next()).get();
             if (obj instanceof NodeImpl)
             {
                 ((NodeImpl)obj).resetCachedSecurityConstraints();
             }
+        }
+    }
+
+    /**
+     * Entry
+     *
+     * Cache entry class adding entry timestamp to track expiration
+     */
+    private static class Entry
+    {
+        public long timestamp;
+        public Object element;
+
+        public Entry(Object element)
+        {
+            put(element);
+            timestamp = System.currentTimeMillis();
+        }
+
+        public Object get()
+        {
+            if ((DatabasePageManagerCache.cacheExpiresSeconds > 0) && (element != null))
+            {
+                long now = System.currentTimeMillis();
+                if (((now - timestamp) / 1000) > DatabasePageManagerCache.cacheExpiresSeconds)
+                {
+                    element = null;
+                }
+                else
+                {
+                    timestamp = now;
+                }
+            }
+            return element;
+        }
+        
+        public void put(Object element)
+        {
+            if (DatabasePageManagerCache.cacheExpiresSeconds > 0)
+            {
+                timestamp = System.currentTimeMillis();
+            }
+            this.element = element;
         }
     }
 
