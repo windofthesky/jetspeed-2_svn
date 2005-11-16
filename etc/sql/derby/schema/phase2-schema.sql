@@ -199,10 +199,11 @@ CREATE TABLE FRAGMENT
         ON DELETE CASCADE 
 
 -- Derby doesn't support UNIQUE constraints on nullable columns !!!  
---,   UNIQUE (PAGE_ID)
+-- replace UNIQUE (PAGE_ID) with IX_FRAGMENT_UNIQUE_PAGE_ID index below...
   );
 
 CREATE  INDEX IX_FRAGMENT_1 ON FRAGMENT (PARENT_ID);
+CREATE  INDEX IX_FRAGMENT_UNIQUE_PAGE_ID ON FRAGMENT (PAGE_ID);
 -----------------------------------------------------------------------------
 -- FRAGMENT_CONSTRAINT
 -----------------------------------------------------------------------------
