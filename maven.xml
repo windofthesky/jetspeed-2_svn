@@ -185,7 +185,18 @@
       <attainGoal name="j2:portal.conf.tomcat"/>
 
       <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
-         <attainGoal name="j2:db.create.test" />
+        <j:set var="online" value="${maven.mode.online}"/>
+        <j:choose>
+          <j:when test="${online}">
+            <j:set var="cmdargs" value="j2:db.create.test"/>
+          </j:when>
+          <j:otherwise>
+            <j:set var="cmdargs" value="-o j2:db.create.test"/>
+          </j:otherwise>
+        </j:choose>
+        <exec dir="${basedir}" vmlauncher="false" failonerror="true" executable="maven">
+          <arg line="${cmdargs}"/>
+        </exec>
       </j:if>
 
 	  <attainGoal name="jetspeed2:schema" />
