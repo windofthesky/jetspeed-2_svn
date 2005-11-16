@@ -103,10 +103,4 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
         return new String[]
         { "prefs.xml", "transaction.xml" };
     }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
-    }
 }

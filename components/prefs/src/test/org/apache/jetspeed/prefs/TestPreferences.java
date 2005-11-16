@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
 
 /**
@@ -32,7 +32,7 @@ import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
  * 
  * @author <a href="dlestrat@yahoo.com">David Le Strat </a>
  */
-public class TestPreferences extends AbstractSpringTestCase
+public class TestPreferences extends DatasourceEnabledSpringTestCase
 {
 
     /** The property manager. */
@@ -361,11 +361,5 @@ public class TestPreferences extends AbstractSpringTestCase
     {
         return new String[]
         { "prefs.xml", "transaction.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 }

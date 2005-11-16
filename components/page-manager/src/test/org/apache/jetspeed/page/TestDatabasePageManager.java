@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -45,7 +45,7 @@ import junit.framework.TestSuite;
  * @version $Id: $
  *          
  */
-public class TestDatabasePageManager extends AbstractSpringTestCase implements PageManagerEventListener
+public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerEventListener
 {
     private String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
     private String deepPagePath = deepFolderPath + "/default-page.psml";
@@ -102,12 +102,6 @@ public class TestDatabasePageManager extends AbstractSpringTestCase implements P
     {
         return new String[]
         { "database-page-manager.xml", "transaction.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 
     /* (non-Javadoc)

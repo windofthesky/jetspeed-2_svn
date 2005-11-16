@@ -67,4 +67,10 @@ public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTest
         super.tearDown();
     }
 
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "boot/datasource.xml"};
+    }
+
 }

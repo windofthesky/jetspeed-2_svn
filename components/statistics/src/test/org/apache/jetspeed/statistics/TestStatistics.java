@@ -26,7 +26,7 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -46,7 +46,7 @@ import com.mockrunner.mock.web.MockHttpSession;
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
  * @version $Id: $
  */
-public class TestStatistics extends AbstractSpringTestCase
+public class TestStatistics extends DatasourceEnabledSpringTestCase
 {
 
     private PortalStatistics statistics = null;
@@ -321,12 +321,6 @@ public class TestStatistics extends AbstractSpringTestCase
     {
         return new String[]
         { "statistics.xml"};
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml"};
     }
 
 }

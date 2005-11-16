@@ -28,7 +28,7 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
@@ -48,7 +48,7 @@ import org.apache.jetspeed.security.impl.PrincipalsSet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestProfiler extends AbstractSpringTestCase
+public class TestProfiler extends DatasourceEnabledSpringTestCase
 {
     private Profiler profiler = null;
     private ProfileResolvers resolvers = null;
@@ -470,11 +470,6 @@ public class TestProfiler extends AbstractSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]{"profiler.xml", "transaction.xml"};
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]{"test-repository-datasource-spring.xml"};
     }
 
 }

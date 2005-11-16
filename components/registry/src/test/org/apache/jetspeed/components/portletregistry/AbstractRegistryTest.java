@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -32,7 +32,7 @@ import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 /**
  * @author scott
  */
-public abstract class AbstractRegistryTest extends AbstractSpringTestCase
+public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCase
 {
 
     protected static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
@@ -203,11 +203,6 @@ public abstract class AbstractRegistryTest extends AbstractSpringTestCase
     {
         return new String[]
         { "transaction.xml", "prefs.xml", "registry.xml" };
-    }
-    
-    protected String[] getBootConfigurations()
-    {
-        return new String[]{"test-repository-datasource-spring.xml"};
     }
 
 }

@@ -25,7 +25,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -52,7 +52,7 @@ import org.jmock.core.stub.ReturnStub;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
  */
-public class TestPortletEntityDAO extends AbstractSpringTestCase
+public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 {
 
     /**
@@ -644,11 +644,5 @@ public class TestPortletEntityDAO extends AbstractSpringTestCase
     {
         return new String[]
         { "transaction.xml", "registry.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 }

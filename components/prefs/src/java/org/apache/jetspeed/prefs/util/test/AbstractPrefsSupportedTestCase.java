@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.prefs.util.test;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyManager;
 
@@ -27,7 +27,7 @@ import org.apache.jetspeed.prefs.PropertyManager;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class AbstractPrefsSupportedTestCase extends AbstractSpringTestCase
+public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestCase
 {
     protected PropertyManager propertyManager;
 
@@ -42,7 +42,7 @@ public class AbstractPrefsSupportedTestCase extends AbstractSpringTestCase
     protected String[] getBootConfigurations()
     {
         return new String[]
-        { "test-repository-datasource-spring.xml" };
+        { "boot/datasource.xml" };
     }
 
     protected void setUp() throws Exception

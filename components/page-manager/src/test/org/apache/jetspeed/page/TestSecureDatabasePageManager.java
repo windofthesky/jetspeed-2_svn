@@ -25,7 +25,7 @@ import java.util.Set;
                                                                                                      
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -49,7 +49,7 @@ import junit.framework.TestSuite;
  * @version $Id: $
  *          
  */
-public class TestSecureDatabasePageManager extends AbstractSpringTestCase
+public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCase
 {
     private PageManager pageManager;
 
@@ -77,12 +77,6 @@ public class TestSecureDatabasePageManager extends AbstractSpringTestCase
     {
         return new String[]
         { "secure-database-page-manager.xml", "transaction.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 
     public void testSecurePageManager() throws Exception

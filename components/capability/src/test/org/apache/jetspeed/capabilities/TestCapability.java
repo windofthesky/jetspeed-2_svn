@@ -18,7 +18,7 @@ package org.apache.jetspeed.capabilities;
 
 import java.util.Iterator;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -29,7 +29,7 @@ import junit.framework.TestSuite;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends AbstractSpringTestCase
+public class TestCapability extends DatasourceEnabledSpringTestCase
 {
     private Capabilities capabilities = null;
 
@@ -179,12 +179,6 @@ public class TestCapability extends AbstractSpringTestCase
     {
         return new String[]
         { "capabilities.xml", "transaction.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 
 }

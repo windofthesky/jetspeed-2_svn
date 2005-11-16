@@ -23,7 +23,7 @@ import java.util.Locale;
 import javax.portlet.PortletMode;
 
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -53,7 +53,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class TestPortletRegistryDAO extends AbstractSpringTestCase
+public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 {
     public static final String APP_1_NAME = "RegistryTestPortlet";
 
@@ -321,11 +321,5 @@ public class TestPortletRegistryDAO extends AbstractSpringTestCase
     {
         return new String[]
         { "transaction.xml", "registry.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "test-repository-datasource-spring.xml" };
     }
 }
