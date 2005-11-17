@@ -57,8 +57,11 @@ public class PortletIterator extends DatabaseBrowserIterator
         {
             order = 1;            
         }
-        order = name1.compareTo(name2);
-            
+        else
+        {
+            order = name1.compareTo(name2);
+        }
+        
         if (!getAscendingOrder())
         {
             order = 0 - order;
