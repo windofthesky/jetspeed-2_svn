@@ -15,10 +15,7 @@
  */
 package org.apache.jetspeed.components.util;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.apache.jetspeed.components.jndi.TyrexJNDIComponent;
+import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 
 /**
@@ -34,27 +31,15 @@ import org.apache.jetspeed.components.test.AbstractSpringTestCase;
  */
 public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTestCase
 {
-
-   
-
-    protected BoundDBCPDatasourceComponent datasourceComponent;
-    protected JNDIComponent jndi;
-
+    protected JetspeedTestJNDIComponent jndiDS;
+    
     /**
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
-        
-        jndi = new TyrexJNDIComponent();
-        String url = System.getProperty("org.apache.jetspeed.database.url");
-        String driver = System.getProperty("org.apache.jetspeed.database.driver");
-        String user = System.getProperty("org.apache.jetspeed.database.user");
-        String password = System.getProperty("org.apache.jetspeed.database.password");
-        datasourceComponent = new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000,
-                GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndi);
-        datasourceComponent.start();
-        
+        jndiDS = new JetspeedTestJNDIComponent();
+        jndiDS.setup();
         super.setUp();    
     }
 
@@ -63,7 +48,7 @@ public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTest
      */
     protected void tearDown() throws Exception
     {
-        jndi.unbindFromCurrentThread();
+        jndiDS.tearDown();
         super.tearDown();
     }
 
