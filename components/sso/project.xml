@@ -97,9 +97,9 @@
             <resources>
                 <resource>
                     <directory>${basedir}/src/test</directory>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
+                    <includes>
+                        <include>**/Test*.java</include>
+                    </includes>
                 </resource>
                 <resource>
                     <directory>${basedir}/src/java</directory>
