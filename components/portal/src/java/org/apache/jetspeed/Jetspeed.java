@@ -48,7 +48,8 @@ public class Jetspeed
      */
     public static void shutdown() throws JetspeedException
     {
-        engine.shutdown();
+        if (engine != null)
+            engine.shutdown();
     }
 
     public static Engine getEngine()
