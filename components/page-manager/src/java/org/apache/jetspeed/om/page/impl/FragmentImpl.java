@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.security.FragmentPermission;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
@@ -226,6 +228,16 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // always check for granted fragment permissions
+        FragmentPermission permission = new FragmentPermission(path, actions);
+        AccessController.checkPermission(permission);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
      */
     public boolean getConstraintsEnabled()
@@ -249,20 +261,6 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#checkAccess(java.lang.String)
-     */
-    public void checkAccess(String actions) throws SecurityException
-    {
-        // check access permissions and constraints only
-        // for view access: all other permissions granted
-        // implicitly via access to page
-        if ((actions != null) && (actions.indexOf(SecuredResource.VIEW_ACTION) != -1))
-        {
-            super.checkAccess(SecuredResource.VIEW_ACTION);
-        }
-    }
-    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getType()
      */

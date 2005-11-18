@@ -16,9 +16,10 @@
 -->
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define">
 
-    <property name='testcase' value='org.apache.jetspeed.page.TestSecureDatabasePageManager' />  
+<!--    <property name='testcase' value='org.apache.jetspeed.page.TestSecurePermissionsDatabasePageManager' />  -->
+<!--    <property name='testcase' value='org.apache.jetspeed.page.TestSecureDatabasePageManager' />  -->
 <!--    <property name='testcase' value='org.apache.jetspeed.page.TestDatabasePageManager' />  -->
-<!--    <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager' />  -->
+    <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager' />
     
 
     <preGoal name="test:test">

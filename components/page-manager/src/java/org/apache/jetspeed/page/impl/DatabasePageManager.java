@@ -648,16 +648,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
             else
             {
+                // determine if folder is new by checking autoincrement id
+                boolean newFolder = folder.getId().equals("0");
+
                 // check for edit access on folder and parent folder
-                folder.checkAccess(SecuredResource.EDIT_ACTION);
+                // if not being initially created; access is not
+                // checked on create
+                if (!newFolder || !folder.getPath().equals(Folder.PATH_SEPARATOR))
+                {
+                    folder.checkAccess(SecuredResource.EDIT_ACTION);
+                }
 
                 // create root folder or update folder
-                boolean newFolder = folder.getId().equals("0");
                 getPersistenceBrokerTemplate().store(folder);
-                newFolder = (newFolder && !folder.getId().equals("0"));
 
                 // notify page manager listeners
-                if (newFolder)
+                if (newFolder && !folder.getId().equals("0"))
                 {
                     delegator.notifyNewNode(folder);
                 }

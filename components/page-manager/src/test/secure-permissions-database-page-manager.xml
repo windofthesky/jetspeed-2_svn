@@ -19,7 +19,7 @@ limitations under the License.
 
     <!-- Page Manager -->
     <bean id="org.apache.jetspeed.page.PageManagerImpl" 
-          name="securePageManagerImpl"
+          name="securePermissionsPageManagerImpl"
           init-method="init"
           class="org.apache.jetspeed.page.impl.DatabasePageManager">
         <!-- OJB configuration file resource path -->
@@ -29,9 +29,9 @@ limitations under the License.
         <!-- folder/page/link cache expires seconds, default=150, infinite=0, min=30 -->
         <constructor-arg index="2"><value>0</value></constructor-arg>
         <!-- permissions security enabled flag, default=false -->
-        <constructor-arg index="3"><value>false</value></constructor-arg>
+        <constructor-arg index="3"><value>true</value></constructor-arg>
         <!-- constraints security enabled flag, default=true -->
-        <constructor-arg index="4"><value>true</value></constructor-arg>
+        <constructor-arg index="4"><value>false</value></constructor-arg>
     </bean>
 
     <!-- Transaction Proxying -->
@@ -40,7 +40,7 @@ limitations under the License.
             <value>org.apache.jetspeed.page.PageManager</value>
         </property>
         <property name="target">
-            <ref bean="securePageManagerImpl" />
+            <ref bean="securePermissionsPageManagerImpl" />
         </property>
         <property name="transactionAttributes">
             <props>

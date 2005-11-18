@@ -20,7 +20,6 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
                                                                                                      
 import javax.security.auth.Subject;
@@ -43,17 +42,17 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * TestPageXmlPersistence
+ * TestSecureDatabasePageManager
  * 
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
  *          
  */
 public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCase
 {
-    private PageManager pageManager;
+    protected PageManager pageManager;
 
-    private String somePortletId;
+    protected String somePortletId;
     
     public static void main(String args[])
     {
@@ -64,7 +63,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
     protected void setUp() throws Exception
     {
         super.setUp();
-        pageManager = (PageManager)ctx.getBean("securePageManager");
+        pageManager = (PageManager)ctx.getBean("pageManager");
     }
 
     public static Test suite()
@@ -110,7 +109,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
         Subject guestSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
         // setup test as admin user
-        Exception setup = (Exception)Subject.doAs(adminSubject, new PrivilegedAction()
+        Exception setup = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -202,14 +201,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (setup != null)
         {
             throw setup;
         }
 
         // access test as admin user
-        Exception adminAccess = (Exception)Subject.doAs(adminSubject, new PrivilegedAction()
+        Exception adminAccess = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -241,14 +240,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (adminAccess != null)
         {
             throw adminAccess;
         }
 
         // access test as user user
-        Exception userAccess = (Exception)Subject.doAs(userSubject, new PrivilegedAction()
+        Exception userAccess = (Exception)Subject.doAsPrivileged(userSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -301,14 +300,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (userAccess != null)
         {
             throw userAccess;
         }
 
         // access test as manager user
-        Exception managerAccess = (Exception)Subject.doAs(managerSubject, new PrivilegedAction()
+        Exception managerAccess = (Exception)Subject.doAsPrivileged(managerSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -359,14 +358,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (managerAccess != null)
         {
             throw managerAccess;
         }
 
         // access test as guest user
-        Exception guestAccess = (Exception)Subject.doAs(guestSubject, new PrivilegedAction()
+        Exception guestAccess = (Exception)Subject.doAsPrivileged(guestSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -424,14 +423,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (guestAccess != null)
         {
             throw guestAccess;
         }
 
         // cleanup test as admin user
-        Exception cleanup = (Exception)Subject.doAs(adminSubject, new PrivilegedAction()
+        Exception cleanup = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -456,7 +455,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         return e;
                     }
                 }
-            });
+            }, null);
         if (cleanup != null)
         {
             throw cleanup;

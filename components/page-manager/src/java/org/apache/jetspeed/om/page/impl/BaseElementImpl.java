@@ -375,7 +375,7 @@ public abstract class BaseElementImpl implements BaseElement, PersistenceBrokerA
     public void checkPermissions(String actions) throws SecurityException
     {
         // skip checks if not enabled
-        if (getPermissionsEnabled())
+        if (!getPermissionsEnabled())
         {
             return;
         }
