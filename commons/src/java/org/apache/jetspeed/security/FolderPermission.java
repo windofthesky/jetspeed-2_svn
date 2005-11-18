@@ -54,7 +54,9 @@ public class FolderPermission extends PortalResourcePermission
 {
    public static final char RECURSIVE_CHAR = '-';
    public static final char WILD_CHAR = '*';
+   public static final String WILD_CHAR_STR = new String(new char[]{WILD_CHAR});
    public static final char FOLDER_SEPARATOR = '/';
+   public static final String FOLDER_SEPARATOR_STR = new String(new char[]{FOLDER_SEPARATOR});
 
    //private final static Log log = LogFactory.getLog(FolderPermission.class);
 
