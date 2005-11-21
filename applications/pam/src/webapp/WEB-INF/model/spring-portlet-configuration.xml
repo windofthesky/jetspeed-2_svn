@@ -71,6 +71,12 @@
   	   	  <entry key="page-view">
   	   	  	<value>pageBean</value>
   	   	  </entry>          
+  	   	  <entry key="add-page">
+  	   	  	<value>pageBean</value>
+  	   	  </entry>          
+  	   	  <entry key="add-folder">
+  	   	  	<value>folderBean</value>
+  	   	  </entry>          
   	   	</map>
   	   </constructor-arg>    	
     </bean>
@@ -85,6 +91,12 @@
   	   	  </entry>
   	   	  <entry key="page-view">
   	   	  	<value>pageBean</value>
+  	   	  </entry>          
+  	   	  <entry key="add-page">
+  	   	  	<value>pageBean</value>
+  	   	  </entry>          
+  	   	  <entry key="add-folder">
+  	   	  	<value>folderBean</value>
   	   	  </entry>          
   	   	</map>
   	   </constructor-arg>    	
