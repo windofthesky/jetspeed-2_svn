@@ -64,38 +64,18 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         PortalStatistics
 {
-
-    /**
-     * @see org.apache.jetspeed.statistics.PortalStatistics#forceFlush()
-     */
-    public void forceFlush()
-    {
-        if (pageBatch != null)
-        {
-            this.pageBatch.flush();
-        }
-        if (portletBatch != null)
-        {
-            this.portletBatch.flush();
-        }
-        if (userBatch != null)
-        {
-            this.userBatch.flush();
-        }
-    }
-
     /* CLF logger */
     protected final static Log logger = LogFactory
             .getLog(PortalStatisticsImpl.class);
 
     /* batch of portlet statistics */
-    private BatchedStatistics portletBatch;
+    protected BatchedStatistics portletBatch;
 
     /* batch if page statistics */
-    private BatchedStatistics pageBatch;
+    protected BatchedStatistics pageBatch;
 
     /* batch of user statistics */
-    private BatchedStatistics userBatch;
+    protected BatchedStatistics userBatch;
 
     /* format string for a portlet access log entry */
     protected static final String portletLogFormat = "{0} {1} {2} [{3}] \"{4} {5} {6}\" {7} {8}";
@@ -106,36 +86,36 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     /* Format string for a User Logout log entry */
     protected static final String logoutLogFormat = "{0} {1} {2} [{3}] \"{4}\" {5} {6}";
 
-    private static final int STATUS_LOGGED_IN = 1;
+    protected static final int STATUS_LOGGED_IN = 1;
 
-    private static final int STATUS_LOGGED_OUT = 2;
+    protected static final int STATUS_LOGGED_OUT = 2;
 
     /* the following fields should be settable with Spring injection */
-    private boolean logToCLF = true;
+    protected boolean logToCLF = true;
 
-    private boolean logToDatabase = true;
+    protected boolean logToDatabase = true;
 
-    private int maxRecordToFlush_Portlet = 30;
+    protected int maxRecordToFlush_Portlet = 30;
 
-    private int maxRecordToFlush_User = 30;
+    protected int maxRecordToFlush_User = 30;
 
-    private int maxRecordToFlush_Page = 30;
+    protected int maxRecordToFlush_Page = 30;
 
-    private long maxTimeMsToFlush_Portlet = 10 * 1000;
+    protected long maxTimeMsToFlush_Portlet = 10 * 1000;
 
-    private long maxTimeMsToFlush_User = 10 * 1000;
+    protected long maxTimeMsToFlush_User = 10 * 1000;
 
-    private long maxTimeMsToFlush_Page = 10 * 1000;
+    protected long maxTimeMsToFlush_Page = 10 * 1000;
 
-    ConnectionRepositoryEntry jetspeedDSEntry;
+    protected ConnectionRepositoryEntry jetspeedDSEntry;
 
     /* after this is NOT for injection */
 
-    DataSource ds;
+    protected DataSource ds;
 
-    private int currentUserCount = 0;
+    protected int currentUserCount = 0;
 
-    private Map currentUsers;
+    protected Map currentUsers;
 
     /* date formatter */
     protected SimpleDateFormat formatter = null;
@@ -292,8 +272,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     protected void saveAccessToCLF(LogRecord record)
     {
-        Object[] args =
-        { ""};
+        Object[] args =  {""};
         String logMessage = "";
         if (record instanceof PortletLogRecord)
         {
@@ -443,7 +422,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         try
         {
-
             HttpServletRequest req = request.getRequest();
             Principal principal = req.getUserPrincipal();
             String userName = (principal != null) ? principal.getName()
@@ -574,7 +552,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return currentUserCount;
     }
 
-    private Date getStartDateFromPeriod(String period, Date end)
+    protected Date getStartDateFromPeriod(String period, Date end)
     {
         GregorianCalendar gcEnd = new GregorianCalendar();
         gcEnd.setTime(end);
@@ -707,9 +685,12 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             int totalRows = 5;
             String listsizeStr = criteria.getListsize();
             int temp = -1;
-            try {
+            try 
+            {
                 temp = Integer.parseInt(listsizeStr);
-            } catch (NumberFormatException e) {
+            } 
+            catch (NumberFormatException e) 
+            {
             }
             if(temp != -1) {
                 totalRows = temp;
@@ -741,16 +722,22 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 rowCount++;
             }
 
-        } catch (SQLException e)
+        } 
+        catch (SQLException e)
         {
             throw new InvalidCriteriaException(e.toString());
         }
-        finally {
-            try {
-                if(con != null) {
+        finally 
+        {
+            try 
+            {
+                if(con != null) 
+                {
                     con.close();
                 }
-            } catch (SQLException e) {
+            } 
+            catch (SQLException e) 
+            {
                 logger.error("error releasing the connection",e);
             }
         }
@@ -758,7 +745,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         return as;
     }
 
-    private String floatFormatter(float f)
+    protected String floatFormatter(float f)
     {
         // for now we'll just truncate as int
         int f2 = new Float(f).intValue();
@@ -790,4 +777,25 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         return this.currentUserCount;
     }
+    
+
+    /**
+     * @see org.apache.jetspeed.statistics.PortalStatistics#forceFlush()
+     */
+    public void forceFlush()
+    {
+        if (pageBatch != null)
+        {
+            this.pageBatch.flush();
+        }
+        if (portletBatch != null)
+        {
+            this.portletBatch.flush();
+        }
+        if (userBatch != null)
+        {
+            this.userBatch.flush();
+        }
+    }
+    
 }
