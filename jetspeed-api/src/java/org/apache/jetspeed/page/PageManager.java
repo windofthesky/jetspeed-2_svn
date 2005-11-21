@@ -355,4 +355,14 @@ public interface PageManager
     public PageSecurity copyPageSecurity(PageSecurity source) 
         throws JetspeedException;
         
+    /**
+     * Deep copy a folder. Copies a folder and all subcontents including
+     * other folders, subpages, links, menus, security, fragments. 
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     */
+    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    throws JetspeedException, PageNotUpdatedException;
+    
 }

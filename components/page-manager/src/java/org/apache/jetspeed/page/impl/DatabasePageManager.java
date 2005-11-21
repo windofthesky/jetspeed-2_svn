@@ -61,7 +61,6 @@ import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
-import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
@@ -904,6 +903,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     throws JetspeedException
     {
         return this.delegator.copyPageSecurity(source);
+    }
+
+    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        this.delegator.deepCopyFolder(srcFolder, destinationPath);
     }
     
 }

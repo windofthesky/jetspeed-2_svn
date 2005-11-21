@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -786,6 +787,88 @@ public abstract class AbstractPageManager
         }
         
         return copy;
+    }
+
+    /**
+     * Deep copy a folder
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     */
+    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        boolean found = true;
+        try
+        {
+            Folder check = this.getFolder(destinationPath);
+        }
+        catch (FolderNotFoundException e)
+        {
+            found = false;
+        }
+        if (found)
+        {
+            throw new JetspeedException("Destination already exists");
+        }
+        Folder dstFolder = this.copyFolder(srcFolder, destinationPath);
+        this.updateFolder(dstFolder);
+        
+        Iterator pages = srcFolder.getPages().iterator();
+        while (pages.hasNext())
+        {
+            Page srcPage = (Page)pages.next();
+            Page dstPage = this.copyPage(srcPage, srcPage.getPath());
+            this.updatePage(dstPage);
+        }
+     
+        // TODO: LINKS
+        
+        Iterator folders = srcFolder.getFolders().iterator();
+        while (folders.hasNext())
+        {
+            Folder folder = (Folder)folders.next();
+            String newPath = concatenatePaths(destinationPath, folder.getName()); 
+            deepCopyFolder(folder, newPath);
+        }        
+    }
+        
+    protected String concatenatePaths(String base, String path)
+    {
+        String result = "";
+        if (base == null)
+        {
+            if (path == null)
+            {
+                return result;
+            }
+            return path;
+        }
+        else
+        {
+            if (path == null)
+            {
+                return base;
+            }
+        }
+        if (base.endsWith(Folder.PATH_SEPARATOR)) 
+        {
+            if (path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                result = base.concat(path.substring(1));
+                return result;
+            }
+        
+        }
+        else
+        {
+            if (!path.startsWith(Folder.PATH_SEPARATOR)) 
+            {
+                result = base.concat(Folder.PATH_SEPARATOR).concat(path);
+                return result;
+            }
+        }
+        return base.concat(path);
     }
     
 }
