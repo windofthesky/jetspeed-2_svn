@@ -15,6 +15,7 @@
 package org.apache.jetspeed.prefs;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -24,6 +25,8 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
+import org.apache.jetspeed.prefs.om.Node;
+import org.apache.jetspeed.prefs.om.Property;
 
 /**
  * <p>
@@ -84,6 +87,50 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
         return new TestSuite(TestPreferences.class);
     }
 
+    public void testLookupProperty()
+    throws Exception
+    {
+        PersistenceBrokerPreferencesProvider broker = 
+            (PersistenceBrokerPreferencesProvider) ctx.getBean("prefsPersistenceBroker");
+        
+        Preferences info = Preferences.userRoot().node("/user/dynamite/userinfo");
+        Map keys = new HashMap();
+        keys.put("user.name.family", new Integer(Property.STRING_TYPE));
+        keys.put("user.name.given", new Integer(Property.STRING_TYPE));
+        keys.put("user.email", new Integer(Property.STRING_TYPE));
+        pms.addPropertyKeys(info, keys);
+
+        info.put("user.name.family", "Dynamite");
+        info.put("user.name.given", "Napolean");
+        info.put("user.email", "napolean@dynamite.xxx");
+        info.flush();
+        
+        Iterator result = broker.lookupPreference("userinfo", "user.email", "napolean@dynamite.xxx").iterator();
+        int count = 0;
+        while (result.hasNext())
+        {
+            Node node = (Node)result.next();
+            System.out.println("node = " + node.getFullPath());
+            Iterator props = node.getNodeProperties().iterator();
+            while (props.hasNext())
+            {
+                Property prop = (Property)props.next();
+                String name = prop.getPropertyKey().getPropertyKeyName();
+                String value = prop.getTextPropertyValue();
+                if ("user.name.family".equals(name))
+                    assertTrue("family name wrong " + value, "Dynamite".equals(value));
+                else if ("user.name.given".equals(name))
+                    assertTrue("given name wrong " + value, "Napolean".equals(value));
+                else if ("user.email".equals(name))
+                    assertTrue("email is wrong " + value, "napolean@dynamite.xxx".equals(value));
+                else
+                    assertTrue("bad property name " + name, false);                
+            }
+            count++;
+        }
+        assertTrue("test-1: count is one " + count, count == 1);                
+    }
+    
     /**
      * <p>
      * Test user root.
