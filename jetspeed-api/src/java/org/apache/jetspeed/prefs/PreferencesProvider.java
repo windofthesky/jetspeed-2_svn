@@ -42,5 +42,16 @@ public interface PreferencesProvider
     
     void removeNode(Node node);
     
+    /**
+     * Lookup a preference node given the preference name, a property name and value.
+     * Options can be set to null if you dont want them included in the query.
+     * 
+     * @param nodeName the name of the node to lookup, such as 'userinfo'
+     * @param propertyName the name of the property, such as 'user.email'
+     * @param propertyValue the value of the property, such as 'taylor@apache.org'
+     * @return a collection of found matching elements of type <code>Node</code>
+     */
+    Collection lookupPreference(String nodeName, String propertyName, String propertyValue);
+
     void init() throws Exception;
 }
