@@ -326,4 +326,27 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     {
         return this.enablePropertyManager;
     }
+    
+    public Collection lookupPreference(String nodeName, String propertyName, String propertyValue)
+    {
+// if the OJB fails, try this
+//        String LOOKUP_BY_EMAIL = 
+//            "SELECT p.full_path, k.property_name, v.text_value " +
+//            "FROM `prefs_node` p, prefs_property_key k, prefs_property_value v " +
+//            "WHERE p.NODE_NAME = 'userinfo' and v.node_id = p.node_id " + 
+//            "AND v.property_key_id = k.property_key_id " +
+//            "AND k.property_name = '";
+
+        Criteria c = new Criteria();
+        if (nodeName != null)
+            c.addEqualTo("nodeName", nodeName);
+        if (propertyName != null)
+            c.addEqualTo("nodeKeys.propertyKeyName", propertyName);
+        if (propertyValue != null)
+            c.addEqualTo("nodeProperties.textPropertyValue", propertyValue);
+        Query query = QueryFactory.newQuery(NodeImpl.class, c);
+        Collection children = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        return children;
+        
+    }
 }
