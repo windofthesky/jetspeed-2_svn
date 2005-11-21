@@ -36,13 +36,12 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.portals.bridges.frameworks.FrameworkConstants;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
 import org.apache.portals.messaging.PortletMessaging;
 
@@ -164,6 +163,40 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         return "folder-view:success";
     }
 
+    public String processAddPageAction(ActionRequest request, ActionResponse response, Object bean) 
+    throws PortletException,
+           IOException
+    {
+        PageProxyBean proxy = (PageProxyBean)bean;
+        String key = proxy.getKey();
+        try
+        {
+            String fullKey = getFullKey(request, key);
+            System.out.println("Saving . " + fullKey);
+            Page page = pageManager.newPage(fullKey);
+            // TODO: Get System Wide defaults for decorators
+            page.getRootFragment().setName("jetspeed-layouts::VelocityTwoColumns");
+            page.setDefaultDecorator("tigris", Fragment.LAYOUT);
+            page.setDefaultDecorator("tigris", Fragment.PORTLET);
+            // or:
+            //String templateFolder = actionRequest.getPreferences().getValue("newUserTemplateDirectory", "/_user/template/");
+            // TODO: copy the entire dir tree, not just the default-page.psml                 
+            //Page template = pageManager.getPage(templateFolder + "default-page.psml");                
+            //Page copy = pageManager.copyPage(template, Folder.USER_FOLDER + userName + "/default-page.psml");
+            
+            
+            proxy.update(page);
+            pageManager.updatePage(page);
+            
+            notifyUpdate(request, response, fullKey);            
+        }
+        catch (JetspeedException e)
+        {
+            e.printStackTrace();
+        }
+        return "folder-view:success";
+    }
+   
     public String processDeleteFolderAction(ActionRequest request, ActionResponse response, Object bean) 
     throws PortletException,
            IOException
