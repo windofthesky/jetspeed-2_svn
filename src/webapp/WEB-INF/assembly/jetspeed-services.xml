@@ -83,6 +83,12 @@ limitations under the License.
 		  <entry key="PortalStatistics">
             <ref bean="PortalStatistics"/>
           </entry>		            
+		  <entry key="PortalAdministration">
+            <ref bean="PortalAdministration"/>
+          </entry>		            
+          <entry key="PreferencesProvider">
+            <ref bean="org.apache.jetspeed.prefs.PreferencesProvider"/>
+          </entry>
   	   	</map>
   	   </constructor-arg>
   </bean>
