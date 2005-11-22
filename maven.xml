@@ -282,4 +282,11 @@
                      value="./etc/import/import.properties"/>		
         </java>
     </goal>
+    
+    <goal name='pages'>
+	<copy todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/pages/">
+        <fileset dir="./src/webapp/WEB-INF/pages/"/>        
+  	</copy>        
+        
+    </goal>
 </project>

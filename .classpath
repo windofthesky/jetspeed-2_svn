@@ -55,10 +55,8 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/gems/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="applications/jpetstore/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/jsf-demo/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="applications/palm/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="applications/pam/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/j2-admin/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="applications/security/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar"/>

@@ -354,12 +354,8 @@
             <td>Deploys Jetspeed local layout portlet application.</td>
           </tr>
           <tr>
-            <td><code>j2:pam.palmdeploy</code></td>
-            <td>Deploys Jetspeed portlet application lifecycle management portlet application.</td>
-          </tr>
-          <tr>
-            <td><code>j2:pam.pamdeploy</code></td>
-            <td>Deploys Jetspeed portlet application management portlet application.</td>
+            <td><code>j2:pam.admindeploy</code></td>
+            <td>Deploys Jetspeed Administration portlet application.</td>
           </tr>
           <tr>
             <td><code>j2:pam.tsdeploy</code></td>
@@ -382,10 +378,6 @@
             <td>Deploys the JSF demo portlet application which uses MyFaces native JSF portlet bridge.</td>
           </tr>
           <tr>
-            <td><code>j2:pam.securitydeploy</code></td>
-            <td>Deploys the Jetspeed security administration portlet application.</td>
-          </tr>
-          <tr>
             <td><code>j2:pam.phpdeploy</code></td>
             <td>Deploys the Jetspeed PHP bridge demo portlet application.</td>
           </tr>
@@ -400,8 +392,8 @@
           <tr>
             <td><code>j2:nodbMinDeploy</code></td>
             <td>
-              Deploys the portal using the <code>j2:portal.deploy</code> goal and only the layout and security portlets
-              using <code>j2:pam.layoutdeploy</code> and <code>j2:pam.securitydeploy</code>.
+              Deploys the portal using the <code>j2:portal.deploy</code> goal and only the layout and admin portlets
+              using <code>j2:pam.layoutdeploy</code> and <code>j2:pam.admindeploy</code>.
             </td>
           </tr>
           <tr>
@@ -412,23 +404,9 @@
             </td>
           </tr>
           <tr>
-            <td><code>j2:nodbBasicDeploy</code></td>
-            <td>
-              The same functionality as <code>j2:nodbMinDeploy</code> and additionaly deploys the PAM and PALM portlets
-              using <code>j2:pam.pamdeploy</code> and <code>j2:pam.palmdeploy</code>.
-            </td>
-          </tr>
-          <tr>
-            <td><code>j2:basicDeploy</code></td>
-            <td>
-              The same functionality as <code>j2:nodbBasicDeploy</code> and additionaly seeds the portal database using
-              the <code>j2:db.entities</code> goal.
-            </td>
-          </tr>
-          <tr>
             <td><code>j2:nodbfullDeploy</code></td>
             <td>
-              The same functionality as <code>j2:nodbBasicDeploy</code> but additional deploys all other demo portlet
+              The same functionality as <code>j2:nodbMinDeploy</code> but additional deploys all other demo portlet
               applications (see full list above).
             </td>
           </tr>
