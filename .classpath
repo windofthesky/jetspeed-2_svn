@@ -120,5 +120,8 @@
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-struts-1.2.7-0.4-dev.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-velocity-0.4-dev.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>
+	<classpathentry kind="src" path="/portals-bridges"/>
+	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/javamail/jars/javamail-1.3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
