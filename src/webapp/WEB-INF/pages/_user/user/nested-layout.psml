@@ -14,12 +14,12 @@
   <metadata name="short-title" xml:lang="zh">内嵌布局</metadata>
 
   <fragment id="100393" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="100939" type="portlet" name="pam::LocaleSelector">
+    <fragment id="100939" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="OneColumn" name="row" value="0"/>
     </fragment>                                
     <fragment id="100345" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
       <property layout="OneColumn" name="row" value="1"/>
-      <fragment id="100121" type="portlet" name="security::LoginPortlet">
+      <fragment id="100121" type="portlet" name="j2-admin::LoginPortlet">
         <property layout="TwoColumns" name="row" value="0"/>
         <property layout="TwoColumns" name="column" value="0"/>
       </fragment>                                

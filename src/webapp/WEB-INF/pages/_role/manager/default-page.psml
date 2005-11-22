@@ -35,7 +35,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="mrp-xx6" type="portlet" name="security::LoginPortlet">
+    <fragment id="mrp-xx6" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="2" />
     </fragment>                                    

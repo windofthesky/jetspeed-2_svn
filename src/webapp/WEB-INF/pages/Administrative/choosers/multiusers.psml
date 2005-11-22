@@ -21,7 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">用户选择器</metadata>
 
   <fragment id="mchooser-users" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
-    <fragment id="mchooser-users-1" type="portlet" name="security::UserMultiChooser" >
+    <fragment id="mchooser-users-1" type="portlet" name="j2-admin::UserMultiChooser" >
     </fragment>
   </fragment>
 </page>

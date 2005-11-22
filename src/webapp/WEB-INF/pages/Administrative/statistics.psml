@@ -19,6 +19,6 @@ limitations under the License.
   <title>Portal Statistics</title>
 
   <fragment id="stats-2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="stats-3" type="portlet" name="pam::StatisticsPortlet" />
+    <fragment id="stats-3" type="portlet" name="j2-admin::StatisticsPortlet" />
   </fragment>
 </page>

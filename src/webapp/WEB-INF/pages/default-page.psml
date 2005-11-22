@@ -27,11 +27,11 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="dp-3" type="portlet" name="pam::LocaleSelector">
+    <fragment id="dp-3" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="dp-12" type="portlet" name="security::LoginPortlet">
+    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                

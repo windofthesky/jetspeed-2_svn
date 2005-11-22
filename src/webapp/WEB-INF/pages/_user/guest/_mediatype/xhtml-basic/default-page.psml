@@ -25,7 +25,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
 
   <fragment id="dp-xhtml-basic-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="dp-xhtml-basic-11" type="portlet" name="security::LoginPortletForXHTMLBasic">
+    <fragment id="dp-xhtml-basic-11" type="portlet" name="j2-admin::LoginPortletForXHTMLBasic">
       <property layout="OneColumn" name="row" value="0" />
     </fragment>                                
     <fragment id="dp-xhtml-basic-12" type="portlet" name="demo::BookmarkPortletForXHTMLBasic">

@@ -25,11 +25,11 @@ limitations under the License.
       
 
   <fragment id="js-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
-    <fragment id="pdb-1" type="portlet" name="pam::PortalSiteBrowser" >
+    <fragment id="pdb-1" type="portlet" name="j2-admin::PortalSiteBrowser" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="psd-1" type="portlet" name="pam::PortalSiteDetail" >
+    <fragment id="psd-1" type="portlet" name="j2-admin::PortalSiteDetail" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

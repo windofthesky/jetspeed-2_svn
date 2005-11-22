@@ -21,7 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">角色选择器</metadata>
 
   <fragment id="chooser-roles" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
-    <fragment id="chooser-roles-1" type="portlet" name="security::RoleChooser" >
+    <fragment id="chooser-roles-1" type="portlet" name="j2-admin::RoleChooser" >
     </fragment>
   </fragment>
 </page>

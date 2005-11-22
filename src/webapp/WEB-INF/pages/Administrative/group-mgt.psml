@@ -23,11 +23,11 @@ limitations under the License.
   <metadata name="title" xml:lang="hu">Csoport beállítások</metadata>
   <metadata name="title" xml:lang="zh">用户组管理</metadata>
   <fragment id="gm-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
-    <fragment id="gm-3" type="portlet" name="security::GroupBrowserPortlet">
+    <fragment id="gm-3" type="portlet" name="j2-admin::GroupBrowserPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="gm-4" type="portlet" name="security::GroupDetailsPortlet">
+    <fragment id="gm-4" type="portlet" name="j2-admin::GroupDetailsPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    

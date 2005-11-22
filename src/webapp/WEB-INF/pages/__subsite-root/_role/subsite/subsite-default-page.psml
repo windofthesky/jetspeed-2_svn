@@ -11,10 +11,10 @@
 
 
   <fragment id="sub-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="sub-1" type="portlet" name="pam::LocaleSelector">
+    <fragment id="sub-1" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="OneColumn" name="row" value="3" />
     </fragment>                                
-    <fragment id="sub-2" type="portlet" name="security::LoginPortlet">
+    <fragment id="sub-2" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="OneColumn" name="row" value="1" />
     </fragment>                                
   </fragment>

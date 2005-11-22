@@ -23,7 +23,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">我的帐户配置</metadata>
 
   <fragment id="cpwd-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="cpwd-2" type="portlet" name="security::ChangePasswordPortlet">
+    <fragment id="cpwd-2" type="portlet" name="j2-admin::ChangePasswordPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
