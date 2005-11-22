@@ -18,6 +18,8 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.security.AccessControlContext;
 import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +57,9 @@ public class WorkerMonitorImpl implements WorkerMonitor
     /** Static counters for identifying workers */
     private static long sCount = 0;
 
+    /** Count of running jobs **/
+    private int runningJobs = 0;
+    
     /** Minimum number of wokers to create */
     private int minWorkers = 5;
 
@@ -166,6 +171,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 {
                     worker.setJob(job, context);
                     worker.notify();
+                    runningJobs++;
                 }
             }
             catch (Throwable t)
@@ -192,12 +198,14 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 RenderingJob job = (RenderingJob)queue.pop();
                 AccessControlContext context = (AccessControlContext)queue.pop();
                 worker.setJob(job, context);
+                runningJobs--;
                 return;
             }
             else
             {
                 worker.setJob(null);
                 worker.resetJobCount();
+                runningJobs--;
             }
         }
 
@@ -206,4 +214,24 @@ public class WorkerMonitorImpl implements WorkerMonitor
             this.workers.push(worker);
         }
     }
+
+    public int getQueuedJobsCount()
+    {
+        return queue.size();
+    }
+    
+    /**
+     * Returns a snapshot of the available jobs
+     * @return available jobs
+     */
+    public int getAvailableJobsCount()
+    {
+        return workers.size();
+    }
+    
+    public int getRunningJobsCount()
+    {
+        return this.tg.activeCount();
+    }
+    
 }

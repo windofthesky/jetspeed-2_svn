@@ -143,8 +143,8 @@ implements JetspeedEngineConstants, HttpSessionListener
                 engine = new JetspeedEngine(properties, applicationRoot, config, initializeComponentManager(config, applicationRoot, properties));
              
                 console.info("JetspeedServlet attempting to start the Jetspeed Portal Engine...");
-                engine.start();
                 Jetspeed.setEngine(engine);
+                engine.start();                
                 console.info("JetspeedServlet has successfuly started the Jetspeed Portal Engine....");
 
             }

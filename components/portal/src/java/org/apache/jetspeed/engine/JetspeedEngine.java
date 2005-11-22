@@ -90,7 +90,8 @@ public class JetspeedEngine implements Engine
         
         // Make these availble as beans to Spring
         componentManager.addComponent("Engine", this);
-        componentManager.addComponent("PortalContext", context);        
+        componentManager.addComponent("PortalContext", context);
+        componentManager.addComponent("PortalConfiguration", configuration);
     }  
     
     
