@@ -387,16 +387,6 @@
     <attainGoal name="j2:deploy"/>
   </goal>
 
-  <goal name="j2:pam.palmdeploy">
-    <j:set var="maven.war.final.name" value="palm"/>
-    <attainGoal name="j2:deploy"/>
-  </goal>
-
-  <goal name="j2:pam.pamdeploy">
-    <j:set var="maven.war.final.name" value="pam"/>
-    <attainGoal name="j2:deploy"/>
-  </goal>
-
   <goal name="j2:pam.tsdeploy">
     <j:set var="maven.war.final.name" value="testsuite"/>
     <attainGoal name="j2:deploy"/>
@@ -422,8 +412,8 @@
     <attainGoal name="j2:deploy"/>
   </goal>
 
-  <goal name="j2:pam.securitydeploy">
-    <j:set var="maven.war.final.name" value="security"/>
+  <goal name="j2:pam.admindeploy">
+    <j:set var="maven.war.final.name" value="j2-admin"/>
     <attainGoal name="j2:deploy"/>
   </goal>
 
@@ -516,30 +506,18 @@
   <goal name="j2:minDeploy">
       <attainGoal name="j2:portal.deploy"/>
       <attainGoal name="j2:pam.layoutdeploy"/>
-      <attainGoal name="j2:pam.securitydeploy"/>
+      <attainGoal name="j2:pam.admindeploy"/>
       <attainGoal name="j2:db.entities"/>
   </goal>
 
   <goal name="j2:nodbMinDeploy">
       <attainGoal name="j2:portal.deploy"/>
       <attainGoal name="j2:pam.layoutdeploy"/>
-      <attainGoal name="j2:pam.securitydeploy"/>
+      <attainGoal name="j2:pam.admindeploy"/>
   </goal>
   
-  <goal name="j2:basicDeploy">
-      <attainGoal name="j2:minDeploy"/>
-      <attainGoal name="j2:pam.pamdeploy"/>
-      <attainGoal name="j2:pam.palmdeploy"/>
-  </goal>
-
-  <goal name="j2:nodbBasicDeploy">
-      <attainGoal name="j2:nodbMinDeploy"/>
-      <attainGoal name="j2:pam.pamdeploy"/>
-      <attainGoal name="j2:pam.palmdeploy"/>
-  </goal>
-
   <goal name="j2:fullDeploy">
-      <attainGoal name="j2:basicDeploy"/>
+      <attainGoal name="j2:minDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
       <attainGoal name="j2:pam.strutsdeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
@@ -551,7 +529,7 @@
   </goal>
 
   <goal name="j2:nodbfullDeploy">
-      <attainGoal name="j2:nodbBasicDeploy"/>
+      <attainGoal name="j2:nodbMinDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
       <attainGoal name="j2:pam.strutsdeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
@@ -572,12 +550,8 @@
       <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/palm"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/palm.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/pam.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/security.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/j2-admin"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/j2-admin.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
@@ -594,7 +568,7 @@
       <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war"/>
       <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
       <delete file="${context_dir}/${org.apache.jetspeed.portal.artifactId}.xml"/>
-      <delete file="${context_dir}/security.xml"/>
+      <delete file="${context_dir}/j2-admin.xml"/>
       <delete file="${context_dir}/jpetstore.xml"/>
   </goal>
   
@@ -641,16 +615,6 @@
     <attainGoal name="j2:doStart"/>
   </goal>
     
-  <goal name="j2:basicStart" description="Creates the production DB and calls portal/maven j2:basicDeploy">
-    <j:set var="deployType" value="j2:basicDeploy"/>
-    <attainGoal name="j2:doStart"/>
-  </goal>
-
-  <goal name="j2:nodbBasicStart" description="Don't create a new production DB but call portal/maven j2:basicDeploy">
-    <j:set var="deployType" value="j2:nodbBasicDeploy"/>
-    <j:set var="recreateDB" value="false"/>
-    <attainGoal name="j2:doStart"/>
-  </goal>
   <!-- ================================================= -->
   <!-- ============= DEVELOPMENT UTILITIES ============= -->
   <!-- ================================================= -->
