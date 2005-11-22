@@ -1,0 +1,191 @@
+#*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*#
+
+#**
+
+@author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+@version $Id$
+
+*#
+
+<script language="JavaScript" type="text/javascript">
+    <!--
+    function select(value)
+    {
+        var openerForm = opener.document.forms['portletform'];
+        var openerEl = openerForm.elements['portlets'];
+        window.close();
+    }
+	function rowHover(row)
+	{
+	    row.oldClassName = row.className;
+	    row.className = 'jetdbLight';
+	    row.onmouseout = function()
+	    {
+	        this.className = this.oldClassName;
+	    }
+	}    
+	function sendChecks(form)
+	{
+		var result = "";
+		for(var i = 0; i < form.length; i++)
+		{
+		   var e = form.elements[i];
+		   if (e.type == "checkbox")
+		   {
+		       if (e.checked == true)
+		       {
+		       	   result = result + "," + e.name;
+		       }
+		   }
+		}
+        var openerForm = opener.document.forms['portletform'];
+        var openerEl = openerForm.elements['portlets'];
+        openerEl.value = result;
+        window.close();
+        openerForm.submit();		
+	}
+    //-->
+</script>
+
+
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+<form name='userform' onSubmit='sendChecks(this)'/>
+<table cellpadding=0 cellspacing=1 border=0 width='100%' >
+  <tr>
+    #foreach ($column in $title)    
+      <td align='center' class="jetdbHeadNoLink" nowrap>
+        $column
+      </td>
+    #end
+      <th class="jetdbHeadNoLink" width="10"></th>        
+  </tr>
+  #foreach ( $portlet in $table )
+  <tr>
+    #if ($velocityCount % 2 == 0)
+       #set($rowstyle = "jetdbEven")
+    #else
+       #set($rowstyle = "jetdbOdd")
+    #end   
+      <td class="$rowstyle" width="40%" onmouseover="rowHover(this)">
+        <div align="left">$!portlet.DisplayName</div>
+      </td>
+      <td class="$rowstyle" width="55%" onmouseover="rowHover(this)">
+        <div align="left">$!portlet.Description</div>
+      </td>      
+	  <td class="$rowstyle" width="10">
+  	    <input type="checkbox" name="box_$portlet.Name"/>
+	  </td>    
+   </tr>
+  #end
+</table>
+ <input type="submit" name="select.portlets" value="Select Portlets" class="jetdbButton"  />
+ <input type='hidden' name='searchColumn' value='1'/>                      	
+ 
+</form>
+
+<!-- controls -->
+<table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    #if ($prev)
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='first' />                    
+            <input class="jetdbButton" type="submit" value="<<">
+            <input type="hidden" name="start" value="0">
+          </form>
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='prev'/>                    
+            <input class="jetdbButton" type="submit" value="<">
+            <input type="hidden" name="start" value="$prev">
+          </form>
+        </div>
+      </td>
+    #end
+    #if ($tableSize > 0)
+      <form action="$renderResponse.createActionURL()" method="post">
+      <td valign="middle" height="30">
+        <div align="center">
+          	<input type='hidden' name='db.browser.action' value='change'/>                    
+            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type="input" readonly size='10' value="of $tableSize" class="portlet-form-field-label">            
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input class="jetdbButton" type="submit" value="Go">            
+        </div>
+      </td>  
+
+      </form>
+
+      
+    #end    
+    #if ($next)
+      <td valign="middle">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='next'/>          
+            <input class="jetdbButton" type="submit" value=">">
+            <input type="hidden" name="start" value="$next">
+          </form>
+        </div>
+      </td>
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='last'/>                    
+            <input class="jetdbButton" type="submit" value=">>">
+            <input type="hidden" name="start" value="$tableSize">
+          </form>
+        </div>
+      </td>  
+    #end
+    #if ($tableSize > 0)
+      <td valign="middle">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='refresh'/>
+            <input class="jetdbButton" type="submit" name="eventSubmit_doRefresh" value="Refresh" />
+          </form>
+        </div>
+      </td>
+    #end
+  </tr>
+</table>
+<form action="$renderResponse.createActionURL()" method="post">
+  	<input type='hidden' name='db.browser.action' value='search'/>                    
+  	<input type='hidden' name='searchColumn' value='1'/>                      	
+    <input class="jetdbButton" type="submit" value="Search">
+	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
+	<table>
+	<tr>
+    <td nowrap class="portlet-section-alternate" align="right">Filter by Keyword:&nbsp;</td>
+    <td>	
+	<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">
+	</td>
+	</tr>
+	</table>		
+</form>
