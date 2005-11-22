@@ -1,62 +1,173 @@
 <?xml version="1.0"?>
 <!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
 -->
 <document>
-  <properties>
-    <title>Jetspeed 2 Home Page</title>
-    <subtitle>Welcome to Jetspeed 2</subtitle>
-    <authors>
-      <person name="David Sean Taylor" email="taylor@apache.org"/>
-    </authors>
-  </properties>
-  <body>
-<section name="Jetspeed-2 Overview">
-      <p>
-    Jetspeed-2 is the next-generation enterprise portal at Apache.
-    Jetspeed-2 offers several architectural enhancements and improvements over Jetspeed 1.0. 
-    First, Jetspeed-2 is conformant to the <a href="http://www.jcp.org/en/jsr/detail?id=168">Java Portlet Standard</a> and will provide a standard mechanism for the deployment of portlets.  
-    Second, Jetspeed-2 has matured to a more scalable architecture featuring multi-threaded functionality.  
-    Third, Jetspeed-2 is decoupled from several legacy open source projects.  
-    Fourth, Jetspeed-2 is based on a component architecture.      
-      </p>
-</section>
-<section name="What is Jetspeed?">
-      <p>        
-Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
-A portal makes network resources (applications, databases and so forth) available to end-users. The 
-user can access the portal via a web browser, WAP-phone, pager or any other device. Jetspeed acts 
-as the central hub where information from multiple sources are made available in an easy to use manner. 
-</p>
-      <p>
-
-The data presented via Jetspeed is independent of content type, This means that content from for example
-XML,RSS or SMTP can be integrated with Jetspeed. The actual presentation of the data is 
-handled via ates XSL and delivered to the user for example via the combination of Java Server Pages (JSPs) 
-and HTML. Jetspeed provides support for templating and content publication frameworks such as 
-<a href="http://cocoon.apache.org">Cocoon</a>, <a href="http://www.webmacro.org/">WebMacro</a> and 
-<a href="http://jakarta.apache.org/velocity/">Velocity</a>. Note that outside of regular browser Jetspeed also supports WAP devices.
-</p>
-      <p>
-Jetspeed helps you build portal applications quickly. The goal is to make Jetspeed a tool for both portal developers as well 
-as user interface designers. Currently the focus is on providing developers with a set of tools that facilitates building
-the base for the portal. With Jetspeed you can quickly build an XML
-portal and also syndicate your own content.
-
-</p>
-      
-</section>
-  </body>
+	<properties>
+		<title>Jetspeed 2 Home Page</title>
+		<subtitle>Welcome to Jetspeed 2</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Welcome to Jetspeed-2">
+			<div id="downloadbox">
+				<h5>Get Jetspeed 2.0</h5>
+				<p>
+					<a href="download.html">
+						<img valign="top" src="images/folder-open.gif"
+							border="0" alt="" title="download" />
+						Download
+					</a>
+					Jetspeed 2.0
+					<small>(TBD Mb)</small>
+				</p>
+				<ul>
+					<li>
+						<a href="download.html#System_Requirements">
+							System Requirements
+						</a>
+					</li>
+					<li>
+						<a
+							href="download.html#Installation_Instructions">
+							Installation Instructions
+						</a>
+					</li>
+					<li>
+						<a href="release-notes.html">Release Notes</a>
+					</li>
+					<li>
+						<a href="getting-started.html">
+							Getting Started
+						</a>
+					</li>
+					<li>
+						<a href="guides/index.html">Documentation</a>
+					</li>
+				</ul>
+			</div>
+			<p>
+				Jetspeed-2 is the next-generation enterprise portal at
+				Apache. Jetspeed-2 offers several architectural
+				enhancements and improvements over Jetspeed 1.0. First,
+				Jetspeed-2 is conformant to the
+				<a href="http://www.jcp.org/en/jsr/detail?id=168">Java Portlet Standard</a> 
+				and will provide a standard mechanism for the deployment
+				of portlets. Second, Jetspeed-2 has matured to a more
+				scalable architecture featuring multi-threaded
+				functionality. Third, Jetspeed-2 is decoupled from
+				several legacy open source projects. Fourth, Jetspeed-2
+				is based on a component architecture.
+				<br/><br/>
+			</p>
+			<subsection name="Jetspeed-2 Documentation">
+			<p>
+				Most Jetspeed-2 documentation is in the form of
+				<a href="guides/index.html">documentation guides</a>
+				.
+			</p>
+			</subsection>
+			<subsection name="Jetspeed-2 Status">
+				<p>
+					Jetspeed-2 is currently under development. The first
+					production release is expected in Q4 2005. Even
+					though it is not officially released, there are
+					several production portals using Jetspeed-2 that are
+					already on-line.
+				</p>
+			</subsection>
+			<subsection name="About Jetspeed-2">
+				<p>
+					Jetspeed is an Open Source implementation of an
+					Enterprise Information Portal, written in Java and
+					XML. Within a Jetspeed portal, individual portlets
+					can be aggregated to create a page. Each portlet is
+					an independent application with Jetspeed acting as
+					the central hub making information from multiple
+					sources available in an easy to use manner.
+				</p>
+				<p>
+					A portal based on Jetspeed can make applications,
+					database information and other data sources
+					available to end-users through a single web site.
+					Jetspeed provides a security infrastructure so that
+					the information and functions made available to each
+					user can be customized on basis of the user or a
+					role that the user has. The user can access the
+					portal via a web browser, WAP-phone, pager or any
+					other device supported by the servlet engine.
+				</p>
+				<p>
+					Content held in a wide variety of formats such as
+					XML, RSS or database tables can be integrated within
+					a Jetspeed page. The actual presentation of the data
+					is handled via XSL and delivered to the user via
+					combinations of data presentation tools such as Java
+					Server Pages (JSPs), Velocity and HTML. Jetspeed
+					provides support for templating and content
+					publication frameworks such as
+					<a href="http://cocoon.apache.org">Cocoon</a>
+					,
+					<a href="http://www.webmacro.org">WebMacro</a>
+					and
+					<a href="http://jakarta.apache.org/velocity">
+						Velocity
+					</a>
+					.
+				</p>
+				<p>
+					For more information, see:
+					<ul>
+						<li>
+							<a href="what-is-jetspeed-2.html">
+								What is Jetspeed-2
+							</a>
+							?
+						</li>
+						<li>
+							How do I
+							<a href="getting-started.html">
+								Get Started
+							</a>
+							?
+						</li>
+						<li>
+							Where is
+							<a href="guides/index.html">
+								the Documentation
+							</a>
+							?
+						</li>
+						<li>
+							How
+							<a href="how-to-help.html">Can I Help</a>
+							?
+						</li>
+						<li>
+							What do I need to know
+							<a href="j1-users.html">
+								if I used Jetspeed-1
+							</a>
+							?
+						</li>
+					</ul>
+				</p>
+			</subsection>
+		</section>
+	</body>
 </document>

@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Jetspeed-2 Release Notes</title>
+    <subtitle>Jetspeed-2 Release Notes</subtitle>
+    <authors>
+      <person name="David Le Strat" email="dlestrat@apache.org" />
+    </authors>
+  </properties>
+  <body>
+  	  <section name="Release Notes - Jetspeed 2 - Version 2.0-FINAL ">  
+<subsection name="Bug">
+<ul>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-9'>JS2-9</a>] - Caching of portal parameters o.a.j.engine.servlet.ServletRequestImpl.getParameterMap() prevents subsequent RequestDispatcher invokation query string parameter merging</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-165'>JS2-165</a>] - Portlet Application Manager treeview not updated on deploy events</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-181'>JS2-181</a>] - Build Fails - enum is a keyword in java 1.5 (5.0)</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-193'>JS2-193</a>] - After changing the locale using the LocaleSelector the portlet titles eventually disappers</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-203'>JS2-203</a>] - Non-compliance to Portlet Specification  PLT.16.3.3  cxxx and cxxxi (getContextPath)</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-227'>JS2-227</a>] - FK Constraint Error deleting Users on SSO Site to Principals</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-252'>JS2-252</a>] - Fragments retain their previous content in certain cases</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-261'>JS2-261</a>] - (re)Deployed portlet application wars not always (re)deployed</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-263'>JS2-263</a>] - ClassCastException raised when change portlet location on the fly</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-267'>JS2-267</a>] - No link to download</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-273'>JS2-273</a>] - Editing Page Layout works incorrectly</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-312'>JS2-312</a>] - Security Credential Login Information Cached, Can't reset Admin user with restarting server</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-314'>JS2-314</a>] - initMavenPlugin does not remove older version of the Jetspeed 2</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-315'>JS2-315</a>] - Premature access to portal can break access to portlets.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-320'>JS2-320</a>] - build.properties Variable Interpolation (Commons Configuration) not working in AbstractTestHelper</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-321'>JS2-321</a>] - Customizer not correctly positoning portlets</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-331'>JS2-331</a>] - Decorator Velocity Template/Macro Cache Permanent</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-337'>JS2-337</a>] - Error displayed when (successfully) creating user</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-338'>JS2-338</a>] - In certain cases j2:portal.genapp overwrites the existing project's project.xml</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-339'>JS2-339</a>] - Calls to preferences.store() trigger a warning about missing transaction in OJB</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-342'>JS2-342</a>] - Page clone implementation potentially incomplete</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-343'>JS2-343</a>] - JSCookMenu decorator menu incomplete</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-347'>JS2-347</a>] - a portal cannot mix different layout decorations w/o problems</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-364'>JS2-364</a>] - Check for deploying Portlet Apps with same name as portal</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-375'>JS2-375</a>] - Database scripts broken on Oracle 8i</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-381'>JS2-381</a>] - url rewriting breaks CSS</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-393'>JS2-393</a>] - Site documentation generation broken</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-400'>JS2-400</a>] - Layouts broken</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-404'>JS2-404</a>] - Hsql db 1.7.1 does not support addBatch</li>
+</ul>
+</subsection>
+<subsection name="New Feature">
+<ul>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-21'>JS2-21</a>] - Missing Security Feature: Check roles assigned to any group to user belongs</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-26'>JS2-26</a>] - Exposing J2 Services to Portlets</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-58'>JS2-58</a>] - Jetspeed 2 Maven plugin</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-69'>JS2-69</a>] - Finallizing Portal Navigation using the Profiler</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-138'>JS2-138</a>] - Create a NekoHTML based parser rewriter implementation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-158'>JS2-158</a>] - Navigation menu with pulldown submenus using dhtml</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-173'>JS2-173</a>] - hook in SSO to login / logout life cycle</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-247'>JS2-247</a>] - Portlet Selector</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-283'>JS2-283</a>] - Basic Ajax Service Implementation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-301'>JS2-301</a>] - Support Multiple Providers for User Attributes</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-306'>JS2-306</a>] - Site Administration (Portal Site Manager)</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-307'>JS2-307</a>] - New User Creation Events and Configuration</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-341'>JS2-341</a>] - Add State to Jetspeed Engine for Error Conditions</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-350'>JS2-350</a>] - Implement Graffito based PageManager for PSML</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-363'>JS2-363</a>] - Document Resources: Profiler mapping critiera to associated pages</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-383'>JS2-383</a>] - Configuring portlet in PSML</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-387'>JS2-387</a>] - Layout Pipeline</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-395'>JS2-395</a>] - DB Page Manager</li>
+</ul>
+</subsection>
+    
+<subsection name="Improvement">
+<ul>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-27'>JS2-27</a>] - Allow disable of Groups and Roles</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-151'>JS2-151</a>] - Security enhancements for password validation and enable/disable principals</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-169'>JS2-169</a>] - Replace Large demo.war for deplo y</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-182'>JS2-182</a>] - Refactor layout portlets to run outside of the J2 webapp.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-183'>JS2-183</a>] - Improve the usability of the JetspeedPowerTool</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-188'>JS2-188</a>] - Implement the LDAP</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-190'>JS2-190</a>] - Changing the portlet.xml in a deployed portlet/webapp does not change Jetspeed.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-192'>JS2-192</a>] - SSO Support for Encrypted Credentials and Certficates</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-215'>JS2-215</a>] - security email extensions: password reminder/user creation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-236'>JS2-236</a>] - PageManager Folder/Page security needs to support multiple page.security files</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-251'>JS2-251</a>] - Improvements to folder-strucuture</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-260'>JS2-260</a>] - Removing dependency on Pluto PortletContainerServices and providing a JetspeedNamespaceMapper</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-303'>JS2-303</a>] - ContentServer doesn't allow for content caching</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-308'>JS2-308</a>] - Convert OJB to use a spring managed datasource as opposed to directly setting the JNDI name in OJB.properties.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-329'>JS2-329</a>] - 3 new 100% table-free portlet decorations.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-330'>JS2-330</a>] - System Folder Naming Prefix</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-333'>JS2-333</a>] - Allow for default template support in decorations</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-335'>JS2-335</a>] - Add new genapp goals to limit the number of pages copied to custom portals.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-340'>JS2-340</a>] - Move the "move" action in the MultiLayoutPortlet out of doView and into processAction</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-356'>JS2-356</a>] - Allow folder default page to specify sub folder</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-368'>JS2-368</a>] - Improve access to binary builds</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-392'>JS2-392</a>] - Spanish localisation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-394'>JS2-394</a>] - Page Manager optionally should throw exceptions when resource not found or resource access denied</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-397'>JS2-397</a>] - SSO managment portlet should use credentials from LDAP if configured</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-398'>JS2-398</a>] - Creation of a Decoration API along with the removal of ContentServer</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-399'>JS2-399</a>] - Serve PDF (and other file formats) via a portlet</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-408'>JS2-408</a>] - Make Derby default database, replace Hypersonic</li>
+</ul>
+</subsection>
+            
+<subsection name="Task">
+<ul>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-73'>JS2-73</a>] - TCK</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-83'>JS2-83</a>] - Site Documentation, Architectural Overview</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-256'>JS2-256</a>] - Implement Pluto's DynamicTitleService.</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-332'>JS2-332</a>] - PSML Documentation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-360'>JS2-360</a>] - Springize Aggregation</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-361'>JS2-361</a>] - Portlet Caching implemented in Aggregator</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-362'>JS2-362</a>] - Portlet Stats integrated into Aggregator</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-366'>JS2-366</a>] - Clean up orphan tables in J2 DB schema</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-386'>JS2-386</a>] - 2.0-FINAL-CUSTOMIZATION</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-388'>JS2-388</a>] - SSO</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-389'>JS2-389</a>] - Docs</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-390'>JS2-390</a>] - Admin</li>
+<li>[<a href='http://issues.apache.org/jira/browse/JS2-391'>JS2-391</a>] - Update Installation Documentation</li>
+</ul>
+</subsection>
+      </section>
+  </body>
+</document>

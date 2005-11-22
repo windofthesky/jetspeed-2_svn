@@ -1,0 +1,399 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Getting Started with Jetspeed 2 using a Binary Release</title>
+    <subtitle>Getting ready to build your own portal</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org" />
+      <person name="Ate Douma" email="ate@apache.org" />
+      <person name="David Le Strat" email="dlestrat@apache.org" />
+      <person name="Ron Wheeler" email="rwheeler@artifact-software.com"/>
+     </authors>
+  </properties>
+  <body>
+	<section name="Basic Configuration Parameters">
+
+			      <subsection name="Required Portal Configuration Properties">
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.home</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will (re)create or update your custom portal maven project configuration
+              (with goal <code>j2:portal.conf.project</code>).  This will be where you will be performing all of your future
+			  custom portal development.
+              <br />
+              Example: <code>/home/myportal/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.groupId</code>
+            </td>
+            <td>
+              The (maven) short name of your portal project group.
+              <br />
+              This value is used for the maven repository folder in which the project artifacts (like the portal war
+              file) is stored.
+              <br />
+              Example: <code>myprojects</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.artifactId</code>
+            </td>
+            <td>
+              The (maven) short name of your portal project.
+              <br />
+              This value is used for the portal war file and the (portal) web application context name.
+              <br />
+              Example: <code>myportal</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.name</code>
+            </td>
+            <td>
+              The (maven) full name of your portal project.
+              <br />
+              This value is used by maven for generating JavaDoc titles.
+              <br />
+              Example: <code>My Test Portal</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.currentVersion</code>
+            </td>
+            <td>
+              The current version of your portal project.
+              <br />
+              This value is used by maven as name postfix for the generated artifacts.
+              <br />
+              Example: <code>1.0</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Optional Portal Configuration Properties">
+        <p>
+          The following properties all specify a subfolder of the <code>${org.apache.jetspeed.portal.home}</code>
+          location as defined above.
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.conf.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy application server specific configuration files
+              as a tomcat application context descriptor.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.conf.tomcat</code>.
+            </td>
+            <td>
+              <i>target/portal-conf</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.sql.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy portal and database server specific sql DDL and
+              DML scripts.
+              <br />
+              This folder and its contents is always (re)created by plugin goal <code>j2:portal.conf.sql</code>.
+            </td>
+            <td>
+              <i>target/portal-sql</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.db.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will create its build-in HSQLDB database(s).
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:start.production.server</code>
+              or <code>j2:start.test.server</code>.
+            </td>
+            <td>
+              <i>target/portal-db</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.webapp.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will copy the standard jetspeed web application resources.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.copy.webapp</code>.
+            </td>
+            <td>
+              <i>target/${org.apache.jetspeed.portal.artifactId}</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.portal.target.dir</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will generate and copy runtime portal configuration files.
+              <br />
+              These configuration files contain values derived from build/plugin properties for the portal and OJB.
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:portal.conf.jetspeed</code>
+              and goal <code>j2:portal.conf.ojb</code>.
+            </td>
+            <td>
+              <i>target/${org.apache.jetspeed.portal.artifactId}</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Required Application Server Properties">
+        <p>
+          <i>
+            Note: The maven-plugin currently only supports the Tomcat Server 5.0.x or 5.5.x
+          </i>
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.server.home</code>
+            </td>
+            <td>
+              The root folder of your Tomcat server installation.
+              <br />
+              Example: <code>${CATALINA_HOME}/</code>.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.server.shared</code>
+            </td>
+            <td>
+              The location of the shared jars in your Tomcat installation.
+              <br />
+              Example: <code>${org.apache.jetspeed.server.home}/shared/lib/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.deploy.war.dir</code>
+            </td>
+            <td>
+              The location of web applications in your Tomcat installation.
+              <br />
+              Example: <code>${org.apache.jetspeed.server.home}/webapps/</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.services.autodeployment.user</code>
+            </td>
+            <td>
+              A Tomcat user with the manager role.
+              <br />
+              Used to access the Tomcat Manager application from within the portal, explained below.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.services.autodeployment.password</code>
+            </td>
+            <td>
+              The password of the Tomcat user above.
+              <br />
+              Used to access the Tomcat Manager application from within the portal, explained below.
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.catalina.version.major</code>
+            </td>
+            <td>
+              The major version of the Tomcat server you are using: 5 or 5.5
+              <br />
+              Example: <code>5.5</code>
+            </td>
+            <td>
+              <i>no default</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Optional Database Server Properties">
+        <p>
+          Jetspeed-2 and its maven-plugin uses, as well as provides, by default a HSQLDB database.
+        </p>
+        <p>
+          If you want to use a different database you will need to override the following properties:
+        </p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th nowrap="nowrap">Default value</th>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.default.name</code>
+            </td>
+            <td>
+              The type of database you are using. Used for sql script generation with Torque.
+              <br />
+              Currently supported databases (with corresponding Torque target database name):
+              <ul>
+                <li>hsql (hypersonic)</li>
+                <li>oracle (oracle)</li>
+                <li>mysql (mysql)</li>
+                <li>postgres (postresql)</li>
+                <li>mssql (mssql)</li>
+              </ul>
+            </td>
+            <td>hsql</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.url</code>
+            </td>
+            <td>The jdbc connection url</td>
+            <td>jdbc:hsqldb:hsql://127.0.0.1:9001</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.user</code>
+            </td>
+            <td>The database user name to connect with.</td>
+            <td>sa</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.password</code>
+            </td>
+            <td>The database user its password to connect with.</td>
+            <td>
+              <i>empty</i>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.database.driver</code>
+            </td>
+            <td>The jdbc driver class name</td>
+            <td>org.hsqldb.jdbcDriver</td>
+          </tr>
+          <tr>
+            <td>
+              <code>org.apache.jetspeed.production.jdbc.drivers.path</code>
+            </td>
+            <td>
+              A Java classpath style path to the jdbc driver classes or jar(s) needed for connecting to the database.
+              <br />
+              Example: <code>/lib/ojdbc14.jar;/lib/nls_charset12.jar</code>
+            </td>
+            <td>
+              <i>empty</i>
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Example: A minimal custom portal configuration">
+        <p>
+          Make sure you have define at least the required properties as described above in your
+          <code>${USER_HOME}/build.properties</code>. A minimal custom portal configuration using the default HSQLDB
+          database can be something like:
+          <source>
+            <![CDATA[
+# required portal configuration properties          
+org.apache.jetspeed.portal.home           = /home/myportal/
+org.apache.jetspeed.portal.groupId        = myprojects
+org.apache.jetspeed.portal.artifactId     = myportal
+org.apache.jetspeed.portal.name           = My Test Portal
+org.apache.jetspeed.portal.currentVersion = 1.0
+
+# required application server properties
+org.apache.jetspeed.server.home                      = ${CATALINA_HOME}/
+org.apache.jetspeed.server.shared                    = ${org.apache.jetspeed.server.home}/shared/lib/
+org.apache.jetspeed.deploy.war.dir                   = ${org.apache.jetspeed.server.home}/webapps/
+org.apache.jetspeed.services.autodeployment.user     = j2deployer
+org.apache.jetspeed.services.autodeployment.password = xxxxx
+org.apache.jetspeed.catalina.version.major           = 5.5]]>
+          </source>
+          <i>
+            Note: If you're going to build the default Jetspeed 2 portal directly from the source only the
+            <code>org.apache.jetspeed.portal.home</code> property is required from the set of required portal
+            configuration properties.
+          </i>  
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>

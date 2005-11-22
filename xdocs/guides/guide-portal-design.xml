@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Guide to Portal Design</title>
+    <subtitle>Documentation for Designers working with Jetspeed Portal Design</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name="Portal Design Introduction">
+<p>
+The Java Portlet API (JSR-168) defines the Java standard interface for programming portlets. 
+The Java Portlet API specification enables interoperability between Portlets and Portals. 
+It is the standard specification for developing Java portlets. However the Java Portlet API
+does not define standards for laying out and aggregating portlets and markup on a page.
+The documentation here under "Portal Design" covers:
+<ul>
+  <li><a href='psml.html'>Page Aggregation - see the section on PSML</a></li>    
+  <li><a href='decorators.html'>Page and Portlet Decorators</a></li>    
+  <li><a href='layouts.html'>Page Layouts</a></li>    
+  <li><a href='jpt.html'>The Jetspeed Power Tool</a></li>    
+  <li><a href='site.html'>The Site Content Model</a></li>        
+  <li><a href='#Template Locators'>Template Locators</a></li>          
+  <li><a href='#Terminology'>Terminology</a></li>          
+</ul>
+</p>
+</section>
+<section name='Templates'>
+<p>
+Rendering one or more portlets into a portlet page is largely made up of the process of aggregating
+portlets as dynamic content with templates. Jetspeed-2 makes use of Velocity templates in 
+creating a page layout. Although the Jetspeed-2 architecture fully supports the use of JSP templates for
+decorators and layouts, the developers thus far have chosen Velocity as the tool of choice for writing
+templates. There are two types of templates in Jetspeed: layouts and decorators. 
+The process of rendering a page is the combined aggregation of a layout template, 
+a page decorator template, a PSML definition, and one or more portlet decorator templates.
+As of release 2.0, templates can be stored on the file system. In future releases, templates 
+will also be stored in a CMS backend for versioning.
+</p>
+<subsection name='Layout Templates'>
+<p>
+Layout templates are packaged in special Jetspeed-specific and deployable portlet applications. 
+Layout templates control the overall aggregation of a portal page. Layout templates are 
+combined with portlets, providing a component model for aggregation. Jetspeed-2 comes out 
+of the box with several layout components including one, two and three column layouts. 
+See the <a href='layouts.html'>Layout Documentation</a> for all available Layouts in the 
+default Jetspeed-2 system. Of course you can define and derive your own layouts. 
+</p>
+</subsection>
+<subsection name='Decorators'>
+ <p>
+Decorator templates are packaged in special Jetspeed-specific and deployable archives. 
+Layout templates control the overall aggregation of a portal page. Layout templates are 
+combined with portlets, providing a component model for aggregation. Jetspeed-2 comes out 
+of the box with several layout components including one, two and three column layouts. 
+See the <a href='guide-decorators.html'>Decorator Documentation</a> for all available Layouts in the 
+default Jetspeed-2 system. Of course you can define and derive your own layouts. 
+</p>
+</subsection>
+</section>
+<section name='Template Locators'>
+<p>
+Templates are located by the Jetspeed Template (and Decorator) Locator Component. These components 
+locates templates using a normalized name/value pair URL scheme. 
+using this scheme in what is called a 'normalized' URL to either a decorator or layout.
+However, templating engines such as  Velocity need to work with templates using paths to templates that are
+relative of a document root. The <a href='guide-jpt.html'>Jetspeed Power Tool</a> facilitates conversion between normalized
+and relative paths. Typically in the Spring configuration, the template root of all decorators is defined as:
+<source test=""><![CDATA[
+${applicationRoot}/WEB-INF/decorations
+]]></source>
+and the root of all layouts (per portlet application) is defined as:
+<source test=""><![CDATA[
+${applicationRoot}/WEB-INF/templates
+]]></source>
+The Normalized Path is defined with named pair values. Examples:
+<source test=""><![CDATA[
+type/layout/media-type/html/name/tigris/decorator.vm
+type/decorator/media-type/html/language/en/country/US/name/metal/decorator.vm
+]]></source>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>type</td>
+        <td>layout | portlet | generic</td>
+        <td>The type of template locator. Expected to be either one of the following values 
+            <b>layout</b>, <b>portlet</b> (decorator) or <b>generic</b> (decorator). Layouts can be for either page layouts 
+            or decorators. Generic type decorators can be used
+            for either portlets or page decorations.</td>
+    </tr>
+    <tr>
+        <td>media-type</td>
+        <td>html | wml | dhtml | ...</td>
+        <td>The markup media type to be located. Should be a valid media type (html, dhtml, wml...)</td>
+    </tr>
+    <tr>
+        <td>name</td>
+        <td>A valid decorator or layout name</td>
+        <td>The name of the decorator or layout. Usually corresponds to a 
+            sub-directory holding the decorator or layout templates, images and stylesheets.</td>
+    </tr>
+    <tr>
+        <td>language</td>
+        <td>A valid ISO-639 standard two-character language abbreviation</td>
+        <td>ISO-639 (http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt) defines a standard for language abbreviations.
+            Typical abbreviations are en for english, fr for french, de for German, ...</td>
+    </tr>
+    <tr>
+        <td>country</td>
+        <td>A valid ISO-3166 standard two-character country code abbreviation</td>
+        <td>ISO-3166 (http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html) defines a standard for country code abbreviations.
+            Typical abbreviations are US for United States, FR for France, ...</td>
+    </tr>
+    
+</table>
+
+</p>
+</section>
+
+<section name='Terminology'>
+<table>
+    <tr>
+        <th>
+            Term
+        </th>
+        <th>
+            Definition            
+        </th>
+    </tr>
+    <tr>
+        <td>
+            Layout
+        </td>
+        <td>
+Defines the fashion in which grouping of Fragments
+will organized relative to the final, aggregated
+content of a request to the portal. Layouts are defined by 
+a portlet which applies an algorithm to a template to 
+generate the aggregated content of a page. Typical
+algorithms are two column, three column, nested.           
+        </td>
+    </tr>
+    <tr>
+        <td>
+            TODO: left off here: 
+        </td>
+        <td>
+            fragment, decoration, page, page decorator, portlet decorator, 
+            application relative, normalized template path, absolute URL
+        </td>
+    </tr>    
+</table>
+</section>
+</body>
+</document>
+

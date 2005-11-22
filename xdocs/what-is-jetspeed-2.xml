@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed 2 Home Page</title>
+		<subtitle>Welcome to Jetspeed 2</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="What is Jetspeed?">
+			<p>
+				Jetspeed is an Open Source implementation of an
+				Enterprise Information Portal, using Java and XML. A
+				portal makes network resources (applications, databases
+				and so forth) available to end-users. The user can
+				access the portal via a web browser, WAP-phone, pager or
+				any other device. Jetspeed acts as the central hub where
+				information from multiple sources are made available in
+				an easy to use manner.
+			</p>
+			<p>
+
+				The data presented via Jetspeed is independent of
+				content type, This means that content from for example
+				XML,RSS or SMTP can be integrated with Jetspeed. The
+				actual presentation of the data is handled via ates XSL
+				and delivered to the user for example via the
+				combination of Java Server Pages (JSPs) and HTML.
+				Jetspeed provides support for templating and content
+				publication frameworks such as
+				<a href="http://cocoon.apache.org">Cocoon</a>
+				,
+				<a href="http://www.webmacro.org/">WebMacro</a>
+				and
+				<a href="http://jakarta.apache.org/velocity/">
+					Velocity
+				</a>
+				. Note that outside of regular browser Jetspeed also
+				supports WAP devices.
+			</p>
+			<p>
+				Jetspeed helps you build portal applications quickly.
+				The goal is to make Jetspeed a tool for both portal
+				developers as well as user interface designers.
+				Currently the focus is on providing developers with a
+				set of tools that facilitates building the base for the
+				portal. With Jetspeed you can quickly build an XML
+				portal and also syndicate your own content.
+
+			</p>
+		</section>
+	</body>
+</document>

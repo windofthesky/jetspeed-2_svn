@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>PSML</title>
+    <subtitle>Documentation for Designers working with PSML</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name="PSML">
+<ul>
+     <li><a href="#Page">Page</a></li>          
+     <li><a href="#Defaults">Defaults</a></li>     
+    <li><a href="#Title_and_Metadata">Title and Metadata</a></li>
+    <li><a href="#Layout_Fragments">Layout Fragments</a></li>    
+    <li><a href="#Portlet_Fragments">Portlet Fragments</a></li>    
+    <li><a href="#Preferences">Portlet Preferences</a></li>
+    <li><a href="#PSML_Security_Constraints">Security Constraints</a></li>        
+</ul>
+    
+<p>
+PSML is an acronym for Portal Structure Markup Language. It was created to allow content structure and abstraction within Jetspeed.
+PSML defines how portlets are aggregated, layed out, and decorated on a portal page. Note that page layout is not a part of the Java
+Portlet Standard API. Thus PSML is a Jetspeed-specific implementation. Also note that PSML in Jetspeed-2 is different from PSML in 
+Jetspeed-1. This document can be used as a reference guide to the elements of a PSML resource.
+</p>
+<p>
+Here is an example PSML file:    
+</p>
+<source><![CDATA[
+<page>
+  <defaults
+     skin="orange"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
+  />
+  <title>Welcome to Jetspeed 2</title>
+  <metadata name="title" xml:lang="fr">
+        Ma Premiere Page de PSML
+  </metadata>
+  <metadata name="title" xml:lang="ja">
+        Jetspeed 2 へようこそ
+  </metadata>
+
+  <fragment id="dp-1" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="dp-3" type="portlet" name="pam::LocaleSelector">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>                                
+    <fragment id="dp-12" type="portlet" name="security::LoginPortlet">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>                                
+    <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>        
+    <fragment id="dp-16" type="portlet" name="demo::RoleSecurityTest">
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+    <fragment id="dp-9" type="portlet" name="demo::IFramePortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>
+    <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+    <fragment id="dp-18" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+  </fragment>
+
+  <security-constraints>
+    <security-constraints-ref>public-view</security-constraints-ref>
+  </security-constraints>
+</page>
+]]></source>
+</section>
+<section name='Page'>
+<p>
+The Page element is a simple container to hold all other PSML elements.
+There are two valid attributes for the Page element:
+</p>
+<table>
+    <tr>
+    <th>id</th>
+    <th>hidden</th>
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+<page id='mypage' hidden='false'>
+...
+</page>  
+]]></source>
+</section>
+<section name='Defaults'>
+<p>
+The Defaults element defines the default layout decorator and default portlet decorator.
+The default layout decorator is applied to all layout fragments which do NOT have a decorator attribute.
+The default portlet decorator is applied to all portlet fragments which do NOT have a decorator attribute.
+There are three valid attributes on the defaults element:
+</p>
+<table>
+    <tr>
+    <th>skin</th>
+    <th>layout-decorator</th>
+    <th>portlet-decorator</th>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+]]></source>
+</section>
+
+<section name='Title and Metadata'>
+<p>
+</p>
+<table>
+    <tr>
+    <th></th>
+    <th></th>
+    <th></th>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+]]></source>
+</section>
+
+<section name='Layout Fragments'>
+<p>
+</p>
+<table>
+    <tr>
+    <th></th>
+    <th></th>
+    <th></th>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+]]></source>
+</section>
+
+<section name='Portlet Fragments'>
+<p>
+</p>
+<table>
+    <tr>
+    <th></th>
+    <th></th>
+    <th></th>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+
+]]></source>
+</section>
+
+<section name='Preferences'>
+<p>
+    The &lt;preference&gt; elements allows for the defining of portlet preferences.  
+	This provides an eaiser avenue for the setting of default portlet prefences for a portlet
+    instance on a page without having to duplicate a portlet definition within
+    the portlet application's portlet.xml.
+	<br/><br/>
+	A fragment can contain 0..n &lt;preference&gt; elements.
+	<br/><br/>
+	Preference precedence: User Defined > Fragment Defined > portlet.xml Defined.
+</p>
+<table>
+    <tr>
+    <th>Attribute: name</th>
+    <th>Attribute: readOnly</th>
+    <th>Element: value</th>    
+    </tr>
+    <tr>
+    <td>The name of the preference.</td>
+    <td>Whether or not the user can change the value of this preference.</td>
+    <td>There can be 1..n <i>&lt;value&gt;</i> elements assigned to a single preference.</td>    
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+
+    <fragment id="uhtemp-1012" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="1" />
+      <preference name="Google" readOnly="false">
+        <value>http://www.google.com</value>
+      </preference>
+    </fragment>
+
+]]></source>
+</section>
+
+<section name="PSML Security Constraints">
+<p>
+<a href='bronco.html'>Link to Security Constraints Docs</a>
+</p>
+</section>
+
+</body>
+</document>
+

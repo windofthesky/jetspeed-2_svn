@@ -14,51 +14,36 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<!--
-    WARNING:  This file is generated.  The source is xdocs-templates/navigation.xml 
-    
-    Note:  Changes to this file are not reflected on the generated site until the
-    allSite goal is atained, i.e. maven allSite 
--->
 <project>
-
     <body>
         <links>
-            <item name="Portals Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
-            <item name="Doc for 2.0-M3" href="M3/"/>
+        	<item name="Jetspeed-1" href="http://portals.apache.org/jetspeed-1" target="_nw"/>
+        	<item name="Jetspeed-2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
+        	<item name="Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
             <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
         </links>
         <menu name="Essentials">
-            <item name="Overview" href="index.html" />
-            <item name="Getting Started" href="getting-started.html" />
-            <item name="Localization" href="l10n-guide.html" />
-            <item name="User Attributes" href="user-attributes.html" />
-            <item name="Sub Projects" href="projects-overview.html" />
-            <item name="Maven Plugin" href="j2-maven-plugin.html" />
-            <item name="Documentation" href="documentation.html" />
+            <item name="Features" href="features.html" />
+        	<item name="Getting Started" href="getting-started.html" />            
         </menu>
-        <menu name='Security'>
-            <item name="Security Overview" href="multiproject/jetspeed-security/index.html" />
-            <item name="Architecture Overview" href="multiproject/jetspeed-security/arch.html" />
-            <item name="Authentication" href="multiproject/jetspeed-security/atn.html" />
-            <item name="JAAS Authorization" href="multiproject/jetspeed-security/atz.html" />
-            <item name="PSML Authorization" href="bronco.html" />
-            <item name="SPI: Providers and Handlers" href="spi.html" />
-            <item name="Security Services Configuration" href="multiproject/jetspeed-security/config.html" />
-            <item name="Single Sign on" href="sso.html" />
-        </menu>
-        <menu name='Portal Design'>
-            <item name="Portal Design Overview" href="portal-design.html" />
-            <item name="Layouts" href="layouts.html" />
-            <item name="Decorators" href="decorators.html" />
-            <item name="Jetspeed Power Tool" href="jpt.html" />
-            <item name="PSML" href="psml.html" />
-            <item name="Site" href="site.html" />
-        </menu>
-        <menu name='Components'>
-            <item name="Profiler" href="profiler.html" />
-        </menu>
-        <menu name="Support">
+    	<menu name="Download">
+    		<item name="Binaries " href="download.html" />
+    		<item name="Source" href="download.html" />
+    	</menu>
+    	<menu name="Documentation">
+    		<item name="Documentation Guides" href="guides/index.html" />
+    		<item name="Jetspeed API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
+    		<item name="Jetspeed Plugin" href="j2-maven-plugin.html" />
+    	</menu>
+    	<menu name="About Jetspeed-2">
+    		<item name="FAQs" href="faq.html" />
+    		<item name="For Jetspeed-1 Users" href="j1-users.html" />
+    		<item name="Supporting Projects" href="supporting-projects.html" />
+    		<item name="Who Uses J2?" href="who-uses-j2.html" />
+    		<item name="Portlets Community" href="portlets-community.html" />
+    		<item name="How to Help?" href="how-to-help.html" />
+    	</menu>
+        <menu name="Support"> 	
             <item name="Mailing List" href="mail-lists.html" />
             <item name="Bug Database" href="issue-tracking.html" />
             <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2" />

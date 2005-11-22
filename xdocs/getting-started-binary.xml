@@ -1,0 +1,836 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>
+			Getting Started with Jetspeed 2 using a Binary Release
+		</title>
+		<subtitle>Getting ready to build your own portal</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Ate Douma" email="ate@apache.org" />
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="1. Some Basic Information">
+			<subsection name="Basic Assumptions">
+				<ul>
+					<li>
+						Unless otherwise specified, you should be
+						running all maven build commands from within the
+						Jetspeed directory (if you are just building
+						Jetspeed) or from within your custom portal
+						directory.
+					</li>
+					<li>
+						You must use "/" as a file seperator on both
+						*nix and windows, e.g. c:/windows, and /home.
+					</li>
+				</ul>
+			</subsection>
+			<subsection name="Maven">
+				<p>
+					We will not go into the specifics of Maven as that
+					is beyond the scope of this document. If you have
+					never used Maven, you need to read
+					<a
+						href="http://maven.apache.org/what-is-maven.html">
+						"What is Maven"
+					</a>
+					just to get a sense of the role of Maven in a
+					software development project. If your project
+					involves more than one or two people, you may want
+					to look into
+					<a href="http://maven.apache.org">Maven</a>
+					in more detail since it does simplify and
+					standardize many of the project management issues
+					that are commonly encountered.
+				</p>
+				<p>
+					Here are a few bits of standard maven jargon we feel
+					is important for you to know.
+				</p>
+				<p>
+					You will see mention of a
+					<i>maven repository</i>
+					in this document. When you install Maven the .maven/
+					directory is created in your ${USER_HOME) directory.
+					<br />
+					Under .maven/ you will see a
+					<i>repository</i>
+					directory. This is were Maven stores all of the jars
+					that it downloads when you run your builds. This is
+					also were Maven puts your jars and wars that you
+					build.
+					<b>
+						???? How does fit with the last line in the
+						paragraph
+					</b>
+					Jar files will be stored in a directory structure
+					that has the format of
+					${groupId}/${projectId}/jars/${projectId}-{$version}.jar.
+					The portal war file is stored as
+					${groupId}/${projectId}/wars/${projectId}.war. The
+					${groupId}, ${projectId} and ${version} variables
+					are discussed later on in this document. Jar and war
+					files will also be created in your project in the
+					<i>/target</i>
+					directory.
+				</p>
+			</subsection>
+			<subsection name="Variables">
+				<p>
+					Variables are represented as ${
+					<i>some_variable</i>
+					}. Variable names are case sensitive. Variables are
+					defined in several places in a Maven project and
+					according to the
+					<a
+						href="http://maven.apache.org/reference/user-guide.html##Maven_Setup">
+						Maven Setup
+					</a>
+					section of the on-line Maven User's Guide, the
+					properties files in Maven are processed in the
+					following order:
+					<ul>
+						<li>
+							${project.home}/project.properties -
+							Properties that are common to the entire
+							project
+						</li>
+						<li>
+							${project.home}/build.properties -
+							Properties that describe the current release
+						</li>
+						<li>
+							${user.home}/build.properties - Properties
+							that are particular to you
+						</li>
+					</ul>
+					The usage of these files is quite different from the
+					way they are used in a project that develops from
+					the sources since the project in that case is the
+					Jetspeed project rather than your own portal. In
+					that case, the user's build.properties is used much
+					more intensively used to override Jetspeed's
+					parameters.
+				</p>
+				<p>
+					Maven processes this sequence of properties files,
+					overriding any previously defined properties with
+					newer definitions. The last definition wins! In this
+					sequence, your ${user.home}/build.properties has the
+					final say in the list of properties files processed.
+				</p>
+				<p>
+					This list of properties files that Maven processes
+					is called the "standard properties file set".
+				</p>
+				<p>
+					In addition, System properties are processed after
+					the standard properties files. So, a property
+					specified on the command line using the
+					-Dproperty=value convention will override any
+					previous definition of that property.
+				</p>
+				<p>
+					For example, ${org.apache.jetspeed.server.home}
+					references either:
+					<ul>
+						<li>
+							a property defined earlier in the standard
+							properties file set,
+						</li>
+						<li>
+							a property specified on the command line of
+							the Maven invokation,
+						</li>
+						<li>
+							a variable that has been defined somehwere
+							within the build process or
+						</li>
+						<li>
+							a variable defined in another build file
+							within Jetspeed.
+						</li>
+					</ul>
+				</p>
+			</subsection>
+			<subsection name="Installation dependent locations">
+				<p>
+					The documentation refers to some common locations by
+					the following names:
+				</p>
+				<ul>
+					<li>
+						<b>${USER_HOME}</b>
+						: This is the user's home directory. For Windows
+						systems, this generally c:\Documents and
+						Settings\${userName} where ${userName} is the
+						name you use to log into windows.
+						<br />
+						${user.home} is synonymous with ${USER_HOME}
+						within this document.
+					</li>
+					<li>
+						<b>${CATALINA_HOME}</b>
+						: This refers to the location of your tomcat
+						installation, e.g.
+						<i>c:/tomcat</i>
+						.
+					</li>
+				</ul>
+				<p>
+					These are not used in the Jetspeed configuration but
+					are merely shorthand notations to make the
+					documentation more concise and precise.
+				</p>
+			</subsection>
+			<subsection name="Subversion (SVN)">
+				<p>
+					<a href="http://subversion.tigris.org">
+						Subversion (SVN)
+					</a>
+					is used in the Jetspeed project to manage the source
+					files. SVN is very similar to CVS. For those user's
+					on Windows system who prefer non-command line access
+					we suggest using
+					<a href="http://tortoisesvn.tigris.org">
+						TortoiseSVN
+					</a>
+					which plugs into your Windows Explorer view. For
+					those using the Eclipse IDE, the
+					<a href="http://subclipse.tigris.org">Subclipse</a>
+					plugin is available for SVN access.
+				</p>
+			</subsection>
+
+		</section>
+
+		<section name='2. Overview of the Jetspeed build Process'>
+			<p>
+				Setting up a custom portal development project using the
+				binary distribution is a fairly simple process. At the
+				end, you will you have a directory structure and set of
+				files that will simplify building and deploying your own
+				custom portal.
+			</p>
+			<p>
+				If you want to setup a Jetspeed portal application using
+				Eclipse as your IDE, you should continue reading this
+				page for background material but refer to
+				<a href="Portal-Development-with-Eclipse.html">
+					Building a Jetspeed Enterprise Portal with Eclipse
+				</a>
+				for the actual instructions on using Eclipse for
+				Jetspeed 2 portal development.
+			</p>
+			<p>
+				Creating your own custom portal is very easy with the
+				maven plugin provided by Jetspeed 2. The steps are:
+				<ul>
+					<li>Download and install the Jetspeed plugin</li>
+					<li>
+						Use the plugin to download and generate the
+						Jetspeed binary distribution.
+					</li>
+					<li>
+						Customize the properties files to reflect your
+						database installation and local environment.
+					</li>
+					<li>Prepare the Application Server</li>
+					<li>Build the portal</li>
+					<li>Start the Database Server(if required)</li>
+					<li>Initialize the Database</li>
+					<li>
+						Deploy the default portal using your database
+					</li>
+					<li>Test the default portal</li>
+					<li>
+						Customize the default portal to include your
+						logo and Portal name
+					</li>
+					<li>
+						Generate, deploy and test your custom Portal
+					</li>
+				</ul>
+			</p>
+			<p>
+				The Jetspeed 2 maven-plugin defines default values for
+				most of the properties you can set, but not all. As you
+				customize the portal, you will override others.
+			</p>
+		</section>
+		<section name="3. Installation Steps">
+			<subsection name="3.1 Download the Jetspeed Plugin">
+				<subsection
+					name="3.1.1 Set the maven remote repository lookup configuration">
+					Now we're going to configure your
+					${user.home}build.properties file to give Maven the
+					information that it needs to download the Jetspeed-2
+					maven-plugin. The base directory where you are going
+					to build your portal needs to be specified to Maven
+					as well as the the maven remote repository need to
+					be configured properly in your
+					<code>${USER_HOME}/build.properties</code>
+					:
+					<source>
+						<![CDATA[basedir = c:/myportal
+maven.repo.remote = http://www.bluesunrise.com/maven/, http://www.ibiblio.org/maven/, \
+http://dist.codehaus.org/, http://cvs.apache.org/repository]]>
+					</source>
+					<i>
+						Note: the order in which the repositories are
+						specified is significant!
+					</i>
+				</subsection>
+				<subsection
+					name="3.1.2 Install the Jetspeed 2 maven-plugin">
+					<p>
+						The first time, and when you want to upgrade to
+						a newer version of Jetspeed 2, you need to
+						install the maven-plugin as follows:
+						<source>
+							<![CDATA[
+maven -DartifactId=maven-jetspeed2-plugin -DgroupId=jetspeed2 -Dversion=2.0-M3 plugin:download]]>
+						</source>
+						<i>
+							Note: you must set the version to the
+							specific version you want to install,
+							"2.0-M3" is just an example.
+						</i>
+					</p>
+				</subsection>
+			</subsection>
+
+			<subsection
+				name="3.2 Download the default Jetspeed portal project">
+				<p>
+					Once you have the maven-plugin installed and set
+					properties as needed, generate a default portal
+					configuration using the plugin as follows:
+					<source>
+						<![CDATA[
+maven j2:portal.genapp]]>
+					</source>
+					<i>
+						This maven goal actually executes several
+						subgoals which are further described in the
+						<a href="j2-maven-plugin.html">
+							maven-plugin documentation
+						</a>
+						itself.
+					</i>
+				</p>
+			</subsection>
+
+			<subsection name="3.3 Customize the properties files">
+				<p>
+					You can fill in as much of the project information
+					in the project.xml file as you want. This will
+					depend on how you intend to use Maven as a project
+					management tool and is beyond the scope of this
+					document. The information in the project.xml file
+					distributed with Jetspeed reflects the Jetspeed
+					development project.
+				</p>
+				<p>
+					You can now customize the properties files to
+					reflect your database installation and local
+					environment.
+				</p>
+				<p>
+					The
+					<code>${basedir}project.properties</code>
+					file provided by the Jetspeed developers includes
+					all of the variables that are common to all portals
+					based on Jetspeed. You should not have to change
+					these.
+				</p>
+				<p>
+					The project properties are described in the
+					<a
+						href="http://maven.apache.org/maven-1.x/reference/properties.html">
+						Maven Properties Reference
+					</a>
+					documentation. We have already filled in the value
+					for basedir and maven.repo.remote in previous steps.
+					You can fill in as much of the project information
+					in the
+					<code>${basedir}project.xml</code>
+					file as you want. This will depend on how you intend
+					to use Maven as a project management tool and is
+					beyond the scope of this document. The
+					<a href="http://maven.apache.org/maven-1.x">
+						Maven site
+					</a>
+					has all of the information that you need to use
+					Maven successfully.
+				</p>
+				<p>
+					The configuration of your specific properties needs
+					to be done before we can build the portal. Review
+					the definition of the configuration properties
+					described in
+					<a href="configuration-properties.html">
+						Basic Configuration Parameters
+					</a>
+					.
+				</p>
+				<p>
+					In the case of a binary build, the basic
+					configuration properties can be placed in
+					<code>${basedir}build.properties</code>
+					. A minimal custom portal configuration using the
+					default HSQLDB database can be something like:
+					<source>
+						<![CDATA[
+# required portal configuration properties          
+org.apache.jetspeed.portal.home           = /home/myportal/
+org.apache.jetspeed.portal.groupId        = myprojects
+org.apache.jetspeed.portal.artifactId     = myportal
+org.apache.jetspeed.portal.name           = My Test Portal
+org.apache.jetspeed.portal.currentVersion = 1.0
+
+]]>
+					</source>
+				</p>
+				<p>
+					If you are not using the HSQLDB database that comes
+					pre-configured in the
+					<code>${basedir}project.properties</code>
+					file, you also need to define the database
+					parameters in the
+					<code>${basedir}build.properties</code>
+					file. Refer to the
+					<a href="guide-database.html">Database Configuration</a>
+					section for a description of the variables required.
+				</p>
+			</subsection>
+			<subsection name="3.4 Prepare the Application Server">
+				Before running the portal, we need to prepare the
+				Application server to run a Jetspeed portal. This
+				consists of telling Jetspeed where the application
+				server expects files to be placed and what
+				authentication values are required to request service
+				from the Application Server's management tools. There
+				may also be modifications to the server configuration so
+				be sure to read the
+				<a href="guides/guide-app-servers.html">
+					Application server configuration documentation
+				</a>
+				.
+				<p>
+					Verify that you made the Application Server changes
+					suggested in the overview of the
+					<a href="getting-started.html">Getting Started</a>
+					documentation.
+				</p>
+				<p>
+					A minimal custom portal configuration using the
+					Tomcat 5.5 Application Server could be something
+					like:
+
+					<source>
+						<![CDATA[
+# required portal configuration properties          
+org.apache.jetspeed.portal.home           = /home/myportal/
+org.apache.jetspeed.portal.groupId        = myprojects
+org.apache.jetspeed.portal.artifactId     = myportal
+org.apache.jetspeed.portal.name           = My Test Portal
+org.apache.jetspeed.portal.currentVersion = 1.0
+
+# required application server properties
+org.apache.jetspeed.server.home                      = ${CATALINA_HOME}/
+org.apache.jetspeed.server.shared                    = ${org.apache.jetspeed.server.home}/shared/lib/
+org.apache.jetspeed.deploy.war.dir                   = ${org.apache.jetspeed.server.home}/webapps/
+org.apache.jetspeed.services.autodeployment.user     = j2deployer
+org.apache.jetspeed.services.autodeployment.password = xxxxx
+org.apache.jetspeed.catalina.version.major           = 5.5]]>
+
+					</source>
+				</p>
+			</subsection>
+			<subsection name="3.5 Build the portal">
+				<p>
+					Once your portal configuration and setup is ready,
+					you can build and install the portal application in
+					your local maven repository (as needed for
+					deployment) using the following standard maven goal
+					from your custom portal project directory (in
+					${org.apache.jetspeed.portal.home}):
+					<source>
+						<![CDATA[
+maven war:install]]>
+					</source>
+				</p>
+				<p>
+					You are now ready to deploy the new portal
+					application. For this, skip the following section on
+					building the Jetspeed 2 portal from source and
+					continue with the
+					<a href="#6__Deploy_and_Run">deployment</a>
+					section.
+				</p>
+			</subsection>
+			<subsection name="3.6 Start the Database Server">
+				<p>
+					You need to make sure that your database server is
+					running. If you are not using the default HSQLDB
+					database, you need to make sure that it is running
+					and that the user that will own the Jetspeed tables
+					is setup and ready for use. Refer to the
+					<a href="guide-database.html">Database Configuration</a>
+					section for more information. If you are using the
+					default HSQLDB database you need to start it before
+					deploying the portal.
+				</p>
+				<p>
+					To start the HSQLDB production database run the
+					following in a
+					<i>separate</i>
+					console:
+					<source>
+						<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:start.production.server]]>
+					</source>
+				</p>
+				<p>
+					You need to have this database running during the
+					deployment and while running the application server.
+					Afterwards you can stop the database and close this
+					console with a
+					<code>Ctrl-C</code>
+					.
+				</p>
+				<p>
+					Note: this is required when using the
+					<code>j2:quickStart</code>
+					goal as described below. The Jetspeed 2 maven-plugin
+					provides other (sub)goals which you can use without
+					(re)creating a production database and/or inserting
+					default portal configuration data. See the
+					<a href="j2-maven-plugin.html">
+						Plugin documentation
+					</a>
+					for further information about the available goals.
+				</p>
+			</subsection>
+			<subsection name="3.7 Initialize the Database">
+				<p>
+					The database's tables and initial data needs to be
+					loaded prior to Jetspeed being deployed. The
+					<a href="j2-maven-plugin.html">maven-plugin</a>
+					includes a number of goals that can be used to
+					manage the database. The easiest way to load the
+					tables and deploy the application is to run the
+					j2:quickstart goal.
+					<source>
+						<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:quickStart]]>
+					</source>
+					This can only be run once without a bit of a cleanup
+					afterwards since it defines the tables and loads the
+					data as part of starting the application. If you
+					have an error and you want to run it again, you must
+					make sure that the tables and data are cleaned out
+					either by manually dropping the tables in the
+					database or by using the j2:db.drop.production Maven
+					goal.
+				</p>
+				<p>
+					The j2:quickstart currently only covers deploying to
+					Tomcat 5 or Tomcat 5.5 application servers.
+				</p>
+				<p>
+					Information about deployment to other application
+					servers can be found at the The Jetspeed 2
+					<a
+						href="http://wiki.apache.org/portals/Jetspeed2">
+						Wiki
+					</a>
+					.
+				</p>
+				<p>
+					To deploy a default Jetspeed 2 portal, including the
+					demo portlet applications, run the following in a
+					<i>separate</i>
+					console:
+					<source>
+						<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:quickStart]]>
+					</source>
+					<i>
+						Note: the
+						<a href="j2-maven-plugin.html">
+							maven-plugin documentation
+						</a>
+						described other goals you can use to initialize
+						the database.
+					</i>
+				</p>
+			</subsection>
+			<subsection
+				name="3.8 Deploy the default portal using your database">
+				<p>
+					The j2:quickstart task does this for you. If you
+					have used another Maven goal to initialize the
+					database, then you can deploy the portal by using:
+				</p>
+				<source>
+					<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:fullDeploy]]>
+				</source>
+				<p>
+					The j2:fullDeploy goal currently only covers
+					deploying to Tomcat 5 or Tomcat 5.5 application
+					servers.
+				</p>
+				<p>
+					Information about deployment to other application
+					servers can be found at the The Jetspeed 2
+					<a
+						href="http://wiki.apache.org/portals/Jetspeed2">
+						Wiki
+					</a>
+					.
+				</p>
+			</subsection>
+			<subsection name="3.9 Test the default portal">
+				<p>
+					The final step in getting the default portal running
+					is starting up your Tomcat server. The portal will
+					automatically install any deployed portlet
+					applications.
+				</p>
+				<p>
+					Then you can access the portal with your browser at:
+					<pre>
+						<a href="http://localhost:8080/jetspeed">
+							http://localhost:8080/jetspeed
+						</a>
+					</pre>
+					or replace "jetspeed" in the above url with the name
+					of your own portal application (
+					<code>
+						${org.apache.jetspeed.portal.artifactId}
+					</code>
+					).
+				</p>
+				<p>
+					If you see a running Jetspeed portal, we have
+					succeeded in getting the software installed and
+					working.
+				</p>
+				<p>
+					With the default Jetspeed 2 portal deployment,
+					several example user accounts are inserted into the
+					portal database with which you can logon to the
+					portal:
+					<table>
+						<tr>
+							<th>username</th>
+							<th>password</th>
+							<th>roles</th>
+						</tr>
+						<tr>
+							<td>
+								<code>admin</code>
+							</td>
+							<td>
+								<code>admin</code>
+							</td>
+							<td>
+								<code>admin, manager, user</code>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>manager</code>
+							</td>
+							<td>
+								<code>manager</code>
+							</td>
+							<td>
+								<code>manager, user</code>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>jetspeed</code>
+							</td>
+							<td>
+								<code>jetspeed</code>
+							</td>
+							<td>
+								<code>manager</code>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>user</code>
+							</td>
+							<td>
+								<code>user</code>
+							</td>
+							<td>
+								<code>user</code>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>tomcat</code>
+							</td>
+							<td>
+								<code>tomcat</code>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</p>
+			</subsection>
+			<subsection
+				name="3.10 Customize the default portal to include your logo and Portal name">
+				<p>
+					Now that the default portal is working we can try a
+					small customization to test out the customization
+					process. We are going to change the logo and portal
+					name.
+				</p>
+				<subsection
+					name="3.10.1 Creating your customization area">
+
+					<p>
+						The first step is to create a directory to hold
+						your customized files. This will help you to
+						preserve your changes when you install new
+						versions of jetspeed. Create a directory in the
+						top level of the portal home.
+					</p>
+					<source>
+						<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+mkdir customized]]>
+					</source>
+					<p>
+						Make a copy of the build.properties file that
+						you have already modified.
+					</p>
+					<p>
+						You may also want to make a directory to hold
+						the original files before you modify them. This
+						is not strictly requirred since you can always
+						reload the distribution. However it might be
+						handy to keep a copy for reference or to quickly
+						get back to the state before you made changes.
+					</p>
+				</subsection>
+				<subsection
+					name="3.10.2 Making some simple cuistomizations">
+					<p>
+						We are going to change the logo and the portal
+						name to test customization. You can make you own
+						logo to replace the Jetspeed logo. Take a look
+						at the ${basedir}/src/webapp/images/logo.png to
+						get the size and to verify the background
+						colour. Make your own logo or copy the
+						testlogo.png file to your
+						<code>${basedir}/customized</code>
+						directory.
+					</p>
+					<p>
+						Next copy the ??? file into your
+						<code>$basedir}/customize</code>
+						folder
+					</p>
+					Modify the line specifying the title of the portal.
+				</subsection>
+				<subsection
+					name="3.10.3 Setup the customization Script">
+					<p>
+						Copy the following code into a file
+						<code>$basedir}/customize/????</code>
+						. This will replace the distributed files with
+						your modified files prior to generating
+					</p>
+					<source>
+						???? ????maven script to copy files from the
+						user's customize directory to the "right places"
+						??? I would like the script to include the code
+						for moving the logo and for moving the file that
+						holds the new title ????
+					</source>
+					<b>
+						??? does anything need to be done to get this
+						included in the maven goals?????
+					</b>
+					<p>
+						Run the customization script.
+						<source>
+							<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:customize]]>
+						</source>
+					</p>
+
+				</subsection>
+			</subsection>
+
+			<subsection
+				name="3.11 Generate, deploy and test your custom Portal">
+				<p>
+
+				</p>
+				<source>
+					<![CDATA[
+cd ${org.apache.jetspeed.portal.home}
+maven j2:fullDeploy]]>
+				</source>
+
+				<p>
+					You can access the revised portal with your browser
+					at:
+					<pre>
+						<a href="http://localhost:8080/jetspeed">
+							http://localhost:8080/jetspeed
+						</a>
+					</pre>
+					or replace "jetspeed" in the above url with the name
+					of your own portal application (
+					<code>
+						${org.apache.jetspeed.portal.artifactId}
+					</code>
+					).
+				</p>
+				<p>
+					You should see the new name and the new logo on the
+					front page.
+				</p>
+
+			</subsection>
+
+
+		</section>
+	</body>
+</document>
