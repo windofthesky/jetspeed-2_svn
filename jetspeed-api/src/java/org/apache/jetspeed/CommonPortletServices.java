@@ -40,5 +40,6 @@ public interface CommonPortletServices
     public final static String CPS_HEADER_RESOURCE_FACTORY = "cps:HeaderResource";
     public final static String CPS_PERMISSION_MANAGER = "cps:PermissionManager";
     public final static String CPS_PORTAL_STATISTICS = "cps:PortalStatistics";
-    
+    public final static String CPS_PORTAL_ADMINISTRATION = "cps:PortalAdministration";
+    public final static String CPS_PREFERENCES_PROVIDER = "cps:PreferencesProvider";
 }

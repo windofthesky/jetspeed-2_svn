@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.List;
+
 import org.apache.jetspeed.util.Queue;
 
 /**
@@ -26,10 +28,54 @@ import org.apache.jetspeed.util.Queue;
  */
 public interface WorkerMonitor 
 {
+    /**
+     * Start processing the worker monitor
+     *
+     */
     void start();
+    
+    /**
+     * Stop processing the worker monitor
+     * Finish all jobs
+     *
+     */
     void stop();
+    
+    /**
+     * Retrieves a snapshot of job count in the waiting (backlogged) queue
+     * 
+     * @return snapshot count of waiting jobs
+     */
+    int getQueuedJobsCount();
+    
+    /**
+     * Returns a snapshot count of the available jobs
+     * @return available jobs count
+     */
+    int getAvailableJobsCount();
+    
+    /**
+     * Returns a snapshot count of the jobs currently running
+     * 
+     * @return snapshot count of running jobs
+     */
+    int getRunningJobsCount();
+    
     void setQueue(Queue queue);
+    
     Worker getWorker();
+    
+    /** 
+     * Start processing a job, assign it to a worker thread.
+     * 
+     * @param job
+     */
     void process(RenderingJob job);
+    
+    /**
+     * Release a job on completion
+     * 
+     * @param worker
+     */
     void release(Worker worker);
 }
