@@ -351,6 +351,13 @@
       <j:set var="j2.war.version" value="${jetspeed.version}"/>
       <attainGoal name="j2:warDeploy"/>
   </goal>
+  
+  <goal name="j2:deploybridgewar">
+      <j:set var="j2.war.groupId" value="${bridges.groupId}"/>
+      <j:set var="j2.war.version" value="${portals.bridges.version}"/>
+      <attainGoal name="j2:warDeploy"/>
+  </goal>
+  
   <!-- warDeploy allows you to deploy arbitrary wars to the portal deploy folder,
        optionally downloading it from remote repositories if not available yet
        Required properties to set:
@@ -392,24 +399,14 @@
     <attainGoal name="j2:deploy"/>
   </goal>
 
-  <goal name="j2:pam.strutsdeploy">
-    <j:set var="maven.war.final.name" value="struts-demo"/>
-    <attainGoal name="j2:deploy"/>
-  </goal>
-
   <goal name="j2:pam.jpetstoredeploy">
     <j:set var="maven.war.final.name" value="jpetstore"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:deploybridgewar"/>
   </goal>
 
   <goal name="j2:pam.jsfdeploy">
     <j:set var="maven.war.final.name" value="jsf-demo"/>
-    <attainGoal name="j2:deploy"/>
-  </goal>
-
-  <goal name="j2:pam.jsfmyfacesdeploy">
-    <j:set var="maven.war.final.name" value="jsf-demo-myfaces"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:deploybridgewar"/>
   </goal>
 
   <goal name="j2:pam.admindeploy">
@@ -419,12 +416,12 @@
 
   <goal name="j2:pam.phpdeploy">
     <j:set var="maven.war.final.name" value="php"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:deploybridgewar"/>
   </goal>
 
   <goal name="j2:pam.perldeploy">
     <j:set var="maven.war.final.name" value="perl"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:deploybridgewar"/>
   </goal>
 
   <goal name="j2:pam.rssdeploy">
@@ -519,9 +516,7 @@
   <goal name="j2:fullDeploy">
       <attainGoal name="j2:minDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
-      <attainGoal name="j2:pam.strutsdeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
-      <attainGoal name="j2:pam.jsfmyfacesdeploy"/>
       <attainGoal name="j2:pam.phpdeploy"/>
       <attainGoal name="j2:pam.perldeploy"/>
       <attainGoal name="j2:pam.rssdeploy"/>
@@ -531,9 +526,7 @@
   <goal name="j2:nodbfullDeploy">
       <attainGoal name="j2:nodbMinDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
-      <attainGoal name="j2:pam.strutsdeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
-      <attainGoal name="j2:pam.jsfmyfacesdeploy"/>
       <attainGoal name="j2:pam.phpdeploy"/>
       <attainGoal name="j2:pam.perldeploy"/>
       <attainGoal name="j2:pam.rssdeploy"/>
@@ -552,12 +545,8 @@
       <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/j2-admin"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/j2-admin.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo-myfaces.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/php"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
