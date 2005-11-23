@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Map;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalTestConstants;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -46,6 +47,7 @@ public class SpringEngineHelper extends AbstractTestHelper
         SpringComponentManager scm = new SpringComponentManager(new String[] {"/WEB-INF/assembly/boot/datasource.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
        
         engine = new JetspeedEngine(config, appRoot, servletConfig, scm );
+        Jetspeed.setEngine(engine);
         engine.start();
         getContext().put(ENGINE_ATTR, engine );
     }
