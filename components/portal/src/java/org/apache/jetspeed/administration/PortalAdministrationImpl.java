@@ -102,7 +102,7 @@ public class PortalAdministrationImpl implements PortalAdministration
 
     public void start()
     {
-        this.config = (Configuration) Jetspeed.getComponentManager().getComponent("PortalConfiguration");
+        this.config = (Configuration) Jetspeed.getComponentManager().getComponent("portal_configuration");
         
         this.defaultRoles = 
             config.getList(PortalConfigurationConstants.REGISTRATION_ROLES_DEFAULT);
