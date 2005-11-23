@@ -194,7 +194,7 @@
             <j:set var="cmdargs" value="-o j2:db.create.test"/>
           </j:otherwise>
         </j:choose>
-        <exec dir="${basedir}" vmlauncher="false" failonerror="true" executable="maven">
+        <exec dir="${basedir}" vmlauncher="true" failonerror="true" executable="maven">
           <arg line="${cmdargs}"/>
         </exec>
       </j:if>
