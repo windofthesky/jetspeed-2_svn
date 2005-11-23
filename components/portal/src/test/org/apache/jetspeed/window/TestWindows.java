@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,8 +36,8 @@ import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
 import org.jmock.Mock;
 import org.jmock.core.Invocation;
+import org.jmock.core.InvocationMatcher;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
-import org.jmock.core.matcher.InvokeCountMatcher;
 import org.jmock.core.matcher.InvokeOnceMatcher;
 import org.jmock.core.stub.CustomStub;
 import org.jmock.core.stub.ReturnStub;
@@ -169,4 +170,70 @@ public class TestWindows extends TestCase
         }
     }
 
+    /**
+     * Inline copy of InvokeCountMatcher from latest jMock Development Snapshot: 20050628-175146
+     * so we don't need to depend on their SNAPSHOT release anymore but can fallback on their 1.0.1 version.
+     * (doesn't seem they are going to release a new real version soon as it has been ages since 1.0.1 came out)
+     * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
+     *
+     */
+    private static class InvokeCountMatcher implements InvocationMatcher
+    {
+        private int invocationCount = 0;
+
+        private int expectedCount;
+
+        public InvokeCountMatcher(int expectedCount)
+        {
+            this.expectedCount = expectedCount;
+        }
+
+        public boolean matches(Invocation invocation)
+        {
+            return getInvocationCount() < expectedCount;
+        }
+
+        public void verify()
+        {
+            verifyHasBeenInvokedExactly(expectedCount);
+        }
+
+        public boolean hasDescription()
+        {
+            return true;
+        }
+
+        public StringBuffer describeTo(StringBuffer buffer)
+        {
+            return buffer.append("expected ").append(expectedCount).append(" times, invoked ").append(
+                            getInvocationCount()).append(" times");
+        }
+
+        public int getInvocationCount()
+        {
+            return invocationCount;
+        }
+
+        public boolean hasBeenInvoked()
+        {
+            return invocationCount > 0;
+        }
+
+        public void invoked(Invocation invocation)
+        {
+            invocationCount++;
+        }
+
+        public void verifyHasBeenInvoked()
+        {
+            Assert.assertTrue("expected method was not invoked", hasBeenInvoked());
+        }
+
+        public void verifyHasBeenInvokedExactly(int expectedCount)
+        {
+            Assert.assertTrue("expected method was not invoked the expected number of times: expected " + expectedCount
+                            + " times, was invoked " + invocationCount + " times", invocationCount == expectedCount);
+        }
+
+    }
 }

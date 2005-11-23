@@ -214,7 +214,7 @@ limitations under the License.
 		<!-- Unit testing -->
 	    <dependency>
 		  <id>jmock</id>
-		   <version>SNAPSHOT</version>
+		   <version>1.0.1</version>
 		   <properties>
 		     <war.bundle>false</war.bundle>
 		   </properties>
