@@ -477,11 +477,12 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     /*
      * JST-168 PLT.16.3.3 cxxxiv
      */
+/*
     public int getContentLength()
     {
         return 0;
     }
-
+*/
     /*
      * JST-168 PLT.16.3.3 cxxix
      */
@@ -493,11 +494,12 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     /*
      * JST-168 PLT.16.3.3 cxxxii
      */
+/*
     public BufferedReader getReader() throws IOException
     {
         return null;
     }
-
+*/
     /*
      * JST-168 PLT.16.3.3 cxxxii
      */
@@ -509,19 +511,21 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     /*
      * JST-168 PLT.16.3.3 cxxxii
      */
+/*
     public String getContentType()
     {
         return null;
     }
-
+*/
     /*
      * JST-168 PLT.16.3.3 cxxxii
      */
+/*
     public ServletInputStream getInputStream() throws IOException
     {
         return null;
     }
-
+*/
     /*
      * JST-168 PLT.16.3.3 cxxxii
      */
