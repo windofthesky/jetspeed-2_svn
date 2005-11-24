@@ -40,7 +40,7 @@ public interface PreferencesProvider
     
     void storeNode(Node node);
     
-    void removeNode(Node node);
+    void removeNode(Node parentNode, Node node);
     
     /**
      * Lookup a preference node given the preference name, a property name and value.

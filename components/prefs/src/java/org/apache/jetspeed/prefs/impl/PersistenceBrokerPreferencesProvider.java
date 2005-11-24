@@ -307,11 +307,20 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         getPersistenceBrokerTemplate().store(node);
     }
 
-    public void removeNode(Node node)
+    public void removeNode(Node parentNode, Node node)
     {
         NodeCache key = new NodeCache(node);
         nodeMap.remove(key);
-        getPersistenceBrokerTemplate().delete(node);
+        if ( parentNode != null )
+        {
+            key = new NodeCache(parentNode);
+            key = (NodeCache)nodeMap.get(key);
+            if ( key != null && key.isChildrenLoaded() )
+            {
+                key.getChildren().remove(node);
+            }
+        }
+        getPersistenceBrokerTemplate().delete(node);        
     }
 
     /**

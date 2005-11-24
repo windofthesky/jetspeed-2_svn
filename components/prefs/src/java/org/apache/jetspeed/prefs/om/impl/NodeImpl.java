@@ -229,6 +229,12 @@ public class NodeImpl implements Node
     {
         this.modifiedDate = modifiedDate;
     }
+    
+    public boolean equals(Object o)
+    {
+        return fullPath != null && o != null && o instanceof NodeImpl && ((NodeImpl) o).fullPath != null
+                        && fullPath.equals(((NodeImpl) o).fullPath);
+    }
 
     /**
      * <p>

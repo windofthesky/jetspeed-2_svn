@@ -287,8 +287,14 @@ public class PreferencesImpl extends AbstractPreferences
      * @see java.util.prefs.Preferences#removeNodeSpi()
      */
     public void removeNodeSpi() throws BackingStoreException
-    {        
-       prefsProvider.removeNode(node);
+    {      
+        Node parentNode = null;
+        Preferences parent = parent();
+        if ( parent != null && parent instanceof PreferencesImpl )
+        {
+            parentNode = ((PreferencesImpl)parent).getNode();
+        }
+        prefsProvider.removeNode(parentNode, node);
     }
 
     /**
