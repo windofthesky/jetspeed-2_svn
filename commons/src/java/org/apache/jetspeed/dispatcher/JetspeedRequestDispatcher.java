@@ -105,11 +105,11 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
         {
             if ( servletRequest != null && servletRequest instanceof PortletDispatcherIncludeAware )
             {
-                ((PortletDispatcherIncludeAware)servletRequest).setPortletDispatcherIncluded(true);
+                ((PortletDispatcherIncludeAware)servletRequest).setPortletDispatcherIncluded(false);
             }
             if ( servletResponse != null && servletResponse instanceof PortletDispatcherIncludeAware )
             {
-                ((PortletDispatcherIncludeAware)servletResponse).setPortletDispatcherIncluded(true);
+                ((PortletDispatcherIncludeAware)servletResponse).setPortletDispatcherIncluded(false);
             }
             
         }
