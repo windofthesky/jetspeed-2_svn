@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -56,7 +57,7 @@ import org.apache.pluto.util.Enumerator;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class ServletRequestImpl extends HttpServletRequestWrapper
+public class ServletRequestImpl extends HttpServletRequestWrapper implements PortletDispatcherIncludeAware
 {
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
     /** Logger */
@@ -68,6 +69,8 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     private Map portletParameters;
     private ObjectID webAppId;
+    
+    private boolean included;
 
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
@@ -379,158 +382,150 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return super.getHeaderNames();
     }
     
+    /**
+     * @param included when true, JSR-168 PLT.16.3.3 rules need to be enforced
+     */
+    public void setPortletDispatcherIncluded(boolean included)
+    {
+        this.included = included;
+    }
+    
     /*
-     * JST-168 PLT.16.3.3 cxxix
+     * JSR-168 PLT.16.3.3 cxxix
      */
   	public String getProtocol()
   	{
-  			return null;
+        return (included ? null : super.getProtocol() );
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxix
+     * JSR-168 PLT.16.3.3 cxxix
      */
   	public String getRemoteAddr()
   	{
-  			return null;
+        return (included ? null : super.getRemoteAddr() );
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxix
+     * JSR-168 PLT.16.3.3 cxxix
      */
   	public String getRemoteHost()
   	{
-  			return null;
+        return (included ? null : super.getRemoteHost() );
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxix
-     */
-  	public String getRealPath()
-  	{
-  			return null;
-  	}
-
-    /*
-     * JST-168 PLT.16.3.3 cxxix
+     * JSR-168 PLT.16.3.3 cxxix
      */
   	public StringBuffer getRequestURL()
   	{
-  			return null;
+        return (included ? null : super.getRequestURL());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxx
+     * JSR-168 PLT.16.3.3 cxxx
      */
     public String getPathInfo()
   	{
-  			String attr = (String)super.getAttribute("javax.servlet.include.path_info");
-  			return (attr != null) ? attr : super.getPathInfo();
+        return (included ? (String)super.getAttribute("javax.servlet.include.path_info") : super.getPathInfo());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxx
+     * JSR-168 PLT.16.3.3 cxxx
      */
   	public String getPathTranslated()
   	{
-  	    // TODO: Don't know yet how to implement this. 
-  	    //       A null value is a valid value. 
-  			return null;
+        return (included ? null : super.getPathTranslated());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxx
+     * JSR-168 PLT.16.3.3 cxxx
      */
   	public String getQueryString()
   	{
-  			String attr = (String)super.getAttribute("javax.servlet.include.query_string");
-  			return (attr != null) ? attr : super.getQueryString();
+        return (included ? (String)super.getAttribute("javax.servlet.include.query_string") : super.getQueryString());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxx
+     * JSR-168 PLT.16.3.3 cxxx
      */
   	public String getRequestURI()
   	{
-  			String attr = (String)super.getAttribute("javax.servlet.include.request_uri");
-  			return (attr != null) ? attr : super.getRequestURI();
+        return (included ? (String)super.getAttribute("javax.servlet.include.request_uri") : super.getRequestURI());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxx
+     * JSR-168 PLT.16.3.3 cxxx
      */
   	public String getServletPath()
   	{
-  			String attr = (String)super.getAttribute("javax.servlet.include.servlet_path");
-  			return (attr != null) ? attr : super.getServletPath();
+        return (included ? (String)super.getAttribute("javax.servlet.include.servlet_path") : super.getServletPath());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxxi
+     * JSR-168 PLT.16.3.3 cxxxi
      */
   	public String getContextPath() 
   	{
-       String attr = (String)super.getAttribute("javax.servlet.include.context_path");
-       return (attr != null) ? attr : super.getContextPath();
+        return (included ? (String)super.getAttribute("javax.servlet.include.context_path") : super.getContextPath());
   	}
 
     /*
-     * JST-168 PLT.16.3.3 cxxxiv
+     * JSR-168 PLT.16.3.3 cxxxiv
      */
-/*
     public int getContentLength()
     {
-        return 0;
+        return (included ? 0 : super.getContentLength());
     }
-*/
+
     /*
-     * JST-168 PLT.16.3.3 cxxix
+     * JSR-168 PLT.16.3.3 cxxix
      */
     public String getRealPath(String arg0)
     {
-        return null;
+        return (included ? null : super.getRealPath(arg0));
     }
 
     /*
-     * JST-168 PLT.16.3.3 cxxxii
+     * JSR-168 PLT.16.3.3 cxxxii
      */
-/*
     public BufferedReader getReader() throws IOException
     {
-        return null;
+        return (included ? null : super.getReader());
     }
-*/
+
     /*
-     * JST-168 PLT.16.3.3 cxxxii
+     * JSR-168 PLT.16.3.3 cxxxii
      */
     public String getCharacterEncoding()
     {
-        return null;
+        return (included ? null : super.getCharacterEncoding());
     }
 
     /*
-     * JST-168 PLT.16.3.3 cxxxii
+     * JSR-168 PLT.16.3.3 cxxxii
      */
-/*
     public String getContentType()
     {
-        return null;
+        return (included ? null : super.getContentType());
     }
-*/
+
     /*
-     * JST-168 PLT.16.3.3 cxxxii
+     * JSR-168 PLT.16.3.3 cxxxii
      */
-/*
     public ServletInputStream getInputStream() throws IOException
     {
-        return null;
+        return (included ? null : super.getInputStream());
     }
-*/
+
     /*
-     * JST-168 PLT.16.3.3 cxxxii
+     * JSR-168 PLT.16.3.3 cxxxii
      */
     public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException
     {
+        if ( !included )
+        {
+            super.setCharacterEncoding(arg0);
+        }
     }
-
 }

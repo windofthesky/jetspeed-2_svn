@@ -26,6 +26,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.PortletException;
 
+import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.pluto.core.impl.RenderRequestImpl;
 import org.apache.pluto.core.impl.RenderResponseImpl;
 
@@ -52,12 +53,22 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
 
     public void include(RenderRequest request, RenderResponse response) throws PortletException, java.io.IOException
     {
+        HttpServletRequest servletRequest = null;
         HttpServletResponse servletResponse = null;
         try
         {
-            HttpServletRequest servletRequest = (HttpServletRequest) ((RenderRequestImpl) request).getRequest();
+            servletRequest = (HttpServletRequest) ((RenderRequestImpl) request).getRequest();
             servletResponse = (HttpServletResponse) ((RenderResponseImpl) response).getResponse();
-
+            
+            if ( servletRequest instanceof PortletDispatcherIncludeAware )
+            {
+                ((PortletDispatcherIncludeAware)servletRequest).setPortletDispatcherIncluded(true);
+            }
+            if ( servletResponse instanceof PortletDispatcherIncludeAware )
+            {
+                ((PortletDispatcherIncludeAware)servletResponse).setPortletDispatcherIncluded(true);
+            }
+            
             this.requestDispatcher.include(servletRequest, servletResponse);
 
         }
@@ -89,6 +100,18 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
                 rootCause = e.getCause();
             }
             throw new PortletException(rootCause != null ? rootCause : e);
+        }
+        finally
+        {
+            if ( servletRequest != null && servletRequest instanceof PortletDispatcherIncludeAware )
+            {
+                ((PortletDispatcherIncludeAware)servletRequest).setPortletDispatcherIncluded(true);
+            }
+            if ( servletResponse != null && servletResponse instanceof PortletDispatcherIncludeAware )
+            {
+                ((PortletDispatcherIncludeAware)servletResponse).setPortletDispatcherIncluded(true);
+            }
+            
         }
     }
 }
