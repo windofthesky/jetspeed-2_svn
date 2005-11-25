@@ -94,10 +94,6 @@ limitations under the License.
       <param-value>/WEB-INF/conf/jetspeed.properties</param-value>
     </init-param>
     <init-param>
-      <param-name>configuration</param-name>
-      <param-value>/WEB-INF/conf/jetspeed-configuration.xml</param-value>
-    </init-param>
-    <init-param>
       <param-name>applicationRoot</param-name>
       <param-value>webContext</param-value>
     </init-param>
