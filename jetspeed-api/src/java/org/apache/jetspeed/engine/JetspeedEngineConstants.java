@@ -62,8 +62,6 @@ public interface JetspeedEngineConstants
 
     public static final String JETSPEED_PROPERTIES_KEY = "properties";
     public static final String JETSPEED_PROPERTIES_DEFAULT = "/WEB-INF/conf/jetspeed.properties";
-    public static final String JETSPEED_CONFIGURATION_KEY = "configuration";
-    public static final String JETSPEED_CONFIGURATION_DEFAULT = "/WEB-INF/conf/jetspeed.xml";
 
     /** If this value is set as applicationRoot, then the webContext is used
      * as application root
