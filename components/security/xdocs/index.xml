@@ -81,7 +81,7 @@
         <section name="Role Based Access Control">
             <p>
                 Role based access control (RBAC) in Jetspeed 2 support multiple hierarchy resolution strategies as defined in
-                <a href="http://www.doc.ic.ac.uk/~ecl1/papers/rbac99.pdf">The Uses of Hierarchy in Access Control</a>
+                <a href="http://www.doc.ic.ac.uk/~ecl1/wiki/lib/exe/fetch.php?id=emil%3Aresearchthemes%3Apubbytheme&amp;cache=cache&amp;media=research:papers:1999rbac.pdf">The Uses of Hierarchy in Access Control</a>
                 . See <a href="hierarchy.html">Hierarchy Management Overview</a> for more information.
             </p>
         </section>

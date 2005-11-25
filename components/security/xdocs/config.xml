@@ -42,7 +42,7 @@
             <subsection name="security-atz.xml">
                 <p>
                     This configuration file configures the authorization policy, in J2's case
-                    <a href="atz-jass.html">RdbmsPolicy</a>
+                    <a href="atz-jaas.html">RdbmsPolicy</a>
                     .
                 </p>
             </subsection>

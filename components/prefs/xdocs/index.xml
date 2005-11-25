@@ -46,7 +46,7 @@
                         Roles and groups hierarchy: Documentation on how roles and groups hierarchy use the
                         <code>Preferences</code>
                         model can be found in the
-                        <a href="/multiproject/jetspeed-security/hierarchy.html#Leveraging_Preferences_to_Manage_Hierarchies">security section</a>
+                        <a href="../../multiproject/jetspeed-security/hierarchy.html#Leveraging_Preferences_to_Manage_Hierarchies">security section</a>
                         of the documentation.
                     </li>
                 </ul>
