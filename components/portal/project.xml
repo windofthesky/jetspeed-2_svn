@@ -41,9 +41,6 @@
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
         <unitTest>
-      <excludes>
-        <exclude>org/apache/jetspeed/layout/TestLayout.java</exclude>
-      </excludes>
             <includes>
                 <include>**/Test*</include>
             </includes>
