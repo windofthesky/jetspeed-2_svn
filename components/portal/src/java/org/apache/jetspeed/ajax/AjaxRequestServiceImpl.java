@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -87,12 +88,12 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     {
         this.objects = objects;
         this.velocityEngine = velocityEngine;
-        this.urlParameterName = urlParameterName;
+        this.urlParameterName = urlParameterName;        
     }
-
+    
     // This is the entry point for this service
     public void process(RequestContext requestContext) throws AJAXException
-    {
+    {        
         // Lookup the object that is to be used
         String objectKey = requestContext.getRequestParameter(urlParameterName);
         if (objectKey != null)

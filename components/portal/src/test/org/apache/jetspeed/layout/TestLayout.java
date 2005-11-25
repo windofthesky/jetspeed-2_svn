@@ -15,12 +15,21 @@
  */
 package org.apache.jetspeed.layout;
 
-import org.apache.jetspeed.AbstractPortalContainerTestCase;
+import java.io.File;
+
+import junit.framework.TestCase;
+
+import org.apache.jetspeed.ajax.AjaxRequestService;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
+import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.layout.impl.LayoutValve;
+import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import com.mockrunner.mock.web.MockServletConfig;
 
 /**
  * Test for Fragment placement
@@ -28,12 +37,16 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a>David Gurney </a>
  * @version $Id: $
  */
-public class TestLayout extends AbstractPortalContainerTestCase
+public class TestLayout extends TestCase
 {
 
-    private ComponentManager m_oComponentManager;
+    private ComponentManager cm;
 
-    private LayoutValve m_oLv;
+    private LayoutValve valve;
+    
+    private VelocityEngine velocity;
+    
+    private AjaxRequestService ajax;
 
     public static void main(String[] args)
     {
@@ -47,31 +60,39 @@ public class TestLayout extends AbstractPortalContainerTestCase
     {
         super.setUp();
 
+        String appRoot =  "./"; //PortalTestConstants.JETSPEED_APPLICATION_ROOT;
+        
+        MockServletConfig servletConfig = new MockServletConfig();        
+        ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(appRoot));        
+        servletConfig.setServletContext(servletContent);
+        ServletConfigFactoryBean.setServletConfig(servletConfig);
+        
         // Load the Spring configs
         String[] bootConfigs = null;
         String[] appConfigs =
-        { "src/webapp/WEB-INF/assembly/layout-api.xml",
+        { //"src/webapp/WEB-INF/assembly/layout-api.xml",
                 "src/test/resources/assembly/test-layout-api.xml"};
-        m_oComponentManager = new SpringComponentManager(bootConfigs,
-                appConfigs, null, ".");
-        m_oComponentManager.start();
-
-        // Get a valid LayoutValve from Spring
-        m_oLv = (LayoutValve) m_oComponentManager.getComponent("layoutValve");
+        
+                
+        cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
+        cm.start();
+        valve = (LayoutValve) cm.getComponent("layoutValve");
+        velocity = (VelocityEngine) cm.getComponent("AjaxVelocityEngine");
+        ajax = (AjaxRequestService) cm.getComponent("AjaxRequestService");
+                
     }
 
     protected void tearDown() throws Exception
     {
-        m_oComponentManager.stop();
+        cm.stop();
     }
 
-    public void xtestNullRequestContext()
+    public void testNullRequestContext()
     {
-        // Get the layout that has a null request context
-        LayoutValve lv = new LayoutValve(null);
+        // Get the layout that has a null request context        
         try
         {
-            lv.invoke(null, null);
+            valve.invoke(null, null);
             TestLayout.fail("should have thrown an exception");
         } catch (PipelineException e)
         {
@@ -79,14 +100,14 @@ public class TestLayout extends AbstractPortalContainerTestCase
         }
     }
 
-    public void xtestNullParameters()
+    public void testNullParameters()
     {
         try
         {
             // Test the success case
             RequestContext rc = FragmentUtil
                     .setupRequestContext(null, "1234", "0", "0");
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
                     "failure"));
         } catch (PipelineException e)
@@ -99,7 +120,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
             // Test the success case
             RequestContext rc = FragmentUtil.setupRequestContext("moveabs", null, "0",
                     "0");
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -114,7 +135,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
             // Test the success case
             RequestContext rc = FragmentUtil.setupRequestContext("moveabs", "1234",
                     null, "0");
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -129,7 +150,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
             // Test the success case
             RequestContext rc = FragmentUtil.setupRequestContext("moveabs", "1234",
                     "0", null);
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -140,7 +161,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
         }
     }
 
-    public void xtestMoveSuccess()
+    public void testMoveSuccess()
     {
         moveSuccess("moveabs", "1", "0", "0", "0", "0", "0", "0"); // Doesn't
                                                                     // really
@@ -236,7 +257,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
                                                                     // move
     }
 
-    public void xtestMoveFailure()
+    public void testMoveFailure()
     {
         moveFailure("moveabs", "bogus", "0", "0", "0", "0"); // non integer
                                                                 // portlet id
@@ -267,7 +288,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
                         null);
             }
 
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -313,7 +334,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
                 rc = FragmentUtil.setupRequestContext(a_sMoveType, p_sPortletId, null,
                         null);
             }
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -336,7 +357,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
                 rc = FragmentUtil.setupRequestContext(a_sMoveType, null, null, null);
             }
 
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
@@ -347,7 +368,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
         }
     }
 
-    public void xtestRemove()
+    public void testRemove()
     {
         remove("1");
         remove("2");
@@ -364,7 +385,7 @@ public class TestLayout extends AbstractPortalContainerTestCase
 
             rc = FragmentUtil.setupRequestContext("remove", p_sPortletId, null, null);
 
-            m_oLv.invoke(rc, null);
+            valve.invoke(rc, null);
 
             // Take a look at the response to verify a failiure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
