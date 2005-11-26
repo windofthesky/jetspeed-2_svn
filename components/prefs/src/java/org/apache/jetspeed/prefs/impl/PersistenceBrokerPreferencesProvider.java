@@ -344,7 +344,8 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 //            "FROM `prefs_node` p, prefs_property_key k, prefs_property_value v " +
 //            "WHERE p.NODE_NAME = 'userinfo' and v.node_id = p.node_id " + 
 //            "AND v.property_key_id = k.property_key_id " +
-//            "AND k.property_name = '";
+//            "AND k.property_name = ? " +
+//            "AND v.text_value = ?"    
 
         Criteria c = new Criteria();
         if (nodeName != null)
