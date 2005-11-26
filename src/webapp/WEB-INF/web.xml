@@ -198,6 +198,14 @@ limitations under the License.
          /fileserver/*
        </url-pattern>
     </servlet-mapping>            
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /ajaxapi/*
+       </url-pattern>
+    </servlet-mapping>            
     
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>

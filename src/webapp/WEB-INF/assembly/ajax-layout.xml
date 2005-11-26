@@ -21,11 +21,9 @@
     <constructor-arg index="2">
         <value>moveabs</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
-  -->
 </bean>
 
 <bean id="AjaxMovePortletLeft"
@@ -39,11 +37,9 @@
     <constructor-arg index="2">
         <value>moveleft</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-  -->
 </bean>
 
 <bean id="AjaxMovePortletRight"
@@ -57,11 +53,9 @@
     <constructor-arg index="2">
         <value>moveright</value>
     </constructor-arg>
- <!--
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-  -->    
 </bean>
 
 <bean id="AjaxMovePortletUp"
@@ -75,11 +69,9 @@
     <constructor-arg index="2">
         <value>moveup</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
- -->    
 </bean>
 
 <bean id="AjaxMovePortletDown"
@@ -93,11 +85,9 @@
     <constructor-arg index="2">
         <value>movedown</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-  -->    
 </bean>
 
 <bean id="AjaxAddPortlet"
@@ -108,11 +98,9 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-  -->    
 </bean>
 
 <bean id="AjaxRemovePortlet"
@@ -123,11 +111,9 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-<!--    
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
- -->    
 </bean>
 
 

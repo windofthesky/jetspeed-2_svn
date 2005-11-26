@@ -22,6 +22,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.layout.Coordinate;
+import org.apache.jetspeed.layout.PortletPlacementContext;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -35,15 +40,22 @@ public class AddPortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-
+    private PageManager pageManager = null;
+    
     /** Logger */
     protected Log log = LogFactory.getLog(AddPortletAction.class);
 
     public AddPortletAction(String template, String errorTemplate)
     {
-        super(template, errorTemplate);
+        this(template, errorTemplate, null);
     }
 
+    public AddPortletAction(String template, String errorTemplate, PageManager pageManager)
+    {
+        super(template, errorTemplate);
+        this.pageManager = pageManager;
+    }
+    
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
     {
@@ -81,7 +93,15 @@ public class AddPortletAction
                 resultMap.put(NEWROW, new Integer(iRow));
             }
 
-            // todo .. work with the page manager to add the portlet
+            // Use the Portlet Placement Manager to accomplish the removal
+            PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
+            Fragment fragment = placement.getFragmentById(portletId);
+            
+            Coordinate coordinate = placement.add(portletId, new CoordinateImpl(iCol, iRow));
+            
+            Page page = placement.syncPageFragments();
+            if (pageManager != null)
+                pageManager.updatePage(page);
 
             resultMap.put(STATUS, "success");
         } 

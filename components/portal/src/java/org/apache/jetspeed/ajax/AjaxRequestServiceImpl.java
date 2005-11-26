@@ -22,7 +22,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

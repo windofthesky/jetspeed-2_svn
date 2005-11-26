@@ -23,8 +23,10 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
-import org.apache.jetspeed.layout.PortletPlacementManager;
+import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -44,11 +46,25 @@ public class MovePortletAction
     private int iMoveType = -1;
 
     private String sMoveType = null;
+    
+    private PageManager pageManager = null;
 
-    public MovePortletAction(String template, String errorTemplate, String sMoveType)
+    public MovePortletAction(String template, 
+            String errorTemplate, 
+            String sMoveType)
+    throws AJAXException    
+    {
+        this(template, errorTemplate, sMoveType, null);
+    }
+    
+    public MovePortletAction(String template, 
+                             String errorTemplate, 
+                             String sMoveType,
+                             PageManager pageManager)
     throws AJAXException
     {
         super(template, errorTemplate);
+        this.pageManager = pageManager;
         setMoveType(sMoveType);
     }
 
@@ -89,13 +105,15 @@ public class MovePortletAction
             // Get the necessary parameters off of the request
             String portletId = requestContext
                     .getRequestParameter(PORTLETID);
-            if (portletId == null) { throw new Exception(
-                    "portlet id not provided"); }
+            if (portletId == null) 
+            { 
+                throw new Exception("portlet id not provided"); 
+            }
 
             resultMap.put(PORTLETID, portletId);
 
-            PortletPlacementManager ppm = new PortletPlacementManagerImpl(requestContext);
-            Fragment fragment = ppm.getFragmentById(portletId);
+            PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
+            Fragment fragment = placement.getFragmentById(portletId);
             Coordinate returnCoordinate = null;
 
             // Only required for moveabs
@@ -110,26 +128,30 @@ public class MovePortletAction
 
                 Coordinate a_oCoordinate = new CoordinateImpl(0, 0, a_iCol,
                         a_iRow);
-                returnCoordinate = ppm
-                        .moveAbs(fragment, a_oCoordinate);
+                returnCoordinate = placement.moveAbsolute(fragment, a_oCoordinate);
             } 
             else if (iMoveType == LEFT)
             {
-                returnCoordinate = ppm.moveLeft(fragment);
+                returnCoordinate = placement.moveLeft(fragment);
             } 
             else if (iMoveType == RIGHT)
             {
-                returnCoordinate = ppm.moveRight(fragment);
+                returnCoordinate = placement.moveRight(fragment);
             } 
             else if (iMoveType == UP)
             {
-                returnCoordinate = ppm.moveUp(fragment);
+                returnCoordinate = placement.moveUp(fragment);
             } 
             else if (iMoveType == DOWN)
             {
-                returnCoordinate = ppm.moveDown(fragment);
+                returnCoordinate = placement.moveDown(fragment);
             }
 
+            // synchronize back to the page layout root fragment
+            Page page = placement.syncPageFragments();
+            if (pageManager != null)
+                pageManager.updatePage(page);
+            
             // Use dummy values for now
             resultMap.put(STATUS, "success");
 
@@ -144,6 +166,7 @@ public class MovePortletAction
                     .getNewCol()));
             resultMap.put(NEWROW, String.valueOf(returnCoordinate
                     .getNewRow()));
+                                   
 
         } 
         catch (Exception e)

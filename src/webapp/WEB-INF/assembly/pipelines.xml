@@ -235,8 +235,13 @@ limitations under the License.
    </constructor-arg>
    <constructor-arg>
     <list>
-<!--    	<ref bean="securityValve"/>    	    	-->
-    	<ref bean="AJAXValve"/>
+        <ref bean="portalURLValve"/>    	    	
+    	<ref bean="securityValve"/>    	    	
+    	<ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>    	    	    	
+    	<ref bean="containerValve"/>
+        <!-- TODO: replace layout valve with Ajax valve -->
+    	<ref bean="layoutValve"/>
     </list>
     </constructor-arg>
   </bean> 
@@ -271,7 +276,7 @@ limitations under the License.
             <entry key='/portal'>
                 <value>jetspeed-pipeline</value>
             </entry>
-            <entry key='/ajax'>
+            <entry key='/ajaxapi'>
                 <value>ajax-pipeline</value>
             </entry>
             <entry key='/login'>
