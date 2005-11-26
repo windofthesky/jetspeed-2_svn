@@ -24,7 +24,47 @@
 	</properties>
 	<body>
 		<section name="Guide to Jetspeed-2 Component Architecture">
-			
+		<p>
+		The Jetspeed-2 architecture is build on a component architecture where as defined by 
+	    <a href="http://www.martinfowler.com/articles/injection.html">Martin Fowler</a>:
+		<pre>
+    By the term component, I mean a glob of software that's intended to be used, 
+    without change, by application that is out of the control of the writers of 
+    the component. By 'without change' I mean that the using application doesn't 
+    change the source code of the components, although they may alter the component's 
+    behavior by extending it in ways allowed by the component writers.</pre>
+		</p>
+		<p>
+		Jetspeed-2 uses dependency injection as a programming design pattern and architectural model 
+		to establish a level of abstraction via a public interface, and to remove dependency on the components' implementation.
+		The architecture unites the components rather than the components linking themselves or being linked together.
+		Dependency injection is a pattern in which responsibility for object creation and object linking is removed 
+		from the objects themselves and transferred to a factory.
+		Dependency injection therefore is obviously inverting the control for object creation and linking, 
+		and can be seen to be a form of Inversion of Controls(IoC).
+		</p>
+		<subsection name="Jetspeed-2 and Component Frameworks">
+		<p>
+		Jetspeed-2 leverages the <a href="http://www.springframework.org">Spring Framework</a> as its default component framework.
+		However, Jetspeed-2 provides an architecture in which the component framework can easily be replaced by alternative
+		component frameworks such as <a href="http://www.picocontainer.org/">Pico</a>.
+		</p>
+		<p>
+		Jetspeed-2 component framework assembly is configured and implemented in <i>JetspeedServlet</i>:<br/><br/>
+		<img src="images/jetspeedservlet-c.gif" border="0"/>
+		</p>
+		<p>
+		The <i>JetspeedServlet</i> is configured is the portal application <i>web.xml</i> to load at startup.  The <i>initializeComponentManager</i>
+		method loads the <a href="guide-portal-assembly.html">assembly</a> for the given component framework. The <i>JetspeedEngine</i> is then
+		constructed with the proper component manager.
+		<pre>
+    engine = new JetspeedEngine(properties, applicationRoot, config,
+                                initializeComponentManager(config, applicationRoot, properties));
+		</pre>
+		</p>
+		</subsection>
+		<subsection name="Jetspeed-2 Core Components">
+		</subsection>
 		</section>
 	</body>
 </document>

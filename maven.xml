@@ -142,6 +142,12 @@
         <copy toDir="${directory}">
           <fileset dir="${fromDir}"/>
         </copy>
+      	<copy toDir="${directory}/style">
+      	  <fileset dir="${basedir}/xdocs/style"/>
+      	</copy>
+      	<copy toDir="${directory}/images">
+      	  <fileset file="${basedir}/xdocs/images/breadcrumbs.jpg"/>
+      	</copy>
       </j:forEach>
 
       <attainGoal name="multiproject:create-nav"/>
