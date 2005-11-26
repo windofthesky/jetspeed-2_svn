@@ -51,8 +51,32 @@
                     </li>
                 </ul>
             </p>
-        </section>
-        <section name="Preferences Implementation Overview">
+            <subsection name="Preferences Goals">
+            <p>
+            	The <i>Preferences</i> API provides a generic implementation for organizing properties as illustrated below:
+            	<pre>
+&lt;preferences EXTERNAL_XML_VERSION="1.0"&gt;
+&lt;root type="user"&gt;
+  &lt;map /&gt;
+  &lt;node name="user"&gt;
+    &lt;map /&gt;
+	&lt;node name="principal1"&gt;
+      &lt;map /&gt;
+    &lt;node name="propertyset1"&gt;
+      &lt;map&gt;
+        &lt;entry key="set1prop1" value="256" /&gt;
+        &lt;entry key="set1prop2" value="314" /&gt;
+      &lt;/map&gt;
+    &lt;/node&gt;
+  &lt;/node&gt;
+&lt;/root&gt;</pre>
+            </p>
+            <p>
+           		A good reference article can be found at <a href="http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html">
+           		ONJava.com</a>.
+            </p>
+            </subsection>
+            <subsection name="Preferences Implementation Overview">
             <p>
                 Jetspeed 2
                 <code>Preferences</code>
@@ -100,6 +124,7 @@
                     </td>
                 </tr>
             </table>
+            </subsection>
             <subsection name="Preferences Database Schema">
                 <p>
                     The following database schema is being used in Jetspeed 2 to store <code>Preferences</code> 
@@ -108,7 +133,7 @@
                 <p>
                     <img src="images/preferences-schema.gif" border="0"/>
                 </p>
-            </subsection>    
+            </subsection>
         </section>
     </body>
 </document>

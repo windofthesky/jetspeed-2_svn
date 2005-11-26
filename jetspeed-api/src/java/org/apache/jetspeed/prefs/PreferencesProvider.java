@@ -20,35 +20,37 @@ import java.util.prefs.Preferences;
 import org.apache.jetspeed.prefs.om.Node;
 
 /**
- * <p>Utility component used to pass the {@link PersistenceStoreContainer} and
- * store name to the {@link Preferences} SPI implementation.</p>
+ * <p>
+ * Utility component used to pass the {@link PersistenceStoreContainer} and
+ * store name to the {@link Preferences} SPI implementation.
+ * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface PreferencesProvider
-{    
-    boolean isPropertyManagerEnabled();
-    
-    Node getNode( String fullPath, int nodeType ) throws NodeDoesNotExistException;
-    
-    boolean nodeExists( String fullPath, int nodeType );
-    
-    Node createNode( Node parent, String nodeName, int nodeType, String fullPath )
-    throws FailedToCreateNodeException, NodeAlreadyExistsException;
-    
+{
+    Node getNode(String fullPath, int nodeType) throws NodeDoesNotExistException;
+
+    boolean nodeExists(String fullPath, int nodeType);
+
+    Node createNode(Node parent, String nodeName, int nodeType, String fullPath) throws FailedToCreateNodeException,
+            NodeAlreadyExistsException;
+
     Collection getChildren(Node parentNode);
-    
+
     void storeNode(Node node);
-    
+
     void removeNode(Node parentNode, Node node);
-    
+
     /**
-     * Lookup a preference node given the preference name, a property name and value.
-     * Options can be set to null if you dont want them included in the query.
+     * Lookup a preference node given the preference name, a property name and
+     * value. Options can be set to null if you dont want them included in the
+     * query.
      * 
      * @param nodeName the name of the node to lookup, such as 'userinfo'
      * @param propertyName the name of the property, such as 'user.email'
-     * @param propertyValue the value of the property, such as 'taylor@apache.org'
+     * @param propertyValue the value of the property, such as
+     *            'taylor@apache.org'
      * @return a collection of found matching elements of type <code>Node</code>
      */
     Collection lookupPreference(String nodeName, String propertyName, String propertyValue);
