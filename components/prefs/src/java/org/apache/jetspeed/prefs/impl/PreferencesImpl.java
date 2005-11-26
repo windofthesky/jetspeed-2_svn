@@ -28,17 +28,14 @@ import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
-import org.apache.jetspeed.prefs.om.PropertyKey;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
-import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 
 /**
- * <p>S
- * {@link Preferences}implementation relying on Jetspeed OJB based persistence
- * plugin.
+ * <p>
+ * S {@link Preferences}implementation relying on Jetspeed OJB based
+ * persistence plugin.
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
@@ -58,12 +55,11 @@ public class PreferencesImpl extends AbstractPreferences
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
 
-
     protected static PreferencesProvider prefsProvider;
 
     static PreferencesImpl systemRoot;
+
     static PreferencesImpl userRoot;
-   
 
     /**
      * <p>
@@ -74,17 +70,14 @@ public class PreferencesImpl extends AbstractPreferences
      * Logs a warning if the underlying datastore is unavailable.
      * </p>
      * 
-     * @param parent
-     *            The parent object.
-     * @param nodeName
-     *            The node name.
-     * @param nodeType
-     *            The node type.
+     * @param parent The parent object.
+     * @param nodeName The node name.
+     * @param nodeType The node type.
      */
-    public PreferencesImpl( PreferencesImpl parent, String nodeName, int nodeType ) throws IllegalStateException
+    public PreferencesImpl(PreferencesImpl parent, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
-        
+
         try
         {
             if (parent != null)
@@ -115,11 +108,15 @@ public class PreferencesImpl extends AbstractPreferences
             catch (NodeDoesNotExistException e1)
             {
                 // If we get this at this point something is very wrong
-                IllegalStateException ise = new IllegalStateException("Unable to create node for Preferences of type "+nodeType+" for path "+this.absolutePath() +
-                               ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
+                IllegalStateException ise = new IllegalStateException(
+                        "Unable to create node for Preferences of type "
+                                + nodeType
+                                + " for path "
+                                + this.absolutePath()
+                                + ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
                 ise.initCause(e1);
                 throw ise;
-            }            
+            }
         }
 
     }
@@ -152,7 +149,7 @@ public class PreferencesImpl extends AbstractPreferences
     /**
      * @see java.util.prefs.Preferences#childSpi(java.lang.String)
      */
-    public AbstractPreferences childSpi( String name )
+    public AbstractPreferences childSpi(String name)
     {
         return new PreferencesImpl(this, name, node.getNodeType());
     }
@@ -168,22 +165,20 @@ public class PreferencesImpl extends AbstractPreferences
     /**
      * @see java.util.prefs.Preferences#getSpi(java.lang.String)
      */
-    public String getSpi( String key )
+    public String getSpi(String key)
     {
-
+        String value = null;
         Collection properties = node.getNodeProperties();
 
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
-            if (curProp.getPropertyKey().getPropertyKeyName().equals(key))
+            if ((null != curProp) && (null != curProp.getPropertyName()) && (curProp.getPropertyName().equals(key)))
             {
-                return curProp.getPropertyValue(curProp.getPropertyKey().getPropertyKeyType());
+                value = curProp.getPropertyValue();
             }
         }
-
-        //prop not found
-        return null;
+        return value;
     }
 
     /**
@@ -199,9 +194,13 @@ public class PreferencesImpl extends AbstractPreferences
             for (Iterator j = propCol.iterator(); j.hasNext();)
             {
                 Property curprop = (Property) j.next();
-                propertyNames.add(curprop.getPropertyKey().getPropertyKeyName());
+                if ((null != curprop) && (null != curprop.getPropertyName())
+                        && !propertyNames.contains(curprop.getPropertyName()))
+                {
+                    propertyNames.add(curprop.getPropertyName());
+                }
             }
-        }    
+        }
 
         return (String[]) propertyNames.toArray(new String[propertyNames.size()]);
     }
@@ -209,17 +208,9 @@ public class PreferencesImpl extends AbstractPreferences
     /**
      * @see java.util.prefs.Preferences#putSpi(java.lang.String,
      *      java.lang.String)
-     *      <p>
-     *      In addition to java.util.prefs.Preferences, this implementation is
-     *      enforcing that node used as property sets have been defined as such
-     *      and that only the keys defined associated to the property set can be
-     *      added as properties of the current node.
-     *      </p>
      */
-    public void putSpi( String key, String value )
+    public void putSpi(String key, String value)
     {
-      
-        Collection nodeKeys = node.getNodeKeys();
         Collection properties = node.getNodeProperties();
         if (null == properties)
         {
@@ -227,72 +218,42 @@ public class PreferencesImpl extends AbstractPreferences
             return;
         }
 
-        boolean foundProp = false;
-        boolean foundKey = false;
-        // First if the property exists, update its value.
+        // If the property exists, update its value.
+        boolean propFound = false;
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
-            if (curProp.getPropertyKey().getPropertyKeyName().equals(key))
+            if ((null != curProp) && (null != curProp.getPropertyName()) && curProp.getPropertyName().equals(key))
             {
-                foundProp = true;
-                foundKey = true;
-                if (log.isDebugEnabled())
-                    log.debug("Update existing property: [" + key + ", " + value + "]");
-
-                curProp.setPropertyValue(curProp.getPropertyKey().getPropertyKeyType(), value);
+                propFound = true;
+                curProp.setPropertyValue(value);
                 curProp.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            }
-
-        }
-        // The property does not already exist. Create a new property, if
-        // the property key exits and is associated to this node.
-        if (prefsProvider.isPropertyManagerEnabled() && !foundProp)
-        {
-            for (Iterator i = nodeKeys.iterator(); i.hasNext();)
-            {
-                PropertyKey curpk = (PropertyKey) i.next();
-                if (curpk.getPropertyKeyName().equals(key))
+                if (log.isDebugEnabled())
                 {
-                    foundKey = true;
-                    if (log.isDebugEnabled())
-                        log.debug("New property value: [" + key + ", " + value + "]");
-
-                    properties.add(new PropertyImpl(node.getNodeId(), curpk.getPropertyKeyId(), curpk, curpk
-                            .getPropertyKeyType(), value));
+                    log.debug("Update existing property: " + curProp.toString());
                 }
+                // Property found, we break.
+                break;
             }
         }
-        else if (!prefsProvider.isPropertyManagerEnabled() && !foundProp)
+        if (!propFound)
         {
-            foundKey = true;
-            PropertyKey pKey = new PropertyKeyImpl(key, Property.STRING_TYPE);
-            properties.add(new PropertyImpl(node.getNodeId(), pKey.getPropertyKeyId(), pKey, pKey
-                    .getPropertyKeyType(), value));
-
+            properties.add(new PropertyImpl(node.getNodeId(), key, value));
         }
 
-        if (!foundKey)
-        {
-            if (log.isWarnEnabled())
-                log.warn(PropertyException.PROPERTYKEY_NOT_FOUND);
-            return;
-        }
-       
         prefsProvider.storeNode(node);
-
     }
 
     /**
      * @see java.util.prefs.Preferences#removeNodeSpi()
      */
     public void removeNodeSpi() throws BackingStoreException
-    {      
+    {
         Node parentNode = null;
         Preferences parent = parent();
-        if ( parent != null && parent instanceof PreferencesImpl )
+        if (parent != null && parent instanceof PreferencesImpl)
         {
-            parentNode = ((PreferencesImpl)parent).getNode();
+            parentNode = ((PreferencesImpl) parent).getNode();
         }
         prefsProvider.removeNode(parentNode, node);
     }
@@ -300,7 +261,7 @@ public class PreferencesImpl extends AbstractPreferences
     /**
      * @see java.util.prefs.Preferences#removeSpi(java.lang.String)
      */
-    public void removeSpi( String key )
+    public void removeSpi(String key)
     {
         Collection properties = node.getNodeProperties();
 
@@ -308,12 +269,11 @@ public class PreferencesImpl extends AbstractPreferences
         {
             Property curProp = (Property) i.next();
 
-            if ((curProp.getPropertyKey().getPropertyKeyName().equals(key)))
+            if ((curProp.getPropertyName().equals(key)))
             {
                 i.remove();
             }
         }
-        
         // Update node.
         prefsProvider.storeNode(node);
     }
@@ -338,14 +298,16 @@ public class PreferencesImpl extends AbstractPreferences
     {
         return node;
     }
-    
+
     /**
      * 
      * <p>
      * setPreferencesProvider
      * </p>
-     * Sets the <code>org.apache.jetspeed.prefs.PreferencesProvider</code> that
-     * will support backing store operations for all <code>PreferencesImpls</code>
+     * Sets the <code>org.apache.jetspeed.prefs.PreferencesProvider</code>
+     * that will support backing store operations for all
+     * <code>PreferencesImpls</code>
+     * 
      * @param prefsProvider
      */
     public static void setPreferencesProvider(PreferencesProvider prefsProvider)

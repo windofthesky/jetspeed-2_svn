@@ -29,16 +29,13 @@ import org.apache.jetspeed.prefs.PreferencesProvider;
 public class PreferencesFactoryImpl implements PreferencesFactory
 {
     
-    
     protected static PreferencesProvider prefsProvider;
 
     public PreferencesFactoryImpl()
     {
         super();        
         System.setProperty("java.util.prefs.PreferencesFactory", getClass().getName());
-    }
-    
-     
+    }  
 
     /**
      * @see java.util.prefs.PreferencesFactory#systemRoot()
@@ -56,6 +53,13 @@ public class PreferencesFactoryImpl implements PreferencesFactory
         return  PreferencesImpl.userRoot;
     }
     
+    /**
+     * <p>
+     * Initializes the factory.
+     * </p>
+     * 
+     * @throws Exception
+     */
     public void init() throws Exception
     {        
         try
@@ -71,14 +75,22 @@ public class PreferencesFactoryImpl implements PreferencesFactory
         }
     }
     
-    
-
+    /**
+     * @return The {@link PreferencesProvider}
+     */
     public PreferencesProvider getPrefsProvider()
     {
         return prefsProvider;
     }
     
-    public void setPrefsProvider( PreferencesProvider prefsProvider )
+    /**
+     * <p>
+     * Set the preferences provider.
+     * </p>
+     * 
+     * @param prefsProvider The {@link PreferencesProvider}
+     */
+    public void setPrefsProvider(PreferencesProvider prefsProvider)
     {
         PreferencesFactoryImpl.prefsProvider = prefsProvider;
     }

@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
-import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
@@ -45,6 +44,9 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
     private static class NodeCache implements Serializable
     {
+        /** The serial uid. */
+        private static final long serialVersionUID = 1853381807991868844L;
+
         Node node;
 
         String fullpath;
@@ -126,8 +128,6 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
     private HashMap nodeMap = new HashMap();
 
-    private boolean enablePropertyManager;
-
     /**
      * @param repository
      *            Location of repository mapping file. Must be available within the classpath.
@@ -139,33 +139,14 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
      *             current classPath.
      */
-    public PersistenceBrokerPreferencesProvider(String repositoryPath, boolean enablePropertyManager)
+    public PersistenceBrokerPreferencesProvider(String repositoryPath)
             throws ClassNotFoundException
     {
         super(repositoryPath);
-        this.enablePropertyManager = enablePropertyManager;
-    }
-    
-    /**
-     * @param enablePropertyManager Whether to enable the <code>PropertyManager</code>.
-     */
-    public void setEnablePropertyManager(boolean enablePropertyManager)
-    {
-        this.enablePropertyManager = enablePropertyManager;
     }
 
     /**
-     * <p>
-     * Get the node id from the full path.
-     * </p>
-     * 
-     * @param fullPath
-     *            The full path.
-     * @param nodeType
-     *            The node type.
-     * @return An array of value returned including:
-     * @throws NodeNotFoundException
-     *             if the node does not exist
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#getNode(java.lang.String, int)
      */
     public Node getNode(String fullPath, int nodeType) throws NodeDoesNotExistException
     {
@@ -195,13 +176,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     }
 
     /**
-     * <p>
-     * nodeExists
-     * </p>
-     * 
-     * @param fullPath
-     * @param nodeType
-     * @return
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#nodeExists(java.lang.String, int)
      */
     public boolean nodeExists(String fullPath, int nodeType)
     {
@@ -217,21 +192,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     }
 
     /**
-     * <p>
-     * Create a new preference node in the backing store.
-     * </p>
-     * 
-     * @param parent
-     *            The parent node.
-     * @param nodeName
-     *            The node name.
-     * @param nodeType
-     *            The node type.
-     * @param fullPath
-     *            The node full path.
-     * @return the newly created node
-     * @throws NodeAlreadyExistsException
-     *             if a node of the same type having the same path already exists.
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#createNode(org.apache.jetspeed.prefs.om.Node, java.lang.String, int, java.lang.String)
      */
     public Node createNode(Node parent, String nodeName, int nodeType, String fullPath)
             throws FailedToCreateNodeException, NodeAlreadyExistsException
@@ -265,15 +226,9 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
         }
     }
-
+  
     /**
-     * <p>
-     * getChildren
-     * </p>
-     * 
      * @see org.apache.jetspeed.prefs.PreferencesProvider#getChildren(org.apache.jetspeed.prefs.om.Node)
-     * @param parentNode
-     * @return
      */
     public Collection getChildren(Node parentNode)
     {
@@ -300,6 +255,9 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         return children;
     }
 
+    /**
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#storeNode(org.apache.jetspeed.prefs.om.Node)
+     */
     public void storeNode(Node node)
     {
         NodeCache key = new NodeCache(node);
@@ -307,6 +265,9 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         getPersistenceBrokerTemplate().store(node);
     }
 
+    /**
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#removeNode(org.apache.jetspeed.prefs.om.Node, org.apache.jetspeed.prefs.om.Node)
+     */
     public void removeNode(Node parentNode, Node node)
     {
         NodeCache key = new NodeCache(node);
@@ -322,41 +283,27 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         }
         getPersistenceBrokerTemplate().delete(node);        
     }
-
-    /**
-     * <p>
-     * isPropertyManagerEnabled
-     * </p>
-     * 
-     * @see org.apache.jetspeed.prefs.PreferencesProvider#isPropertyManagerEnabled()
-     * @return
-     */
-    public boolean isPropertyManagerEnabled()
-    {
-        return this.enablePropertyManager;
-    }
     
+    /**
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#lookupPreference(java.lang.String, java.lang.String, java.lang.String)
+     */
     public Collection lookupPreference(String nodeName, String propertyName, String propertyValue)
     {
-// if the OJB fails, try this
-//        String LOOKUP_BY_EMAIL = 
-//            "SELECT p.full_path, k.property_name, v.text_value " +
-//            "FROM `prefs_node` p, prefs_property_key k, prefs_property_value v " +
-//            "WHERE p.NODE_NAME = 'userinfo' and v.node_id = p.node_id " + 
-//            "AND v.property_key_id = k.property_key_id " +
-//            "AND k.property_name = ? " +
-//            "AND v.text_value = ?"    
-
         Criteria c = new Criteria();
         if (nodeName != null)
+        {
             c.addEqualTo("nodeName", nodeName);
+        }
         if (propertyName != null)
-            c.addEqualTo("nodeKeys.propertyKeyName", propertyName);
+        {
+            c.addEqualTo("nodeProperties.propertyName", propertyName);
+        }
         if (propertyValue != null)
-            c.addEqualTo("nodeProperties.textPropertyValue", propertyValue);
+        {
+            c.addEqualTo("nodeProperties.propertyValue", propertyValue);
+        }
         Query query = QueryFactory.newQuery(NodeImpl.class, c);
         Collection children = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-        return children;
-        
+        return children;       
     }
 }

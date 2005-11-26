@@ -14,9 +14,6 @@
  */
 package org.apache.jetspeed.prefs;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -24,9 +21,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider;
-import org.apache.jetspeed.prefs.om.Node;
-import org.apache.jetspeed.prefs.om.Property;
 
 /**
  * <p>
@@ -38,38 +32,16 @@ import org.apache.jetspeed.prefs.om.Property;
 public class TestPreferences extends DatasourceEnabledSpringTestCase
 {
 
-    /** The property manager. */
-    private static PropertyManager pms;
-
-    /**
-     * <p>
-     * Defines property set types.
-     * </p>
-     */
-    private final static int USER_PROPERTY_SET_TYPE = 0;
-
-    private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
-
-    private PreferencesProvider provider;
-
-    private PreferencesProvider providerNoProp;
-
     /**
      * @see junit.framework.TestCase#setUp()
      */
     public void setUp() throws Exception
     {
         super.setUp();
-        provider = (PreferencesProvider) ctx.getBean("prefsProvider");
-        pms = (PropertyManager) ctx.getBean("propertyManager");
-        PersistenceBrokerPreferencesProvider prefsPersistenceBroker = (PersistenceBrokerPreferencesProvider) ctx
-                .getBean("prefsPersistenceBroker");
-        prefsPersistenceBroker.setEnablePropertyManager(true);
-
+        
         // Make sure we are starting with a clean slate
         clearChildren(Preferences.userRoot());
         clearChildren(Preferences.systemRoot());
-
     }
 
     /**
@@ -77,58 +49,15 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
      */
     public void tearDown() throws Exception
     {
-        clean();
-        // super.tearDown();
     }
 
+    /**
+     * @return The test suite.
+     */
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestPreferences.class);
-    }
-
-    public void testLookupProperty()
-    throws Exception
-    {
-        PersistenceBrokerPreferencesProvider broker = 
-            (PersistenceBrokerPreferencesProvider) ctx.getBean("prefsPersistenceBroker");
-        
-        Preferences info = Preferences.userRoot().node("/user/dynamite/userinfo");
-        Map keys = new HashMap();
-        keys.put("user.name.family", new Integer(Property.STRING_TYPE));
-        keys.put("user.name.given", new Integer(Property.STRING_TYPE));
-        keys.put("user.email", new Integer(Property.STRING_TYPE));
-        pms.addPropertyKeys(info, keys);
-
-        info.put("user.name.family", "Dynamite");
-        info.put("user.name.given", "Napolean");
-        info.put("user.email", "napolean@dynamite.xxx");
-        info.flush();
-        
-        Iterator result = broker.lookupPreference("userinfo", "user.email", "napolean@dynamite.xxx").iterator();
-        int count = 0;
-        while (result.hasNext())
-        {
-            Node node = (Node)result.next();
-            System.out.println("node = " + node.getFullPath());
-            Iterator props = node.getNodeProperties().iterator();
-            while (props.hasNext())
-            {
-                Property prop = (Property)props.next();
-                String name = prop.getPropertyKey().getPropertyKeyName();
-                String value = prop.getTextPropertyValue();
-                if ("user.name.family".equals(name))
-                    assertTrue("family name wrong " + value, "Dynamite".equals(value));
-                else if ("user.name.given".equals(name))
-                    assertTrue("given name wrong " + value, "Napolean".equals(value));
-                else if ("user.email".equals(name))
-                    assertTrue("email is wrong " + value, "napolean@dynamite.xxx".equals(value));
-                else
-                    assertTrue("bad property name " + name, false);                
-            }
-            count++;
-        }
-        assertTrue("test-1: count is one " + count, count == 1);                
     }
     
     /**
@@ -240,10 +169,10 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
      */
     public void testPropertyAndPropertyKeys() throws Exception
     {
-
-        // 1. Current node does not have any property associated to it.
-        // No property has been defined nor added to the node. There should be
-        // no property and adding a child should return null.
+        // 1. Current node does not have any property associated to it. We are adding
+        // a property at the user root level.
+        // No property has been defined nor added to the node. This should return
+        // the property value
         Preferences pref0 = Preferences.userRoot();
         try
         {
@@ -261,10 +190,9 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
 
         pref0.put("propertyName0", "true");
         String prop = pref0.get("propertyName0", null);
-        assertNull("should be null.", prop);
+        assertTrue("should be prop == true.", prop.equals("true"));
 
         // 2. Current node has properties associated to it.
-        initPropertyKeys();
         Preferences pref1 = Preferences.userRoot().node("/user/principal1/propertyset1");
         pref1.put("propertyName0", "true");
         String prop1 = pref1.get("propertyName0", null);
@@ -284,7 +212,7 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
         // Test remove property.
         pref1.remove("propertyName0");
         prop1 = pref1.get("propertyName0", null);
-        assertNull("should be null.", prop);
+        assertNull("should be null.", prop1);
 
         // Remove all nodes with properties assigned to property sets.
         pref1.put("propertyName0", "true");
@@ -333,68 +261,12 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
 
     /**
      * <p>
-     * Init property property keys map.
+     * Clear all the children.
      * </p>
+     * 
+     * @param node
+     * @throws Exception
      */
-    protected Map initPropertyKeysMap()
-    {
-        // Build a few property keys.
-        Map propertyKeys = new HashMap();
-        propertyKeys.put("propertyName0", new Integer("0"));
-        propertyKeys.put("propertyName1", new Integer("1"));
-        propertyKeys.put("propertyName2", new Integer("2"));
-        propertyKeys.put("propertyName3", new Integer("3"));
-
-        return propertyKeys;
-    }
-
-    /**
-     * <p>
-     * Init property property keys.
-     * </p>
-     */
-    protected void initPropertyKeys() throws Exception
-    {
-        Map propertyKeys = initPropertyKeysMap();
-        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
-
-        try
-        {
-            pms.addPropertyKeys(pref, propertyKeys);
-        }
-        catch (PropertyException pex)
-        {
-        }
-    }
-
-    /**
-     * <p>
-     * Clean properties.
-     * </p>
-     */
-    protected void clean() throws Exception
-    {
-        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
-        try
-        {
-            Map propertyKeys = pms.getPropertyKeys(pref);
-            pms.removePropertyKeys(pref, propertyKeys.keySet());
-            Preferences.userRoot().node("/user").removeNode();
-            Preferences.userRoot().node("/an1").removeNode();
-            Preferences.userRoot().node("/rn1").removeNode();
-            Preferences.userRoot().node("/testOpenNode").removeNode();
-            Preferences.userRoot().node("/removeTest").removeNode();
-        }
-        catch (PropertyException pex)
-        {
-            System.out.println("PropertyException" + pex);
-        }
-        catch (BackingStoreException bse)
-        {
-            System.out.println("BackingStoreException" + bse);
-        }
-    }
-
     protected void clearChildren(Preferences node) throws Exception
     {
         String[] names = node.childrenNames();
@@ -402,8 +274,17 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
         {
             node.node(names[i]).removeNode();
         }
+        // Remove the properties of the current node.
+        String[] keys = node.keys();
+        for (int j = 0; j < keys.length; j++)
+        {
+            node.remove(keys[j]);
+        }
     }
 
+    /**
+     * @see org.apache.jetspeed.components.test.AbstractSpringTestCase#getConfigurations()
+     */
     protected String[] getConfigurations()
     {
         return new String[]

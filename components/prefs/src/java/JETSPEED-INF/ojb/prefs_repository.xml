@@ -77,18 +77,6 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <collection-descriptor
-	        name="nodeKeys"
-	        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-	        auto-retrieve="true"
-	        auto-delete="false"
-	        auto-update="true"
-	        indirection-table="PREFS_NODE_PROPERTY_KEY"
-	    >
-	        <documentation>This is the reference to the property keys allowed for that node.</documentation>
-	        <fk-pointing-to-this-class column="NODE_ID"/>
-	        <fk-pointing-to-element-class column="PROPERTY_KEY_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
 	        name="nodeProperties"
 	        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyImpl"
 	        auto-retrieve="true"
@@ -99,54 +87,6 @@ limitations under the License.
 	        <documentation>This is the reference to a node properties.</documentation>
 	        <inverse-foreignkey field-ref="nodeId"/>
 	    </collection-descriptor>
-	</class-descriptor>
-	
-	<!--
-	   - P R O P E R T Y  K E Y
-	-->	
-	
-	<class-descriptor
-	    class="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-	    table="PREFS_PROPERTY_KEY"
-	>
-	    <documentation>Represents a property key.</documentation>
-	    <field-descriptor
-	        name="propertyKeyId"
-	        column="PROPERTY_KEY_ID"
-	        jdbc-type="BIGINT"
-	        primarykey="true"
-	        autoincrement="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="propertyKeyName"
-	        column="PROPERTY_NAME"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="100"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="propertyKeyType"
-	        column="PROPERTY_TYPE"
-	        jdbc-type="SMALLINT"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="creationDate"
-	        column="CREATION_DATE"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="modifiedDate"
-	        column="MODIFIED_DATE"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
 	</class-descriptor>
 	
 	<!--
@@ -173,45 +113,17 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
-	    <field-descriptor
-	        name="propertyKeyId"
-	        column="PROPERTY_KEY_ID"
-	        jdbc-type="BIGINT"
+        <field-descriptor
+	        name="propertyName"
+	        column="PROPERTY_NAME"
+	        jdbc-type="VARCHAR"
 	        nullable="false"
+	        length="100"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
-	        name="booleanPropertyValue"
-	        column="BOOLEAN_VALUE"
-	        jdbc-type="INTEGER"
-	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-	        nullable="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="datePropertyValue"
-	        column="DATETIME_VALUE"
-	        jdbc-type="TIMESTAMP"
-	        nullable="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="longPropertyValue"
-	        column="LONG_VALUE"
-	        jdbc-type="BIGINT"
-	        nullable="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="doublePropertyValue"
-	        column="DOUBLE_VALUE"
-	        jdbc-type="DOUBLE"
-	        nullable="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="textPropertyValue"
-	        column="TEXT_VALUE"
+	        name="propertyValue"
+	        column="PROPERTY_VALUE"
 	        jdbc-type="VARCHAR"
 	        nullable="true"
 	        length="254"
@@ -231,17 +143,6 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
-	    <reference-descriptor
-	        name="propertyKey"
-	        class-ref="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-delete="false"
-	        auto-update="true"
-	    >
-	        <documentation>This is the reference to a property key.</documentation>
-	        <foreignkey field-ref="propertyKeyId"/>
-	    </reference-descriptor>
 	</class-descriptor>
 	
 </descriptor-repository>

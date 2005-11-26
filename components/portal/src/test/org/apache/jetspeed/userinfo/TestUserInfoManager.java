@@ -17,7 +17,6 @@ package org.apache.jetspeed.userinfo;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -30,8 +29,6 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.prefs.PropertyException;
-import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
@@ -196,32 +193,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         Preferences userInfoPrefs = user.getPreferences().node("userinfo");
-        Map propertyKeys = initPropertyKeysMap();
-        try
-        {
-            propertyManager.addPropertyKeys(userInfoPrefs, propertyKeys);
-        }
-        catch (PropertyException pex)
-        {
-            assertTrue("should have add propertyKeys. should not have thrown an exception.", false);
-        }
         userInfoPrefs.put("user.name.given", "Test Dude");
         userInfoPrefs.put("user.name.family", "Dudley");
-    }
-
-    /**
-     * <p>
-     * Init property property keys map.
-     * </p>
-     */
-    protected Map initPropertyKeysMap()
-    {
-        // Build a few property keys.
-        Map propertyKeys = new HashMap();
-        propertyKeys.put("user.name.given", new Integer(Property.STRING_TYPE));
-        propertyKeys.put("user.name.family", new Integer(Property.STRING_TYPE));
-
-        return propertyKeys;
     }
 
     /**

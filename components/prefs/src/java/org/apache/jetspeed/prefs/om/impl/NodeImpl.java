@@ -32,13 +32,23 @@ import org.apache.jetspeed.prefs.om.Node;
  */
 public class NodeImpl implements Node
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = -5367800007757021163L;
+
     private long nodeId;
+
     private Long parentNodeId;
+
     private Collection nodeProperties;
+
     private Collection nodeKeys;
+
     private String nodeName;
+
     private int nodeType;
+
     private String fullPath;
+
     private Timestamp creationDate;
 
     /**
@@ -63,16 +73,12 @@ public class NodeImpl implements Node
      * <li>Full path.</li>
      * </ul>
      * 
-     * @param parentNodeId
-     *            The parent node id.
-     * @param nodeName
-     *            The node name.
-     * @param nodeType
-     *            The node type.
-     * @param fullPath
-     *            The full path.
+     * @param parentNodeId The parent node id.
+     * @param nodeName The node name.
+     * @param nodeType The node type.
+     * @param fullPath The full path.
      */
-    public NodeImpl( Long parentNodeId, String nodeName, int nodeType, String fullPath )
+    public NodeImpl(Long parentNodeId, String nodeName, int nodeType, String fullPath)
     {
         this.parentNodeId = parentNodeId;
         this.nodeName = nodeName;
@@ -95,7 +101,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setNodeId(int)
      */
-    public void setNodeId( long nodeId )
+    public void setNodeId(long nodeId)
     {
         this.nodeId = nodeId;
     }
@@ -111,7 +117,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setParentNodeId(java.lang.Long)
      */
-    public void setParentNodeId( Long parentNodeId )
+    public void setParentNodeId(Long parentNodeId)
     {
         this.parentNodeId = parentNodeId;
     }
@@ -127,7 +133,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setNodeProperties(java.util.Collection)
      */
-    public void setNodeProperties( Collection nodeProperties )
+    public void setNodeProperties(Collection nodeProperties)
     {
         this.nodeProperties = nodeProperties;
     }
@@ -143,7 +149,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setNodeKeys(java.util.Collection)
      */
-    public void setNodeKeys( Collection nodeKeys )
+    public void setNodeKeys(Collection nodeKeys)
     {
         this.nodeKeys = nodeKeys;
     }
@@ -159,7 +165,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setNodeName(java.lang.String)
      */
-    public void setNodeName( String nodeName )
+    public void setNodeName(String nodeName)
     {
         this.nodeName = nodeName;
     }
@@ -175,7 +181,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setNodeType(int)
      */
-    public void setNodeType( int nodeType )
+    public void setNodeType(int nodeType)
     {
         this.nodeType = nodeType;
     }
@@ -191,7 +197,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setFullPath(java.lang.String)
      */
-    public void setFullPath( String fullPath )
+    public void setFullPath(String fullPath)
     {
         this.fullPath = fullPath;
     }
@@ -207,7 +213,7 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setCreationDate(java.sql.Timestamp)
      */
-    public void setCreationDate( Timestamp creationDate )
+    public void setCreationDate(Timestamp creationDate)
     {
         this.creationDate = creationDate;
     }
@@ -225,15 +231,15 @@ public class NodeImpl implements Node
     /**
      * @see org.apache.jetspeed.prefs.om.Node#setModifiedDate(java.sql.Timestamp)
      */
-    public void setModifiedDate( Timestamp modifiedDate )
+    public void setModifiedDate(Timestamp modifiedDate)
     {
         this.modifiedDate = modifiedDate;
     }
-    
+
     public boolean equals(Object o)
     {
         return fullPath != null && o != null && o instanceof NodeImpl && ((NodeImpl) o).fullPath != null
-                        && fullPath.equals(((NodeImpl) o).fullPath);
+                && fullPath.equals(((NodeImpl) o).fullPath);
     }
 
     /**
@@ -245,14 +251,10 @@ public class NodeImpl implements Node
      */
     public String toString()
     {
-        String toStringNode = "[[parentNodeId, " + this.parentNodeId + "], "
-            + "[nodeName, " + this.nodeName + "], "
-            + "[fullPath, " + this.fullPath + "], "
-            + "[nodeType, " + this.nodeType + "], "
-            + "[nodeKeys, " + this.nodeKeys + "], "
-            + "[nodeProperties, " + this.nodeProperties + "], "
-            + "[creationDate, " + this.creationDate + "], "
-            + "[modifiedDate, " + this.modifiedDate + "]]";
+        String toStringNode = "[[parentNodeId, " + this.parentNodeId + "], " + "[nodeName, " + this.nodeName + "], "
+                + "[fullPath, " + this.fullPath + "], " + "[nodeType, " + this.nodeType + "], " + "[nodeKeys, "
+                + this.nodeKeys + "], " + "[nodeProperties, " + this.nodeProperties + "], " + "[creationDate, "
+                + this.creationDate + "], " + "[modifiedDate, " + this.modifiedDate + "]]";
         return toStringNode;
     }
 

@@ -17,7 +17,6 @@ package org.apache.jetspeed.prefs.util.test;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.apache.jetspeed.prefs.PropertyManager;
 
 /**
  * <p>
@@ -29,8 +28,6 @@ import org.apache.jetspeed.prefs.PropertyManager;
  */
 public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestCase
 {
-    protected PropertyManager propertyManager;
-
     protected PreferencesProvider prefsProvider;
 
     protected String[] getConfigurations()
@@ -49,6 +46,5 @@ public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestC
     {
         super.setUp();
         prefsProvider = (PreferencesProvider) ctx.getBean("prefsProvider");
-        propertyManager = (PropertyManager) ctx.getBean("propertyManager");
     }
 }

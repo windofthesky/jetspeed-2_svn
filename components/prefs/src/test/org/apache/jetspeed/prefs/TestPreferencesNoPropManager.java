@@ -6,8 +6,6 @@
  */
 package org.apache.jetspeed.prefs;
 
-import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
@@ -41,8 +39,6 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
      */
     public void tearDown() throws Exception
     {
-        clean();
-        // super.tearDown();
     }
 
     protected void clearChildren(Preferences node) throws Exception
@@ -56,32 +52,12 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
 
     /**
      * <p>
-     * Clean properties.
+     * Legacy test from the times where we add a property manager. The property manager is
+     * since gone, but the test still tests the prefs implementation.
      * </p>
+     * 
+     * @throws Exception
      */
-    protected void clean() throws Exception
-    {
-        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
-        try
-        {
-            Map propertyKeys = propertyManager.getPropertyKeys(pref);
-            propertyManager.removePropertyKeys(pref, propertyKeys.keySet());
-            Preferences.userRoot().node("/user").removeNode();
-            Preferences.userRoot().node("/an1").removeNode();
-            Preferences.userRoot().node("/rn1").removeNode();
-            Preferences.userRoot().node("/testOpenNode").removeNode();
-            Preferences.userRoot().node("/removeTest").removeNode();
-        }
-        catch (PropertyException pex)
-        {
-            System.out.println("PropertyException" + pex);
-        }
-        catch (BackingStoreException bse)
-        {
-            System.out.println("BackingStoreException" + bse);
-        }
-    }
-
     public void testSansPropertyManager() throws Exception
     {
 
@@ -98,6 +74,9 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
 
     }
 
+    /**
+     * @see org.apache.jetspeed.components.test.AbstractSpringTestCase#getConfigurations()
+     */
     protected String[] getConfigurations()
     {
         return new String[]

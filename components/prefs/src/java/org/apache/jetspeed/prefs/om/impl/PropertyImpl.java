@@ -17,112 +17,71 @@ package org.apache.jetspeed.prefs.om.impl;
 import java.sql.Timestamp;
 
 import org.apache.jetspeed.prefs.om.Property;
-import org.apache.jetspeed.prefs.om.PropertyKey;
 
 /**
- * <p>{@link Property} interface implementation.</p>
- * <p>Represents a property key/value pair.</p>
- *
+ * <p>
+ * {@link Property} interface implementation.
+ * </p>
+ * <p>
+ * Represents a property key/value pair.
+ * </p>
+ * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyImpl implements Property
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 7037975617489867366L;
+
     private long nodeId;
+
+    private String propertyName;
+
+    private String propertyValue;
+
     private long propertyValueId;
-    private long propertyKeyId;
-    
+
     /**
-     * <p>Property implementation default constructor.</p>
+     * <p>
+     * Property implementation default constructor.
+     * </p>
      */
     public PropertyImpl()
     {
     }
 
     /**
-     * Property constructor given a property key id, node id
-     * and the appropriate value object type and value:
-     *
-     * <ul>
-     *     <li>0=Boolean,</li>
-     *     <li>1=Long,</li>
-     *     <li>2=Double,</li>
-     *     <li>3=String,</li>
-     *     <li>4=Timestamp</li>
-     * </ul>
-     * @param propertyKeyId The property key id.
+     * Property constructor given a property key id, node id and the appropriate
+     * value.
+     * 
      * @param nodeId The node id.
-     * @param valueObjectType The value object type.
+     * @param propertyName The property name.
      * @param valueObject The value object.
      */
-    public PropertyImpl(long nodeId, long propertyKeyId, PropertyKey propertyKey, int valueObjectType, Object valueObject)
+    public PropertyImpl(long nodeId, String propertyName, Object valueObject)
     {
         this.nodeId = nodeId;
-        this.propertyKeyId = propertyKeyId;
-        this.propertyKey = propertyKey;
+        this.propertyName = propertyName;
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
 
-        setPropertyValue(valueObjectType, (String) valueObject);
+        setPropertyValue((String) valueObject);
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#getPropertyValue(int)
+     * @see org.apache.jetspeed.prefs.om.Property#getPropertyValue()
      */
-    public final String getPropertyValue(int valueObjectType)
+    public final String getPropertyValue()
     {
-        String stringValue = null;
-
-        if (BOOLEAN_TYPE == valueObjectType)
-        {
-            stringValue = (Boolean.valueOf(this.booleanPropertyValue)).toString();
-        }
-        else if (LONG_TYPE == valueObjectType)
-        {
-            stringValue = Long.toString(this.longPropertyValue);
-        }
-        else if (DOUBLE_TYPE == valueObjectType)
-        {
-            stringValue = Double.toString(this.doublePropertyValue);
-        }
-        else if (STRING_TYPE == valueObjectType)
-        {
-            stringValue = this.textPropertyValue;
-        }
-        else if (TIMESTAMP_TYPE == valueObjectType)
-        {
-            stringValue = this.datePropertyValue.toString();
-        }
-        return stringValue;
+        return propertyValue;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#setPropertyValue(int, java.lang.String)
+     * @see org.apache.jetspeed.prefs.om.Property#setPropertyValue(java.lang.String)
      */
-    public final void setPropertyValue(int valueObjectType, String valueObject)
+    public final void setPropertyValue(String valueObject)
     {
-        if (null != valueObject)
-        {
-            if (BOOLEAN_TYPE == valueObjectType)
-            {
-                this.booleanPropertyValue = (Boolean.valueOf(valueObject)).booleanValue();
-            }
-            else if (LONG_TYPE == valueObjectType)
-            {
-                this.longPropertyValue = (Long.valueOf(valueObject)).longValue();
-            }
-            else if (DOUBLE_TYPE == valueObjectType)
-            {
-                this.doublePropertyValue = (Double.valueOf(valueObject)).doubleValue();
-            }
-            else if (STRING_TYPE == valueObjectType)
-            {
-                this.textPropertyValue = (String) valueObject;
-            }
-            else if (TIMESTAMP_TYPE == valueObjectType)
-            {
-                this.datePropertyValue = Timestamp.valueOf(valueObject);
-            }
-        }
+        this.propertyValue = valueObject;
     }
 
     /**
@@ -158,127 +117,19 @@ public class PropertyImpl implements Property
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#getPropertyKeyId()
+     * @return Returns the propertyName.
      */
-    public long getPropertyKeyId()
+    public String getPropertyName()
     {
-        return this.propertyKeyId;
+        return propertyName;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#setPropertyKeyId(long)
+     * @param propertyName The propertyName to set.
      */
-    public void setPropertyKeyId(long propertyKeyId)
+    public void setPropertyName(String propertyName)
     {
-        this.propertyKeyId = propertyKeyId;
-    }
-
-    private PropertyKey propertyKey;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getPropertyKey()
-     */
-    public PropertyKey getPropertyKey()
-    {
-        return this.propertyKey;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setPropertyKey(org.apache.jetspeed.prefs.om.PropertyKey)
-     */
-    public void setPropertyKey(PropertyKey propertyKey)
-    {
-        this.propertyKey = propertyKey;
-    }
-
-    private boolean booleanPropertyValue;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getBooleanPropertyValue()
-     */
-    public boolean getBooleanPropertyValue()
-    {
-        return this.booleanPropertyValue;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setBooleanPropertyValue(boolean)
-     */
-    public void setBooleanPropertyValue(boolean booleanPropertyValue)
-    {
-        this.booleanPropertyValue = booleanPropertyValue;
-    }
-
-    private Timestamp datePropertyValue;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getDatePropertyValue()
-     */
-    public Timestamp getDatePropertyValue()
-    {
-        return this.datePropertyValue;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setDatePropertyValue(java.sql.Timestamp)
-     */
-    public void setDatePropertyValue(Timestamp datePropertyValue)
-    {
-        this.datePropertyValue = datePropertyValue;
-    }
-
-    private long longPropertyValue;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getLongPropertyValue()
-     */
-    public long getLongPropertyValue()
-    {
-        return this.longPropertyValue;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setLongPropertyValue(long)
-     */
-    public void setLongPropertyValue(long longPropertyValue)
-    {
-        this.longPropertyValue = longPropertyValue;
-    }
-
-    private double doublePropertyValue;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getDoublePropertyValue()
-     */
-    public double getDoublePropertyValue()
-    {
-        return this.doublePropertyValue;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setDoublePropertyValue(double)
-     */
-    public void setDoublePropertyValue(double doublePropertyValue)
-    {
-        this.doublePropertyValue = doublePropertyValue;
-    }
-
-    private String textPropertyValue;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#getTextPropertyValue()
-     */
-    public String getTextPropertyValue()
-    {
-        return this.textPropertyValue;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Property#setTextPropertyValue(java.lang.String)
-     */
-    public void setTextPropertyValue(String textPropertyValue)
-    {
-        this.textPropertyValue = textPropertyValue;
+        this.propertyName = propertyName;
     }
 
     private Timestamp creationDate;
@@ -318,17 +169,16 @@ public class PropertyImpl implements Property
     }
 
     /**
-     * <p>Convert <code>Property</code> to string.</p>
+     * <p>
+     * Convert <code>Property</code> to string.
+     * </p>
+     * 
      * @return The Property string value.
      */
     public String toString()
     {
-        String toStringProperty = "[[nodeId, " + this.nodeId + "], "
-            + "[propertyKeyId, " + this.propertyKeyId + "], "
-            + "[propertyKey, " + this.propertyKey + "], "
-            + "[propertyValue, " + getPropertyValue(propertyKey.getPropertyKeyType()) + "], "
-            + "[creationDate, " + this.creationDate + "], "
-            + "[modifiedDate, " + this.modifiedDate + "]]";
+        String toStringProperty = "[[nodeId, " + this.nodeId + "], " + "[propertyValue, " + getPropertyValue() + "], "
+                + "[creationDate, " + this.creationDate + "], " + "[modifiedDate, " + this.modifiedDate + "]]";
         return toStringProperty;
     }
 
