@@ -146,6 +146,8 @@
       	  <fileset dir="${basedir}/xdocs/style"/>
       	</copy>
       	<copy toDir="${directory}/images">
+          <fileset file="${basedir}/xdocs/images/h3.jpg"/>
+      	  <fileset file="${basedir}/xdocs/images/h5.jpg"/>
       	  <fileset file="${basedir}/xdocs/images/breadcrumbs.jpg"/>
       	</copy>
       </j:forEach>

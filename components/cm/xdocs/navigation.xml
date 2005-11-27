@@ -17,11 +17,13 @@
 <project>
     <body>
         <links>
+        	<item name="Components Guide" href="../../guides/guide-components.html" />
             <item name="Jetspeed 2" href="../../index.html" />
             <!-- Cannot access ${pom.id}... Hard coding pdf name. -->
             <item name="PDF Documentation" href="/jetspeed-cm.pdf" img="../../images/pdf.gif" />
         </links>
-        <menu name="Misc.">
+        <menu name="Jetspeed-2 Component Manager Documentation">
+        	<item name="Component Manager Overview" href="index.html" />
             <item name="Tasks" href="tasks.html" />
         </menu>
     </body>

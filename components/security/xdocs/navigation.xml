@@ -17,11 +17,12 @@
 <project>
     <body>
         <links>
-            <item name="Jetspeed 2" href="../../index.html" />
+        	<item name="Components Guide" href="../../guides/guide-components.html" />
+        	<item name="Jetspeed-2" href="../../index.html" />
             <!-- Cannot access ${pom.id}... Hard coding pdf name. -->
             <item name="PDF Documentation" href="/jetspeed-security.pdf" img="../../images/pdf.gif" />
         </links>
-        <menu name="Jetspeed 2 Security Documentation">
+        <menu name="Jetspeed-2 Security Documentation">
             <item name="Overview" href="index.html" />
             <item name="Architecture Overview" href="arch.html" />
             <item name="Authentication" href="atn.html">

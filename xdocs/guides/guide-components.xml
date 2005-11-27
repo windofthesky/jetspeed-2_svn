@@ -54,16 +54,37 @@
 		<img src="images/jetspeedservlet-c.gif" border="0"/>
 		</p>
 		<p>
-		The <i>JetspeedServlet</i> is configured is the portal application <i>web.xml</i> to load at startup.  The <i>initializeComponentManager</i>
-		method loads the <a href="guide-portal-assembly.html">assembly</a> for the given component framework. The <i>JetspeedEngine</i> is then
+		The <code>JetspeedServlet</code> is configured in the portal application <i>web.xml</i> to load at startup.  The <code>initializeComponentManager</code>
+		method loads the <a href="guide-portal-assembly.html">assembly</a> for the given component framework.  The default implementation
+		of <code>initializeComponentManager</code> supports the <a href="http://www.springframework.com">spring framework</a> as a component framework
+		and assembles the xml files located under <code>WEB-INF/assembly</code> to initialize the spring engine.  The <i>JetspeedEngine</i> is then
 		constructed with the proper component manager.
 		<pre>
     engine = new JetspeedEngine(properties, applicationRoot, config,
                                 initializeComponentManager(config, applicationRoot, properties));
 		</pre>
 		</p>
+		<p>
+		In order to support another component framework, developers should override the <code>initializeComponentManager</code> implementation.
+		</p>
 		</subsection>
 		<subsection name="Jetspeed-2 Core Components">
+		<table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Component Manager - Artifact Id: jetspeed-cm</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-cm/index.html"><code>ComponentManager</code></a></td>
+            <td>The <code>ComponentManager</code> provides a generic layer of abstraction on top of the component framework
+            being used.  The default <code>ComponentManager</code> implementation in Jetspeed-2 is the 
+            <code>SpringComponentManager</code>.  More information can be found in the 
+            <a href="../multiproject/jetspeed-cm/index.html"><code>ComponentManager</code> documentation</a>.</td>
+          </tr>
+		</table>
 		</subsection>
 		</section>
 	</body>
