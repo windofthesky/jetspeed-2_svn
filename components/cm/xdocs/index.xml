@@ -17,6 +17,9 @@
 <document>
     <properties>
         <title>Jetspeed-2 Component Manager</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
     </properties>
     <body>
         <section name="Component Manager Overview">

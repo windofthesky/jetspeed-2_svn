@@ -84,6 +84,25 @@
             <code>SpringComponentManager</code>.  More information can be found in the 
             <a href="../multiproject/jetspeed-cm/index.html"><code>ComponentManager</code> documentation</a>.</td>
           </tr>
+		</table><br/>
+		<table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Deploy Tools - Artifact Id: jetspeed-deploy-tools</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code></a></td>
+            <td><code>JetspeedDeploy</code> prepares portlet applications prior to being deployed in Jetspeed-2.  More information can be found in the 
+            <a href="../multiproject/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code> documentation</a>.</td>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-deploy-tools/index.html"><code>DeploymentManager</code></a></td>
+            <td>The <code>DeploymentManager</code> listens for new portal assets (portlets, decorators) to be deployed.  An overview of how deployment
+            works in Jetspeed-2 can be found <a href="../multiproject/jetspeed-deploy-tools/index.html">here</a>.</td>
+          </tr>
 		</table>
 		</subsection>
 		</section>

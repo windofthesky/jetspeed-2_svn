@@ -62,6 +62,7 @@
 		<subsection name="Guides to Jetspeed-2 Tools">
 		<ul>
 			<li><a href="guide-jpt.html">Guide to Jetspeed-2 Power Tools</a></li>
+			<li><a href="../multiproject/jetspeed-deploy-tools/index.html">Guide to Jetspeed-2 Portlet Application Deployment</a></li>
 			<li><a href="../j2-maven-plugin.html">Guide to Jetspeed-2 Maven Plugin</a></li>			
 		</ul>
 		</subsection>
