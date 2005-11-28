@@ -15,6 +15,11 @@
  */
 package org.apache.jetspeed.decoration;
 
+/**
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public interface PathResolverCache
 {
     void addPath(String key, String path);
