@@ -23,32 +23,36 @@ import java.util.StringTokenizer;
 /**
  * <h2>Overview</h2>
  * <p>
- * The Path object is used to standard used to standardize the creation of mutation of path-like
- * structures. For: example /foo/bar/index.html.
+ * The Path object is used to standard used to standardize the creation of
+ * mutation of path-like structures. For: example /foo/bar/index.html.
  * </p>
  * <h2>Rules for Interperting Pathes</h2>
  * <p>
- * Below are the rules for how the constructor interprets literal paths. <strong>NOTE</strong> the
- * {@link addSegment(String)} interprets string pathes in a somewhat different manner. <table>
+ * Below are the rules for how the constructor interprets literal paths.
+ * <strong>NOTE</strong> the {@link addSegment(String)} interprets string
+ * pathes in a somewhat different manner. <table>
  * <tr>
  * <th>Literal Path</th>
  * <th>Interpretation</th>
  * </tr>
  * <td> <i>/foo/bar/index.html</i> </td>
- * <td> <code>foo</code> and <code>bar</code> will be considered directory segments while
- * <code>index.html</code> will be considered a file segment. This means that the
- * <code>baseName</code> will be set to <i>index</i> and the <code>fileExtension</code> will be
- * set to <i>.html</i> </td>
+ * <td> <code>foo</code> and <code>bar</code> will be considered directory
+ * segments while <code>index.html</code> will be considered a file segment.
+ * This means that the <code>baseName</code> will be set to <i>index</i> and
+ * the <code>fileExtension</code> will be set to <i>.html</i> </td>
  * <tr>
- * <td> <i>/foo/bar/</i>, <i>/foo/bar</i>, <i>foo/bar/</i> <i>foo/bar</i> </td>
+ * <td> <i>/foo/bar/</i>, <i>/foo/bar</i>, <i>foo/bar/</i> <i>foo/bar</i>
+ * </td>
  * <td>
  * <p>
- * <code>foo</code> and <code>bar</code> will be considered directory segments.
- * <code>baseName</code> and <code>fileExtension</code> will be left as <code>null</code>.
+ * <code>foo</code> and <code>bar</code> will be considered directory
+ * segments. <code>baseName</code> and <code>fileExtension</code> will be
+ * left as <code>null</code>.
  * <p>
- * I cases where a file has no extension you must use the {@link setFileSegment(String))} to
- * manually set the file. This causes the <code>baseName</code> to be set to the file name
- * specified and the <code>fileExtension</code> will be set to the empty string ("").
+ * I cases where a file has no extension you must use the
+ * {@link setFileSegment(String))} to manually set the file. This causes the
+ * <code>baseName</code> to be set to the file name specified and the
+ * <code>fileExtension</code> will be set to the empty string ("").
  * </p>
  * </td>
  * </tr>
@@ -101,33 +105,41 @@ public class Path implements Serializable, Cloneable
 
     protected final void parsePathSegments(LinkedList segments, String path, boolean prepend)
     {
-        String[] split = path.split("\\?");
-        pathOnly = split[0];
-        StringTokenizer t = new StringTokenizer(pathOnly, PATH_SEPERATOR);
-        int index = 0;
-        while (t.hasMoreTokens())
+        if (path.equals("/"))
         {
-            if (prepend)
+            pathOnly = "";
+            segments.add("");
+        }
+        else
+        {
+            String[] split = path.split("\\?");
+            pathOnly = split[0];
+            StringTokenizer t = new StringTokenizer(pathOnly, PATH_SEPERATOR);
+            int index = 0;
+            while (t.hasMoreTokens())
             {
-                segments.add(index, t.nextToken());
-                index++;
-            }
-            else
-            {
-                if (fileName == null)
+                if (prepend)
                 {
-                    segments.add(t.nextToken());
+                    segments.add(index, t.nextToken());
+                    index++;
                 }
-                else if (fileName != null && segments.size() > 1)
+                else
                 {
-                    segments.add(segments.size() - 1, t.nextToken());
+                    if (fileName == null)
+                    {
+                        segments.add(t.nextToken());
+                    }
+                    else if (fileName != null && segments.size() > 1)
+                    {
+                        segments.add(segments.size() - 1, t.nextToken());
+                    }
+                    else if (fileName != null && segments.size() < 2)
+                    {
+                        segments.add(0, t.nextToken());
+                    }
                 }
-                else if (fileName != null && segments.size() < 2)
-                {
-                    segments.add(0, t.nextToken());
-                }
-            }
 
+            }
         }
     }
 
@@ -172,9 +184,11 @@ public class Path implements Serializable, Cloneable
     /**
      * Returns the segement of the path at the specified index <code>i</code>.
      * 
-     * @param i index containing the segment to return.
+     * @param i
+     *            index containing the segment to return.
      * @return Segment at index <code>i</code>
-     * @throws ArrayIndexOutOfBoundsException if the index is not within the bounds of this Path.
+     * @throws ArrayIndexOutOfBoundsException
+     *             if the index is not within the bounds of this Path.
      */
     public String getSegment(int i)
     {
@@ -183,12 +197,14 @@ public class Path implements Serializable, Cloneable
 
     /**
      * <p>
-     * Adds this segment to the end of the path but before the current file segment, if one exists.
-     * For consistency Segments added via this method are <strong>ALWAYS</strong> considered
-     * directories even when matching a standrad file pattern i.e. <i>index.html</i>
+     * Adds this segment to the end of the path but before the current file
+     * segment, if one exists. For consistency Segments added via this method
+     * are <strong>ALWAYS</strong> considered directories even when matching a
+     * standrad file pattern i.e. <i>index.html</i>
      * </p>
      * <p>
-     * If you need to set the file segment, please use the setFileSegment() method.
+     * If you need to set the file segment, please use the setFileSegment()
+     * method.
      * </p>
      * 
      * @param segment
@@ -228,10 +244,10 @@ public class Path implements Serializable, Cloneable
             newPathString.append("/").append((String) segments.get(i));
         }
 
-        if (queryString != null)
-        {
-            newPathString.append("?").append(queryString);
-        }
+//        if (queryString != null)
+//        {
+//            newPathString.append("?").append(queryString);
+//        }
 
         return new Path(newPathString.toString());
     }
@@ -346,8 +362,9 @@ public class Path implements Serializable, Cloneable
     }
 
     /**
-     * Removes the last directory segment in this path. This method <strong>WILL NOT</strong>
-     * remove the fileSegment, but path segment immediately before it.
+     * Removes the last directory segment in this path. This method <strong>WILL
+     * NOT</strong> remove the fileSegment, but path segment immediately before
+     * it.
      * 
      * @return segment removed.
      */
@@ -416,9 +433,13 @@ public class Path implements Serializable, Cloneable
 
     public Path getChild(String childPath)
     {
+        if(path.length() == 0)
+        {
+            return new Path(childPath);
+        }
         if (fileName != null)
         {
-            return getSubPath(0, (segments.size() - 1)).addSegment(childPath);
+            return getSubPath(0, (segments.size() - 1)).addSegment(childPath);       
         }
         else
         {
@@ -430,10 +451,13 @@ public class Path implements Serializable, Cloneable
     public Path getChild(Path childPath)
     {
         Path child = null;
-        if (fileName != null)
+        if (segments.size() == 0)
+        {
+            child = childPath;
+        }
+        else if (fileName != null)
         {
             child = getSubPath(0, (segments.size() - 1));
-
         }
         else
         {
