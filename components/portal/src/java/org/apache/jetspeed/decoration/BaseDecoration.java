@@ -22,7 +22,7 @@ import org.apache.jetspeed.util.Path;
 /**
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * 
  */
 public class BaseDecoration implements Decoration
 {
@@ -41,19 +41,15 @@ public class BaseDecoration implements Decoration
      * @param basePath
      * @throws InvalidDecorationConfigurationException
      */
-    public BaseDecoration(Properties config, ResourceValidator validator, Path basePath, PathResolverCache cache) throws InvalidDecorationConfigurationException
+    public BaseDecoration(Properties config, ResourceValidator validator, Path basePath, PathResolverCache cache) 
     {        
         this.config = config;
         this.validator = validator;
         this.basePath= basePath;
         this.cache = cache;
-        this.styleSheet = config.getProperty("stylesheet", "/css/styles.css");
+        this.styleSheet = config.getProperty("stylesheet", DEFAULT_STYLE_SHEET);
         
-        this.name = config.getProperty("name", config.getProperty("id"));
-        if(name == null)
-        {
-            throw new InvalidDecorationConfigurationException("The decoration configuration does not contain a name or id property.");
-        }
+        this.name = config.getProperty("name");      
     }
 
     public String getName()
@@ -71,7 +67,7 @@ public class BaseDecoration implements Decoration
         }
         else
         {
-            String locatedPath = getResource(basePath, new Path(path));
+            String locatedPath = getResource((Path)basePath.clone(), new Path(path));
             if(!locatedPath.startsWith(NO_SUCH_RESOURCE))
             {
                 cache.addPath(workingPath.toString(), locatedPath);
@@ -89,10 +85,10 @@ public class BaseDecoration implements Decoration
         {
             return pathString;
         }
-        else if((searchPath.length()-1) > 0)
+        else if((rootPath.length()) > 0)
         {
-            
-            return getResource(rootPath.getSubPath(0, (rootPath.length()-1)),searchPath);
+            rootPath.removeLastPathSegment();
+            return getResource(rootPath,searchPath);
         }
         else
         {
