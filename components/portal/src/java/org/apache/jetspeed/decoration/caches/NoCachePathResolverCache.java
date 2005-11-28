@@ -18,7 +18,7 @@ package org.apache.jetspeed.decoration.caches;
 import org.apache.jetspeed.decoration.PathResolverCache;
 
 /**
- * Represents an entirely non-caching cache :)
+ * A non-caching cache :)
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
