@@ -28,7 +28,7 @@
         </menu>
     	<menu name="Download">
     		<item name="Binaries " href="download.html" />
-    		<item name="Source" href="download.html" />
+    		<item name="Source" href="getting-started-source.html" />
     	</menu>
     	<menu name="Documentation">
     		<item name="Documentation Guides" href="guides/index.html" />

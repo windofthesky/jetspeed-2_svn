@@ -32,6 +32,7 @@
 				</a>
 				.
 			</p>
+			<subsection name="Jetspeed-2 Binary Distribution">
 			<table>
 				<tr>
 					<th />
@@ -58,6 +59,7 @@
 					<td>Link here</td>
 				</tr>
 			</table>
+			</subsection>
 			<subsection name="System Requirements">
 				<p>
 				The list of systems requirements for Jetspeed-2 is available <a href="getting-started.html#Requirements">here</a>.
