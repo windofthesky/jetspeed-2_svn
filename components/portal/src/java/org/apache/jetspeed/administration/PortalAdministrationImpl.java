@@ -15,22 +15,31 @@
  */
 package org.apache.jetspeed.administration;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.FileReader;
 import java.io.StringWriter;
 import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletConfig;
+import javax.security.auth.Subject;
+import javax.servlet.jsp.JspException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.profiler.Profiler;
@@ -46,7 +55,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
+import org.apache.taglibs.random.RandomStrg;
 
 /**
  * PortalAdministrationImpl
@@ -57,6 +66,7 @@ import org.springframework.mail.javamail.JavaMailSender;
  *  - 
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
  * @version $Id: $
  */
 
@@ -81,6 +91,17 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected Map defaultRules;
     /** name of PSML Folder Template to clone from when registering new user */
     protected String folderTemplate;
+    
+    /** the list of characters from which a password can be generatored. */
+    protected static final char[] PASS_CHARS = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+        // removed these for aesthetic purposes
+        //'!', '&',  '-', '_', '=',
+        // '*','@', '#', '$', '%', '^',
+        //'+',
     
     public PortalAdministrationImpl( UserManager userManager,
                                      RoleManager roleManager,
@@ -219,17 +240,52 @@ public class PortalAdministrationImpl implements PortalAdministration
                 }
             }
             
-            // create user's home folder                        
-            // deep copy from the default folder template tree, creating a deep-copy of the template
-            // in the new user's folder tree
             if (folderTemplate == null)
             {
                 folderTemplate = this.folderTemplate; 
             }
-            Folder source = pageManager.getFolder(folderTemplate);
-            pageManager.deepCopyFolder(source, Folder.USER_FOLDER + userName);
+            
+            // This next chunk of code is the fancy way to force the creation of the user
+            // template pages to be created with subject equal to the new user
+            // otherwise it would be created as guest, and guest does not have enough privs.
+            final String innerFolderTemplate = folderTemplate;
+            final String innerUserName = userName;
+            final PageManager innerPageManager = pageManager;
+            User powerUser = userManager.getUser("admin");
+            JetspeedException pe = (JetspeedException) Subject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
+                {
+                    public Object run() 
+                    {
+                         try
+                        {
+//                           create user's home folder                        
+                             // deep copy from the default folder template tree, creating a deep-copy of the template
+                             // in the new user's folder tree
+                            Folder source = innerPageManager.getFolder(innerFolderTemplate);
+                            innerPageManager.deepCopyFolder(source, Folder.USER_FOLDER + innerUserName);
+                             
+                            return null;
+                        }
+                         catch (FolderNotFoundException e1) {
+                             return e1;
+                         } catch (InvalidFolderException e1){
+                             return e1;
+                         } catch (NodeException e1){
+                             return e1;
+                         } catch (PageNotUpdatedException e1) {
+                             return e1;
+                         } catch (JetspeedException e1) {
+                             return e1;
+                         }                     
+                    }
+                }, null);
+                
+            if(pe != null)
+            {
+                throw pe;
+            }
                         
-        } 
+        }
         catch (Exception e) 
         {
             throw new RegistrationException(e); 
@@ -242,28 +298,73 @@ public class PortalAdministrationImpl implements PortalAdministration
      */
     public String generatePassword()
     {
-        // TODO: Find a replacement for Ostermiller's utility
-        // http://ostermiller.org/utils/RandPass.html
-        // almost screwed up and checked in a GPL licensed piece of code
-        // had to remove
-        return "secret";
+        RandomStrg rs = new RandomStrg();
+        
+        //TODO put in a more secure random number provider
+        //rs.setAlgorithm();   -- ideally call this for super security.  need rnd provider
+        
+        try
+        {
+            rs.generateRandomObject();
+        } catch (JspException e)
+        {
+            // this would only get thrown if we tried a secure random and the provider
+            // was not available.
+            e.printStackTrace();
+        }
+        rs.setLength(new Integer(12));
+        rs.setSingle(PASS_CHARS,PASS_CHARS.length);
+        ArrayList upper = new ArrayList();
+        ArrayList lower = new ArrayList();
+        //upper.add(new Character('A'));
+        //lower.add(new Character('B'));
+        rs.setRanges(upper,lower);
+        String retval = rs.getRandom();
+        
+        return retval;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.administration.PortalAdministration#sendPassword(java.lang.String)
      */
-    public void sendEmail(String emailAddress, 
+    public void sendEmail(PortletConfig  portletConfig,
+                          String emailAddress, 
                           String localizedSubject, 
                           String localizedTemplatePath,
                           Map userAttributes)                            
     throws AdministrationEmailException    
     {       
+        
+        String from = config.getString(PortalConfigurationConstants.EMAIL_SENDER);
+        String subject = localizedSubject;
+        String to = emailAddress;
+        String text = mergeEmailTemplate(portletConfig, userAttributes, "map", localizedTemplatePath);
+        sendEmail(from, subject, to, text);
+        
+    }
+    
+    /**
+     * @param from
+     * @param subject
+     * @param to
+     * @param text
+     * @throws AdministrationEmailException
+     */
+    public void sendEmail(String from, String subject, String to, String text) throws AdministrationEmailException
+    {
         SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(config.getString(PortalConfigurationConstants.EMAIL_SENDER));
-        msg.setSubject(localizedSubject);
-        msg.setTo(emailAddress);
-        msg.setText(mergeEmailTemplate(userAttributes, "map", localizedTemplatePath));
-
+        if(from == null) 
+        {
+            from = "jetspeedAdministrator@bluesunrise.com";
+        }
+        msg.setFrom(from);
+        if(subject == null) 
+        {
+            subject = "message from jetspeed";
+        }
+        msg.setSubject(subject);
+        msg.setTo(to);
+        msg.setText(text);
         try
         {
             mailSender.send(msg);
@@ -271,34 +372,23 @@ public class PortalAdministrationImpl implements PortalAdministration
         catch (MailException ex)
         {
             throw new AdministrationEmailException(
-                    "Failed to send forgotten password email to user with email address "
+                    "Failed to send forgotten password email to user with email address because "+ex.getMessage()
                             ); //+ user.getEmail());
         }
     }
     
-    public void sendEmail(String recipient,
-            String localizedSubject,
-            String message)
-    throws AdministrationEmailException
-    {
-        
-    }
-    
-    
-    public String mergeEmailTemplate(Map attributes, String attributesName, String template)
+    public String mergeEmailTemplate(PortletConfig  portletConfig, Map attributes, String attributesName, String template)
     throws AdministrationEmailException
     {
         VelocityContext context = new VelocityContext();
         context.put(attributesName, attributes);
-        
         StringWriter writer = new StringWriter();
-        final InputStream templateResource = this.getClass()
-                .getResourceAsStream(template);
-        Reader templateReader = new InputStreamReader(templateResource);
+        
         try
         {
-            velocityEngine.evaluate(context, writer, "UserEmailProcessor",
-                    templateReader);
+            String realTemplatePath = portletConfig.getPortletContext().getRealPath(template);
+            FileReader templateReader = new FileReader(realTemplatePath);
+            velocityEngine.evaluate(context, writer, "UserEmailProcessor", templateReader);
         } catch (Exception e)
         {
             throw new AdministrationEmailException(
@@ -316,7 +406,7 @@ public class PortalAdministrationImpl implements PortalAdministration
     public User lookupUserFromEmail(String email)
         throws AdministrationEmailException    
     {
-        Collection result = preferences.lookupPreference("userinfo", "user.email", email);
+        Collection result = preferences.lookupPreference("userinfo", "user.business-info.online.email", email);
         if (result.size() == 0)
         {
             throw new AdministrationEmailException(USER_NOT_FOUND_FROM_EMAIL + email);

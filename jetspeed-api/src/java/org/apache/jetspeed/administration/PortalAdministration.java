@@ -18,6 +18,7 @@ package org.apache.jetspeed.administration;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletConfig;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -82,7 +83,8 @@ public interface PortalAdministration
      * @parm userAttributes map of user attributes
      * @throws AdministrationEmailException
      */
-    public void sendEmail(String emailAddress, 
+    public void sendEmail(PortletConfig portletConfig,
+                          String emailAddress, 
                           String localizedSubject, 
                           String templatePath,
                           Map userAttributes)

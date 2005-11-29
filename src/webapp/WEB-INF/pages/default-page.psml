@@ -29,31 +29,40 @@ limitations under the License.
   <fragment id="dp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="dp-3" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>                                
-    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
-      <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
+    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>                                
+    <fragment id="dp-22" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>                                
+    <fragment id="dp-23" type="portlet" name="j2-admin::UserRegistrationPortlet">
+      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>                                
+    
     <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>        
     <fragment id="dp-16" type="portlet" name="demo::RoleSecurityTest">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>
-    <fragment id="dp-9" type="portlet" name="demo::IFramePortlet" decorator="gray-gradient-noborder">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
+    <fragment id="dp-9" type="portlet" name="demo::IFramePortlet" decorator="gray-gradient-noborder">
+      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>
     <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
-      <property layout="TwoColumns" name="row" value="2" />
-      <property layout="TwoColumns" name="column" value="1" />
+      <property layout="TwoColumns" name="row" value="4" />
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>
     <fragment id="dp-18" type="portlet" name="demo::BookmarkPortlet">
-      <property layout="TwoColumns" name="row" value="3" />
-      <property layout="TwoColumns" name="column" value="1" />
+      <property layout="TwoColumns" name="row" value="5" />
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
 

@@ -839,5 +839,115 @@ limitations under the License.
     </portlet-info>
   </portlet>
 
+  <portlet id="ForgottenPasswordPortlet">
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+            <value>/WEB-INF/view/userreg/forgottenPasswd.vm</value>
+     </init-param>
+     <init-param>
+        <description>This parameter sets the template used to send the Email for Forgotten password</description>
+        <name>emailTemplate</name>
+            <value>/WEB-INF/view/userreg/forgottenPasswdEmail.vm</value>
+     </init-param>   
+     <init-param>
+        <description>This parameter sets the url to which folks will return after they receive an email</description>
+        <name>returnURL</name>
+            <value>http://localhost:8080/jetspeed/portal/something.vm</value>
+     </init-param>   
+     <init-param>
+        <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
+        <name>redirectPath</name>
+            <value>http://localhost:8080/jetspeed/portal/</value>
+     </init-param>   
+
+    <portlet-name>ForgottenPasswordPortlet</portlet-name>
+    <display-name>Forgotten Password Portlet</display-name>
+    <description>Provides users with the ability to request a new password to be sent to their email address</description>
+    <portlet-class>org.apache.jetspeed.portlets.registration.ForgottenPasswordPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Forgotten Password</title>
+      <short-title>Forgotten Password</short-title>
+      <keywords>password, forgotten, lost, passwd </keywords>
+    </portlet-info>
+  </portlet>
+
+    <portlet id="ForgottenPasswordReturnPortlet">
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+            <value>/WEB-INF/view/userreg/forgottenPasswdReturn.vm</value>
+     </init-param>
+    <portlet-name>ForgottenPasswordReturnPortlet</portlet-name>
+    <display-name>Forgotten Password Return Portlet</display-name>
+    <description>Provides users with the ability to click and update their password after email</description>
+    <portlet-class>org.apache.jetspeed.portlets.registration.ForgottenPasswordPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Forgotten Password Return</title>
+      <short-title>forgot PS return</short-title>
+      <keywords> </keywords>
+    </portlet-info>
+  </portlet>
+  
+      
+    <portlet id="UserRegistrationPortlet">
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+            <value>/WEB-INF/view/userreg/userRegistration.vm</value>
+     </init-param>
+      
+      <init-param>
+        <description>This option will generate a new password for each user registration</description>
+        <name>Option_Generate_Passwords</name>
+            <value>false</value>
+      </init-param>   
+      <init-param>
+        <description>This option will force email address to be system wide unique</description>
+        <name>Option_Emails_System_Unique</name>
+            <value>true</value>
+      </init-param>   
+      <init-param>
+        <description>This option will use the email address as the username</description>
+        <name>Option_Use_Email_As_Username</name>
+            <value>false</value>
+      </init-param> 
+
+      <init-param>
+        <description>This is the template in which you setup an email to be sent after user exists</description>
+        <name>emailTemplate</name>
+            <value>/WEB-INF/view/userreg/userRegistrationEmail.vm</value>
+      </init-param> 
+      
+        
+       
+    <portlet-name>UserRegistrationPortlet</portlet-name>
+    <display-name>User Registration Portlet</display-name>
+    <description>Provides users with the ability register anew with the portal</description>
+    <portlet-class>org.apache.jetspeed.portlets.registration.UserRegistrationPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>User Registration </title>
+      <short-title>User Registration</short-title>
+      <keywords>password, register, signup, new user </keywords>
+    </portlet-info>
+  </portlet>
 </portlet-app>
 

@@ -36,7 +36,13 @@
       <version>${jetspeed.version}</version>
     </dependency>
  </dependencies>
-    
+   
+<dependencies>
+    <dependency>
+      <id>taglibs:random</id>
+      <version>1.0.2</version>
+    </dependency>
+ </dependencies> 
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>

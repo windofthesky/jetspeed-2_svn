@@ -149,6 +149,15 @@ limitations under the License.
         </properties>
     </dependency>
     <dependency>
+        <id>taglibs:standard</id>
+        <version>1.0.6</version>
+        <type>jar</type>
+        <properties>
+            <war.bundle>true</war.bundle>
+        </properties>
+    </dependency>
+
+    <dependency>
         <id>servletapi</id>
         <version>2.3</version>
         <type>jar</type>
