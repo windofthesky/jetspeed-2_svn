@@ -73,7 +73,7 @@ limitations under the License.
         <version>${jetspeed.version}</version>
         <type>jar</type>
         <properties>
-            <war.bundle>true</war.bundle>
+            <war.bundle>false</war.bundle>
         </properties>
     </dependency>
     <dependency>
