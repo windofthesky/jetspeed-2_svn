@@ -109,7 +109,7 @@ limitations under the License.
 #set($navigationsStandardMenu = $site.getMenu("navigations"))
 
 #if(!$navigationsStandardMenu.empty)
-          <td valign="top" id="leftcol" width="20%">
+          <td valign="top" id="leftcol" >
             <div id="navcolumn">
               <table cellpadding="0" cellspacing="4" border="0" width="100%">
 #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
