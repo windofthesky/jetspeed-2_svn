@@ -23,19 +23,16 @@ limitations under the License.
 
 .gray-gradient .PTitle
 {
-    padding: 2px;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
     border-left: 1px solid #999999;
     border-right: 1px solid #999999;
     border-top: 1px solid #999999;
     color: #01375D;
     
-    background-image: url(content/gray-gradient/images/grad2gray.png);
-    
-    /**
-    Specify the height of the image used
-    else it will use the text height    
-    **/
-    height:16px;    
+    background-image: url(content/gray-gradient/images/grad2gray.png);  
+  
 }
 
 .gray-gradient .PTitleContent
@@ -65,7 +62,7 @@ limitations under the License.
     border-left: 1px solid #999999;
     border-right: 1px solid #999999;
     border-bottom: 1px solid #999999;
-    padding-left: 1em;
+    
 }
 
 .gray-gradient .PContentRight

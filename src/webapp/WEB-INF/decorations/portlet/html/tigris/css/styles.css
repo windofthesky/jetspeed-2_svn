@@ -24,7 +24,10 @@ limitations under the License.
 
 .portlet-tigris .PTitle
 {
-    padding: 2px;
+      
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px;
     border-left: 1px solid #DDDDDD;
     border-right: 1px solid #666666;
     border-top: 1px solid #DDDDDD;
@@ -32,11 +35,7 @@ limitations under the License.
     color: #000000;
     background-color: #DDDDDD;
         
-    /**
-    Specify the height of the image used
-    else it will use the text height    
-    **/
-    height:16px;    
+    
 }
 
 .portlet-tigris .PTitleContent

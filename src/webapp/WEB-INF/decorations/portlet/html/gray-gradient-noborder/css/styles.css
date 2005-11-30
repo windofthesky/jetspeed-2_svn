@@ -21,16 +21,12 @@ limitations under the License.
 
 .gray-gradient-noborder .PTitle
 {
-    padding: 2px;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
     color: #01375D;
     
-    background-image: url(content/gray-gradient-noborder/images/grad2gray.png);
-    
-    /**
-    Specify the height of the image used
-    else it will use the text height    
-    **/
-    height:16px;    
+    background-image: url(content/gray-gradient-noborder/images/grad2gray.png);    
 }
 
 .gray-gradient-noborder .PTitleContent

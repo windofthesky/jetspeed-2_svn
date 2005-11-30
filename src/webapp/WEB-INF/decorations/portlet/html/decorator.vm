@@ -41,7 +41,9 @@ the root of your decortaion.  This will be used instead of the default.
       #foreach ($action in $actions)
        <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
       #end
-    </div>
+    
+	</div>
+	
   </div>
   #if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span>

@@ -18,20 +18,15 @@ limitations under the License.
 
 .blue-gradient .PTitle
 {
-    width: 100%;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
     border-left: 1px solid #517B94;
     border-right: 1px solid #517B94;
     border-top: 1px solid #517B94;
     color: #01375D;    
     
     background-image: url(content/blue-gradient/images/grad2blue.png);
-    
-    /**
-    Specify the height of the image used
-    else it will use the text height    
-    **/
-    height:16px;    
-
 }
 
 .blue-gradient .PTitleContent
@@ -39,30 +34,21 @@ limitations under the License.
     font-weight:bold;
     display: inline;
     float: left;
-    padding-left: 2px;
-    padding-top: 2px;
+
 }
 
 .blue-gradient .PActionBar
 {
    float: right;
    display: inline;
-   padding-right: 2px;
-   padding-top: 2px;
+
 }
  
 .blue-gradient .PContent
 {   
-    width: 100%;  
     border-left: 1px solid #517B94;
     border-right: 1px solid #517B94;
     border-bottom: 1px solid #517B94;
-}
-
-.blue-gradient .PContent
-{ 
-	\width: 110%; 
-	w\idth: 100%;
 }
 
 

@@ -56,11 +56,6 @@ body.layout-tigris
     padding: 0;
 }
 
-.PTitle
-{
- 
-}
-
 
 .Link
 {
@@ -213,7 +208,9 @@ body.layout-tigris
     border-top: 1px solid #999;
 }
 
-.layout-tigris #leftcol {
+.layout-tigris #leftcol 
+{
+    width: 15%;
     voice-family: "\"}\"";
     voice-family: inherit;
     font-size: x-small;
@@ -371,21 +368,44 @@ body.layout-tigris
    display: inline;
 }
 
-.portal-layout-column
-{  
-  float: left;
+
+
+
+.layout-tigris .portal-layout
+{
+	padding-top:6px;
 }
-.portal-layout-column-gutter
+
+
+
+/** TwoColumn Sepcific widths */
+.layout-tigris .portal-layout-TwoColumns .portal-layout-column
 {  
-  /** This is the "gutter" setting for columns */
-  padding-right: 4px;
-  padding-top: 4px;
+  padding-left:1%;
+  width: 48%;
+  float: left;  
+}
+
+/** TwoColumn Sepcific widths */
+.layout-tigris .portal-layout-OneColumn .portal-layout-column
+{  
+  padding-left:1%;
+  padding-right:1%;
+  width: 97%;
+  float: left;  
+}
+
+
+/** TwoColumn Sepcific widths */
+.layout-tigris .portal-layout-ThreeColumns .portal-layout-column
+{  
+  padding-left:1%;
+  width: 31%;
+  float: left;  
 }
 
 .portal-layout-cell
 {
-  width: 100%;  
-  height:100%;
   padding-bottom: 4px;
 }
 

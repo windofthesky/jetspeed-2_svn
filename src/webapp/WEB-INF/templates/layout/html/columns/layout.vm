@@ -49,20 +49,21 @@ limitations under the License.
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 
-
-  <div id="$renderResponse.namespace" class="portal-layout">
+ <div id="$renderResponse.namespace" class="portal-layout portal-layout-$layoutType">
 	#set ($sizeIndex = 0)
     #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
 	#foreach($column in $columnLayout.columns)
 	  #set($columnWidth = "auto")
 	  
+	  #*
 	  #if ($columnLayout.getColumnWidth($sizeIndex) > 0)
 	    #set($columnWidth = $columnLayout.getColumnWidth($sizeIndex))
 	  #end
+	  *#
 
 	  #set ($sizeIndex = $sizeIndex + 1)  
-	  <div class="portal-layout-column" style="width:${columnWidth}%;">
-		  <div class="portal-layout-column-gutter"> 
+	  <div id="column-$sizeIndex" class="portal-layout-column" >
+		<!--  <div class="portal-layout-column-gutter"> --> 
 	     #foreach($f in $column)
   	     
            ## Set up coordinates for this fragment
@@ -133,7 +134,7 @@ limitations under the License.
 		   #end
 		   </div>
 		 #end
-		 </div>
+		<!-- </div> -->
 	  </div>
 	 #end
    </div>  
