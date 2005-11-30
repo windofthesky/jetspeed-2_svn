@@ -24,18 +24,18 @@ package org.apache.jetspeed.om.page.impl;
 public class FragmentSecurityConstraintsImpl extends SecurityConstraintsImpl
 {
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#newSecurityConstraint()
+     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintClass()
      */
-    public BaseSecurityConstraint newSecurityConstraint()
+    public Class getSecurityConstraintClass()
     {
-        return new FragmentSecurityConstraint();
+        return FragmentSecurityConstraintImpl.class;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#newSecurityConstraintsRef()
+     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintsRefClass()
      */
-    public BaseSecurityConstraintsRef newSecurityConstraintsRef()
+    public Class getSecurityConstraintsRefClass()
     {
-        return new FragmentSecurityConstraintsRef();
+        return FragmentSecurityConstraintsRef.class;
     }
 }

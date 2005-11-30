@@ -97,6 +97,27 @@ limitations under the License.
         <index name="IX_FOLDER_CONSTRAINTS_REF_1">
             <index-column name="FOLDER_ID"/>
         </index>
+        <unique name="UN_FOLDER_CONSTRAINTS_REF_1">
+            <unique-column name="FOLDER_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="FOLDER_ORDER">
+        <column name="ORDER_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="FOLDER_ID" type="INTEGER" required="true"/>
+        <column name="SORT_ORDER" type="INTEGER" required="true"/>
+        <column name="NAME" size="80" type="VARCHAR" required="true"/>
+        <foreign-key foreignTable="FOLDER" onDelete="cascade">
+            <reference foreign="FOLDER_ID" local="FOLDER_ID"/>
+        </foreign-key>
+        <index name="IX_FOLDER_ORDER_1">
+            <index-column name="FOLDER_ID"/>
+        </index>
+        <unique name="UN_FOLDER_ORDER_1">
+            <unique-column name="FOLDER_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
     </table>
 
     <!--
@@ -182,6 +203,10 @@ limitations under the License.
         <index name="IX_PAGE_CONSTRAINTS_REF_1">
             <index-column name="PAGE_ID"/>
         </index>
+        <unique name="UN_PAGE_CONSTRAINTS_REF_1">
+            <unique-column name="PAGE_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
     </table>
 
     <!--
@@ -248,6 +273,40 @@ limitations under the License.
         <index name="IX_FRAGMENT_CONSTRAINTS_REF_1">
             <index-column name="FRAGMENT_ID"/>
         </index>
+        <unique name="UN_FRAGMENT_CONSTRAINTS_REF_1">
+            <unique-column name="FRAGMENT_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="FRAGMENT_PREF">
+        <column name="PREF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="FRAGMENT_ID" type="INTEGER" required="true"/>
+        <column name="NAME" size="40" type="VARCHAR" required="true"/>
+        <column name="IS_READ_ONLY" required="true" type="BOOLEANINT"/>
+        <foreign-key foreignTable="FRAGMENT" onDelete="cascade">
+            <reference foreign="FRAGMENT_ID" local="FRAGMENT_ID"/>
+        </foreign-key>
+        <index name="IX_FRAGMENT_PREF_1">
+            <index-column name="FRAGMENT_ID"/>
+        </index>
+        <unique name="UN_FRAGMENT_PREF_1">
+            <unique-column name="FRAGMENT_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="FRAGMENT_PREF_VALUE">
+        <column name="PREF_VALUE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PREF_ID" type="INTEGER" required="true"/>
+        <column name="VALUE_ORDER" type="INTEGER" required="true"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+        <foreign-key foreignTable="FRAGMENT_PREF" onDelete="cascade">
+            <reference foreign="PREF_ID" local="PREF_ID"/>
+        </foreign-key>
+        <index name="IX_FRAGMENT_PREF_VALUE_1">
+            <index-column name="PREF_ID"/>
+        </index>
     </table>
 
     <!--
@@ -283,16 +342,31 @@ limitations under the License.
         <column name="CONSTRAINTS_DEF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_SECURITY_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="40" type="VARCHAR"/>
-        <column name="APPLY_ORDER" type="INTEGER" required="true"/>
-        <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
-        <column name="ROLE_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
-        <column name="GROUP_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
-        <column name="PERMISSIONS_ACL" size="120" type="VARCHAR"/>
         <foreign-key foreignTable="PAGE_SECURITY" onDelete="cascade">
             <reference foreign="PAGE_SECURITY_ID" local="PAGE_SECURITY_ID"/>
         </foreign-key>
         <index name="IX_PAGE_SEC_CONSTRAINTS_DEF_1">
             <index-column name="PAGE_SECURITY_ID"/>
+        </index>
+        <unique name="UN_PAGE_SEC_CONSTRAINTS_DEF_1">
+            <unique-column name="PAGE_SECURITY_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="PAGE_SEC_CONSTRAINT_DEF">
+        <column name="CONSTRAINT_DEF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CONSTRAINTS_DEF_ID" type="INTEGER" required="true"/>
+        <column name="APPLY_ORDER" type="INTEGER" required="true"/>
+        <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="PERMISSIONS_ACL" size="120" type="VARCHAR"/>
+        <foreign-key foreignTable="PAGE_SEC_CONSTRAINTS_DEF" onDelete="cascade">
+            <reference foreign="CONSTRAINTS_DEF_ID" local="CONSTRAINTS_DEF_ID"/>
+        </foreign-key>
+        <index name="IX_PAGE_SEC_CONSTRAINT_DEF_1">
+            <index-column name="CONSTRAINTS_DEF_ID"/>
         </index>
     </table>
 
@@ -307,6 +381,10 @@ limitations under the License.
         <index name="IX_PAGE_SEC_CONSTRAINTS_REF_1">
             <index-column name="PAGE_SECURITY_ID"/>
         </index>
+        <unique name="UN_PAGE_SEC_CONSTRAINTS_REF_1">
+            <unique-column name="PAGE_SECURITY_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
     </table>
 
     <!--

@@ -20,16 +20,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * PageSecurityImpl
@@ -42,13 +39,57 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     private List constraintsDefs;
     private List globalConstraintsRefs;
 
-    private List securityConstraintsDefs;
+    private PageSecurityConstraintsDefList securityConstraintsDefs;
     private Map securityConstraintsDefsMap;
-    private List globalSecurityConstraintsRefs;
+    private PageSecurityConstraintsRefList globalSecurityConstraintsRefs;
 
     public PageSecurityImpl()
     {
         super(null);
+    }
+
+    /**
+     * accessConstraintsDefs
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessConstraintsDefs()
+    {
+        // create initial collection if necessary
+        if (constraintsDefs == null)
+        {
+            constraintsDefs = new ArrayList(4);
+        }
+        return constraintsDefs;
+    }
+
+    /**
+     * accessGlobalConstraintsRefs
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessGlobalConstraintsRefs()
+    {
+        // create initial collection if necessary
+        if (globalConstraintsRefs == null)
+        {
+            globalConstraintsRefs = new ArrayList(4);
+        }
+        return globalConstraintsRefs;
+    }
+
+    /**
+     * clearSecurityConstraintsDefsMap
+     *
+     * Clear previously cached security constraints definitions map.
+     */
+    synchronized void clearSecurityConstraintsDefsMap()
+    {
+        securityConstraintsDefsMap = null;
     }
 
     /* (non-Javadoc)
@@ -56,6 +97,13 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      */
     public List getSecurityConstraintsDefs()
     {
+        // return mutable constraints defs list
+        // by using list wrapper to manage
+        // element uniqueness
+        if (securityConstraintsDefs == null)
+        {
+            securityConstraintsDefs = new PageSecurityConstraintsDefList(this);
+        }
         return securityConstraintsDefs;
     }
     
@@ -64,19 +112,34 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      */
     public void setSecurityConstraintsDefs(List definitions)
     {
-        securityConstraintsDefs = definitions;
-        securityConstraintsDefsMap = null;
+        // set constraints defs by replacing existing
+        // entries with new elements if new collection
+        // is specified
+        List securityConstraintsDefs = getSecurityConstraintsDefs();
+        if (definitions != securityConstraintsDefs)
+        {
+            // replace all constraints definitions
+            securityConstraintsDefs.clear();
+            if (definitions != null)
+            {
+                securityConstraintsDefs.addAll(definitions);
+            }
+        }
+        // clear cached security constraints definition map
+        clearSecurityConstraintsDefsMap();
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#getSecurityConstraintsDef(java.lang.String)
      */
-    public SecurityConstraintsDef getSecurityConstraintsDef(String name)
+    public synchronized SecurityConstraintsDef getSecurityConstraintsDef(String name)
     {
-        if ((securityConstraintsDefs != null) && (securityConstraintsDefsMap == null))
+        // build and cache security constraints definitions
+        // map if necessary upon realization or after modification
+        if ((getSecurityConstraintsDefs() != null) && (securityConstraintsDefsMap == null))
         {
-            securityConstraintsDefsMap = new HashMap((securityConstraintsDefs.size() * 2) + 1);
-            Iterator definitionsIter = securityConstraintsDefs.iterator();
+            securityConstraintsDefsMap = new HashMap((getSecurityConstraintsDefs().size() * 2) + 1);
+            Iterator definitionsIter = getSecurityConstraintsDefs().iterator();
             while (definitionsIter.hasNext())
             {
                 SecurityConstraintsDef definition = (SecurityConstraintsDef)definitionsIter.next();
@@ -87,9 +150,10 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
                 }
             }
         }
+        // lookup constraints definition using cached map 
         if (securityConstraintsDefsMap != null)
         {
-            return (SecurityConstraintsDef) securityConstraintsDefsMap.get(name);
+            return (SecurityConstraintsDef)securityConstraintsDefsMap.get(name);
         }
         return null;
     }
@@ -99,6 +163,13 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      */
     public List getGlobalSecurityConstraintsRefs()
     {
+        // return mutable constraints refs list
+        // by using list wrapper to manage apply
+        // order and element uniqueness
+        if (globalSecurityConstraintsRefs == null)
+        {
+            globalSecurityConstraintsRefs = new PageSecurityConstraintsRefList(this);
+        }
         return globalSecurityConstraintsRefs;
     }
     
@@ -107,7 +178,19 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      */
     public void setGlobalSecurityConstraintsRefs(List constraintsRefs)
     {
-        globalSecurityConstraintsRefs = constraintsRefs;
+        // set constraints refs using ordered ref
+        // names by replacing existing entries with
+        // new elements if new collection is specified
+        List globalSecurityConstraintsRefs = getGlobalSecurityConstraintsRefs();
+        if (constraintsRefs != globalSecurityConstraintsRefs)
+        {
+            // replace all constraints ref names
+            globalSecurityConstraintsRefs.clear();
+            if (constraintsRefs != null)
+            {
+                globalSecurityConstraintsRefs.addAll(constraintsRefs);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -116,204 +199,5 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     public String getType()
     {
         return DOCUMENT_TYPE;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void beforeUpdate(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // propagate to super
-        super.beforeUpdate(broker);
-
-        // synchronize persistent constraints definitions
-        if ((securityConstraintsDefs != null) && !securityConstraintsDefs.isEmpty())
-        {
-            // get sorted list of definition names and required
-            // size of constraints definitions collection
-            List securityConstraintsDefNames = new ArrayList(securityConstraintsDefs.size());
-            int securityConstraintsDefsSize = 0;
-            Iterator definitionsIter = securityConstraintsDefs.iterator();
-            while (definitionsIter.hasNext())
-            {
-                SecurityConstraintsDef securityConstraintsDef = (SecurityConstraintsDef)definitionsIter.next();
-                String securityConstraintsDefName = securityConstraintsDef.getName();
-                if ((securityConstraintsDef.getSecurityConstraints() != null) &&
-                    (securityConstraintsDefName != null) &&
-                    !securityConstraintsDefNames.contains(securityConstraintsDefName))
-                {
-                    securityConstraintsDefsSize += securityConstraintsDef.getSecurityConstraints().size();
-                    securityConstraintsDefNames.add(securityConstraintsDefName);
-                }
-            }
-            Collections.sort(securityConstraintsDefNames);
-            // update constraints definitions collection size
-            if (constraintsDefs == null)
-            {
-                constraintsDefs = new ArrayList(securityConstraintsDefsSize);
-            }
-            while (constraintsDefs.size() < securityConstraintsDefsSize)
-            {
-                constraintsDefs.add(new PageSecuritySecurityConstraintsDef());
-            }
-            while (constraintsDefs.size() > securityConstraintsDefsSize)
-            {
-                constraintsDefs.remove(constraintsDefs.size()-1);
-            }
-            // update constraints definitions
-            Iterator updateIter0 = securityConstraintsDefNames.iterator();
-            Iterator updateIter1 = constraintsDefs.iterator();
-            while (updateIter0.hasNext() && updateIter1.hasNext())
-            {
-                // update by definition name
-                String securityConstraintsDefName = (String)updateIter0.next();
-                // find named definition
-                SecurityConstraintsDef securityConstraintsDef = null;
-                Iterator findDefinitionIter = securityConstraintsDefs.iterator();
-                while ((securityConstraintsDef == null) && findDefinitionIter.hasNext())
-                {
-                    SecurityConstraintsDef testSecurityConstraintsDef = (SecurityConstraintsDef)findDefinitionIter.next();
-                    if (securityConstraintsDefName.equals(testSecurityConstraintsDef.getName()))
-                    {
-                        securityConstraintsDef = testSecurityConstraintsDef;
-                    }
-                }
-                // update constraints definition
-                if ((securityConstraintsDef != null) && (securityConstraintsDef.getSecurityConstraints() != null))
-                {
-                    Iterator updateIter2 = securityConstraintsDef.getSecurityConstraints().iterator();
-                    for (int i = 0; (updateIter1.hasNext() && updateIter2.hasNext()); i++)
-                    {
-                        SecurityConstraint securityConstraint = (SecurityConstraint)updateIter2.next();
-                        PageSecuritySecurityConstraintsDef constraintsDef = (PageSecuritySecurityConstraintsDef)updateIter1.next();
-                        constraintsDef.setName(securityConstraintsDefName);
-                        constraintsDef.setApplyOrder(i);
-                        constraintsDef.setUserPrincipals(securityConstraint.getUsersList());
-                        constraintsDef.setRolePrincipals(securityConstraint.getRolesList());
-                        constraintsDef.setGroupPrincipals(securityConstraint.getGroupsList());
-                        constraintsDef.setPermissions(securityConstraint.getPermissionsList());
-                    }
-                }
-            }
-        }
-        else
-        {
-            // empty constraints definitions collection
-            if (constraintsDefs != null)
-            {
-                constraintsDefs.clear();
-            }
-        }
-
-        // synchronize persistent global constraints references
-        if ((globalSecurityConstraintsRefs != null) && !globalSecurityConstraintsRefs.isEmpty())
-        {
-            // update global constraints references collection size
-            if (globalConstraintsRefs == null)
-            {
-                globalConstraintsRefs = new ArrayList(globalSecurityConstraintsRefs.size());
-            }
-            while (globalConstraintsRefs.size() < globalSecurityConstraintsRefs.size())
-            {
-                PageSecurityGlobalSecurityConstraintsRef globalConstraintsRef = new PageSecurityGlobalSecurityConstraintsRef();
-                globalConstraintsRef.setApplyOrder(globalConstraintsRefs.size());
-                globalConstraintsRefs.add(globalConstraintsRef);
-            }
-            while (globalConstraintsRefs.size() > globalSecurityConstraintsRefs.size())
-            {
-                globalConstraintsRefs.remove(globalConstraintsRefs.size()-1);
-            }
-            // update global constraints references
-            Iterator updateIter0 = globalSecurityConstraintsRefs.iterator();
-            Iterator updateIter1 = globalConstraintsRefs.iterator();
-            while (updateIter0.hasNext() && updateIter1.hasNext())
-            {
-                String securityConstraintsRef = (String)updateIter0.next();
-                PageSecurityGlobalSecurityConstraintsRef globalConstraintsRef = (PageSecurityGlobalSecurityConstraintsRef)updateIter1.next();
-                globalConstraintsRef.setName(securityConstraintsRef);
-            }
-        }
-        else
-        {
-            // empty global constraints references collection
-            if (globalConstraintsRefs != null)
-            {
-                globalConstraintsRefs.clear();
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // propagate to super
-        super.afterLookup(broker);
-
-        // synchronize constraints definitions
-        if ((constraintsDefs != null) && !constraintsDefs.isEmpty())
-        {
-            // initialize security constraints definitions collection
-            if (securityConstraintsDefs == null)
-            {
-                securityConstraintsDefs = new ArrayList(4);
-            }
-            else
-            {
-                securityConstraintsDefs.clear();
-            }
-            // construct security constraints definitions
-            Iterator updateIter = constraintsDefs.iterator();
-            SecurityConstraintsDef securityConstraintsDef = null;
-            while (updateIter.hasNext())
-            {
-                PageSecuritySecurityConstraintsDef constraintsDef = (PageSecuritySecurityConstraintsDef)updateIter.next();
-                if ((securityConstraintsDef == null) || !securityConstraintsDef.getName().equals(constraintsDef.getName()))
-                {
-                    securityConstraintsDef = new SecurityConstraintsDefImpl();
-                    securityConstraintsDef.setName(constraintsDef.getName());
-                    securityConstraintsDef.setSecurityConstraints(new ArrayList(4));
-                    securityConstraintsDefs.add(securityConstraintsDef);
-                }
-                SecurityConstraint securityConstraint = new SecurityConstraintImpl();
-                securityConstraint.setUsers(constraintsDef.getUserPrincipals());
-                securityConstraint.setRoles(constraintsDef.getRolePrincipals());
-                securityConstraint.setGroups(constraintsDef.getGroupPrincipals());
-                securityConstraint.setPermissions(constraintsDef.getPermissions());
-                securityConstraintsDef.getSecurityConstraints().add(securityConstraint);
-            }
-        }
-        else
-        {
-            // remove security constraints collection
-            securityConstraintsDefs = null;
-        }
-        securityConstraintsDefsMap = null;
-
-        // synchronize global constraints references
-        if ((globalConstraintsRefs != null) && !globalConstraintsRefs.isEmpty())
-        {
-            // update global security constraints references
-            if (globalSecurityConstraintsRefs == null)
-            {
-                globalSecurityConstraintsRefs = new ArrayList(globalConstraintsRefs.size());
-            }
-            else
-            {
-                globalSecurityConstraintsRefs.clear();
-            }
-            Iterator updateIter = globalConstraintsRefs.iterator();
-            while (updateIter.hasNext())
-            {
-                PageSecurityGlobalSecurityConstraintsRef globalConstraintsRef = (PageSecurityGlobalSecurityConstraintsRef)updateIter.next();
-                globalSecurityConstraintsRefs.add(globalConstraintsRef.getName());
-            }
-        }
-        else
-        {
-            // remove global security constraints references collection
-            globalSecurityConstraintsRefs = null;
-        }
     }
 }

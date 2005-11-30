@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
@@ -166,6 +167,13 @@ public interface PageManager
      * @return a newly created SecurityConstraintsDef object
      */
     public SecurityConstraintsDef newSecurityConstraintsDef();
+
+    /**
+     * newFragmentPreference - creates a new fragment preference
+     *
+     * @return a newly created FragmentPreference
+     */
+    public FragmentPreference newFragmentPreference();
 
    /**
     * 

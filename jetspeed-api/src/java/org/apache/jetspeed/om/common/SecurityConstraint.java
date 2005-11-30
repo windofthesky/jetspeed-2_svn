@@ -39,34 +39,16 @@ public interface SecurityConstraint
      * getUsers
      * </p>
      *
-     * @return constraint users in CSV string form
+     * @return constraint users list as List of String
      */
-    String getUsers();
-    
-    /**
-     * <p>
-     * getUsersList
-     * </p>
-     *
-     * @return constraint users as List
-     */
-    List getUsersList();
+    List getUsers();
     
     /**
      * <p>
      * setUsers
      * </p>
      *
-     * @param users constraint list in CSV string form
-     */
-    void setUsers(String users);
-
-    /**
-     * <p>
-     * setUsers
-     * </p>
-     *
-     * @param users constraint list as List
+     * @param users constraint users list as List of String
      */
     void setUsers(List users);
     
@@ -75,34 +57,16 @@ public interface SecurityConstraint
      * getRoles
      * </p>
      *
-     * @return constraint roles in CSV string form
+     * @return constraint roles list as List of String
      */
-    String getRoles();
-    
-    /**
-     * <p>
-     * getRolesList
-     * </p>
-     *
-     * @return constraint roles as List
-     */
-    List getRolesList();
+    List getRoles();
     
     /**
      * <p>
      * setRoles
      * </p>
      *
-     * @param roles constraint list in CSV string form
-     */
-    void setRoles(String roles);
-
-    /**
-     * <p>
-     * setRoles
-     * </p>
-     *
-     * @param roles constraint list as List
+     * @param roles constraint roles list as List of String
      */
     void setRoles(List roles);
     
@@ -111,34 +75,16 @@ public interface SecurityConstraint
      * getGroups
      * </p>
      *
-     * @return constraint groups in CSV string form
+     * @return constraint groups list as List of String
      */
-    String getGroups();
-    
-    /**
-     * <p>
-     * getGroupsList
-     * </p>
-     *
-     * @return constraint groups as List
-     */
-    List getGroupsList();
+    List getGroups();
     
     /**
      * <p>
      * setGroups
      * </p>
      *
-     * @param groups constraint list in CSV string form
-     */
-    void setGroups(String groups);
-
-    /**
-     * <p>
-     * setGroups
-     * </p>
-     *
-     * @param groups constraint list as List
+     * @param groups constraint groups list as List of String
      */
     void setGroups(List groups);
     
@@ -147,34 +93,16 @@ public interface SecurityConstraint
      * getPermissions
      * </p>
      *
-     * @return constraint permissions in CSV string form
+     * @return constraint permissions list as List of String
      */
-    String getPermissions();
-    
-    /**
-     * <p>
-     * getPermissionsList
-     * </p>
-     *
-     * @return constraint permissions as List
-     */
-    List getPermissionsList();
+    List getPermissions();
     
     /**
      * <p>
      * setPermissions
      * </p>
      *
-     * @param permissions constraint permissions list in CSV string form
-     */
-    void setPermissions(String permissions);
-
-    /**
-     * <p>
-     * setPermissions
-     * </p>
-     *
-     * @param permissions constraint permissions list as List
+     * @param permissions constraint permissions list as List of String
      */
     void setPermissions(List permissions);
 }

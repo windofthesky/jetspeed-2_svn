@@ -13,46 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page.impl;
-
-import java.util.List;
+package org.apache.jetspeed.om.folder.impl;
 
 /**
- * BaseSecurityConstraintsRef
+ * FolderOrder
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class BaseSecurityConstraintsRef
+public class FolderOrder
 {
     private int id;
-    private int applyOrder;
+    private int sortOrder;
     private String name;
 
     /**
-     * getApplyOrder
+     * getSortOrder
      *
-     * @return apply order for constraints
+     * @return sort order
      */
-    public int getApplyOrder()
+    public int getSortOrder()
     {
-        return applyOrder;
+        return sortOrder;
     }
 
     /**
-     * setApplyOrder
+     * setSortOrder
      *
-     * @param order apply order for constraints
+     * @param order sort order
      */
-    public void setApplyOrder(int order)
+    public void setSortOrder(int order)
     {
-        applyOrder = order;
+        sortOrder = order;
     }
 
     /**
      * getName
      *
-     * @return name of referenced constraint
+     * @return folder/page/link name
      */
     public String getName()
     {
@@ -62,7 +60,7 @@ public class BaseSecurityConstraintsRef
     /**
      * setName
      *
-     * @param name name of referenced constraint
+     * @param name folder/page/link name
      */
     public void setName(String name)
     {
@@ -74,13 +72,16 @@ public class BaseSecurityConstraintsRef
      */
     public boolean equals(Object o)
     {
-        if (o instanceof BaseSecurityConstraintsRef)
+        if (o instanceof FolderOrder)
         {
             if (name != null)
             {
-                return name.equals(((BaseSecurityConstraintsRef)o).getName());
+                return name.equals(((FolderOrder)o).getName());
             }
-            return (((BaseSecurityConstraintsRef)o).getName() == null);
+            else
+            {
+                return (((FolderOrder)o).getName() == null);
+            }
         }
         return false;
     }

@@ -119,7 +119,7 @@
     </field>
     
     <field name="preferences"
-           type="org.apache.jetspeed.om.preference.impl.FragmentPreference" collection="arraylist">
+           type="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl" collection="arraylist">
       <bind-xml name="preference"/>
     </field>
   </class>
@@ -428,19 +428,19 @@
   <class name="org.apache.jetspeed.om.page.SecurityConstraintImpl">
     <map-to xml="security-constraint"/>
 
-    <field name="users" type="java.lang.String">
+    <field name="usersAsString" type="java.lang.String">
       <bind-xml name="users"/>
     </field>
 
-    <field name="roles" type="java.lang.String">
+    <field name="rolesAsString" type="java.lang.String">
       <bind-xml name="roles"/>
     </field>
 
-    <field name="groups" type="java.lang.String">
+    <field name="groupsAsString" type="java.lang.String">
       <bind-xml name="groups"/>
     </field>
 
-    <field name="permissions" type="java.lang.String">
+    <field name="permissionsAsString" type="java.lang.String">
       <bind-xml name="permissions"/>
     </field>
   </class>
@@ -453,7 +453,7 @@
     </field>
 
     <field name="securityConstraintsDefs"
-           type="org.apache.jetspeed.om.page.SecurityConstraintsDefImpl"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl"
            collection="collection">
       <bind-xml name="security-constraints-def"/>
     </field>
@@ -465,7 +465,7 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.page.SecurityConstraintsDefImpl">
+  <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl">
     <map-to xml="security-constraints-def"/>
 
     <field name="name" type="java.lang.String">
@@ -480,7 +480,7 @@
   </class>
   
 
-  <class name="org.apache.jetspeed.om.preference.impl.FragmentPreference">
+  <class name="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl">
     <map-to xml="preference"/>
 
     <field name="name" type="string">

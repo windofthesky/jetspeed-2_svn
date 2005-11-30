@@ -236,9 +236,17 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
         throws java.lang.CloneNotSupportedException;
     
     /**
+     * Get collection of fragment preference objects used
+     * to initialize user preferences
      * 
-     * @return
+     * @return list of FragmentPreference objects
      */
-    List getPreferences();
-    
+    public List getPreferences();    
+
+    /**
+     * Set collection of fragment preference objects
+     * 
+     * @param preferences list of FragmentPreference objects
+     */
+    public void setPreferences(List preferences);    
 }

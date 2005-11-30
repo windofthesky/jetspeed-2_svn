@@ -40,11 +40,13 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
+import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
+import org.apache.jetspeed.om.page.impl.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.DelegatingPageManager;
 import org.apache.jetspeed.page.FolderNotRemovedException;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
@@ -95,6 +97,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
         modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
+        modelClasses.put("FragmentPreferenceImpl.class", FragmentPreferenceImpl.class);
     }
 
     private DelegatingPageManager delegator;
@@ -268,6 +271,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public SecurityConstraintsDef newSecurityConstraintsDef()
     {
         return delegator.newSecurityConstraintsDef();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentPreference()
+     */
+    public FragmentPreference newFragmentPreference()
+    {
+        return delegator.newFragmentPreference();
     }
 
     /* (non-Javadoc)

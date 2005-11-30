@@ -18,18 +18,19 @@ package org.apache.jetspeed.om.preference.impl;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceCtrl;
 
 /**
  * 
- * Castor-friendly Preference implementation to be used with Fragment-based
+ * Preference implementation to be used with Fragment-based
  * portlet Preferences.
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
-public class FragmentPreference implements Preference, PreferenceCtrl
+public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, FragmentPreference
 {
     private String name;
     private List values;

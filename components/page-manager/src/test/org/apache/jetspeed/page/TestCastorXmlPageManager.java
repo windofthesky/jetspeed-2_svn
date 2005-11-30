@@ -51,6 +51,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -69,7 +70,7 @@ import org.apache.jetspeed.util.DirectoryHelper;
  * @version $Id: TestCastorXmlPageManager.java,v 1.9 2004/08/24 21:33:05 weaver
  *          Exp $
  */
-public class TestCastorXmlPageManager extends TestCase
+public class TestCastorXmlPageManager extends TestCase implements PageManagerTestShared 
 {
     private String testPage002 = "/test002.psml";
     private String testPage003 = "/test003.psml";
@@ -242,6 +243,21 @@ public class TestCastorXmlPageManager extends TestCase
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(0, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
+        List preferences = f.getPreferences();
+        assertNotNull(preferences);
+        assertTrue(preferences.size() == 2);
+        assertEquals("pref0", ((FragmentPreference)preferences.get(0)).getName());
+        assertTrue(((FragmentPreference)preferences.get(0)).isReadOnly());
+        assertNotNull(((FragmentPreference)preferences.get(0)).getValueList());
+        assertEquals(2, ((FragmentPreference)preferences.get(0)).getValueList().size());
+        assertEquals("pref0-value0", (String)((FragmentPreference)preferences.get(0)).getValueList().get(0));
+        assertEquals("pref0-value1", (String)((FragmentPreference)preferences.get(0)).getValueList().get(1));
+        assertEquals("pref1", ((FragmentPreference)preferences.get(1)).getName());
+        assertFalse(((FragmentPreference)preferences.get(1)).isReadOnly());
+        assertNotNull(((FragmentPreference)preferences.get(1)).getValueList());
+        assertEquals(1, ((FragmentPreference)preferences.get(1)).getValueList().size());
+        assertEquals("pref1-value", (String)((FragmentPreference)preferences.get(1)).getValueList().get(0));
+
         f = (Fragment) children.get(1);
         assertTrue(f.getId().equals("pe002"));
         assertTrue(f.getName().equals("JMXPortlet"));
@@ -294,9 +310,9 @@ public class TestCastorXmlPageManager extends TestCase
         constraints.setOwner("new-user");
         List constraintsList = new ArrayList(1);
         SecurityConstraint constraint = pageManager.newSecurityConstraint();
-        constraint.setUsers("user10,user11");
-        constraint.setRoles("*");
-        constraint.setPermissions(page.EDIT_ACTION + "," + page.VIEW_ACTION);
+        constraint.setUsers(Shared.makeListFromCSV("user10,user11"));
+        constraint.setRoles(Shared.makeListFromCSV("*"));
+        constraint.setPermissions(Shared.makeListFromCSV(page.EDIT_ACTION + "," + page.VIEW_ACTION));
         constraintsList.add(constraint);
         constraints.setSecurityConstraints(constraintsList);
         List constraintsRefsList = new ArrayList(1);
@@ -934,9 +950,13 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(secs.size() == 1);
         SecurityConstraint constraint = (SecurityConstraint)secs.get(0);
         assertNotNull(constraint);
-        assertTrue(constraint.getUsers().equals("user10,user11"));
-        assertTrue(constraint.getRoles().equals("*"));
-        assertTrue(constraint.getPermissions().equals("edit,view"));
+        assertTrue(constraint.getUsers() != null);
+        assertTrue(constraint.getUsers().size() == 2);
+        assertTrue(Shared.makeCSVFromList(constraint.getUsers()).equals("user10,user11"));
+        assertTrue(constraint.getRoles() == null);
+        assertTrue(constraint.getPermissions() != null);
+        assertTrue(constraint.getPermissions().size() == 2);
+        assertTrue(Shared.makeCSVFromList(constraint.getPermissions()).equals("edit,view"));
         List refs = constraints.getSecurityConstraintsRefs();
         assertNotNull(refs);
         assertTrue(refs.size() == 1);

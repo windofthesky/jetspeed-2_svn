@@ -15,27 +15,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+
 /**
- * PageSecurityConstraintsImpl
+ * PageSecurityConstraintImpl
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageSecurityConstraintsImpl extends SecurityConstraintsImpl
+public class FragmentSecurityConstraintImpl extends SecurityConstraintImpl
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintClass()
-     */
-    public Class getSecurityConstraintClass()
-    {
-        return PageSecurityConstraintImpl.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintsRefClass()
-     */
-    public Class getSecurityConstraintsRefClass()
-    {
-        return PageSecurityConstraintsRef.class;
-    }
+    // new class defined only to facilitate OJB table/class mapping
 }

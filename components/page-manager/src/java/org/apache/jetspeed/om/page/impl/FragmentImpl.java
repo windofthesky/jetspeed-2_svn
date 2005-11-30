@@ -17,6 +17,7 @@ package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,9 +27,9 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.security.FragmentPermission;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * FragmentImpl
@@ -39,7 +40,6 @@ import org.apache.ojb.broker.PersistenceBrokerException;
 public class FragmentImpl extends BaseElementImpl implements Fragment
 {
     private List fragments;
-    private FragmentList fragmentsList;
     private String type;
     private String skin;
     private String decorator;
@@ -51,13 +51,50 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private String extendedPropertyValue1;
     private String extendedPropertyName2;
     private String extendedPropertyValue2;
+    private List preferences;
 
-    private Map properties;
+    private FragmentList fragmentsList;
+    private FragmentPropertyMap propertiesMap;
+    private FragmentPreferenceList fragmentPreferences;
     private PageImpl page;
 
     public FragmentImpl()
     {
         super(new FragmentSecurityConstraintsImpl());
+    }
+
+    /**
+     * accessFragments
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessFragments()
+    {
+        // create initial collection if necessary
+        if (fragments == null)
+        {
+            fragments = new ArrayList(4);
+        }
+        return fragments;
+    }
+
+    /**
+     * accessPreferences
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessPreferences()
+    {
+        // create initial collection if necessary
+        if (preferences == null)
+        {
+            preferences = new ArrayList(4);
+        }
+        return preferences;
     }
 
     /**
@@ -169,6 +206,159 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             }
         }
         return matchedFragments;
+    }
+
+    /**
+     * getPropertyMemberKeys
+     *
+     * Get valid explicit property member keys.
+     *
+     * @return list of property member keys with values
+     */
+    List getPropertyMemberKeys()
+    {
+        List keys = new ArrayList(5);
+        if (layoutRowProperty >= 0)
+        {
+            keys.add(ROW_PROPERTY_NAME);
+        }
+        if (layoutColumnProperty >= 0)
+        {
+            keys.add(COLUMN_PROPERTY_NAME);
+        }
+        if (layoutSizesProperty != null)
+        {
+            keys.add(SIZES_PROPERTY_NAME);
+        }
+        if ((extendedPropertyName1 != null) && (extendedPropertyValue1 != null))
+        {
+            keys.add(extendedPropertyName1);
+        }
+        if ((extendedPropertyName2 != null) && (extendedPropertyValue2 != null))
+        {
+            keys.add(extendedPropertyName2);
+        }
+        return keys;
+    }
+
+    /**
+     * getPropertyMember
+     *
+     * Get explicit property member.
+     *
+     * @param key property name
+     * @return property setting
+     */
+    String getPropertyMember(String key)
+    {
+        // set fragment explicit property member
+        if (key.equals(ROW_PROPERTY_NAME))
+        {
+            if (layoutRowProperty >= 0)
+            {
+                return String.valueOf(layoutRowProperty);
+            }
+        }
+        else if (key.equals(COLUMN_PROPERTY_NAME))
+        {
+            if (layoutColumnProperty >= 0)
+            {
+                return String.valueOf(layoutColumnProperty);
+            }
+        }
+        else if (key.equals(SIZES_PROPERTY_NAME))
+        {
+            return layoutSizesProperty;
+        }
+        else if (key.equals(extendedPropertyName1))
+        {
+            return extendedPropertyValue1;
+        }
+        else if (key.equals(extendedPropertyName2))
+        {
+            return extendedPropertyValue2;
+        }
+        return null;
+    }
+
+    /**
+     * setPropertyMember
+     *
+     * Set explicit property member.
+     *
+     * @param key property name
+     * @param value property setting
+     */
+    void setPropertyMember(String key, String value)
+    {
+        // set fragment explicit property member
+        if (key.equals(ROW_PROPERTY_NAME))
+        {
+            layoutRowProperty = Integer.parseInt(value);
+        }
+        else if (key.equals(COLUMN_PROPERTY_NAME))
+        {
+            layoutColumnProperty = Integer.parseInt(value);
+        }
+        else if (key.equals(SIZES_PROPERTY_NAME))
+        {
+            layoutSizesProperty = value;
+        }
+        else if (key.equals(extendedPropertyName1))
+        {
+            extendedPropertyValue1 = value;
+        }
+        else if (key.equals(extendedPropertyName2))
+        {
+            extendedPropertyValue2 = value;
+        }
+        else if (extendedPropertyName1 == null)
+        {
+            extendedPropertyName1 = key;
+            extendedPropertyValue1 = value;
+        }
+        else if (extendedPropertyName2 == null)
+        {
+            extendedPropertyName2 = key;
+            extendedPropertyValue2 = value;
+        }
+        else
+        {
+            throw new RuntimeException("Unable to set fragment property " + key + ", extended properties already used.");
+        }
+    }
+
+    /**
+     * clearPropertyMember
+     *
+     * Clear explicit property member.
+     *
+     * @param key property name
+     */
+    void clearPropertyMember(String key)
+    {
+        if (key.equals(ROW_PROPERTY_NAME))
+        {
+            layoutRowProperty = -1;
+        }
+        else if (key.equals(COLUMN_PROPERTY_NAME))
+        {
+            layoutColumnProperty = -1;
+        }
+        else if (key.equals(SIZES_PROPERTY_NAME))
+        {
+            layoutSizesProperty = null;
+        }
+        else if (key.equals(extendedPropertyName1))
+        {
+            extendedPropertyName1 = null;
+            extendedPropertyValue1 = null;
+        }
+        else if (key.equals(extendedPropertyName2))
+        {
+            extendedPropertyName2 = null;
+            extendedPropertyValue2 = null;
+        }
     }
 
     /* (non-Javadoc)
@@ -335,13 +525,9 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // access rights to all fragments; otherwise, a copy of
         // the list will be returned and any modifications to the
         // set of fragments in the collection will not be preserved
-        if (fragments == null)
-        {
-            fragments = new ArrayList(4);
-        }
         if (fragmentsList == null)
         {
-            fragmentsList = new FragmentList(this, fragments);
+            fragmentsList = new FragmentList(this);
         }
         return filterFragmentsByAccess(fragmentsList);
     }
@@ -351,11 +537,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public String getProperty(String propName)
     {
-        if (properties != null)
-        {
-            return (String)properties.get(propName);
-        }
-        return null;
+        return (String)getProperties().get(propName);
     }
     
     /* (non-Javadoc)
@@ -363,13 +545,10 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public int getIntProperty(String propName)
     {
-        if (properties != null)
+        String propValue = (String)getProperties().get(propName);
+        if (propValue != null)
         {
-            String propValue = (String)properties.get(propName);
-            if (propValue != null)
-            {
-                return Integer.parseInt(propValue);
-    }
+            return Integer.parseInt(propValue);
         }
         return -1;
     }
@@ -380,11 +559,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     public Map getProperties()
     {
         // initialize and return writable properties map
-        if (properties == null)
+        if (propertiesMap == null)
         {
-            properties = new HashMap(4);
-    }
-        return properties;
+            propertiesMap = new FragmentPropertyMap(this);
+        }
+        return propertiesMap;
     }
     
     /* (non-Javadoc)
@@ -395,7 +574,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // get standard int property
         return getIntProperty(ROW_PROPERTY_NAME);
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
      */
@@ -405,13 +584,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         if (row >= 0)
         {
             getProperties().put(ROW_PROPERTY_NAME, String.valueOf(row));
-    }
-        else if (properties != null)
+        }
+        else
         {
-            properties.remove(ROW_PROPERTY_NAME);
+            getProperties().remove(ROW_PROPERTY_NAME);
         }
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
      */
@@ -420,7 +599,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // get standard int property
         return getIntProperty(COLUMN_PROPERTY_NAME);
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
      */
@@ -431,9 +610,9 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(column));
         }
-        else if (properties != null)
+        else
         {
-            properties.remove(COLUMN_PROPERTY_NAME);
+            getProperties().remove(COLUMN_PROPERTY_NAME);
         }
     }
 
@@ -456,9 +635,9 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             getProperties().put(SIZES_PROPERTY_NAME, sizes);
         }
-        else if (properties != null)
+        else
         {
-            properties.remove(SIZES_PROPERTY_NAME);
+            getProperties().remove(SIZES_PROPERTY_NAME);
         }
     }
     
@@ -483,93 +662,36 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public List getPreferences()
     {
-        return null; // NYI
+        // return mutable preferences list
+        // by using list wrapper to manage
+        // element uniqueness
+        if (fragmentPreferences == null)
+        {
+            fragmentPreferences = new FragmentPreferenceList(this);
+        }
+        return fragmentPreferences;
     }
     
     /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
      */
-    public void beforeUpdate(PersistenceBroker broker) throws PersistenceBrokerException
+    public void setPreferences(List preferences)
     {
-        // propagate to super
-        super.beforeUpdate(broker);
-
-        // update concrete fields with properties
-        layoutRowProperty = -1;
-        layoutColumnProperty = -1;
-        layoutSizesProperty = null;
-        extendedPropertyName1 = null;
-        extendedPropertyValue1 = null;
-        extendedPropertyName2 = null;
-        extendedPropertyValue2 = null;
-        if ((properties != null) && !properties.isEmpty())
+        // set preferences by replacing existing
+        // entries with new elements if new collection
+        // is specified
+        List fragmentPreferences = getPreferences();
+        if (preferences != fragmentPreferences)
         {
-            Iterator propsIter = properties.entrySet().iterator();
-            while (propsIter.hasNext())
+            // replace all preferences
+            fragmentPreferences.clear();
+            if (preferences != null)
             {
-                Map.Entry prop = (Map.Entry)propsIter.next();
-                String propName = (String)prop.getKey();
-                String propValue = (String)prop.getValue();
-                if (propValue != null)
-                {
-                    if (propName.equals(ROW_PROPERTY_NAME))
-                    {
-                        layoutRowProperty = Integer.parseInt(propValue);
-                    }
-                    else if (propName.equals(COLUMN_PROPERTY_NAME))
-                    {
-                        layoutColumnProperty = Integer.parseInt(propValue);
-                    }
-                    else if (propName.equals(SIZES_PROPERTY_NAME))
-                    {
-                        layoutSizesProperty = propValue;
-                    }
-                    else if (extendedPropertyName1 == null)
-                    {
-                        extendedPropertyName1 = propName;
-                        extendedPropertyValue1 = propValue;
-                    }
-                    else if (extendedPropertyName2 == null)
-                    {
-                        extendedPropertyName2 = propName;
-                        extendedPropertyValue2 = propValue;
-                    }
-                }
+                fragmentPreferences.addAll(preferences);
             }
         }
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // propagate to super
-        super.afterLookup(broker);
-
-        // load properties from concrete fields
-        if (layoutRowProperty >= 0)
-        {
-            getProperties().put(ROW_PROPERTY_NAME, String.valueOf(layoutRowProperty));
-        }
-        if (layoutColumnProperty >= 0)
-        {
-            getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(layoutColumnProperty));
-        }
-        if (layoutSizesProperty != null)
-        {
-            getProperties().put(SIZES_PROPERTY_NAME, layoutSizesProperty);
-        }
-        if ((extendedPropertyName1 != null) && (extendedPropertyValue1 != null))
-        {
-            getProperties().put(extendedPropertyName1, extendedPropertyValue1);
-        }
-        if ((extendedPropertyName2 != null) && (extendedPropertyValue2 != null))
-        {
-            getProperties().put(extendedPropertyName2, extendedPropertyValue2);
-        }
-    }
-
+    
     /**
      * filterFragmentsByAccess
      *

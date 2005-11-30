@@ -304,9 +304,18 @@ public class PortletAggregatorFragmentImpl implements Fragment
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
+     */
     public List getPreferences()
     {
-        // TODO Auto-generated method stub
         return null;
     }    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
+     */
+    public void setPreferences(List preferences)
+    {
+    }
 }

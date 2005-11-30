@@ -45,12 +45,14 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
-import org.apache.jetspeed.om.page.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
+import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -92,6 +94,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
         modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
+        modelClasses.put("FragmentPreferenceImpl.class", FragmentPreferenceImpl.class);
     }
 
     private IdGenerator generator = null;

@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import org.apache.jetspeed.om.page.impl.BaseSecurityConstraint;
-import org.apache.jetspeed.om.page.impl.BaseSecurityConstraintsRef;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 
 /**
@@ -28,18 +26,18 @@ import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 public class FolderSecurityConstraintsImpl extends SecurityConstraintsImpl
 {
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#newSecurityConstraint()
+     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintClass()
      */
-    public BaseSecurityConstraint newSecurityConstraint()
+    public Class getSecurityConstraintClass()
     {
-        return new FolderSecurityConstraint();
+        return FolderSecurityConstraintImpl.class;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#newSecurityConstraintsRef()
+     * @see org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl#getSecurityConstraintsRefClass()
      */
-    public BaseSecurityConstraintsRef newSecurityConstraintsRef()
+    public Class getSecurityConstraintsRefClass()
     {
-        return new FolderSecurityConstraintsRef();
+        return FolderSecurityConstraintsRef.class;
     }
 }

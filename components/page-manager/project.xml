@@ -86,6 +86,9 @@
 	<unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
 
         <unitTest>
+            <excludes>
+                <exclude>**/PageManagerTestShared.java</exclude>
+            </excludes>
             <resources>
                 <resource>
                     <directory>${basedir}/src/test</directory>

@@ -16,8 +16,10 @@
 package org.apache.jetspeed.page;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.GenericMetadata;
@@ -29,6 +31,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
@@ -45,7 +48,7 @@ import junit.framework.TestSuite;
  * @version $Id: $
  *          
  */
-public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerEventListener
+public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerTestShared, PageManagerEventListener
 {
     private String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
     private String deepPagePath = deepFolderPath + "/default-page.psml";
@@ -144,13 +147,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         folderConstraints.setOwner("admin");
         List inlineFolderConstraints = new ArrayList(2);
         SecurityConstraint folderConstraint = pageManager.newSecurityConstraint();
-        folderConstraint.setUsers("user,admin");
-        folderConstraint.setRoles("manager");
-        folderConstraint.setGroups("*");
-        folderConstraint.setPermissions("view,edit");
+        folderConstraint.setUsers(Shared.makeListFromCSV("user,admin"));
+        folderConstraint.setRoles(Shared.makeListFromCSV("manager"));
+        folderConstraint.setGroups(Shared.makeListFromCSV("*"));
+        folderConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
         inlineFolderConstraints.add(folderConstraint);
         folderConstraint = pageManager.newSecurityConstraint();
-        folderConstraint.setPermissions("edit");
+        folderConstraint.setPermissions(Shared.makeListFromCSV("edit"));
         inlineFolderConstraints.add(folderConstraint);
         folderConstraints.setSecurityConstraints(inlineFolderConstraints);
         List folderConstraintsRefs = new ArrayList(2);
@@ -158,6 +161,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         folderConstraintsRefs.add("public-edit");
         folderConstraints.setSecurityConstraintsRefs(folderConstraintsRefs);
         folder.setSecurityConstraints(folderConstraints);
+        List documentOrder = new ArrayList(2);
+        documentOrder.add("some-other-page.psml");
+        documentOrder.add("default-page.psml");
+        folder.setDocumentOrder(documentOrder);
         pageManager.updateFolder(folder);
         
         assertNull(folder.getParent());
@@ -176,8 +183,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageConstraints.setOwner("user");
         List inlinePageConstraints = new ArrayList(1);
         SecurityConstraint pageConstraint = pageManager.newSecurityConstraint();
-        pageConstraint.setUsers("jetspeed");
-        pageConstraint.setPermissions("edit");
+        pageConstraint.setUsers(Shared.makeListFromCSV("jetspeed"));
+        pageConstraint.setPermissions(Shared.makeListFromCSV("edit"));
         inlinePageConstraints.add(pageConstraint);
         pageConstraints.setSecurityConstraints(inlinePageConstraints);
         List pageConstraintsRefs = new ArrayList(1);
@@ -202,6 +209,22 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         portlet.setState("Normal");
         portlet.setLayoutRow(88);
         portlet.setLayoutColumn(99);
+        List preferences = new ArrayList(2);
+        FragmentPreference preference = pageManager.newFragmentPreference();
+        preference.setName("pref0");
+        preference.setReadOnly(true);
+        List preferenceValues = new ArrayList(2);
+        preferenceValues.add("pref0-value0");
+        preferenceValues.add("pref0-value1");
+        preference.setValueList(preferenceValues);
+        preferences.add(preference);
+        preference = pageManager.newFragmentPreference();
+        preference.setName("pref1");
+        preferenceValues = new ArrayList(1);
+        preferenceValues.add("pref1-value");
+        preference.setValueList(preferenceValues);
+        preferences.add(preference);
+        portlet.setPreferences(preferences);
         root.getFragments().add(portlet);
         portlet = pageManager.newPortletFragment();
         portlet.setName("some-app::SomePortlet");
@@ -228,8 +251,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         constraintsDef.setName("public-view");
         List defConstraints = new ArrayList(1);
         SecurityConstraint defConstraint = pageManager.newSecurityConstraint();
-        defConstraint.setUsers("*");
-        defConstraint.setPermissions("view");
+        defConstraint.setUsers(Shared.makeListFromCSV("*"));
+        defConstraint.setPermissions(Shared.makeListFromCSV("view"));
         defConstraints.add(defConstraint);
         constraintsDef.setSecurityConstraints(defConstraints);
         constraintsDefs.add(constraintsDef);
@@ -237,11 +260,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         constraintsDef.setName("admin-all");
         defConstraints = new ArrayList(2);
         defConstraint = pageManager.newSecurityConstraint();
-        defConstraint.setRoles("admin");
-        defConstraint.setPermissions("view,edit");
+        defConstraint.setRoles(Shared.makeListFromCSV("admin"));
+        defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
         defConstraints.add(defConstraint);
         defConstraint = pageManager.newSecurityConstraint();
-        defConstraint.setRoles("nobody");
+        defConstraint.setRoles(Shared.makeListFromCSV("nobody"));
         defConstraints.add(defConstraint);
         constraintsDef.setSecurityConstraints(defConstraints);
         constraintsDefs.add(constraintsDef);
@@ -314,7 +337,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertNotNull(page.getParent());
         assertEquals(page.getParent().getId(), folder.getId());
     }
-    
+
     public void testGets() throws Exception
     {
         // reset page manager cache
@@ -331,11 +354,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("admin-all", ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getName());
             assertNotNull(((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getSecurityConstraints());
             assertEquals(2, ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getSecurityConstraints().size());
-            assertEquals("view,edit", ((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getSecurityConstraints().get(0)).getPermissions());
+            assertEquals("view,edit", Shared.makeCSVFromList(((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getSecurityConstraints().get(0)).getPermissions()));
             assertEquals("public-view", ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getName());
             assertNotNull(((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints());
             assertEquals(1, ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().size());
-            assertEquals("view", ((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().get(0)).getPermissions());
+            assertEquals("view", Shared.makeCSVFromList(((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().get(0)).getPermissions()));
             assertNotNull(check.getGlobalSecurityConstraintsRefs());
             assertEquals(2, check.getGlobalSecurityConstraintsRefs().size());
             assertEquals("admin-all", (String)check.getGlobalSecurityConstraintsRefs().get(0));
@@ -367,7 +390,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("manager-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(0));
             assertNotNull(check.getSecurityConstraints().getSecurityConstraints());
             assertEquals(1, check.getSecurityConstraints().getSecurityConstraints().size());
-            assertEquals("jetspeed", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers());
+            assertEquals("jetspeed", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers()));
             assertNotNull(check.getRootFragment());
             assertEquals("blue-gradient", check.getRootFragment().getDecorator());
             assertEquals("jetspeed-layouts::VelocityTwoColumns", check.getRootFragment().getName());
@@ -379,22 +402,37 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("custom-prop-value1", check.getRootFragment().getProperty("custom-prop1"));
             assertNotNull(check.getRootFragment().getFragments());
             assertEquals(2, check.getRootFragment().getFragments().size());
-            assertEquals("security::LoginPortlet", ((Fragment)check.getRootFragment().getFragments().get(0)).getName());
-            assertEquals("Portlet", ((Fragment)check.getRootFragment().getFragments().get(0)).getShortTitle());
-            assertEquals("Portlet Fragment", ((Fragment)check.getRootFragment().getFragments().get(0)).getTitle());
-            assertEquals("Normal", ((Fragment)check.getRootFragment().getFragments().get(0)).getState());
-            assertEquals(88, ((Fragment)check.getRootFragment().getFragments().get(0)).getLayoutRow());
-            assertEquals(88, ((Fragment)check.getRootFragment().getFragments().get(0)).getIntProperty(Fragment.ROW_PROPERTY_NAME));
-            assertEquals(99, ((Fragment)check.getRootFragment().getFragments().get(0)).getLayoutColumn());
-            assertEquals("some-app::SomePortlet", ((Fragment)check.getRootFragment().getFragments().get(1)).getName());
-            assertEquals("Some Portlet", ((Fragment)check.getRootFragment().getFragments().get(1)).getShortTitle());
-            assertEquals("Some Portlet Fragment", ((Fragment)check.getRootFragment().getFragments().get(1)).getTitle());
-            assertEquals("Normal", ((Fragment)check.getRootFragment().getFragments().get(1)).getState());
-            assertEquals(22, ((Fragment)check.getRootFragment().getFragments().get(1)).getLayoutRow());
-            assertEquals(11, ((Fragment)check.getRootFragment().getFragments().get(1)).getLayoutColumn());
-            assertNotNull(((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints());
-            assertEquals("user", ((Fragment)check.getRootFragment().getFragments().get(1)).getSecurityConstraints().getOwner());
-            assertNotNull(check.getFragmentById(((Fragment)check.getRootFragment().getFragments().get(0)).getId()));
+            Fragment check0 = (Fragment)check.getRootFragment().getFragments().get(0);
+            assertEquals("security::LoginPortlet", check0.getName());
+            assertEquals("Portlet", check0.getShortTitle());
+            assertEquals("Portlet Fragment", check0.getTitle());
+            assertEquals("Normal", check0.getState());
+            assertEquals(88, check0.getLayoutRow());
+            assertEquals(88, check0.getIntProperty(Fragment.ROW_PROPERTY_NAME));
+            assertEquals(99, check0.getLayoutColumn());
+            assertNotNull(check0.getPreferences());
+            assertEquals(2, check0.getPreferences().size());
+            assertEquals("pref0", ((FragmentPreference)check0.getPreferences().get(0)).getName());
+            assertTrue(((FragmentPreference)check0.getPreferences().get(0)).isReadOnly());
+            assertNotNull(((FragmentPreference)check0.getPreferences().get(0)).getValueList());
+            assertEquals(2, ((FragmentPreference)check0.getPreferences().get(0)).getValueList().size());
+            assertEquals("pref0-value0", (String)((FragmentPreference)check0.getPreferences().get(0)).getValueList().get(0));
+            assertEquals("pref0-value1", (String)((FragmentPreference)check0.getPreferences().get(0)).getValueList().get(1));
+            assertEquals("pref1", ((FragmentPreference)check0.getPreferences().get(1)).getName());
+            assertFalse(((FragmentPreference)check0.getPreferences().get(1)).isReadOnly());
+            assertNotNull(((FragmentPreference)check0.getPreferences().get(1)).getValueList());
+            assertEquals(1, ((FragmentPreference)check0.getPreferences().get(1)).getValueList().size());
+            assertEquals("pref1-value", (String)((FragmentPreference)check0.getPreferences().get(1)).getValueList().get(0));
+            Fragment check1 = (Fragment)check.getRootFragment().getFragments().get(1);
+            assertEquals("some-app::SomePortlet", check1.getName());
+            assertEquals("Some Portlet", check1.getShortTitle());
+            assertEquals("Some Portlet Fragment", check1.getTitle());
+            assertEquals("Normal", check1.getState());
+            assertEquals(22, check1.getLayoutRow());
+            assertEquals(11, check1.getLayoutColumn());
+            assertNotNull(check1.getSecurityConstraints());
+            assertEquals("user", check1.getSecurityConstraints().getOwner());
+            assertNotNull(check.getFragmentById(check0.getId()));
             assertNotNull(check.getFragmentsByName("some-app::SomePortlet"));
             assertEquals(1, check.getFragmentsByName("some-app::SomePortlet").size());
             assertNotNull(check.getParent());
@@ -420,8 +458,14 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("public-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(1));
             assertNotNull(check.getSecurityConstraints().getSecurityConstraints());
             assertEquals(2, check.getSecurityConstraints().getSecurityConstraints().size());
-            assertEquals("user,admin", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers());
-            assertEquals("edit", ((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(1)).getPermissions());
+            assertEquals("user,admin", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers()));
+            assertEquals("manager", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getRoles()));
+            assertNull(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getGroups());
+            assertEquals("edit", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(1)).getPermissions()));
+            assertNotNull(check.getDocumentOrder());
+            assertEquals(2, check.getDocumentOrder().size());
+            assertEquals("some-other-page.psml", (String)check.getDocumentOrder().get(0));
+            assertEquals("default-page.psml", (String)check.getDocumentOrder().get(1));
             assertNull(check.getParent());
             assertNotNull(check.getPageSecurity());
             assertNotNull(check.getPages());
@@ -470,11 +514,19 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         Page page = pageManager.getPage("/default-page.psml");
         assertEquals("/default-page.psml", page.getPath());
         page.setTitle("UPDATED");
+        page.getRootFragment().getProperties().remove("custom-prop1");
+        page.getRootFragment().getProperties().put("UPDATED", "UPDATED");
+        SecurityConstraint pageConstraint = pageManager.newSecurityConstraint();
+        pageConstraint.setUsers(Shared.makeListFromCSV("UPDATED"));
+        page.getSecurityConstraints().getSecurityConstraints().add(0, pageConstraint);
         pageManager.updatePage(page);
 
         Folder folder = pageManager.getFolder("/");
         assertEquals("/", folder.getPath());
         folder.setTitle("UPDATED");
+        folder.getDocumentOrder().remove("some-other-page.psml");
+        folder.getDocumentOrder().add("UPDATED");
+        folder.getDocumentOrder().add("some-other-page.psml");
         pageManager.updateFolder(folder);
     }
 

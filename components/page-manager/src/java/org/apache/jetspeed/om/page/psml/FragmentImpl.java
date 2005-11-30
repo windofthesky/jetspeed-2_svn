@@ -301,6 +301,14 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     }
 
+    /**
+     * <p>
+     * getPreferences
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
+     * @param name
+     */
     public List getPreferences()
     {
         return preferences;
@@ -311,7 +319,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         this.preferences = preferences;  
     } 
     
-        /**
+    /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
      */

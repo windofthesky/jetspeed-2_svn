@@ -16,12 +16,54 @@
 package org.apache.jetspeed.om.page.impl;
 
 /**
- * PageSecurityConstraint
+ * FragmentPreferenceValue
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageSecurityConstraint extends BaseSecurityConstraint
+public class FragmentPreferenceValue
 {
-    // new class defined only to facilitate OJB table/class mapping
+    private int id;
+    private int valueOrder;
+    private String value;
+
+    /**
+     * getValueOrder
+     *
+     * @return value order
+     */
+    public int getValueOrder()
+    {
+        return valueOrder;
+    }
+
+    /**
+     * setValueOrder
+     *
+     * @param order value order
+     */
+    public void setValueOrder(int order)
+    {
+        valueOrder = order;
+    }
+
+    /**
+     * getValue
+     *
+     * @return preference value
+     */
+    public String getValue()
+    {
+        return value;
+    }
+
+    /**
+     * setValue
+     *
+     * @param value preference value
+     */
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
 }

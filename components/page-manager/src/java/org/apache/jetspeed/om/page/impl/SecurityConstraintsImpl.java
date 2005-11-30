@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.page.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -37,179 +38,68 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     private List constraints;
     private List constraintsRefs;
 
-    private List securityConstraints;
-    private List securityConstraintsRefs;
+    private SecurityConstraintList securityConstraints;
+    private SecurityConstraintsRefList securityConstraintsRefs;
 
     private List allConstraints;
 
     /**
-     * beforeUpdate
+     * accessConstraintsRefs
      *
-     * Update persistent constraints using transient constraints.
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
      */
-    public void beforeUpdate()
+    List accessConstraintsRefs()
     {
-        // synchronize persistent constraints
-        if ((securityConstraints != null) && !securityConstraints.isEmpty())
+        // create initial collection if necessary
+        if (constraintsRefs == null)
         {
-            // update constraints collection size
-            if (constraints == null)
-            {
-                constraints = new ArrayList(securityConstraints.size());
-            }
-            while (constraints.size() < securityConstraints.size())
-            {
-                BaseSecurityConstraint constraint = newSecurityConstraint();
-                constraint.setApplyOrder(constraints.size());
-                constraints.add(constraint);
-            }
-            while (constraints.size() > securityConstraints.size())
-            {
-                constraints.remove(constraints.size()-1);
-            }
-            // update constraints
-            Iterator updateIter0 = securityConstraints.iterator();
-            Iterator updateIter1 = constraints.iterator();
-            while (updateIter0.hasNext() && updateIter1.hasNext())
-            {
-                SecurityConstraint securityConstraint = (SecurityConstraint)updateIter0.next();
-                BaseSecurityConstraint constraint = (BaseSecurityConstraint)updateIter1.next();
-                constraint.setUserPrincipals(securityConstraint.getUsersList());
-                constraint.setRolePrincipals(securityConstraint.getRolesList());
-                constraint.setGroupPrincipals(securityConstraint.getGroupsList());
-                constraint.setPermissions(securityConstraint.getPermissionsList());
-            }
+            constraintsRefs = new ArrayList(4);
         }
-        else
-        {
-            // empty constraints collection
-            if (constraints != null)
-            {
-                constraints.clear();
-            }
-        }
-
-        // synchronize persistent constraints references
-        if ((securityConstraintsRefs != null) && !securityConstraintsRefs.isEmpty())
-        {
-            // update constraints references collection size
-            if (constraintsRefs == null)
-            {
-                constraintsRefs = new ArrayList(securityConstraintsRefs.size());
-            }
-            while (constraintsRefs.size() < securityConstraintsRefs.size())
-            {
-                BaseSecurityConstraintsRef constraintsRef = newSecurityConstraintsRef();
-                constraintsRef.setApplyOrder(constraintsRefs.size());
-                constraintsRefs.add(constraintsRef);
-            }
-            while (constraintsRefs.size() > securityConstraintsRefs.size())
-            {
-                constraintsRefs.remove(constraintsRefs.size()-1);
-            }
-            // update constraints references
-            Iterator updateIter0 = securityConstraintsRefs.iterator();
-            Iterator updateIter1 = constraintsRefs.iterator();
-            while (updateIter0.hasNext() && updateIter1.hasNext())
-            {
-                String securityConstraintsRef = (String)updateIter0.next();
-                BaseSecurityConstraintsRef constraintsRef = (BaseSecurityConstraintsRef)updateIter1.next();
-                constraintsRef.setName(securityConstraintsRef);
-            }
-        }
-        else
-        {
-            // empty constraints references collection
-            if (constraintsRefs != null)
-            {
-                constraintsRefs.clear();
-            }
-        }
+        return constraintsRefs;
     }
 
     /**
-     * afterLookup
+     * accessConstraints
      *
-     * Update transient constraints from persistent constraints.
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
      */
-    public void afterLookup()
+    List accessConstraints()
     {
-        // synchronize constraints
-        if ((constraints != null) && !constraints.isEmpty())
+        // create initial collection if necessary
+        if (constraints == null)
         {
-            // initialize security constraints collection
-            if (securityConstraints == null)
-            {
-                securityConstraints = new ArrayList(constraints.size());
-            }
-            else
-            {
-                securityConstraints.clear();
-            }
-            // construct security constraints
-            Iterator updateIter = constraints.iterator();
-            while (updateIter.hasNext())
-            {
-                BaseSecurityConstraint constraint = (BaseSecurityConstraint)updateIter.next();
-                SecurityConstraint securityConstraint = new SecurityConstraintImpl();
-                securityConstraint.setUsers(constraint.getUserPrincipals());
-                securityConstraint.setRoles(constraint.getRolePrincipals());
-                securityConstraint.setGroups(constraint.getGroupPrincipals());
-                securityConstraint.setPermissions(constraint.getPermissions());
-                securityConstraints.add(securityConstraint);
-            }
+            constraints = new ArrayList(4);
         }
-        else
-        {
-            // remove security constraints collection
-            securityConstraints = null;
-        }
-
-        // synchronize constraints references
-        if ((constraintsRefs != null) && !constraintsRefs.isEmpty())
-        {
-            // update security constraints references
-            if (securityConstraintsRefs == null)
-            {
-                securityConstraintsRefs = new ArrayList(constraintsRefs.size());
-            }
-            else
-            {
-                securityConstraintsRefs.clear();
-            }
-            Iterator updateIter = constraintsRefs.iterator();
-            while (updateIter.hasNext())
-            {
-                BaseSecurityConstraintsRef constraintsRef = (BaseSecurityConstraintsRef)updateIter.next();
-                securityConstraintsRefs.add(constraintsRef.getName());
-            }
-        }
-        else
-        {
-            // remove security constraints references collection
-            securityConstraintsRefs = null;
-        }
+        return constraints;
     }
 
     /**
-     * newSecurityConstraint
+     * getSecurityConstraintClass
      *
-     * Create new persistent constraint instance.
+     * Return class of persistent constraint instance.
+     *
+     * @return constraint class
      */
-    public BaseSecurityConstraint newSecurityConstraint()
+    public Class getSecurityConstraintClass()
     {
-        // transient by default
+        // none by default
         return null;
     }
 
     /**
-     * newSecurityConstraintsRef
+     * getSecurityConstraintsRefClass
      *
-     * Create new persistent constraints reference instance.
+     * Return class of persistent constraints reference instance.
+     *
+     * @return constraints reference class
      */
-    public BaseSecurityConstraintsRef newSecurityConstraintsRef()
+    public Class getSecurityConstraintsRefClass()
     {
-        // transient by default
+        // none by default
         return null;
     }
 
@@ -323,9 +213,9 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // add any security constraints references
-        if ((securityConstraintsRefs != null) && !securityConstraintsRefs.isEmpty())
+        if ((getSecurityConstraintsRefs() != null) && !getSecurityConstraintsRefs().isEmpty())
         {
-            List referencedConstraints = dereferenceSecurityConstraintsRefs(securityConstraintsRefs, pageSecurity);
+            List referencedConstraints = dereferenceSecurityConstraintsRefs(getSecurityConstraintsRefs(), pageSecurity);
             if (referencedConstraints != null)
             {
                 allConstraints.addAll(referencedConstraints);
@@ -352,7 +242,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     /**
      * clearAllSecurityConstraints
      */
-    private synchronized void clearAllSecurityConstraints()
+    synchronized void clearAllSecurityConstraints()
     {
         // clear previously cached security constraints
         allConstraints = null;
@@ -412,6 +302,12 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public List getSecurityConstraints()
     {
+        // return mutable inline constraint list
+        // by using list wrapper to manage apply order
+        if (securityConstraints == null)
+        {
+            securityConstraints = new SecurityConstraintList(this);
+        }
         return securityConstraints;
     }
     
@@ -420,8 +316,20 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public void setSecurityConstraints(List constraints)
     {
-        // save new setting and reset cached security constraints
-        securityConstraints = constraints;
+        // set inline constraints by replacing existing
+        // entries with new elements if new collection
+        // is specified
+        List securityConstraints = getSecurityConstraints();
+        if (constraints != securityConstraints)
+        {
+            // replace all constraints
+            securityConstraints.clear();
+            if (constraints != null)
+            {
+                securityConstraints.addAll(constraints);
+            }
+        }
+        // reset cached security constraints
         clearAllSecurityConstraints();
     }
 
@@ -430,6 +338,13 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public List getSecurityConstraintsRefs()
     {
+        // return mutable constraints refs list
+        // by using list wrapper to manage apply
+        // order and element uniqueness
+        if (securityConstraintsRefs == null)
+        {
+            securityConstraintsRefs = new SecurityConstraintsRefList(this);
+        }
         return securityConstraintsRefs;
     }
     
@@ -438,8 +353,20 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public void setSecurityConstraintsRefs(List constraintsRefs)
     {
-        // save new setting and reset cached security constraints
-        securityConstraintsRefs = constraintsRefs;
+        // set constraints refs using ordered ref
+        // names by replacing existing entries with
+        // new elements if new collection is specified
+        List securityConstraintsRefs = getSecurityConstraintsRefs();
+        if (constraintsRefs != securityConstraintsRefs)
+        {
+            // replace all constraints ref names
+            securityConstraintsRefs.clear();
+            if (constraintsRefs != null)
+            {
+                securityConstraintsRefs.addAll(constraintsRefs);
+            }
+        }
+        // reset cached security constraints
         clearAllSecurityConstraints();
     }
 

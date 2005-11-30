@@ -112,7 +112,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         {
             if (metadataFields == null)
             {
-                metadataFields = new ArrayList(4);
+                metadataFields = new ArrayList(1);
             }
             pageMetadata = newPageMetadata(metadataFields);
         }

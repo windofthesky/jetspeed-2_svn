@@ -391,6 +391,13 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
+         * @see org.apache.jetspeed.om.page.Fragment#setPreferences()
+         */
+        public void setPreferences(List preferences)
+        {
+        }
+
+        /**
          * @see org.apache.jetspeed.om.page.Fragment#getProperties()
          */
         public Map getProperties()

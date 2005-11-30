@@ -15,15 +15,15 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import org.apache.jetspeed.om.page.impl.BaseSecurityConstraint;
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 
 /**
- * FolderSecurityConstraint
+ * FolderSecurityConstraintImpl
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FolderSecurityConstraint extends BaseSecurityConstraint
+public class FolderSecurityConstraintImpl extends SecurityConstraintImpl
 {
     // new class defined only to facilitate OJB table/class mapping
 }

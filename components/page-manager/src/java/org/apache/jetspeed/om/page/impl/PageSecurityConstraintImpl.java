@@ -15,33 +15,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+
 /**
- * PageSecuritySecurityConstraintsDef
+ * PageSecurityConstraintImpl
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PageSecuritySecurityConstraintsDef extends BaseSecurityConstraint
+public class PageSecurityConstraintImpl extends SecurityConstraintImpl
 {
-    private String name;
-
-    /**
-     * getName
-     *
-     * @return name of defined constraint
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * setName
-     *
-     * @param name name of defined constraint
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    // new class defined only to facilitate OJB table/class mapping
 }

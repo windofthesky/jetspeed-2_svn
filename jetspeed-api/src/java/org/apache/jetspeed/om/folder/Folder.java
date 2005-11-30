@@ -66,7 +66,7 @@ public interface Folder extends Node
     int RESERVED_FOLDER_LANGUAGE = 6;
     int RESERVED_FOLDER_COUNTRY = 7;
     int RESERVED_FOLDER_OTHER = 9999;
-    
+   
     /**
      * getDocumentOrder
      *

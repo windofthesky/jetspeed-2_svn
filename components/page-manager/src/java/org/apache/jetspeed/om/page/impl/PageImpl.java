@@ -24,8 +24,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * PageImpl
@@ -234,21 +232,5 @@ public class PageImpl extends DocumentImpl implements Page
     public String getType()
     {
         return DOCUMENT_TYPE;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     */
-    public void afterLookup(PersistenceBroker broker) throws PersistenceBrokerException
-    {
-        // propagate
-        super.afterLookup(broker);
-
-        // set page implementation in root and children fragments
-        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
-        if (rootFragment != null)
-        {
-            rootFragment.setPage(this);
-        }
     }
 }

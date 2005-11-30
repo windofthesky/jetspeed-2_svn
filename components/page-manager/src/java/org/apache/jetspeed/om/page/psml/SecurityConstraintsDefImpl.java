@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page;
+package org.apache.jetspeed.om.page.psml;
 
 import java.util.List;
 

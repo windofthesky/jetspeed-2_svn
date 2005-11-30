@@ -665,10 +665,19 @@ public class ContentFragmentImpl implements ContentFragment
 
     }
 
-
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
+     */
     public List getPreferences()
     {
         return fragment.getPreferences();
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
+     */
+    public void setPreferences(List preferences)
+    {
+        fragment.setPreferences(preferences);
+    }
 }

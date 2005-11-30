@@ -40,6 +40,8 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.MenuElement;
 
@@ -68,6 +70,7 @@ public abstract class AbstractPageManager
     protected Class securityConstraintsClass;
     protected Class securityConstraintClass;
     protected Class securityConstraintsDefClass;
+    protected Class fragmentPreferenceClass;
 
     private boolean permissionsEnabled;
 
@@ -98,6 +101,7 @@ public abstract class AbstractPageManager
         this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl.class");
         this.securityConstraintClass = (Class)modelClasses.get("SecurityConstraintImpl.class");
         this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl.class");
+        this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl.class");
     }
     
     /**
@@ -413,6 +417,25 @@ public abstract class AbstractPageManager
         catch (ClassCastException e)
         {
             String message = "Failed to create security constraints definition object for " + this.securityConstraintsDefClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newFragmentPreference - creates a new security constraints definition
+     *
+     * @return a newly created FragmentPreference object
+     */
+    public FragmentPreference newFragmentPreference()
+    {
+        try
+        {
+            return (FragmentPreference)createObject(this.fragmentPreferenceClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraints definition object for " + this.fragmentPreferenceClass;
             log.error(message, e);
         }
         return null;

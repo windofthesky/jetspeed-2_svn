@@ -15,13 +15,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+
 /**
- * PageSecurityConstraint
+ * PageSecuritySecurityConstraintImpl
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentSecurityConstraint extends BaseSecurityConstraint
+public class PageSecuritySecurityConstraintImpl extends SecurityConstraintImpl
 {
     // new class defined only to facilitate OJB table/class mapping
 }

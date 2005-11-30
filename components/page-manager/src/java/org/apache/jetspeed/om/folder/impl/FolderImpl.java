@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
@@ -53,7 +54,9 @@ public class FolderImpl extends NodeImpl implements Folder
     private List folders;
     private List pages;
     private List pageSecurity;
+    private List orders;
 
+    private FolderOrderList documentOrder;
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
@@ -61,6 +64,23 @@ public class FolderImpl extends NodeImpl implements Folder
     public FolderImpl()
     {
         super(new FolderSecurityConstraintsImpl());
+    }
+
+    /**
+     * accessFolderOrders
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessFolderOrders()
+    {
+        // create initial collection if necessary
+        if (orders == null)
+        {
+            orders = new ArrayList();
+        }
+        return orders;
     }
 
     /**
@@ -75,7 +95,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // add to folders collection
         if (folders == null)
         {
-            folders = new ArrayList();
+            folders = new ArrayList(4);
         }
         folders.add(newFolder);
 
@@ -116,7 +136,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // add to pages collection
         if (pages == null)
         {
-            pages = new ArrayList();
+            pages = new ArrayList(8);
         }
         pages.add(newPage);
 
@@ -237,15 +257,34 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public List getDocumentOrder()
     {
-        return null; // NYI
+        // return mutable document order list
+        // by using list wrapper to manage sort
+        // order and element uniqueness
+        if (documentOrder == null)
+        {
+            documentOrder = new FolderOrderList(this);
+        }
+        return documentOrder;
     }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#setDocumentOrder(java.util.List)
      */
-    public void setDocumentOrder(List docIndexes)
+    public void setDocumentOrder(List docNames)
     {
-        // NYI
+        // set document order using ordered document
+        // names by replacing existing entries with
+        // new elements if new collection is specified
+        List documentOrder = getDocumentOrder();
+        if (docNames != documentOrder)
+        {
+            // replace all document order names
+            documentOrder.clear();
+            if (docNames != null)
+            {
+                documentOrder.addAll(docNames);
+            }
+        }
     }
 
     /* (non-Javadoc)

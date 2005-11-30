@@ -37,40 +37,147 @@ import org.apache.jetspeed.om.common.SecurityConstraint;
  */
 public class SecurityConstraintImpl implements SecurityConstraint
 {
-    private String users;
+    private int id;
+    private int applyOrder;
     private List usersList;
-
-    private String roles;
     private List rolesList;
-
-    private String groups;
     private List groupsList;
-
-    private String permissions;
     private List permissionsList;
 
+    private String users;
+    private String roles;
+    private String groups;
+    private String permissions;
+
+    /**
+     * getApplyOrder
+     *
+     * @return apply order for constraints
+     */
+    public int getApplyOrder()
+    {
+        return applyOrder;
+    }
+
+    /**
+     * setApplyOrder
+     *
+     * @param order apply order for constraints
+     */
+    public void setApplyOrder(int order)
+    {
+        applyOrder = order;
+    }
+
+    /**
+     * getUsersAsString
+     *
+     * @return users CSV list
+     */
+    public String getUsersAsString()
+    {
+        if ((users == null) && (usersList != null) && !usersList.isEmpty())
+        {
+            users = formatCSVList(usersList);
+        }
+        return users;
+    }
+
+    /**
+     * setUsersAsString
+     *
+     * @param users users CSV list
+     */
+    public void setUsersAsString(String users)
+    {
+        this.users = users;
+        usersList = parseCSVList(users);
+    }
+
+    /**
+     * getRolesAsString
+     *
+     * @return roles CSV list
+     */
+    public String getRolesAsString()
+    {
+        if ((roles == null) && (rolesList != null) && !rolesList.isEmpty())
+        {
+            roles = formatCSVList(rolesList);
+        }
+        return roles;
+    }
+    
+    /**
+     * setRolesAsString
+     *
+     * @param roles roles CSV list
+     */
+    public void setRolesAsString(String roles)
+    {
+        this.roles = roles;
+        rolesList = parseCSVList(roles);
+    }
+
+    /**
+     * getGroupsAsString
+     *
+     * @return groups CSV list
+     */
+    public String getGroupsAsString()
+    {
+        if ((groups == null) && (groupsList != null) && !groupsList.isEmpty())
+        {
+            groups = formatCSVList(groupsList);
+        }
+        return groups;
+    }
+    
+    /**
+     * setGroupsAsString
+     *
+     * @param groups groups CSV list
+     */
+    public void setGroupsAsString(String groups)
+    {
+        this.groups = groups;
+        groupsList = parseCSVList(groups);
+    }
+
+    /**
+     * getPermissionsAsString
+     *
+     * @return permmissions CSV list
+     */
+    public String getPermissionsAsString()
+    {
+        if ((permissions == null) && (permissionsList != null) && !permissionsList.isEmpty())
+        {
+            permissions = formatCSVList(permissionsList);
+        }
+        return permissions;
+    }
+    
+    /**
+     * setPermissionsAsString
+     *
+     * @param permissions permmissions CSV list
+     */
+    public void setPermissionsAsString(String permissions)
+    {
+        this.permissions = permissions;
+        permissionsList = parseCSVList(permissions);
+    }
+    
     /**
      * <p>
      * getUsers
      * </p>
      *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getUsers()
-     * @return
+     * @return users list
      */
-    public String getUsers()
-    {
-        return users;
-    }
-    
-    /**
-     * <p>
-     * getUsersList
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#getUsersList()
-     * @return
-     */
-    public List getUsersList()
+    public List getUsers()
     {
         return usersList;
     }
@@ -80,22 +187,8 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * setUsers
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#setUsers(java.lang.String)
-     * @param users
-     */
-    public void setUsers(String users)
-    {
-        this.users = users;
-        usersList = parseCSVList(users);
-    }
-
-    /**
-     * <p>
-     * setUsers
-     * </p>
-     *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setUsers(java.util.List)
-     * @param users
+     * @param users users list
      */
     public void setUsers(List users)
     {
@@ -109,22 +202,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * </p>
      *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getRoles()
-     * @return
+     * @return roles list
      */
-    public String getRoles()
-    {
-        return roles;
-    }
-    
-    /**
-     * <p>
-     * getRolesList
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#getRolesList()
-     * @return
-     */
-    public List getRolesList()
+    public List getRoles()
     {
         return rolesList;
     }
@@ -134,22 +214,8 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * setRoles
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#setRoles(java.lang.String)
-     * @param roles
-     */
-    public void setRoles(String roles)
-    {
-        this.roles = roles;
-        rolesList = parseCSVList(roles);
-    }
-
-    /**
-     * <p>
-     * setRoles
-     * </p>
-     *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setRoles(java.util.List)
-     * @param roles
+     * @param roles roles list
      */
     public void setRoles(List roles)
     {
@@ -163,22 +229,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * </p>
      *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getGroups()
-     * @return
+     * @return groups list
      */
-    public String getGroups()
-    {
-        return groups;
-    }
-    
-    /**
-     * <p>
-     * getGroupsList
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#getGroupsList()
-     * @return
-     */
-    public List getGroupsList()
+    public List getGroups()
     {
         return groupsList;
     }
@@ -188,22 +241,8 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * setGroups
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#setGroups(java.lang.String)
-     * @param groups
-     */
-    public void setGroups(String groups)
-    {
-        this.groups = groups;
-        groupsList = parseCSVList(groups);
-    }
-
-    /**
-     * <p>
-     * setGroups
-     * </p>
-     *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setGroups(java.util.List)
-     * @param groups
+     * @param groups groups list
      */
     public void setGroups(List groups)
     {
@@ -217,22 +256,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * </p>
      *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getPermissions()
-     * @return
+     * @return permissions list
      */
-    public String getPermissions()
-    {
-        return permissions;
-    }
-    
-    /**
-     * <p>
-     * getPermissionsList
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#getPermissionsList()
-     * @return
-     */
-    public List getPermissionsList()
+    public List getPermissions()
     {
         return permissionsList;
     }
@@ -242,22 +268,8 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * setPermissions
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraint#setPermissions(java.lang.String)
-     * @param permissions
-     */
-    public void setPermissions(String permissions)
-    {
-        this.permissions = permissions;
-        permissionsList = parseCSVList(permissions);
-    }
-
-    /**
-     * <p>
-     * setPermissions
-     * </p>
-     *
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setPermissions(java.util.List)
-     * @param permissions
+     * @param permissions permissions list
      */
     public void setPermissions(List permissions)
     {
