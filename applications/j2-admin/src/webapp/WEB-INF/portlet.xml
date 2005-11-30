@@ -853,12 +853,12 @@ limitations under the License.
      <init-param>
         <description>This parameter sets the url to which folks will return after they receive an email</description>
         <name>returnURL</name>
-            <value>http://localhost:8080/jetspeed/portal/something.vm</value>
+            <value>/complete-registration.psml</value>
      </init-param>   
      <init-param>
         <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
         <name>redirectPath</name>
-            <value>http://localhost:8080/jetspeed/portal/</value>
+            <value>/forgotten-password.psml</value>
      </init-param>   
 
     <portlet-name>ForgottenPasswordPortlet</portlet-name>

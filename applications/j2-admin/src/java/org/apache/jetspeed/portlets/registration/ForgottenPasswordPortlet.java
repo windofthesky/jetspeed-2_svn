@@ -32,6 +32,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -284,14 +285,17 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             publishRenderMessage(
                     request,
                     MSG_CHANGEDPW_MSG,
+                    // TODO: localize this!
                     makeMessage("An email has been sent to you.  Please follow the link in the email"));
             
-            response.sendRedirect(this.redirectPath);
-        } catch (AdministrationEmailException e)
+            response.sendRedirect(generateRedirectURL(request, response));
+        } 
+        catch (AdministrationEmailException e)
         {
             publishRenderMessage(request, CTX_MESSAGE, makeMessage(e
                     .getMessage()));
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             publishRenderMessage(request, CTX_MESSAGE,
                     makeMessage("Failed to send password: " + e.toString()));
@@ -315,12 +319,23 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         return this.emailSubject;
     }
 
-    protected String generateReturnURL(ActionRequest request,
-            ActionResponse response, String urlGUID)
+    protected String generateReturnURL(PortletRequest request,
+                                       PortletResponse response,
+                                       String urlGUID)
     {
-        return this.returnUrlPath + "?guid=" + urlGUID;
+        String fullPath = this.returnUrlPath + "?guid=" + urlGUID; 
+        // NOTE: getPortalURL will encode the fullPath for us
+        String url = admin.getPortalURL(request, response, fullPath);
+        return url;
     }
 
+    protected String generateRedirectURL(PortletRequest request,
+                                         PortletResponse response)
+                                         
+    {
+        return admin.getPortalURL(request, response, this.redirectPath);
+    }
+    
     protected String getUserName(User user)
     {
         Principal principal = null;
