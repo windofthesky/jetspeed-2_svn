@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+
 import org.apache.jetspeed.security.User;
 
 /**
@@ -100,6 +103,22 @@ public interface PortalAdministration
     public User lookupUserFromEmail(String email)
     throws AdministrationEmailException;
     
-    
+    /**
+     * Provide a common way to get portal URLs
+     * Necessary for generating return URLs for features such as 
+     * forgotten password. The URL generated will be a combination
+     * of the Jetspeed base URL plus the path parameter appended 
+     * Example:
+     *  base URL = http://www.apache.org/jetspeed/portal
+     *      path = /system/forgotten-password.psml
+     *  Returns: 
+     *     http://www.apache.org/jetspeed/portal/system/forgotten-password.psml
+     *     
+     * @param request The portlet request.
+     * @param response The portlet response, used to encode the path
+     * @param path The relative path to a portal resource
+     * @return the base Jetspeed portal URL plus the appended path parameter
+     */
+    String getPortalURL(PortletRequest request, PortletResponse response, String path);
 }
 
