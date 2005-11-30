@@ -26,7 +26,7 @@
     <property name="resourceLoaderPath"><value>/WEB-INF/templates/</value></property>
 </bean>
   
-<bean id='PortalAdministration' init-method="start"
+<bean id='PortalAdministrationImpl' init-method="start"
       class='org.apache.jetspeed.administration.PortalAdministrationImpl'>
     	<constructor-arg index='0'>
     		<ref bean="org.apache.jetspeed.security.UserManager"/>
@@ -52,6 +52,21 @@
         <constructor-arg index='7'>
     		<ref bean="adminVelocityEngine"/>
     	</constructor-arg>                                                            
+</bean>
+    
+<bean id="PortalAdministration" name="PortalAdministration" parent="baseTransactionProxy">
+        <property name="proxyInterfaces">
+            <value>org.apache.jetspeed.administration.PortalAdministration</value>
+        </property>
+
+        <property name="target">
+            <ref bean="PortalAdministrationImpl" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.administration.RegistrationException</prop>
+            </props>
+        </property>
 </bean>
     
 </beans>

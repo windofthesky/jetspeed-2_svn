@@ -851,7 +851,8 @@ public abstract class AbstractPageManager
         while (pages.hasNext())
         {
             Page srcPage = (Page)pages.next();
-            Page dstPage = this.copyPage(srcPage, srcPage.getPath());
+            String path = this.concatenatePaths(destinationPath, srcPage.getName());
+            Page dstPage = this.copyPage(srcPage, path);
             this.updatePage(dstPage);
         }
      

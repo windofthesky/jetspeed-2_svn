@@ -113,6 +113,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.groupManager = groupManager;
         this.pageManager = pageManager;
         this.preferences = preferences;
+        this.profiler = profiler;
         this.mailSender = mailSender;
         this.velocityEngine = velocityEngine;
         this.adminUtil = new AdminUtil();
@@ -143,9 +144,6 @@ public class PortalAdministrationImpl implements PortalAdministration
             config.getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
         this.adminUser = config.getString(PortalConfigurationConstants.USERS_DEFAULT_ADMIN);
         
-        System.out.println("admin user = " + adminUser);
-        System.out.println("roles = " + defaultRoles);
-        System.out.println("folder template = " + folderTemplate);
     }
     
     public void registerUser(String userName, String password)
@@ -174,7 +172,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             User user = userManager.getUser(userName);
                         
             // assign roles to user
-            if (roles == null)
+            if (roles == null || roles.isEmpty())
             {
                 roles = this.defaultRoles;
             }
@@ -184,16 +182,13 @@ public class PortalAdministrationImpl implements PortalAdministration
                 while (roleList.hasNext())
                 {
                     String role = (String)roleList.next();
-                    if (!role.startsWith(Folder.ROLE_FOLDER))
-                    {
-                        role = Folder.ROLE_FOLDER + role;
-                    }
-                    roleManager.addRoleToUser(userName, role);
+                    if (role.trim().length() > 0)
+                        roleManager.addRoleToUser(userName, role);
                 }
             }
             
             // assign groups to user
-            if (groups == null)
+            if (groups == null || groups.isEmpty())
             {
                 groups = this.defaultGroups;
             }
@@ -203,11 +198,10 @@ public class PortalAdministrationImpl implements PortalAdministration
                 while (groupsList.hasNext())
                 {
                     String group = (String)groupsList.next();
-                    if (!group.startsWith(Folder.GROUP_FOLDER))
+                    if (group.trim().length() > 0)
                     {
-                        group = Folder.GROUP_FOLDER + group;
-                    }                    
-                    groupManager.addUserToGroup(userName, group);
+                        groupManager.addUserToGroup(userName, group);
+                    }
                 }
             }
             
@@ -223,7 +217,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             }
             
             // assign profiling rules to user
-            if (rules == null)
+            if (rules == null || rules.isEmpty())
             {
                 rules = this.defaultRules;
             }
@@ -232,7 +226,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                 Iterator ruleEntries = rules.entrySet().iterator();
                 while (ruleEntries.hasNext())
                 {           
-                    Map.Entry entry = (Map.Entry)ruleEntries.next();
+                    Map.Entry entry = (Map.Entry)ruleEntries.next();                    
                     ProfilingRule rule = profiler.getRule((String)entry.getKey());
                     if (rule != null)
                     {
@@ -288,7 +282,10 @@ public class PortalAdministrationImpl implements PortalAdministration
                 // rollback user creation and cascade roles, groups, etc
                 try
                 {
-                    userManager.removeUser(userName);
+                    if (userManager.getUser(userName) != null)
+                    {
+                        userManager.removeUser(userName);
+                    }
                 }
                 catch (Exception e)
                 {
