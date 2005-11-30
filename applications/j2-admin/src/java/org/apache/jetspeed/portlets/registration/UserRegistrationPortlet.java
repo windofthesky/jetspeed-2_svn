@@ -30,6 +30,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -179,6 +180,8 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             // just to be sure
             this.optionForceEmailsToBeSystemUnique = true;
         }
+        this.returnUrlPath = config.getInitParameter(IP_RETURN_URL);
+        this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);        
     }
 
     public void doView(RenderRequest request, RenderResponse response)
@@ -374,13 +377,15 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             {
                 String password = admin.generatePassword();
                 userInfo.put("user.password", password);
-            } else
+            } 
+            else
             {
                 if (userInfo.get("password").equals(
                         userInfo.get("verifyPassword")))
                 {
 
-                } else
+                } 
+                else
                 {
                     //                  TODO: localize messages
                     errors
@@ -389,7 +394,8 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                     return;
                 }
             }
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             // TODO: localize messages
             errors.add("Failed to add user. " + e.toString());
@@ -416,8 +422,10 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             userInfo.put(CTX_RETURN_URL, generateReturnURL(actionRequest,
                     actionResponse, urlGUID));
 
-            if (this.emailTemplate == null) { throw new Exception(
-                    "email template not available"); }
+            if (this.emailTemplate == null) 
+            { 
+                throw new Exception("email template not available"); 
+            }
 
             admin.sendEmail(getPortletConfig(), (String) userInfo
                     .get(USER_ATTRIBUTE_EMAIL), getEmailSubject(actionRequest),
@@ -426,9 +434,10 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,
                     "You have completed the user registration process.  Please login above");
 
-            actionResponse.sendRedirect(this.redirectPath);
+            actionResponse.sendRedirect(this.generateRedirectURL(actionRequest, actionResponse));
 
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             // TODO: localize messages
             errors.add("Failed to add user. " + e.toString());
@@ -464,10 +473,20 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         return Arrays.asList(temps);
     }
 
-    protected String generateReturnURL(ActionRequest request,
-            ActionResponse response, String urlGUID)
+    protected String generateReturnURL(PortletRequest request,
+            PortletResponse response,
+            String urlGUID)
     {
-        return this.returnUrlPath + "?newUserGUID=" + urlGUID;
+        String fullPath = this.returnUrlPath + "?newUserGUID=" + urlGUID; 
+        // NOTE: getPortalURL will encode the fullPath for us
+        String url = admin.getPortalURL(request, response, fullPath);
+        return url;
     }
 
+    protected String generateRedirectURL(PortletRequest request,
+              PortletResponse response)              
+    {
+        return admin.getPortalURL(request, response, this.redirectPath);
+    }
+    
 }

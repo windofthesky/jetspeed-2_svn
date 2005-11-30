@@ -853,7 +853,7 @@ limitations under the License.
      <init-param>
         <description>This parameter sets the url to which folks will return after they receive an email</description>
         <name>returnURL</name>
-            <value>/complete-registration.psml</value>
+            <value>/</value>
      </init-param>   
      <init-param>
         <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
@@ -924,6 +924,17 @@ limitations under the License.
         <name>Option_Use_Email_As_Username</name>
             <value>false</value>
       </init-param> 
+
+     <init-param>
+        <description>This parameter sets the url to which folks will return after they receive an email</description>
+        <name>returnURL</name>
+            <value>/complete-registration.psml</value>
+     </init-param>   
+     <init-param>
+        <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
+        <name>redirectPath</name>
+            <value>/registration-reminder.psml</value>
+     </init-param>   
 
       <init-param>
         <description>This is the template in which you setup an email to be sent after user exists</description>
