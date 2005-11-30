@@ -361,8 +361,9 @@ public interface PageManager
      *  
      * @param source source folder
      * @param dest destination folder
+     * @param owner set owner of the new folder(s), or null for no owner
      */
-    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
     throws JetspeedException, PageNotUpdatedException;
     
 }
