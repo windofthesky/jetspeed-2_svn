@@ -40,7 +40,7 @@ public class TestPathUtil extends TestCase
         assertEquals("file.html", path.getSegment(3));  
         assertEquals("/root/sub1/sub2/file.html", path.pathOnly());
         
-        assertEquals("/sub1/sub2/file.html?foo=bar&name=bob", path.getSubPath(1).toString());
+        assertEquals("/sub1/sub2/file.html", path.getSubPath(1).toString());
         
         path = new Path("file.html");
         assertEquals(".html", path.getFileExtension());
