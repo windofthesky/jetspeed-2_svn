@@ -905,10 +905,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         return this.delegator.copyPageSecurity(source);
     }
 
-    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
     throws JetspeedException, PageNotUpdatedException
     {
-        this.delegator.deepCopyFolder(srcFolder, destinationPath);
+        this.delegator.deepCopyFolder(srcFolder, destinationPath, owner);
     }
     
 }

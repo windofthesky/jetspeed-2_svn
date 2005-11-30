@@ -795,7 +795,7 @@ public abstract class AbstractPageManager
      * @param source source folder
      * @param dest destination folder
      */
-    public void deepCopyFolder(Folder srcFolder, String destinationPath)
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
     throws JetspeedException, PageNotUpdatedException
     {
         boolean found = true;
@@ -812,6 +812,10 @@ public abstract class AbstractPageManager
             throw new JetspeedException("Destination already exists");
         }
         Folder dstFolder = this.copyFolder(srcFolder, destinationPath);
+        if (owner != null)
+        {
+            dstFolder.getSecurityConstraints().setOwner(owner);
+        }
         this.updateFolder(dstFolder);
         
         Iterator pages = srcFolder.getPages().iterator();
@@ -829,7 +833,7 @@ public abstract class AbstractPageManager
         {
             Folder folder = (Folder)folders.next();
             String newPath = concatenatePaths(destinationPath, folder.getName()); 
-            deepCopyFolder(folder, newPath);
+            deepCopyFolder(folder, newPath, owner);
         }        
     }
         
