@@ -814,6 +814,12 @@ public abstract class AbstractPageManager
         Folder dstFolder = this.copyFolder(srcFolder, destinationPath);
         if (owner != null)
         {
+            SecurityConstraints constraints = dstFolder.getSecurityConstraints();
+            if (constraints == null)
+            {
+                constraints = this.newSecurityConstraints();
+                dstFolder.setSecurityConstraints(constraints);
+            }
             dstFolder.getSecurityConstraints().setOwner(owner);
         }
         this.updateFolder(dstFolder);
@@ -833,7 +839,7 @@ public abstract class AbstractPageManager
         {
             Folder folder = (Folder)folders.next();
             String newPath = concatenatePaths(destinationPath, folder.getName()); 
-            deepCopyFolder(folder, newPath, owner);
+            deepCopyFolder(folder, newPath, null);
         }        
     }
         
