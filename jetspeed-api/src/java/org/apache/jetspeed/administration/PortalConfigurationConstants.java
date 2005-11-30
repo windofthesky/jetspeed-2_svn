@@ -64,4 +64,7 @@ public interface PortalConfigurationConstants
     /** Registration default profiling rules assigned during registration or new user creation **/        
     static final String REGISTRATION_RULES_DEFAULT = "registration.rules.default";
     
+    /** Users */
+    static final String USERS_DEFAULT_ADMIN = "default.admin.user";
+    static final String USERS_DEFAULT_GUEST = "default.user.principal";
 }

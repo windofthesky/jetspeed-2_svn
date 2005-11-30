@@ -31,6 +31,8 @@ import javax.portlet.PortletResponse;
 import javax.security.auth.Subject;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -72,6 +74,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 public class PortalAdministrationImpl implements PortalAdministration
 {
+    private final static Log log = LogFactory.getLog(PortalAdministrationImpl.class);
+    
     /** administration services */
     protected Configuration config;
     protected UserManager userManager;
@@ -92,6 +96,8 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected Map defaultRules;
     /** name of PSML Folder Template to clone from when registering new user */
     protected String folderTemplate;
+    /** default administrative user */
+    protected String adminUser;
         
     public PortalAdministrationImpl( UserManager userManager,
                                      RoleManager roleManager,
@@ -135,6 +141,11 @@ public class PortalAdministrationImpl implements PortalAdministration
         }
         this.folderTemplate = 
             config.getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
+        this.adminUser = config.getString(PortalConfigurationConstants.USERS_DEFAULT_ADMIN);
+        
+        System.out.println("admin user = " + adminUser);
+        System.out.println("roles = " + defaultRoles);
+        System.out.println("folder template = " + folderTemplate);
     }
     
     public void registerUser(String userName, String password)
@@ -243,7 +254,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             final String innerUserName = userName;
             final PageManager innerPageManager = pageManager;
             final String innerUser = userName;
-            User powerUser = userManager.getUser("admin"); // TODO: DO NOT HARD CODE ADMIN USER
+            User powerUser = userManager.getUser(this.adminUser);
             JetspeedException pe = (JetspeedException) Subject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
                 {
                     public Object run() 
@@ -274,12 +285,23 @@ public class PortalAdministrationImpl implements PortalAdministration
                 
             if(pe != null)
             {
+                // rollback user creation and cascade roles, groups, etc
+                try
+                {
+                    userManager.removeUser(userName);
+                }
+                catch (Exception e)
+                {
+                    log.error("Registration Error: Failed to rollback user " + userName);
+                }
+                log.error("Registration Error: Failed to create user folders for " + userName + ", " + pe.toString());
                 throw pe;
             }
                         
         }
         catch (Exception e) 
         {
+            log.error("Registration Error: Failed to create registered user " + userName + ", " + e.toString());
             throw new RegistrationException(e); 
         }        
     }
