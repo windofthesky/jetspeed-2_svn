@@ -251,7 +251,8 @@ public class PortalAdministrationImpl implements PortalAdministration
             final String innerFolderTemplate = folderTemplate;
             final String innerUserName = userName;
             final PageManager innerPageManager = pageManager;
-            User powerUser = userManager.getUser("admin");
+            final String innerUser = userName;
+            User powerUser = userManager.getUser("admin"); // TODO: DO NOT HARD CODE ADMIN USER
             JetspeedException pe = (JetspeedException) Subject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
                 {
                     public Object run() 
@@ -261,8 +262,8 @@ public class PortalAdministrationImpl implements PortalAdministration
 //                           create user's home folder                        
                              // deep copy from the default folder template tree, creating a deep-copy of the template
                              // in the new user's folder tree
-                            Folder source = innerPageManager.getFolder(innerFolderTemplate);
-                            innerPageManager.deepCopyFolder(source, Folder.USER_FOLDER + innerUserName);
+                            Folder source = innerPageManager.getFolder(innerFolderTemplate);                            
+                            innerPageManager.deepCopyFolder(source, Folder.USER_FOLDER + innerUserName, innerUser);
                              
                             return null;
                         }
