@@ -128,6 +128,8 @@ class FolderOrderList extends AbstractList
                 break;
             }
         }
+        // clear all cached folder ordering
+        folder.clearDocumentOrderComparator();
     }
 
     /* (non-Javadoc)
@@ -145,12 +147,14 @@ class FolderOrderList extends AbstractList
      */
     public Object remove(int index)
     {
-        // implement for modifiable AbstractList:
-        // save removed element 
+        // implement for modifiable AbstractList
         FolderOrder removed = (FolderOrder)folder.accessFolderOrders().remove(index);
         if (removed != null)
         {
+            // save removed element 
             getRemovedFolderOrders().add(removed);
+            // clear all cached folder ordering
+            folder.clearDocumentOrderComparator();
         }
         return removed;
     }
@@ -169,6 +173,8 @@ class FolderOrderList extends AbstractList
         newFolderOrder.setSortOrder(folderOrder.getSortOrder());
         // save replaced element
         getRemovedFolderOrders().add(folderOrder);
+        // clear all cached folder ordering
+        folder.clearDocumentOrderComparator();
         // return unwrapped folder order name string
         return folderOrder.getName();
     }

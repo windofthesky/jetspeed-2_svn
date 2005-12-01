@@ -241,9 +241,21 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageManager.updatePage(page);
 
         assertNotNull(page.getParent());
+        assertEquals(page.getParent().getId(), folder.getId());
         assertNotNull(folder.getPages());
         assertEquals(1, folder.getPages().size());
+
+        page = pageManager.newPage("/another-page.psml");
+        page.setTitle("Another Page");
+        pageManager.updatePage(page);
+        assertNotNull(page.getParent());
         assertEquals(page.getParent().getId(), folder.getId());
+        page = pageManager.newPage("/some-other-page.psml");
+        page.setTitle("Some Other Page");
+        pageManager.updatePage(page);
+        assertNotNull(page.getParent());
+        assertEquals(page.getParent().getId(), folder.getId());
+        assertEquals(3, folder.getPages().size());
 
         PageSecurity pageSecurity = pageManager.newPageSecurity();
         List constraintsDefs = new ArrayList(2);
@@ -277,8 +289,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageManager.updatePageSecurity(pageSecurity);
 
         assertNotNull(pageSecurity.getParent());
-        assertNotNull(folder.getPageSecurity());
         assertEquals(pageSecurity.getParent().getId(), folder.getId());
+        assertNotNull(folder.getPageSecurity());
 
         // test duplicate creates
         try
@@ -310,14 +322,15 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
 
         // test folder/page creation with attributes on deep path
+        Folder deepFolder = null;
         int pathIndex = deepFolderPath.indexOf('/', 1);
         while ((pathIndex != -1) && (pathIndex <= deepFolderPath.length()))
         {
-            folder = pageManager.newFolder(deepFolderPath.substring(0, pathIndex));
-            pageManager.updateFolder(folder);
-            assertNotNull(folder.getParent());
-            assertNotNull(((Folder)folder.getParent()).getFolders());
-            assertEquals(1, ((Folder)folder.getParent()).getFolders().size());
+            deepFolder = pageManager.newFolder(deepFolderPath.substring(0, pathIndex));
+            pageManager.updateFolder(deepFolder);
+            assertNotNull(deepFolder.getParent());
+            assertNotNull(((Folder)deepFolder.getParent()).getFolders());
+            assertEquals(1, ((Folder)deepFolder.getParent()).getFolders().size());
 
             if (pathIndex < deepFolderPath.length())
             {
@@ -332,10 +345,29 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
                 pathIndex = -1;
             }
         }
-        page = pageManager.newPage(deepPagePath);
-        pageManager.updatePage(page);
-        assertNotNull(page.getParent());
-        assertEquals(page.getParent().getId(), folder.getId());
+        Page deepPage = pageManager.newPage(deepPagePath);
+        pageManager.updatePage(deepPage);
+        assertNotNull(deepPage.getParent());
+        assertEquals(deepPage.getParent().getId(), deepFolder.getId());
+
+        // test folder nodesets
+        assertNotNull(folder.getFolders());
+        assertEquals(1, folder.getFolders().size());
+        assertNotNull(folder.getAll());
+        assertEquals(5, folder.getAll().size());
+        Iterator all = folder.getAll().iterator();
+        assertEquals("some-other-page.psml", ((Node)all.next()).getName());
+        assertEquals("default-page.psml", ((Node)all.next()).getName());
+        assertEquals("__subsite-rootx", ((Node)all.next()).getName());
+        assertEquals("another-page.psml", ((Node)all.next()).getName());
+        assertEquals("page.security", ((Node)all.next()).getName());
+        assertNotNull(folder.getAll().subset(Page.DOCUMENT_TYPE));
+        assertEquals(3, folder.getAll().subset(Page.DOCUMENT_TYPE).size());
+        assertNotNull(folder.getAll().inclusiveSubset(".*other.*"));
+        assertEquals(2, folder.getAll().inclusiveSubset(".*other.*").size());
+        assertNull(folder.getAll().inclusiveSubset("nomatch"));
+        assertNotNull(folder.getAll().exclusiveSubset(".*-page.psml"));
+        assertEquals(2, folder.getAll().exclusiveSubset(".*-page.psml").size());
     }
 
     public void testGets() throws Exception
@@ -469,9 +501,17 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNull(check.getParent());
             assertNotNull(check.getPageSecurity());
             assertNotNull(check.getPages());
-            assertEquals(1, check.getPages().size());
+            assertEquals(3, check.getPages().size());
             assertNotNull(check.getFolders());
             assertEquals(1, check.getFolders().size());
+            assertNotNull(check.getAll());
+            assertEquals(5, check.getAll().size());
+            Iterator all = check.getAll().iterator();
+            assertEquals("some-other-page.psml", ((Node)all.next()).getName());
+            assertEquals("default-page.psml", ((Node)all.next()).getName());
+            assertEquals("__subsite-rootx", ((Node)all.next()).getName());
+            assertEquals("another-page.psml", ((Node)all.next()).getName());
+            assertEquals("page.security", ((Node)all.next()).getName());
         }
         catch (FolderNotFoundException e)
         {
@@ -528,6 +568,12 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         folder.getDocumentOrder().add("UPDATED");
         folder.getDocumentOrder().add("some-other-page.psml");
         pageManager.updateFolder(folder);
+
+        assertNotNull(folder.getAll());
+        assertEquals(5, folder.getAll().size());
+        Iterator all = folder.getAll().iterator();
+        assertEquals("default-page.psml", ((Node)all.next()).getName());
+        assertEquals("some-other-page.psml", ((Node)all.next()).getName());
     }
 
     public void testRemoves() throws Exception
@@ -604,7 +650,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     public void testEvents() throws Exception
     {
         // verify listener functionality and operation counts
-        assertEquals(19, newNodeCount);
+        assertEquals(21, newNodeCount);
         assertEquals(3, updatedNodeCount);
         assertEquals(1, removedNodeCount);
     }

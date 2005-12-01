@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;
 
@@ -32,24 +34,66 @@ import org.apache.jetspeed.page.document.NodeSet;
  */
 public class NodeSetImpl implements NodeSet
 {
-    private List nodes;
-    private Map nodesByName;
+    public static final NodeSetImpl EMPTY_NODE_SET = new NodeSetImpl();
 
-    public NodeSetImpl()
+    private static final Map patternCache = new LRUMap(128);
+
+    private Map nodes;
+    private Comparator comparator;
+
+    public NodeSetImpl(List nodes, Comparator comparator)
     {
-    }
-    public NodeSetImpl(List nodes)
-    {
-        this.nodes = new ArrayList(nodes.size());
-        this.nodesByName = new HashMap((nodes.size() / 2) + 1);
+        this.nodes = new TreeMap(comparator);
         Iterator addIter = nodes.iterator();
         while (addIter.hasNext())
         {
             Node node = (Node)addIter.next();
-            this.nodes.add(node);
-            if (!this.nodesByName.containsKey(node.getName()))
+            if (!this.nodes.containsKey(node.getName()))
             {
-                this.nodesByName.put(node.getName(), node);
+                this.nodes.put(node.getName(), node);
+            }
+        }
+        this.comparator = comparator;
+    }
+
+    public NodeSetImpl(List nodes)
+    {
+        this(nodes, null);
+    }
+
+    public NodeSetImpl(Comparator comparator)
+    {
+        this.comparator = comparator;
+    }
+
+    public NodeSetImpl(NodeSet nodeSet)
+    {
+        this((nodeSet instanceof NodeSetImpl) ? ((NodeSetImpl)nodeSet).comparator : (Comparator)null);
+    }
+
+    public NodeSetImpl()
+    {
+    }
+
+    /**
+     * getCachedPattern
+     *
+     * @param regex pattern
+     * @return cached pattern
+     */
+    private Pattern getCachedPattern(String regex)
+    {
+        synchronized (patternCache)
+        {
+            if (patternCache.containsKey(regex))
+            {
+                return (Pattern)patternCache.get(regex);
+            }
+            else
+            {
+                Pattern pattern = Pattern.compile(regex);
+                patternCache.put(regex, pattern);
+                return pattern;
             }
         }
     }
@@ -61,13 +105,11 @@ public class NodeSetImpl implements NodeSet
     {
         if (nodes == null)
         {
-            nodes = new ArrayList(8);
-            nodesByName = new HashMap(5);
+            nodes = new TreeMap(comparator);
         }
-        nodes.add(node);
-        if (!nodesByName.containsKey(node.getName()))
+        if (!nodes.containsKey(node.getName()))
         {
-            nodesByName.put(node.getName(), node);
+            nodes.put(node.getName(), node);
         }
     }
     
@@ -76,9 +118,9 @@ public class NodeSetImpl implements NodeSet
      */
     public Node get(String name)
     {
-        if (nodesByName != null)
+        if (nodes != null)
         {
-            return (Node)nodesByName.get(name);
+            return (Node)nodes.get(name);
         }
         return null;
     }
@@ -90,7 +132,7 @@ public class NodeSetImpl implements NodeSet
     {
         if (nodes != null)
         {
-            return nodes.iterator();
+            return nodes.values().iterator();
         }
         return null;
     }
@@ -100,7 +142,21 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet subset(String type)
     {
-        return null; // NYI
+        NodeSetImpl subset = null;
+        Iterator nodeItr = nodes.values().iterator();
+        while (nodeItr.hasNext())
+        {
+            Node node = (Node) nodeItr.next();
+            if (node.getType().equals(type))
+            {
+                if (subset == null)
+                {
+                    subset = new NodeSetImpl(comparator);
+                }
+                subset.add(node);
+            }
+        }
+        return subset;
     }
     
     /* (non-Javadoc)
@@ -108,7 +164,22 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet inclusiveSubset(String regex)
     {
-        return null; // NYI
+        Pattern pattern = getCachedPattern(regex);
+        NodeSetImpl subset = null;
+        Iterator nodeItr = nodes.values().iterator();
+        while (nodeItr.hasNext())
+        {
+            Node node = (Node) nodeItr.next();
+            if (pattern.matcher(node.getName()).matches())
+            {
+                if (subset == null)
+                {
+                    subset = new NodeSetImpl(comparator);
+                }
+                subset.add(node);
+            }
+        }
+        return subset;
     }
     
     /* (non-Javadoc)
@@ -116,7 +187,22 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet exclusiveSubset(String regex)
     {
-        return null; // NYI
+        Pattern pattern = getCachedPattern(regex);
+        NodeSetImpl subset = null;
+        Iterator nodeItr = nodes.values().iterator();
+        while (nodeItr.hasNext())
+        {
+            Node node = (Node) nodeItr.next();
+            if (!pattern.matcher(node.getName()).matches())
+            {
+                if (subset == null)
+                {
+                    subset = new NodeSetImpl(comparator);
+                }
+                subset.add(node);
+            }
+        }
+        return subset;
     }
     
     /* (non-Javadoc)
@@ -138,7 +224,7 @@ public class NodeSetImpl implements NodeSet
     {
         if (nodes != null)
         {
-            return nodes.contains(node);
+            return nodes.containsValue(node);
         }
         return false;
     }

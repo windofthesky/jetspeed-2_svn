@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.folder.impl;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -57,6 +58,8 @@ public class FolderImpl extends NodeImpl implements Folder
     private List orders;
 
     private FolderOrderList documentOrder;
+    private boolean documentOrderComparatorValid;
+    private Comparator documentOrderComparator;
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
@@ -196,6 +199,86 @@ public class FolderImpl extends NodeImpl implements Folder
         allNodeSet = null;
     }
     
+    /**
+     * createDocumentOrderComparator
+     *
+     * @return document order comparator
+     */
+    private Comparator createDocumentOrderComparator()
+    {
+        if (!documentOrderComparatorValid)
+        {
+            documentOrderComparatorValid = true;
+            // return null if no document order exists;
+            // (null implies natural ordering by name)
+            final List documentOrder = getDocumentOrder();
+            if ((documentOrder == null) || documentOrder.isEmpty())
+            {
+                return null;
+            }
+            // create new document order comparator
+            documentOrderComparator = new Comparator()
+                {
+                    /* (non-Javadoc)
+                     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                     */
+                    public int compare(Object o1, Object o2)
+                    {
+                        // Compare node names using document order;
+                        // use indicies as names if found in document
+                        // order to force explicitly ordered items
+                        // ahead of unordered items
+                        String name1 = (String)o1;
+                        int index1 = documentOrder.indexOf(name1);
+                        if (index1 >= 0)
+                        {
+                            // use order index as name1
+                            name1 = String.valueOf(index1);
+                        }
+                        String name2 = (String)o2;
+                        int index2 = documentOrder.indexOf(name2);
+                        if (index2 >= 0)
+                        {
+                            // use order index as name2
+                            name2 = String.valueOf(index2);
+                            if (index1 >= 0)
+                            {
+                                // pad order indicies for numeric string compare
+                                while (name1.length() != name2.length())
+                                {
+                                    if (name1.length() < name2.length())
+                                    {
+                                        name1 = "0" + name1;
+                                    }
+                                    else
+                                    {
+                                        name2 = "0" + name2;
+                                    }
+                                }
+                            }
+                        }
+                        // compare names and/or indicies
+                        return name1.compareTo(name2);                        
+                    }
+                };
+        }
+        return documentOrderComparator;
+    }
+
+    /**
+     * clearDocumentOrderComparator
+     */
+    void clearDocumentOrderComparator()
+    {
+        // clear node set ordering
+        documentOrderComparatorValid = false;
+        documentOrderComparator = null;
+        // clear previously cached node sets
+        allNodeSet = null;
+        foldersNodeSet = null;
+        pagesNodeSet = null;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
      */
@@ -455,11 +538,11 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             if (folders != null)
             {
-                foldersNodeSet = new NodeSetImpl(folders);
+                foldersNodeSet = new NodeSetImpl(folders, createDocumentOrderComparator());
             }
             else
             {
-                foldersNodeSet = new NodeSetImpl();
+                foldersNodeSet = NodeSetImpl.EMPTY_NODE_SET;
             }
         }
         return foldersNodeSet;
@@ -478,11 +561,11 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             if (pages != null)
             {
-                pagesNodeSet = new NodeSetImpl(pages);
+                pagesNodeSet = new NodeSetImpl(pages, createDocumentOrderComparator());
             }
             else
             {
-                pagesNodeSet = new NodeSetImpl();
+                pagesNodeSet = NodeSetImpl.EMPTY_NODE_SET;
             }
         }
         return pagesNodeSet;
@@ -514,11 +597,11 @@ public class FolderImpl extends NodeImpl implements Folder
             }
             if (!all.isEmpty())
             {
-                allNodeSet = new NodeSetImpl(all);
+                allNodeSet = new NodeSetImpl(all, createDocumentOrderComparator());
             }
             else
             {
-                allNodeSet = new NodeSetImpl();
+                allNodeSet = NodeSetImpl.EMPTY_NODE_SET;
             }
         }
         return allNodeSet;
@@ -577,7 +660,7 @@ public class FolderImpl extends NodeImpl implements Folder
                     {
                         // not permitted, copy previously permitted nodes
                         // to new filteredNodes node set with same comparator
-                        filteredNodes = new NodeSetImpl();
+                        filteredNodes = new NodeSetImpl(nodes);
                         Iterator copyIter = nodes.iterator();
                         while (copyIter.hasNext())
                         {
