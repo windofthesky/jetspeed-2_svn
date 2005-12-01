@@ -343,7 +343,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         SimpleMailMessage msg = new SimpleMailMessage();
         if(from == null) 
         {
-            from = "jetspeedAdministrator@bluesunrise.com";
+            from = from = "jetspeed-admin@apache.org";
         }
         msg.setFrom(from);
         if(subject == null) 
