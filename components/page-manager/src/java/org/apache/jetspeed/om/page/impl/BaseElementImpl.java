@@ -25,6 +25,7 @@ import java.util.List;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -245,13 +246,50 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
     {
-        // copy constraints to maintain persistent types
+        // copy constraints to maintain persistent
+        // collection members
         if (this.constraints != null)
         {
             this.constraints.setOwner(constraints.getOwner());
             this.constraints.setSecurityConstraints(constraints.getSecurityConstraints());
             this.constraints.setSecurityConstraintsRefs(constraints.getSecurityConstraintsRefs());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        // return universal security constraints instance
+        // since object members are copied on assignment to
+        // maintain persistent collection members
+        return new SecurityConstraintsImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraint()
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        // return constraints specific security constraint instance
+        if ((constraints != null) && (constraints.getSecurityConstraintClass() != null))
+        {
+            try
+            {
+                return (SecurityConstraintImpl)constraints.getSecurityConstraintClass().newInstance();
+            }
+            catch (InstantiationException ie)
+            {
+                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", " + ie + ").");
+            }
+            catch (IllegalAccessException iae)
+            {
+                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", " + iae + ").");
+            }
+        }
+        // return universal security constraint instance
+        return new SecurityConstraintImpl();
     }
 
     /* (non-Javadoc)

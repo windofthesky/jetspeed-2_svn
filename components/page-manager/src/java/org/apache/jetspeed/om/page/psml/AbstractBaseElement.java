@@ -28,6 +28,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
@@ -179,6 +180,32 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     public void setSecurityConstraints(SecurityConstraints constraints)
     {
         this.constraints = constraints;
+    }
+
+    /**
+     * <p>
+     * newSecurityConstraints
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#newSecurityConstraints()
+     * @return security constraints
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        return new SecurityConstraintsImpl();
+    }
+
+    /**
+     * <p>
+     * newSecurityConstraint
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#newSecurityConstraint()
+     * @return security constraint
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        return new SecurityConstraintImpl();
     }
 
     /**

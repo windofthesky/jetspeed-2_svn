@@ -84,6 +84,19 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
 
     /**
      * <p>
+     * newSecurityConstraintsDef
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.PageSecurity#newSecurityConstraintsDef()
+     * @return security constraints definition
+     */
+    public SecurityConstraintsDef newSecurityConstraintsDef()
+    {
+        return new SecurityConstraintsDefImpl();
+    }
+
+    /**
+     * <p>
      * getSecurityConstraintsDef
      * </p>
      *

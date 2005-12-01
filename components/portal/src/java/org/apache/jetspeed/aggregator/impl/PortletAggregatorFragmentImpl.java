@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.Fragment;
 
@@ -63,6 +64,22 @@ public class PortletAggregatorFragmentImpl implements Fragment
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
     {
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraint()
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        return null;
     }
     
     /* (non-Javadoc)

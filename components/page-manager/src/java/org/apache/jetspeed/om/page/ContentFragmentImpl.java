@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 
 public class ContentFragmentImpl implements ContentFragment
@@ -397,7 +398,24 @@ public class ContentFragmentImpl implements ContentFragment
         fragment.setSecurityConstraints(constraints);
     }
     
-    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        
+        return fragment.newSecurityConstraints();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraint()
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        
+        return fragment.newSecurityConstraint();
+    }
+
     /**
      * Checks the ContentFragment cache for a ContentFragment
      * that matches the <code>Id</code> of this fragment.  If

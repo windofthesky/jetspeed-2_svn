@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.page.document.Node;
 
@@ -353,6 +354,24 @@ public class ContentPageImpl implements ContentPage
     {
         
         page.setSecurityConstraints(constraints);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        
+        return page.newSecurityConstraints();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraint()
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        
+        return page.newSecurityConstraint();
     }
 
     /* (non-Javadoc)

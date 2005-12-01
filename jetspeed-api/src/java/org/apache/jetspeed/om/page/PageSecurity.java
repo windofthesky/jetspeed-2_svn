@@ -53,6 +53,15 @@ public interface PageSecurity extends Document
 
     /**
      * <p>
+     * newSecurityConstraintsDef
+     * </p>
+     *
+     * @return a newly created SecurityConstraintsDef object
+     */
+    SecurityConstraintsDef newSecurityConstraintsDef();
+
+    /**
+     * <p>
      * getSecurityConstraintsDef
      * </p>
      *

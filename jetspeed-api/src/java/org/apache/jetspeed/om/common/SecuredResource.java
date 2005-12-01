@@ -63,6 +63,24 @@ public interface SecuredResource
 
     /**
      * <p>
+     * newSecurityConstraints
+     * </p>
+     *
+     * @return a newly created SecurityConstraints object
+     */
+    SecurityConstraints newSecurityConstraints();
+
+    /**
+     * <p>
+     * newSecurityConstraint
+     * </p>
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    SecurityConstraint newSecurityConstraint();
+
+    /**
+     * <p>
      * checkConstraints
      * </p>
      *

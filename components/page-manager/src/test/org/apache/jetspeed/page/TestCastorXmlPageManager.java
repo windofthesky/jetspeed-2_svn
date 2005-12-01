@@ -306,10 +306,10 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         properties.put(Fragment.COLUMN_PROPERTY_NAME, "0");
         root.getFragments().add(f);
 
-        SecurityConstraints constraints = pageManager.newSecurityConstraints();
+        SecurityConstraints constraints = page.newSecurityConstraints();
         constraints.setOwner("new-user");
         List constraintsList = new ArrayList(1);
-        SecurityConstraint constraint = pageManager.newSecurityConstraint();
+        SecurityConstraint constraint = page.newSecurityConstraint();
         constraint.setUsers(Shared.makeListFromCSV("user10,user11"));
         constraint.setRoles(Shared.makeListFromCSV("*"));
         constraint.setPermissions(Shared.makeListFromCSV(page.EDIT_ACTION + "," + page.VIEW_ACTION));
