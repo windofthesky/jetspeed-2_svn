@@ -17,11 +17,13 @@ package org.apache.jetspeed.portlets.registration;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -115,6 +117,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         String password;
     }
 
+    
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
@@ -130,7 +133,12 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         this.returnUrlPath = config.getInitParameter(IP_RETURN_URL);
         this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);
         this.template = config.getInitParameter(IP_TEMPLATE);
-
+        
+        List l = new ArrayList();
+        l.add(config.getInitParameter(IP_TEMPLATE));
+        String appRoot = "root";
+        
+        
         hackMap = new HashMap();
     }
 
@@ -215,12 +223,13 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         List errors = new LinkedList();
 
         String email = request.getParameter(RP_EMAIL_ADDRESS);
-        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
+        Locale locale = request.getLocale();
+
+        ResourceBundle resource = getPortletConfig().getResourceBundle(locale);
 
         // validation
         if (!ValidationHelper.isEmailAddress(email, true, 80))
         {
-            // TODO: get error message from localized resource
             errors.add(resource.getString("forgotten.invalid_email_format_entered"));
         }
 
@@ -236,7 +245,6 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             user = admin.lookupUserFromEmail(email);
         } catch (Exception e)
         {
-            // TODO: get message from localized messages
             publishRenderMessage(
                     request,
                     MSG_MESSAGE,
@@ -269,10 +277,47 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
                     response, urlGUID));
             userAttributes.put(CTX_NEW_PASSWORD, newPassword);
             userAttributes.put(CTX_USER_NAME, userName);
-            if (this.template == null) { throw new Exception(
-                    "email template not available"); }
+
+/*
+ *         this code is my first attempt to get things working with a template locator... it's not going to work given the way things are partitioned in the jetspeed
+
+        TemplateLocator templateLocator;
+        try
+        {
+            templateLocator = new JetspeedTemplateLocator(l, appRoot);
+        } catch (FileNotFoundException e)
+        {
+            throw new PortletException("can't init TemplateLocator:"+e.getMessage());
+        }
+            LocatorDescriptor ld = templateLocator.createLocatorDescriptor(null);
+            RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+    
+            CapabilityMap capabilityMap = requestContext.getCapabilityMap();
+            ld.setMediaType(capabilityMap.getPreferredMediaType().getName());
+            
+            Locale locale = requestContext.getLocale();
+            ld.setCountry(locale.getCountry());
+            ld.setLanguage(locale.getLanguage());
+            
+            TemplateDescriptor td = templateLocator.locateTemplate( ld);
+            
+            this.template = td.getAbsolutePath();
+            */
+            
+            String language = locale.getLanguage();
+            String templ = this.template;
+            int period = templ.lastIndexOf(".");
+            if(period >0) {
+                String fixedTempl = templ.substring(0,period)+ "_"+language+"."+templ.substring(period+1);
+                this.template = fixedTempl;
+            }
+            
+            if (this.template == null) 
+            { 
+                throw new Exception("email template not available"); 
+            }
             admin.sendEmail(this.getPortletConfig(), email,
-                    getEmailSubject(request), this.template, userAttributes);
+                    getEmailSubject(request),this.template, userAttributes);
 
             //TODO this is currently hacked with a hashmap... needs to move to either a DB table
             // or to some sort of credential
@@ -284,7 +329,6 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             publishRenderMessage(
                     request,
                     MSG_CHANGEDPW_MSG,
-                    // TODO: localize this!
                     makeMessage(resource.getString("an_email_has_been_sent")));
             
             response.sendRedirect(generateRedirectURL(request, response));

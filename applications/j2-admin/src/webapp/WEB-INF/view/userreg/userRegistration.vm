@@ -1,3 +1,4 @@
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
 <div id="UserRegistration"  class="portlet-section-text"> 
 	#if($registeredUserMsg)
 		<table >
@@ -7,7 +8,7 @@
 	<form name="userRegistrationForm" action="$renderResponse.createActionURL()" method="post" >
 	<table>
 		<tr><td colspan="2" > 
-			Welcome.  Please fill out the following form to become a registered user.
+			$MESSAGES.getString('page.welcome')
 			#if($MSG )
 	 			<p class="portlet-msg-error">$!MSG</p>
 	 		#end	
@@ -15,21 +16,21 @@
 		
 		#if($CTX_Option_Use_Email_As_Username)
 		#else
-		<tr><td>username:</td><td><input type="text" name="user.name" value="$!{user.get("user.name")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.username')</td><td><input type="text" name="user.name" value="$!{user.get("user.name")}" /></td></tr>
 		#end
-		<tr><td>first name:</td><td><input type="text" name="user.name.given" value="$!{user.get("user.name.given")}" /></td></tr>
-		<tr><td>last name:</td><td><input type="text" name="user.name.family" value="$!{user.get("user.name.family")}" /></td></tr>
-		<tr><td>department: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.department" value="$!{user.get("user.department")}" /></td></tr>
-		<tr><td>employer: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.employer" value="$!{user.get("user.employer")}" /></td></tr>
-		<tr><td>email address:</td><td><input type="text" name="user.business-info.online.email" value="$!{user.get("user.business-info.online.email")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.firstname')</td><td><input type="text" name="user.name.given" value="$!{user.get("user.name.given")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.lastname')</td><td><input type="text" name="user.name.family" value="$!{user.get("user.name.family")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.department')</td><td><input type="text" name="user.department" value="$!{user.get("user.department")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.employer') </td><td><input type="text" name="user.employer" value="$!{user.get("user.employer")}" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.email.address')</td><td><input type="text" name="user.business-info.online.email" value="$!{user.get("user.business-info.online.email")}" /></td></tr>
 		
 		#if($CTX_Option_Generate_Passwords)
 		#else
-		<tr><td>password:</td><td><input type="password" name="password" value="" /></td></tr>
-		<tr><td>password (verify):</td><td><input type="password" name="verifyPassword" value="" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.password')</td><td><input type="password" name="password" value="" /></td></tr>
+		<tr><td>$MESSAGES.getString('page.passwordVerify')</td><td><input type="password" name="verifyPassword" value="" /></td></tr>
 		#end
 		
-		<tr><td colspan="2" > <input type="submit" value="Register Me!" name="Register Me" /> </td></tr>
+		<tr><td colspan="2" > <input type="submit" value="$MESSAGES.getString('page.button')" name="Register Me" /> </td></tr>
 	</table>
     </form>
     #end

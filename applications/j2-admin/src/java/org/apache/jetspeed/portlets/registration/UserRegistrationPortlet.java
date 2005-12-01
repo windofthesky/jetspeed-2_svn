@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -298,25 +299,21 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         if (!ValidationHelper.isAny((String) userInfo.get("user.name.given"),
                 true, 30))
         {
-            // TODO: get error message from localized resource
             errors.add(resource.getString("error.lacking.first_name"));
         }
         if (!ValidationHelper.isAny((String) userInfo.get("user.name.family"),
                 true, 30))
         {
-            // TODO: get error message from localized resource
             errors.add(resource.getString("error.lacking.last_name"));
         }
         if (!ValidationHelper.isAny((String) userInfo.get("user.name"), true,
                 80))
         {
-            // TODO: get error message from localized resource
             errors.add(resource.getString("error.lacking.username"));
         }
         if (!ValidationHelper.isEmailAddress((String) userInfo
                 .get(USER_ATTRIBUTE_EMAIL), true, 80))
         {
-            // TODO: get error message from localized resource
             errors.add(resource.getString("error.email_invalid_format"));
         }
         if (!this.optionForceGeneratedPasswords)
@@ -324,7 +321,6 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             if (!ValidationHelper.isAny((String) userInfo.get("password"),
                     true, 25))
             {
-                // TODO: get error message from localized resource
                 errors.add(resource.getString("error.lacking.password"));
             }
         }
@@ -346,9 +342,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         //
         if (userIdExistsFlag)
         {
-            // TODO: localize messages
-            errors
-                    .add(resource.getString("error.userid_already_exists"));
+            errors.add(resource.getString("error.userid_already_exists"));
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
             return;
         }
@@ -366,9 +360,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             }
             if ((emailExistsFlag) || (user != null))
             {
-                // TODO: localize messages
-                errors
-                        .add(resource.getString("error.email_already_exists"));
+                errors.add(resource.getString("error.email_already_exists"));
                 publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
                 return;
             }
@@ -391,9 +383,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                 } 
                 else
                 {
-                    //                  TODO: localize messages
-                    errors
-                            .add(resource.getString("error.two_passwords_do_not_match"));
+                    errors.add(resource.getString("error.two_passwords_do_not_match"));
                     publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
                     return;
                 }
@@ -401,7 +391,6 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         } 
         catch (Exception e)
         {
-            // TODO: localize messages
             errors.add(resource.getString("error.failed_to_add") + e.toString());
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
         }
@@ -427,6 +416,17 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             userInfo.put(CTX_RETURN_URL, generateReturnURL(actionRequest,
                     actionResponse, urlGUID));
 
+
+            Locale locale = actionRequest.getLocale();
+
+            String language = locale.getLanguage();
+            String templ = this.emailTemplate;
+            int period = templ.lastIndexOf(".");
+            if(period >0) {
+                String fixedTempl = templ.substring(0,period)+ "_"+language+"."+templ.substring(period+1);
+                this.emailTemplate = fixedTempl;
+            }
+            
             if (this.emailTemplate == null) 
             { 
                 throw new Exception("email template not available"); 
@@ -446,7 +446,6 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         } 
         catch (Exception e)
         {
-            // TODO: localize messages
             errors.add(resource.getString("error.failed_to_add") + e.toString());
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
         }

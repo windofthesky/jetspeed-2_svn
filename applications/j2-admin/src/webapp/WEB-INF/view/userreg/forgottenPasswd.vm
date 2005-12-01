@@ -1,3 +1,5 @@
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+
 <div id="ForgottenPassword"  class="portlet-section-text"> 
 	#if($updatedPWMsg)
 		<table>
@@ -6,17 +8,16 @@
 	#else	
 		<form name="forgottenPasswordForm" action="$renderResponse.createActionURL()" method="post" >
 		<table>
-			<tr><td colspan="2" > 
-				If you have forgotten your password, we can create a new one and send it to you via your email address.
-				You must enter the exact same email address with which you originally registered. 
+			<tr><td colspan="2" >
+				$MESSAGES.getString('page.message') 
 				#if($MSG )
 		 			<br>
 		 			<p class="portlet-msg-error">$!MSG</p>
 		 		#end
 			</td></tr>
 			
-			<tr><td>email address:</td><td><input type="text" name="email" value="$!email" /></td></tr>
-			<tr><td colspan="2" > <input type="submit" value="Request New Password"  name="Request New Password" /> </td></tr>
+			<tr><td>$MESSAGES.getString('page.email')</td><td><input type="text" name="email" value="$!email" /></td></tr>
+			<tr><td colspan="2" > <input type="submit" value="$MESSAGES.getString('page.button')"  name="Request New Password" /> </td></tr>
 		</table>
 	    </form>
     #end
