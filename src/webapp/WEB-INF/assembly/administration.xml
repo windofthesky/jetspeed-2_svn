@@ -17,7 +17,7 @@
 -->
 <beans>
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host"><value>mail.pacbell.net</value></property>
+    <property name="host"><value>localhost</value></property>
     <property name="username"><value></value></property>
     <property name="password"><value></value></property>
   </bean>
