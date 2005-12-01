@@ -170,6 +170,8 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         String email = request.getParameter(RP_EMAIL_ADDRESS);
         String guid = request.getParameter("guid");
 
+        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
+
         if (guid != null) 
         {
             if(isValidGUID(guid)) 
@@ -178,19 +180,15 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
                 {
                     updatePasswordFromGUID(guid);
                     context
-                            .put(CTX_CHANGEDPW_MSG,
-                                    "Your password has been updated!  Please login using it!");
+                            .put(CTX_CHANGEDPW_MSG, resource.getString("forgotten.successful_pw_update"));
                 } catch (Exception e)
                 {
-                    context
-                            .put(CTX_CHANGEDPW_MSG,
-                                    "<font color=\"red\">unable to update your password, try again please</font>");
+                    context.put(CTX_MESSAGE,resource.getString("forgotten.unable_to_update_pw"));
                 }
             } else {
                 // invalid GUID
                 context
-                .put(CTX_CHANGEDPW_MSG,
-                        "<font color=\"red\">I'm sorry that change password link is invalid</font>");
+                .put(CTX_CHANGEDPW_MSG,resource.getString("forgotten.password_update_link_invalid"));
             }
         } else {
             // might be returning from initial request
@@ -217,12 +215,13 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         List errors = new LinkedList();
 
         String email = request.getParameter(RP_EMAIL_ADDRESS);
+        ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
 
         // validation
         if (!ValidationHelper.isEmailAddress(email, true, 80))
         {
             // TODO: get error message from localized resource
-            errors.add("Please enter a valid Email address.");
+            errors.add(resource.getString("forgotten.invalid_email_format_entered"));
         }
 
         if (errors.size() > 0)
@@ -241,7 +240,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             publishRenderMessage(
                     request,
                     MSG_MESSAGE,
-                    makeMessage("Sorry but we could not find this email address on file. Are you sure you typed it in correctly?"));
+                    makeMessage(resource.getString("forgotten.email_address_not_found")));
             return;
         }
 
@@ -286,7 +285,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
                     request,
                     MSG_CHANGEDPW_MSG,
                     // TODO: localize this!
-                    makeMessage("An email has been sent to you.  Please follow the link in the email"));
+                    makeMessage(resource.getString("an_email_has_been_sent")));
             
             response.sendRedirect(generateRedirectURL(request, response));
         } 
@@ -298,7 +297,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         catch (Exception e)
         {
             publishRenderMessage(request, CTX_MESSAGE,
-                    makeMessage("Failed to send password: " + e.toString()));
+                    makeMessage(resource.getString("failed_to_send") + e.toString()));
         }
 
     }

@@ -1,7 +1,7 @@
 <div id="UserRegistration"  class="portlet-section-text"> 
 	#if($registeredUserMsg)
-		<table>
-			<tr><td colspan="2" ><font color="green" size="+1" >$registeredUserMsg</font></td></tr>
+		<table >
+			<tr><td colspan="2" ><p class="portlet-msg-success" >$registeredUserMsg</p></td></tr>
 		</table>
 	#else
 	<form name="userRegistrationForm" action="$renderResponse.createActionURL()" method="post" >
@@ -9,20 +9,19 @@
 		<tr><td colspan="2" > 
 			Welcome.  Please fill out the following form to become a registered user.
 			#if($MSG )
-	 			<br>
-	 			<font color="red">$!MSG</font>
+	 			<p class="portlet-msg-error">$!MSG</p>
 	 		#end	
 		</td></tr>
 		
 		#if($CTX_Option_Use_Email_As_Username)
 		#else
-		<tr><td>username:</td><td><input type="text" name="user.name" value="$!user.name" /></td></tr>
+		<tr><td>username:</td><td><input type="text" name="user.name" value="$!{user.get("user.name")}" /></td></tr>
 		#end
-		<tr><td>first name:</td><td><input type="text" name="user.name.given" value="$!user.name.given" /></td></tr>
-		<tr><td>last name:</td><td><input type="text" name="user.name.family" value="$!user.name.family" /></td></tr>
-		<tr><td>department: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.department" value="$!user.department" /></td></tr>
-		<tr><td>employer: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.employer" value="$!user.employer" /></td></tr>
-		<tr><td>email address:</td><td><input type="text" name="user.business-info.online.email" value="$!user.business-info.online.email" /></td></tr>
+		<tr><td>first name:</td><td><input type="text" name="user.name.given" value="$!{user.get("user.name.given")}" /></td></tr>
+		<tr><td>last name:</td><td><input type="text" name="user.name.family" value="$!{user.get("user.name.family")}" /></td></tr>
+		<tr><td>department: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.department" value="$!{user.get("user.department")}" /></td></tr>
+		<tr><td>employer: <font color="blue" size="-2">(optional)</font></td><td><input type="text" name="user.employer" value="$!{user.get("user.employer")}" /></td></tr>
+		<tr><td>email address:</td><td><input type="text" name="user.business-info.online.email" value="$!{user.get("user.business-info.online.email")}" /></td></tr>
 		
 		#if($CTX_Option_Generate_Passwords)
 		#else

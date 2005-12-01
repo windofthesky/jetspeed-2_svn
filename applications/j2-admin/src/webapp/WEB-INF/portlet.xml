@@ -865,6 +865,7 @@ limitations under the License.
     <display-name>Forgotten Password Portlet</display-name>
     <description>Provides users with the ability to request a new password to be sent to their email address</description>
     <portlet-class>org.apache.jetspeed.portlets.registration.ForgottenPasswordPortlet</portlet-class>
+    <resource-bundle>org.apache.jetspeed.portlets.registration.resources.ForgottenPasswordResources</resource-bundle>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -948,6 +949,7 @@ limitations under the License.
     <display-name>User Registration Portlet</display-name>
     <description>Provides users with the ability register anew with the portal</description>
     <portlet-class>org.apache.jetspeed.portlets.registration.UserRegistrationPortlet</portlet-class>
+    <resource-bundle>org.apache.jetspeed.portlets.registration.resources.UserRegistrationResources</resource-bundle>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>

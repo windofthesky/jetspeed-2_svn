@@ -291,29 +291,33 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             }
         }
 
+        ResourceBundle resource = getPortletConfig().getResourceBundle(actionRequest.getLocale());
+
+        publishRenderMessage(actionRequest, MSG_USERINFO, userInfo);
+        
         if (!ValidationHelper.isAny((String) userInfo.get("user.name.given"),
-                true, 25))
+                true, 30))
         {
             // TODO: get error message from localized resource
-            errors.add("You must enter a first name");
+            errors.add(resource.getString("error.lacking.first_name"));
         }
         if (!ValidationHelper.isAny((String) userInfo.get("user.name.family"),
-                true, 25))
+                true, 30))
         {
             // TODO: get error message from localized resource
-            errors.add("You must enter a last name");
+            errors.add(resource.getString("error.lacking.last_name"));
         }
         if (!ValidationHelper.isAny((String) userInfo.get("user.name"), true,
-                25))
+                80))
         {
             // TODO: get error message from localized resource
-            errors.add("You must enter a username");
+            errors.add(resource.getString("error.lacking.username"));
         }
         if (!ValidationHelper.isEmailAddress((String) userInfo
                 .get(USER_ATTRIBUTE_EMAIL), true, 80))
         {
             // TODO: get error message from localized resource
-            errors.add("Please enter a valid Email address.");
+            errors.add(resource.getString("error.email_invalid_format"));
         }
         if (!this.optionForceGeneratedPasswords)
         {
@@ -321,7 +325,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                     true, 25))
             {
                 // TODO: get error message from localized resource
-                errors.add("You must enter a password");
+                errors.add(resource.getString("error.lacking.password"));
             }
         }
 
@@ -344,7 +348,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         {
             // TODO: localize messages
             errors
-                    .add("Requested User ID already exists.  Please select another User Id.");
+                    .add(resource.getString("error.userid_already_exists"));
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
             return;
         }
@@ -364,7 +368,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             {
                 // TODO: localize messages
                 errors
-                        .add("The requested email address is already being used in the system.  If you already have an account, consider using the forgotten password portlet to retreive your password");
+                        .add(resource.getString("error.email_already_exists"));
                 publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
                 return;
             }
@@ -389,7 +393,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                 {
                     //                  TODO: localize messages
                     errors
-                            .add("The two passwords do not match, please re-type them");
+                            .add(resource.getString("error.two_passwords_do_not_match"));
                     publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
                     return;
                 }
@@ -398,13 +402,14 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         catch (Exception e)
         {
             // TODO: localize messages
-            errors.add("Failed to add user. " + e.toString());
+            errors.add(resource.getString("error.failed_to_add") + e.toString());
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
         }
         // make sure no errors have occurred
         if (errors.size() > 0)
         {
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+            return;
         }
 
         // Ok, we think we're good to go, let's create the user!
@@ -431,16 +436,18 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                     .get(USER_ATTRIBUTE_EMAIL), getEmailSubject(actionRequest),
                     this.emailTemplate, userInfo);
 
-            publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,
-                    "You have completed the user registration process.  Please login above");
+            publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,resource.getString("success.login_above"));
 
+            // put an empty map to "erase" all the user info going forward
+            publishRenderMessage(actionRequest, MSG_USERINFO, new HashMap());
+            
             actionResponse.sendRedirect(this.generateRedirectURL(actionRequest, actionResponse));
 
         } 
         catch (Exception e)
         {
             // TODO: localize messages
-            errors.add("Failed to add user. " + e.toString());
+            errors.add(resource.getString("error.failed_to_add") + e.toString());
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
         }
     }

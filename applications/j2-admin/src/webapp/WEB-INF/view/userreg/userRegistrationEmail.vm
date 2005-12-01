@@ -1,5 +1,13 @@
-This is a place holder for now.
+Hello $!{map.get("user.name.given")} $!{map.get("user.name.family")}:
 
-Hello $!{map.get("user.name.given")}
+Welcome to Jetspeed! 
+Thanks you for registering.  Jetspeed is a powerful component based
+portlet container system conforming to JSR-168.
 
-Hopefully more interesting stuff will happen later.
+Your username is: $!{map.get("user.name")}
+Your password is: $!{map.get("password")}
+
+You may change your password online.
+
+Thanks
+
