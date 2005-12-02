@@ -113,39 +113,74 @@ public interface PageManager
     public Fragment newPortletFragment();
     
     /**
-     * newMenuDefinition - creates a new empty menu definition
+     * newFolderMenuDefinition - creates a new empty menu definition
      *
-     * @return a newly created MenuDefinition object
+     * @return a newly created MenuDefinition object to be used in Folder
      */
-    public MenuDefinition newMenuDefinition();
+    public MenuDefinition newFolderMenuDefinition();
 
     /**
-     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     * newFolderMenuExcludeDefinition - creates a new empty menu exclude definition
      *
-     * @return a newly created MenuExcludeDefinition object
+     * @return a newly created MenuExcludeDefinition object to be used in Folder
      */
-    public MenuExcludeDefinition newMenuExcludeDefinition();
+    public MenuExcludeDefinition newFolderMenuExcludeDefinition();
 
     /**
-     * newMenuIncludeDefinition - creates a new empty menu include definition
+     * newFolderMenuIncludeDefinition - creates a new empty menu include definition
      *
-     * @return a newly created MenuIncludeDefinition object
+     * @return a newly created MenuIncludeDefinition object to be used in Folder
      */
-    public MenuIncludeDefinition newMenuIncludeDefinition();
+    public MenuIncludeDefinition newFolderMenuIncludeDefinition();
 
     /**
-     * newMenuOptionsDefinition - creates a new empty menu options definition
+     * newFolderMenuOptionsDefinition - creates a new empty menu options definition
      *
-     * @return a newly created MenuOptionsDefinition object
+     * @return a newly created MenuOptionsDefinition object to be used in Folder
      */
-    public MenuOptionsDefinition newMenuOptionsDefinition();
+    public MenuOptionsDefinition newFolderMenuOptionsDefinition();
 
     /**
-     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     * newFolderMenuSeparatorDefinition - creates a new empty menu separator definition
      *
-     * @return a newly created MenuSeparatorDefinition object
+     * @return a newly created MenuSeparatorDefinition object to be used in Folder
      */
-    public MenuSeparatorDefinition newMenuSeparatorDefinition();
+    public MenuSeparatorDefinition newFolderMenuSeparatorDefinition();
+
+    /**
+     * newPageMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object to be used in Page
+     */
+    public MenuDefinition newPageMenuDefinition();
+
+    /**
+     * newPageMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object to be used in Page
+     */
+    public MenuExcludeDefinition newPageMenuExcludeDefinition();
+
+    /**
+     * newPageMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object to be used in Page
+     */
+    public MenuIncludeDefinition newPageMenuIncludeDefinition();
+
+    /**
+     * newPageMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object to be used in Page
+     */
+    public MenuOptionsDefinition newPageMenuOptionsDefinition();
+
+    /**
+     * newPageMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object to be used in Page
+     */
+    public MenuSeparatorDefinition newPageMenuSeparatorDefinition();
 
     /**
      * newSecurityConstraints - creates a new empty security constraints definition
@@ -155,11 +190,32 @@ public interface PageManager
     public SecurityConstraints newSecurityConstraints();
 
     /**
-     * newSecurityConstraint - creates a new security constraint definition
+     * newFolderSecurityConstraint - creates a new security constraint definition
      *
-     * @return a newly created SecurityConstraint object
+     * @return a newly created SecurityConstraint object to be used in Folder
      */
-    public SecurityConstraint newSecurityConstraint();
+    public SecurityConstraint newFolderSecurityConstraint();
+
+    /**
+     * newPageSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object to be used in Page
+     */
+    public SecurityConstraint newPageSecurityConstraint();
+
+    /**
+     * newFragmentSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object to be used in Fragment
+     */
+    public SecurityConstraint newFragmentSecurityConstraint();
+
+    /**
+     * newPageSecuritySecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object to be used in PageSecurity
+     */
+    public SecurityConstraint newPageSecuritySecurityConstraint();
 
     /**
      * newSecurityConstraintsDef - creates a new security constraints definition

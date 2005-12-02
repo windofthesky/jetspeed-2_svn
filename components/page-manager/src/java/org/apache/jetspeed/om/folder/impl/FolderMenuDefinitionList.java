@@ -47,39 +47,12 @@ class FolderMenuDefinitionList extends AbstractList
      * @param definition menu definition to add
      * @return list element to add
      */
-    private FolderMenuDefinitionImpl validateDefinitionForAdd(Object definition)
+    private FolderMenuDefinitionImpl validateDefinitionForAdd(FolderMenuDefinitionImpl definition)
     {
         // only non-null definitions supported
         if (definition == null)
         {
             throw new NullPointerException("Unable to add null to list.");
-        }
-        if (!(definition instanceof FolderMenuDefinitionImpl))
-        {
-            // duplicate menu element from equivalent types
-            if (definition instanceof MenuDefinition)
-            {
-                MenuDefinition origDefinition = (MenuDefinition)definition;
-                FolderMenuDefinitionImpl dupDefinition = new FolderMenuDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupDefinition.setName(origDefinition.getName());
-                dupDefinition.setOptions(origDefinition.getOptions());
-                dupDefinition.setDepth(origDefinition.getDepth());
-                dupDefinition.setPaths(origDefinition.isPaths());
-                dupDefinition.setRegexp(origDefinition.isRegexp());
-                dupDefinition.setProfile(origDefinition.getProfile());
-                dupDefinition.setOrder(origDefinition.getOrder());
-                dupDefinition.setSkin(origDefinition.getSkin());
-                dupDefinition.setTitle(origDefinition.getTitle());
-                dupDefinition.setShortTitle(origDefinition.getShortTitle());
-                dupDefinition.setMenuElements(origDefinition.getMenuElements());
-                dupDefinition.getMetadata().copyFields(origDefinition.getMetadata().getFields());
-                definition = dupDefinition;
-            }
-            else
-            {
-                throw new ClassCastException("Unable to create menu element list instance from: " + definition.getClass().getName() + ".");
-            }
         }
         // make sure element is unique
         if (folder.accessMenus().contains(definition))
@@ -96,19 +69,19 @@ class FolderMenuDefinitionList extends AbstractList
             {
                 // reuse menu definition with matching name
                 FolderMenuDefinitionImpl addDefinition = (FolderMenuDefinitionImpl)definition;
-                FolderMenuDefinitionImpl removedDefinition = (FolderMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
+                definition = (FolderMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 // copy menu definition members
-                removedDefinition.setOptions(addDefinition.getOptions());
-                removedDefinition.setDepth(addDefinition.getDepth());
-                removedDefinition.setPaths(addDefinition.isPaths());
-                removedDefinition.setRegexp(addDefinition.isRegexp());
-                removedDefinition.setProfile(addDefinition.getProfile());
-                removedDefinition.setOrder(addDefinition.getOrder());
-                removedDefinition.setSkin(addDefinition.getSkin());
-                removedDefinition.setTitle(addDefinition.getTitle());
-                removedDefinition.setShortTitle(addDefinition.getShortTitle());
-                removedDefinition.setMenuElements(addDefinition.getMenuElements());
+                definition.setOptions(addDefinition.getOptions());
+                definition.setDepth(addDefinition.getDepth());
+                definition.setPaths(addDefinition.isPaths());
+                definition.setRegexp(addDefinition.isRegexp());
+                definition.setProfile(addDefinition.getProfile());
+                definition.setOrder(addDefinition.getOrder());
+                definition.setSkin(addDefinition.getSkin());
+                definition.setTitle(addDefinition.getTitle());
+                definition.setShortTitle(addDefinition.getShortTitle());
+                definition.setMenuElements(addDefinition.getMenuElements());
                 // copy menu definition metadata members
                 // TODO: strengthen... this code is not robust
                 // and may fail if multiple edits without a db
@@ -118,11 +91,10 @@ class FolderMenuDefinitionList extends AbstractList
                 // metadata members are required to be unique
                 // and a removal list is not maintained for the
                 // metadata fields collections yet
-                removedDefinition.getMetadata().copyFields(addDefinition.getMetadata().getFields());
-                definition = removedDefinition;
+                definition.getMetadata().copyFields(addDefinition.getMetadata().getFields());
             }
         }
-        return (FolderMenuDefinitionImpl)definition;
+        return definition;
     }
 
     /**
@@ -151,7 +123,7 @@ class FolderMenuDefinitionList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify menu definition
-        FolderMenuDefinitionImpl definition = validateDefinitionForAdd(element);
+        FolderMenuDefinitionImpl definition = validateDefinitionForAdd((FolderMenuDefinitionImpl)element);
         // add to underlying ordered list
         folder.accessMenus().add(index, definition);
     }
@@ -187,7 +159,7 @@ class FolderMenuDefinitionList extends AbstractList
     {
         // implement for modifiable AbstractList:
         // verify menu definition
-        FolderMenuDefinitionImpl newDefinition = validateDefinitionForAdd(element);
+        FolderMenuDefinitionImpl newDefinition = validateDefinitionForAdd((FolderMenuDefinitionImpl)element);
         // set in underlying ordered list
         FolderMenuDefinitionImpl definition = (FolderMenuDefinitionImpl)folder.accessMenus().set(index, newDefinition);
         // save replaced element

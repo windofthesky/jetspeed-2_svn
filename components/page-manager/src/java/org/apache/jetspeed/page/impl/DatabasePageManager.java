@@ -37,18 +37,26 @@ import org.apache.jetspeed.om.folder.impl.FolderMenuExcludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderMenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderMenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderMenuSeparatorDefinitionImpl;
+import org.apache.jetspeed.om.folder.impl.FolderSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
+import org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
+import org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl;
+import org.apache.jetspeed.om.page.impl.PageMenuExcludeDefinitionImpl;
+import org.apache.jetspeed.om.page.impl.PageMenuIncludeDefinitionImpl;
+import org.apache.jetspeed.om.page.impl.PageMenuOptionsDefinitionImpl;
+import org.apache.jetspeed.om.page.impl.PageMenuSeparatorDefinitionImpl;
+import org.apache.jetspeed.om.page.impl.PageSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
+import org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -89,20 +97,28 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     private static Map modelClasses = new HashMap();
     static
     {
-        modelClasses.put("FragmentImpl.class", FragmentImpl.class);
-        modelClasses.put("PageImpl.class", PageImpl.class);
-        modelClasses.put("FolderImpl.class", FolderImpl.class);
-        //modelClasses.put("LinkImpl.class", LinkImpl.class);
-        modelClasses.put("PageSecurityImpl.class", PageSecurityImpl.class);
-        modelClasses.put("MenuDefinitionImpl.class", FolderMenuDefinitionImpl.class);
-        modelClasses.put("MenuExcludeDefinitionImpl.class", FolderMenuExcludeDefinitionImpl.class);
-        modelClasses.put("MenuIncludeDefinitionImpl.class", FolderMenuIncludeDefinitionImpl.class);
-        modelClasses.put("MenuOptionsDefinitionImpl.class", FolderMenuOptionsDefinitionImpl.class);
-        modelClasses.put("MenuSeparatorDefinitionImpl.class", FolderMenuSeparatorDefinitionImpl.class);
-        modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
-        modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
-        modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
-        modelClasses.put("FragmentPreferenceImpl.class", FragmentPreferenceImpl.class);
+        modelClasses.put("FragmentImpl", FragmentImpl.class);
+        modelClasses.put("PageImpl", PageImpl.class);
+        modelClasses.put("FolderImpl", FolderImpl.class);
+        //modelClasses.put("LinkImpl", LinkImpl.class);
+        modelClasses.put("PageSecurityImpl", PageSecurityImpl.class);
+        modelClasses.put("FolderMenuDefinitionImpl", FolderMenuDefinitionImpl.class);
+        modelClasses.put("FolderMenuExcludeDefinitionImpl", FolderMenuExcludeDefinitionImpl.class);
+        modelClasses.put("FolderMenuIncludeDefinitionImpl", FolderMenuIncludeDefinitionImpl.class);
+        modelClasses.put("FolderMenuOptionsDefinitionImpl", FolderMenuOptionsDefinitionImpl.class);
+        modelClasses.put("FolderMenuSeparatorDefinitionImpl", FolderMenuSeparatorDefinitionImpl.class);
+        modelClasses.put("PageMenuDefinitionImpl", PageMenuDefinitionImpl.class);
+        modelClasses.put("PageMenuExcludeDefinitionImpl", PageMenuExcludeDefinitionImpl.class);
+        modelClasses.put("PageMenuIncludeDefinitionImpl", PageMenuIncludeDefinitionImpl.class);
+        modelClasses.put("PageMenuOptionsDefinitionImpl", PageMenuOptionsDefinitionImpl.class);
+        modelClasses.put("PageMenuSeparatorDefinitionImpl", PageMenuSeparatorDefinitionImpl.class);
+        modelClasses.put("SecurityConstraintsImpl", SecurityConstraintsImpl.class);
+        modelClasses.put("FolderSecurityConstraintImpl", FolderSecurityConstraintImpl.class);
+        modelClasses.put("PageSecurityConstraintImpl", PageSecurityConstraintImpl.class);
+        modelClasses.put("FragmentSecurityConstraintImpl", FragmentSecurityConstraintImpl.class);
+        modelClasses.put("PageSecuritySecurityConstraintImpl", PageSecuritySecurityConstraintImpl.class);
+        modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
+        modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
     }
 
     private DelegatingPageManager delegator;
@@ -214,44 +230,89 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         return delegator.newPortletFragment();
     }
     
+
+
+
+
+
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newMenuDefinition()
+     * @see org.apache.jetspeed.page.PageManager#newFolderMenuDefinition()
      */
-    public MenuDefinition newMenuDefinition()
+    public MenuDefinition newFolderMenuDefinition()
     {
-        return delegator.newMenuDefinition();
+        return delegator.newFolderMenuDefinition();
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newMenuExcludeDefinition()
+     * @see org.apache.jetspeed.page.PageManager#newFolderMenuExcludeDefinition()
      */
-    public MenuExcludeDefinition newMenuExcludeDefinition()
+    public MenuExcludeDefinition newFolderMenuExcludeDefinition()
     {
-        return delegator.newMenuExcludeDefinition();
+        return delegator.newFolderMenuExcludeDefinition();
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newMenuIncludeDefinition()
+     * @see org.apache.jetspeed.page.PageManager#newFolderMenuIncludeDefinition()
      */
-    public MenuIncludeDefinition newMenuIncludeDefinition()
+    public MenuIncludeDefinition newFolderMenuIncludeDefinition()
     {
-        return delegator.newMenuIncludeDefinition();
+        return delegator.newFolderMenuIncludeDefinition();
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newMenuOptionsDefinition()
+     * @see org.apache.jetspeed.page.PageManager#newFolderMenuOptionsDefinition()
      */
-    public MenuOptionsDefinition newMenuOptionsDefinition()
+    public MenuOptionsDefinition newFolderMenuOptionsDefinition()
     {
-        return delegator.newMenuOptionsDefinition();
+        return delegator.newFolderMenuOptionsDefinition();
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newMenuSeparatorDefinition()
+     * @see org.apache.jetspeed.page.PageManager#newFolderMenuSeparatorDefinition()
      */
-    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    public MenuSeparatorDefinition newFolderMenuSeparatorDefinition()
     {
-        return delegator.newMenuSeparatorDefinition();
+        return delegator.newFolderMenuSeparatorDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageMenuDefinition()
+     */
+    public MenuDefinition newPageMenuDefinition()
+    {
+        return delegator.newPageMenuDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageMenuExcludeDefinition()
+     */
+    public MenuExcludeDefinition newPageMenuExcludeDefinition()
+    {
+        return delegator.newPageMenuExcludeDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageMenuIncludeDefinition()
+     */
+    public MenuIncludeDefinition newPageMenuIncludeDefinition()
+    {
+        return delegator.newPageMenuIncludeDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageMenuOptionsDefinition()
+     */
+    public MenuOptionsDefinition newPageMenuOptionsDefinition()
+    {
+        return delegator.newPageMenuOptionsDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageMenuSeparatorDefinition()
+     */
+    public MenuSeparatorDefinition newPageMenuSeparatorDefinition()
+    {
+        return delegator.newPageMenuSeparatorDefinition();
     }
 
     /* (non-Javadoc)
@@ -263,11 +324,35 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#newSecurityConstraint()
+     * @see org.apache.jetspeed.page.PageManager#newFolderSecurityConstraint()
      */
-    public SecurityConstraint newSecurityConstraint()
+    public SecurityConstraint newFolderSecurityConstraint()
     {
-        return delegator.newSecurityConstraint();
+        return delegator.newFolderSecurityConstraint();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageSecurityConstraint()
+     */
+    public SecurityConstraint newPageSecurityConstraint()
+    {
+        return delegator.newPageSecurityConstraint();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentSecurityConstraint()
+     */
+    public SecurityConstraint newFragmentSecurityConstraint()
+    {
+        return delegator.newFragmentSecurityConstraint();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageSecuritySecurityConstraint()
+     */
+    public SecurityConstraint newPageSecuritySecurityConstraint()
+    {
+        return delegator.newPageSecuritySecurityConstraint();
     }
 
     /* (non-Javadoc)

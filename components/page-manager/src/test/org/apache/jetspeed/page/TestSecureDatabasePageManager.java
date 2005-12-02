@@ -130,7 +130,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         SecurityConstraintsDef constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("public-view");
                         List defConstraints = new ArrayList(1);
-                        SecurityConstraint defConstraint = pageManager.newSecurityConstraint();
+                        SecurityConstraint defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setUsers(Shared.makeListFromCSV("*"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view"));
                         defConstraints.add(defConstraint);
@@ -139,7 +139,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("admin-all");
                         defConstraints = new ArrayList(1);
-                        defConstraint = pageManager.newSecurityConstraint();
+                        defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setRoles(Shared.makeListFromCSV("admin"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
                         defConstraints.add(defConstraint);
@@ -155,7 +155,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
                         List inlineConstraints = new ArrayList(1);
-                        SecurityConstraint constraint = pageManager.newSecurityConstraint();
+                        SecurityConstraint constraint = pageManager.newPageSecurityConstraint();
                         constraint.setRoles(Shared.makeListFromCSV("manager"));
                         constraint.setPermissions(Shared.makeListFromCSV("edit"));
                         inlineConstraints.add(constraint);
@@ -186,7 +186,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         page = pageManager.newPage("/user-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         inlineConstraints = new ArrayList(1);
-                        constraint = pageManager.newSecurityConstraint();
+                        constraint = pageManager.newPageSecurityConstraint();
                         constraint.setUsers(Shared.makeListFromCSV("user"));
                         constraint.setPermissions(Shared.makeListFromCSV("view,edit"));
                         inlineConstraints.add(constraint);

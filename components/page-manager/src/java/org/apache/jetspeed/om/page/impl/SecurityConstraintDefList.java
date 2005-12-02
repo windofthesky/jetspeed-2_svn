@@ -45,26 +45,14 @@ class SecurityConstraintDefList extends AbstractList
      * @param constraint constraint to add
      * @return list element to add
      */
-    private PageSecuritySecurityConstraintImpl validateConstraintForAdd(SecurityConstraintImpl constraint)
+    private PageSecuritySecurityConstraintImpl validateConstraintForAdd(PageSecuritySecurityConstraintImpl constraint)
     {
         // validate constraint instance class
         if (constraint == null)
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        if (!(constraint instanceof PageSecuritySecurityConstraintImpl))
-        {
-            // duplicate constraint from equivalent types                
-            SecurityConstraintImpl origConstraint = (SecurityConstraintImpl)constraint;
-            PageSecuritySecurityConstraintImpl dupConstraint = new PageSecuritySecurityConstraintImpl();
-            // TODO: move this logic to copy methods on implementations
-            dupConstraint.setUsers(origConstraint.getUsers());
-            dupConstraint.setRoles(origConstraint.getRoles());
-            dupConstraint.setGroups(origConstraint.getGroups());
-            dupConstraint.setPermissions(origConstraint.getPermissions());
-            return dupConstraint;
-        }
-        return (PageSecuritySecurityConstraintImpl)constraint;
+        return constraint;
     }
 
     /* (non-Javadoc)
@@ -79,7 +67,7 @@ class SecurityConstraintDefList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify constraint
-        PageSecuritySecurityConstraintImpl constraint = validateConstraintForAdd((SecurityConstraintImpl)element);
+        PageSecuritySecurityConstraintImpl constraint = validateConstraintForAdd((PageSecuritySecurityConstraintImpl)element);
         // add to underlying ordered list
         constraintsDef.accessConstraintDefs().add(index, constraint);
         // set apply order in added element
@@ -134,7 +122,7 @@ class SecurityConstraintDefList extends AbstractList
     {
         // implement for modifiable AbstractList:
         // verify constraint
-        PageSecuritySecurityConstraintImpl newConstraint = validateConstraintForAdd((SecurityConstraintImpl)element);
+        PageSecuritySecurityConstraintImpl newConstraint = validateConstraintForAdd((PageSecuritySecurityConstraintImpl)element);
         // set in underlying ordered list
         PageSecuritySecurityConstraintImpl constraint = (PageSecuritySecurityConstraintImpl)constraintsDef.accessConstraintDefs().set(index, newConstraint);
         // set apply order in new element

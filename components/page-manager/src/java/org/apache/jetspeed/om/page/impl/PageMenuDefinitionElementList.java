@@ -49,83 +49,14 @@ class PageMenuDefinitionElementList extends AbstractList
      * @param menuElement element to add
      * @return list element to add
      */
-    private PageMenuDefinitionElement validateMenuElementForAdd(Object menuElement)
+    private PageMenuDefinitionElement validateMenuElementForAdd(PageMenuDefinitionElement menuElement)
     {
-        // validate element instance class
+        // validate element instance
         if (menuElement == null)
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        if (!(menuElement instanceof PageMenuDefinitionElement))
-        {
-            // duplicate menu element from equivalent types
-            if (menuElement instanceof MenuDefinition)
-            {
-                MenuDefinition origMenuElement = (MenuDefinition)menuElement;
-                PageMenuDefinitionImpl dupMenuElement = new PageMenuDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupMenuElement.setName(origMenuElement.getName());
-                dupMenuElement.setOptions(origMenuElement.getOptions());
-                dupMenuElement.setDepth(origMenuElement.getDepth());
-                dupMenuElement.setPaths(origMenuElement.isPaths());
-                dupMenuElement.setRegexp(origMenuElement.isRegexp());
-                dupMenuElement.setProfile(origMenuElement.getProfile());
-                dupMenuElement.setOrder(origMenuElement.getOrder());
-                dupMenuElement.setSkin(origMenuElement.getSkin());
-                dupMenuElement.setTitle(origMenuElement.getTitle());
-                dupMenuElement.setShortTitle(origMenuElement.getShortTitle());
-                dupMenuElement.setMenuElements(origMenuElement.getMenuElements());
-                dupMenuElement.getMetadata().copyFields(origMenuElement.getMetadata().getFields());
-                menuElement = dupMenuElement;
-            }
-            else if (menuElement instanceof MenuExcludeDefinition)
-            {
-                MenuExcludeDefinition origMenuElement = (MenuExcludeDefinition)menuElement;
-                PageMenuExcludeDefinitionImpl dupMenuElement = new PageMenuExcludeDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupMenuElement.setName(origMenuElement.getName());
-                menuElement = dupMenuElement;
-            }
-            else if (menuElement instanceof MenuIncludeDefinition)
-            {
-                MenuIncludeDefinition origMenuElement = (MenuIncludeDefinition)menuElement;
-                PageMenuIncludeDefinitionImpl dupMenuElement = new PageMenuIncludeDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupMenuElement.setName(origMenuElement.getName());
-                dupMenuElement.setNest(origMenuElement.isNest());
-                menuElement = dupMenuElement;
-            }
-            else if (menuElement instanceof MenuOptionsDefinition)
-            {
-                MenuOptionsDefinition origMenuElement = (MenuOptionsDefinition)menuElement;
-                PageMenuOptionsDefinitionImpl dupMenuElement = new PageMenuOptionsDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupMenuElement.setOptions(origMenuElement.getOptions());
-                dupMenuElement.setDepth(origMenuElement.getDepth());
-                dupMenuElement.setPaths(origMenuElement.isPaths());
-                dupMenuElement.setRegexp(origMenuElement.isRegexp());
-                dupMenuElement.setProfile(origMenuElement.getProfile());
-                dupMenuElement.setOrder(origMenuElement.getOrder());
-                dupMenuElement.setSkin(origMenuElement.getSkin());
-                menuElement = dupMenuElement;
-            }
-            else if (menuElement instanceof MenuSeparatorDefinition)
-            {
-                MenuSeparatorDefinition origMenuElement = (MenuSeparatorDefinition)menuElement;
-                PageMenuSeparatorDefinitionImpl dupMenuElement = new PageMenuSeparatorDefinitionImpl();
-                // TODO: move this logic to copy methods on implementations
-                dupMenuElement.setSkin(origMenuElement.getSkin());
-                dupMenuElement.setTitle(origMenuElement.getTitle());
-                dupMenuElement.setText(origMenuElement.getText());
-                dupMenuElement.getMetadata().copyFields(origMenuElement.getMetadata().getFields());
-                menuElement = dupMenuElement;
-            }
-            else
-            {
-                throw new ClassCastException("Unable to create menu element list instance from: " + menuElement.getClass().getName() + ".");
-            }
-        }
-        return (PageMenuDefinitionElement)menuElement;
+        return menuElement;
     }
 
     /* (non-Javadoc)
@@ -140,7 +71,7 @@ class PageMenuDefinitionElementList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify element
-        PageMenuDefinitionElement menuElement = validateMenuElementForAdd(element);
+        PageMenuDefinitionElement menuElement = validateMenuElementForAdd((PageMenuDefinitionElement)element);
         // add to underlying ordered list
         menuDefinition.accessElements().add(index, menuElement);
         // set element order in added element
@@ -195,7 +126,7 @@ class PageMenuDefinitionElementList extends AbstractList
     {
         // implement for modifiable AbstractList:
         // verify element
-        PageMenuDefinitionElement newMenuElement = validateMenuElementForAdd(element);
+        PageMenuDefinitionElement newMenuElement = validateMenuElementForAdd((PageMenuDefinitionElement)element);
         // set in underlying ordered list
         PageMenuDefinitionElement menuElement = (PageMenuDefinitionElement)menuDefinition.accessElements().set(index, newMenuElement);
         // set element order in new element

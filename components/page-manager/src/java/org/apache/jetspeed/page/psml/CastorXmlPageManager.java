@@ -81,20 +81,28 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     private static Map modelClasses = new HashMap();
     static
     {
-        modelClasses.put("FragmentImpl.class", FragmentImpl.class);
-        modelClasses.put("PageImpl.class", PageImpl.class);
-        modelClasses.put("FolderImpl.class", FolderImpl.class);
-        modelClasses.put("LinkImpl.class", LinkImpl.class);
-        modelClasses.put("PageSecurityImpl.class", PageSecurityImpl.class);
-        modelClasses.put("MenuDefinitionImpl.class", MenuDefinitionImpl.class);
-        modelClasses.put("MenuExcludeDefinitionImpl.class", MenuExcludeDefinitionImpl.class);
-        modelClasses.put("MenuIncludeDefinitionImpl.class", MenuIncludeDefinitionImpl.class);
-        modelClasses.put("MenuOptionsDefinitionImpl.class", MenuOptionsDefinitionImpl.class);
-        modelClasses.put("MenuSeparatorDefinitionImpl.class", MenuSeparatorDefinitionImpl.class);
-        modelClasses.put("SecurityConstraintsImpl.class", SecurityConstraintsImpl.class);
-        modelClasses.put("SecurityConstraintImpl.class", SecurityConstraintImpl.class);
-        modelClasses.put("SecurityConstraintsDefImpl.class", SecurityConstraintsDefImpl.class);
-        modelClasses.put("FragmentPreferenceImpl.class", FragmentPreferenceImpl.class);
+        modelClasses.put("FragmentImpl", FragmentImpl.class);
+        modelClasses.put("PageImpl", PageImpl.class);
+        modelClasses.put("FolderImpl", FolderImpl.class);
+        modelClasses.put("LinkImpl", LinkImpl.class);
+        modelClasses.put("PageSecurityImpl", PageSecurityImpl.class);
+        modelClasses.put("FolderMenuDefinitionImpl", MenuDefinitionImpl.class);
+        modelClasses.put("FolderMenuExcludeDefinitionImpl", MenuExcludeDefinitionImpl.class);
+        modelClasses.put("FolderMenuIncludeDefinitionImpl", MenuIncludeDefinitionImpl.class);
+        modelClasses.put("FolderMenuOptionsDefinitionImpl", MenuOptionsDefinitionImpl.class);
+        modelClasses.put("FolderMenuSeparatorDefinitionImpl", MenuSeparatorDefinitionImpl.class);
+        modelClasses.put("PageMenuDefinitionImpl", MenuDefinitionImpl.class);
+        modelClasses.put("PageMenuExcludeDefinitionImpl", MenuExcludeDefinitionImpl.class);
+        modelClasses.put("PageMenuIncludeDefinitionImpl", MenuIncludeDefinitionImpl.class);
+        modelClasses.put("PageMenuOptionsDefinitionImpl", MenuOptionsDefinitionImpl.class);
+        modelClasses.put("PageMenuSeparatorDefinitionImpl", MenuSeparatorDefinitionImpl.class);
+        modelClasses.put("SecurityConstraintsImpl", SecurityConstraintsImpl.class);
+        modelClasses.put("FolderSecurityConstraintImpl", SecurityConstraintImpl.class);
+        modelClasses.put("PageSecurityConstraintImpl", SecurityConstraintImpl.class);
+        modelClasses.put("FragmentSecurityConstraintImpl", SecurityConstraintImpl.class);
+        modelClasses.put("PageSecuritySecurityConstraintImpl", SecurityConstraintImpl.class);
+        modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
+        modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
     }
 
     private IdGenerator generator = null;

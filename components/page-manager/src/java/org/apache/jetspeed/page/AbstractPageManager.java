@@ -59,13 +59,21 @@ public abstract class AbstractPageManager
     protected Class linkClass;
     protected Class pageSecurityClass;
     protected Class propertyClass;
-    protected Class menuDefinitionClass;
-    protected Class menuExcludeDefinitionClass;
-    protected Class menuIncludeDefinitionClass;
-    protected Class menuOptionsDefinitionClass;
-    protected Class menuSeparatorDefinitionClass;
+    protected Class folderMenuDefinitionClass;
+    protected Class folderMenuExcludeDefinitionClass;
+    protected Class folderMenuIncludeDefinitionClass;
+    protected Class folderMenuOptionsDefinitionClass;
+    protected Class folderMenuSeparatorDefinitionClass;
+    protected Class pageMenuDefinitionClass;
+    protected Class pageMenuExcludeDefinitionClass;
+    protected Class pageMenuIncludeDefinitionClass;
+    protected Class pageMenuOptionsDefinitionClass;
+    protected Class pageMenuSeparatorDefinitionClass;
     protected Class securityConstraintsClass;
-    protected Class securityConstraintClass;
+    protected Class folderSecurityConstraintClass;
+    protected Class pageSecurityConstraintClass;
+    protected Class fragmentSecurityConstraintClass;
+    protected Class pageSecuritySecurityConstraintClass;
     protected Class securityConstraintsDefClass;
     protected Class fragmentPreferenceClass;
 
@@ -85,20 +93,28 @@ public abstract class AbstractPageManager
     {
         this(permissionsEnabled, constraintsEnabled);     
 
-        this.fragmentClass = (Class)modelClasses.get("FragmentImpl.class");
-        this.pageClass = (Class)modelClasses.get("PageImpl.class");
-        this.folderClass = (Class)modelClasses.get("FolderImpl.class");
-        this.linkClass = (Class)modelClasses.get("LinkImpl.class");
-        this.pageSecurityClass = (Class)modelClasses.get("PageSecurityImpl.class");
-        this.menuDefinitionClass = (Class)modelClasses.get("MenuDefinitionImpl.class");
-        this.menuExcludeDefinitionClass = (Class)modelClasses.get("MenuExcludeDefinitionImpl.class");
-        this.menuIncludeDefinitionClass = (Class)modelClasses.get("MenuIncludeDefinitionImpl.class");
-        this.menuOptionsDefinitionClass = (Class)modelClasses.get("MenuOptionsDefinitionImpl.class");
-        this.menuSeparatorDefinitionClass = (Class)modelClasses.get("MenuSeparatorDefinitionImpl.class");
-        this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl.class");
-        this.securityConstraintClass = (Class)modelClasses.get("SecurityConstraintImpl.class");
-        this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl.class");
-        this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl.class");
+        this.fragmentClass = (Class)modelClasses.get("FragmentImpl");
+        this.pageClass = (Class)modelClasses.get("PageImpl");
+        this.folderClass = (Class)modelClasses.get("FolderImpl");
+        this.linkClass = (Class)modelClasses.get("LinkImpl");
+        this.pageSecurityClass = (Class)modelClasses.get("PageSecurityImpl");
+        this.folderMenuDefinitionClass = (Class)modelClasses.get("FolderMenuDefinitionImpl");
+        this.folderMenuExcludeDefinitionClass = (Class)modelClasses.get("FolderMenuExcludeDefinitionImpl");
+        this.folderMenuIncludeDefinitionClass = (Class)modelClasses.get("FolderMenuIncludeDefinitionImpl");
+        this.folderMenuOptionsDefinitionClass = (Class)modelClasses.get("FolderMenuOptionsDefinitionImpl");
+        this.folderMenuSeparatorDefinitionClass = (Class)modelClasses.get("FolderMenuSeparatorDefinitionImpl");
+        this.pageMenuDefinitionClass = (Class)modelClasses.get("PageMenuDefinitionImpl");
+        this.pageMenuExcludeDefinitionClass = (Class)modelClasses.get("PageMenuExcludeDefinitionImpl");
+        this.pageMenuIncludeDefinitionClass = (Class)modelClasses.get("PageMenuIncludeDefinitionImpl");
+        this.pageMenuOptionsDefinitionClass = (Class)modelClasses.get("PageMenuOptionsDefinitionImpl");
+        this.pageMenuSeparatorDefinitionClass = (Class)modelClasses.get("PageMenuSeparatorDefinitionImpl");
+        this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl");
+        this.folderSecurityConstraintClass = (Class)modelClasses.get("FolderSecurityConstraintImpl");
+        this.pageSecurityConstraintClass = (Class)modelClasses.get("PageSecurityConstraintImpl");
+        this.fragmentSecurityConstraintClass = (Class)modelClasses.get("FragmentSecurityConstraintImpl");
+        this.pageSecuritySecurityConstraintClass = (Class)modelClasses.get("PageSecuritySecurityConstraintImpl");
+        this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl");
+        this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl");
     }
     
     /**
@@ -268,95 +284,190 @@ public abstract class AbstractPageManager
     }
     
     /**
-     * newMenuDefinition - creates a new empty menu definition
+     * newFolderMenuDefinition - creates a new empty menu definition
      *
      * @return a newly created MenuDefinition object
      */
-    public MenuDefinition newMenuDefinition()
+    public MenuDefinition newFolderMenuDefinition()
     {
         try
         {
-            return (MenuDefinition)createObject(this.menuDefinitionClass);
+            return (MenuDefinition)createObject(this.folderMenuDefinitionClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create menu definition object for " + this.menuDefinitionClass;
+            String message = "Failed to create menu definition object for " + this.folderMenuDefinitionClass;
             log.error(message, e);
         }
         return null;
     }
 
     /**
-     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     * newFolderMenuExcludeDefinition - creates a new empty menu exclude definition
      *
      * @return a newly created MenuExcludeDefinition object
      */
-    public MenuExcludeDefinition newMenuExcludeDefinition()
+    public MenuExcludeDefinition newFolderMenuExcludeDefinition()
     {
         try
         {
-            return (MenuExcludeDefinition)createObject(this.menuExcludeDefinitionClass);
+            return (MenuExcludeDefinition)createObject(this.folderMenuExcludeDefinitionClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create menu exclude definition object for " + this.menuExcludeDefinitionClass;
+            String message = "Failed to create menu exclude definition object for " + this.folderMenuExcludeDefinitionClass;
             log.error(message, e);
         }
         return null;
     }
 
     /**
-     * newMenuIncludeDefinition - creates a new empty menu include definition
+     * newFolderMenuIncludeDefinition - creates a new empty menu include definition
      *
      * @return a newly created MenuIncludeDefinition object
      */
-    public MenuIncludeDefinition newMenuIncludeDefinition()
+    public MenuIncludeDefinition newFolderMenuIncludeDefinition()
     {
         try
         {
-            return (MenuIncludeDefinition)createObject(this.menuIncludeDefinitionClass);
+            return (MenuIncludeDefinition)createObject(this.folderMenuIncludeDefinitionClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create menu include definition object for " + this.menuIncludeDefinitionClass;
+            String message = "Failed to create menu include definition object for " + this.folderMenuIncludeDefinitionClass;
             log.error(message, e);
         }
         return null;
     }
 
     /**
-     * newMenuOptionsDefinition - creates a new empty menu options definition
+     * newFolderMenuOptionsDefinition - creates a new empty menu options definition
      *
      * @return a newly created MenuOptionsDefinition object
      */
-    public MenuOptionsDefinition newMenuOptionsDefinition()
+    public MenuOptionsDefinition newFolderMenuOptionsDefinition()
     {
         try
         {
-            return (MenuOptionsDefinition)createObject(this.menuOptionsDefinitionClass);
+            return (MenuOptionsDefinition)createObject(this.folderMenuOptionsDefinitionClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create menu options definition object for " + this.menuOptionsDefinitionClass;
+            String message = "Failed to create menu options definition object for " + this.folderMenuOptionsDefinitionClass;
             log.error(message, e);
         }
         return null;
     }
 
     /**
-     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     * newFolderMenuSeparatorDefinition - creates a new empty menu separator definition
      *
      * @return a newly created MenuSeparatorDefinition object
      */
-    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    public MenuSeparatorDefinition newFolderMenuSeparatorDefinition()
     {
         try
         {
-            return (MenuSeparatorDefinition)createObject(this.menuSeparatorDefinitionClass);
+            return (MenuSeparatorDefinition)createObject(this.folderMenuSeparatorDefinitionClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create menu separator definition object for " + this.menuSeparatorDefinitionClass;
+            String message = "Failed to create menu separator definition object for " + this.folderMenuSeparatorDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object
+     */
+    public MenuDefinition newPageMenuDefinition()
+    {
+        try
+        {
+            return (MenuDefinition)createObject(this.pageMenuDefinitionClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create menu definition object for " + this.pageMenuDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object
+     */
+    public MenuExcludeDefinition newPageMenuExcludeDefinition()
+    {
+        try
+        {
+            return (MenuExcludeDefinition)createObject(this.pageMenuExcludeDefinitionClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create menu exclude definition object for " + this.pageMenuExcludeDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object
+     */
+    public MenuIncludeDefinition newPageMenuIncludeDefinition()
+    {
+        try
+        {
+            return (MenuIncludeDefinition)createObject(this.pageMenuIncludeDefinitionClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create menu include definition object for " + this.pageMenuIncludeDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object
+     */
+    public MenuOptionsDefinition newPageMenuOptionsDefinition()
+    {
+        try
+        {
+            return (MenuOptionsDefinition)createObject(this.pageMenuOptionsDefinitionClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create menu options definition object for " + this.pageMenuOptionsDefinitionClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object
+     */
+    public MenuSeparatorDefinition newPageMenuSeparatorDefinition()
+    {
+        try
+        {
+            return (MenuSeparatorDefinition)createObject(this.pageMenuSeparatorDefinitionClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create menu separator definition object for " + this.pageMenuSeparatorDefinitionClass;
             log.error(message, e);
         }
         return null;
@@ -382,19 +493,76 @@ public abstract class AbstractPageManager
     }
 
     /**
-     * newSecurityConstraint - creates a new security constraint definition
+     * newFolderSecurityConstraint - creates a new security constraint definition
      *
      * @return a newly created SecurityConstraint object
      */
-    public SecurityConstraint newSecurityConstraint()
+    public SecurityConstraint newFolderSecurityConstraint()
     {
         try
         {
-            return (SecurityConstraint)createObject(this.securityConstraintClass);
+            return (SecurityConstraint)createObject(this.folderSecurityConstraintClass);
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create security constraint definition object for " + this.securityConstraintClass;
+            String message = "Failed to create security constraint definition object for " + this.folderSecurityConstraintClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    public SecurityConstraint newPageSecurityConstraint()
+    {
+        try
+        {
+            return (SecurityConstraint)createObject(this.pageSecurityConstraintClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraint definition object for " + this.pageSecurityConstraintClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newFragmentSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    public SecurityConstraint newFragmentSecurityConstraint()
+    {
+        try
+        {
+            return (SecurityConstraint)createObject(this.fragmentSecurityConstraintClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraint definition object for " + this.fragmentSecurityConstraintClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newPageSecuritySecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    public SecurityConstraint newPageSecuritySecurityConstraint()
+    {
+        try
+        {
+            return (SecurityConstraint)createObject(this.pageSecuritySecurityConstraintClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create security constraint definition object for " + this.pageSecuritySecurityConstraintClass;
             log.error(message, e);
         }
         return null;
@@ -570,7 +738,7 @@ public abstract class AbstractPageManager
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints("folder", srcSecurity);
             folder.setSecurityConstraints(copiedSecurity);
         }    
         
@@ -605,7 +773,7 @@ public abstract class AbstractPageManager
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints("page", srcSecurity);
             page.setSecurityConstraints(copiedSecurity);
         }    
 
@@ -613,7 +781,7 @@ public abstract class AbstractPageManager
 //        List menus = page.getMenuDefinitions();
 //        if (menus != null)
 //        {
-//            List copiedMenus = copyMenuDefinitions(page.getMenuDefinitions());
+//            List copiedMenus = copyMenuDefinitions("page", page.getMenuDefinitions());
 //            page.setMenuDefinitions(copiedMenus);
 //        }        
         
@@ -635,7 +803,7 @@ public abstract class AbstractPageManager
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints(srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints("fragment", srcSecurity);
             copy.setSecurityConstraints(copiedSecurity);
         }    
         
@@ -684,14 +852,22 @@ public abstract class AbstractPageManager
         }       
     }
     
-    protected List copyMenuDefinitions(List srcMenus)
+    protected List copyMenuDefinitions(String type, List srcMenus)
     {
         List copiedMenus = new ArrayList(4); 
         Iterator menus = srcMenus.iterator();
         while (menus.hasNext())
         {
             MenuDefinition srcMenu = (MenuDefinition)menus.next();
-            MenuDefinition copiedMenu = newMenuDefinition();
+            MenuDefinition copiedMenu = null;
+            if (type.equals("page"))
+            {
+                copiedMenu = newPageMenuDefinition();
+            }
+            else if (type.equals("folder"))
+            {
+                copiedMenu = newFolderMenuDefinition();
+            }
             copiedMenu.setDepth(srcMenu.getDepth());
             copiedMenu.setName(srcMenu.getName());
             copiedMenu.setOptions(srcMenu.getOptions());
@@ -741,7 +917,7 @@ public abstract class AbstractPageManager
         dstConstraint.setPermissions(srcConstraint.getPermissions());        
     }
     
-    protected SecurityConstraints copySecurityConstraints(SecurityConstraints source)
+    protected SecurityConstraints copySecurityConstraints(String type, SecurityConstraints source)
     {
         SecurityConstraints security = newSecurityConstraints();
         if (source.getOwner() != null)        
@@ -755,7 +931,19 @@ public abstract class AbstractPageManager
             while (constraints.hasNext())
             {
                 SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
-                SecurityConstraint dstConstraint = newSecurityConstraint();
+                SecurityConstraint dstConstraint = null;
+                if (type.equals("page"))
+                {
+                    dstConstraint = newPageSecurityConstraint();
+                }
+                else if (type.equals("folder"))
+                {
+                    dstConstraint = newFolderSecurityConstraint();
+                }
+                else if (type.equals("fragment"))
+                {
+                    dstConstraint = newFragmentSecurityConstraint();
+                }
                 copyConstraint(srcConstraint, dstConstraint);
                 copiedConstraints.add(dstConstraint);
             }
@@ -798,7 +986,7 @@ public abstract class AbstractPageManager
             while (constraints.hasNext())
             {
                 SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
-                SecurityConstraint dstConstraint = newSecurityConstraint();
+                SecurityConstraint dstConstraint = newPageSecuritySecurityConstraint();
                 copyConstraint(srcConstraint, dstConstraint);
                 copiedConstraints.add(dstConstraint);
             }                                            

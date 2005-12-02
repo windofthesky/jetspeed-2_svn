@@ -67,6 +67,7 @@ class PageSecurityConstraintsDefList extends AbstractList
             {
                 SecurityConstraintsDefImpl addConstraintsDef = constraintsDef;
                 constraintsDef = (SecurityConstraintsDefImpl)removedConstraintsDefs.remove(removedIndex);
+                // TODO: move this logic to copy methods on implementations
                 constraintsDef.setSecurityConstraints(addConstraintsDef.getSecurityConstraints());
             }
         }

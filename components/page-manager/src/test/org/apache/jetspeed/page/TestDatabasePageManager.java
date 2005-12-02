@@ -151,7 +151,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         SecurityConstraints folderConstraints = pageManager.newSecurityConstraints();
         folderConstraints.setOwner("admin");
         List inlineFolderConstraints = new ArrayList(2);
-        SecurityConstraint folderConstraint = pageManager.newSecurityConstraint();
+        SecurityConstraint folderConstraint = pageManager.newFolderSecurityConstraint();
         folderConstraint.setUsers(Shared.makeListFromCSV("user,admin"));
         folderConstraint.setRoles(Shared.makeListFromCSV("manager"));
         folderConstraint.setGroups(Shared.makeListFromCSV("*"));

@@ -282,11 +282,9 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
     {
-        // copy constraints to maintain persistent
-        // collection members
         if (this.constraints != null)
         {
-            // TODO: move this logic to copy methods on implementations
+            // set constraints configuration in nested om implementation instance
             this.constraints.setOwner(constraints.getOwner());
             this.constraints.setSecurityConstraints(constraints.getSecurityConstraints());
             this.constraints.setSecurityConstraintsRefs(constraints.getSecurityConstraintsRefs());

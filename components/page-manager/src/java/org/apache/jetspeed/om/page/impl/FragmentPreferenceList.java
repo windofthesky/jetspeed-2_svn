@@ -67,6 +67,7 @@ class FragmentPreferenceList extends AbstractList
             {
                 FragmentPreferenceImpl addPreference = preference;
                 preference = (FragmentPreferenceImpl)removedPreferences.remove(removedIndex);
+                // TODO: move this logic to copy methods on implementations
                 preference.setReadOnly(addPreference.isReadOnly());
                 preference.setValueList(addPreference.getValueList());
             }
