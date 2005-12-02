@@ -213,6 +213,41 @@ public interface Folder extends Node
     List getMenuDefinitions();
 
     /**
+     * newMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object for use in Folder
+     */
+    MenuDefinition newMenuDefinition();
+
+    /**
+     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object for use in Folder
+     */
+    MenuExcludeDefinition newMenuExcludeDefinition();
+
+    /**
+     * newMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object for use in Folder
+     */
+    MenuIncludeDefinition newMenuIncludeDefinition();
+
+    /**
+     * newMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object for use in Folder
+     */
+    MenuOptionsDefinition newMenuOptionsDefinition();
+
+    /**
+     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object for use in Folder
+     */
+    MenuSeparatorDefinition newMenuSeparatorDefinition();
+
+    /**
      * setMenuDefinitions - set list of menu definitions
      *
      * @param definitions definition list

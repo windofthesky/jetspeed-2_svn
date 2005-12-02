@@ -54,19 +54,10 @@ public interface SecuredResource
     
     /**
      * <p>
-     * setSecurityConstraints
-     * </p>
-     *
-     * @param constraints security constraints for resource
-     */
-    void setSecurityConstraints(SecurityConstraints constraints);
-
-    /**
-     * <p>
      * newSecurityConstraints
      * </p>
      *
-     * @return a newly created SecurityConstraints object
+     * @return a newly created SecurityConstraints object for use in SecuredResource
      */
     SecurityConstraints newSecurityConstraints();
 
@@ -75,9 +66,18 @@ public interface SecuredResource
      * newSecurityConstraint
      * </p>
      *
-     * @return a newly created SecurityConstraint object
+     * @return a newly created SecurityConstraint object for use in SecuredResource
      */
     SecurityConstraint newSecurityConstraint();
+
+    /**
+     * <p>
+     * setSecurityConstraints
+     * </p>
+     *
+     * @param constraints security constraints for resource
+     */
+    void setSecurityConstraints(SecurityConstraints constraints);
 
     /**
      * <p>

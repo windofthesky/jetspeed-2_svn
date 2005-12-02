@@ -117,6 +117,15 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraintsDef()
+     */
+    public SecurityConstraintsDef newSecurityConstraintsDef()
+    {
+        // return specific security constraints definition instance
+        return new SecurityConstraintsDefImpl();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#setSecurityConstraintsDefs(java.util.List)
      */
     public void setSecurityConstraintsDefs(List definitions)
@@ -136,15 +145,6 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         }
         // clear cached security constraints definition map
         clearSecurityConstraintsDefsMap();
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraintsDef()
-     */
-    public SecurityConstraintsDef newSecurityConstraintsDef()
-    {
-        // return specific security constraints definition instance
-        return new SecurityConstraintsDefImpl();
     }
 
     /* (non-Javadoc)

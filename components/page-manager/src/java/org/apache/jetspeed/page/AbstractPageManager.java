@@ -16,7 +16,6 @@
 package org.apache.jetspeed.page;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
@@ -25,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -678,21 +676,11 @@ public abstract class AbstractPageManager
         return copy;
     }
     
-    
     public void copyMetadata(Page source, Page dest)
     {
         if (source.getMetadata() != null)
         {
-            Collection fields = source.getMetadata().getFields();
-            if (fields != null)
-            {
-                Iterator fieldsIterator = fields.iterator();
-                while (fieldsIterator.hasNext())
-                {
-                    LocalizedField field = (LocalizedField)fieldsIterator.next();                    
-                    dest.getMetadata().addField(field.getLocale(), field.getName(), field.getValue());
-                }
-            }
+            dest.getMetadata().copyFields(source.getMetadata().getFields());
         }       
     }
     

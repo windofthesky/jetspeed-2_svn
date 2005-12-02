@@ -684,28 +684,28 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         // test writing page menu definitions
         page = pageManager.getPage(this.testPage002);
         page.setMenuDefinitions(new ArrayList());
-        MenuDefinition newMenu = pageManager.newMenuDefinition();
+        MenuDefinition newMenu = page.newMenuDefinition();
         newMenu.setName("updated-menu");
         newMenu.setSkin("tabs");
         newMenu.setMenuElements(new ArrayList());
-        MenuSeparatorDefinition newSeparator = pageManager.newMenuSeparatorDefinition();
+        MenuSeparatorDefinition newSeparator = page.newMenuSeparatorDefinition();
         newSeparator.setText("-- Updated Menu --");
         newMenu.getMenuElements().add(newSeparator);
-        MenuOptionsDefinition newOptions0 = pageManager.newMenuOptionsDefinition();
+        MenuOptionsDefinition newOptions0 = page.newMenuOptionsDefinition();
         newOptions0.setOptions("/*.psml");
         newOptions0.setRegexp(true);
         newMenu.getMenuElements().add(newOptions0);
-        MenuOptionsDefinition newOptions1 = pageManager.newMenuOptionsDefinition();
+        MenuOptionsDefinition newOptions1 = page.newMenuOptionsDefinition();
         newOptions1.setOptions("/folder0");
         newMenu.getMenuElements().add(newOptions1);
-        MenuDefinition newNestedMenu = pageManager.newMenuDefinition();
+        MenuDefinition newNestedMenu = page.newMenuDefinition();
         newNestedMenu.setOptions("/*/");
         newNestedMenu.setRegexp(true);
         newMenu.getMenuElements().add(newNestedMenu);
-        MenuExcludeDefinition newExcludeMenu = pageManager.newMenuExcludeDefinition();
+        MenuExcludeDefinition newExcludeMenu = page.newMenuExcludeDefinition();
         newExcludeMenu.setName("exclude-menu");
         newMenu.getMenuElements().add(newExcludeMenu);
-        MenuIncludeDefinition newIncludeMenu = pageManager.newMenuIncludeDefinition();
+        MenuIncludeDefinition newIncludeMenu = page.newMenuIncludeDefinition();
         newIncludeMenu.setName("include-menu");
         newIncludeMenu.setNest(true);
         newMenu.getMenuElements().add(newIncludeMenu);
@@ -736,7 +736,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         // test writing folder menu definitions
         folder = pageManager.getFolder(this.testFolder2);
         folder.setMenuDefinitions(new ArrayList());
-        newMenu = pageManager.newMenuDefinition();
+        newMenu = folder.newMenuDefinition();
         newMenu.setName("updated-menu");
         newMenu.setSkin("bread-crumbs");
         newMenu.setOptions("./");

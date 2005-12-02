@@ -26,6 +26,11 @@ import java.util.ListIterator;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
@@ -56,6 +61,7 @@ public class FolderImpl extends NodeImpl implements Folder
     private List pages;
     private List pageSecurity;
     private List orders;
+    private List menus;
 
     private FolderOrderList documentOrder;
     private boolean documentOrderComparatorValid;
@@ -63,6 +69,7 @@ public class FolderImpl extends NodeImpl implements Folder
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
+    private FolderMenuDefinitionList menuDefinitions;
 
     public FolderImpl()
     {
@@ -84,6 +91,23 @@ public class FolderImpl extends NodeImpl implements Folder
             orders = new ArrayList();
         }
         return orders;
+    }
+
+    /**
+     * accessMenus
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessMenus()
+    {
+        // create initial collection if necessary
+        if (menus == null)
+        {
+            menus = new ArrayList(2);
+        }
+        return menus;
     }
 
     /**
@@ -488,15 +512,74 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public List getMenuDefinitions()
     {
-        return null; // NYI
+        // return mutable menu definition list
+        // by using list wrapper to manage
+        // element uniqueness
+        if (menuDefinitions == null)
+        {
+            menuDefinitions = new FolderMenuDefinitionList(this);
+        }
+        return menuDefinitions;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#newMenuDefinition()
+     */
+    public MenuDefinition newMenuDefinition()
+    {
+        return new FolderMenuDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#newMenuExcludeDefinition()
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition()
+    {
+        return new FolderMenuExcludeDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#newMenuIncludeDefinition()
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition()
+    {
+        return new FolderMenuIncludeDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#newMenuOptionsDefinition()
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition()
+    {
+        return new FolderMenuOptionsDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#newMenuSeparatorDefinition()
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    {
+        return new FolderMenuSeparatorDefinitionImpl();
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#setMenuDefinitions(java.util.List)
      */
     public void setMenuDefinitions(List definitions)
     {
-        // NYI
+        // set menu definitions by replacing
+        // existing entries with new elements if
+        // new collection is specified
+        List menuDefinitions = getMenuDefinitions();
+        if (definitions != menuDefinitions)
+        {
+            // replace all menu definitions
+            menuDefinitions.clear();
+            if (definitions != null)
+            {
+                menuDefinitions.addAll(definitions);
+            }
+        }
     }
 
     /* (non-Javadoc)

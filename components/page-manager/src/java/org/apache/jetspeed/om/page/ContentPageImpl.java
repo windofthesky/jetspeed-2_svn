@@ -9,6 +9,11 @@ import java.util.Map;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.page.document.Node;
 
 public class ContentPageImpl implements ContentPage
@@ -175,6 +180,46 @@ public class ContentPageImpl implements ContentPage
     public List getMenuDefinitions()
     {
         return page.getMenuDefinitions();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuDefinition()
+     */
+    public MenuDefinition newMenuDefinition()
+    {
+        return page.newMenuDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuExcludeDefinition()
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition()
+    {
+        return page.newMenuExcludeDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuIncludeDefinition()
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition()
+    {
+        return page.newMenuIncludeDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuOptionsDefinition()
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition()
+    {
+        return page.newMenuOptionsDefinition();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuSeparatorDefinition()
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    {
+        return page.newMenuSeparatorDefinition();
     }
 
     /* (non-Javadoc)
@@ -348,15 +393,6 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
-     */
-    public void setSecurityConstraints(SecurityConstraints constraints)
-    {
-        
-        page.setSecurityConstraints(constraints);
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
      */
     public SecurityConstraints newSecurityConstraints()
@@ -372,6 +408,15 @@ public class ContentPageImpl implements ContentPage
     {
         
         return page.newSecurityConstraint();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        
+        page.setSecurityConstraints(constraints);
     }
 
     /* (non-Javadoc)

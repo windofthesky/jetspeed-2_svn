@@ -44,21 +44,21 @@ public interface PageSecurity extends Document
     
     /**
      * <p>
+     * newSecurityConstraintsDef
+     * </p>
+     *
+     * @return a newly created SecurityConstraintsDef object for use in PageSecurity
+     */
+    SecurityConstraintsDef newSecurityConstraintsDef();
+
+    /**
+     * <p>
      * setSecurityConstraintsDefs
      * </p>
      *
      * @param defintions security constraints definitions
      */
     void setSecurityConstraintsDefs(List definitions);
-
-    /**
-     * <p>
-     * newSecurityConstraintsDef
-     * </p>
-     *
-     * @return a newly created SecurityConstraintsDef object
-     */
-    SecurityConstraintsDef newSecurityConstraintsDef();
 
     /**
      * <p>

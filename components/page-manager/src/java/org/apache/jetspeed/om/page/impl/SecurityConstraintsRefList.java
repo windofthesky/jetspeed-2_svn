@@ -68,7 +68,7 @@ class SecurityConstraintsRefList extends AbstractList
             }
             catch (IllegalAccessException iae)
             {
-                throw new ClassCastException("Unable to create constraints reference list element instance: " + constraints.getSecurityConstraintsRefClass().getName() + ", " + iae + ").");
+                throw new ClassCastException("Unable to create constraints reference list element instance: " + constraints.getSecurityConstraintsRefClass().getName() + ", (" + iae + ").");
             }
         }
         else

@@ -391,14 +391,6 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
-     */
-    public void setSecurityConstraints(SecurityConstraints constraints)
-    {
-        fragment.setSecurityConstraints(constraints);
-    }
-    
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
      */
     public SecurityConstraints newSecurityConstraints()
@@ -416,6 +408,14 @@ public class ContentFragmentImpl implements ContentFragment
         return fragment.newSecurityConstraint();
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        fragment.setSecurityConstraints(constraints);
+    }
+    
     /**
      * Checks the ContentFragment cache for a ContentFragment
      * that matches the <code>Id</code> of this fragment.  If

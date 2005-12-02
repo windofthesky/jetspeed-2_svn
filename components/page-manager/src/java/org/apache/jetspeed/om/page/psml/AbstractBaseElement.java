@@ -171,19 +171,6 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     
     /**
      * <p>
-     * setSecurityConstraints
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecureResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
-     * @param constraints
-     */
-    public void setSecurityConstraints(SecurityConstraints constraints)
-    {
-        this.constraints = constraints;
-    }
-
-    /**
-     * <p>
      * newSecurityConstraints
      * </p>
      *
@@ -206,6 +193,19 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     public SecurityConstraint newSecurityConstraint()
     {
         return new SecurityConstraintImpl();
+    }
+
+    /**
+     * <p>
+     * setSecurityConstraints
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     * @param constraints
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        this.constraints = constraints;
     }
 
     /**

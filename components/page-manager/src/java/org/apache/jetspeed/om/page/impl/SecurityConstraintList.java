@@ -60,6 +60,7 @@ class SecurityConstraintList extends AbstractList
             {
                 SecurityConstraintImpl origConstraint = (SecurityConstraintImpl)constraint;
                 SecurityConstraintImpl dupConstraint = (SecurityConstraintImpl)constraints.getSecurityConstraintClass().newInstance();
+                // TODO: move this logic to copy methods on implementations
                 dupConstraint.setUsers(origConstraint.getUsers());
                 dupConstraint.setRoles(origConstraint.getRoles());
                 dupConstraint.setGroups(origConstraint.getGroups());
@@ -68,11 +69,11 @@ class SecurityConstraintList extends AbstractList
             }
             catch (InstantiationException ie)
             {
-                throw new ClassCastException("Unable to create constraint list element instance: " + constraints.getSecurityConstraintClass().getName() + ", " + ie + ").");
+                throw new ClassCastException("Unable to create constraint list element instance: " + constraints.getSecurityConstraintClass().getName() + ", (" + ie + ").");
             }
             catch (IllegalAccessException iae)
             {
-                throw new ClassCastException("Unable to create constraint list element instance: " + constraints.getSecurityConstraintClass().getName() + ", " + iae + ").");
+                throw new ClassCastException("Unable to create constraint list element instance: " + constraints.getSecurityConstraintClass().getName() + ", (" + iae + ").");
             }
         }
         return constraint;

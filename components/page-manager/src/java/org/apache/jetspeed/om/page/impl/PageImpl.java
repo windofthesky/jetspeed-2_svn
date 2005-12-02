@@ -20,6 +20,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
@@ -37,10 +42,30 @@ public class PageImpl extends DocumentImpl implements Page
     private String skin;
     private String defaultLayoutDecorator;
     private String defaultPortletDecorator;
+    private List menus;
+
+    private PageMenuDefinitionList menuDefinitions;
 
     public PageImpl()
     {
         super(new PageSecurityConstraintsImpl());
+    }
+
+    /**
+     * accessMenus
+     *
+     * Access mutable persistent collection member for List wrappers.
+     *
+     * @return persistent collection
+     */
+    List accessMenus()
+    {
+        // create initial collection if necessary
+        if (menus == null)
+        {
+            menus = new ArrayList(2);
+        }
+        return menus;
     }
 
     /* (non-Javadoc)
@@ -215,15 +240,74 @@ public class PageImpl extends DocumentImpl implements Page
      */
     public List getMenuDefinitions()
     {
-        return null; // NYI
+        // return mutable menu definition list
+        // by using list wrapper to manage
+        // element uniqueness
+        if (menuDefinitions == null)
+        {
+            menuDefinitions = new PageMenuDefinitionList(this);
+        }
+        return menuDefinitions;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuDefinition()
+     */
+    public MenuDefinition newMenuDefinition()
+    {
+        return new PageMenuDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuExcludeDefinition()
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition()
+    {
+        return new PageMenuExcludeDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuIncludeDefinition()
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition()
+    {
+        return new PageMenuIncludeDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuOptionsDefinition()
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition()
+    {
+        return new PageMenuOptionsDefinitionImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#newMenuSeparatorDefinition()
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    {
+        return new PageMenuSeparatorDefinitionImpl();
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#setMenuDefinitions(java.util.List)
      */
     public void setMenuDefinitions(List definitions)
     {
-        // NYI
+        // set menu definitions by replacing
+        // existing entries with new elements if
+        // new collection is specified
+        List menuDefinitions = getMenuDefinitions();
+        if (definitions != menuDefinitions)
+        {
+            // replace all menu definitions
+            menuDefinitions.clear();
+            if (definitions != null)
+            {
+                menuDefinitions.addAll(definitions);
+            }
+        }
     }
 
     /* (non-Javadoc)

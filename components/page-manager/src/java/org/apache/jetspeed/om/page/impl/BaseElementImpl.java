@@ -242,21 +242,6 @@ public abstract class BaseElementImpl implements BaseElement
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
-     */
-    public void setSecurityConstraints(SecurityConstraints constraints)
-    {
-        // copy constraints to maintain persistent
-        // collection members
-        if (this.constraints != null)
-        {
-            this.constraints.setOwner(constraints.getOwner());
-            this.constraints.setSecurityConstraints(constraints.getSecurityConstraints());
-            this.constraints.setSecurityConstraintsRefs(constraints.getSecurityConstraintsRefs());
-        }
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
      */
     public SecurityConstraints newSecurityConstraints()
@@ -281,15 +266,31 @@ public abstract class BaseElementImpl implements BaseElement
             }
             catch (InstantiationException ie)
             {
-                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", " + ie + ").");
+                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", (" + ie + ").");
             }
             catch (IllegalAccessException iae)
             {
-                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", " + iae + ").");
+                throw new ClassCastException("Unable to create security constraint instance: " + constraints.getSecurityConstraintClass().getName() + ", (" + iae + ").");
             }
         }
         // return universal security constraint instance
         return new SecurityConstraintImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        // copy constraints to maintain persistent
+        // collection members
+        if (this.constraints != null)
+        {
+            // TODO: move this logic to copy methods on implementations
+            this.constraints.setOwner(constraints.getOwner());
+            this.constraints.setSecurityConstraints(constraints.getSecurityConstraints());
+            this.constraints.setSecurityConstraintsRefs(constraints.getSecurityConstraintsRefs());
+        }
     }
 
     /* (non-Javadoc)

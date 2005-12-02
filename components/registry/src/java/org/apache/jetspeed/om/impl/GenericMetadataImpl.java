@@ -112,7 +112,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.GenericMetadata#setField(java.util.Collection)
+     * @see org.apache.jetspeed.om.common.GenericMetadata#setFields(java.util.Collection)
      */
     public void setFields(Collection fields)
     {
@@ -129,5 +129,59 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             }
         }
         
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.GenericMetadata#copyFields(java.util.Collection)
+     */
+    public void copyFields(Collection fields)
+    {
+        // preserve matching fields during copy to
+        // minimize persistent store thrash and
+        // field uniqueness constraint violations
+        // that may occur if identical field is
+        // removed and reinserted
+        if ((this.fields != null) && !this.fields.isEmpty())
+        {
+            // remove unique existing fields
+            if (fields != null)
+            {
+                this.fields.retainAll(fields);
+            }
+            else
+            {
+                this.fields = null;
+            }
+        }
+        if ((fields != null) && !fields.isEmpty())
+        {
+            // create new fields collection if necessary
+            if (this.fields == null)
+            {
+                this.fields = new ArrayList();
+            }
+            // copy unique new metadata members
+            Iterator fieldIter = fields.iterator();
+            while (fieldIter.hasNext())
+            {
+                LocalizedField field = (LocalizedField)fieldIter.next();
+                if (!this.fields.contains(field))
+                {
+                    addField(field.getLocale(), field.getName(), field.getValue());
+                }
+            }
+        }
+        
+        // update field map
+        this.fieldMap.clear();
+        if (this.fields != null)
+        {    
+            Iterator fieldIter = this.fields.iterator();
+            while (fieldIter.hasNext())
+            {
+                LocalizedField field = (LocalizedField)fieldIter.next();
+                this.fieldMap.put(field.getName(), field);
+            }
+        }
     }
 }

@@ -120,6 +120,59 @@ limitations under the License.
         </unique>
     </table>
 
+    <table name="FOLDER_MENU">
+        <column name="MENU_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
+        <column name="PARENT_ID" type="INTEGER"/>
+        <column name="FOLDER_ID" type="INTEGER"/>
+        <column name="ELEMENT_ORDER" type="INTEGER"/>
+        <column name="NAME" size="100" type="VARCHAR"/>
+        <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
+        <column name="TEXT" size="100" type="VARCHAR"/>
+        <column name="OPTIONS" size="255" type="VARCHAR"/>
+        <column name="DEPTH" type="INTEGER"/>
+        <column name="IS_PATHS" type="BOOLEANINT"/>
+        <column name="IS_REGEXP" type="BOOLEANINT"/>
+        <column name="PROFILE" size="80" type="VARCHAR"/>
+        <column name="OPTIONS_ORDER" size="255" type="VARCHAR"/>
+        <column name="SKIN" size="80" type="VARCHAR"/>
+        <column name="IS_NEST" type="BOOLEANINT"/>
+        <foreign-key foreignTable="FOLDER_MENU" onDelete="cascade">
+            <reference foreign="MENU_ID" local="PARENT_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="FOLDER" onDelete="cascade">
+            <reference foreign="FOLDER_ID" local="FOLDER_ID"/>
+        </foreign-key>
+        <index name="IX_FOLDER_MENU_1">
+            <index-column name="PARENT_ID"/>
+        </index>        
+        <unique name="UN_FOLDER_MENU_1">
+            <unique-column name="FOLDER_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="FOLDER_MENU_METADATA">
+        <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="MENU_ID" type="INTEGER" required="true"/>
+        <column name="NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+        <foreign-key foreignTable="FOLDER_MENU" onDelete="cascade">
+            <reference foreign="MENU_ID" local="MENU_ID"/>
+        </foreign-key>
+        <index name="IX_FOLDER_MENU_METADATA_1">
+            <index-column name="MENU_ID"/>
+        </index>
+        <unique name="UN_FOLDER_MENU_METADATA_1">
+            <unique-column name="MENU_ID"/>
+            <unique-column name="NAME"/>
+            <unique-column name="LOCALE"/>
+            <unique-column name="VALUE"/>
+        </unique>
+    </table>
+
     <!--
        Page Definition
     -->
@@ -206,6 +259,59 @@ limitations under the License.
         <unique name="UN_PAGE_CONSTRAINTS_REF_1">
             <unique-column name="PAGE_ID"/>
             <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="PAGE_MENU">
+        <column name="MENU_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
+        <column name="PARENT_ID" type="INTEGER"/>
+        <column name="PAGE_ID" type="INTEGER"/>
+        <column name="ELEMENT_ORDER" type="INTEGER"/>
+        <column name="NAME" size="100" type="VARCHAR"/>
+        <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
+        <column name="TEXT" size="100" type="VARCHAR"/>
+        <column name="OPTIONS" size="255" type="VARCHAR"/>
+        <column name="DEPTH" type="INTEGER"/>
+        <column name="IS_PATHS" type="BOOLEANINT"/>
+        <column name="IS_REGEXP" type="BOOLEANINT"/>
+        <column name="PROFILE" size="80" type="VARCHAR"/>
+        <column name="OPTIONS_ORDER" size="255" type="VARCHAR"/>
+        <column name="SKIN" size="80" type="VARCHAR"/>
+        <column name="IS_NEST" type="BOOLEANINT"/>
+        <foreign-key foreignTable="PAGE_MENU" onDelete="cascade">
+            <reference foreign="MENU_ID" local="PARENT_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="PAGE" onDelete="cascade">
+            <reference foreign="PAGE_ID" local="PAGE_ID"/>
+        </foreign-key>
+        <index name="IX_PAGE_MENU_1">
+            <index-column name="PARENT_ID"/>
+        </index>        
+        <unique name="UN_PAGE_MENU_1">
+            <unique-column name="PAGE_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <table name="PAGE_MENU_METADATA">
+        <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="MENU_ID" type="INTEGER" required="true"/>
+        <column name="NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+        <foreign-key foreignTable="PAGE_MENU" onDelete="cascade">
+            <reference foreign="MENU_ID" local="MENU_ID"/>
+        </foreign-key>
+        <index name="IX_PAGE_MENU_METADATA_1">
+            <index-column name="MENU_ID"/>
+        </index>
+        <unique name="UN_PAGE_MENU_METADATA_1">
+            <unique-column name="MENU_ID"/>
+            <unique-column name="NAME"/>
+            <unique-column name="LOCALE"/>
+            <unique-column name="VALUE"/>
         </unique>
     </table>
 

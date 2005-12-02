@@ -22,6 +22,16 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
+import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 
@@ -244,6 +254,56 @@ public class PageImpl extends DocumentImpl implements Page
     public List getMenuDefinitions()
     {
         return menuDefinitions;
+    }
+
+    /**
+     * newMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object for use in Page
+     */
+    public MenuDefinition newMenuDefinition()
+    {
+        return new MenuDefinitionImpl();
+    }
+
+    /**
+     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object for use in Page
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition()
+    {
+        return new MenuExcludeDefinitionImpl();
+    }
+
+    /**
+     * newMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object for use in Page
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition()
+    {
+        return new MenuIncludeDefinitionImpl();
+    }
+
+    /**
+     * newMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object for use in Page
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition()
+    {
+        return new MenuOptionsDefinitionImpl();
+    }
+
+    /**
+     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object for use in Page
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    {
+        return new MenuSeparatorDefinitionImpl();
     }
 
     /**

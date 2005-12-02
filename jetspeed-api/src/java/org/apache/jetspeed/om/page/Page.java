@@ -17,6 +17,12 @@ package org.apache.jetspeed.om.page;
 
 import java.util.List;
 
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+
 /**
  * This interface represents a complete page document used by Jetspeed
  * to layout a user-customizable portal page.
@@ -109,6 +115,41 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @return definition list
      */
     List getMenuDefinitions();
+
+    /**
+     * newMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object for use in Page
+     */
+    MenuDefinition newMenuDefinition();
+
+    /**
+     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object for use in Page
+     */
+    MenuExcludeDefinition newMenuExcludeDefinition();
+
+    /**
+     * newMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object for use in Page
+     */
+    MenuIncludeDefinition newMenuIncludeDefinition();
+
+    /**
+     * newMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object for use in Page
+     */
+    MenuOptionsDefinition newMenuOptionsDefinition();
+
+    /**
+     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object for use in Page
+     */
+    MenuSeparatorDefinition newMenuSeparatorDefinition();
 
     /**
      * setMenuDefinitions - set list of menu definitions

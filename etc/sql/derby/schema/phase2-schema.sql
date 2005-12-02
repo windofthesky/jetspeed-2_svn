@@ -99,6 +99,58 @@ CREATE TABLE FOLDER_ORDER
     UNIQUE (FOLDER_ID, NAME));
 
 CREATE  INDEX IX_FOLDER_ORDER_1 ON FOLDER_ORDER (FOLDER_ID);
+-------------------------------------------------------------------------
+-- FOLDER_MENU
+-------------------------------------------------------------------------
+CREATE TABLE FOLDER_MENU
+(
+    MENU_ID INTEGER NOT NULL,
+    CLASS_NAME VARCHAR(100) NOT NULL,
+    PARENT_ID INTEGER,
+    FOLDER_ID INTEGER,
+    ELEMENT_ORDER INTEGER,
+    NAME VARCHAR(100),
+    TITLE VARCHAR(100),
+    SHORT_TITLE VARCHAR(40),
+    TEXT VARCHAR(100),
+    OPTIONS VARCHAR(255),
+    DEPTH INTEGER,
+    IS_PATHS INTEGER,
+    IS_REGEXP INTEGER,
+    PROFILE VARCHAR(80),
+    OPTIONS_ORDER VARCHAR(255),
+    SKIN VARCHAR(80),
+    IS_NEST INTEGER,
+    PRIMARY KEY(MENU_ID),
+    FOREIGN KEY (PARENT_ID) REFERENCES FOLDER_MENU (MENU_ID)
+        ON DELETE CASCADE 
+  ,
+    FOREIGN KEY (FOLDER_ID) REFERENCES FOLDER (FOLDER_ID)
+        ON DELETE CASCADE 
+
+-- Derby doesn't support UNIQUE constraints on nullable columns !!!  
+-- replace UNIQUE (FOLDER_ID, NAME) with IX_FOLDER_MENU_UNIQUE_FN index below...
+  );
+
+CREATE  INDEX IX_FOLDER_MENU_1 ON FOLDER_MENU (PARENT_ID);
+CREATE  INDEX IX_FOLDER_MENU_UNIQUE_FN ON FOLDER_MENU (FOLDER_ID, NAME);
+--------------------------------------------------------------------------
+-- FOLDER_MENU_METADATA
+--------------------------------------------------------------------------
+CREATE TABLE FOLDER_MENU_METADATA
+(
+    METADATA_ID INTEGER NOT NULL,
+    MENU_ID INTEGER NOT NULL,
+    NAME VARCHAR(15) NOT NULL,
+    LOCALE VARCHAR(20) NOT NULL,
+    VALUE VARCHAR(100) NOT NULL,
+    PRIMARY KEY(METADATA_ID),
+    FOREIGN KEY (MENU_ID) REFERENCES FOLDER_MENU (MENU_ID)
+        ON DELETE CASCADE 
+  ,
+    UNIQUE (MENU_ID, NAME, LOCALE, VALUE));
+
+CREATE  INDEX IX_FOLDER_MENU_METADATA_1 ON FOLDER_MENU_METADATA (MENU_ID);
 -----------------------------------------------------------------------------
 -- PAGE
 -----------------------------------------------------------------------------
@@ -186,6 +238,58 @@ CREATE TABLE PAGE_CONSTRAINTS_REF
     UNIQUE (PAGE_ID, NAME));
 
 CREATE  INDEX IX_PAGE_CONSTRAINTS_REF_1 ON PAGE_CONSTRAINTS_REF (PAGE_ID);
+-------------------------------------------------------------------------
+-- PAGE_MENU
+-------------------------------------------------------------------------
+CREATE TABLE PAGE_MENU
+(
+    MENU_ID INTEGER NOT NULL,
+    CLASS_NAME VARCHAR(100) NOT NULL,
+    PARENT_ID INTEGER,
+    PAGE_ID INTEGER,
+    ELEMENT_ORDER INTEGER,
+    NAME VARCHAR(100),
+    TITLE VARCHAR(100),
+    SHORT_TITLE VARCHAR(40),
+    TEXT VARCHAR(100),
+    OPTIONS VARCHAR(255),
+    DEPTH INTEGER,
+    IS_PATHS INTEGER,
+    IS_REGEXP INTEGER,
+    PROFILE VARCHAR(80),
+    OPTIONS_ORDER VARCHAR(255),
+    SKIN VARCHAR(80),
+    IS_NEST INTEGER,
+    PRIMARY KEY(MENU_ID),
+    FOREIGN KEY (PARENT_ID) REFERENCES PAGE_MENU (MENU_ID)
+        ON DELETE CASCADE 
+  ,
+    FOREIGN KEY (PAGE_ID) REFERENCES PAGE (PAGE_ID)
+        ON DELETE CASCADE 
+
+-- Derby doesn't support UNIQUE constraints on nullable columns !!!  
+-- replace UNIQUE (PAGE_ID, NAME) with IX_PAGE_MENU_UNIQUE_PN index below...
+  );
+
+CREATE  INDEX IX_PAGE_MENU_1 ON PAGE_MENU (PARENT_ID);
+CREATE  INDEX IX_PAGE_MENU_UNIQUE_PN ON PAGE_MENU (PAGE_ID, NAME);
+--------------------------------------------------------------------------
+-- PAGE_MENU_METADATA
+--------------------------------------------------------------------------
+CREATE TABLE PAGE_MENU_METADATA
+(
+    METADATA_ID INTEGER NOT NULL,
+    MENU_ID INTEGER NOT NULL,
+    NAME VARCHAR(15) NOT NULL,
+    LOCALE VARCHAR(20) NOT NULL,
+    VALUE VARCHAR(100) NOT NULL,
+    PRIMARY KEY(METADATA_ID),
+    FOREIGN KEY (MENU_ID) REFERENCES PAGE_MENU (MENU_ID)
+        ON DELETE CASCADE 
+  ,
+    UNIQUE (MENU_ID, NAME, LOCALE, VALUE));
+
+CREATE  INDEX IX_PAGE_MENU_METADATA_1 ON PAGE_MENU_METADATA (MENU_ID);
 -----------------------------------------------------------------------------
 -- FRAGMENT
 -----------------------------------------------------------------------------

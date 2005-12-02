@@ -98,4 +98,14 @@ public interface GenericMetadata
      * @return
      */
     LocalizedField createLocalizedField();
+
+    /**
+     * 
+     * <p>
+     * copyFields
+     * </p>
+     *
+     * @param fields
+     */
+    public void copyFields( Collection fields );
 }

@@ -57,6 +57,7 @@ class SecurityConstraintDefList extends AbstractList
             // duplicate constraint from equivalent types                
             SecurityConstraintImpl origConstraint = (SecurityConstraintImpl)constraint;
             PageSecuritySecurityConstraintImpl dupConstraint = new PageSecuritySecurityConstraintImpl();
+            // TODO: move this logic to copy methods on implementations
             dupConstraint.setUsers(origConstraint.getUsers());
             dupConstraint.setRoles(origConstraint.getRoles());
             dupConstraint.setGroups(origConstraint.getGroups());

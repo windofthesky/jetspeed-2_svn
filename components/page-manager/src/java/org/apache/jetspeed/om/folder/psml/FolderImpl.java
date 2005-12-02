@@ -28,6 +28,11 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
+import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
+import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -735,6 +740,56 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public List getMenuDefinitions()
     {
         return metadata.getMenuDefinitions();
+    }
+
+    /**
+     * newMenuDefinition - creates a new empty menu definition
+     *
+     * @return a newly created MenuDefinition object for use in Folder
+     */
+    public MenuDefinition newMenuDefinition()
+    {
+        return new MenuDefinitionImpl();
+    }
+
+    /**
+     * newMenuExcludeDefinition - creates a new empty menu exclude definition
+     *
+     * @return a newly created MenuExcludeDefinition object for use in Folder
+     */
+    public MenuExcludeDefinition newMenuExcludeDefinition()
+    {
+        return new MenuExcludeDefinitionImpl();
+    }
+
+    /**
+     * newMenuIncludeDefinition - creates a new empty menu include definition
+     *
+     * @return a newly created MenuIncludeDefinition object for use in Folder
+     */
+    public MenuIncludeDefinition newMenuIncludeDefinition()
+    {
+        return new MenuIncludeDefinitionImpl();
+    }
+
+    /**
+     * newMenuOptionsDefinition - creates a new empty menu options definition
+     *
+     * @return a newly created MenuOptionsDefinition object for use in Folder
+     */
+    public MenuOptionsDefinition newMenuOptionsDefinition()
+    {
+        return new MenuOptionsDefinitionImpl();
+    }
+
+    /**
+     * newMenuSeparatorDefinition - creates a new empty menu separator definition
+     *
+     * @return a newly created MenuSeparatorDefinition object for use in Folder
+     */
+    public MenuSeparatorDefinition newMenuSeparatorDefinition()
+    {
+        return new MenuSeparatorDefinitionImpl();
     }
 
     /**
