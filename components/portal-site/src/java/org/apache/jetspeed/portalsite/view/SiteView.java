@@ -428,9 +428,10 @@ public class SiteView
                     // skip null control values
                     if (properties[i].getValue() != null)
                     {
-                        // fold control names and values to lower case
+                        // fold control names to lower case; preserve
+                        // value case as provided by profiler
                         String propertyName = properties[i].getName().toLowerCase();
-                        String propertyValue = properties[i].getValue().toLowerCase();
+                        String propertyValue = properties[i].getValue();
                         
                         // detect duplicate control names which indicates multiple
                         // values: must duplicate locator paths for each value; different
