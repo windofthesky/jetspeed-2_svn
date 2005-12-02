@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.portlets.registration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -422,9 +423,13 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             String language = locale.getLanguage();
             String templ = this.emailTemplate;
             int period = templ.lastIndexOf(".");
-            if(period >0) {
-                String fixedTempl = templ.substring(0,period)+ "_"+language+"."+templ.substring(period+1);
-                this.emailTemplate = fixedTempl;
+            if (period > 0)
+            {
+                String fixedTempl = templ.substring(0, period) + "_" + language + "." + templ.substring(period + 1);
+                if (new File(getPortletContext().getRealPath(fixedTempl)).exists())
+                {
+                    this.emailTemplate = fixedTempl;
+                }
             }
             
             if (this.emailTemplate == null) 
