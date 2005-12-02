@@ -38,10 +38,13 @@ public class LanguageCriterionResolver
         String value = super.resolve(context, criterion);
         if (value != null)
         {
-            return value;
+            return value.toLowerCase();
         }
      
-        return context.getLocale().getLanguage();   
+        String language = context.getLocale().getLanguage();
+        if (language != null)
+            language = language.toLowerCase();
+        return language;
     }    
     
     /* (non-Javadoc)

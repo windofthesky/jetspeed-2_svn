@@ -212,7 +212,7 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
                 // Get the results from the velocity processing
                 String buffer = stringWriter.getBuffer().toString();
 
-                log.debug("output from AjaxService:" + buffer);
+                //log.debug("output from AjaxService:" + buffer);
 
                 // Put the response XML on the response object
                 HttpServletResponse response = requestContext.getResponse();

@@ -41,10 +41,13 @@ public class CountryCriterionResolver
         String value = super.resolve(context, criterion);
         if (value != null)
         {
-            return value;
+            return value.toUpperCase();
         }
      
-        return context.getLocale().getCountry();   
+        String country = context.getLocale().getCountry();
+        if (country != null)
+            country = country.toUpperCase();
+        return country;
     }    
     
     /* (non-Javadoc)
