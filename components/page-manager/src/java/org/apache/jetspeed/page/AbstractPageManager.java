@@ -40,7 +40,6 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.MenuElement;
@@ -659,7 +658,23 @@ public abstract class AbstractPageManager
             Map.Entry prop = (Map.Entry)props.next();
             copy.getProperties().put(prop.getKey(), prop.getValue());
         }
-                       
+                  
+        // copy preferences
+        Iterator prefs = source.getPreferences().iterator();
+        while (prefs.hasNext())
+        {
+            FragmentPreference pref = (FragmentPreference)prefs.next();
+            FragmentPreference newPref = this.newFragmentPreference();
+            newPref.setName(pref.getName());
+            newPref.setReadOnly(pref.isReadOnly());
+            newPref.setValueList(new ArrayList());
+            Iterator values = pref.getValueList().iterator();            
+            while (values.hasNext())
+            {
+                String value = (String)values.next();
+                newPref.getValueList().add(value);
+            }
+        }
         return copy;
     }
     
