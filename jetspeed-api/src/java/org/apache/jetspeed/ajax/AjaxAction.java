@@ -40,4 +40,13 @@ public interface AjaxAction
      * @throws Exception
      */
     public boolean run(RequestContext requestContext, Map resultMap) throws AJAXException;
+    
+    /**
+     * Checks to see if the current subject has access to to execute this action.
+     * 
+     * @param context
+     * @return true if access granted, false if denied.
+     */
+    public boolean checkAccess(RequestContext context, String action);
+    
 }

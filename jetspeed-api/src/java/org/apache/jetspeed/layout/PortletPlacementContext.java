@@ -78,12 +78,12 @@ public interface PortletPlacementContext
 	/**
      * Add a portlet to its managed page.
      * 
-	 * @param portletDefinitionID the definition of the portlet in format "PortletApp::PortletName"
+	 * @param fragment The Fragment to add
 	 * @param coordinate The coordinate where to place the new portlet
 	 * @return
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate add(String portletDefinitionID, Coordinate coordinate) throws PortletPlacementException;
+	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException;
     
 	/**
      * Remove the specified fragment.
