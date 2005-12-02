@@ -75,6 +75,9 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     // Parameter on the URL that will be used to lookup the object
     protected String urlParameterName = URL_PARAMETER_NAME;
 
+    // Default Action if no action specified
+    protected String defaultAction = "getpage";
+    
     // Spring can be used to inject this information
     public AjaxRequestServiceImpl(Map objects, VelocityEngine velocityEngine)
     {
@@ -95,56 +98,50 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     public void process(RequestContext requestContext) throws AJAXException
     {        
         // Lookup the object that is to be used
-        String objectKey = requestContext.getRequestParameter(urlParameterName);
-        if (objectKey != null)
+        String objectKey = requestContext.getRequestParameter(urlParameterName);        
+        if (objectKey == null)
         {
-            // Get the object associated with this key
-            Object object = objects.get(objectKey);
-            if (object != null)
+            objectKey = defaultAction;
+        }
+        // Get the object associated with this key
+        Object object = objects.get(objectKey);
+        if (object != null)
+        {
+            Map resultMap = new HashMap();
+
+            boolean success = true;
+            try
             {
-                Map resultMap = new HashMap();
-
-                boolean success = true;
-                try
+                // Check to see if this object implements the action
+                // interface
+                if (object instanceof AjaxAction)
                 {
-                    // Check to see if this object implements the action
-                    // interface
-                    if (object instanceof AjaxAction)
-                    {
-                        success = processAction((AjaxAction) object,
-                                requestContext, resultMap);
-                    }
-                } catch (Exception e)
-                {
-                    success = false;
+                    success = processAction((AjaxAction) object,
+                            requestContext, resultMap);
                 }
-
-                try
-                {
-                    // Check to see if this object implements the builder
-                    // interface
-                    if (object instanceof AjaxBuilder)
-                    {
-                        processBuilder((AjaxBuilder) object, resultMap,
-                                requestContext, success);
-                    }
-                } catch (Exception e)
-                {
-                    // The builder failed, return an error response
-                    buildError(requestContext);
-                }
-            } else
+            } catch (Exception e)
             {
-                // Log an informational message
-                log.debug("could not find the object named:" + objectKey);
+                success = false;
+            }
 
-                // Return an error response
+            try
+            {
+                // Check to see if this object implements the builder
+                // interface
+                if (object instanceof AjaxBuilder)
+                {
+                    processBuilder((AjaxBuilder) object, resultMap,
+                            requestContext, success);
+                }
+            } catch (Exception e)
+            {
+                // The builder failed, return an error response
                 buildError(requestContext);
             }
         } else
         {
-            // Log an information message
-            log.debug("key not found, could not process");
+            // Log an informational message
+            log.debug("could not find the object named:" + objectKey);
 
             // Return an error response
             buildError(requestContext);

@@ -40,7 +40,7 @@ public class GetPageAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     /** Logger */
-    protected Log log = LogFactory.getLog(GetPortletsAction.class);
+    protected Log log = LogFactory.getLog(GetPageAction.class);
 
     private PageManager pageManager = null;
     

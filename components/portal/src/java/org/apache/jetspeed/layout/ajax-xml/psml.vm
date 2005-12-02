@@ -20,7 +20,7 @@
 
 <js>
     <status>$status</status>
-    <action>getportlets</action>
+    <action>$action</action>
     
 <page hidden='$page.Hidden'>
   <defaults

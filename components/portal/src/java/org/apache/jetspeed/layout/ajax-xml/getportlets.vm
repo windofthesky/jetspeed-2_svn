@@ -1,6 +1,6 @@
 <js>
     <status>$status</status>
-    <action>getportlets</action>
+    <action>$action</action>
     
     <portlets>
 #foreach ($portlet in $portlets)    
