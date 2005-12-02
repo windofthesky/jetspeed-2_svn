@@ -7,8 +7,9 @@
     == Constructor Arguments ==
     index 0 = render response VM template, generates XML NORMAL response
     index 1 = render response VM template, generates XML ERROR response
-    index 1 = action name from AJAX Request
-    
+    index 2 = action name from AJAX Request
+    index 3 = Page Manager
+    index 4 = Registry (getPortlets)
     -->
 <bean id="AjaxMovePortletAbsolute"
     class="org.apache.jetspeed.layout.impl.MovePortletAction">
@@ -116,6 +117,40 @@
     </constructor-arg>        
 </bean>
 
+<bean id="AjaxGetPortlets"
+    class="org.apache.jetspeed.layout.impl.GetPortletsAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getportlets.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>        
+    <constructor-arg index='3'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>              
+    <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.search.SearchEngine"/>        
+    </constructor-arg>              
+    <constructor-arg index='5'>
+        <ref bean="org.apache.jetspeed.security.PermissionManager"/>        
+    </constructor-arg>              
+</bean>
+
+<bean id="AjaxGetPage"
+    class="org.apache.jetspeed.layout.impl.GetPageAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/psml.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>        
+</bean>
 
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
@@ -140,6 +175,12 @@
             </entry>
             <entry key="remove">
                 <ref bean="AjaxRemovePortlet"/>
+            </entry>
+            <entry key="getportlets">
+                <ref bean="AjaxGetPortlets"/>
+            </entry>
+            <entry key="getpage">
+                <ref bean="AjaxGetPage"/>
             </entry>
         </map>
     </constructor-arg>
