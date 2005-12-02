@@ -323,27 +323,9 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return column;
 	}
 	
-	public Coordinate add(String portletDefinitionID, Coordinate coordinate) throws PortletPlacementException 
+	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException 
     {
-//        try
-//        {
-//            Fragment fragment = pageManager.newFragment();
-//            fragment.setType(Fragment.PORTLET);
-//            fragment.setId(generator.getNextPeid());
-//            fragment.setName(portletId);
-//            
-//            Page page = pageManager.getContentPage(pageId);
-//            // WARNING: under construction
-//            // this is prototype and very dependent on a single depth fragment structure            
-//            Fragment root = page.getRootFragment();
-//            root.getFragments().add(fragment);
-//            pageManager.updatePage(page);            
-//        }
-//        catch (Exception e)
-//        {
-//            log.error("failed to add portlet " + portletId + " to page: " + pageId);
-//        }
-		return null;
+        return addInternal(fragment, coordinate);
 	}
 	
 	// Adds an existing fragment to the coordinate position

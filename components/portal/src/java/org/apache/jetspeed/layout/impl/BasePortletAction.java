@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -75,4 +77,19 @@ public abstract class BasePortletAction
         return template;
     }
 
+    public boolean checkAccess(RequestContext context, String action)
+    {
+        Page page = context.getPage();
+        try
+        {
+            page.checkAccess(action);
+            
+        }
+        catch (SecurityException e)
+        {
+            return false;
+        }     
+        return true;
+    }
+    
 }

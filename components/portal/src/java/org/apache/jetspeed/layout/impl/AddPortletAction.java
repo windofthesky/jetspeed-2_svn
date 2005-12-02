@@ -24,6 +24,7 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletPlacementContext;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -32,6 +33,13 @@ import org.apache.jetspeed.request.RequestContext;
 /**
  * Add Portlet portlet placement action
  * 
+ * AJAX Parameters: 
+ *    id = portlet full name (pa::portletName) to be added
+ *    page = (implied in the URL)
+ * Optional Parameters:  
+ *    row = the new row to move to
+ *    col = the new column to move to
+ *    
  * @author <a>David Gurney </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
@@ -50,7 +58,9 @@ public class AddPortletAction
         this(template, errorTemplate, null);
     }
 
-    public AddPortletAction(String template, String errorTemplate, PageManager pageManager)
+    public AddPortletAction(String template, 
+                            String errorTemplate, 
+                            PageManager pageManager)
     {
         super(template, errorTemplate);
         this.pageManager = pageManager;
@@ -73,6 +83,13 @@ public class AddPortletAction
             }
             resultMap.put(PORTLETID, portletId);
 
+            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            {
+                success = false;
+                resultMap.put(REASON, "Insufficient access to edit page");                
+                return success;
+            }
+            
             // These are optional parameters
             String col = requestContext.getRequestParameter(COL);
             String row = requestContext.getRequestParameter(ROW);
@@ -95,11 +112,16 @@ public class AddPortletAction
 
             // Use the Portlet Placement Manager to accomplish the removal
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
-            Fragment fragment = placement.getFragmentById(portletId);
+            Fragment fragment = pageManager.newFragment();
+            fragment.setType(Fragment.PORTLET);
+            fragment.setName(portletId);
+            // TODO: this does not handle nested layouts            
+            Fragment root = requestContext.getPage().getRootFragment();
+            root.getFragments().add(fragment);
             
-            Coordinate coordinate = placement.add(portletId, new CoordinateImpl(iCol, iRow));
+            Coordinate coordinate = placement.add(fragment, new CoordinateImpl(iCol, iRow, iCol, iRow));
+            Page page = placement.syncPageFragments();                                                
             
-            Page page = placement.syncPageFragments();
             if (pageManager != null)
                 pageManager.updatePage(page);
 
@@ -109,6 +131,7 @@ public class AddPortletAction
         {
             // Log the exception
             log.error("exception while adding a portlet", e);
+            resultMap.put(REASON, e.toString());
 
             // Return a failure indicator
             success = false;

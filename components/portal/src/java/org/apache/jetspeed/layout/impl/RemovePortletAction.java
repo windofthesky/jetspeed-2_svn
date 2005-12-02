@@ -23,6 +23,7 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletPlacementContext;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -33,6 +34,10 @@ import org.apache.jetspeed.request.RequestContext;
 /**
  * Remove Portlet portlet placement action
  * 
+ * AJAX Parameters: 
+ *    id = the fragment id of the portlet to remove
+ *    page = (implied in the URL)
+ *    
  * @author <a>David Gurney </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
@@ -76,6 +81,13 @@ public class RemovePortletAction
 
             resultMap.put(PORTLETID, portletId);
 
+            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            {
+                success = false;
+                resultMap.put(REASON, "Insufficient access to edit page");
+                return success;
+            }
+            
             // Use the Portlet Placement Manager to accomplish the removal
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
             Fragment fragment = placement.getFragmentById(portletId);
@@ -94,7 +106,7 @@ public class RemovePortletAction
         {
             // Log the exception
             log.error("exception while adding a portlet", e);
-
+            resultMap.put(REASON, e.toString());
             // Return a failure indicator
             success = false;
         }

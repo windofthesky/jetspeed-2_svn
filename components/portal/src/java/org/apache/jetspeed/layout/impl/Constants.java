@@ -22,16 +22,21 @@ package org.apache.jetspeed.layout.impl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public interface Constants {
+public interface Constants 
+{
 	public static final String STATUS = "status";
 	public static final String ACTION = "action";
-	public static final String PORTLETID = "id";
+    public static final String REASON = "reason";
+	public static final String PORTLETID = "id";    
 	public static final String OLDCOL = "oldcol";
 	public static final String OLDROW = "oldrow";
 	public static final String NEWCOL = "newcol";
 	public static final String NEWROW = "newrow";
 	public static final String COL = "col";
 	public static final String ROW = "row";
+    public static final String FILTER = "filter";
+    public static final String PORTLETS = "portlets";
+    public static final String PAGE = "page";
 
 	// Move types
 	public static final int ABS = 1;

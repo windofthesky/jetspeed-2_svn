@@ -15,33 +15,66 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.search.ParsedObject;
+import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.PortletPermission;
 
 /**
- * Get Portlet portlet placement action
+ * Get Portlets retrieves the portlet list available to the current subject
  *
+ * AJAX Parameters: 
+ *    filter = (optional)filter to lookup portlets using fulltext search
+ *    
  * @author <a>David Gurney</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
 public class GetPortletsAction 
     extends BasePortletAction 
-    implements AjaxAction, AjaxBuilder, Constants 
+    implements AjaxAction, AjaxBuilder, Constants, Comparator
 {
     /** Logger */
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
 
-    public GetPortletsAction(String template, String errorTemplate)
+    private PageManager pageManager = null;
+    private PortletRegistry registry = null;
+    private SearchEngine searchEngine = null;
+    private PermissionManager permissionManager = null;
+    
+    public GetPortletsAction(String template, 
+                             String errorTemplate,
+                             PageManager pageManager,
+                             PortletRegistry registry,
+                             SearchEngine searchEngine,
+                             PermissionManager permissionManager)
     {
         super(template, errorTemplate);
+        this.pageManager = pageManager;
+        this.registry = registry;
+        this.searchEngine = searchEngine;
+        this.permissionManager = permissionManager;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -52,17 +85,20 @@ public class GetPortletsAction
         {
             resultMap.put(ACTION, "getportlets");
 
-            // Get the fragment information from the page
-            ContentPage a_oPage = requestContext.getPage();
-
-            // David Taylor is working on a method like this
-            // page.getFragmentByEntitlement();
-
-            Fragment a_oRootFragment = a_oPage.getRootFragment();
-
+            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            {
+                success = false;
+                resultMap.put(REASON, "Insufficient access to edit page");
+                return success;
+            }
+            
+            String filter = requestContext.getRequestParameter(FILTER);            
+                        
+            List portlets = retrievePortlets(requestContext, filter);
+            
             resultMap.put(STATUS, "success");
 
-            // resultMap.put(FRAGMENTS, a_oFragments);
+            resultMap.put(PORTLETS, portlets);
 
         } 
         catch (Exception e)
@@ -76,4 +112,109 @@ public class GetPortletsAction
 
         return success;
 	}
+    
+    protected List retrievePortlets(RequestContext requestContext, String filter)
+    {
+        Iterator portlets = null;
+        List list = new ArrayList();
+        Locale locale = requestContext.getLocale();
+        
+        if (filter == null)
+            portlets = registry.getAllPortletDefinitions().iterator();
+        else
+            portlets = searchEngine.search(filter).getResults().iterator();
+        
+        Subject subject = requestContext.getSubject();
+        
+        while (portlets.hasNext())
+        {
+            PortletDefinitionComposite portlet = null;
+            if (filter == null)
+                portlet = (PortletDefinitionComposite)portlets.next();
+            else
+                portlet = this.getPortletFromParsedObject((ParsedObject)portlets.next());
+            
+            if (portlet == null)
+                continue;
+            
+            MutablePortletApplication muta = 
+                (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            String appName = muta.getName();
+            if (appName != null && appName.equals("jetspeed-layouts"))
+                continue;                
+            
+            // SECURITY filtering
+            String uniqueName = appName + "::" + portlet.getName();
+            if (subject != null)
+            {
+                if (permissionManager.checkPermission(subject, 
+                    new PortletPermission(portlet.getUniqueName(), 
+                    SecuredResource.VIEW_ACTION, subject )))
+                {
+                    list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+                }
+            }
+        }            
+        Collections.sort(list, this);
+        return list;
+    }
+    
+    protected PortletDefinitionComposite getPortletFromParsedObject(ParsedObject po)
+    {
+        boolean found = false;
+        String name = "";
+        Map fields = po.getFields();
+        if(fields != null)
+        {
+            Object id = fields.get("ID");
+    
+            if(id != null)
+            {
+                if(id instanceof Collection)
+                {
+                    Collection coll = (Collection)id;
+                    name = (String) coll.iterator().next();
+                }
+                else
+                {
+                    name = (String)id;
+                }
+            }
+            
+            if(po.getType().equals("portlet"))
+            {
+                Object pa = fields.get("portlet_application");
+                String paName = "";
+                if(pa != null)
+                {
+                    if(id instanceof Collection)
+                    {
+                        Collection coll = (Collection)pa;
+                        paName = (String) coll.iterator().next();
+                    }
+                    else
+                    {
+                        paName = (String)pa;
+                    }
+                }
+                name = paName + "::" + name;
+                found = true;
+            }
+        }
+        if (found == false)
+            return null;
+        
+        return registry.getPortletDefinitionByUniqueName(name);
+    }
+    
+    public int compare(Object obj1, Object obj2)
+    {
+        PortletInfo portlet1 = (PortletInfo)obj1;
+        PortletInfo portlet2 = (PortletInfo)obj2;
+        String name1 = portlet1.getName();
+        String name2 = portlet2.getName();
+        name1 = (name1 == null) ? "unknown" : name1;
+        name2 = (name2 == null) ? "unknown" : name2;
+        return name1.compareTo(name2);
+    }
 }

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.layout.impl.Constants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -230,7 +231,8 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
         } catch (Exception e)
         {
             log.error("builder failed", e);
-
+            inputMap.put(Constants.REASON, e.toString());
+            
             buildError(requestContext);
         }
     }
