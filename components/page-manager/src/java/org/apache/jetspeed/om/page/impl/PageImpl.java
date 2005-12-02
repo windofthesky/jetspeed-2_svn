@@ -228,14 +228,6 @@ public class PageImpl extends DocumentImpl implements Page
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#clone()
-     */
-    public Object clone() throws CloneNotSupportedException
-    {
-        return null; // NYI
-    }
-    
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getMenuDefinitions()
      */
     public List getMenuDefinitions()

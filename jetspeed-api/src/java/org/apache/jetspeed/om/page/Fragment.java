@@ -42,7 +42,7 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
+public interface Fragment extends BaseElement, java.io.Serializable
 {
     /**
      * A fragment of type PORTLET is considered to be a compliant portlet
@@ -229,12 +229,6 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      */
     public boolean isReference();
 
-    /**
-     * Creates a clone of this object
-     */
-    public Object clone()
-        throws java.lang.CloneNotSupportedException;
-    
     /**
      * Get collection of fragment preference objects used
      * to initialize user preferences

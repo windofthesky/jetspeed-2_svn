@@ -118,15 +118,6 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#clone()
-     */
-    public Object clone() throws CloneNotSupportedException
-    {
-        
-        return fragment.clone();
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getDecorator()
      */
     public String getDecorator()

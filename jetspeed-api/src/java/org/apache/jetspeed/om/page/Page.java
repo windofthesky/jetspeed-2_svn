@@ -29,7 +29,7 @@ import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
  *
  * @version $Id$
  */
-public interface Page extends Document, java.io.Serializable, Cloneable
+public interface Page extends Document, java.io.Serializable
 {
     String DOCUMENT_TYPE = ".psml";
     
@@ -103,11 +103,6 @@ public interface Page extends Document, java.io.Serializable, Cloneable
      * @return the list of found Fragment objects or null if not found
      */
     List getFragmentsByName(String name);
-
-    /**
-     * Create a clone of this object
-     */
-    Object clone() throws java.lang.CloneNotSupportedException;
 
     /**
      * getMenuDefinitions - get list of menu definitions

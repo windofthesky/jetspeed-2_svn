@@ -221,16 +221,6 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         }
     }
     
-    public Object clone() throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-
-        // TBD: copy the properties and fragment structures
-
-        return cloned;
-
-    } // clone
-
     /**
      * <p>
      * equals

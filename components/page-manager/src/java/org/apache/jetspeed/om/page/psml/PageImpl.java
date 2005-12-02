@@ -224,15 +224,6 @@ public class PageImpl extends DocumentImpl implements Page
         this.defaults = defaults;
     }
 
-    public Object clone() throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-
-        // TBD: clone the inner content
-
-        return cloned;
-    }
-
     /**
      * <p>
      * getType

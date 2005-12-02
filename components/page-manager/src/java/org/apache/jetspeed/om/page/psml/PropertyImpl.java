@@ -64,12 +64,6 @@ public class PropertyImpl implements java.io.Serializable
         this.value = value;
     }
 
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        return super.clone();
-    }
-
     /**
      * <p>
      * getIntValue

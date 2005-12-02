@@ -559,16 +559,6 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     }
 
     /**
-     * Create a clone of this object
-     */
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-        return cloned;
-    }
-
-    /**
      * <p>
      * equals
      * </p>

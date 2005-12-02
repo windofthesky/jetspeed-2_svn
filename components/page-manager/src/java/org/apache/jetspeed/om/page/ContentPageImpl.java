@@ -122,15 +122,6 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#clone()
-     */
-    public Object clone() throws CloneNotSupportedException
-    {
-        
-        return new ContentPageImpl((Page)page.clone());
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getDefaultDecorator(java.lang.String)
      */
     public String getDefaultDecorator(String fragmentType)

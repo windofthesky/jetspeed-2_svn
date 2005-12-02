@@ -650,14 +650,6 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#clone()
-     */
-    public Object clone() throws CloneNotSupportedException
-    {
-        return null; // NYI
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
      */
     public List getPreferences()
