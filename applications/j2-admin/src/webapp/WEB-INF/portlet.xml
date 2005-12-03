@@ -872,6 +872,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
     </supports>
     <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
     <portlet-info>
       <title>Forgotten Password</title>
       <short-title>Forgotten Password</short-title>
@@ -895,6 +896,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
     </supports>
     <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
     <portlet-info>
       <title>Forgotten Password Return</title>
       <short-title>forgot PS return</short-title>
@@ -956,6 +958,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
     </supports>
     <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
     <portlet-info>
       <title>User Registration </title>
       <short-title>User Registration</short-title>
