@@ -17,12 +17,14 @@
 <project>
     <body>
         <links>
-            <item name="Jetspeed 2" href="../../index.html" />
+        	<item name="Components Guide" href="../../guides/guide-components.html" />
+        	<item name="Jetspeed 2" href="../../index.html" />
             <!-- Cannot access ${pom.id}... Hard coding pdf name. -->
             <item name="PDF Documentation" href="/jetspeed-rdbms.pdf" img="../../images/pdf.gif" />
         </links>
-        <menu name="Misc.">
-            <item name="Tasks" href="tasks.html" />
-        </menu>
+    	<menu name="Jetspeed-2 RDBMS Documentation">
+    	    <item name="RDBMS Overview" href="index.html" />
+    		<item name="Data Access in Jetspeed-2" href="dao.html" />
+    	</menu>
     </body>
 </project>

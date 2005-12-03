@@ -25,7 +25,6 @@
     	<menu name="Jetspeed-2 Deploy Tools Documentation">
     	    <item name="Jetspeed-2 Deployment Overview" href="index.html" />
     		<item name="Deploy Tools Overview" href="deploy-tools.html" />
-    	    <item name="Tasks" href="tasks.html" />
         </menu>
     </body>
 </project>

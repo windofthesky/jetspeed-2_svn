@@ -24,7 +24,6 @@
         </links>
         <menu name="Jetspeed-2 Preferences Documentation">
             <item name="Preferences Overview" href="index.html" />
-            <item name="Tasks" href="tasks.html" />
         </menu>
     </body>
 </project>

@@ -213,6 +213,12 @@ org.apache.jetspeed.production.jdbc.drivers.path=
 				</table>
 
 			</subsection>
+			<subsection name="Datasource Configuration with Jetspeed-2">
+			<p>
+			Jetspeed-2 requires a datasource to be configured in the application server on which it is being deployed.
+			For more information, see the <a href="../multiproject/jetspeed-rdbms/index.html">RDBMS component documentation</a>.
+			</p>
+			</subsection>
 
 		</section>
 	</body>

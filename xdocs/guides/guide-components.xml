@@ -103,7 +103,96 @@
             <td>The <code>DeploymentManager</code> listens for new portal assets (portlets, decorators) to be deployed.  An overview of how deployment
             works in Jetspeed-2 can be found <a href="../multiproject/jetspeed-deploy-tools/index.html">here</a>.</td>
           </tr>
-		</table>
+		</table><br/>
+		<table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Preferences - Artifact Id: jetspeed-prefs</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
+            <td>The <code>PreferencesProvider</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
+          </tr>
+		</table><br/>
+		<table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 RDBMS - Artifact Id: jetspeed-rdbms</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-rdbms/index.html"><code>ConnectionRepositoryEntry</code></a></td>
+            <td>The <code>ConnectionRepositoryEntry</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-rdbms/dao.html"><code>InitablePersistenceBrokerDaoSupport</code></a></td>
+            <td><code>InitablePersistenceBrokerDaoSupport</code> provides data access and persistence support for Jetspeed-2.</td>
+          </tr>
+		</table><br/>
+		<table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Security - Artifact Id: jetspeed-security</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-security/arch.html"><code>DefaultLoginModule</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>RdbmsPolicy</code></a><br/></td>
+            <td>Jetspeed-2 default implementation for <a href="http://java.sun.com/products/jaas/">JAAS services</a>.  Jetspeed-2 leverages JAAS as 
+            a generic security standard framework to expose security functionality to the portal engine.  The JAAS services
+            leverage Jetspeed-2 coarsed grained services for which specific implementations are provided through Jetpseed-2 security SPI.</td>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-security/arch.html"><code>UserManager</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>RoleManager</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>GroupManager</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>PermissionManager</code></a></td>
+            <td>Coarsed grained security components exposing Jetspeed-2 security management APIs.</td>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-security/arch.html"><code>UserSecurityHandler</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>CredentialHandler</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>GroupSecurityHandler</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>RoleSecurityHandler</code></a><br/>
+            <a href="../multiproject/jetspeed-security/arch.html"><code>SecurityMappingHandler</code></a></td>
+            <td>Fined grained Jetspeed-2 security SPI components exposing a specific implementation to the Jetspeed-2
+            security engine.  This mechanism provides a flexible framework for supporting multiple security implementation
+            without having to impact the higher level security services.</td>
+          </tr>
+		</table><br/>
+		<!-- table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Search - Artifact Id: jetspeed-search</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
+            <td>The <code>PreferencesProvider</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
+          </tr>
+		</table><br/-->
+		<!-- table>
+          <tr>
+          	<th colspan="2">Jetspeed-2 Statistics - Artifact Id: jetspeed-statistics</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
+            <td>The <code>PreferencesProvider</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
+          </tr>
+		</table><br/-->
 		</subsection>
 		</section>
 	</body>

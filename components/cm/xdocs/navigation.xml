@@ -24,7 +24,6 @@
         </links>
         <menu name="Jetspeed-2 Component Manager Documentation">
         	<item name="Component Manager Overview" href="index.html" />
-            <item name="Tasks" href="tasks.html" />
         </menu>
     </body>
 </project>

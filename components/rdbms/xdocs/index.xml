@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed-2 RDBMS</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="RDBMS Overview">
+            <p>
+            Jetspeed-2 RDBMS component provide a layer of abstraction from the persistence mechanism used by Jetspeed-2.
+            It provides facilities for datasource configuration as well as data access. 
+            </p>
+            <subsection name="Datasource Configuration">
+            <p>
+            Jetspeed-2 uses <a href="http://db.apache.org/ojb/">OJB</a> <code>PersistenceBroker</code> API as its default
+            persistence mechanism.  The <code>ConnectionRepositoryEntry</code> component configures OJB for Jetspeed-2 as well
+            as the properties available under <code>/etc/db-ojb</code> in the Jetspeed-2 source repository or <code>WEB-INF/classes</code>
+            in a deployed instance of Jetspeed-2.
+            </p>
+            <p>
+            The <code>datasource.xml</code> spring assembly configuration file configures <code>ConnectionRepositoryEntry</code> and is located
+            in <code>WEB-INF/assembly/boot</code>.
+            </p>
+            <p>
+            The <code>ConnectionRepositoryEntry</code> configures an entry in OJB's ConnectionRepository according to its properties.
+            The properties <code>driverClassName</code>, <code>url</code>, <code>username</code> and <code>password</code> are used
+			only if no <code>jndiName</code> is set, i.e. if the connection factory uses the driver to create data sources.  The platform
+			settings are derived from the configured  data source or database driver using OJB's <code>JdbcMetadataUtils</code> class.  The default
+			Jetspeed-2 <code>ConnectionRepositoryEntry</code> configuration expose a datasource.
+            <pre>
+    &lt;bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry"&gt;
+      &lt;property name="jndiName"&gt;
+        &lt;value&gt;java:comp/env/jdbc/jetspeed&lt;/value&gt;
+      &lt;/property&gt;
+    &lt;/bean&gt;</pre>
+            </p>
+            <p>
+            In order for OJB to be configured properly with Jetspeed-2, the <code>OJB.properties</code> file (located under
+            <code>/etc/db-ojb/OJB.properties</code> in the source tree and <code>WEB-INF/classes</code> in the deployed application)
+            must set:
+            <pre>
+    ConnectionManagerClass=org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerImpl</pre>
+            instead of:
+            <pre>
+    ConnectionFactoryClass=org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl</pre>
+            </p>
+            <p>
+            A class diagram of <code>ConnectionRepositoryEntry</code> and <code>ConnectionManagerImpl</code> is
+            provided below:<br/>
+            <img src="images/connection-repository-c.gif" border="0"/>
+            </p>
+            </subsection>
+            <subsection name="OJB Datasource Configuration">
+            <p>
+            The bean name provided in <code>datasource.xml</code> must match the <code>jdbc-connection-descriptor</code>
+            <code>jcd-alias</code> property (by default <code>JetspeedDS</code>) located in OJB <code>repository_database.xml</code>
+            as illustrated below.
+            <pre>
+    &lt;jdbc-connection-descriptor
+        jcd-alias="JetspeedDS"
+        default-connection="true"
+        batch-mode="false"&gt;</pre>
+            </p>
+            </subsection>
+            <subsection name="Jetspeed-2 Datasource Configuration in Tomcat">
+            <p>
+            Jetspeed-2 configure the following datasource in Tomcat.  In the source tree, the Tomcat datasource configuration
+            is located under <code>/etc/conf/tomcat</code>.  When deployed Jetspeed-2 in a Tomcat instance, the Jetspeed-2
+            datasource configuration are deployed under <code>${tomcat_home}/conf/Catalina/localhost/jetspeed.xml</code>. If a different
+            portal name is being used for Jetspeed-2, the configuration file will be named accordingly.
+            <pre>
+    &lt;Resource name="jdbc/jetspeed" auth="Container"
+                 factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+                 type="javax.sql.DataSource" username="" password=""
+                 driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+                 url="jdbc:derby:/tmp/productiondb;create=true"
+                 maxActive="100" maxIdle="30" maxWait="10000"/&gt;</pre>
+            </p>
+            </subsection>
+        </section>
+    </body>
+</document>
+
