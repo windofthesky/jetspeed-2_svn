@@ -32,8 +32,8 @@
     	</menu>
     	<menu name="Documentation">
     		<item name="Documentation Guides" href="guides/index.html" />
-    		<item name="Jetspeed API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
-    		<item name="Jetspeed Plugin" href="j2-maven-plugin.html" />
+    		<item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
+    		<item name="Jetspeed-2 Plugin" href="j2-maven-plugin.html" />
     	</menu>
     	<menu name="About Jetspeed-2">
     		<item name="FAQs" href="faq.html" />

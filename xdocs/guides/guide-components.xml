@@ -167,7 +167,7 @@
             without having to impact the higher level security services.</td>
           </tr>
 		</table><br/>
-		<!-- table>
+		<table>
           <tr>
           	<th colspan="2">Jetspeed-2 Search - Artifact Id: jetspeed-search</th>
           </tr>
@@ -176,10 +176,15 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
-            <td>The <code>PreferencesProvider</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
+            <td><a href="../multiproject/jetspeed-search/index.html"><code>SearchEngine</code></a></td>
+            <td>The <code>SearchEngine</code> provide the integration with the <a href="http://lucene.apache.org/">Apache Lucene</a> search
+            engine.</td>
           </tr>
-		</table><br/-->
+          <tr>
+            <td><a href="../multiproject/jetspeed-search/index.html"><code>HandlerFactory</code></a></td>
+            <td>The <code>HandlerFactory</code> exposes the documents handlers to the <code>SearchEngine</code>.</td>
+          </tr>
+		</table><br/>
 		<!-- table>
           <tr>
           	<th colspan="2">Jetspeed-2 Statistics - Artifact Id: jetspeed-statistics</th>
