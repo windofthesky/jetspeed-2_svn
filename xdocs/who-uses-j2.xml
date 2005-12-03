@@ -24,6 +24,32 @@
 	</properties>
 	<body>
 		<section name="Who Uses Jetspeed-2?">
+		<table>
+          <tr>
+            <th>Company/Project</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="http://www.bluesunrise.com"><img src="images/users/bluesunrise.gif" border="0" /></a></td>
+            <td><a href="http://www.bluesunrise.com">BlueSunrise</a> provides services to help companies implement Jetspeed-2 solutions.</td>
+          </tr>
+          <tr>
+            <td><a href="http://www.itgroundwork.com/"><img src="images/users/groundwork.gif" border="0" /></a></td>
+            <td><a href="http://www.itgroundwork.com/">GroundWork</a>'s open source IT infrastructure monitoring 
+            solution delivers enterprise-class availability and performance for a fraction of the cost of commercial
+            alternatives.</td>
+          </tr>
+          <tr>
+            <td><a href="http://www.jahia.net"><img src="images/users/jahia.gif" border="0" /></a></td>
+            <td>The <a href="http://www.jahia.net">Jahia 5.0</a> line of products includes a Corporate Portal Server based on Jetspeed-2.
+            100% Java based, the full Jahia source code is available under a collaborative and community source license (contribute or pay paradigm).</td>
+          </tr>
+          <tr>
+            <td><a href="http://wfmopen.sf.net">WfMOpen</a></td>
+            <td>In its 1.4 version, <a href="http://wfmopen.sf.net">WfMOpen</a> provides resource management for the 
+			workflow engines (BPE) and uses Jetspeed-2 as a container for the engine's administrative portlets.</td>
+          </tr>
+		</table>
 		</section>
 	</body>
 </document>
