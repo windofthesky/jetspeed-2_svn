@@ -26,6 +26,7 @@ import java.util.prefs.Preferences;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -99,6 +100,16 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         public void checkPermissions(String actions) throws SecurityException
         {
             f.checkPermissions(actions);
+        }
+        
+        public SecurityConstraint newSecurityConstraint()
+        {
+            return f.newSecurityConstraint();
+        }
+
+        public SecurityConstraints newSecurityConstraints()
+        {
+            return f.newSecurityConstraints();
         }
 
         /** 
@@ -292,11 +303,6 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         public String toString()
         {
             return f.toString();
-        }
-
-        public Object clone() throws CloneNotSupportedException
-        {
-            return f.clone();
         }
 
         /** 
