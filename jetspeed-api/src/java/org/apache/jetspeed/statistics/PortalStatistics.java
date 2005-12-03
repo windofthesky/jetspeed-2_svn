@@ -153,4 +153,18 @@ public interface PortalStatistics
     public int getNumberOfLoggedInUsers();
 
     public List getListOfLoggedInUsers();
+    
+    /**
+     * Factory to create new statistics query criteria
+     * 
+     * @return a newly create statistics empty criteria
+     */
+    public StatisticsQueryCriteria createStatisticsQueryCriteria();
+    
+    /**
+     * Factory to create new, empty, aggregate statistics object.
+     * 
+     * @return unpopulated AggregateStatistics object 
+     */
+    public AggregateStatistics getDefaultEmptyAggregateStatistics();
 }

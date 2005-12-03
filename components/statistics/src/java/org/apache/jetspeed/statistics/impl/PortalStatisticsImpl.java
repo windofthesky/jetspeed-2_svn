@@ -590,6 +590,22 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     }
 
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.statistics.PortalStatistics#getDefaultEmptyStatisticsQueryCriteria()
+     */
+    public StatisticsQueryCriteria createStatisticsQueryCriteria()
+    {
+        return new StatisticsQueryCriteriaImpl();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.statistics.PortalStatistics#getDefaultEmptyAggregateStatistics()
+     */
+    public AggregateStatistics getDefaultEmptyAggregateStatistics()
+    {
+        return new AggregateStatisticsImpl();
+    }
+
     /**
      * @see org.apache.jetspeed.statistics.PortalStatistics#queryStatistics(org.apache.jetspeed.statistics.StatisticsQueryCriteria)
      */

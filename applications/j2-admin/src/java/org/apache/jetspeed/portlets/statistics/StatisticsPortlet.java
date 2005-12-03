@@ -84,7 +84,7 @@ public class StatisticsPortlet extends GenericVelocityPortlet
             if (sqc == null)
             {
                 // if we get here, we're on the first startup.
-                sqc = new StatisticsQueryCriteriaImpl();
+                sqc = statistics.createStatisticsQueryCriteria();
                 sqc.setQueryType(PortalStatistics.QUERY_TYPE_PORTLET);
                 sqc.setTimePeriod("1");
                 sqc.setListsize("5");
@@ -115,7 +115,8 @@ public class StatisticsPortlet extends GenericVelocityPortlet
             ActionResponse actionResponse) throws PortletException, IOException
     {
         PortletSession session = request.getPortletSession();
-        StatisticsQueryCriteria criteria = new StatisticsQueryCriteriaImpl();
+        StatisticsQueryCriteria criteria = statistics.createStatisticsQueryCriteria();
+        
         String user = request.getParameter("user");
         criteria.setUser(user);
         String timeperiod = request.getParameter("timeperiod");
@@ -131,7 +132,7 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         String queryType = request.getParameter("queryType");
 
         criteria.setQueryType(queryType);
-        AggregateStatistics stats = new AggregateStatisticsImpl();
+        AggregateStatistics stats = statistics.getDefaultEmptyAggregateStatistics();
         try
         {
             statistics.forceFlush();
