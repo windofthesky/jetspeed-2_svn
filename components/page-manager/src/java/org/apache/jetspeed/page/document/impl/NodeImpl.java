@@ -119,6 +119,50 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         return pageMetadata;
     }
 
+    /**
+     * defaultTitleFromName
+     *
+     * Compute default title from name.
+     *
+     * @return default title
+     */
+    protected String defaultTitleFromName()
+    {
+        // transform name to title
+        String title = getName();
+        if (title != null)
+        {
+            // strip extensions and default root folder name
+            if ((getType() != null) && title.endsWith(getType()))
+            {
+                title = title.substring(0, title.length()-getType().length());
+            }
+            else if (title.equals(Folder.PATH_SEPARATOR))
+            {
+                title = "top";
+            }
+            // use space as word separator
+            title = title.replace('_', ' ');
+            title = title.replace('-', ' ');
+            // use title case for title words
+            int wordIndex = -1;
+            do
+            {
+                if (!Character.isTitleCase(title.charAt(wordIndex+1)))
+                {
+                    StringBuffer makeTitle = new StringBuffer();
+                    makeTitle.append(title.substring(0, wordIndex+1));
+                    makeTitle.append(Character.toTitleCase(title.charAt(wordIndex+1)));
+                    makeTitle.append(title.substring(wordIndex+2));
+                    title = makeTitle.toString();
+                }
+                wordIndex = title.indexOf(' ', wordIndex+1);
+            }
+            while (wordIndex != -1);
+        }
+        return title;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getName()
      */

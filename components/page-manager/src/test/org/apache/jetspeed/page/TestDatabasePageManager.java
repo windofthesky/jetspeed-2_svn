@@ -144,6 +144,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
         // test document and folder creation
         Folder folder = pageManager.newFolder("/");
+        assertEquals("Top", folder.getTitle());
         folder.setTitle("Root Folder");
         folder.setDefaultPage("default-page.psml");
         folder.setShortTitle("Root");
@@ -225,6 +226,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertNull(folder.getParent());
 
         Page page = pageManager.newPage("/default-page.psml");
+        assertEquals("Default Page", page.getTitle());
         page.setTitle("Default Page");
         page.setVersion("6.89");
         page.setDefaultDecorator("tigris", Fragment.LAYOUT);
@@ -330,11 +332,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(1, folder.getPages().size());
 
         page = pageManager.newPage("/another-page.psml");
+        assertEquals("Another Page", page.getTitle());
         page.setTitle("Another Page");
         pageManager.updatePage(page);
         assertNotNull(page.getParent());
         assertEquals(page.getParent().getId(), folder.getId());
         page = pageManager.newPage("/some-other-page.psml");
+        assertEquals("Some Other Page", page.getTitle());
         page.setTitle("Some Other Page");
         pageManager.updatePage(page);
         assertNotNull(page.getParent());
@@ -342,6 +346,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(3, folder.getPages().size());
 
         Link link = pageManager.newLink("/default.link");
+        assertEquals("Default", link.getTitle());
         link.setTitle("Default Link");
         link.setVersion("1.23");
         link.setShortTitle("Default");

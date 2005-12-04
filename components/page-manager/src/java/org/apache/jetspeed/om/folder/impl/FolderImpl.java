@@ -404,6 +404,21 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.BaseElement#getTitle()
+     */
+    public String getTitle()
+    {
+        // default title to folder name
+        String title = super.getTitle();
+        if (title == null)
+        {
+            title = defaultTitleFromName();
+            setTitle(title);
+        }
+        return title;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
      */
     public List getDocumentOrder()

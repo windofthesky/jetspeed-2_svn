@@ -33,15 +33,31 @@ public abstract class DocumentImpl extends NodeImpl implements Document
         super(constraints);
     }
     
-    /**
-     * @return Returns the version.
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.BaseElement#getTitle()
+     */
+    public String getTitle()
+    {
+        // default title to document name
+        String title = super.getTitle();
+        if (title == null)
+        {
+            title = defaultTitleFromName();
+            setTitle(title);
+        }
+        return title;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Document#setVersion()
      */
     public String getVersion()
     {
         return version;
     }
-    /**
-     * @param version The version to set.
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Document#setVersion(java.lang.String)
      */
     public void setVersion(String version)
     {
