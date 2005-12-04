@@ -16,6 +16,6 @@
 -->
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define" xmlns:maven="jelly:maven">
 
-    <property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryDirectPart1a' />
+    <property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryDirectAll' />
 
 </project>

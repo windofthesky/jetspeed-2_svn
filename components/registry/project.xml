@@ -88,7 +88,21 @@
         <unitTest>
             <excludes>
                 <exclude>**/Abstract*</exclude>
-
+                <!--
+                    The following tests have been aggregated into
+                    TestRegistryDirectAll because the individual
+                    tests do not get executed in a predictable
+                    order by maven/junit. For example, on Linux
+                    FC4, these tests were repeatably executed
+                    in this order:
+                        TestRegistryDirectPart1a
+                        TestRegistryDirectPart2a
+                        TestRegistryDirectPart1b
+                    Obviously, the component unit tests then failed.
+                -->
+                <exclude>**/TestRegistryDirectPart1a*</exclude>
+                <exclude>**/TestRegistryDirectPart1b*</exclude>
+                <exclude>**/TestRegistryDirectPart2a*</exclude>
             </excludes>
             <resources>
                 <resource>
