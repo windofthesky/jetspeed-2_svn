@@ -100,6 +100,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("FolderSecurityConstraintImpl", SecurityConstraintImpl.class);
         modelClasses.put("PageSecurityConstraintImpl", SecurityConstraintImpl.class);
         modelClasses.put("FragmentSecurityConstraintImpl", SecurityConstraintImpl.class);
+        modelClasses.put("LinkSecurityConstraintImpl", SecurityConstraintImpl.class);
         modelClasses.put("PageSecuritySecurityConstraintImpl", SecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
         modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);

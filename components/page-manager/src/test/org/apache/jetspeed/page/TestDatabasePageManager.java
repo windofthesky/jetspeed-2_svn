@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
@@ -340,6 +341,35 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(page.getParent().getId(), folder.getId());
         assertEquals(3, folder.getPages().size());
 
+        Link link = pageManager.newLink("/default.link");
+        link.setTitle("Default Link");
+        link.setVersion("1.23");
+        link.setShortTitle("Default");
+        link.setTarget("top");
+        link.setUrl("http://www.default.org/");
+        metadata = link.getMetadata();
+        metadata.addField(Locale.FRENCH, "title", "[fr] Default Link");
+        metadata.addField(Locale.GERMAN, "title", "[de] Default Link");
+        SecurityConstraints linkConstraints = link.newSecurityConstraints();
+        linkConstraints.setOwner("user");
+        List inlineLinkConstraints = new ArrayList(1);
+        SecurityConstraint linkConstraint = link.newSecurityConstraint();
+        linkConstraint.setUsers(Shared.makeListFromCSV("jetspeed"));
+        linkConstraint.setPermissions(Shared.makeListFromCSV("edit"));
+        inlineLinkConstraints.add(linkConstraint);
+        linkConstraints.setSecurityConstraints(inlineLinkConstraints);
+        List linkConstraintsRefs = new ArrayList(1);
+        linkConstraintsRefs.add("manager-edit");
+        linkConstraints.setSecurityConstraintsRefs(linkConstraintsRefs);
+        link.setSecurityConstraints(linkConstraints);
+
+        pageManager.updateLink(link);
+
+        assertNotNull(link.getParent());
+        assertEquals(link.getParent().getId(), folder.getId());
+        assertNotNull(folder.getLinks());
+        assertEquals(1, folder.getLinks().size());
+
         PageSecurity pageSecurity = pageManager.newPageSecurity();
         List constraintsDefs = new ArrayList(2);
         SecurityConstraintsDef constraintsDef = pageManager.newSecurityConstraintsDef();
@@ -396,6 +426,15 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
+            Link dupLink = pageManager.newLink("/default.link");
+            pageManager.updateLink(dupLink);
+            assertTrue("Duplicate Link / CREATED", false);
+        }
+        catch (FailedToUpdateDocumentException e)
+        {
+        }
+        try
+        {
             PageSecurity dupPageSecurity = pageManager.newPageSecurity();
             pageManager.updatePageSecurity(dupPageSecurity);
             assertTrue("Duplicate PageSecurity / CREATED", false);
@@ -437,12 +476,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertNotNull(folder.getFolders());
         assertEquals(1, folder.getFolders().size());
         assertNotNull(folder.getAll());
-        assertEquals(5, folder.getAll().size());
+        assertEquals(6, folder.getAll().size());
         Iterator all = folder.getAll().iterator();
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("__subsite-rootx", ((Node)all.next()).getName());
         assertEquals("another-page.psml", ((Node)all.next()).getName());
+        assertEquals("default.link", ((Node)all.next()).getName());
         assertEquals("page.security", ((Node)all.next()).getName());
         assertNotNull(folder.getAll().subset(Page.DOCUMENT_TYPE));
         assertEquals(3, folder.getAll().subset(Page.DOCUMENT_TYPE).size());
@@ -450,7 +490,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(2, folder.getAll().inclusiveSubset(".*other.*").size());
         assertNull(folder.getAll().inclusiveSubset("nomatch"));
         assertNotNull(folder.getAll().exclusiveSubset(".*-page.psml"));
-        assertEquals(2, folder.getAll().exclusiveSubset(".*-page.psml").size());
+        assertEquals(3, folder.getAll().exclusiveSubset(".*-page.psml").size());
     }
 
     public void testGets() throws Exception
@@ -464,6 +504,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             PageSecurity check = pageManager.getPageSecurity();
             assertEquals("/page.security", check.getPath());
             assertEquals("page.security", check.getName());
+            assertEquals("/page.security", check.getUrl());
             assertNotNull(check.getSecurityConstraintsDefs());
             assertEquals(2, check.getSecurityConstraintsDefs().size());
             assertEquals("admin-all", ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(0)).getName());
@@ -486,9 +527,37 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
+            Link check = pageManager.getLink("/default.link");
+            assertEquals("/default.link", check.getPath());
+            assertEquals("default.link", check.getName());
+            assertEquals("Default Link", check.getTitle());
+            assertEquals("1.23", check.getVersion());            
+            assertEquals("Default", check.getShortTitle());
+            assertEquals("top", check.getTarget());
+            assertEquals("http://www.default.org/", check.getUrl());
+            assertNotNull(check.getMetadata());
+            assertEquals("[fr] Default Link", check.getTitle(Locale.FRENCH));
+            assertEquals("[de] Default Link", check.getTitle(Locale.GERMAN));
+            assertNotNull(check.getSecurityConstraints());
+            assertEquals("user", check.getSecurityConstraints().getOwner());
+            assertNotNull(check.getSecurityConstraints().getSecurityConstraintsRefs());
+            assertEquals(1, check.getSecurityConstraints().getSecurityConstraintsRefs().size());
+            assertEquals("manager-edit", (String)check.getSecurityConstraints().getSecurityConstraintsRefs().get(0));
+            assertNotNull(check.getSecurityConstraints().getSecurityConstraints());
+            assertEquals(1, check.getSecurityConstraints().getSecurityConstraints().size());
+            assertEquals("jetspeed", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers()));
+            assertNotNull(check.getParent());
+        }
+        catch (PageNotFoundException e)
+        {
+            assertTrue("Link /default.link NOT FOUND", false);
+        }
+        try
+        {
             Page check = pageManager.getPage("/default-page.psml");
             assertEquals("/default-page.psml", check.getPath());
             assertEquals("default-page.psml", check.getName());
+            assertEquals("/default-page.psml", check.getUrl());
             assertEquals("Default Page", check.getTitle());
             assertEquals("6.89", check.getVersion());            
             assertEquals("tigris", check.getDefaultDecorator(Fragment.LAYOUT));
@@ -585,6 +654,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             Folder check = pageManager.getFolder("/");
             assertEquals("/", check.getPath());
             assertEquals("/", check.getName());
+            assertEquals("/", check.getUrl());
             assertEquals("Root Folder", check.getTitle());
             assertEquals("default-page.psml", check.getDefaultPage());
             assertEquals("Root", check.getShortTitle());
@@ -609,15 +679,18 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNotNull(check.getPageSecurity());
             assertNotNull(check.getPages());
             assertEquals(3, check.getPages().size());
+            assertNotNull(check.getLinks());
+            assertEquals(1, check.getLinks().size());
             assertNotNull(check.getFolders());
             assertEquals(1, check.getFolders().size());
             assertNotNull(check.getAll());
-            assertEquals(5, check.getAll().size());
+            assertEquals(6, check.getAll().size());
             Iterator all = check.getAll().iterator();
             assertEquals("some-other-page.psml", ((Node)all.next()).getName());
             assertEquals("default-page.psml", ((Node)all.next()).getName());
             assertEquals("__subsite-rootx", ((Node)all.next()).getName());
             assertEquals("another-page.psml", ((Node)all.next()).getName());
+            assertEquals("default.link", ((Node)all.next()).getName());
             assertEquals("page.security", ((Node)all.next()).getName());
             assertNotNull(check.getMenuDefinitions());
             assertEquals(2, check.getMenuDefinitions().size());
@@ -715,6 +788,12 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         page.getSecurityConstraints().getSecurityConstraints().add(0, pageConstraint);
         pageManager.updatePage(page);
 
+        Link link = pageManager.getLink("/default.link");
+        assertEquals("/default.link", link.getPath());
+        link.setTitle("UPDATED");
+        link.getSecurityConstraints().setOwner("UPDATED");
+        pageManager.updateLink(link);
+
         Folder folder = pageManager.getFolder("/");
         assertEquals("/", folder.getPath());
         folder.setTitle("UPDATED");
@@ -729,7 +808,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageManager.updateFolder(folder);
 
         assertNotNull(folder.getAll());
-        assertEquals(5, folder.getAll().size());
+        assertEquals(6, folder.getAll().size());
         Iterator all = folder.getAll().iterator();
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
@@ -774,6 +853,14 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
+            Link check = pageManager.getLink("/default.link");
+            assertTrue("Link /default.link FOUND", false);
+        }
+        catch (DocumentNotFoundException e)
+        {
+        }
+        try
+        {
             Page check = pageManager.getPage("/default-page.psml");
             assertTrue("Page /default-page.psml FOUND", false);
         }
@@ -809,8 +896,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     public void testEvents() throws Exception
     {
         // verify listener functionality and operation counts
-        assertEquals(21, newNodeCount);
-        assertEquals(3, updatedNodeCount);
+        assertEquals(22, newNodeCount);
+        assertEquals(4, updatedNodeCount);
         assertEquals(1, removedNodeCount);
     }
 }

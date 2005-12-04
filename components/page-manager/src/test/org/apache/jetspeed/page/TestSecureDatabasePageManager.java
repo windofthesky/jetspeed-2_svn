@@ -30,6 +30,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
@@ -194,6 +195,19 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         page.setSecurityConstraints(constraints);
                         pageManager.updatePage(page);
 
+                        Link link = pageManager.newLink("/default.link");
+                        link.setUrl("http://www.default.org/");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        inlineConstraints = new ArrayList(1);
+                        constraint = pageManager.newLinkSecurityConstraint();
+                        constraint.setRoles(Shared.makeListFromCSV("manager"));
+                        constraint.setPermissions(Shared.makeListFromCSV("edit"));
+                        inlineConstraints.add(constraint);
+                        constraints.setSecurityConstraints(inlineConstraints);
+                        link.setSecurityConstraints(constraints);                        
+                        pageManager.updateLink(link);
+
                         return null;
                     }
                     catch (Exception e)
@@ -228,11 +242,13 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
                         assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                         Page page1 = pageManager.getPage("/user-page.psml");
+                        Link link = pageManager.getLink("/default.link");
                         // test edit access
                         pageManager.updateFolder(folder);
                         pageManager.updatePageSecurity(pageSecurity);
                         pageManager.updatePage(page0);
                         pageManager.updatePage(page1);
+                        pageManager.updateLink(link);
                         return null;
                     }
                     catch (Exception e)
@@ -267,6 +283,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
                         assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                         Page page1 = pageManager.getPage("/user-page.psml");
+                        Link link = pageManager.getLink("/default.link");
                         // test edit access
                         try
                         {
@@ -293,6 +310,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         {
                         }
                         pageManager.updatePage(page1);
+                        try
+                        {
+                            pageManager.updateLink(link);
+                            assertTrue("Page /default.link not editable for user", false);
+                        }
+                        catch (SecurityException se)
+                        {
+                        }
                         return null;
                     }
                     catch (Exception e)
@@ -325,6 +350,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         assertEquals(1, page0.getRootFragment().getFragments().size());
                         assertNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
                         assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                        Link link = pageManager.getLink("/default.link");
                         try
                         {
                             Page page1 = pageManager.getPage("/user-page.psml");
@@ -351,6 +377,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         {
                         }
                         pageManager.updatePage(page0);
+                        pageManager.updateLink(link);
                         return null;
                     }
                     catch (Exception e)
@@ -383,6 +410,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         assertEquals(1, page0.getRootFragment().getFragments().size());
                         assertNull(page0.getFragmentById(TestSecureDatabasePageManager.this.somePortletId));
                         assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                        Link link = pageManager.getLink("/default.link");
                         try
                         {
                             Page page1 = pageManager.getPage("/user-page.psml");
@@ -412,6 +440,14 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
                         {
                             pageManager.updatePage(page0);
                             assertTrue("Page /default-page.psml not editable for guest", false);
+                        }
+                        catch (SecurityException se)
+                        {
+                        }
+                        try
+                        {
+                            pageManager.updateLink(link);
+                            assertTrue("Page /default.link not editable for guest", false);
                         }
                         catch (SecurityException se)
                         {

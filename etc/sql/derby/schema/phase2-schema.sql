@@ -397,6 +397,92 @@ CREATE TABLE FRAGMENT_PREF_VALUE
 
 CREATE  INDEX IX_FRAGMENT_PREF_VALUE_1 ON FRAGMENT_PREF_VALUE (PREF_ID);
 -----------------------------------------------------------------------------
+-- LINK
+-----------------------------------------------------------------------------
+
+CREATE TABLE LINK
+(
+    LINK_ID INTEGER NOT NULL,
+    PARENT_ID INTEGER NOT NULL,
+    PATH VARCHAR(240) NOT NULL,
+    NAME VARCHAR(80) NOT NULL,
+    VERSION VARCHAR (40),
+    TITLE VARCHAR(100),
+    SHORT_TITLE VARCHAR(40),
+    IS_HIDDEN INTEGER NOT NULL,
+    TARGET VARCHAR(80),
+    URL VARCHAR(255),
+    SUBSITE VARCHAR(40),
+    USER_PRINCIPAL VARCHAR(40),
+    ROLE_PRINCIPAL VARCHAR(40),
+    GROUP_PRINCIPAL VARCHAR(40),
+    MEDIATYPE VARCHAR(15),
+    LOCALE VARCHAR(20),
+    EXT_ATTR_NAME VARCHAR(15),
+    EXT_ATTR_VALUE VARCHAR(40),
+    OWNER_PRINCIPAL VARCHAR(40),
+    PRIMARY KEY(LINK_ID),
+    FOREIGN KEY (PARENT_ID) REFERENCES FOLDER (FOLDER_ID)
+        ON DELETE CASCADE 
+  ,
+    UNIQUE (PATH));
+
+CREATE  INDEX IX_LINK_1 ON LINK (PARENT_ID);
+-----------------------------------------------------------------------------
+-- LINK_METADATA
+-----------------------------------------------------------------------------
+
+CREATE TABLE LINK_METADATA
+(
+    METADATA_ID INTEGER NOT NULL,
+    LINK_ID INTEGER NOT NULL,
+    NAME VARCHAR(15) NOT NULL,
+    LOCALE VARCHAR(20) NOT NULL,
+    VALUE VARCHAR(100) NOT NULL,
+    PRIMARY KEY(METADATA_ID),
+    FOREIGN KEY (LINK_ID) REFERENCES LINK (LINK_ID)
+        ON DELETE CASCADE 
+  ,
+    UNIQUE (LINK_ID, NAME, LOCALE, VALUE));
+
+CREATE  INDEX IX_LINK_METADATA_1 ON LINK_METADATA (LINK_ID);
+-----------------------------------------------------------------------------
+-- LINK_CONSTRAINT
+-----------------------------------------------------------------------------
+
+CREATE TABLE LINK_CONSTRAINT
+(
+    CONSTRAINT_ID INTEGER NOT NULL,
+    LINK_ID INTEGER NOT NULL,
+    APPLY_ORDER INTEGER NOT NULL,
+    USER_PRINCIPALS_ACL VARCHAR(120),
+    ROLE_PRINCIPALS_ACL VARCHAR(120),
+    GROUP_PRINCIPALS_ACL VARCHAR(120),
+    PERMISSIONS_ACL VARCHAR(120),
+    PRIMARY KEY(CONSTRAINT_ID),
+    FOREIGN KEY (LINK_ID) REFERENCES LINK (LINK_ID)
+        ON DELETE CASCADE 
+);
+
+CREATE  INDEX IX_LINK_CONSTRAINT_1 ON LINK_CONSTRAINT (LINK_ID);
+-----------------------------------------------------------------------------
+-- LINK_CONSTRAINTS_REF
+-----------------------------------------------------------------------------
+
+CREATE TABLE LINK_CONSTRAINTS_REF
+(
+    CONSTRAINTS_REF_ID INTEGER NOT NULL,
+    LINK_ID INTEGER NOT NULL,
+    APPLY_ORDER INTEGER NOT NULL,
+    NAME VARCHAR(40) NOT NULL,
+    PRIMARY KEY(CONSTRAINTS_REF_ID),
+    FOREIGN KEY (LINK_ID) REFERENCES LINK (LINK_ID)
+        ON DELETE CASCADE 
+  ,
+    UNIQUE (LINK_ID, NAME));
+
+CREATE  INDEX IX_LINK_CONSTRAINTS_REF_1 ON LINK_CONSTRAINTS_REF (LINK_ID);
+-----------------------------------------------------------------------------
 -- PAGE_SECURITY
 -----------------------------------------------------------------------------
 

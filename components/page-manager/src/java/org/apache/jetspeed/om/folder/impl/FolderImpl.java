@@ -35,6 +35,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -59,6 +60,7 @@ public class FolderImpl extends NodeImpl implements Folder
     private String defaultPage;
     private List folders;
     private List pages;
+    private List links;
     private List pageSecurity;
     private List orders;
     private List menus;
@@ -69,6 +71,7 @@ public class FolderImpl extends NodeImpl implements Folder
     private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
+    private NodeSet linksNodeSet;
     private FolderMenuDefinitionList menuDefinitions;
 
     public FolderImpl()
@@ -190,6 +193,47 @@ public class FolderImpl extends NodeImpl implements Folder
         // reset cached node sets
         allNodeSet = null;
         pagesNodeSet = null;
+    }
+
+    /**
+     * addLink
+     *
+     * Adds a link to the persistent collection and resets cached node sets.
+     *
+     * @param link new link impl
+     */
+    public void addLink(LinkImpl newLink)
+    {
+        // add to links collection
+        if (links == null)
+        {
+            links = new ArrayList(4);
+        }
+        links.add(newLink);
+
+        // reset cached node sets
+        allNodeSet = null;
+        linksNodeSet = null;
+    }
+    
+    /**
+     * removeLink
+     *
+     * Removes a link to the persistent collection and resets cached node sets.
+     *
+     * @param link remove link impl
+     */
+    public void removeLink(LinkImpl removeLink)
+    {
+        // remove from links collection
+        if (links != null)
+        {
+            links.remove(removeLink);
+        }
+
+        // reset cached node sets
+        allNodeSet = null;
+        linksNodeSet = null;
     }
 
     /**
@@ -469,7 +513,8 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getLinks() throws NodeException
     {
-        return null; // NYI
+        // return nodes with view access
+        return filterNodeSetByAccess(getLinksNodeSet());
     }
     
     /* (non-Javadoc)
@@ -477,7 +522,17 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Link getLink(String name) throws DocumentNotFoundException, NodeException
     {
-        return null; // NYI
+        // select link by name
+        Link link = (Link)getLinksNodeSet().get(name);
+        if (link == null)
+        {
+            throw new DocumentNotFoundException("Link not found: " + name);
+        }
+
+        // check for view access on link
+        link.checkAccess(SecuredResource.VIEW_ACTION);
+
+        return link;
     }
     
     /* (non-Javadoc)
@@ -655,6 +710,29 @@ public class FolderImpl extends NodeImpl implements Folder
     }
     
     /**
+     * getLinksNodeSet
+     *
+     * Latently create and access links node set.
+     *
+     * @return folders node set
+     */
+    private NodeSet getLinksNodeSet() throws NodeException
+    {
+        if (linksNodeSet == null)
+        {
+            if (links != null)
+            {
+                linksNodeSet = new NodeSetImpl(links, createDocumentOrderComparator());
+            }
+            else
+            {
+                linksNodeSet = NodeSetImpl.EMPTY_NODE_SET;
+            }
+        }
+        return linksNodeSet;
+    }
+    
+    /**
      * getAllNodeSet
      *
      * Latently create and access all nodes node set.
@@ -673,6 +751,10 @@ public class FolderImpl extends NodeImpl implements Folder
             if (pages != null)
             {
                 all.addAll(pages);
+            }
+            if (links != null)
+            {
+                all.addAll(links);
             }
             if (pageSecurity != null)
             {

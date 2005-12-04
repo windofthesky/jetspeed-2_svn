@@ -53,11 +53,11 @@ class SecurityConstraintsRefList extends AbstractList
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        // wrap constraints ref name string
+        // wrap constraints ref name string; use
+        // specific constraints ref name string wrapper
         BaseSecurityConstraintsRef constraintsRef = null;
         if (constraints.getSecurityConstraintsRefClass() != null)
         {
-            // use specific constraints ref name string wrapper
             try
             {
                 constraintsRef = (BaseSecurityConstraintsRef)constraints.getSecurityConstraintsRefClass().newInstance();
@@ -73,7 +73,6 @@ class SecurityConstraintsRefList extends AbstractList
         }
         else
         {
-            // use generic constraints ref name string wrapper
             constraintsRef = new BaseSecurityConstraintsRef();
         }
         constraintsRef.setName(name);

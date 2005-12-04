@@ -416,6 +416,94 @@ limitations under the License.
     </table>
 
     <!--
+       Link Definition
+    -->
+
+    <table name="LINK">
+        <column name="LINK_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PARENT_ID" type="INTEGER" required="true"/>
+        <column name="PATH" required="true" size="240" type="VARCHAR"/>
+        <column name="NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="VERSION" required="false" size="40" type="VARCHAR"/>        
+        <column name="TITLE" size="100" type="VARCHAR"/>
+        <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
+        <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
+        <column name="TARGET" size="80" type="VARCHAR"/>
+        <column name="URL" size="255" type="VARCHAR"/>
+        <column name="SUBSITE" size="40" type="VARCHAR"/>
+        <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPAL" size="40" type="VARCHAR"/>
+        <column name="MEDIATYPE" size="15" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
+        <column name="EXT_ATTR_NAME" size="15" type="VARCHAR"/>
+        <column name="EXT_ATTR_VALUE" size="40" type="VARCHAR"/>
+        <column name="OWNER_PRINCIPAL" size="40" type="VARCHAR"/>
+        <foreign-key foreignTable="FOLDER" onDelete="cascade">
+            <reference foreign="FOLDER_ID" local="PARENT_ID"/>
+        </foreign-key>
+        <index name="IX_LINK_1">
+            <index-column name="PARENT_ID"/>
+        </index>
+        <unique name="UN_LINK_1">
+            <unique-column name="PATH"/>
+        </unique>
+    </table>
+    
+    <table name="LINK_METADATA">
+        <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="LINK_ID" type="INTEGER" required="true"/>
+        <column name="NAME" required="true" size="15" type="VARCHAR"/>
+        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+        <foreign-key foreignTable="LINK" onDelete="cascade">
+            <reference foreign="LINK_ID" local="LINK_ID"/>
+        </foreign-key>
+        <index name="IX_LINK_METADATA_1">
+            <index-column name="LINK_ID"/>
+        </index>
+        <unique name="UN_LINK_METADATA_1">
+            <unique-column name="LINK_ID"/>
+            <unique-column name="NAME"/>
+            <unique-column name="LOCALE"/>
+            <unique-column name="VALUE"/>
+        </unique>
+    </table>
+
+    <table name="LINK_CONSTRAINT">
+        <column name="CONSTRAINT_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="LINK_ID" type="INTEGER" required="true"/>
+        <column name="APPLY_ORDER" type="INTEGER" required="true"/>
+        <column name="USER_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="ROLE_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="GROUP_PRINCIPALS_ACL" size="120" type="VARCHAR"/>
+        <column name="PERMISSIONS_ACL" size="120" type="VARCHAR"/>
+        <foreign-key foreignTable="LINK" onDelete="cascade">
+            <reference foreign="LINK_ID" local="LINK_ID"/>
+        </foreign-key>
+        <index name="IX_LINK_CONSTRAINT_1">
+            <index-column name="LINK_ID"/>
+        </index>
+    </table>
+
+    <table name="LINK_CONSTRAINTS_REF">
+        <column name="CONSTRAINTS_REF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="LINK_ID" type="INTEGER" required="true"/>
+        <column name="APPLY_ORDER" type="INTEGER" required="true"/>
+        <column name="NAME" size="40" type="VARCHAR" required="true"/>
+        <foreign-key foreignTable="LINK" onDelete="cascade">
+            <reference foreign="LINK_ID" local="LINK_ID"/>
+        </foreign-key>
+        <index name="IX_LINK_CONSTRAINTS_REF_1">
+            <index-column name="LINK_ID"/>
+        </index>
+        <unique name="UN_LINK_CONSTRAINTS_REF_1">
+            <unique-column name="LINK_ID"/>
+            <unique-column name="NAME"/>
+        </unique>
+    </table>
+
+    <!--
        Page Security Definition
     -->
 

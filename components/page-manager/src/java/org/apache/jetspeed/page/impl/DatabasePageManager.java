@@ -48,6 +48,8 @@ import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl;
+import org.apache.jetspeed.om.page.impl.LinkImpl;
+import org.apache.jetspeed.om.page.impl.LinkSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.PageMenuExcludeDefinitionImpl;
@@ -100,7 +102,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("FragmentImpl", FragmentImpl.class);
         modelClasses.put("PageImpl", PageImpl.class);
         modelClasses.put("FolderImpl", FolderImpl.class);
-        //modelClasses.put("LinkImpl", LinkImpl.class);
+        modelClasses.put("LinkImpl", LinkImpl.class);
         modelClasses.put("PageSecurityImpl", PageSecurityImpl.class);
         modelClasses.put("FolderMenuDefinitionImpl", FolderMenuDefinitionImpl.class);
         modelClasses.put("FolderMenuExcludeDefinitionImpl", FolderMenuExcludeDefinitionImpl.class);
@@ -116,6 +118,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("FolderSecurityConstraintImpl", FolderSecurityConstraintImpl.class);
         modelClasses.put("PageSecurityConstraintImpl", PageSecurityConstraintImpl.class);
         modelClasses.put("FragmentSecurityConstraintImpl", FragmentSecurityConstraintImpl.class);
+        modelClasses.put("LinkSecurityConstraintImpl", LinkSecurityConstraintImpl.class);
         modelClasses.put("PageSecuritySecurityConstraintImpl", PageSecuritySecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
         modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
@@ -348,6 +351,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newLinkSecurityConstraint()
+     */
+    public SecurityConstraint newLinkSecurityConstraint()
+    {
+        return delegator.newLinkSecurityConstraint();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newPageSecuritySecurityConstraint()
      */
     public SecurityConstraint newPageSecuritySecurityConstraint()
@@ -462,10 +473,52 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
      */
-    public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public Link getLink(String path) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        // TODO Auto-generated method stub
-        return null;
+        // construct link attributes from path
+        path = NodeImpl.getCanonicalNodePath(path);
+
+        // optimized retrieval from cache by path if available
+        NodeImpl cachedNode = DatabasePageManagerCache.cacheLookup(path);
+        if (cachedNode instanceof Link)
+        {
+            // check for view access on link
+            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+
+            return (Link)cachedNode;
+        }
+
+        // retrieve link from database
+        try
+        {
+            Criteria filter = new Criteria();
+            filter.addEqualTo("path", path);
+            QueryByCriteria query = QueryFactory.newQuery(LinkImpl.class, filter);
+            Link link = (Link) getPersistenceBrokerTemplate().getObjectByQuery(query);
+            
+            // return link or throw exception
+            if (link == null)
+            {
+                throw new DocumentNotFoundException("Link " + path + " not found.");
+            }
+
+            // check for view access on link
+            link.checkAccess(SecuredResource.VIEW_ACTION);
+
+            return link;
+        }
+        catch (DocumentNotFoundException dnfe)
+        {
+            throw dnfe;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
+        }
+        catch (Exception e)
+        {
+            throw new DocumentNotFoundException("Link " + path + " not found.", e);
+        }
     }
 
     /* (non-Javadoc)
@@ -832,8 +885,76 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public void updateLink(Link link) throws JetspeedException, LinkNotUpdatedException
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            // dereference link in case proxy is supplied
+            link = (Link)ProxyHelper.getRealObject(link);
 
+            // look up and set parent folder if necessary
+            if (link.getParent() == null)
+            {
+                // access folder by path
+                String linkPath = link.getPath();
+                String parentPath = linkPath.substring(0, linkPath.lastIndexOf(Folder.PATH_SEPARATOR));
+                if (parentPath.length() == 0)
+                {
+                    parentPath = Folder.PATH_SEPARATOR;
+                }
+                FolderImpl parent = null;
+                try
+                {
+                    parent = (FolderImpl)getFolder(parentPath);
+                }
+                catch (FolderNotFoundException fnfe)
+                {
+                    throw new FailedToUpdateDocumentException("Missing parent folder: " + parentPath);
+                }
+                
+                // check for edit access on parent folder; link
+                // access not checked on create
+                parent.checkAccess(SecuredResource.EDIT_ACTION);
+
+                try
+                {
+                    // update parent folder with added link
+                    parent.addLink((LinkImpl)link);
+                    link.setParent(parent);
+                    getPersistenceBrokerTemplate().store(parent);
+                }
+                catch (Exception e)
+                {
+                    // cleanup parent folder on error
+                    parent.removeLink((LinkImpl)link);
+                    throw e;
+                }
+
+                // notify page manager listeners
+                delegator.notifyNewNode(link);
+            }
+            else
+            {
+                // check for edit access on link and parent folder
+                link.checkAccess(SecuredResource.EDIT_ACTION);
+
+                // update link
+                getPersistenceBrokerTemplate().store(link);
+
+                // notify page manager listeners
+                delegator.notifyUpdatedNode(link);
+            }
+        }
+        catch (FailedToUpdateDocumentException fude)
+        {
+            throw fude;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
+        }
+        catch (Exception e)
+        {
+            throw new FailedToUpdateDocumentException("Link " + link.getPath() + " not updated.", e);
+        }
     }
 
     /* (non-Javadoc)
@@ -841,8 +962,39 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public void removeLink(Link link) throws JetspeedException, LinkNotRemovedException
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            // dereference link in case proxy is supplied
+            link = (Link)ProxyHelper.getRealObject(link);
 
+            // check for edit access on link and parent folder
+            link.checkAccess(SecuredResource.EDIT_ACTION);
+
+            // look up and update parent folder if necessary
+            if (link.getParent() != null)
+            {
+                // update parent folder with removed link; deletes link
+                FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(link.getParent());
+                parent.removeLink((LinkImpl)link);
+                getPersistenceBrokerTemplate().store(parent);
+            }
+            else
+            {
+                // delete link
+                getPersistenceBrokerTemplate().delete(link);
+            }
+
+            // notify page manager listeners
+            delegator.notifyRemovedNode(link);
+        }
+        catch (SecurityException se)
+        {
+            throw se;
+        }
+        catch (Exception e)
+        {
+            throw new FailedToDeleteDocumentException("Link " + link.getPath() + " not removed.", e);
+        }
     }
 
     /* (non-Javadoc)

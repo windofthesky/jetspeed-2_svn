@@ -108,6 +108,7 @@ public class TestSecurePermissionsDatabasePageManager extends TestSecureDatabase
                         {
                             // granted permissions
                             permissions.add(new PagePermission("/default-page.psml", "edit"));
+                            permissions.add(new PagePermission("/default.link", "edit"));
                         }
                     }
                 }

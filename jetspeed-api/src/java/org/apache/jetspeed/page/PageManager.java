@@ -211,6 +211,13 @@ public interface PageManager
     public SecurityConstraint newFragmentSecurityConstraint();
 
     /**
+     * newLinkSecurityConstraint - creates a new security constraint definition
+     *
+     * @return a newly created SecurityConstraint object to be used in Link
+     */
+    public SecurityConstraint newLinkSecurityConstraint();
+
+    /**
      * newPageSecuritySecurityConstraint - creates a new security constraint definition
      *
      * @return a newly created SecurityConstraint object to be used in PageSecurity
