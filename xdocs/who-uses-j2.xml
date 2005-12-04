@@ -34,6 +34,11 @@
             <td><a href="http://www.bluesunrise.com">BlueSunrise</a> provides services to help companies implement Jetspeed-2 solutions.</td>
           </tr>
           <tr>
+            <td><a href="http://www.convergys.com/"><img src="images/users/convergys.gif" border="0" /></a></td>
+            <td><a href="http://www.convergys.com/">Convergys</a> uses Jetspeed-2 as a B2B Business Intelligence 
+			Portal to expose reports from third party enterprise OLAP engines such as Cognos and MicroStrategy.</td>
+          </tr>
+          <tr>
             <td><a href="http://www.itgroundwork.com/"><img src="images/users/groundwork.gif" border="0" /></a></td>
             <td><a href="http://www.itgroundwork.com/">GroundWork</a>'s open source IT infrastructure monitoring 
             solution delivers enterprise-class availability and performance for a fraction of the cost of commercial
