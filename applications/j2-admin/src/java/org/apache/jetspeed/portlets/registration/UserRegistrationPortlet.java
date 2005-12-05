@@ -17,14 +17,15 @@ package org.apache.jetspeed.portlets.registration;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.portlet.ActionRequest;
@@ -42,14 +43,13 @@ import org.apache.jetspeed.administration.PortalAdministration;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.portals.bridges.frameworks.model.ModelBean;
 import org.apache.portals.bridges.velocity.AbstractVelocityMessagingPortlet;
 import org.apache.portals.gems.util.ValidationHelper;
 import org.apache.velocity.context.Context;
 
 /**
  * This portlet allows a logged on user to change its password.
- *
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
  * @version $Id: $
@@ -65,7 +65,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
 
     private static final String USER_ATTRIBUTE_EMAIL = "user.business-info.online.email";
 
-    // Messages 
+    // Messages
     private static final String MSG_MESSAGE = "MSG";
 
     private static final String MSG_USERINFO = "user";
@@ -73,7 +73,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     private static final String MSG_REGED_USER_MSG = "registeredUserMsg";
 
     // Init Parameters
-    private static final String IP_ROLES = "roles"; // comma separated    
+    private static final String IP_ROLES = "roles"; // comma separated
 
     private static final String IP_GROUPS = "groups"; // comma separated
 
@@ -99,6 +99,10 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     private static final String CTX_MESSAGE = "MSG";
 
     private static final String CTX_USERINFO = "user";
+
+    private static final String CTX_FIELDS = "fieldsInOrder";
+
+    private static final String CTX_OPTIONALS = "optionalMap";
 
     private static final String CTX_REGED_USER_MSG = "registeredUserMsg";
 
@@ -133,7 +137,10 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     /** will force the passwords to be generated instead of picked by the user */
     private boolean optionForceGeneratedPasswords = false;
 
-    /** will use cause the portlet to use a user request username instead otherwise forces emailaddress */
+    /**
+     * will use cause the portlet to use a user request username instead
+     * otherwise forces emailaddress
+     */
     private boolean optionForceEmailAsUsername = true;
 
     /** will check to make sure the email address is unique to the system */
@@ -169,21 +176,24 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
 
         this.emailTemplate = config.getInitParameter(IP_EMAIL_TEMPLATE);
 
-        // user attributes ? 
+        // user attributes ?
 
-        this.optionForceEmailsToBeSystemUnique = Boolean.getBoolean(config
-                .getInitParameter(IP_OPTION_EMAILS_SYSTEM_UNIQUE));
-        this.optionForceGeneratedPasswords = Boolean.getBoolean(config
-                .getInitParameter(IP_OPTION_GENERATE_PASSWORDS));
-        this.optionForceEmailAsUsername = Boolean.getBoolean(config
-                .getInitParameter(IP_OPTION_USE_EMAIL_AS_USERNAME));
+        this.optionForceEmailsToBeSystemUnique = Boolean.valueOf(
+                config.getInitParameter(IP_OPTION_EMAILS_SYSTEM_UNIQUE))
+                .booleanValue();
+        this.optionForceGeneratedPasswords = Boolean.valueOf(
+                config.getInitParameter(IP_OPTION_GENERATE_PASSWORDS))
+                .booleanValue();
+        this.optionForceEmailAsUsername = Boolean.valueOf(
+                config.getInitParameter(IP_OPTION_USE_EMAIL_AS_USERNAME))
+                .booleanValue();
         if (this.optionForceEmailAsUsername)
         {
             // just to be sure
             this.optionForceEmailsToBeSystemUnique = true;
         }
         this.returnUrlPath = config.getInitParameter(IP_RETURN_URL);
-        this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);        
+        this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);
     }
 
     public void doView(RenderRequest request, RenderResponse response)
@@ -191,14 +201,33 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     {
         response.setContentType("text/html");
         Context context = getContext(request);
-        context.put(CTX_USERINFO, this.receiveRenderMessage(request,
-                MSG_USERINFO));
-        context.put(CTX_MESSAGE, consumeRenderMessage(request, MSG_MESSAGE));
-        
-        // if this is non-null, then we know that we registered
-        context.put(CTX_REGED_USER_MSG, consumeRenderMessage(request,
-                MSG_REGED_USER_MSG));
 
+        Object userinfoObject = this
+                .receiveRenderMessage(request, MSG_USERINFO);
+        context.put(CTX_USERINFO, userinfoObject);
+        context.put(CTX_FIELDS, getListOfNonSpecialFormKeys());
+        context.put(CTX_OPTIONALS, getOptionalMap());
+        context.put(CTX_MESSAGE, consumeRenderMessage(request, MSG_MESSAGE));
+        String guid = request.getParameter("newUserGUID");
+        if (guid != null)
+        {
+            // we'll ignore the possibility of an invalid guid for now.
+
+            // NOTE this would be a good place to put the actual registration if
+            // that's the process you want to have happen.
+
+            ResourceBundle resource = getPortletConfig().getResourceBundle(
+                    request.getLocale());
+            context.put(CTX_REGED_USER_MSG, resource
+                    .getString("success.login_above"));
+        } else
+        {
+            // not a returning url, but perhaps we just got redirected from the
+            // form ?
+            // if this is non-null, then we know that we registered
+            context.put(CTX_REGED_USER_MSG, consumeRenderMessage(request,
+                    MSG_REGED_USER_MSG));
+        }
         // next two control the existence of some of the fields in the form
         if (this.optionForceEmailAsUsername)
         {
@@ -212,62 +241,202 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         super.doView(request, response);
     }
 
-    private Object getBeanFromSession(PortletRequest request, ModelBean mb)
-    {
-        return request.getPortletSession().getAttribute(makeModelBeanKey(mb));
-    }
+    private static final Boolean required = new Boolean(true);
 
-    private void clearBeanFromSession(PortletRequest request, ModelBean mb)
-    {
-        System.out.println("Clearing bean " + makeModelBeanKey(mb));
-        request.getPortletSession().removeAttribute(makeModelBeanKey(mb));
-    }
+    private static final Boolean optional = new Boolean(false);
 
-    private void putBeanInSession(PortletRequest request, ModelBean mb,
-            Object bean)
+    private static final Integer IS_STRING = new Integer(1);
+
+    private static final Integer IS_EMAIL = new Integer(2);
+
+    private static final Integer IS_PHONE = new Integer(3);
+
+    private static final Integer IS_URL = new Integer(4);
+
+    private static final Integer IS_BDATE = new Integer(5);
+
+    protected List getListOfNonSpecialFormKeys()
     {
-        if (bean instanceof Serializable)
+        List l = new ArrayList();
+        for (int i = 0; i < formKeys.length; i++)
         {
-            request.getPortletSession()
-                    .setAttribute(makeModelBeanKey(mb), bean);
+            String key = (String) formKeys[i][0];
+            if (key.equals("user.name"))
+            {
+                // don't put this in
+            } else if (key.equals("user.business-info.online.email"))
+            {
+                // don't put this in
+            } else if (key.equals("password"))
+            {
+                // don't put this in
+            } else if (key.equals("verifyPassword"))
+            {
+                // don't put this in
+            } else
+            {
+                // but DO add this
+                l.add(key);
+            }
         }
+        return l;
     }
 
-    private String makeModelBeanKey(ModelBean mb)
+    protected Map getOptionalMap()
     {
-        return "ModelBean:" + mb.getBeanName();
+        Map m = new HashMap();
+        for (int i = 0; i < formKeys.length; i++)
+        {
+            boolean isRequired = ((Boolean) formKeys[i][1]).booleanValue();
+            if (!isRequired)
+            {
+                m.put(formKeys[i][0], "");
+            }
+        }
+        return m;
+    }
+    // PLT name, required, max length,  validation type 
+    
+    protected static Object[][] formKeys =
+    { 
+        // the next four items are special cases
+        
+        // this is the offical email used by jetspeed.  You can chnage it, but you have to look around in the code
+        {"user.business-info.online.email", required ,      new Integer(80),        IS_EMAIL},
+        
+        // username is required here 
+        // chould be commented out if email is used as username...
+        {"user.name",         required ,      new Integer(80),        IS_STRING},
+        
+        // These last two are special cases you must have them
+        // comment them out here if you use the generated password option
+        {"password", required, new Integer(80), IS_STRING},
+        {"verifyPassword", required, new Integer(80), IS_STRING},
+    
+        // the following can be placed in any order, and will appear in that order on the page
+        
+        //      All of the following are optional and are stored as user attributes if collected.
+        
+        /*
+        {"user.bdate",          optional ,      new Integer(25),        IS_BDATE},    // Note: store as a string which is a number, time in milliseconds since 1970... see Portlet Spec. 
+        {"user.gender",         optional ,      new Integer(10),        IS_STRING},
+        {"user.employer",         optional ,      new Integer(80),        IS_STRING},
+        */
+        
+        {"user.department",         optional ,      new Integer(80),        IS_STRING},
+        /*
+        {"user.jobtitle",         optional ,      new Integer(80),        IS_STRING},
+        {"user.name.prefix",         optional ,      new Integer(10),        IS_STRING},
+        */
+        {"user.name.given",         optional ,      new Integer(30),        IS_STRING},
+        {"user.name.family",         optional ,      new Integer(30),        IS_STRING},
+        /*
+        {"user.name.middle",         optional ,      new Integer(30),        IS_STRING},
+        {"user.name.suffix",         optional ,      new Integer(10),        IS_STRING},
+        {"user.name.nickName",         optional ,      new Integer(30),        IS_STRING},
+        {"user.home-info.postal.name",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.street",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.city",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.stateprov",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.postalcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.country",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.postal.organization",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.telephone.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.telephone.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.telephone.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.home-info.telecom.telephone.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.telephone.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.fax.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.fax.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.fax.number",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.fax.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.fax.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.mobile.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.mobile.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.mobile.number",optional ,      new Integer(80),        IS_PHONE},
+        {"user.home-info.telecom.mobile.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.mobile.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.pager.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.pager.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.pager.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.home-info.telecom.pager.ext",            optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.telecom.pager.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.home-info.online.email",         optional ,      new Integer(80),        IS_EMAIL},
+        {"user.home-info.online.uri",         optional ,      new Integer(80),        IS_URL},
+        */
+        {"user.business-info.postal.name",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.street",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.city",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.stateprov",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.postalcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.country",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.postal.organization",         optional ,      new Integer(80),        IS_STRING},
+        /*
+        {"user.business-info.telecom.telephone.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.telephone.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.telephone.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.business-info.telecom.telephone.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.telephone.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.fax.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.fax.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.fax.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.business-info.telecom.fax.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.fax.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.mobile.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.mobile.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.mobile.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.business-info.telecom.mobile.ext",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.mobile.comment",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.pager.intcode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.pager.loccode",         optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.pager.number",         optional ,      new Integer(80),        IS_PHONE},
+        {"user.business-info.telecom.pager.ext",            optional ,      new Integer(80),        IS_STRING},
+        {"user.business-info.telecom.pager.comment",         optional ,      new Integer(80),        IS_STRING},
+//      --- special case see above  user.business-info.online.email 
+        {"user.business-info.online.uri", optional ,      new Integer(80),        IS_URL},
+        */
+    };
+
+    protected boolean validateFormValue(String value, Integer length,
+            Integer validationType)
+    {
+
+        if (validationType.equals(IS_STRING))
+        {
+            if (!ValidationHelper.isAny(value, true, length.intValue())) { return false; }
+        } else if (validationType.equals(IS_EMAIL))
+        {
+            if (!ValidationHelper
+                    .isEmailAddress(value, true, length.intValue())) { return false; }
+        } else if (validationType.equals(IS_PHONE))
+        {
+            if (!ValidationHelper.isPhoneNumber(value, true, length.intValue())) { return false; }
+        } else if (validationType.equals(IS_URL))
+        {
+            if (!ValidationHelper.isURL(value, true, length.intValue())) { return false; }
+        } else if (validationType.equals(IS_BDATE))
+        {
+            if (!ValidationHelper.isValidDatetime(value)) { return false; }
+        } else
+        {
+            // unkown type assume string for now
+            if (!ValidationHelper.isAny(value, true, length.intValue())) { return false; }
+        }
+        return true;
+
     }
 
-    /*   
-     protected Object formToBean(ActionRequest request, String view, ModelBean mb) throws PortletException
-     {
-
-     // try to get the bean from the session first
-     Object bean = getBeanFromSession(request, mb);
-     if (bean == null)
-     {
-     bean = model.createBean(mb);
-     if (bean == null) { throw new PortletException("Portlet Action error in creating bean for view: " + view); }
-     putBeanInSession(request, mb, bean);
-     }
-
-     Map params = request.getParameterMap();
-     try
-     {
-     BeanUtils.populate(bean, params);
-     }
-     catch (Exception e)
-     {
-     throw new PortletException("Portlet Action error in  populating bean: " + mb.getBeanName(), e);
-     }
-     return bean;
-     }
-     */
-
-    protected static String[] formValues =
-    { "user.name.family", "user.name.given", "user.business-info.online.email",
-            "user.name", "password", "verifyPassword", "user.department",
-            "user.employer"};
+    protected String convertIfNeed(String key, String value)
+    {
+        if ("user.bdate".equals(key))
+        {
+            // this one needs conversion
+            Date d = ValidationHelper.parseDate(value);
+            long timeInmS = d.getTime();
+            return "" + timeInmS;
+        }
+        return value;
+    }
 
     public void processAction(ActionRequest actionRequest,
             ActionResponse actionResponse) throws PortletException, IOException
@@ -277,183 +446,246 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         Map userAttributes = new HashMap();
 
         Map userInfo = new HashMap();
+        ResourceBundle resource = getPortletConfig().getResourceBundle(
+                actionRequest.getLocale());
 
-        for (int i = 0; i < formValues.length; i++)
-        {
-            String key = formValues[i];
-            String value = actionRequest.getParameter(key);
-            if (value != null)
-            {
-                userInfo.put(key, value);
-                if (key.startsWith("user."))
-                {
-                    // we'll assume that these map back to PLT.D  values
-                    userAttributes.put(key, value);
-                }
-            }
-        }
-
-        ResourceBundle resource = getPortletConfig().getResourceBundle(actionRequest.getLocale());
-
-        publishRenderMessage(actionRequest, MSG_USERINFO, userInfo);
-        
-        if (!ValidationHelper.isAny((String) userInfo.get("user.name.given"),
-                true, 30))
-        {
-            errors.add(resource.getString("error.lacking.first_name"));
-        }
-        if (!ValidationHelper.isAny((String) userInfo.get("user.name.family"),
-                true, 30))
-        {
-            errors.add(resource.getString("error.lacking.last_name"));
-        }
-        if (!ValidationHelper.isAny((String) userInfo.get("user.name"), true,
-                80))
-        {
-            errors.add(resource.getString("error.lacking.username"));
-        }
-        if (!ValidationHelper.isEmailAddress((String) userInfo
-                .get(USER_ATTRIBUTE_EMAIL), true, 80))
-        {
-            errors.add(resource.getString("error.email_invalid_format"));
-        }
-        if (!this.optionForceGeneratedPasswords)
-        {
-            if (!ValidationHelper.isAny((String) userInfo.get("password"),
-                    true, 25))
-            {
-                errors.add(resource.getString("error.lacking.password"));
-            }
-        }
-
-        if (optionForceEmailAsUsername)
-        {
-            // force user.name to be same as email
-            userInfo.put("user.name", userInfo.get(USER_ATTRIBUTE_EMAIL));
-        }
-
-        boolean userIdExistsFlag = true;
         try
         {
-            User user = userManager.getUser((String) userInfo.get("user.name"));
-        } catch (SecurityException e)
-        {
-            userIdExistsFlag = false;
-        }
-        //
-        if (userIdExistsFlag)
-        {
-            errors.add(resource.getString("error.userid_already_exists"));
-            publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
-            return;
-        }
-        if (optionForceEmailsToBeSystemUnique)
-        {
-            boolean emailExistsFlag = true;
-            User user = null;
+
+            for (int i = 0; i < formKeys.length; i++)
+            {
+                try
+                {
+                    String key = (String) formKeys[i][0];
+                    Boolean isRequired = (Boolean) formKeys[i][1];
+                    String value = actionRequest.getParameter(key);
+                    if ((value != null) && (value.length() > 0))
+                    {
+
+                        userInfo.put(key, value);
+
+                        // do some validation
+                        if (!validateFormValue(value, (Integer) formKeys[i][2],
+                                (Integer) formKeys[i][3]))
+                        {
+                            errors.add(resource
+                                    .getString("error.invalid-format." + key));
+                        }
+
+                        if (key.startsWith("user."))
+                        {
+                            value = convertIfNeed(key, value);
+                            // we'll assume that these map back to PLT.D values
+                            userAttributes.put(key, value);
+                        }
+                    } else
+                    {
+                        // don't have that value or it's too short... is it
+                        // required ?
+                        if (isRequired.booleanValue())
+                        {
+                            errors.add(resource.getString("error.lacking."
+                                    + key));
+                        }
+                        // place an empty version in userInfo anyway
+                        // so that the template will display the correct fields
+                        userInfo.put(key, "");
+                    }
+                } catch (MissingResourceException mre)
+                {
+                    errors.add(resource.getString("error.failed_to_add")
+                            + mre.toString());
+                }
+
+            }
+            // publish the whole map so we can reload the form values on error.
+            publishRenderMessage(actionRequest, MSG_USERINFO, userInfo);
+
+            // These next checks may duplicate previous checks.
+            // however this is a double check given the nature of the values and
+            // how they are used.
+            if (this.optionForceEmailAsUsername)
+            {
+                // email is something special
+                if (!ValidationHelper.isEmailAddress((String) userInfo
+                        .get(USER_ATTRIBUTE_EMAIL), true, 80))
+                {
+                    errors.add(resource.getString("error.invalid-format."
+                            + USER_ATTRIBUTE_EMAIL));
+                }
+            } else
+            {
+                if (!ValidationHelper.isAny((String) userInfo.get("user.name"),
+                        true, 80))
+                {
+                    errors.add(resource.getString("error.lacking.user.name"));
+                }
+            }
+
+            // if we're not generating make sure it's real
+            if (!this.optionForceGeneratedPasswords)
+            {
+                if (!ValidationHelper.isAny((String) userInfo.get("password"),
+                        true, 25))
+                {
+                    errors.add(resource.getString("error.lacking.password"));
+                }
+            }
+
+            if (optionForceEmailAsUsername)
+            {
+                // force user.name to be same as email
+                userInfo.put("user.name", userInfo.get(USER_ATTRIBUTE_EMAIL));
+            }
+
+            boolean userIdExistsFlag = true;
             try
             {
-                user = admin.lookupUserFromEmail((String) userInfo
-                        .get(USER_ATTRIBUTE_EMAIL));
-            } catch (AdministrationEmailException e1)
+                User user = userManager.getUser((String) userInfo
+                        .get("user.name"));
+            } catch (SecurityException e)
             {
-                emailExistsFlag = false;
+                userIdExistsFlag = false;
             }
-            if ((emailExistsFlag) || (user != null))
+            //
+            if (userIdExistsFlag)
             {
-                errors.add(resource.getString("error.email_already_exists"));
+                errors.add(resource.getString("error.userid_already_exists"));
+                publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+                return;
+            }
+            if (optionForceEmailsToBeSystemUnique)
+            {
+                boolean emailExistsFlag = true;
+                User user = null;
+                try
+                {
+                    user = admin.lookupUserFromEmail((String) userInfo
+                            .get(USER_ATTRIBUTE_EMAIL));
+                } catch (AdministrationEmailException e1)
+                {
+                    emailExistsFlag = false;
+                }
+                if ((emailExistsFlag) || (user != null))
+                {
+                    errors
+                            .add(resource
+                                    .getString("error.email_already_exists"));
+                    publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+                    return;
+                }
+
+            }
+
+            try
+            {
+                if (optionForceGeneratedPasswords)
+                {
+                    String password = admin.generatePassword();
+                    userInfo.put("password", password);
+                } else
+                {
+                    if (userInfo.get("password").equals(
+                            userInfo.get("verifyPassword")))
+                    {
+
+                    } else
+                    {
+                        errors.add(resource
+                                .getString("error.two_passwords_do_not_match"));
+                        publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+                        return;
+                    }
+                }
+            } catch (Exception e)
+            {
+                errors.add(resource.getString("error.failed_to_add")
+                        + e.toString());
+                publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+            }
+            // make sure no errors have occurred
+            if (errors.size() > 0)
+            {
                 publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
                 return;
             }
 
-        }
-
-        try
-        {
-            if (optionForceGeneratedPasswords)
+            // Ok, we think we're good to go, let's create the user!
+            try
             {
-                String password = admin.generatePassword();
-                userInfo.put("user.password", password);
-            } 
-            else
-            {
-                if (userInfo.get("password").equals(
-                        userInfo.get("verifyPassword")))
-                {
+                admin.registerUser((String) userInfo.get("user.name"),
+                        (String) userInfo.get("password"), this.roles,
+                        this.groups, userAttributes, // note use of only
+                                                        // PLT.D values here.
+                        rules, null); // passing in null causes use of default
+                                        // template
 
-                } 
-                else
+                String urlGUID = ForgottenPasswordPortlet.makeGUID(
+                        (String) userInfo.get("user.name"), (String) userInfo
+                                .get("password"));
+
+                userInfo.put(CTX_RETURN_URL, generateReturnURL(actionRequest,
+                        actionResponse, urlGUID));
+
+                Locale locale = actionRequest.getLocale();
+
+                String language = locale.getLanguage();
+                String templ = this.emailTemplate;
+                int period = templ.lastIndexOf(".");
+                if (period > 0)
                 {
-                    errors.add(resource.getString("error.two_passwords_do_not_match"));
-                    publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
-                    return;
+                    String fixedTempl = templ.substring(0, period) + "_"
+                            + language + "." + templ.substring(period + 1);
+                    if (new File(getPortletContext().getRealPath(fixedTempl))
+                            .exists())
+                    {
+                        this.emailTemplate = fixedTempl;
+                    }
                 }
-            }
-        } 
-        catch (Exception e)
-        {
-            errors.add(resource.getString("error.failed_to_add") + e.toString());
-            publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
-        }
-        // make sure no errors have occurred
-        if (errors.size() > 0)
-        {
-            publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
-            return;
-        }
 
-        // Ok, we think we're good to go, let's create the user!
-        try
-        {
-            admin.registerUser((String) userInfo.get("user.name"),
-                    (String) userInfo.get("password"), this.roles, this.groups,
-                    userAttributes, // note use of only PLT.D  values here.
-                    rules, null); // passing in null causes use of default template
+                if (templ == null) { throw new Exception(
+                        "email template not available"); }
 
-            String urlGUID = ForgottenPasswordPortlet.makeGUID(
-                    (String) userInfo.get("user.name"), (String) userInfo
-                            .get("password"));
+                admin.sendEmail(getPortletConfig(), (String) userInfo
+                        .get(USER_ATTRIBUTE_EMAIL),
+                        getEmailSubject(actionRequest), templ, userInfo);
 
-            userInfo.put(CTX_RETURN_URL, generateReturnURL(actionRequest,
-                    actionResponse, urlGUID));
-
-
-            Locale locale = actionRequest.getLocale();
-
-            String language = locale.getLanguage();
-            String templ = this.emailTemplate;
-            int period = templ.lastIndexOf(".");
-            if (period > 0)
-            {
-                String fixedTempl = templ.substring(0, period) + "_" + language + "." + templ.substring(period + 1);
-                if (new File(getPortletContext().getRealPath(fixedTempl)).exists())
+                if ((this.optionForceEmailAsUsername)
+                        || (this.optionForceGeneratedPasswords))
                 {
-                    this.emailTemplate = fixedTempl;
+                    publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,
+                            resource.getString("success.check_your_email"));
+                } else
+                {
+                    publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,
+                            resource.getString("success.login_above"));
                 }
+
+                // put an empty map to "erase" all the user info going forward
+                publishRenderMessage(actionRequest, MSG_USERINFO, new HashMap());
+
+                actionResponse.sendRedirect(this.generateRedirectURL(
+                        actionRequest, actionResponse));
+
+            } catch (Exception e)
+            {
+                errors.add(resource.getString("error.failed_to_add")
+                        + e.toString());
+                publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
             }
-            
-            if (this.emailTemplate == null) 
-            { 
-                throw new Exception("email template not available"); 
-            }
-
-            admin.sendEmail(getPortletConfig(), (String) userInfo
-                    .get(USER_ATTRIBUTE_EMAIL), getEmailSubject(actionRequest),
-                    this.emailTemplate, userInfo);
-
-            publishRenderMessage(actionRequest, MSG_REGED_USER_MSG,resource.getString("success.login_above"));
-
-            // put an empty map to "erase" all the user info going forward
-            publishRenderMessage(actionRequest, MSG_USERINFO, new HashMap());
-            
-            actionResponse.sendRedirect(this.generateRedirectURL(actionRequest, actionResponse));
-
-        } 
-        catch (Exception e)
+        } catch (MissingResourceException mre)
         {
-            errors.add(resource.getString("error.failed_to_add") + e.toString());
+            errors.add(resource.getString("error.failed_to_add")
+                    + mre.toString());
+            publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
+        } catch (Exception e)
+        {
+            errors
+                    .add(resource.getString("error.failed_to_add")
+                            + e.toString());
             publishRenderMessage(actionRequest, MSG_MESSAGE, errors);
         }
+
     }
 
     protected String getEmailSubject(PortletRequest request)
@@ -468,7 +700,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             this.emailSubject = null;
         }
         if (this.emailSubject == null)
-                this.emailSubject = "Registration Confirmation";
+            this.emailSubject = "Registration Confirmation";
         return this.emailSubject;
     }
 
@@ -485,17 +717,16 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     }
 
     protected String generateReturnURL(PortletRequest request,
-            PortletResponse response,
-            String urlGUID)
+            PortletResponse response, String urlGUID)
     {
-        String fullPath = this.returnUrlPath + "?newUserGUID=" + urlGUID; 
+        String fullPath = this.returnUrlPath + "?newUserGUID=" + urlGUID;
         // NOTE: getPortalURL will encode the fullPath for us
         String url = admin.getPortalURL(request, response, fullPath);
         return url;
     }
 
     protected String generateRedirectURL(PortletRequest request,
-              PortletResponse response)              
+            PortletResponse response)
     {
         return admin.getPortalURL(request, response, this.redirectPath);
     }

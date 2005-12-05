@@ -18,10 +18,6 @@
 		#else
 		<tr><td>$MESSAGES.getString('page.username')</td><td><input type="text" name="user.name" value="$!{user.get("user.name")}" /></td></tr>
 		#end
-		<tr><td>$MESSAGES.getString('page.firstname')</td><td><input type="text" name="user.name.given" value="$!{user.get("user.name.given")}" /></td></tr>
-		<tr><td>$MESSAGES.getString('page.lastname')</td><td><input type="text" name="user.name.family" value="$!{user.get("user.name.family")}" /></td></tr>
-		<tr><td>$MESSAGES.getString('page.department')</td><td><input type="text" name="user.department" value="$!{user.get("user.department")}" /></td></tr>
-		<tr><td>$MESSAGES.getString('page.employer') </td><td><input type="text" name="user.employer" value="$!{user.get("user.employer")}" /></td></tr>
 		<tr><td>$MESSAGES.getString('page.email.address')</td><td><input type="text" name="user.business-info.online.email" value="$!{user.get("user.business-info.online.email")}" /></td></tr>
 		
 		#if($CTX_Option_Generate_Passwords)
@@ -30,8 +26,17 @@
 		<tr><td>$MESSAGES.getString('page.passwordVerify')</td><td><input type="password" name="verifyPassword" value="" /></td></tr>
 		#end
 		
+		#foreach( $fieldName in $fieldsInOrder )
+			#set($pagestring = "page.${fieldName}") 
+			#if( $optionalMap.get($fieldName) )
+			<tr><td>${MESSAGES.getString($pagestring)} $MESSAGES.getString("page.optional")</td><td><input type="text" name="$fieldName" value="$!{user.get($fieldName)}" /></td></tr>
+			#else
+			<tr><td>${MESSAGES.getString($pagestring)}</td><td><input type="text" name="$fieldName" value="$!{user.get($fieldName)}" /></td></tr>
+			#end		
+		#end
+		
 		<tr><td colspan="2" > <input type="submit" value="$MESSAGES.getString('page.button')" name="Register Me" /> </td></tr>
 	</table>
-    </form>
+    </form>    
     #end
 </div>

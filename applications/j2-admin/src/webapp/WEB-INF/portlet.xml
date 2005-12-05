@@ -853,12 +853,14 @@ limitations under the License.
      <init-param>
         <description>This parameter sets the url to which folks will return after they receive an email</description>
         <name>returnURL</name>
-            <value>/</value>
+        <!-- the current system simply return the user to the default page where this portlet provides feedback --> 
+        <value>/</value>
      </init-param>   
      <init-param>
         <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
         <name>redirectPath</name>
-            <value>/forgotten-password.psml</value>
+        <!-- the current system simply return the user to the default page where this portlet provides feedback --> 
+            <value>/</value>
      </init-param>   
 
     <portlet-name>ForgottenPasswordPortlet</portlet-name>
@@ -931,12 +933,14 @@ limitations under the License.
      <init-param>
         <description>This parameter sets the url to which folks will return after they receive an email</description>
         <name>returnURL</name>
-            <value>/complete-registration.psml</value>
+             <!-- the current system simply return the user to the default page where this portlet provides feedback --> 
+            <value>/</value>
      </init-param>   
      <init-param>
         <description>This parameter sets the URL to which people will go after they successfully complete their form for forgotten password</description>
         <name>redirectPath</name>
-            <value>/registration-reminder.psml</value>
+             <!-- the current system simply return the user to the default page where this portlet provides feedback --> 
+            <value>/</value>
      </init-param>   
 
       <init-param>
@@ -965,5 +969,6 @@ limitations under the License.
       <keywords>password, register, signup, new user </keywords>
     </portlet-info>
   </portlet>
+     
 </portlet-app>
 

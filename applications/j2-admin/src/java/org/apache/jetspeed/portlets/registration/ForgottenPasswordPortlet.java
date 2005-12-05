@@ -106,18 +106,6 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
 
     /** localized emailSubject */
     private String emailSubject = null;
-
-    //TODO do this in a DB
-    Map hackMap;
-
-    class UserPassword
-    {
-
-        String user;
-
-        String password;
-    }
-
     
     public void init(PortletConfig config) throws PortletException
     {
@@ -140,22 +128,22 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         String appRoot = "root";
         
         
-        hackMap = new HashMap();
     }
 
     private boolean isValidGUID(String guid)
     {
-        // lookup the guid here 
-        UserPassword m = (UserPassword) hackMap.get(guid);
-        if (m != null) { return true; }
+        Map map = admin.getNewLoginInfo(guid);
+        
+        if (map != null) { return true; }
         return false;
     }
 
     private boolean updatePasswordFromGUID(String guid)
     {
-        UserPassword m = (UserPassword) hackMap.get(guid);
-        String userName = (String) m.user;
-        String newPassword = (String) m.password;
+        Map map = admin.getNewLoginInfo(guid);
+        
+        String userName = (String) map.get("user.name");
+        String newPassword = (String) map.get("password");
 
         // Here's where a break should be.   The following code should be put into the RETURN portlet
         try
@@ -163,7 +151,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             userManager.setPassword(userName, null, newPassword);
             userManager.setPasswordUpdateRequired(userName, true);
             // if we got here stuff is changed... removed the key from the map
-            hackMap.remove(guid);
+            admin.removeNewLoginInfo(guid);
         } catch (SecurityException e)
         {
             return false;
@@ -279,31 +267,32 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             userAttributes.put(CTX_NEW_PASSWORD, newPassword);
             userAttributes.put(CTX_USER_NAME, userName);
 
-/*
- *         this code is my first attempt to get things working with a template locator... it's not going to work given the way things are partitioned in the jetspeed
 
-        TemplateLocator templateLocator;
-        try
-        {
-            templateLocator = new JetspeedTemplateLocator(l, appRoot);
-        } catch (FileNotFoundException e)
-        {
-            throw new PortletException("can't init TemplateLocator:"+e.getMessage());
-        }
+/*          this code is my first attempt to get things working with a template locator... it's not going to work given the way things are partitioned in the jetspeed
+
+            
+            TemplateLocator templateLocator;
+            
+            templateLocator = (TemplateLocator) Jetspeed.getComponentManager().getComponent("TemplateLocator");
+            
+            List l = new ArrayList();
+            String appRoot = "/WEB-INF/view/userreg/";
+            templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
+            
             LocatorDescriptor ld = templateLocator.createLocatorDescriptor(null);
             RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
     
             CapabilityMap capabilityMap = requestContext.getCapabilityMap();
             ld.setMediaType(capabilityMap.getPreferredMediaType().getName());
             
-            Locale locale = requestContext.getLocale();
+            //Locale locale = requestContext.getLocale();
             ld.setCountry(locale.getCountry());
             ld.setLanguage(locale.getLanguage());
             
             TemplateDescriptor td = templateLocator.locateTemplate( ld);
             
             this.template = td.getAbsolutePath();
-            */
+*/            
             
             String language = locale.getLanguage();
             String templ = this.template;
@@ -313,23 +302,23 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
                 String fixedTempl = templ.substring(0, period) + "_" + language + "." + templ.substring(period + 1);
                 if (new File(getPortletContext().getRealPath(fixedTempl)).exists())
                 {
-                    this.template = fixedTempl;
+                    templ = fixedTempl;
                 }
             }
             
-            if (this.template == null) 
+            if (templ == null) 
             { 
                 throw new Exception("email template not available"); 
             }
             admin.sendEmail(this.getPortletConfig(), email,
-                    getEmailSubject(request),this.template, userAttributes);
+                    getEmailSubject(request),templ, userAttributes);
 
             //TODO this is currently hacked with a hashmap... needs to move to either a DB table
             // or to some sort of credential
-            UserPassword up = new UserPassword();
-            up.user = userName;
-            up.password = newPassword;
-            hackMap.put(urlGUID, up);
+            Map map = new HashMap();
+            map.put("user.name",userName);
+            map.put("password",newPassword);
+            admin.putNewLoginInfo(urlGUID, map);
 
             publishRenderMessage(
                     request,
