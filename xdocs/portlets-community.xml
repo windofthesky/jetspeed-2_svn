@@ -24,6 +24,25 @@
 	</properties>
 	<body>
 		<section name="Portlets Community">
+		<table>
+          <tr>
+            <th>Project</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="https://gems.dev.java.net/"><img src="images/portlets/gems.gif" border="0" /></a></td>
+            <td><a href="https://gems.dev.java.net/">Gems</a> provides a collection of JSR-168 portlets.  The list of available portlets include:
+            <ul>
+            <li>E-Mail Portlet</li>
+			<li>Calendar Portlet</li>
+			<li>Blog Portlet</li>
+			<li>RSS Feed Portlet</li>
+			<li>Calculator Portlet</li>
+			<li>Image Viewer Portlet</li>
+			<li>Horoscope Portlet</li>
+            </ul></td>
+          </tr>
+        </table>
 		</section>
 	</body>
 </document>

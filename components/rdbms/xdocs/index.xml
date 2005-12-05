@@ -44,22 +44,22 @@
 			only if no <code>jndiName</code> is set, i.e. if the connection factory uses the driver to create data sources.  The platform
 			settings are derived from the configured  data source or database driver using OJB's <code>JdbcMetadataUtils</code> class.  The default
 			Jetspeed-2 <code>ConnectionRepositoryEntry</code> configuration expose a datasource.
-            <pre>
+            <source>
     &lt;bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry"&gt;
       &lt;property name="jndiName"&gt;
         &lt;value&gt;java:comp/env/jdbc/jetspeed&lt;/value&gt;
       &lt;/property&gt;
-    &lt;/bean&gt;</pre>
+    &lt;/bean&gt;</source>
             </p>
             <p>
             In order for OJB to be configured properly with Jetspeed-2, the <code>OJB.properties</code> file (located under
             <code>/etc/db-ojb/OJB.properties</code> in the source tree and <code>WEB-INF/classes</code> in the deployed application)
             must set:
-            <pre>
-    ConnectionManagerClass=org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerImpl</pre>
+            <source>
+    ConnectionManagerClass=org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerImpl</source>
             instead of:
-            <pre>
-    ConnectionFactoryClass=org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl</pre>
+            <source>
+    ConnectionFactoryClass=org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl</source>
             </p>
             <p>
             A class diagram of <code>ConnectionRepositoryEntry</code> and <code>ConnectionManagerImpl</code> is
@@ -72,11 +72,11 @@
             The bean name provided in <code>datasource.xml</code> must match the <code>jdbc-connection-descriptor</code>
             <code>jcd-alias</code> property (by default <code>JetspeedDS</code>) located in OJB <code>repository_database.xml</code>
             as illustrated below.
-            <pre>
+            <source>
     &lt;jdbc-connection-descriptor
         jcd-alias="JetspeedDS"
         default-connection="true"
-        batch-mode="false"&gt;</pre>
+        batch-mode="false"&gt;</source>
             </p>
             </subsection>
             <subsection name="Jetspeed-2 Datasource Configuration in Tomcat">
@@ -85,13 +85,13 @@
             is located under <code>/etc/conf/tomcat</code>.  When deployed Jetspeed-2 in a Tomcat instance, the Jetspeed-2
             datasource configuration are deployed under <code>${tomcat_home}/conf/Catalina/localhost/jetspeed.xml</code>. If a different
             portal name is being used for Jetspeed-2, the configuration file will be named accordingly.
-            <pre>
+            <source>
     &lt;Resource name="jdbc/jetspeed" auth="Container"
                  factory="org.apache.commons.dbcp.BasicDataSourceFactory"
                  type="javax.sql.DataSource" username="" password=""
                  driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
                  url="jdbc:derby:/tmp/productiondb;create=true"
-                 maxActive="100" maxIdle="30" maxWait="10000"/&gt;</pre>
+                 maxActive="100" maxIdle="30" maxWait="10000"/&gt;</source>
             </p>
             </subsection>
         </section>

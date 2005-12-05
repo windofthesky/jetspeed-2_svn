@@ -24,7 +24,19 @@
 	</properties>
 	<body>
 		<section name="Guide to Jetspeed-2 Development">
+		    <subsection name="Working with Jetspeed-2 Source Code">
+		    <p>
+		    For information on how to get started with Jetspeed-2 source code, check 
+		    <a href="../getting-started-source.html">getting started with Jetspeed-2 source code</a>.
+		    </p>
+		    </subsection>
 			<subsection name="How to Submit Patches?">
+			<p>
+			When working with Eclipse with the <a href="http://subclipse.tigris.org/">Subclipse plugin</a>,
+			it is possible to generate a patch for the code changed as illustrated below:
+			<br/>
+			<img src="images/create-patch.gif" border="0" />
+			</p>
 			</subsection>
 		</section>
 	</body>

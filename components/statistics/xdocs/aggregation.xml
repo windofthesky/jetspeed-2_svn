@@ -30,8 +30,8 @@
             <p>
             The <code>PortalStatistics</code> component exposes a <code>queryStatistics</code> method that given
             a <code>StatisticsQueryCriteria</code> will return <code>AggregateStatistics</code>.
-        	<pre>
-    AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria)</pre>
+        	<source>
+    AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria)</source>
     		The <code>AggregateStatistics</code> can then be used for reporting purpose.
             <br/>
         	<img src="images/aggregatestatistics-c.gif" border="0" />
@@ -43,7 +43,7 @@
 			for view statistics.  To query statistics, a <code>StatisticsQueryCriteria</code> must be set.  According to this
 			criteria the <code>PortalStatistics</code> <code>queryStatistics()</code> method will return an <code>AggregateStatistics</code>.
 			</p>
-			<pre>
+			<source>
         StatisticsQueryCriteria criteria = statistics.createStatisticsQueryCriteria();
         ...
         criteria.setUser(user);
@@ -55,7 +55,7 @@
         AggregateStatistics stats = statistics.getDefaultEmptyAggregateStatistics();
         ...
         statistics.forceFlush();
-        stats = statistics.queryStatistics(criteria);</pre>
+        stats = statistics.queryStatistics(criteria);</source>
 			</subsection>
 		</section>
     </body>

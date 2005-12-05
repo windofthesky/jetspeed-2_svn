@@ -28,8 +28,9 @@
         	<code>JetspeedDeploy</code> prepares portlet applications for deployment within Jetspeed-2. When a new
         	portlet deployment event is registered, the <code>DeployPortletAppEventListener</code> invokes <code>JetspeedDeploy</code>
         	to prepare the portlet application for deployment.
-        	<pre>
-    new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), stripLoggers);</pre>
+        	<source>
+    new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), stripLoggers);
+            </source>
         	</p>
         	<p>
         	<code>JetspeedDeploy</code> copies the web application archives (.war) from the input directory to the
@@ -42,7 +43,7 @@
             <p>
             <code>JetspeedDeploy</code> invokes the <code>JetspeedWebApplicationRewriter</code> to infuse the <code>web.xml</code>
             with the <code>JetspeedContainer</code> servlet if it does not already exist:
-            <pre>
+            <source>
   &lt;servlet&gt;
     &lt;servlet-name&gt;JetspeedContainer&lt;/servlet-name&gt;
     &lt;display-name&gt;Jetspeed Container&lt;/display-name&gt;
@@ -58,7 +59,8 @@
   &lt;servlet-mapping&gt;
     &lt;servlet-name&gt;JetspeedContainer&lt;/servlet-name&gt;
     &lt;url-pattern&gt;/container/*&lt;/url-pattern&gt;
-  &lt;/servlet-mapping&gt;</pre>
+  &lt;/servlet-mapping&gt;
+            </source>
             </p>
             <p>
             In the same fashion, the <code>JetspeedDeploy</code> invokes the <code>JetspeedContextRewriter</code> to manipulate
@@ -69,9 +71,9 @@
             <subsection name="JetspeedDeploy Standalone Usage">
             <p>
             <code>JetspeedDeploy</code> can also be invoke through the command line:
-            <pre>
+            <source>
     java -jar jetspeed-deploy-tools-&lt;version&gt;.jar -s inputWarPath outputWarPath
-            </pre>
+            </source>
             where:
             <ul>
             <li><code>-s</code>: flag indicating whether or not to strip to loggers from the application. When the flag is present, the

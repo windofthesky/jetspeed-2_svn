@@ -47,9 +47,9 @@
             In order to configure Jetspeed 2 to use LDAP, add <i>security-spi-ldap.xml</i> and <i>security-spi-ldap-atn.xml</i> to the Jetspeed 2 application
             assembly directory and remove the default authentication SPI file <i>security-spi-atn.xml</i>.
             In the source, this directory is located at:
-            <pre>${jetspeed-source-home}/src/webapp/WEB-INF/assembly/</pre>
+            <source>${jetspeed-source-home}/src/webapp/WEB-INF/assembly/</source>
             If your application is deployed in Tomcat, this directory is located at:
-            <pre>${tomcat-home}/webapps/jetspeed/WEB-INF/assembly</pre> 
+            <source>${tomcat-home}/webapps/jetspeed/WEB-INF/assembly</source> 
             </p>
             <p>
             The <i>security-spi-ldap.xml</i> configuration file requires the following values to be set:

@@ -38,8 +38,8 @@
         	The <code>PortalStatistics</code> implementation logs usage data based on the 
         	<a href="http://httpd.apache.org/docs/logs.html">Apache Common Log Format (CLF)</a>
         	where each log entry is formatted in the form:
-        	<pre>
-    %h %l %u %t \"%r\" %>s %b</pre>
+        	<source>
+    %h %l %u %t \"%r\" %>s %b</source>
     		where:
 			<ul>
 			<li><b>%h </b>- remote host</li>
@@ -85,7 +85,7 @@
         	</p>
         	<p>
         	A sample configuration is provided below:
-        	<pre>
+        	<source>
     &lt;bean id="PortalStatistics" 
       class="org.apache.jetspeed.statistics.impl.PortalStatisticsImpl"
       init-method="springInit"
@@ -108,7 +108,7 @@
       &lt;constructor-arg  index='7&gt;&lt;value&gt;60000&lt;/value&gt;&lt;/constructor-arg&gt;
       &lt;!-- jetspeedDSEntry --&gt;
       &lt;constructor-arg  index='8'&gt;&lt;ref bean="JetspeedDS"/&gt;&lt;/constructor-arg&gt;
-    &lt;/bean&gt;</pre>
+    &lt;/bean&gt;</source>
         	</p>
         	</subsection>
 		</section>

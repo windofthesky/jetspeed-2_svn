@@ -34,14 +34,14 @@
             component is configured in <code>WEB-INF/assembly/search.xml</code>.  The default implementation based on the embedded Lucene
             search engine must specify the location of the search index file, the name of the analyzer class (if null the default analyzer
             <code>StandardAnalyzer</code> is used), whether to optimize after update and the <code>HandlerFactory</code>:
-            <pre>
+            <source>
     &lt;bean id="org.apache.jetspeed.search.SearchEngine"
   	  class="org.apache.jetspeed.search.lucene.SearchEngineImpl"&gt;
   	  &lt;constructor-arg index="0"&gt;&lt;value&gt;${applicationRoot}/WEB-INF/search_index&lt;/value&gt;&lt;/constructor-arg&gt;
   	  &lt;constructor-arg index="1"&gt;&lt;null /&gt;&lt;/constructor-arg&gt;
   	  &lt;constructor-arg type="boolean"&gt;&lt;valu&gt;true&lt;/value&gt;&lt;/constructor-arg&gt;
   	  &lt;constructor-arg&gt;&lt;ref bean="org.apache.jetspeed.search.HandlerFactory"/&gt;&lt;/constructor-arg&gt;
-    &lt;/bean&gt;</pre>
+    &lt;/bean&gt;</source>
     		</p>
     		<p>
     		The <code>HandlerFactory</code> provides the <code>SearchEngine</code> with a list of <code>ObjectHandler</code>

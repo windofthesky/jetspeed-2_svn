@@ -57,7 +57,7 @@
             <subsection name="Preferences Goals">
             <p>
             	The <i>Preferences</i> API provides a generic implementation for organizing properties as illustrated below:
-            	<pre>
+            	<source>
 &lt;preferences EXTERNAL_XML_VERSION="1.0"&gt;
 &lt;root type="user"&gt;
   &lt;map /&gt;
@@ -72,7 +72,7 @@
       &lt;/map&gt;
     &lt;/node&gt;
   &lt;/node&gt;
-&lt;/root&gt;</pre>
+&lt;/root&gt;</source>
             </p>
             <p>
            		A good reference article can be found at <a href="http://www.onjava.com/pub/a/onjava/synd/2001/10/17/j2se.html">

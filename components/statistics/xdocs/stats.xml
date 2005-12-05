@@ -30,14 +30,14 @@
         	</p>
         	<p>
         	For user events, the <code>SecurityValveImpl</code> logs a user login event in <code>getSubject(RequestContext request)</code>.
-        	<pre>
-    statistics.logUserLogin(request, 0);</pre>
+        	<source>
+    statistics.logUserLogin(request, 0);</source>
         	</p>
         	<p>
         	For portlet events, the <code>RenderingJobImpl</code> invoked in <code>RenderingJob</code> <code>buildRenderingJob</code> logs
         	a portlet access event.
-        	<pre>
-    statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);</pre>       	
+        	<source>
+    statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);</source>       	
         	</p>
     		</subsection>
     		<subsection name="Viewing Statistics">

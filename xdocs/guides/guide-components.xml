@@ -59,10 +59,10 @@
 		of <code>initializeComponentManager</code> supports the <a href="http://www.springframework.com">spring framework</a> as a component framework
 		and assembles the xml files located under <code>WEB-INF/assembly</code> to initialize the spring engine.  The <i>JetspeedEngine</i> is then
 		constructed with the proper component manager.
-		<pre>
-    engine = new JetspeedEngine(properties, applicationRoot, config,
-                                initializeComponentManager(config, applicationRoot, properties));
-		</pre>
+		<source>
+  engine = new JetspeedEngine(properties, applicationRoot, config,
+      initializeComponentManager(config, applicationRoot, properties));
+		</source>
 		</p>
 		<p>
 		In order to support another component framework, developers should override the <code>initializeComponentManager</code> implementation.
