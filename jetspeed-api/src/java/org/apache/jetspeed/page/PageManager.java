@@ -392,6 +392,16 @@ public interface PageManager
         throws JetspeedException, PageNotUpdatedException;
 
     /** 
+     * Copy the source link creating and returning a new copy of the link  
+     * 
+     * @param source The source Link object to be copied 
+     * @param path a PSML normalized path to the new link to be created
+     * @return a new Link object copied from the source
+     */
+    public Link copyLink(Link source, String path) 
+        throws JetspeedException, LinkNotUpdatedException;
+
+    /** 
      * Copy the source folder creating and returning a new copy of the folder  
      * with the same content as the source
      * All subobjects are created with new ids

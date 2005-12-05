@@ -20,6 +20,7 @@ import java.util.Iterator;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -49,6 +50,8 @@ public class PageImporter
     private int folderCount = 0;    
     /* count of total pages imported */
     private int pageCount = 0;
+    /* count of total links imported */
+    private int linkCount = 0;
     
     public static void main(String args[])
     {
@@ -191,6 +194,33 @@ public class PageImporter
                 pageCount++;
             }
         }
+
+        Iterator links = srcFolder.getLinks().iterator();
+        while (links.hasNext())
+        {
+            Link srcLink = (Link)links.next();
+            Link dstLink = lookupLink(srcLink.getPath());
+            if (null != dstLink)
+            {
+                if (isOverwritePages())
+                {
+                    System.out.println("overwriting link " + srcLink.getPath());                            
+                    destManager.removeLink(dstLink);
+                    dstLink = destManager.copyLink(srcLink, srcLink.getPath());
+                    destManager.updateLink(dstLink);
+                    linkCount++;                    
+                }
+                else
+                    System.out.println("skipping link " + srcLink.getPath());                
+            }
+            else            
+            {
+                System.out.println("importing new link " + srcLink.getPath());
+                dstLink = destManager.copyLink(srcLink, srcLink.getPath());
+                destManager.updateLink(dstLink);
+                linkCount++;
+            }
+        }
         
         Iterator folders = srcFolder.getFolders().iterator();
         while (folders.hasNext())
@@ -207,6 +237,18 @@ public class PageImporter
         try
         {
             return destManager.getPage(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
+    private Link lookupLink(String path)
+    {
+        try
+        {
+            return destManager.getLink(path);
         }
         catch (Exception e)
         {
@@ -296,6 +338,20 @@ public class PageImporter
     public void setPageCount(int pageCount)
     {
         this.pageCount = pageCount;
+    }
+    /**
+     * @return Returns the linkCount.
+     */
+    public int getLinkCount()
+    {
+        return linkCount;
+    }
+    /**
+     * @param linkCount The linkCount to set.
+     */
+    public void setLinkCount(int linkCount)
+    {
+        this.linkCount = linkCount;
     }
     /**
      * @return Returns the rootFolder.

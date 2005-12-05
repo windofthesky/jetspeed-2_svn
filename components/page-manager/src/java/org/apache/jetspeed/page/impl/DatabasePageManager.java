@@ -1138,6 +1138,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         return this.delegator.copyPage(source, path);
     }
 
+    public Link copyLink(Link source, String path)
+    throws JetspeedException, LinkNotUpdatedException
+    {
+        return this.delegator.copyLink(source, path);
+    }
+
     public Folder copyFolder(Folder source, String path)
     throws JetspeedException, PageNotUpdatedException
     {

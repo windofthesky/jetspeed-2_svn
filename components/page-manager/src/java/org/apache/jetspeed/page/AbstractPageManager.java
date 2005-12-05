@@ -39,8 +39,8 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.portalsite.MenuElement;
 
 /**
  * AbstractPageManagerService
@@ -53,6 +53,12 @@ public abstract class AbstractPageManager
 {
     private final static Log log = LogFactory.getLog(AbstractPageManager.class);
     
+    private final static String FOLDER_NODE_TYPE = "folder";
+    private final static String PAGE_NODE_TYPE = "page";
+    private final static String FRAGMENT_NODE_TYPE = "fragment";
+    private final static String LINK_NODE_TYPE = "link";
+    private final static String PAGE_SECURITY_NODE_TYPE = "pageSecurity";
+
     protected Class fragmentClass;
     protected Class pageClass;
     protected Class folderClass;
@@ -750,25 +756,42 @@ public abstract class AbstractPageManager
     }
         
     public Folder copyFolder(Folder source, String path)
-    throws JetspeedException, PageNotUpdatedException
+    throws JetspeedException, FolderNotUpdatedException
     {
+        // create the new folder and copy attributes
         Folder folder = newFolder(path);
         folder.setDefaultPage(source.getDefaultPage()); 
         folder.setShortTitle(source.getShortTitle());
         folder.setTitle(source.getTitle());
         folder.setHidden(source.isHidden());
+
+        // copy locale specific metadata
+        folder.getMetadata().copyFields(source.getMetadata().getFields());
         
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints("folder", srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints(FOLDER_NODE_TYPE, srcSecurity);
             folder.setSecurityConstraints(copiedSecurity);
         }    
         
-        // TODO: document orders
+        // copy document orders
+        folder.setDocumentOrder(new ArrayList());
+        Iterator documentOrders = source.getDocumentOrder().iterator();
+        while (documentOrders.hasNext())
+        {
+            String name = (String)documentOrders.next();
+            folder.getDocumentOrder().add(name);
+        }
 
-        // TODO: menu definitions
+        // copy menu definitions
+        List menus = source.getMenuDefinitions();
+        if (menus != null)
+        {
+            List copiedMenus = copyMenuDefinitions(FOLDER_NODE_TYPE, menus);
+            folder.setMenuDefinitions(copiedMenus);
+        }        
                 
         return folder;
     }
@@ -786,34 +809,35 @@ public abstract class AbstractPageManager
         page.setDefaultSkin(source.getDefaultSkin());
         page.setHidden(source.isHidden());
         
-        // metadata
-        copyMetadata(source, page);
-        
-        // fragments
-        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName());
-        page.setRootFragment(root);
+        // copy locale specific metadata
+        page.getMetadata().copyFields(source.getMetadata().getFields());
         
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints("page", srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints(PAGE_NODE_TYPE, srcSecurity);
             page.setSecurityConstraints(copiedSecurity);
         }    
 
-        // menus
-//        List menus = page.getMenuDefinitions();
-//        if (menus != null)
-//        {
-//            List copiedMenus = copyMenuDefinitions("page", page.getMenuDefinitions());
-//            page.setMenuDefinitions(copiedMenus);
-//        }        
+        // copy menu definitions
+        List menus = source.getMenuDefinitions();
+        if (menus != null)
+        {
+            List copiedMenus = copyMenuDefinitions(PAGE_NODE_TYPE, menus);
+            page.setMenuDefinitions(copiedMenus);
+        }        
+        
+        // copy fragments
+        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName());
+        page.setRootFragment(root);
         
         return page;
     }
 
     public Fragment copyFragment(Fragment source, String name)
     {
+        // create the new fragment and copy attributes
         Fragment copy = newFragment();
         copy.setDecorator(source.getDecorator());
         copy.setName(name);
@@ -827,19 +851,9 @@ public abstract class AbstractPageManager
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            SecurityConstraints copiedSecurity = copySecurityConstraints("fragment", srcSecurity);
+            SecurityConstraints copiedSecurity = copySecurityConstraints(FRAGMENT_NODE_TYPE, srcSecurity);
             copy.setSecurityConstraints(copiedSecurity);
         }    
-        
-        // recursively copy fragments
-        Iterator fragments = source.getFragments().iterator();
-        while (fragments.hasNext())
-        {
-            Fragment fragment = (Fragment)fragments.next();
-            Fragment copiedFragment = copyFragment(fragment, fragment.getName());
-            copy.getFragments().add(copiedFragment);
-        }
-        
         
         // copy properties
         Iterator props = source.getProperties().entrySet().iterator();
@@ -850,6 +864,7 @@ public abstract class AbstractPageManager
         }
                   
         // copy preferences
+        copy.setPreferences(new ArrayList());
         Iterator prefs = source.getPreferences().iterator();
         while (prefs.hasNext())
         {
@@ -864,18 +879,87 @@ public abstract class AbstractPageManager
                 String value = (String)values.next();
                 newPref.getValueList().add(value);
             }
+            copy.getPreferences().add(newPref);
+        }
+
+        // recursively copy fragments
+        Iterator fragments = source.getFragments().iterator();
+        while (fragments.hasNext())
+        {
+            Fragment fragment = (Fragment)fragments.next();
+            Fragment copiedFragment = copyFragment(fragment, fragment.getName());
+            copy.getFragments().add(copiedFragment);
         }
         return copy;
     }
     
-    public void copyMetadata(Page source, Page dest)
+    public Link copyLink(Link source, String path)
+    throws JetspeedException, LinkNotUpdatedException
     {
-        if (source.getMetadata() != null)
+        // create the new link and copy attributes
+        Link link = newLink(path);
+        link.setTitle(source.getTitle());
+        link.setShortTitle(source.getShortTitle());
+        link.setVersion(source.getVersion());
+        link.setTarget(source.getTarget());
+        link.setUrl(source.getUrl());
+        link.setHidden(source.isHidden());
+        
+        // copy locale specific metadata
+        link.getMetadata().copyFields(source.getMetadata().getFields());
+        
+        // copy security constraints
+        SecurityConstraints srcSecurity = source.getSecurityConstraints();        
+        if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
-            dest.getMetadata().copyFields(source.getMetadata().getFields());
-        }       
+            SecurityConstraints copiedSecurity = copySecurityConstraints(LINK_NODE_TYPE, srcSecurity);
+            link.setSecurityConstraints(copiedSecurity);
+        }    
+
+        return link;
     }
-    
+
+    public PageSecurity copyPageSecurity(PageSecurity source) 
+    throws JetspeedException, FailedToUpdateDocumentException
+    {
+        // create the new page security document and copy attributes
+        PageSecurity copy = this.newPageSecurity();
+        copy.setPath(source.getPath());
+        copy.setVersion(source.getVersion());        
+
+        // copy security constraint defintions
+        copy.setSecurityConstraintsDefs(new ArrayList());                
+        Iterator defs = source.getSecurityConstraintsDefs().iterator();
+        while (defs.hasNext())
+        {
+            SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
+            SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
+            defCopy.setName(def.getName());
+            List copiedConstraints = new ArrayList();
+            Iterator constraints = def.getSecurityConstraints().iterator();
+            while (constraints.hasNext())
+            {
+                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
+                SecurityConstraint dstConstraint = newPageSecuritySecurityConstraint();
+                copyConstraint(srcConstraint, dstConstraint);
+                copiedConstraints.add(dstConstraint);
+            }                                            
+            defCopy.setSecurityConstraints(copiedConstraints);
+            copy.getSecurityConstraintsDefs().add(defCopy);
+        }
+        
+        // copy global security constraint references
+        copy.setGlobalSecurityConstraintsRefs(new ArrayList());
+        Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
+        while (globals.hasNext())
+        {
+            String global = (String)globals.next();
+            copy.getGlobalSecurityConstraintsRefs().add(global);
+        }
+        
+        return copy;
+    }
+
     protected List copyMenuDefinitions(String type, List srcMenus)
     {
         List copiedMenus = new ArrayList(4); 
@@ -883,54 +967,142 @@ public abstract class AbstractPageManager
         while (menus.hasNext())
         {
             MenuDefinition srcMenu = (MenuDefinition)menus.next();
-            MenuDefinition copiedMenu = null;
-            if (type.equals("page"))
+            MenuDefinition copiedMenu = (MenuDefinition)copyMenuElement(type, srcMenu);
+            if (copiedMenu != null)
             {
-                copiedMenu = newPageMenuDefinition();
-            }
-            else if (type.equals("folder"))
-            {
-                copiedMenu = newFolderMenuDefinition();
-            }
-            copiedMenu.setDepth(srcMenu.getDepth());
-            copiedMenu.setName(srcMenu.getName());
-            copiedMenu.setOptions(srcMenu.getOptions());
-            copiedMenu.setOrder(srcMenu.getOrder());
-            copiedMenu.setPaths(srcMenu.isPaths());
-            copiedMenu.setProfile(srcMenu.getProfile());
-            copiedMenu.setRegexp(srcMenu.isRegexp());
-            
-            // TODO: how do I copy all localized short titles?
-            copiedMenu.setShortTitle(srcMenu.getShortTitle());
-            
-            copiedMenu.setSkin(srcMenu.getSkin());
-            
-            // TODO: how do I copy all localized titles?            
-            copiedMenu.setTitle(srcMenu.getTitle());
-            
-            // TODO: copy metadata
-            copiedMenu.getMetadata();
-            
-            List srcElements = copiedMenu.getMenuElements();
-            if (srcElements != null)
-            {
-                List copiedElements = copyMenuElements(srcElements);
-                copiedMenu.setMenuElements(copiedElements);
+                copiedMenus.add(copiedMenu);
             }
         }
         return copiedMenus;
     }
     
-    protected List copyMenuElements(List srcElements)
+    protected Object copyMenuElement(String type, Object srcElement)
     {
-        List copiedElements = new ArrayList(8);
-        Iterator elements = srcElements.iterator();
-        while (elements.hasNext())
+        if (srcElement instanceof MenuDefinition)
         {
-            MenuElement srcElement = (MenuElement)elements.next();
-            // MenuElement copiedElement = newMenuElement();
+            // create the new menu element and copy attributes
+            MenuDefinition source = (MenuDefinition)srcElement;
+            MenuDefinition menu = null;
+            if (type.equals(PAGE_NODE_TYPE))
+            {
+                menu = newPageMenuDefinition();
+            }
+            else if (type.equals(FOLDER_NODE_TYPE))
+            {
+                menu = newFolderMenuDefinition();
+            }
+            menu.setDepth(source.getDepth());
+            menu.setName(source.getName());
+            menu.setOptions(source.getOptions());
+            menu.setOrder(source.getOrder());
+            menu.setPaths(source.isPaths());
+            menu.setProfile(source.getProfile());
+            menu.setRegexp(source.isRegexp());
+            menu.setShortTitle(source.getShortTitle());
+            menu.setSkin(source.getSkin());
+            menu.setTitle(source.getTitle());
+
+            // copy locale specific metadata
+            menu.getMetadata().copyFields(source.getMetadata().getFields());
+        
+            // recursively copy menu elements
+            List elements = source.getMenuElements();
+            if (elements != null)
+            {
+                List copiedElements = new ArrayList(4); 
+                Iterator elementsIter = elements.iterator();
+                while (elementsIter.hasNext())
+                {
+                    Object element = elementsIter.next();
+                    Object copiedElement = copyMenuElement(type, element);
+                    if (copiedElement != null)
+                    {
+                        copiedElements.add(copiedElement);
+                    }
+                }
+                menu.setMenuElements(copiedElements);
+            }
+
+            return menu;
         }
-        return copiedElements;
+        else if (srcElement instanceof MenuExcludeDefinition)
+        {
+            // create the new menu exclude element and copy attributes
+            MenuExcludeDefinition source = (MenuExcludeDefinition)srcElement;
+            MenuExcludeDefinition menuExclude = null;
+            if (type.equals(PAGE_NODE_TYPE))
+            {
+                menuExclude = newPageMenuExcludeDefinition();
+            }
+            else if (type.equals(FOLDER_NODE_TYPE))
+            {
+                menuExclude = newFolderMenuExcludeDefinition();
+            }
+            menuExclude.setName(source.getName());
+            return menuExclude;
+        }
+        else if (srcElement instanceof MenuIncludeDefinition)
+        {
+            // create the new menu include element and copy attributes
+            MenuIncludeDefinition source = (MenuIncludeDefinition)srcElement;
+            MenuIncludeDefinition menuInclude = null;
+            if (type.equals(PAGE_NODE_TYPE))
+            {
+                menuInclude = newPageMenuIncludeDefinition();
+            }
+            else if (type.equals(FOLDER_NODE_TYPE))
+            {
+                menuInclude = newFolderMenuIncludeDefinition();
+            }
+            menuInclude.setName(source.getName());
+            menuInclude.setNest(source.isNest());
+            return menuInclude;
+        }
+        else if (srcElement instanceof MenuOptionsDefinition)
+        {
+            // create the new menu options element and copy attributes
+            MenuOptionsDefinition source = (MenuOptionsDefinition)srcElement;
+            MenuOptionsDefinition menuOptions = null;
+            if (type.equals(PAGE_NODE_TYPE))
+            {
+                menuOptions = newPageMenuOptionsDefinition();
+            }
+            else if (type.equals(FOLDER_NODE_TYPE))
+            {
+                menuOptions = newFolderMenuOptionsDefinition();
+            }
+            menuOptions.setDepth(source.getDepth());
+            menuOptions.setOptions(source.getOptions());
+            menuOptions.setOrder(source.getOrder());
+            menuOptions.setPaths(source.isPaths());
+            menuOptions.setProfile(source.getProfile());
+            menuOptions.setRegexp(source.isRegexp());
+            menuOptions.setSkin(source.getSkin());
+            return menuOptions;
+        }
+        else if (srcElement instanceof MenuSeparatorDefinition)
+        {
+            // create the new menu separator element and copy attributes
+            MenuSeparatorDefinition source = (MenuSeparatorDefinition)srcElement;
+            MenuSeparatorDefinition menuSeparator = null;
+            if (type.equals(PAGE_NODE_TYPE))
+            {
+                menuSeparator = newPageMenuSeparatorDefinition();
+            }
+            else if (type.equals(FOLDER_NODE_TYPE))
+            {
+                menuSeparator = newFolderMenuSeparatorDefinition();
+            }
+            menuSeparator.setSkin(source.getSkin());
+            menuSeparator.setTitle(source.getTitle());
+            menuSeparator.setText(source.getText());
+
+            // copy locale specific metadata
+            menuSeparator.getMetadata().copyFields(source.getMetadata().getFields());
+        
+            return menuSeparator;
+        }
+        return null;
     }
 
     protected void copyConstraint(SecurityConstraint srcConstraint, SecurityConstraint dstConstraint)
@@ -956,15 +1128,19 @@ public abstract class AbstractPageManager
             {
                 SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
                 SecurityConstraint dstConstraint = null;
-                if (type.equals("page"))
+                if (type.equals(PAGE_NODE_TYPE))
                 {
                     dstConstraint = newPageSecurityConstraint();
                 }
-                else if (type.equals("folder"))
+                else if (type.equals(FOLDER_NODE_TYPE))
                 {
                     dstConstraint = newFolderSecurityConstraint();
                 }
-                else if (type.equals("fragment"))
+                else if (type.equals(LINK_NODE_TYPE))
+                {
+                    dstConstraint = newLinkSecurityConstraint();
+                }
+                else if (type.equals(FRAGMENT_NODE_TYPE))
                 {
                     dstConstraint = newFragmentSecurityConstraint();
                 }
@@ -987,46 +1163,6 @@ public abstract class AbstractPageManager
         return security;
     }
     
-    public PageSecurity copyPageSecurity(PageSecurity source) 
-    throws JetspeedException
-    {
-        PageSecurity copy = this.newPageSecurity();
-        // this is backwards
-        copy.setGlobalSecurityConstraintsRefs(new ArrayList());
-        copy.setSecurityConstraintsDefs(new ArrayList());                
-        
-        copy.setPath(source.getPath());
-        copy.setVersion(source.getVersion());        
-        
-        Iterator defs = source.getSecurityConstraintsDefs().iterator();
-        while (defs.hasNext())
-        {
-            SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
-            SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
-            defCopy.setName(def.getName());                
-            List copiedConstraints = new ArrayList();
-            defCopy.setSecurityConstraints(copiedConstraints);
-            Iterator constraints = def.getSecurityConstraints().iterator();
-            while (constraints.hasNext())
-            {
-                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
-                SecurityConstraint dstConstraint = newPageSecuritySecurityConstraint();
-                copyConstraint(srcConstraint, dstConstraint);
-                copiedConstraints.add(dstConstraint);
-            }                                            
-            copy.getSecurityConstraintsDefs().add(defCopy);            
-        }
-        
-        Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
-        while (globals.hasNext())
-        {
-            String global = (String)globals.next();
-            copy.getGlobalSecurityConstraintsRefs().add(global);
-        }
-        
-        return copy;
-    }
-
     /**
      * Deep copy a folder
      *  
@@ -1071,8 +1207,15 @@ public abstract class AbstractPageManager
             this.updatePage(dstPage);
         }
      
-        // TODO: LINKS
-        
+        Iterator links = srcFolder.getLinks().iterator();
+        while (links.hasNext())
+        {
+            Link srcLink = (Link)links.next();
+            String path = this.concatenatePaths(destinationPath, srcLink.getName());
+            Link dstLink = this.copyLink(srcLink, path);
+            this.updateLink(dstLink);
+        }
+     
         Iterator folders = srcFolder.getFolders().iterator();
         while (folders.hasNext())
         {
