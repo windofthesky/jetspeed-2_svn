@@ -50,6 +50,14 @@
             100% Java based, the full Jahia source code is available under a collaborative and community source license (contribute or pay paradigm).</td>
           </tr>
           <tr>
+            <td><a href="http://www.rosa.com">R.O.S.A. Creation. Technology. Intelligence. AG</a></td>
+            <td><a href="http://www.rosa.com">R.O.S.A.</a> deploys a collaborative portal using Jetspeed 2.</td>
+          </tr>
+          <tr>
+            <td><a href="http://www.ugs.com"><img src="images/users/ugs.gif" border="0" /></a></td>
+            <td><a href="http://www.ugs.com">UGS</a> provides portals for its product lifecycle management product line through Jetspeed 2.</td>
+          </tr>
+          <tr>
             <td><a href="http://wfmopen.sf.net">WfMOpen</a></td>
             <td>In its 1.4 version, <a href="http://wfmopen.sf.net">WfMOpen</a> provides resource management for the 
 			workflow engines (BPE) and uses Jetspeed-2 as a container for the engine's administrative portlets.</td>
