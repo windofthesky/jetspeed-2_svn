@@ -50,13 +50,19 @@
 			
 		</ul>
 		</subsection>
-		<subsection name="Development Guides">
+		<subsection name="Portal Development Guides">
 		<ul>
 			<li><a href="guide-portal-design.html">Guide to portal design</a></li>
 			<li><a href="guide-psml.html">Guide to PSML</a></li>
 			<li><a href="guide-site.html">Guide to working with a Jetspeed-2 site</a></li>
 			<li><a href="guide-l10n.html">Guide to localization with Jetspeed-2</a></li>
-			<li><a href="guide-portlet-bridges.html">Guide to portlet bridges</a></li>			
+			<li><a href="guide-portlet-bridges.html">Guide to portlet bridges</a></li>				
+		</ul>
+		</subsection>
+		<subsection name="Jetspeed-2 Development Guide">
+		<ul>
+			<li><a href="guide-j2-development.html">Guide to Jetspeed-2 development</a></li>
+			<li><a href="../how-to-help.html">Guide to helping with Jetpseed-2</a></li>
 		</ul>
 		</subsection>
 		<subsection name="Guides to Jetspeed-2 Tools">
