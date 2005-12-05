@@ -316,28 +316,28 @@ limitations under the License.
          name="usersList"
          column="USER_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="rolesList"
          column="ROLE_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="groupsList"
          column="GROUP_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="permissionsList"
          column="PERMISSIONS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
    </class-descriptor>
 
@@ -1067,28 +1067,28 @@ limitations under the License.
          name="usersList"
          column="USER_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="rolesList"
          column="ROLE_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="groupsList"
          column="GROUP_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="permissionsList"
          column="PERMISSIONS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
    </class-descriptor>
 
@@ -1711,28 +1711,28 @@ limitations under the License.
          name="usersList"
          column="USER_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="rolesList"
          column="ROLE_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="groupsList"
          column="GROUP_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="permissionsList"
          column="PERMISSIONS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
    </class-descriptor>
 
@@ -2086,28 +2086,28 @@ limitations under the License.
          name="usersList"
          column="USER_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="rolesList"
          column="ROLE_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="groupsList"
          column="GROUP_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="permissionsList"
          column="PERMISSIONS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
    </class-descriptor>
 
@@ -2336,28 +2336,28 @@ limitations under the License.
          name="usersList"
          column="USER_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="rolesList"
          column="ROLE_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="groupsList"
          column="GROUP_PRINCIPALS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
 
       <field-descriptor
          name="permissionsList"
          column="PERMISSIONS_ACL"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ACLFieldConversion"
       />
    </class-descriptor>
 

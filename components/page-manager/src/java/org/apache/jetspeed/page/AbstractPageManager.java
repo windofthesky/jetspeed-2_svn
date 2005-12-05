@@ -268,6 +268,9 @@ public abstract class AbstractPageManager
         return fragment;        
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPortletFragment()
+     */
     public Fragment newPortletFragment()
     {
         Fragment fragment = null;
