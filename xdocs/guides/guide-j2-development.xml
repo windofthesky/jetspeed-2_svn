@@ -34,7 +34,7 @@
 			<p>
 			When working with Eclipse with the <a href="http://subclipse.tigris.org/">Subclipse plugin</a>,
 			it is possible to generate a patch for the code changed as illustrated below:
-			<br/>
+			<br/><br/>
 			<img src="images/create-patch.gif" border="0" />
 			</p>
 			</subsection>

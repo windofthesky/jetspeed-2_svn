@@ -1033,9 +1033,7 @@ maven j2:quickStart]]>
 				</p>
 				<p>
 					Then you can access the portal with your browser at:
-					<source>
-    <a href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a>
-                    </source>
+					<source><a href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a></source>
 					or replace "jetspeed" in the above url with the name
 					of you own portal application (
 					<code>
