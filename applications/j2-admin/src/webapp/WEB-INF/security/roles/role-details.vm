@@ -31,6 +31,7 @@ function openWindow(pipeline)
 </script>
 
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set ($formAction = $renderResponse.createActionURL())
 
 #if ($statusMsg)
 #parse ('/WEB-INF/view/status-include.vm')
@@ -41,7 +42,7 @@ function openWindow(pipeline)
 #set ($newRole = "true")
 #end
 
-<form name='roleForm' action="$renderResponse.createActionURL()" method="post">
+<form name='roleForm' action="$formAction" method="post">
 <table>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('rolename')&nbsp;</td>
@@ -60,16 +61,17 @@ function openWindow(pipeline)
 </form>	      
 
 #if ($newRole == "false")
-<form name='securityform' action="$renderResponse.createActionURL()" method="post">
+<form name='usersInRoleForm' action="$formAction" method="post">
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
 #if ($tableSize > 0)
+   <input type="hidden" name="role" value="$!role">
+   <input type="submit" id="removeCheckedUsers" name="role.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" style="display:none"/>
   <tr>
     #foreach ($column in $title)      
-      <th align='center' class="portlet-section-header" nowrap width="260">
+     <th width="10"></th>
+      <th align='center' class="portlet-section-header" nowrap width="100%">
         $column
       </th>
-     <th class="portlet-section-header" width="10"></th>
-     <th width="100%"/>
     #end
   </tr>
 #end  
@@ -80,28 +82,124 @@ function openWindow(pipeline)
     #else
        #set($rowstyle = "portlet-section-alternate")
     #end  
-	  <td class="$rowstyle" nowrap width="260">
+    <td class="$rowstyle" width="10">
+        <input type="checkbox" name="box_$user"/>
+    </td>
+	  <td class="$rowstyle" nowrap width="100%">
 	    <div align="center">$user</div>
 	  </td>
-	  <td class="$rowstyle" width="10">
-  	    <input type="checkbox" name="box_$user"/>
-	  </td>
-     <td width="100%"/>	  
    </tr>
   #end
 </table>
+</form>
 
+#if ($tableSize > 0)
+<hr/>
+
+<!-- controls -->
+<table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    #if ($prev)
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$formAction" method="post">
+            <input type='hidden' name='db.browser.action' value='first' />                    
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('firstArrow')">
+            <input type="hidden" name="start" value="0">
+          </form>
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+            <input type='hidden' name='db.browser.action' value='prev'/>                    
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('prevArrow')">
+            <input type="hidden" name="start" value="$prev">
+          </form>
+        </div>
+      </td>
+    #end
+    #if ($tableSize > 0)
+      <form action="$formAction" method="post">
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type='hidden' name='db.browser.action' value='change'/>                    
+            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type="input" readonly size='10' value="$MESSAGES.getString('numberseparator') $tableSize" class="portlet-form-field-label">            
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('go')">            
+        </div>
+      </td>  
+
+      </form>
+      
+    #end    
+    #if ($next)
+      <td valign="middle">
+        <div align="center">
+          <form action="$formAction" method="post">
+            <input type='hidden' name='db.browser.action' value='next'/>          
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('nextArrow')">
+            <input type="hidden" name="start" value="$next">
+          </form>
+        </div>
+      </td>
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$formAction" method="post">
+            <input type='hidden' name='db.browser.action' value='last'/>                    
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('lastArrow')">
+            <input type="hidden" name="start" value="$tableSize">
+          </form>
+        </div>
+      </td>  
+    #end
+    #if ($tableSize > 0)
+      <td valign="middle">
+        <div align="center">
+          <form action="$formAction" method="post">
+            <input type='hidden' name='db.browser.action' value='refresh'/>
+            <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="$MESSAGES.getString('refresh')" />
+          </form>
+        </div>
+      </td>
+    #end
+  </tr>
+</table>
+<form action="$formAction" method="post">
+    <input type='hidden' name='db.browser.action' value='search'/>                    
+    <input type='hidden' name='searchColumn' value='1'/>                        
+    
+  <table>
+  <tr>
+    <td><input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')"></td>
+    <td><input type="text" name="searchString" size="30" value="" class="portlet-form-field-label"></td>
+    <td nowrap align="right" style="vertical-align:middle">&nbsp;$MESSAGES.getString('filter')</td>
+    <td style="vertical-align:middle"><input type="checkbox"  #if($filtered == "on") checked="1" #end name="filtered"></td>
+  </tr>
+  </table>    
+</form>
+#end
+
+<form name="securityform" action="$formAction" method="post">
 <table>
 <tr>
   <td>
    <input type="submit" name="role.action.Add_New_Role" value="$MESSAGES.getString('addnewrole')" class="portlet-form-button"  />
   </td>
   <td>
-   <input onclick="javascript:openWindow('$userChooser')" type="submit" name="role.action.Add_Users_To_Role" value="$MESSAGES.getString('adduserstorole')" class="portlet-form-button"  />
+   <input type="button" onclick="javascript:openWindow('$userChooser')" name="role.action.Add_Users_To_Role" value="$MESSAGES.getString('adduserstorole')" class="portlet-form-button"  />
   </td>  
 #if ($tableSize > 0)  
   <td>
-   <input type="submit" name="role.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" class="portlet-form-button" />
+   <input type="button" onclick="javascript:document.forms.usersInRoleForm.removeCheckedUsers.click()" value="$MESSAGES.getString('removecheckedusers')" class="portlet-form-button" />
   </td>    
 #end
   <td>

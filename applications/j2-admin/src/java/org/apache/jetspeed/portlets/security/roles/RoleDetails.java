@@ -76,8 +76,26 @@ public class RoleDetails extends BrowserPortlet
     public void getRows(RenderRequest request, String sql, int windowSize)
     throws Exception
     {
+        getRows(request, sql, windowSize, null);        
+    }
+
+    public void getRows(RenderRequest request, String sql, int windowSize, String filter)
+    throws Exception
+    {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
+        if ( filter != null )
+        {
+            if ( filter.length() == 0 )
+            {
+                filter = null;
+            }
+            else
+            {
+                filter = filter.toLowerCase();
+            }
+        }
+        
         try
         {
             List list = new ArrayList();
@@ -92,8 +110,11 @@ public class RoleDetails extends BrowserPortlet
                 {
                     User user = (User)users.next();
                     Principal principal = SecurityUtil.getPrincipal(user.getSubject(),
-                            UserPrincipal.class);                
-                    list.add(principal.getName());
+                            UserPrincipal.class);
+                    if ( filter == null || principal.getName().toLowerCase().startsWith(filter))
+                    {
+                        list.add(principal.getName());
+                    }
                 }
             }
             BrowserIterator iterator = new DatabaseBrowserIterator(
@@ -136,6 +157,12 @@ public class RoleDetails extends BrowserPortlet
             this.getContext(request).put("statusMsg", msg);            
         }
           
+        String filtered = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_FILTERED);
+        if (filtered != null)
+        {
+            this.getContext(request).put(FILTERED, "on");            
+        }
+
         String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES_USERS, SecurityResources.MESSAGE_REFRESH); 
         if (refresh != null)
         {        

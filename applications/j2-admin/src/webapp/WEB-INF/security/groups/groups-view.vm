@@ -1,6 +1,7 @@
 <script language='JavaScript' src='/idtb/scripts/idtb.js'></script>
 
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set ($formAction = $renderResponse.createActionURL())
 
 #if ($statusMsg)
 #parse ('/WEB-INF/view/status-include.vm')
@@ -48,7 +49,7 @@
     #if ($prev)
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$formAction" method="post">
           	<input type='hidden' name='db.browser.action' value='first' />                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('firstArrow')">
             <input type="hidden" name="start" value="0">
@@ -57,7 +58,7 @@
       </td>  
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$formAction" method="post">
           	<input type='hidden' name='db.browser.action' value='prev'/>                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('prevArrow')">
             <input type="hidden" name="start" value="$prev">
@@ -66,7 +67,7 @@
       </td>
     #end
     #if ($tableSize > 0)
-      <form action="$renderResponse.createActionURL()" method="post">
+      <form action="$formAction" method="post">
       <td valign="middle" height="30">
         <div align="center">
           	<input type='hidden' name='db.browser.action' value='change'/>                    
@@ -91,7 +92,7 @@
     #if ($next)
       <td valign="middle">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$formAction" method="post">
           	<input type='hidden' name='db.browser.action' value='next'/>          
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('nextArrow')">
             <input type="hidden" name="start" value="$next">
@@ -100,7 +101,7 @@
       </td>
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$formAction" method="post">
           	<input type='hidden' name='db.browser.action' value='last'/>                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('lastArrow')">
             <input type="hidden" name="start" value="$tableSize">
@@ -111,7 +112,7 @@
     #if ($tableSize > 0)
       <td valign="middle">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$formAction" method="post">
           	<input type='hidden' name='db.browser.action' value='refresh'/>
             <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="$MESSAGES.getString('refresh')" />
           </form>
@@ -120,17 +121,16 @@
     #end
   </tr>
 </table>
-<form action="$renderResponse.createActionURL()" method="post">
-  	<input type='hidden' name='db.browser.action' value='search'/>                    
-  	<input type='hidden' name='searchColumn' value='1'/>                      	
-    <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')">
-	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
-	<table>
-	<tr>
-    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('filter')&nbsp;&nbsp;&nbsp;</td>
-    <td>	
-	<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">
-	</td>
-	</tr>
-	</table>	
+<form action="$formAction" method="post">
+    <input type='hidden' name='db.browser.action' value='search'/>                    
+    <input type='hidden' name='searchColumn' value='1'/>                        
+    
+  <table>
+  <tr>
+    <td><input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')"></td>
+    <td><input type="text" name="searchString" size="30" value="" class="portlet-form-field-label"></td>
+    <td nowrap align="right" style="vertical-align:middle">&nbsp;$MESSAGES.getString('filter')</td>
+    <td style="vertical-align:middle"><input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered"></td>
+  </tr>
+  </table>    
 </form>
