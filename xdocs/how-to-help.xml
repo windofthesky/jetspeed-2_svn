@@ -24,6 +24,54 @@
 	</properties>
 	<body>
 		<section name="How to Help?">
+		<subsection name="Simple Things I Can Do to Help">
+		<p>
+		There are many ways to help with Jetspeed-2 as with most open source projects:
+		<ul>
+		<li>Subscribe to the <a href="mail-lists.html">user mailing list</a> and help answer questions from the community.
+		In open source a thriving community makes the project successful.  Don't be shy to ask basic questions, we have all
+		been there.</li>
+		<li>Report bugs and issues that you encounter in <a href="http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492">Jetspeed-2 bug tracking system</a>.
+		Prior to reporting a bug, make sure to discuss the issue on the <a href="mail-lists.html">user mailing list</a> or even the 
+		<a href="mail-lists.html">developer mailing list</a>.</li>
+		<li>When you encounter an issue, you may be compelled to fix it.  We encourage this as this makes for a vibrant
+		community.  Once you have a fix, <a href="guides/guide-j2-development.html">submit a patch</a> on the reporting issue.</li>
+		</ul>
+		</p>
+		</subsection>
+		<subsection name="Why Should I Get Involved?">
+		<p>
+		There are many reasons why you want to help, just a few strong points:
+		<ul>
+		<li>If you help others solve there issues, they will most likely help you when you run into some problems.</li>
+		<li>By contributing patches, you can influence the prioritization of functionality and get your changes incorporated.</li>
+		<li>By reporting issues, you help Jetspeed-2 become a stronger project and improve its quality overall.</li>
+		<li>You will meet and get to know great people as well as share and learn best practices which will help you on
+		your project.</li>
+		</ul>
+		We are looking forward to have you part of our community!
+		</p>
+		</subsection>
+		<subsection name="How do I Join the Project?">
+		<p>
+		Projects at Apache operate under a <a href="http://www.apache.org/foundation/how-it-works.html#meritocracy">meritocracy</a>.
+		To become a committer, you first need to demonstrate your committment.  The best way to do so is to start contributing patch,
+		participate in the community and make your interest known.  It takes time and willingness to help and contribute!  This may
+		seem a bit intimidating at first, but the community will always help people who show interest and committment.
+		</p>
+		</subsection>
+		<subection name="Other Resources for Help">
+		<p>
+		Here are some useful links for other resources for help.
+		<ul>
+		<li><a href="http://portals.apache.org/development/code-standards.html">Portals project coding standards</a>.</li>
+		<li><a href="http://portals.apache.org/development/documentation.html">Portals project documentation standards</a>.</li>
+		<li><a href="http://www.apache.org/foundation/how-it-works.html">How does the Apache Software Foundation work</a>?</li>
+		<li><a href="http://people.apache.org/~coar/mlists.html#portals.apache.org">Portals mailing lists statistics</a>.  This can be helpful
+		to help you decide which mailing list to subscribe to.</li>
+		</ul>
+		</p>
+		</subection>
 		</section>
 	</body>
 </document>
