@@ -52,6 +52,15 @@
 				    </ul>
 				</p>
 			</subsection>
+			<subsection name="Guide to Authorization Configuration">
+				<p>
+					Jetspeed-2 provides a <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-security/atz-jaas.html">relational database backed JAAS policy implementation</a>.
+				</p>
+				<p>
+					Jetspeed-2 authorization implementation relies on a SPI model as well and is configured through <code>security-spi-atz.xml</code>.
+					Configuration details are available <a href="../multiproject/jetspeed-security/config.html">here</a>.
+				</p>
+			</subsection>
 		</section>
 	</body>
 </document>
