@@ -437,4 +437,41 @@ public class PortalAdministrationImpl implements PortalAdministration
         return adminUtil.concatenatePaths(jetspeedPath, response.encodeURL(path));
     }
         
+    
+    Map forgottenPasswordData = new HashMap();
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#getNewLoginInfo(java.lang.String)
+     */
+    public Map getNewLoginInfo(String guid)
+    {
+        synchronized(forgottenPasswordData) {
+            return (Map) forgottenPasswordData.get(guid);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#setNewLoginInfo(java.lang.String, org.apache.jetspeed.administration.PortalAdministration.ResetPasswordInfo)
+     */
+    public void putNewLoginInfo(String guid, Map info)
+    {
+        synchronized(forgottenPasswordData) {
+            forgottenPasswordData.put(guid,info);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#removeNewLoginInfo(java.lang.String)
+     */
+    public void removeNewLoginInfo(String guid)
+    {
+        synchronized(forgottenPasswordData) {
+            forgottenPasswordData.remove(guid);
+        }
+    }
+    
+    
+    
+    
+    
 }

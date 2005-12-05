@@ -120,5 +120,25 @@ public interface PortalAdministration
      * @return the base Jetspeed portal URL plus the appended path parameter
      */
     String getPortalURL(PortletRequest request, PortletResponse response, String path);
+    
+    
+    /**
+     * @param guid    The ID which is passed throughte URL to the user
+     * @return
+     */
+    public Map getNewLoginInfo(String guid);
+    /**
+     * @param guid    the ID which is passed through the URL to the user.. 
+     * @param info    a Map, info from which will be used to reset the password
+     *                the password in this case is NOT encrypted, but this should probably
+     *                change if this information is stored on disk... ie a database
+     */
+    public void putNewLoginInfo(String guid, Map info);
+    
+    /**
+     * @param guid    the ID which will be removed from the storage when the info is no longer valid
+     */
+    public void removeNewLoginInfo(String guid);
+    
 }
 
