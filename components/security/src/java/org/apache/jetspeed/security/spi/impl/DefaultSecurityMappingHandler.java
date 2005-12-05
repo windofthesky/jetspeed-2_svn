@@ -112,6 +112,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         this.groupHierarchyResolver = groupHierarchyResolver;
     }
 
+    
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipals(java.lang.String)
      */
@@ -122,27 +123,43 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         if (null != internalUser)
         {
             Collection internalRoles = internalUser.getRolePrincipals();
-            if (null != internalRoles)
+            addRolePrincipals(rolePrincipals, internalRoles);
+            // add all the group roles of the group the user belongs to
+            Collection internalGroups = internalUser.getGroupPrincipals();
+            if ( null != internalGroups )
             {
-                Iterator internalRolesIter = internalRoles.iterator();
-                while (internalRolesIter.hasNext())
+                Iterator internalGroupsIter = internalGroups.iterator();
+                while ( internalGroupsIter.hasNext())
                 {
-                    InternalRolePrincipal internalRole = (InternalRolePrincipal) internalRolesIter.next();
-                    Preferences preferences = Preferences.userRoot().node(internalRole.getFullPath());
-                    String[] fullPaths = roleHierarchyResolver.resolve(preferences);
-                    for (int i = 0; i < fullPaths.length; i++)
+                    // add all roles the group belongs to
+                    addRolePrincipals(rolePrincipals,((InternalGroupPrincipal)internalGroupsIter.next()).getRolePrincipals());
+                }
+            }            
+        }
+        return rolePrincipals;
+    }
+
+    private void addRolePrincipals(Set rolePrincipals, Collection internalRoles)
+    {
+        if (null != internalRoles)
+        {
+            Iterator internalRolesIter = internalRoles.iterator();
+            while (internalRolesIter.hasNext())
+            {
+                InternalRolePrincipal internalRole = (InternalRolePrincipal) internalRolesIter.next();
+                Preferences preferences = Preferences.userRoot().node(internalRole.getFullPath());
+                String[] fullPaths = roleHierarchyResolver.resolve(preferences);
+                for (int i = 0; i < fullPaths.length; i++)
+                {
+                    Principal rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
+                            .getPrincipalNameFromFullPath(fullPaths[i]));
+                    if (!rolePrincipals.contains(rolePrincipal))
                     {
-                        Principal rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
-                                .getPrincipalNameFromFullPath(fullPaths[i]));
-                        if (!rolePrincipals.contains(rolePrincipal))
-                        {
-                            rolePrincipals.add(rolePrincipal);
-                        }
+                        rolePrincipals.add(rolePrincipal);
                     }
                 }
             }
         }
-        return rolePrincipals;
     }
 
     /**

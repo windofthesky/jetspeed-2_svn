@@ -431,7 +431,10 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             ums.addUser("anonuser4", "password");
             rms.addRole("testuserrolemapping");
+            rms.addRole("testrole");
+            gms.addGroup("testrolegroupmapping");
             rms.addRoleToUser("anonuser4", "testuserrolemapping");
+            rms.addRoleToGroup("testrole","testrolegroupmapping");
         }
         catch (SecurityException sex)
         {
@@ -442,10 +445,29 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             boolean isUserInRole = rms.isUserInRole("anonuser4", "testuserrolemapping");
             assertTrue("anonuser4 should be in role testuserrolemapping", isUserInRole);
+            assertFalse("anonuser4 should not be in role testrole", rms.isUserInRole("anonuser4","testrole"));
+            
         }
         catch (SecurityException sex)
         {
             assertTrue("user and role exist. should not have thrown an exception: " + sex, false);
+        }
+        
+        try
+        {
+            gms.addUserToGroup("anonuser4","testrolegroupmapping");
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to add user anonuser4 to group testrolegroupmapping " + sex, false);
+        }        
+        try
+        {
+            assertTrue("anonuser4 should be in role testrole because it is assigned the group testrolegroupmapping", rms.isUserInRole("anonuser4","testrole"));
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("user, group and role exist. should not have thrown an exception: " + sex, false);
         }
 
         // Cleanup test.
@@ -556,7 +578,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         final String[] users = new String[] { "anonuser1", "anonuser2", "anonuser3", "anonuser4", "anonuser5", };
         final String[] roles = new String[] { "testrole", "testrole1", "testrole2", "testrole3", "testgetrole",
                 "testusertorole1", "testuserrolemapping.role1", "testuserrolemapping2.role2", "testuserrolemapping","testuserrolemapping2" };
-        final String[] groups = new String[] { "testusertorole1" };
+        final String[] groups = new String[] { "testrolegroupmapping" };
 
         for (int i = 0; i < users.length; i++)
         {
