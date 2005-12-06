@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
-#* Add all template constants to the current context *#
-#defineNavigationConstants()
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
+#* Loads our custom macros *#
+#parse($layoutDecoration.getResource("decorator-macros.vm"))
+#* Add all template constants to the current context *#
+#defineNavigationConstants()
 
 
 
@@ -28,7 +30,6 @@ limitations under the License.
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />
 #includeJavaScriptForHead()
-#includeHeaderResource()
 #IncludeStylesheets()
     <title>#PageTitle()</title>
 
