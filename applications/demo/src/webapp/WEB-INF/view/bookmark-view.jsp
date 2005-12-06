@@ -25,7 +25,7 @@ ResourceBundle myText = portletConfig.getResourceBundle(renderRequest.getLocale(
                      (name,"<"+
                      myText.getString("undefined")+">");
 %>
-      <A target="_blank" HREF=<%=value%><%=name%></A><BR>                
+	<A target="_blank" HREF="<%=value%>" ><%=name%></A><BR> 
 <%
     }
 %>
