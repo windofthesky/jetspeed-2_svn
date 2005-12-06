@@ -97,7 +97,7 @@ public class RoleDetails extends BrowserPortlet
         
         List list = new ArrayList();
         resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-        resultSetTitleList.add("Users in Role");
+        resultSetTitleList.add("usersinrole"); // resource bundle key
         
         String selectedRole = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
         if (selectedRole != null)
@@ -123,7 +123,7 @@ public class RoleDetails extends BrowserPortlet
         }
         BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList, windowSize);
         setBrowserIterator(request, iterator);
-        iterator.sort("Users in Role");
+        iterator.sort("usersinrole"); // resource bundle key
     }
            
     public void doView(RenderRequest request, RenderResponse response)
