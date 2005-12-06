@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2001,2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -29,32 +29,30 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.util.Path;
 import org.springframework.web.context.ServletContextAware;
 
 /**
- * 
- * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @see org.apache.jetspeed.decoration.DecorationFactory
  */
 public class DecorationFactoryImpl implements DecorationFactory, ServletContextAware
 {
     private static final Log log = LogFactory.getLog(DecorationFactoryImpl.class);
-    
+
     private final Path decorationsPath;
     private final ResourceValidator validator;
-    private final String defaultLayoutDecorator;    
+    private final String defaultLayoutDecorator;
     private final String defaultPortletDecorator;
     private final PortletRegistry registry;
-    
-    private ServletContext servletContext;    
+
+    private ServletContext servletContext;
 
     public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
     {
@@ -66,9 +64,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     }
 
     public DecorationFactoryImpl(PortletRegistry registry,
-                                 String decorationsPath, 
-                                 ResourceValidator validator, 
-                                 String defaultLayoutDecorator, 
+                                 String decorationsPath,
+                                 ResourceValidator validator,
+                                 String defaultLayoutDecorator,
                                  String defaultPortletDecorator)
     {
         this.registry =  registry;
@@ -77,14 +75,14 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         this.defaultLayoutDecorator = defaultLayoutDecorator;
         this.defaultPortletDecorator = defaultPortletDecorator;
     }
-    
+
     public Theme getTheme(Page page, RequestContext requestContext)
     {
         return new PageTheme(page, this, requestContext);
     }
 
     public Decoration getDecoration(Page page, Fragment fragment, RequestContext requestContext)
-          
+
     {
         String decorationName = getDefaultDecorationName(fragment, page);
         Decoration decoration;
@@ -102,22 +100,22 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     }
 
     public PortletDecoration getPortletDecoration(String name, RequestContext requestContext)
-            
+
     {
         Path basePath = createClientPath(name, requestContext, Fragment.PORTLET);
-        
-        Properties configuration = getConfiguration(name);
+
+        Properties configuration = getConfiguration(name, Fragment.PORTLET);
         configuration.setProperty("name", name);
         return new PortletDecorationImpl(configuration, validator, basePath, new SessionPathResolverCache(
                 requestContext.getRequest().getSession()));
     }
-    
+
     public LayoutDecoration getLayoutDecoration(String name, RequestContext requestContext)
-           
+
     {
         Path basePath = createClientPath(name, requestContext, Fragment.LAYOUT);
 
-        Properties configuration = getConfiguration(name);
+        Properties configuration = getConfiguration(name, Fragment.LAYOUT);
         configuration.setProperty("name", name);
         return new LayoutDecorationImpl(configuration, validator, basePath, new SessionPathResolverCache(
                 requestContext.getRequest().getSession()));
@@ -129,10 +127,16 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
     }
 
-    protected Properties getConfiguration(String name)
+    /**
+     * Gets the configuration (decorator.properties) object for the decoration.
+     * @param name Name of the Decoration.
+     * @return <code>java.util.Properties</code> representing the configuration
+     * object.
+     */
+    protected Properties getConfiguration(String name, String type)
     {
         Properties props = new Properties();
-        InputStream is = servletContext.getResourceAsStream(decorationsPath + "/" + name + "/" + Decoration.CONFIG_FILE_NAME);
+        InputStream is = servletContext.getResourceAsStream(decorationsPath + "/"+ type +"/"+ name + "/" + Decoration.CONFIG_FILE_NAME);
         if (is != null)
         {
             try
@@ -147,11 +151,26 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         }
         else
         {
+            log.warn("Could not locate the decorator.properties configuration file for decoration \""+name+
+                 "\".  This decoration may not exist.");
             props.setProperty("id", name);
         }
         return props;
     }
 
+    /**
+     * Creates a <code>org.apache.jetspeed.util.Path</code> object based
+     * off of the user's client browser and locale.
+     *
+     * @param name Decroator's name
+     * @param requestContext  Current portal request.
+     * @param decorationType Type of decoration, either <code>layout</code>
+     * or <code>portlet</code>
+     * @return
+     *
+     * @see Path
+     * @see RequestContext
+     */
     protected Path createClientPath(String name, RequestContext requestContext, String decorationType)
     {
         Path basePath = ((Path)decorationsPath.clone())
@@ -177,6 +196,16 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return basePath;
     }
 
+    /**
+     * Returns a the default decoration name for the specific Fragment type.
+     *
+     * @param fragment Fragment whose default decroation has been requested
+     * @param page Page this fragment belongs to.
+     * @return Default decorator name.
+     *
+     * @see Page
+     * @see Fragment
+     */
     protected String getDefaultDecorationName(Fragment fragment, Page page)
     {
         String decoration = fragment.getDecorator();
@@ -195,9 +224,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return decoration;
     }
 
+    public void clearCache(RequestContext requestContext)
+    {
+        new SessionPathResolverCache(requestContext.getRequest().getSession()).clear();
+    }
+
+
     /**
      * Get the portal-wide list of page decorations.
-     * 
+     *
      * @return A list of page decorations of type <code>Decoration</code>
      */
     public List getPageDecorations(RequestContext request)
@@ -214,15 +249,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return list;
     }
 
-    /**
+        /**
      * Get the portal-wide list of portlet decorations.
-     * 
+     *
      * @return A list of portlet decorations of type <code>String</code>
-     */    
+     */
     public List getPortletDecorations(RequestContext request)
     {
         List list = new LinkedList();
-        /// TODO: hard code until Scotts commits arrive with new directory format        
+        /// TODO: hard code until Scotts commits arrive with new directory format
         list.add("blue-gradient");
         list.add("clear");
         list.add("gray-gradient");
@@ -231,15 +266,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         list.add("metal");
         list.add("minty-blue");
         list.add("pretty-single-portlet");
-        list.add("tigris");        
+        list.add("tigris");
         return list;
     }
-    
+
     /**
      * Get the portal-wide list of available layouts.
-     * 
+     *
      * @return A list of layout portlets of type <code>PortletDefinitionComposite</code>
-     */    
+     */
     public List getLayouts(RequestContext request)
     {
         List list = new LinkedList();
@@ -250,17 +285,17 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
             MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
             String appName = muta.getName();
             if (appName == null)
-                continue;       
+                continue;
             if (!appName.equals("jetspeed-layouts"))
                 continue;
-            
+
             String uniqueName = appName + "::" + portlet.getName();
-            list.add(new LayoutInfoImpl(uniqueName, 
-                     portlet.getDisplayNameText(request.getLocale()), 
+            list.add(new LayoutInfoImpl(uniqueName,
+                     portlet.getDisplayNameText(request.getLocale()),
                      portlet.getDescriptionText(request.getLocale())));
-            
+
         }
         return list;
     }
-    
+
 }
