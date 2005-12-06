@@ -17,6 +17,9 @@ package org.apache.jetspeed.decoration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -24,10 +27,15 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.util.Path;
 import org.springframework.web.context.ServletContextAware;
 
@@ -44,11 +52,26 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     private final ResourceValidator validator;
     private final String defaultLayoutDecorator;    
     private final String defaultPortletDecorator;
+    private final PortletRegistry registry;
     
     private ServletContext servletContext;    
 
     public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
     {
+        this.registry = null;
+        this.decorationsPath = new Path(decorationsPath);
+        this.validator = validator;
+        this.defaultLayoutDecorator = defaultLayoutDecorator;
+        this.defaultPortletDecorator = defaultPortletDecorator;
+    }
+
+    public DecorationFactoryImpl(PortletRegistry registry,
+                                 String decorationsPath, 
+                                 ResourceValidator validator, 
+                                 String defaultLayoutDecorator, 
+                                 String defaultPortletDecorator)
+    {
+        this.registry =  registry;
         this.decorationsPath = new Path(decorationsPath);
         this.validator = validator;
         this.defaultLayoutDecorator = defaultLayoutDecorator;
@@ -172,4 +195,72 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return decoration;
     }
 
+    /**
+     * Get the portal-wide list of page decorations.
+     * 
+     * @return A list of page decorations of type <code>Decoration</code>
+     */
+    public List getPageDecorations(RequestContext request)
+    {
+        List list = new LinkedList();
+        /// TODO: hard code until Scotts commits arrive with new directory format
+        list.add("clear");
+        list.add("jetspeed");
+        list.add("jscookmenu");
+        list.add("metal");
+        list.add("minty-blue");
+        list.add("simple");
+        list.add("tigris");
+        return list;
+    }
+
+    /**
+     * Get the portal-wide list of portlet decorations.
+     * 
+     * @return A list of portlet decorations of type <code>String</code>
+     */    
+    public List getPortletDecorations(RequestContext request)
+    {
+        List list = new LinkedList();
+        /// TODO: hard code until Scotts commits arrive with new directory format        
+        list.add("blue-gradient");
+        list.add("clear");
+        list.add("gray-gradient");
+        list.add("gray-gradient-noborder");
+        list.add("jetspeed");
+        list.add("metal");
+        list.add("minty-blue");
+        list.add("pretty-single-portlet");
+        list.add("tigris");        
+        return list;
+    }
+    
+    /**
+     * Get the portal-wide list of available layouts.
+     * 
+     * @return A list of layout portlets of type <code>PortletDefinitionComposite</code>
+     */    
+    public List getLayouts(RequestContext request)
+    {
+        List list = new LinkedList();
+        Iterator portlets = registry.getAllPortletDefinitions().iterator();
+        while (portlets.hasNext())
+        {
+            PortletDefinitionComposite portlet = (PortletDefinitionComposite)portlets.next();
+            MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            String appName = muta.getName();
+            if (appName == null)
+                continue;       
+            if (!appName.equals("jetspeed-layouts"))
+                continue;
+            
+            String uniqueName = appName + "::" + portlet.getName();
+            list.add(new LayoutInfoImpl(uniqueName, 
+                     portlet.getDisplayNameText(request.getLocale()), 
+                     portlet.getDescriptionText(request.getLocale())));
+            
+        }
+        return list;
+    }
+    
 }

@@ -30,11 +30,11 @@ import org.apache.jetspeed.decoration.ResourceValidator;
  */
 public class WebApplicationResourceValidator implements ResourceValidator
 {
-    private final ServletContext servletContext;
+    private ServletContext servletContext;
     
-    public WebApplicationResourceValidator(ServletContext servletContext)
+    public void setServletContext(ServletContext servletContext)
     {
-        this.servletContext = servletContext;
+        this.servletContext = servletContext;        
     }
 
     public boolean resourceExists(String path)

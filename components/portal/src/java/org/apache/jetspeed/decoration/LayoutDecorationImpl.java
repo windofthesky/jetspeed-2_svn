@@ -15,9 +15,7 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.jetspeed.util.Path;
 
