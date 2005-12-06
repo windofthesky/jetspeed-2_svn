@@ -71,6 +71,21 @@
 		<subsection name="Jetspeed-2 Core Components">
 		<table>
           <tr>
+          	<th colspan="2">Jetspeed-2 Capabilities - Artifact Id: jetspeed-capability</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-capability/index.html"><code>Capabilities</code></a></td>
+            <td>The <code>Capabilities</code> components maps clients to supported mime types and media types.
+            It creates a <code>CapabilityMap</code> that is used through the portal engine to render the
+            portal content for the targetted client.</td>
+          </tr>
+		</table><br/>
+		<table>
+          <tr>
           	<th colspan="2">Jetspeed-2 Component Manager - Artifact Id: jetspeed-cm</th>
           </tr>
           <tr>
