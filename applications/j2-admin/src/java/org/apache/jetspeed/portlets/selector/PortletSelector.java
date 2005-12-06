@@ -37,6 +37,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
@@ -192,41 +193,6 @@ public class PortletSelector extends BrowserPortlet
         }        
     }
       
-    public class PortletInfo 
-    {
-        private String name;
-        private String displayName;
-        private String description;
-        
-        public PortletInfo(String name, String displayName, String description)
-        {
-            this.name = name;
-            this.displayName = displayName;
-            this.description = description;
-        }
-        /**
-         * @return Returns the description.
-         */
-        public String getDescription()
-        {
-            return description;
-        }
-        /**
-         * @return Returns the displayName.
-         */
-        public String getDisplayName()
-        {
-            return displayName;
-        }
-        /**
-         * @return Returns the name.
-         */
-        public String getName()
-        {
-            return name;
-        }
-    }
-
     public int find(BrowserIterator iterator, String searchString, String searchColumn)
     {
         int index = 0;

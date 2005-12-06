@@ -17,7 +17,7 @@ package org.apache.jetspeed.portlets.selector;
 
 import java.util.List;
 
-import org.apache.jetspeed.portlets.selector.PortletSelector.PortletInfo;
+import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 
 
