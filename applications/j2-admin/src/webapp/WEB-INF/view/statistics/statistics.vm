@@ -1,7 +1,7 @@
 <h3 class="portlet-section-header">Portal Statistics</h3>
 
 <div id="StatisticsPortlet"  class="portlet-section-text"> 
-	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post"
+	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post">
 	<table>
 	<tr><td align="center">
 	total sessions in progress: $!totalsessions
