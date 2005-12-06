@@ -44,4 +44,9 @@ public class SessionPathResolverCache extends HashMapPathResolverCache implement
             session.setAttribute(PortalReservedParameters.RESOVLER_CACHE_ATTR, cache);
         }
     }
+    
+    public void clear()
+    {
+        cache.clear();
+    }
 }

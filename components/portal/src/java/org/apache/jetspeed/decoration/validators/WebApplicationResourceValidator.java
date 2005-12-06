@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.decoration.ResourceValidator;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * This implementation uses <code>ServletContext.getResource()</code>
@@ -28,14 +29,10 @@ import org.apache.jetspeed.decoration.ResourceValidator;
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
-public class WebApplicationResourceValidator implements ResourceValidator
+public class WebApplicationResourceValidator implements ResourceValidator, ServletContextAware
 {
     private ServletContext servletContext;
     
-    public void setServletContext(ServletContext servletContext)
-    {
-        this.servletContext = servletContext;        
-    }
 
     public boolean resourceExists(String path)
     {
@@ -49,6 +46,13 @@ public class WebApplicationResourceValidator implements ResourceValidator
             iae.initCause(e);
             throw iae;            
         }
+    }
+
+
+    public void setServletContext(ServletContext servletContext)
+    {
+        this.servletContext = servletContext;
+        
     }
 
 }

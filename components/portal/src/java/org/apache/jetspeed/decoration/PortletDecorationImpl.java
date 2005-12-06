@@ -20,13 +20,13 @@ import java.util.Properties;
 import org.apache.jetspeed.util.Path;
 
 /**
+ * Default implementation of <code>org.apache.jetspeed.decoration.PortletDecoration</code>
  *  
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @see org.apache.jetspeed.decoration.PortletDecoration
  */
 public class PortletDecorationImpl extends BaseDecoration implements PortletDecoration
 {
-
     public PortletDecorationImpl(Properties config, ResourceValidator validator, Path basePath, PathResolverCache cache)
     {
         super(config, validator, basePath, cache);    
@@ -34,7 +34,7 @@ public class PortletDecorationImpl extends BaseDecoration implements PortletDeco
 
     public String getTemplate()
     {
-        return null;
+        return getResource("decorator.vm");
     }
 
 }

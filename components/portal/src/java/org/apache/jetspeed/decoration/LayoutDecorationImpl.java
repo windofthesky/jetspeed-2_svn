@@ -20,8 +20,11 @@ import java.util.Properties;
 import org.apache.jetspeed.util.Path;
 
 /**
+ * Default implementation of <code>org.apache.jetspeed.decoration.LayoutDecoration</code>
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * 
+ * @see org.apache.jetspeed.decoration.LayoutDecoration
  *
  */
 public class LayoutDecorationImpl extends BaseDecoration implements LayoutDecoration

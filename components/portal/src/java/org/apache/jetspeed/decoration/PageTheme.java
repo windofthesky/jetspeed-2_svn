@@ -26,9 +26,11 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
+ * Default implementation of <code>org.apache.jetspeed.decoration.Theme</code>
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
+ * @see org.apache.jetspeed.decoration.Theme
  */
 public class PageTheme implements Theme
 {

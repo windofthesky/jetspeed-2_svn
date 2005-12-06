@@ -15,13 +15,22 @@
  */
 package org.apache.jetspeed.decoration;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.jetspeed.util.Path;
 
 /**
+ * Base class implementing the most common methods shared between
+ * LayoutDecorations and PortletDecorations.
+ * 
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * 
+ * @see org.apache.jetspeed.decoration.Decoration
+ * @see org.apache.jetspeed.decoration.LayoutDecoration
+ * @see org.apache.jetspeed.decoration.PortletDecoration
  * 
  */
 public class BaseDecoration implements Decoration
@@ -33,12 +42,15 @@ public class BaseDecoration implements Decoration
     private final Path basePath;
     private final PathResolverCache cache;
     private final String styleSheet;
+    private List actions;
     
     /**
      * 
-     * @param config
-     * @param validator
-     * @param basePath
+     * @param config <code>java.util.Properties</code> object containing configuration infomation
+     * for this Decoration.
+     * @param validator The ResourceValidator to be used in looking up fully-qualified resource pathes
+     * @param basePath The "root" of the decroation hierarchy.
+     * 
      * @throws InvalidDecorationConfigurationException
      */
     public BaseDecoration(Properties config, ResourceValidator validator, Path basePath, PathResolverCache cache) 
@@ -70,14 +82,32 @@ public class BaseDecoration implements Decoration
             String locatedPath = getResource((Path)basePath.clone(), new Path(path));
             if(!locatedPath.startsWith(NO_SUCH_RESOURCE))
             {
+                if(!path.startsWith("/"))
+                {
+                    locatedPath = locatedPath.substring(1);
+                }
+                           
                 cache.addPath(workingPath.toString(), locatedPath);
             }
+            
+           
             
             return locatedPath;
         }
         
     }
     
+    /**
+     * Recursively tries to locate a resource.
+     * 
+     * @param rootPath initial path to start looking for the <code>searchPath.</code>
+     * The "pruning" of the rootPath of subsequest recursive calls follows the logic
+     * detailed in the {@link Decoration#getResource(String)} method.
+     * @param searchPath relative path to the resource we wish to locate.
+     * @return
+     * 
+     * @see Decoration
+     */
     protected String getResource(Path rootPath, Path searchPath)
     {
         String pathString = rootPath.getChild(searchPath).toString();
@@ -99,6 +129,33 @@ public class BaseDecoration implements Decoration
     public String getStyleSheet()
     {       
         return getResource(styleSheet);
+    }
+
+    public List getActions()
+    {
+       if(actions != null)
+       {
+           return actions;
+       }
+       else
+       {
+           return Collections.EMPTY_LIST;
+       }
+    }
+
+    public void setActions(List actions)
+    {
+        this.actions = actions;
+    }
+
+    public String getProperty(String name)
+    {
+        return config.getProperty(name);
+    }
+
+    public String getBaseCSSClass()
+    {
+        return config.getProperty(Decoration.BASE_CSS_CLASS_PROP, getName());
     }
     
 }
