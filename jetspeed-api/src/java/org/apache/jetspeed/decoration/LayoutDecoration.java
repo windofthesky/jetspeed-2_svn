@@ -15,9 +15,25 @@
  */
 package org.apache.jetspeed.decoration;
 
+/**
+ * Decoration specifically targeted at decorating layouts.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public interface LayoutDecoration extends Decoration
 {
+    /**
+     * The header or "banner" template used to decorate the top of a page.
+     * 
+     * @return String fully resolved path to the header template.
+     */
     String getHeader();
     
+    /**
+     * The footer" template used to decorate the bottom of a page.
+     * 
+     * @return String fully resolved path to the footer template.
+     */
     String getFooter();
 }   

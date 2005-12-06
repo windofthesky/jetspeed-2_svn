@@ -28,9 +28,30 @@ import org.apache.jetspeed.om.page.Fragment;
  */
 public interface Theme 
 {
+    /**
+     * 
+     * @return Set of all of the stylesheets needed to properly
+     * render of the decorations in this theme.
+     */
     Set getStyleSheets();
     
+    /**
+     * Returns a a Decoration for the requested fragment.
+     * 
+     * @param fragment whose decoration we want to retrieve.
+     * @return Decroration for this fragment.
+     * 
+     * @see Decoration
+     * @see Fragment
+     */
     Decoration getDecoration(Fragment fragment);
     
+    /**
+     * Returns the the top most, "root" layout fragment's
+     * decoration. 
+     * 
+     * @return the the top most, "root" layout fragment's
+     * decoration. 
+     */
     LayoutDecoration getPageLayoutDecoration();
 }

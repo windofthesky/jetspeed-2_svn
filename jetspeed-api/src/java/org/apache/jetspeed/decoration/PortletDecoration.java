@@ -15,7 +15,19 @@
  */
 package org.apache.jetspeed.decoration;
 
+/**
+ * Decoration specifically targeted at decorating portlets.
+ * 
+ * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ *
+ */
 public interface PortletDecoration extends Decoration
 {
+    /**
+     * path to the template object used to decorated an individual portlet 
+     * window.
+     * 
+     * @return
+     */
     String getTemplate();
 }

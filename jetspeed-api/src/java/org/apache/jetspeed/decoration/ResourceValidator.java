@@ -17,11 +17,19 @@
 package org.apache.jetspeed.decoration;
 
 /**
+ * Validates whether or not a resource exists.
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
 public interface ResourceValidator
 {
+    /**
+     * Validates whether or not a resource exists.
+     * 
+     * @param path Path to verify.
+     * @return <code>true</code> if a resource exists at the path specified, 
+     * otherwise returns <code>false.</code>
+     */
     boolean resourceExists(String path);
 }

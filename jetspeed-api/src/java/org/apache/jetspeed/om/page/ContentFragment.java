@@ -3,6 +3,7 @@ package org.apache.jetspeed.om.page;
 import java.util.List;
 
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.decoration.Decoration;
 
 
 /**
@@ -73,4 +74,20 @@ public interface ContentFragment extends Fragment
      * @param portletContent
      */
     public void setPortletContent(PortletContent portletContent);
+    
+    /**
+     * Retrieves the actual <code>org.apache.jetspeed.decoration.decorator</code>
+     * object for this content fragment.
+     * 
+     * TODO: Re-evaluate the naming as this is somewhat confusing
+     * due to the existence of Fragment.getDecorator()
+     * @return
+     */
+    Decoration getDecoration();
+    
+    /**
+     * 
+     * @param decoration
+     */
+    void setDecoration(Decoration decoration);
 }
