@@ -136,6 +136,14 @@ limitations under the License.
                 <role>Java Developer</role>
             </roles>
         </developer>
+        <developer>
+            <name>Randy Watler</name>
+            <id>rwatler</id>
+            <email>rwatler@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
     </developers>
 
 
