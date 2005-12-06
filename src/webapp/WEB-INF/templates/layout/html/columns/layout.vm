@@ -48,6 +48,28 @@ limitations under the License.
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
+#set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set ($dcnt = 0)
+
+   #if($editing)
+   #set($themeUrl = $renderResponse.createActionURL())
+   $!themeUrl.setParameter("editingPage","$myPage.id")
+<form name="themeForm" action="$themeUrl" method='post'>
+     <label style='font-size:8pt;color:blue;padding-left: 9px;'>Theme:
+     <select id='theme' name='theme' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
+        #foreach($td in $decorationFactory.getPageDecorations($rc))
+          <option value='$td' #if($decorator == $td) SELECTED #end>$td
+        #end
+     </select>   
+     </label>
+<label style='font-size:8pt;color:blue;padding-left: 9px;'>Layout:
+     <select id='layout' name='layout' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
+        #foreach($ld in $decorationFactory.getLayouts($rc))     
+          <option value='$ld.Name' #if($myFragment.Name == $ld.Name) SELECTED #end>$ld.DisplayName
+         #end
+</select></label></form>
+   #end
 
  <div id="$renderResponse.namespace" class="portal-layout portal-layout-$layoutType">
 	#set ($sizeIndex = 0)
@@ -77,6 +99,18 @@ limitations under the License.
 		   ## editing block
 		   #if($editing)
 		   <div class="portlet-edit-bar">
+   #set ($dcnt = $dcnt + 1)   
+   #set($decUrl = $renderResponse.createActionURL())    
+   $!decUrl.setParameter("fragmentToMove","$f.id")
+   $!decUrl.setParameter("editingPage","$myPage.id")     
+   #set ($temp = ".submit();")
+<form name="portletForm$dcnt" action="$decUrl" method='post'>
+<select id='decorator' name='decorator' style='font-size:8pt;color:blue;' onChange="portletForm$dcnt$temp">
+       <option value=''>
+       #foreach($pd in $decorationFactory.getPortletDecorations($rc))
+          <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+       #end
+</select>
 			 ## Move portlet left
 			 #if($lastColumn > 0 && $col > 0)            
                #set($leftUrl = $renderResponse.createActionURL())    
@@ -123,6 +157,7 @@ limitations under the License.
                #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
                <a href="$rightUrl" class="move-portlet-right"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
 			 #end
+</form>			 
 		   </div>
 		   #end
 		   
