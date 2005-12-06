@@ -26,6 +26,7 @@ import java.util.prefs.Preferences;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -417,6 +418,18 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         public String getProperty(String propName)
         {
             return null;
+        }
+
+        public Decoration getDecoration()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public void setDecoration(Decoration decoration)
+        {
+            // TODO Auto-generated method stub
+            
         }        
     }
 
