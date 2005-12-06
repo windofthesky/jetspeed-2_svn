@@ -96,6 +96,15 @@ public interface Page extends Document, java.io.Serializable
     Fragment getFragmentById(String id);
 
     /**
+     * Removes the fragment contained within this page, with the
+     * specified Id.
+     *
+     * @param id the fragment id to remove
+     * @return the removed Fragment object or null if not found
+     */
+    Fragment removeFragmentById(String id);
+
+    /**
      * Retrieves the fragments contained within this page, with the
      * specified name.
      *

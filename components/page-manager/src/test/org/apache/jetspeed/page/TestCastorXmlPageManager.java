@@ -400,6 +400,12 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     {
         Page page = pageManager.getPage(this.testPage002);
         page.setTitle("Updated Title");
+        Fragment root = page.getRootFragment();
+        assertNotNull(root);
+        assertNotNull(root.getFragments());
+        assertEquals(1, root.getFragments().size());
+        String testId = ((Fragment)root.getFragments().get(0)).getId();
+        assertNotNull(page.removeFragmentById(testId));
 
         try
         {
@@ -415,6 +421,10 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
 
         page = pageManager.getPage(this.testPage002);
         assertTrue(page.getTitle().equals("Updated Title"));
+        root = page.getRootFragment();
+        assertNotNull(root);
+        assertNotNull(root.getFragments());
+        assertTrue(root.getFragments().isEmpty());
     }
 
     public void testUpdateFolder() throws Exception

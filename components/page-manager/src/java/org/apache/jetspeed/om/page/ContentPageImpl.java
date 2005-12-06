@@ -64,6 +64,25 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#removeFragmentById(java.lang.String)
+     */
+    public Fragment removeFragmentById(String id)
+    {
+        // remove from underlying page
+        Fragment removed = page.removeFragmentById(id);
+        if (removed != null)
+        {
+            // reset content fragments if successfully removed
+            if ((rootContentFragment != null) && rootContentFragment.getId().equals(id))
+            {
+                rootContentFragment = null;
+            }
+            cachedFragments.clear();
+        }
+        return removed;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getContentFragmentsByName(java.lang.String)
      */
     public List getContentFragmentsByName(String name)

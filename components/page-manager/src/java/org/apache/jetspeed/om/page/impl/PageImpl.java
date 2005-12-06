@@ -214,6 +214,31 @@ public class PageImpl extends DocumentImpl implements Page
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#removeFragmentById(java.lang.String)
+     */
+    public Fragment removeFragmentById(String id)
+    {
+        // check for page edit access
+        checkAccess(SecuredResource.EDIT_ACTION);
+
+        // remove fragment by id
+        FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
+        if (rootFragment != null)
+        {
+            if (rootFragment.getId().equals(id))
+            {
+                setRootFragment(null);
+                return rootFragment;
+            }
+            else
+            {
+                return rootFragment.removeFragmentById(id);
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getFragmentsByName(java.lang.String)
      */
     public List getFragmentsByName(String name)

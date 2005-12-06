@@ -788,6 +788,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         page.setTitle("UPDATED");
         page.getRootFragment().getProperties().remove("custom-prop1");
         page.getRootFragment().getProperties().put("UPDATED", "UPDATED");
+        assertNotNull(page.getRootFragment().getFragments());
+        assertEquals(2, page.getRootFragment().getFragments().size());
+        String removeId = ((Fragment)page.getRootFragment().getFragments().get(1)).getId();
+        assertNotNull(page.removeFragmentById(removeId));
         SecurityConstraint pageConstraint = page.newSecurityConstraint();
         pageConstraint.setUsers(Shared.makeListFromCSV("UPDATED"));
         page.getSecurityConstraints().getSecurityConstraints().add(0, pageConstraint);

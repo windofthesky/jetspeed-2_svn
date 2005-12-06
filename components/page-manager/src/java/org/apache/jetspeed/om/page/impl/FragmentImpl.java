@@ -165,6 +165,42 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
 
     /**
+     * removeFragmentById
+     *
+     * Remove fragment with matching id from
+     * child fragments.
+     *
+     * @param id fragment id to remove.
+     * @return removed fragment
+     */
+    Fragment removeFragmentById(String id)
+    {
+        // remove from deep children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                FragmentImpl fragment = (FragmentImpl)fragmentsIter.next();
+                if (!fragment.getId().equals(id))
+                {
+                    Fragment removed = fragment.removeFragmentById(id);
+                    if (removed != null)
+                    {
+                        return removed;
+                    }
+                }
+                else
+                {
+                    fragmentsIter.remove();
+                    return fragment;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * getFragmentsByName
      *
      * Retrieve fragments with matching name including

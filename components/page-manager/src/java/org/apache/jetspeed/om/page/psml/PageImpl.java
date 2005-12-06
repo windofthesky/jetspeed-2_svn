@@ -17,8 +17,10 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
@@ -169,6 +171,62 @@ public class PageImpl extends DocumentImpl implements Page
         }
 
         return f;
+    }
+
+    public Fragment removeFragmentById( String id )
+    {
+        // find fragment by id, tracking fragment parent
+        Map parents = new HashMap();
+        Stack stack = new Stack();
+        if (getRootFragment() != null)
+        {
+            stack.push(getRootFragment());
+        }
+        Fragment f = (Fragment) stack.pop();
+        while ((f != null) && (!(f.getId().equals(id))))
+        {
+            Iterator i = f.getFragments().iterator();
+
+            while (i.hasNext())
+            {
+                Fragment child = (Fragment)i.next();
+                stack.push(child);
+                parents.put(child, f);
+            }
+
+            if (stack.size() > 0)
+            {
+                f = (Fragment) stack.pop();
+            }
+            else
+            {
+                f = null;
+            }
+        }
+
+        // remove fragment from parent/page root
+        if (f != null)
+        {
+            Fragment parent = (Fragment)parents.get(f);
+            if (parent != null)
+            {
+                if (parent.getFragments().remove(f))
+                {
+                    return f;
+                }
+            }
+            else
+            {
+                if (f == root)
+                {
+                    root = null;
+                    return f;
+                }
+            }
+        }
+
+        // not found or removed
+        return null;
     }
 
     public List getFragmentsByName( String name )
