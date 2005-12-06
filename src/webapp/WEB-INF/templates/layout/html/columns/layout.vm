@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
+#set($theme = $request.getAttribute("org.apache.jetspeed.theme"))
 
 #set($sizes = $jetspeed.columnSizes)
 
@@ -23,7 +24,7 @@ limitations under the License.
 
 #set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
 
-#set($actions = $jetspeed.PageDecoratorActions)
+#set($actions = $myFragment.decoration.actions)
 
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
@@ -32,19 +33,10 @@ limitations under the License.
   
  #if($myFragment.getDecorator())
         #set($decorator = $myFragment.getDecorator())
-  #end
-
-  #if ($decorator)
-        #set($decoTop = "${decorator}/decorator-top.vm")
-        #set($decoBottom = "${decorator}/decorator-bottom.vm")
-  #end
-
+ #end
+ 
 <!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
-
-
-  #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))
-      #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
-  #end
+#parse($myFragment.decoration.header)
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
@@ -162,7 +154,7 @@ limitations under the License.
 		   #end
 		   
 		   #if($f.type == "portlet")
-   		     #parse($jetspeed.decorateAndInclude($f))
+			 #parse($f.decoration.template)
 		   #else		
 	 	 	 $jetspeed.setCurrentFragment($f)
 			 $f.renderedContent			
@@ -174,8 +166,8 @@ limitations under the License.
 	 #end
    </div>  
 
-  #if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
-    #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
+  #if ($myFragment == $myPage.getRootFragment())
+    #parse($myFragment.decoration.footer)
   #end
   
   <form name='portletform' action="$renderResponse.createActionURL()" method="post">
