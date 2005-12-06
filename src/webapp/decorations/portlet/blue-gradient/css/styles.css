@@ -1,0 +1,677 @@
+/*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+
+
+.blue-gradient .PTitle
+{
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
+    border-left: 1px solid #517B94;
+    border-right: 1px solid #517B94;
+    border-top: 1px solid #517B94;
+    color: #01375D;    
+    
+    background-image: url(../images/grad2blue.png);
+}
+
+.blue-gradient .PTitleContent
+{   
+    font-weight:bold;
+    display: inline;
+    float: left;
+
+}
+
+.blue-gradient .PActionBar
+{
+   float: right;
+   display: inline;
+
+}
+ 
+.blue-gradient .PContent
+{   
+    border-left: 1px solid #517B94;
+    border-right: 1px solid #517B94;
+    border-bottom: 1px solid #517B94;
+}
+
+
+/* font */
+.blue-gradient .PTitleLeft,
+.blue-gradient .PTitle,
+.blue-gradient .PTitleContent,
+.blue-gradient .PTitleRight,
+.blue-gradient .PContentLeft,
+.blue-gradient .PContent,
+.blue-gradient .PContentRight,
+.blue-gradient .PBottomLeft,
+.blue-gradient .PBottom,
+.blue-gradient .PBottomRight
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+
+/* --------------------------------- */
+/* PLT.C.1 Links (Anchor)            */
+/* --------------------------------- */
+
+.blue-gradient A:link, 
+.blue-gradient A:visited {
+    text-decoration: underline;
+}
+
+.blue-gradient A:hover, 
+.blue-gradient A:active {
+    text-decoration: underline;
+}
+
+/* font */
+.blue-gradient A:link,
+.blue-gradient A:visited,
+.blue-gradient A:hover,
+.blue-gradient A:active
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: 12px;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.2 Fonts                     */
+/* --------------------------------- */
+
+.blue-gradient .portlet-font {
+    color: black;
+}
+.blue-gradient .portlet-font-dim {
+    color: gray;
+}
+
+/* font */
+.blue-gradient .portlet-font,
+.blue-gradient .portlet-font-dim
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+
+/* --------------------------------- */
+/* PLT.C.3 Messages                  */
+/* --------------------------------- */
+.blue-gradient .portlet-msg-status {
+    background: url(../../../../images/icon_status_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.blue-gradient .portlet-msg-info {
+    background: url(../../../images/icon_info_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.blue-gradient .portlet-msg-error {
+    background: url(../../images/icon_error_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.blue-gradient .portlet-msg-alert {
+    background: url(../../../images/icon_warning_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.blue-gradient .portlet-msg-success {
+    background: url(../../../images/icon_success_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+/* font */
+.blue-gradient .portlet-msg-status,
+.blue-gradient .portlet-msg-info,
+.blue-gradient .portlet-msg-error,
+.blue-gradient .portlet-msg-alert,
+.blue-gradient .portlet-msg-success
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.4 Sections                  */
+/* --------------------------------- */
+.blue-gradient .portlet-section-header {
+    background-image: url(../../../images/nw_maj_rond.gif);
+    background-repeat: no-repeat;
+    color: #fff;
+    background-color: #036;
+    padding: 5px;
+    margin-right: 2px;
+    margin-left: 2px;
+    clear: both;
+}
+
+.blue-gradient .portlet-section-body {
+    background: #efefef;
+    border: none;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+}
+
+.blue-gradient .portlet-section-alternate {
+    background: #ddd;
+    border: none;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+}
+
+.blue-gradient .portlet-section-selected {
+    /* TODO : ex. change color */
+    background: #ffe;
+    border: none;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+    font-weight:bold;
+}
+
+.blue-gradient .portlet-section-subheader {
+    background-image: url(../../../images/nw_maj_rond.gif);
+    background-repeat: no-repeat;
+    color: #fff;
+    background-color: #888;
+    padding: 5px;
+    margin-right: 2px;
+    margin-left: 2px;
+    clear: both;
+}
+
+.blue-gradient .portlet-section-footer {
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    background-color: #ddd;
+    background-image: url(../../../images/sw_med_rond.gif);
+    color: #000;
+    padding: 5px;
+    margin: .67em 2px;
+    margin-top: 0;
+}
+
+.blue-gradient .portlet-section-text {
+    padding: 1em;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+/* font */
+.blue-gradient .portlet-section-header,
+.blue-gradient .portlet-section-body,
+.blue-gradient .portlet-section-alternate,
+.blue-gradient .portlet-section-selected,
+.blue-gradient .portlet-section-subheader,
+.blue-gradient .portlet-section-footer,
+.blue-gradient .portlet-section-text,
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.5 Forms                     */
+/* --------------------------------- */
+.blue-gradient .portlet-form-label {
+}
+
+.blue-gradient .portlet-form-input-field {
+}
+
+.blue-gradient .portlet-form-button {
+}
+
+.blue-gradient .portlet-icon-label {
+}
+
+.blue-gradient .portlet-dlg-icon-label {
+}
+
+.blue-gradient .portlet-form-field-label {
+}
+
+.blue-gradient .portlet-form-field {
+}
+
+/* font */
+.blue-gradient .portlet-section-header,
+.blue-gradient .portlet-section-body,
+.blue-gradient .portlet-section-alternate,
+.blue-gradient .portlet-section-selected,
+.blue-gradient .portlet-section-subheader,
+.blue-gradient .portlet-section-footer,
+.blue-gradient .portlet-section-text,
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus                     */
+/* --------------------------------- */
+.blue-gradient .portlet-menu {
+    background: #efefef;
+    margin-bottom: 6px;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+.blue-gradient .portlet-menu-item {
+    text-decoration: none;
+    color: blue;
+}
+
+.blue-gradient .portlet-menu-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+}
+
+.blue-gradient .portlet-menu-item-hover {
+    text-decoration: none;
+    color: #f30 !important;
+}
+
+.blue-gradient .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.blue-gradient .portlet-menu-cascade-item {
+    text-decoration: none;
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+}
+
+.blue-gradient .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.blue-gradient .portlet-menu-description {
+}
+
+.blue-gradient .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+    background: #ddd;
+    color: #555;
+    padding: 4px;
+}
+
+/* font */
+.blue-gradient .portlet-menu,
+.blue-gradient .portlet-menu-item,
+.blue-gradient .portlet-menu-item-selected,
+.blue-gradient .portlet-menu-item-hover,
+.blue-gradient .portlet-menu-item-hover-selected,
+.blue-gradient .portlet-menu-cascade-item,
+.blue-gradient .portlet-menu-cascade-item-selected,
+.blue-gradient .portlet-menu-description,
+.blue-gradient .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus (arrowfolder style) */
+/* --------------------------------- */
+.blue-gradient .arrowfolder .portlet-menu {
+    background: #efefef;
+    margin-bottom: 6px;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-item {
+    text-decoration: none;
+    color: blue;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+
+}
+
+.blue-gradient .arrowfolder .portlet-menu-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-item-hover {
+    text-decoration: none;
+    color: #f30 !important;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-cascade-item {
+    text-decoration: none;
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowfolderclosed1_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(../../../images/icon_arrowfolderopen2_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.blue-gradient .arrowfolder .portlet-menu-description {
+}
+
+.blue-gradient .arrowfolder .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+    background: #ddd;
+    color: #555;
+    padding: 4px;
+}
+
+/* font */
+.blue-gradient .arrowfolder .portlet-menu,
+.blue-gradient .arrowfolder .portlet-menu-item,
+.blue-gradient .arrowfolder .portlet-menu-item-selected,
+.blue-gradient .arrowfolder .portlet-menu-item-hover,
+.blue-gradient .arrowfolder .portlet-menu-item-hover-selected,
+.blue-gradient .arrowfolder .portlet-menu-cascade-item,
+.blue-gradient .arrowfolder .portlet-menu-cascade-item-selected,
+.blue-gradient .arrowfolder .portlet-menu-description,
+.blue-gradient .arrowfolder .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+/* --------------------------------- */
+/* Tree component                    */
+/* --------------------------------- */
+
+.blue-gradient .tree {
+   lineheight: 18px;
+   font-family: arial, sans-serif;
+}
+
+.blue-gradient .tree-node {
+   padding: 2px 15px 2px 5px;
+}
+
+.blue-gradient .tree-node a {
+   text-decoration: none;
+}
+
+.blue-gradient .tree-node-selected {
+   padding: 2px 15px 2px 5px;
+}
+
+.blue-gradient .tree-node-selected a {
+   text-decoration: none;
+   font-weight: bold;
+}
+
+/* --------------------------------- */
+/* Portlet Table                     */
+/* --------------------------------- */
+.blue-gradient th, td, input {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+.blue-gradient table, th, td {
+    vertical-align: top;
+    font-size: small;
+    border: none;
+    /* action buttons shifts right a few millimeters by the following */
+    /*white-space: nowrap;*/
+}
+
+.blue-gradient .portlet-table-header {
+    background-color: #bbb;
+    border: 0.75px solid #fff;
+    padding: 2px 3px;
+    text-align: left;
+}
+
+.blue-gradient .portlet-table-footer {
+    font-size: x-small;
+    padding: 5px;
+    margin: .67em 2px;
+    margin-top: 0;
+    background-color: #ddd;
+    background-image: url(../images/sw_med_rond.gif);
+    background-repeat: no-repeat;
+    background-position: bottom left;
+}
+
+
+.blue-gradient .portlet-table-row1 td {
+    font-size: small;
+    background: #ddd;
+    border-bottom: 1px solid #fff;
+}
+
+.blue-gradient .portlet-table-row2 td {
+    font-size: small;
+    background: #efefef;
+    border-bottom: 1px solid #fff;
+}
+
+.blue-gradient .portlet-table-col1 {
+    border-right: 1px solid #fff;
+    padding: 2px 15px 2px 5px;
+}
+
+.blue-gradient .portlet-table-col2 {
+    border-left: 1px solid #fff;
+    padding: 2px 15px 2px 5px;
+}
+
+/* --------------------------------- */
+/* Portlet Data Scroller Table       */
+/* --------------------------------- */
+
+.blue-gradient .portlet-scroller-grid td {
+    horizontal-align: center;
+}
+
+.blue-gradient .portlet-scroller {
+    horizontal-align: center;
+}
+
+.blue-gradient .portlet-paginator {
+    horizontal-align: center;
+}
+
+/* Custom stuff for UGS added by EDB */
+.blue-gradient p.corelink
+{
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    font-size: 12px;
+}
+
+.blue-gradient p.abstract
+{
+    margin-top: 0em;
+    margin-bottom: 0.5em;
+    font-size: 11px;
+}
+
+.blue-gradient p.title
+{
+    font-family: Arial, Helvetica, sans-serif; 
+    font-size: 17px; 
+    font-weight: bold; 
+    padding-bottom: 0em; 
+    margin-top: 0em; 
+    margin-bottom: 0em;
+}
+
+.blue-gradient p.download
+{
+    font-size:12px;
+    margin-top:0.25em;
+    margin-bottom:0em;
+}
+
+.blue-gradient p.side
+{ 
+    font-size: 12px;
+    margin-left: 0.85em;
+    text-indent: -0.85em;
+    margin-top: 0.25em;
+    margin-bottom:
+    0.25em;
+}
+
+.blue-gradient img
+{
+    display: inline;
+    margin: 0em;
+}
+
+/** Below are tab styles */
+    .blue-gradient .tabContainer
+    {
+      background-image: url(../images/grad1blue.png);
+      width: 100%;
+     
+    }
+    
+    .blue-gradient .tabSpacer
+    {
+      border-bottom: thin solid #01375D;
+      height: 3px;      
+      width: 100%;
+    }
+    
+    .blue-gradient A.tab,
+    .blue-gradient A:LINK.tab,
+    .blue-gradient A:ACTIVE.tab,
+    .blue-gradient A:VISITED.tab,
+    .blue-gradient A:HOVER.tab
+    {
+      color: #02385E;
+      font-size: x-small;
+      text-decoration: none;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+    
+    .blue-gradient A.tabActive
+    {
+       
+        background-color: #85A3B8;
+        border-top: thin solid     #01375D;
+        border-left: thin solid #01375D;
+        border-right: thin solid #01375D;        
+        
+    }
+    
+    .blue-gradient A:LINK.tabActive,
+    .blue-gradient A:ACTIVE.tabActive,
+    .blue-gradient A:VISITED.tabActive
+    {
+        color: #FFFFFF;
+    }
+    
+    .blue-gradient A.tabInactive
+    {
+      background-image: none;
+      border-bottom: thin solid #01375D;
+      border-top: 0 none;
+    }
+    
+    .blue-gradient A:HOVER.tabInactive
+    {
+      background-image: url(../images/grad2blue.png);
+      border-top: thin solid #990000;
+    }
+
