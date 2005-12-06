@@ -65,7 +65,6 @@ limitations under the License.
 
  <div id="$renderResponse.namespace" class="portal-layout portal-layout-$layoutType">
 	#set ($sizeIndex = 0)
-    #set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
 	#foreach($column in $columnLayout.columns)
 	  #set($columnWidth = "auto")
 	  
@@ -108,9 +107,8 @@ limitations under the License.
                #set($leftUrl = $renderResponse.createActionURL())    
                $!leftUrl.setParameter("move","3")
                $!leftUrl.setParameter("fragmentToMove","$f.id")
-			   $!leftUrl.setParameter("editingPage","$myPage.id")  
-               #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
-               <a href="$leftUrl" class="move-portlet-left"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
+			   $!leftUrl.setParameter("editingPage","$myPage.id")                
+               <a href="$leftUrl" class="move-portlet-left"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="Move Portlet Left"/></a>
 			 #end
 			 
 			 ## Move portlet up	
@@ -119,16 +117,14 @@ limitations under the License.
                  $!upUrl.setParameter("move","1")
                  $!upUrl.setParameter("fragmentToMove","$f.id")
 				 $!upUrl.setParameter("editingPage","$myPage.id") 
-                 #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
-                 <a href="$upUrl" class="move-portlet-up"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
+                 <a href="$upUrl" class="move-portlet-up"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="Move Portlet Up"/></a>
 			 #end
 			 
 			 ## Remove portlet from page
              #set($deleter = $renderResponse.createActionURL())    
              $deleter.setParameter("deleteId","$f.id")
              $deleter.setParameter("page","$myPage")                         
-             #set ($imgsrc="$layoutImageBase/close.gif")
-             <a href="$deleter" class="remove-portlet-from-apge"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Remove Portlet"/></a>
+             <a href="$deleter" class="remove-portlet-from-apge"><img src="#GetPageResource('images/close.gif')" border="0" title="Remove Portlet"/></a>
 			 
 			 ## Move portlet down
              #if($row < $lastRow)						
@@ -136,8 +132,7 @@ limitations under the License.
                $!downUrl.setParameter("move","2")
                $!downUrl.setParameter("fragmentToMove","$f.id")
 			   $!downUrl.setParameter("editingPage","$myPage.id") 
-               #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
-               <a href="$downUrl" class="move-portlet-down"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
+               <a href="$downUrl" class="move-portlet-down"><img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="Move Portlet Down"/></a>
 			 #end
 			 
 			 ## Move portlet right
@@ -146,8 +141,7 @@ limitations under the License.
                $!rightUrl.setParameter("move","4")
                $!rightUrl.setParameter("fragmentToMove","$f.id")
 			   $!rightUrl.setParameter("editingPage","$myPage.id") 
-               #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
-               <a href="$rightUrl" class="move-portlet-right"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
+               <a href="$rightUrl" class="move-portlet-right"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="Move Portlet Right"/></a>
 			 #end
 </form>			 
 		   </div>

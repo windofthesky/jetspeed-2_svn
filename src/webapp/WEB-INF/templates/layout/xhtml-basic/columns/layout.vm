@@ -21,16 +21,7 @@
 #set($editing = true)
 #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
 #end
-#if($myFragment.getDecorator())
-#set($decorator = $myFragment.getDecorator())
-#end
-#if($decorator)
-#set($decoTop = "${decorator}/decorator-top.vm")
-#set($decoBottom = "${decorator}/decorator-bottom.vm")
-#end
-#if(($decoTop) && ($myFragment == $myPage.getRootFragment()))
-#parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
-#end
+#parse($myFragment.decoration.header)
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 #if($actions.size()>0)
@@ -55,14 +46,13 @@
 ##
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 #set ($sizeIndex = 0)
-#set ($layoutImageBase = "${jetspeed.pageBasePath}/content/images")
 #foreach($column in $columnLayout.columns)
 #set ($sizeIndex = $sizeIndex + 1)     
 #foreach($f in $column)       
 ## TODO: Edit layout
 ## get the decorated Portlet content
 #if($f.type == "portlet")
-#parse($jetspeed.decorateAndInclude($f))
+#parse($f.decoration.template)
 #else		
 $jetspeed.setCurrentFragment($f)
 $f.renderedContent			
@@ -72,5 +62,5 @@ $f.renderedContent
 </div>
 ##
 #if(($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
-#parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
+#parse($myFragment.decoration.footer)
 #end

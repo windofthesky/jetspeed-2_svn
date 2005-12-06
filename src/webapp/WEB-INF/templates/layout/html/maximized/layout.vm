@@ -14,43 +14,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
-
-#set($table = $jetspeed.columns)
-
 #set($myPage = $jetspeed.page)
+#set($f = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
+#set($rootFragment = $myPage.rootFragment)
 
-#set($myFragment = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
-
-#set($myLayout = $jetspeed.currentLayout)
-
-#set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
-#set($ldecorator = $myPage.getDefaultDecorator("layout"))  
-
-#if($myFragment.getDecorator())
-    #set($decorator = $myFragment.getDecorator())
+#if ($rootFragment.decoration.header)
+   #parse($rootFragment.decoration.header)
 #end
-
-#if($myLayout.getDecorator())
-        #set($ldecorator = $myLayout.getDecorator())
-#end
-
-#if ($ldecorator)
-   #set($decoTop = "${ldecorator}/decorator-top.vm")
-   #set($decoBottom = "${ldecorator}/decorator-bottom.vm")
-#end
-
-<!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
-
-  #if ($decoTop)
-      #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
-  #end
 
   ## get the decorated Portlet content
   <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout-maxed">
-    #parse($jetspeed.decorateAndInclude($myFragment))
+    #parse($f.decoration.template)
   </div>
-
-
-#if ($decoBottom)
-   #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
+  
+#if ($rootFragment.decoration.footer)
+  #parse($rootFragment.decoration.footer)
 #end
