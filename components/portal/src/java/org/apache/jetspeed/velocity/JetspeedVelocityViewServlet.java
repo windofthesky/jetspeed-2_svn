@@ -120,6 +120,9 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
     /** cache validation interval */
     private long cacheValidationInterval;
 
+    /** default velocity engine */
+    private VelocityEngine defaultVelocityEngine;
+
     /**
      * Initialize servlet, BridgesVelocityViewServlet, and VelocityViewServlet.
      *
@@ -247,8 +250,8 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             }
         }
 
-        // fallback to global velocity engine singleton
-        return super.getTemplate(name);
+        // no velocity engine available
+        throw new Exception("No velocity engine available for request context.");
     }
 
     /**
@@ -279,8 +282,8 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             }
         }
 
-        // fallback to global velocity engine singleton
-        return super.getTemplate(name, encoding);
+        // no velocity engine available
+        throw new Exception("No velocity engine available for request context.");
     }
 
     /** velocity engine logging adapter */
@@ -412,7 +415,16 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                 }
                 else
                 {
-                    return null;
+                    // use default velocity engine
+                    synchronized (this)
+                    {
+                        // construct and cache default velocity engine
+                        if (defaultVelocityEngine != null)
+                        {
+                            defaultVelocityEngine = initVelocity((TemplateDescriptor)null);
+                        }
+                        return defaultVelocityEngine;
+                    }
                 }
             }
             
@@ -567,6 +579,20 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     }
                 }
             }
+
+            // fallback to default velocity engine
+            if (velocity == null)
+            {
+                synchronized (this)
+                {
+                    // construct and cache default velocity engine
+                    if (defaultVelocityEngine != null)
+                    {
+                        defaultVelocityEngine = initVelocity((TemplateDescriptor)null);
+                    }
+                    velocity = defaultVelocityEngine;
+                }
+            }
             
             // return velocity engine for validated configuration
             return velocity;
@@ -595,13 +621,23 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             velocity.setApplicationAttribute(SERVLET_CONTEXT_KEY, getServletContext());
             velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.tools.view.servlet.ServletLogger");
             ExtendedProperties configuration = loadConfiguration(getServletConfig());
-            configuration.addProperty("velocimacro.library", macros.getAppRelativePath());
+            if (macros != null)
+            {
+                configuration.addProperty("velocimacro.library", macros.getAppRelativePath());
+            }
             configuration.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
             velocity.setExtendedProperties(configuration);
 
             // initialize and return velocity engine
             velocity.init();
-            log.debug("initVelocity(): create new VelocityEngine instance to support " + macros.getAppRelativePath() + " decoration template macros");
+            if (macros != null)
+            {
+                log.debug("initVelocity(): create new VelocityEngine instance to support " + macros.getAppRelativePath() + " decoration template macros");
+            }
+            else
+            {
+                log.debug("initVelocity(): create new default VelocityEngine instance");
+            }
             return velocity;
         }
         catch (Exception e)
