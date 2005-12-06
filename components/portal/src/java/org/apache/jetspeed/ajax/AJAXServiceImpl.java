@@ -68,6 +68,7 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
                 engine = new VelocityEngine();
                 Properties props = new Properties();
                 props.load(request.getContext().getResourceAsStream("/WEB-INF/velocity.properties"));
+                props.setProperty("file.resource.loader.path", request.getContext().getRealPath("/"));
                 engine.init();
             }
             

@@ -594,10 +594,9 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             // base configuration velocimacro.library property
             velocity.setApplicationAttribute(SERVLET_CONTEXT_KEY, getServletContext());
             velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.tools.view.servlet.ServletLogger");
-            velocity.setProperty(VelocityEngine.RESOURCE_LOADER, "webapp");
-            velocity.setProperty("webapp.resource.loader.class", "org.apache.velocity.tools.view.servlet.WebappLoader");
             ExtendedProperties configuration = loadConfiguration(getServletConfig());
             configuration.addProperty("velocimacro.library", macros.getAppRelativePath());
+            configuration.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
             velocity.setExtendedProperties(configuration);
 
             // initialize and return velocity engine
