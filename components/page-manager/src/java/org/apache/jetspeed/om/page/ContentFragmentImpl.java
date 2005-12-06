@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 
@@ -24,6 +25,7 @@ public class ContentFragmentImpl implements ContentFragment
     private List contentFragments;
     private static final Log log = LogFactory.getLog(ContentFragmentImpl.class);
     private final Map cachedFragments;
+    private Decoration decoration;
     
 
     public ContentFragmentImpl(Fragment fragment, Map cachedFagments)
@@ -407,6 +409,7 @@ public class ContentFragmentImpl implements ContentFragment
         fragment.setSecurityConstraints(constraints);
     }
     
+    
     /**
      * Checks the ContentFragment cache for a ContentFragment
      * that matches the <code>Id</code> of this fragment.  If
@@ -681,6 +684,11 @@ public class ContentFragmentImpl implements ContentFragment
     {
         return fragment.getPreferences();
     }
+
+    public Decoration getDecoration()
+    {
+        return decoration;
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
@@ -689,4 +697,12 @@ public class ContentFragmentImpl implements ContentFragment
     {
         fragment.setPreferences(preferences);
     }
+
+
+    public void setDecoration(Decoration decoration)
+    {
+        this.decoration = decoration;
+        
+    }
+    
 }
