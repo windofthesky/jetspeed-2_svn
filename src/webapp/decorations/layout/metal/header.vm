@@ -15,18 +15,16 @@ limitations under the License.
 *#
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
+#defineLayoutObjects()
 <html>
-<head>
-    <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
-    <title>$jetspeed.page.title</title> 
-#set($cssUrls = $renderRequest.getAttribute("cssUrls"))
-#foreach($cssUrl in $cssUrls)
-    <link rel="stylesheet" type="text/css" media="all" href="$cssUrl" />
-#end
+<head>	
+    <meta http-equiv="Content-type" content="#ContentType()" />	
+	<title>#PageTitle()</title> 
+	#includeJavaScriptForHead()
+	#IncludeStylesheets()    
 </head>
 
-<body class="layout-Metal">
+<body class="#PageBaseCSSClass()">
 
 
 
