@@ -26,16 +26,14 @@ limitations under the License.
     <title>$jetspeed.page.getTitle($preferedLocale)</title>
 #includeJavaScriptForHead()
 #includeHeaderResource()
+#IncludeStylesheets()
 </head>
-<body class="${_layoutBaseCssClass}">
-
-#set($myF = $jetspeed.currentFragment)
-
+<body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 
-<div id="layout-${myF.id}" class="${_layoutBaseCssClass}" >
+<div id="layout-${layoutFragment.id}" class="#PageBaseCSSClass()" >
 <p>
-<img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
+<img src="#GetPageResource('images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0">
 </p>
 
 #set($site = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))

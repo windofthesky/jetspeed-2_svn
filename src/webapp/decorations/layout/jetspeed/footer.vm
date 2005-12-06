@@ -20,7 +20,7 @@ limitations under the License.
 </div>
 
 <p>
-<img src="content/images/jetspeed-powered.gif" alt="Jetspeed 2 Powered" border="0">
+<img src="#GetPageResource('images/jetspeed-powered.gif')" alt="Jetspeed 2 Powered" border="0">
 </p>
 </body>
 </html>
