@@ -139,11 +139,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", rootFolderProxy.getName());
         assertEquals("root", rootFolderProxy.getTitle());
         assertEquals("/", extractFileSystemPathFromId(rootFolderProxy.getId()));
-        assertEquals(3, rootFolderProxy.getFolders().size());
+        assertEquals(4, rootFolderProxy.getFolders().size());
         Iterator foldersIter = rootFolderProxy.getFolders().iterator();
         assertEquals("folder0", ((Folder)foldersIter.next()).getName());
         assertEquals("folder1", ((Folder)foldersIter.next()).getName());
         assertEquals("folder2", ((Folder)foldersIter.next()).getName());
+        assertEquals("folder3", ((Folder)foldersIter.next()).getName());
         assertEquals(4, rootFolderProxy.getPages().size());
         Iterator pagesIter = rootFolderProxy.getPages().iterator();
         assertEquals("page2.psml", ((Page)pagesIter.next()).getName());
@@ -200,7 +201,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(rootPageProxiesByPath.contains(rootPage0Proxy));
         List rootFolderProxiesByPath = baseView.getNodeProxies("/*/", null, false, false);
         assertNotNull(rootFolderProxiesByPath);
-        assertEquals(3,rootFolderProxiesByPath.size());
+        assertEquals(4,rootFolderProxiesByPath.size());
         assertTrue(rootFolderProxiesByPath.contains(rootFolder0Proxy));
         List folderPageProxiesByPath = baseView.getNodeProxies("*/p*[0-9].psml", rootFolderProxy, false, false);
         assertNotNull(folderPageProxiesByPath);
@@ -215,7 +216,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", rootFolderProxy.getName());
         assertEquals("user root", rootFolderProxy.getTitle());
         assertEquals("/_user/user", extractFileSystemPathFromId(rootFolderProxy.getId()));
-        assertEquals(3, rootFolderProxy.getFolders().size());
+        assertEquals(4, rootFolderProxy.getFolders().size());
         assertEquals(4, rootFolderProxy.getPages().size());
         assertEquals(2, rootFolderProxy.getLinks().size());
         rootPage0Proxy = rootFolderProxy.getPage("page0.psml");
@@ -517,6 +518,17 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestPageProxy);
         assertEquals("page0.psml", requestPageProxy.getName());
         assertEquals("/folder0/page0.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("page", false, false, "/folder3/default-folder0/");
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertEquals("page1.psml", requestPageProxy.getName());
+        assertEquals("/folder3/default-folder1/page1.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
     }
 
     /**

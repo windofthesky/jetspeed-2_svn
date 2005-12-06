@@ -320,11 +320,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 
             // lookup request path in view for viewable page or folder
             // nodes; note: directly requested pages/folders may be hidden
+            // or not viewable
             Node requestNode = null;
             try
             {
                 // try page or folder request url
-                requestNode = view.getNodeProxy(requestPath, null, true, false);
+                requestNode = view.getNodeProxy(requestPath, null, false, false);
             }
             catch (NodeNotFoundException nnfe)
             {
@@ -348,30 +349,80 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             {
                 Folder requestFolder = (Folder)requestNode;
                 
+                // support subfolders specified as default pages;
+                // find highest subfolder with a default page that
+                // specifies a default folder, (not a default page).
+                try
+                {
+                    String defaultFolderName = requestFolder.getDefaultPage();
+                    if (defaultFolderName != null)
+                    {
+                        // do not follow broken default folders
+                        Folder defaultRequestFolder = requestFolder;
+                        // follow default folders to parent folders
+                        while ((defaultRequestFolder != null) && (defaultFolderName != null) &&
+                               defaultFolderName.equals(".."))
+                        {
+                            defaultRequestFolder = (Folder)defaultRequestFolder.getParent();
+                            if (defaultRequestFolder != null)
+                            {
+                                defaultFolderName = defaultRequestFolder.getDefaultPage();
+                            }
+                            else
+                            {
+                                defaultFolderName = null;
+                            }
+                        }
+                        // follow default folders to subfolders
+                        while ((defaultRequestFolder != null) && (defaultFolderName != null) &&
+                               !defaultFolderName.endsWith(Page.DOCUMENT_TYPE) && !defaultFolderName.equals(".."))
+                        {
+                            defaultRequestFolder = defaultRequestFolder.getFolder(defaultFolderName);
+                            defaultFolderName = defaultRequestFolder.getDefaultPage();
+                        }
+                        // use default request folder
+                        if (defaultRequestFolder != null)
+                        {
+                            requestFolder = defaultRequestFolder;
+                        }
+                    }
+                }
+                catch (NodeException ne)
+                {
+                }
+                catch (SecurityException se)
+                {
+                    requestFolder = null;
+                    accessException = se;
+                }
+
                 // only request folders with pages can be
                 // selected by request; otherwise, fall back to
                 // parent folders assuming that immediate parents
                 // will have the most appropriate default page
                 NodeSet requestFolderPages = null;
-                try
+                if (requestFolder != null)
                 {
-                    requestFolderPages = requestFolder.getPages();
-                    while (((requestFolderPages == null) || requestFolderPages.isEmpty()) && (requestFolder.getParent() != null))
+                    try
                     {
-                        requestFolder = (Folder)requestFolder.getParent();
                         requestFolderPages = requestFolder.getPages();
+                        while (((requestFolderPages == null) || requestFolderPages.isEmpty()) && (requestFolder.getParent() != null))
+                        {
+                            requestFolder = (Folder)requestFolder.getParent();
+                            requestFolderPages = requestFolder.getPages();
+                        }
+                    }
+                    catch (NodeException ne)
+                    {
+                        requestFolderPages = null;
+                    }
+                    catch (SecurityException se)
+                    {
+                        requestFolderPages = null;
+                        accessException = se;
                     }
                 }
-                catch (NodeException ne)
-                {
-                    requestFolderPages = null;
-                }
-                catch (SecurityException se)
-                {
-                    requestFolderPages = null;
-                    accessException = se;
-                }
-                if ((requestFolderPages != null) && !requestFolderPages.isEmpty())
+                if ((requestFolder != null) && (requestFolderPages != null) && !requestFolderPages.isEmpty())
                 {
                     // attempt to lookup last visited page by folder proxy
                     // path, (proxies are hashed by their path), contains

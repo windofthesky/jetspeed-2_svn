@@ -321,14 +321,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public String getDefaultPage(Object proxy)
     {
         // attempt to get explicitly specified default page
-        Page defaultPage = selectDefaultPageFromAggregateFolders(proxy);
-        if (defaultPage != null)
-        {
-            return defaultPage.getName();
-        }
-
-        // no default page available
-        return null;
+        return selectDefaultPageFromAggregateFolders(proxy);
     }
 
     /**
@@ -645,9 +638,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                                         proxy folder view path
      *
      * @param proxy this folder proxy
-     * @return selected default page proxy
+     * @return selected default page name
      */
-    private Page selectDefaultPageFromAggregateFolders(Object proxy)
+    private String selectDefaultPageFromAggregateFolders(Object proxy)
     {
         // select most specific specified default page
         // along search paths
@@ -663,17 +656,45 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 String defaultPageName = folder.getDefaultPage();
                 if (defaultPageName != null)
                 {
-                    // validate and return default page if it exists
-                    // as child in this folder
-                    try
+                    // validate and return default page or folder
+                    // if it exists as child in this folder
+                    if (defaultPageName.equals(".."))
                     {
-                        return getPage(proxy, defaultPageName);
+                        // default parent folder
+                        if (getParent() != null)
+                        {
+                            return defaultPageName;
+                        }
                     }
-                    catch (NodeException ne)
+                    else
                     {
-                    }
-                    catch (SecurityException se)
-                    {
+                        // default page
+                        try
+                        {
+                            getPage(proxy, defaultPageName);
+                            return defaultPageName;
+                        }
+                        catch (NodeException ne)
+                        {
+                        }
+                        catch (SecurityException se)
+                        {
+                        }
+                        // default folder
+                        if (!defaultPageName.endsWith(Page.DOCUMENT_TYPE))
+                        {
+                            try
+                            {
+                                getFolder(proxy, defaultPageName);
+                                return defaultPageName;
+                            }
+                            catch (NodeException ne)
+                            {
+                            }
+                            catch (SecurityException se)
+                            {
+                            }
+                        }
                     }
                 }
                 else if (!fallbackDefaultPageNotFound)
@@ -682,7 +703,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     // it exists as child in this folder
                     try
                     {
-                        return getPage(proxy, Folder.FALLBACK_DEFAULT_PAGE);
+                        getPage(proxy, Folder.FALLBACK_DEFAULT_PAGE);
+                        return Folder.FALLBACK_DEFAULT_PAGE;
                     }
                     catch (NodeException ne)
                     {
