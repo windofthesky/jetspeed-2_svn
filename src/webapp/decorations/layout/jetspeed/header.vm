@@ -22,8 +22,9 @@ limitations under the License.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
-    <title>$jetspeed.page.getTitle($preferedLocale)</title>
+    <meta http-equiv="Content-type" content="#ContentType()" />
+	<base href="#BaseHref()">
+    <title>#PageTitle()</title>
 #includeJavaScriptForHead()
 #includeHeaderResource()
 #IncludeStylesheets()

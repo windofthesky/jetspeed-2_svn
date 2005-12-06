@@ -1,5 +1,5 @@
 
-var cmThemeIEBase = 'content/images/ThemeIE/';
+var cmThemeIEBase = 'images/ThemeIE/';
 
 var cmThemeIE =
 {

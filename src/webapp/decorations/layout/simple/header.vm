@@ -24,6 +24,7 @@ limitations under the License.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
+	<base href="#BaseHref()">
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />
 #includeJavaScriptForHead()

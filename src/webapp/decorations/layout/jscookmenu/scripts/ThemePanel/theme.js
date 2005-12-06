@@ -1,6 +1,6 @@
 
 // directory of where all the images are
-var cmThemePanelBase = 'content/images/ThemePanel/';
+var cmThemePanelBase = 'images/ThemePanel/';
 
 var cmThemePanel =
 {

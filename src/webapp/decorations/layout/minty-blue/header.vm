@@ -19,6 +19,7 @@ limitations under the License.
 
 <html>
 <head>
+	<base href="#BaseHref()">
     <meta http-equiv="Content-type" content="#ContentType()" />
 	<meta name="version" content="#SiteVersionTag()">
     <meta name="keywords" content="" />

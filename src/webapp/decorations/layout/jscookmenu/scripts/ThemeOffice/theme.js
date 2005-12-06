@@ -1,6 +1,6 @@
 
 // directory of where all the images are
-var cmThemeOfficeBase = 'content/images/ThemeOffice/';
+var cmThemeOfficeBase = 'images/ThemeOffice/';
 
 var cmThemeOffice =
 {

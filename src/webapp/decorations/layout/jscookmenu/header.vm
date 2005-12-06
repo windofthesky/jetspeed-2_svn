@@ -36,11 +36,14 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 *#
 
-#* Add all template constants to the current context *#
-#defineNavigationConstants()
-
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
+
+#* Loads our custom macros *#
+#parse($layoutDecoration.getResource("decorator-macros.vm"))
+
+#* Add all template constants to the current context *#
+#defineNavigationConstants()
 
 #* Access page context *#
 #set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
@@ -56,11 +59,12 @@ DEALINGS IN THE SOFTWARE.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
+	<base href="#BaseHref()">
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />
 
 #includeJavaScriptForHead()
-#includeHeaderResource()
+## #includeHeaderResource()
 #IncludeStylesheets()
     <title>#PageTitle()</title>
 
