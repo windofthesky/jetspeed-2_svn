@@ -30,7 +30,8 @@ limitations under the License.
 		<js:service name='PageManager'/>
 		<js:service name='TemplateLocator'/>
 		<js:service name='DecorationLocator'/>
-		<js:service name='Powertools'/>        
+		<js:service name='Powertools'/>    
+		<js:service name='DecorationFactory'/>		    
 	</js:services>
 	
 </portlet-app>
