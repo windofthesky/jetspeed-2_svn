@@ -33,7 +33,7 @@ limitations under the License.
 <!--  BEGIN: layout/html/metal/decorator.vm -->
 
 <p>
-<img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
+<img src="#PageBaseCSSClass('images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0">
 </p>
 
 ## $jetspeed.include($jetspeed.currentFragment)
