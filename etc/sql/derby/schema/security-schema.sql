@@ -81,8 +81,25 @@ CREATE TABLE SSO_SITE
     URL VARCHAR(254) NOT NULL,
     ALLOW_USER_SET INTEGER default 0,
     REQUIRES_CERTIFICATE INTEGER default 0,
+    CHALLENGE_RESPONSE_AUTH INTEGER default 0,
+    FORM_AUTH INTEGER default 0,
+    FORM_USER_FIELD VARCHAR(128) NOT NULL,
+    FORM_PWD_FIELD VARCHAR(128) NOT NULL,
+    REALM VARCHAR(128) NOT NULL,
+    
     PRIMARY KEY(SITE_ID),
     UNIQUE (URL));
+-----------------------------------------------------------------------------
+-- SSO_COOKIE
+-----------------------------------------------------------------------------
+    
+CREATE TABLE SSO_COOKIE
+(
+    COOKIE_ID INTEGER NOT NULL,
+    COOKIE VARCHAR(254) NOT NULL, 
+    CREATE_DATE IMESTAMP NOT NULL,
+    PRIMARY KEY(COOKIE_ID)
+ );   
 
 -----------------------------------------------------------------------------
 -- SSO_SITE_TO_PRINCIPALS
@@ -129,6 +146,21 @@ CREATE TABLE SSO_SITE_TO_REMOTE
         ON DELETE CASCADE 
   ,
     FOREIGN KEY (PRINCIPAL_ID) REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+        ON DELETE CASCADE 
+  );
+
+----------------------------------------------------------------------------
+-- SSO_COOKIE_TO_REMOTE
+-----------------------------------------------------------------------------  
+CREATE TABLE SSO_COOKIE_TO_REMOTE
+(
+    COOKIE_ID INTEGER NOT NULL,
+    REMOTE_PRINCIPAL_ID INTEGER NOT NULL,
+    PRIMARY KEY(SITE_ID,REMOTE_PRINCIPAL_ID),
+    FOREIGN KEY (SITE_ID) REFERENCES SSO_SITE (SITE_ID)
+        ON DELETE CASCADE 
+  ,
+    FOREIGN KEY (REMOTE_PRINCIPAL_ID) REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
         ON DELETE CASCADE 
   );
 
