@@ -121,6 +121,20 @@
 		</table><br/>
 		<table>
           <tr>
+          	<th colspan="2">Jetspeed-2 Portal - Artifact Id: jetspeed-portal</th>
+          </tr>
+          <tr>
+            <th>Component Name</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="../multiproject/jetspeed-portal/pipeline.html"><code>Pipeline</code></a></td>
+            <td>The <code>Pipeline</code> orchestrates the <code>Valve</code> that are performing atomic operation on a
+            Jetspeed-2 request.</td>
+          </tr>
+		</table><br/>
+		<table>
+          <tr>
           	<th colspan="2">Jetspeed-2 Preferences - Artifact Id: jetspeed-prefs</th>
           </tr>
           <tr>

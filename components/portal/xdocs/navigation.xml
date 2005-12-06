@@ -17,9 +17,14 @@
 <project>
     <body>
         <links>
-            <item name="Jetspeed 2" href="../../index.html" />
+        	<item name="Components Guide" href="../../guides/guide-components.html" />
+        	<item name="Jetspeed 2" href="../../index.html" />
             <!-- Cannot access ${pom.id}... Hard coding pdf name. -->
             <item name="PDF Documentation" href="/jetspeed-portal.pdf" img="../../images/pdf.gif" />
         </links>
+    	<menu name="Jetspeed-2 Portal Documentation">
+    	    <item name="Portal Overview" href="index.html" />
+    		<item name="Request Pipeline" href="pipeline.html" />
+    	</menu>
     </body>
 </project>
