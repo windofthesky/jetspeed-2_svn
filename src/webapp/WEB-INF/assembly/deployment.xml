@@ -75,7 +75,7 @@ limitations under the License.
   <bean id="decoratorDeploymentListener" 
   	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener"   	   
   > 	
-       <constructor-arg ><value>${applicationRoot}/WEB-INF/decorations</value></constructor-arg>
+       <constructor-arg ><value>${applicationRoot}/decorations</value></constructor-arg>
   </bean>
 
   <!-- The deployment manager watches a specific staging directory for
