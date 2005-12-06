@@ -30,7 +30,7 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.capabilities.Capabilities" />
+       <ref bean="org.apache.jetspeed.capabilities.Capabilities" />
    </constructor-arg>
   </bean> 
   
@@ -44,13 +44,13 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.profiler.Profiler" />
+       <ref bean="org.apache.jetspeed.profiler.Profiler" />
    </constructor-arg>
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.security.UserManager" />
+       <ref bean="org.apache.jetspeed.security.UserManager" />
    </constructor-arg>
    <constructor-arg>
-   	<ref bean="PortalStatistics" />
+       <ref bean="PortalStatistics" />
    </constructor-arg>   
   </bean> 
   
@@ -69,13 +69,13 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.profiler.Profiler" />
+       <ref bean="org.apache.jetspeed.profiler.Profiler" />
    </constructor-arg>
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.portalsite.PortalSite" />
+       <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
    </constructor-arg>
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.page.PageManager" />
+       <ref bean="org.apache.jetspeed.page.PageManager" />
    </constructor-arg>
   </bean> 
   
@@ -89,10 +89,10 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.pluto.PortletContainer" />
+       <ref bean="org.apache.pluto.PortletContainer" />
    </constructor-arg>
    <constructor-arg>   
-   	<ref bean="PortletWindowAccessor" />    
+       <ref bean="PortletWindowAccessor" />    
    </constructor-arg>   
   </bean> 
   
@@ -101,7 +101,7 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.aggregator.PortletAggregator"/>
+       <ref bean="org.apache.jetspeed.aggregator.PortletAggregator"/>
    </constructor-arg>
   </bean> 
 
@@ -110,7 +110,7 @@ limitations under the License.
         init-method="initialize"
   >
      <!-- portlet -->
-	 <constructor-arg index="0"><value>demo::ContentViewer</value></constructor-arg>    
+     <constructor-arg index="0"><value>demo::ContentViewer</value></constructor-arg>    
      <!-- entity -->
      <constructor-arg index="1"><value>public.content.21</value></constructor-arg>    
   </bean> 
@@ -120,7 +120,7 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="org.apache.jetspeed.aggregator.PageAggregator"/>
+       <ref bean="org.apache.jetspeed.aggregator.PageAggregator"/>
    </constructor-arg>
   </bean> 
   
@@ -135,9 +135,20 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<ref bean="AJAXService"/>
+       <ref bean="AJAXService"/>
    </constructor-arg>
   </bean> 
+  
+  <bean id="DecorationValve"
+        class="org.apache.jetspeed.decoration.DecorationValve"
+        init-method="initialize">
+        <constructor-arg>
+            <ref bean="DecorationFactory" />
+        </constructor-arg>
+		<constructor-arg>			
+			 <ref bean="PortletWindowAccessor" />
+		</constructor-arg>
+  </bean>
 
   <bean id="loginViewValve"
         class="org.apache.jetspeed.login.impl.LoginJSPViewValve"
@@ -153,7 +164,7 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>JetspeedPipeline</value>
+       <value>JetspeedPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
@@ -164,7 +175,8 @@ limitations under the License.
       <ref bean="passwordCredentialValve"/>
       <ref bean="loginValidationValve"/>
       <ref bean="profilerValve"/>
-      <ref bean="containerValve"/>
+      <ref bean="DecorationValve" />
+      <ref bean="containerValve"/>      
       <ref bean="actionValve"/>
       <ref bean="aggregatorValve"/>
       <ref bean="cleanUpValve"/>
@@ -177,7 +189,7 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>LoginPipeline</value>
+       <value>LoginPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
@@ -193,15 +205,15 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>ActionPipeline</value>
+       <value>ActionPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
-    	<ref bean="localizationValve"/>
-    	<ref bean="capabilityValve"/>
-      <ref bean="portalURLValve"/>
-    	<ref bean="containerValve"/>
-    	<ref bean="actionValve"/>
+        <ref bean="localizationValve"/>
+        <ref bean="capabilityValve"/>
+        <ref bean="portalURLValve"/>
+        <ref bean="containerValve"/>
+        <ref bean="actionValve"/>
     </list>
     </constructor-arg>
   </bean> 
@@ -211,17 +223,17 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>PortletPipeline</value>
+       <value>PortletPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
-        <ref bean="portalURLValve"/>    	    	
-    	<ref bean="capabilityValve"/>
-    	<ref bean="securityValve"/>    	    	
-    	<ref bean="localizationValve"/>
-        <ref bean="profilerValve"/>    	    	    	
-    	<ref bean="containerValve"/>
-    	<ref bean="portletValve"/>    
+        <ref bean="portalURLValve"/>                
+        <ref bean="capabilityValve"/>
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="containerValve"/>
+        <ref bean="portletValve"/>    
     </list>
     </constructor-arg>
   </bean> 
@@ -231,17 +243,17 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>AjaxPipeline</value>
+       <value>AjaxPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
-        <ref bean="portalURLValve"/>    	    	
-    	<ref bean="securityValve"/>    	    	
-    	<ref bean="localizationValve"/>
-        <ref bean="profilerValve"/>    	    	    	
-    	<ref bean="containerValve"/>
+        <ref bean="portalURLValve"/>                
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="containerValve"/>
         <!-- TODO: replace layout valve with Ajax valve -->
-    	<ref bean="layoutValve"/>
+        <ref bean="layoutValve"/>
     </list>
     </constructor-arg>
   </bean> 
@@ -251,17 +263,17 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-   	<value>FileServerPipeline</value>
+       <value>FileServerPipeline</value>
    </constructor-arg>
    <constructor-arg>
     <list>
-        <ref bean="portalURLValve"/>    	    	
-    	<ref bean="securityValve"/>    	    	
-    	<ref bean="localizationValve"/>
-        <ref bean="profilerValve"/>    	    	    	
-    	<ref bean="containerValve"/>
-    	<ref bean="fileServerValve"/>            
-    	<ref bean="portletValve"/>    
+        <ref bean="portalURLValve"/>                
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="containerValve"/>
+        <ref bean="fileServerValve"/>            
+        <ref bean="portletValve"/>    
     </list>
     </constructor-arg>
   </bean> 

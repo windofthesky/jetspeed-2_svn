@@ -42,7 +42,7 @@
     <bean id="DecorationLocator" class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start" destroy-method="stop">
         <constructor-arg>
             <list>
-                <value>${applicationRoot}/WEB-INF/decorations</value>
+                <value>${applicationRoot}/decorations</value>
             </list>
         </constructor-arg>
         <constructor-arg>
