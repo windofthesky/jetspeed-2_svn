@@ -20,28 +20,6 @@ limitations under the License.
 
 <web-app>
   <display-name>Jetspeed-2 Enterprise Portal</display-name>	
-  <filter>
-    <filter-name>ContentServer</filter-name>
-    <filter-class>org.apache.jetspeed.contentserver.ContentFilter</filter-class>
-     <init-param>
-           <param-name>content.directory</param-name>
-        <param-value>
-           WEB-INF/decorations
-        </param-value>
-    </init-param>
-     <init-param>
-        <param-name>url.hint</param-name>
-        <param-value>
-           content/
-        </param-value>
-    </init-param>
-    <init-param>
-        <param-name>use.caching</param-name>
-        <param-value>
-           false
-        </param-value>
-    </init-param>
-  </filter>
   
   <filter>
     <filter-name>AJAXFilter</filter-name>
@@ -53,35 +31,7 @@ limitations under the License.
     <url-pattern>*.ajax</url-pattern>    
   </filter-mapping>  
 
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.gif</url-pattern>    
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.jpg</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.jpeg</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.png</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.js</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.ico</url-pattern>    
- </filter-mapping>
- <filter-mapping>
-    <filter-name>ContentServer</filter-name>
-    <url-pattern>*.css</url-pattern>    
-  </filter-mapping>
-	
+  
   <listener>
     <listener-class>org.apache.jetspeed.engine.JetspeedServlet</listener-class>
   </listener>
