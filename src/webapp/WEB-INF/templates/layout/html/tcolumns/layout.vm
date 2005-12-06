@@ -67,8 +67,7 @@ limitations under the License.
 	  #if($editing == true)    		  	  
 	   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
 	      <td align="right" valign="middle" class="PContent" >
-            #set ($imgsrc="${jetspeed.pageBasePath}/content/images/select.gif")
-	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Select"/></a>
+	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Select"/></a>
 	      </td>	  
 	  #end      
       </tr>
@@ -120,8 +119,7 @@ limitations under the License.
                          #set($upUrl = $renderResponse.createRenderURL())    
                          $!upUrl.setParameter("move","1")
                          $!upUrl.setParameter("fragmentId","$f.id")
-                         #set ($imgsrc="$layoutImageBase/movePortletUp.gif")
-                         <a href="$upUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Up"/></a>
+                         <a href="$upUrl"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
                    <td></td>
@@ -133,8 +131,7 @@ limitations under the License.
                          #set($leftUrl = $renderResponse.createRenderURL())    
                          $!leftUrl.setParameter("move","3")
                          $!leftUrl.setParameter("fragmentId","$f.id")    
-                         #set ($imgsrc="$layoutImageBase/movePortletLeft.gif")
-                         <a href="$leftUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Left"/></a>
+                         <a href="$leftUrl"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="Move Portlet Left"/></a>
                         #end
                    </td>
                    <td align="center" style="font-size:smaller; font-weight:bold" >
@@ -145,16 +142,14 @@ limitations under the License.
                          #set($rightUrl = $renderResponse.createRenderURL())    
                          $!rightUrl.setParameter("move","4")
                          $!rightUrl.setParameter("fragmentId","$f.id")
-                         #set ($imgsrc="$layoutImageBase/movePortletRight.gif")
-                         <a href="$rightUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Right"/></a>
+                         <a href="$rightUrl"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
                     <td>
                          #set($deleter = $renderResponse.createActionURL())    
                          $deleter.setParameter("deleteId","$f.id")
                          $deleter.setParameter("page","$myPage")                         
-                         #set ($imgsrc="$layoutImageBase/close.gif")
-                         &nbsp;<a href="$deleter"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Remove Portlet"/></a>                    
+                         &nbsp;<a href="$deleter"><img src="#GetPageResource('images/close.gif')" border="0" title="Remove Portlet"/></a>                    
                     </td>
                  </tr>
 				 <tr>
@@ -165,7 +160,7 @@ limitations under the License.
 			            $!downUrl.setParameter("move","2")
 			            $!downUrl.setParameter("fragmentId","$f.id")
                         #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
-					    <a href="$downUrl"><img src="$jetspeed.getAbsoluteUrl($imgsrc)" border="0" title="Move Portlet Down"/></a>
+					    <a href="$downUrl"><img src="#GetPageResource('images/movePortletDown.gi')" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
 					<td></td>
@@ -176,10 +171,10 @@ limitations under the License.
 		 #end			
            ## get the decorated Portlet content
 		  #if($f.type == "portlet")
-   		    #parse($jetspeed.decorateAndInclude($f))
+			 #parse($f.decoration.template)
 		  #else		
-			$jetspeed.setCurrentFragment($f)
-			$f.renderedContent			
+	 	 	 $jetspeed.setCurrentFragment($f)
+			 $f.renderedContent			
 		  #end
            
           ##$jetspeed.decorateAndInclude($f)
