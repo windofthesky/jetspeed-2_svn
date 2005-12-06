@@ -14,6 +14,8 @@
 */
 package org.apache.jetspeed.sso;
 
+import java.io.BufferedInputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,6 +35,49 @@ public interface SSOProvider
 	 * @throws Exception
 	 */
    void init() throws Exception;
+   
+   /**
+    * This method first authenticates the the SSOSite and then forwards the request
+    * to the destination URL. The content will be returned as a string.
+    * If the SSOSite and the url match only one call will be executed since the
+    * authentication will be done while getting the result page.
+    * 
+    * @param userID
+    * @param url
+    * @param SSOSite
+    * @param bRefresh if true it refreshes the proxy connection if false a cached proxy will be used
+    * @return
+    * @throws SSOException
+    */
+   public BufferedInputStream useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException;
+   
+   /**
+    * Same as the method above except that the user will be authenticated against all
+    * SSOSites defined for the user before going to the destination site.
+    * 
+    * @param userID
+    * @param url
+    * @param bRefresh if true it refreshes the proxy connection if false a cached proxy will be used
+    * @return
+    * @throws SSOException
+    */
+   public BufferedInputStream useSSO(Subject subject, String url, boolean bRefresh) throws SSOException;
+   
+    
+   /**
+    * Retrive cookies for an user by User full path
+    * @param fullPath
+    * @return
+    */
+   Collection getCookiesForUser(String fullPath);
+   
+   /**
+    * Retrive Cookies by Subject
+    * @param user
+    * @return
+    */
+   Collection getCookiesForUser(Subject user);
+   
    
    /**
     * Public API's for SSO functinality
@@ -92,5 +137,15 @@ public interface SSOProvider
     /* Retrive site information */
     String getSiteURL(String site);
     String getSiteName(String site); 
+    
+    void	setRealmForSite(String site, String realm) throws SSOException;
+    String	getRealmForSite(String site) throws SSOException;
+    
+    /**
+     * Get all SSOSites that the principal has access to
+     * @param userId
+     * @return
+     */
+    public Collection getSitesForPrincipal(String userId);
     
 }

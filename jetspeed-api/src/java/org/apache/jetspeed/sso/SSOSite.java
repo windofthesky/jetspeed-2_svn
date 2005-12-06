@@ -1,16 +1,18 @@
-/*
- * Created on Nov 19, 2004
- *
- * Copyright 2003-2004 Groundwork Open Source Solution.
- * 
- *      http://www.itgroundwork.com
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/* Copyright 2004 Apache Software Foundation
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package org.apache.jetspeed.sso;
 
 import java.util.Collection;
@@ -107,4 +109,34 @@ public interface SSOSite {
      * setRemotePrincipals 
      */
     public void setRemotePrincipals(Collection remotePrincipals);
+    
+    /**
+     * Define the Authentication methods. 
+     * Supported are: Challenge Response and From based
+     */
+    public void setFormAuthentication(boolean isFormAuthentication);
+   
+    /**
+     * Form authentication requires two fields that hold the credential 
+     * information for the request.
+     */
+   
+    public void configFormAuthentication(String formUserField, String formPwdField);
+    
+    /*
+     * Uses Challenge Response mechanism for authentication
+     */
+    public void setChallengeResponseAuthentication(boolean isChallengeResponseAuthentication);
+    
+    public boolean isChallangeResponseAuthentication();
+	public boolean isFormAuthentication();
+
+	public String getFormPwdField();
+	public void setFormPwdField(String formPwdField);
+
+	public String getFormUserField();
+	public void setFormUserField(String formUserField);
+	
+	public void setRealm(String realm);
+	public String getRealm();
 }

@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.sso.impl;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -32,6 +37,7 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 
 import org.apache.jetspeed.sso.SSOContext;
+import org.apache.jetspeed.sso.SSOCookie;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;
@@ -58,6 +64,22 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
+// HTTPClient imports
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.HttpAuthenticator;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+
 /**
 * <p>Utility component to handle SSO requests</p>
 * 
@@ -66,7 +88,14 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class PersistenceBrokerSSOProvider extends
 		InitablePersistenceBrokerDaoSupport implements SSOProvider 
 {	
-	private Hashtable mapSite = new Hashtable();	
+	/* Logging */
+	private static final Log log = LogFactory.getLog(PersistenceBrokerSSOProvider.class);
+	
+	/*
+	 * Cache for sites and Proxy sites
+	 */
+	private Hashtable mapSite = new Hashtable();
+	private Hashtable clientProxy = new Hashtable();
 	
     private String USER_PATH = "/user/";
     private String GROUP_PATH = "/group/";
@@ -83,7 +112,191 @@ public class PersistenceBrokerSSOProvider extends
     {
        super(repositoryPath);
     }
+    
+    
+    /*
+     *  (non-Javadoc)
+     * @see org.apache.jetspeed.sso.SSOProvider#useSSO(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public BufferedInputStream useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException
+    {
+    	// Get the principal from the subject
+		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
+		String fullPath = principal.getFullPath();
+		
+    	String content = null;
+    	
+    	/* ProxyID is used for the cache. The http client object will be cached for a
+    	 * given user site url combination
+    	 */
+    	String proxyID = fullPath + "_" + SSOSite;
+    	
+    	// Get the site
+    	SSOSite ssoSite = getSSOSiteObject(SSOSite);
+		
+		if ( ssoSite != null)
+		{
+			SSOSite[] sites = new SSOSite[1];
+			sites[0] = ssoSite;
+			
+			return this.getContentFromURL(proxyID, url, sites, bRefresh);
+		}
+		else
+		{
+			// Site doesn't exist -- log an error but continue
+			String msg = "SSO component -- useSSO can't retrive SSO credential because SSOSite [" + SSOSite + "] doesn't exist";
+			log.error(msg);
+			SSOSite[] sites = new SSOSite[0];
+			return this.getContentFromURL(proxyID, url, sites, bRefresh);
+		}
+     }
+    
+    /*
+     *  (non-Javadoc)
+     * @see org.apache.jetspeed.sso.SSOProvider#useSSO(java.lang.String, java.lang.String)
+     */
+    public BufferedInputStream useSSO(Subject subject, String url, boolean bRefresh) throws SSOException
+    {
+    	String content = null;
+       	// Get the principal from the subject
+		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
+		String fullPath = principal.getFullPath();
 
+    	
+    	/* ProxyID is used for the cache. The http client object will be cached for a
+    	 * given user 
+    	 */
+    	String proxyID = fullPath;
+    	
+    	Collection sites = this.getSitesForPrincipal(fullPath);
+    	
+    	if (sites == null)
+    	{
+    		String msg = "SSO Component useSSO -- Couldn't find any SSO sites for user ["+fullPath+"]";
+    		log.error(msg);
+    		throw new SSOException(msg);
+    	}
+    	
+    	// Load all the sites
+    	int siteSize = sites.size();
+    	int siteIndex =0;
+    	SSOSite[] ssoSites = new SSOSite[siteSize];
+    	
+    	Iterator itSites = sites.iterator();
+    	while(itSites.hasNext())
+    	{
+    		SSOSite ssoSite = (SSOSite)itSites.next();
+    		if (ssoSite != null)
+    		{
+    			ssoSites[siteIndex] = ssoSite;
+    			siteIndex++;
+    		}
+    	}
+    	
+    	return this.getContentFromURL(proxyID, url, ssoSites, bRefresh);
+    }
+    
+     /**
+     * Retrive cookies for an user by User full path
+     * @param fullPath
+     * @return
+     */
+    public Collection getCookiesForUser(String fullPath)
+    {
+    	// Get the SSO user identified by the fullPath
+    	SSOPrincipal ssoPrincipal = this.getSSOPrincipal(fullPath);
+    	
+    	// For each remote user we'll get the cookie
+    	Criteria remoteUserFilter = new Criteria();
+    	Vector temp = new Vector();
+    	
+    	Iterator itRemotePrincipal = ssoPrincipal.getRemotePrincipals().iterator();
+    	while (itRemotePrincipal.hasNext())
+    	{
+    		InternalUserPrincipal rp  = (InternalUserPrincipal)itRemotePrincipal.next();
+    		if (rp != null)
+    		{
+    			temp.add(rp.getFullPath());
+    		}
+    	}
+    	
+    	if (temp.size() > 0)
+    	{
+    	
+	        Criteria filter = new Criteria();   
+	        filter.addIn("remotePrincipals.fullPath", temp);
+	         
+	        QueryByCriteria query = QueryFactory.newQuery(SSOCookieImpl.class, filter);
+	        return getPersistenceBrokerTemplate().getCollectionByQuery(query);
+    	}
+    	else
+    	{
+    		return null;
+    	}
+
+    }
+    
+    /**
+     * Retrive Cookies by Subject
+     * @param user
+     * @return
+     */
+    public Collection getCookiesForUser(Subject user)
+    {
+    	// Get the principal from the subject
+		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(user, UserPrincipal.class);
+		String fullPath = principal.getFullPath();
+		
+		// Call into API
+		return this.getCookiesForUser(fullPath);
+    }
+    
+
+    public void setRealmForSite(String site, String realm) throws SSOException
+    {
+    	SSOSite ssoSite = getSSOSiteObject(site);
+		
+		if ( ssoSite != null)
+		{
+			try
+			{
+				ssoSite.setRealm(realm);
+				getPersistenceBrokerTemplate().store(ssoSite);
+			}
+			catch (Exception e)
+			{
+				throw new SSOException("Failed to set the realm for site [" + site + "] Error" +e );
+			}
+		}
+    }
+    
+    public String getRealmForSite(String site) throws SSOException
+    {
+    	SSOSite ssoSite = getSSOSiteObject(site);
+		
+		if ( ssoSite != null)
+		{
+			return ssoSite.getRealm();
+		}
+		
+		return null;
+    }
+    
+    /**
+     * Get all SSOSites that the principal has access to
+     * @param userId
+     * @return
+     */
+    public Collection getSitesForPrincipal(String fullPath)
+    {
+   	
+    	Criteria filter = new Criteria();       
+        filter.addEqualTo("principals.fullPath", fullPath);
+        
+        QueryByCriteria query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query); 
+    }
+    
 	public Iterator getSites(String filter)
     {
         Criteria queryCriteria = new Criteria();
@@ -179,7 +392,7 @@ public class PersistenceBrokerSSOProvider extends
     {
         SSOSite ssoSite = getSSOSiteObject(site);
 		
-		if ( ssoSite == null)
+		if ( ssoSite != null)
 		{
 			return ssoSite.getName();
 		}
@@ -272,6 +485,20 @@ public class PersistenceBrokerSSOProvider extends
 			ssoSite.setName(site);
 			ssoSite.setCertificateRequired(false);
 			ssoSite.setAllowUserSet(true);
+			// By default we use ChallengeResponse Authentication
+			ssoSite.setChallengeResponseAuthentication(true);
+			ssoSite.setFormAuthentication(false);
+			
+			// Store the site so that we get a valid SSOSiteID
+			try
+	         {
+	             getPersistenceBrokerTemplate().store(ssoSite);
+	          }
+	         catch (Exception e)
+	         {
+	         	e.printStackTrace();
+	            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
+	         }
 		}
 		
 		// Get the Principal information (logged in user)
@@ -321,7 +548,7 @@ public class PersistenceBrokerSSOProvider extends
 		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/group/"+  principalName + "/" + remoteUser);
 		else
 		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser);
-	
+		
 		// New credential object for remote principal
 		 InternalCredentialImpl credential = 
             new InternalCredentialImpl(remotePrincipal.getPrincipalId(),
@@ -334,20 +561,25 @@ public class PersistenceBrokerSSOProvider extends
 		
 		// Add it to Principals remotePrincipals list
 		principal.addRemotePrincipal(remotePrincipal);
-		
+
 		// Update the site remotePrincipals list
 		ssoSite.getRemotePrincipals().add(remotePrincipal);
+		
 		 	
 		// Update database and reset cache
 		 try
          {
              getPersistenceBrokerTemplate().store(ssoSite);
+             
+             // Persist Principal/Remote
+     		getPersistenceBrokerTemplate().store(principal);
           }
          catch (Exception e)
          {
          	e.printStackTrace();
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
          }
+         
          // Add to site
          this.mapSite.put(site, ssoSite);
 	}
@@ -392,14 +624,19 @@ public class PersistenceBrokerSSOProvider extends
 			{
 			    throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
 			}
-			
+
 			// Update assocation tables
 			ssoSite.getRemotePrincipals().remove(remotePrincipal);
-			remoteForPrincipals.remove(remotePrincipal);
-		    
+			
+			if (remoteForPrincipals.remove(remotePrincipal) == true)
+			
+			// Update the site
+			getPersistenceBrokerTemplate().store(ssoSite);
+
 			// delete the remote Principal from the SECURITY_PRINCIPAL table
 		    getPersistenceBrokerTemplate().delete(remotePrincipal);
-			
+		    
+						
 		}
 		catch(SSOException ssoex)
 		{
@@ -471,7 +708,8 @@ public class PersistenceBrokerSSOProvider extends
 			}
 						
 			// Update principal information
-			remotePrincipal.setFullPath("/sso/user/"+ principalName + "/" + remoteUser);
+			//remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser);
+			
 			InternalCredential credential = (InternalCredential)remotePrincipal.getCredentials().iterator().next();
 					
 			// New credential object
@@ -482,7 +720,7 @@ public class PersistenceBrokerSSOProvider extends
 			// Update database and reset cache
 			 try
 			 {
-			     getPersistenceBrokerTemplate().store(ssoSite);
+			     getPersistenceBrokerTemplate().store(credential);
 			  }
 			 catch (Exception e)
 			 {
@@ -923,4 +1161,181 @@ public class PersistenceBrokerSSOProvider extends
         return group;       
     }
     
+    private SSOSite getSiteForRemoteUser(String fullPath)
+    {
+    	// Get Site for remote user
+        Criteria filter = new Criteria();
+        filter.addEqualTo("remotePrincipals.fullPath", fullPath);
+        Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
+        return  (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
+    }
+    
+    private BufferedInputStream getContentFromURL(String proxyID, String destUrl, SSOSite[] sites, boolean bRefresh ) throws SSOException
+    {
+    	URL urlObj = null;
+    	
+    	// Result Buffer
+    	BufferedInputStream bis = null;
+    	
+    	String strErrorMessage = "SSO Component Error. Failed to get content for URL " + destUrl;
+    	
+    	try
+    	{
+    		urlObj = new URL(destUrl);
+    	}
+    	catch (MalformedURLException e)
+    	{
+    		String msg = ("Error -- Malformed URL [" + destUrl +"] for SSO authenticated destination");
+    		log.error(msg);
+    		throw new SSOException(msg, e);
+    	}
+    	
+    	/* 
+    	 * Setup HTTPClient
+    	 * Check if an HTTP Client already exists for the given /user/site
+    	 */
+    	HttpClient client = (HttpClient)this.clientProxy.get(proxyID);
+    	GetMethod get = null;
+    	
+    	if (bRefresh == true || client == null)
+    	{
+    		if (log.isInfoEnabled())
+    			log.info("SSO Component -- Create new HTTP Client object for Principal/URL [" + proxyID+ "]");
+    		
+	    	client = new HttpClient();
+	    	client.getState().setCookiePolicy(CookiePolicy.COMPATIBILITY);
+	    	
+	    	int numberOfSites = sites.length;
+	    	
+	    	// Do all the logins for the site
+	    	for (int i=0; i<numberOfSites; i++)
+	    	{
+	    		SSOSite site = sites[i];
+	    		
+	    		if (site != null)
+	    		{
+	    			Iterator itRemotePrincipals = site.getRemotePrincipals().iterator();
+	    			while (itRemotePrincipals.hasNext() )
+	    			{
+	    				InternalUserPrincipal remotePrincipal = (InternalUserPrincipal)itRemotePrincipals.next();
+	            		if (remotePrincipal != null)
+	            		{
+	            			InternalCredential credential = null;
+	            			if ( remotePrincipal.getCredentials() != null)
+	            				credential = (InternalCredential)remotePrincipal.getCredentials().iterator().next();
+	            			
+	            			if (credential != null)
+	            			{
+	            				client.getState().setCredentials(
+	            		    			site.getRealm(),
+	            		                urlObj.getHost(),
+	            		                new UsernamePasswordCredentials(stripPrincipalName(remotePrincipal.getFullPath()),  credential.getValue())
+	            		            );
+	            				
+	            				// Build URL if it's Form authentication
+	            				StringBuffer siteURL = new StringBuffer(site.getSiteURL());
+		       					
+		        				// Check if it's form based or ChallengeResponse
+	        					if (site.isFormAuthentication())
+	        					{
+	        						siteURL.append("?").append(site.getFormUserField()).append("=").append(stripPrincipalName(remotePrincipal.getFullPath())).append("&").append(site.getFormPwdField()).append("=").append(credential.getValue());
+	        					}
+	            				
+	            				get = new GetMethod(siteURL.toString());
+	
+	            	            // Tell the GET method to automatically handle authentication. The
+	            	            // method will use any appropriate credentials to handle basic
+	            	            // authentication requests.  Setting this value to false will cause
+	            	            // any request for authentication to return with a status of 401.
+	            	            // It will then be up to the client to handle the authentication.
+	            	            get.setDoAuthentication( true );
+	            	            try {
+	            	                // execute the GET
+	            	                int status = client.executeMethod( get );
+	            	                
+	            	                if (log.isInfoEnabled() )
+	            	                		log.info("Accessing site [" + site.getSiteURL() + "]. HTTP Status [" +status+ "]" );
+	            	                
+	            	                /*
+	            	    	    	 * If the destination URL and the SSO url match
+	            	    	    	 * use the authentication process but return immediately
+	            	    	    	 * the result page.
+	            	    	    	 */
+	            	                if( destUrl.compareTo(site.getSiteURL()) == 0 && numberOfSites == 1)
+	            	                {
+	            	                	if (log.isInfoEnabled() )
+	            	                		log.info("SSO Component --SSO Site and destination URL match. Go and get the content." );
+	            	                	
+	            	                	try
+	            	            		{
+	            	            			bis = new BufferedInputStream(get.getResponseBodyAsStream());
+	            	            		}
+	            	            		catch(IOException ioe)
+	            	            		{
+	            	            			log.error(strErrorMessage, ioe);
+	            	            			throw new SSOException (strErrorMessage, ioe);	
+	            	            		}
+
+	            	            		get.releaseConnection();
+	            	            		
+	            	            		//	Add the client object to the cache
+	            	        	    	this.clientProxy.put(proxyID, client);
+	            	            		
+	            	            		return bis;
+	            	                }
+	            	        
+		            			} catch (Exception e) {
+		                        	log.error("Exception while authentication. Error: " +e);	                        
+		                        }
+		            			
+		            			get.releaseConnection();
+	             			}
+	            		}
+	    			}
+	    		}   		
+	    	}
+	    	
+	    	// Add the client object to the cache
+	    	this.clientProxy.put(proxyID, client);
+    	}
+    	else
+    	{
+    		if (log.isInfoEnabled())
+    			log.info("SSO Component -- Use cached HTTP Client object for Principal/URL [" + proxyID+ "]");
+    	}
+    	
+    	// All the SSO authentication done go to the destination url
+		get = new GetMethod(destUrl);
+		try {
+            // execute the GET
+            int status = client.executeMethod( get );
+            
+            log.info("Accessing site [" + destUrl + "]. HTTP Status [" +status+ "]" );
+    
+		} catch (Exception e) {
+        	log.error("Exception while authentication. Error: " +e);	                        
+        }
+		
+		
+		try
+		{
+			bis = new BufferedInputStream(get.getResponseBodyAsStream());
+		}
+		catch(IOException ioe)
+		{
+			log.error(strErrorMessage, ioe);
+			throw new SSOException (strErrorMessage, ioe);
+			
+		}
+		catch (Exception e)
+		{
+			log.error(strErrorMessage, e);
+			throw new SSOException (strErrorMessage, e);
+			
+		}
+		
+		get.releaseConnection();
+		
+		return bis;
+    }
 }

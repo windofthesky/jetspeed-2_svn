@@ -101,11 +101,22 @@ limitations under the License.
         <column name="URL" required="true" size="254" type="VARCHAR"/>
         <column name="ALLOW_USER_SET" default="0" type="BOOLEANINT"/>
         <column name="REQUIRES_CERTIFICATE" default="0" type="BOOLEANINT"/>
+        <column name="CHALLENGE_RESPONSE_AUTH" default="0" type="BOOLEANINT"/>
+        <column name="FORM_AUTH" default="0" type="BOOLEANINT"/>
+        <column name="FORM_USER_FIELD" required="false" size="128" type="VARCHAR"/>
+        <column name="FORM_PWD_FIELD" required="false" size="128" type="VARCHAR"/>
+        <column name="REALM" required="false" size="128" type="VARCHAR"/>
+        
         <unique name="UIX_SITE_URL">
           <unique-column name="URL" />
         </unique>                
     </table>
-	
+    
+    <table name="SSO_COOKIE">
+        <column name="COOKIE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="COOKIE" required="true" size="1024" type="VARCHAR"/> 
+        <column name="CREATE_DATE" required="true" type="TIMESTAMP"/>         
+    </table>
 	
     <table name="SSO_SITE_TO_PRINCIPALS">
     	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
@@ -136,11 +147,24 @@ limitations under the License.
     <table name="SSO_SITE_TO_REMOTE">
     	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+           
          <foreign-key foreignTable="SSO_SITE" onDelete="cascade">
             <reference foreign="SITE_ID" local="SITE_ID"/>
         </foreign-key>
        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>
+    </table>
+    
+    <table name="SSO_COOKIE_TO_REMOTE">
+    	<column name="COOKIE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="REMOTE_PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+           
+         <foreign-key foreignTable="SSO_COOKIE" onDelete="cascade">
+            <reference foreign="COOKIE_ID" local="COOKIE_ID"/>
+        </foreign-key>
+       <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="REMOTE_PRINCIPAL_ID"/>
         </foreign-key>
     </table>
          

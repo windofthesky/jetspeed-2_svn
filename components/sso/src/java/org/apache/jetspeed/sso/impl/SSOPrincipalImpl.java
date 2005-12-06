@@ -18,6 +18,7 @@ package org.apache.jetspeed.sso.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.sso.SSOPrincipal;
@@ -57,7 +58,7 @@ public class SSOPrincipalImpl implements SSOPrincipal {
 	   private Collection permissions;
 	   
 	   /** Remote principals for Principal */
-	   private Collection remotePrincipals;
+	   private Collection remotePrincipals = new Vector();
 	   
 	   /** SIteID for Remote principal */
 	   private int siteID;
@@ -106,10 +107,11 @@ public class SSOPrincipalImpl implements SSOPrincipal {
 	    */
 	   public void  addRemotePrincipal(InternalUserPrincipal principal)
 	   {
-	   		if (remotePrincipals == null)
+	   	/*	if (remotePrincipals == null)
 	   		{
 	   			remotePrincipals = new ArrayList(1);
 	   		}
+	   	*/
 	   		
 	   		remotePrincipals.add(principal);
 	   }

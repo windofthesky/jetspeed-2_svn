@@ -70,6 +70,33 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+        
+        <dependency>
+			<groupId>portals-bridges</groupId>
+			<artifactId>portals-bridges-common</artifactId>
+			<version>${portals.bridges.common.version}</version>
+			<type>jar</type>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+		</dependency>	
+	    <dependency>
+	      <groupId>portals-bridges</groupId>
+	      <artifactId>portals-bridges-velocity</artifactId>
+	      <version>${portals.bridges.velocity.version}</version>
+	      <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+        <dependency>
+            <id>commons-httpclient</id>
+            <groupId>commons-httpclient</groupId>
+            <version>2.0.2</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        
 
         <!-- Testing only -->
         <dependency>
@@ -88,7 +115,6 @@
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
-
     </dependencies>
 
     <build>

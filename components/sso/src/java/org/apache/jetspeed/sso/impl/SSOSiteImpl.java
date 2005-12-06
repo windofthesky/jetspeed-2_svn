@@ -42,6 +42,18 @@ public class SSOSiteImpl implements SSOSite {
 	private boolean	isAllowUserSet;
 	private boolean isCertificateRequired;
 	
+	private boolean	isChallangeResponseAuthentication;
+	
+	/* Realm used to do ChallengeResponse Authentication */
+	private String	realm;
+	
+	private boolean	isFormAuthentication;
+	
+	/* Names of fields for User and Password values. The names are up to the
+	 * application developer and therefore it must be configurable for SSO*/
+	private String	formUserField;
+	private String	formPwdField;
+	
 	private Collection	principals = new Vector();
 	private Collection	remotePrincipals = new Vector();
 	
@@ -207,4 +219,87 @@ public class SSOSiteImpl implements SSOSite {
         this.remotePrincipals = remotePrincipals;
     }
     
+    /**
+     * Define the Authentication methods. 
+     * Supported are: Challenge Response and From based
+     */
+    /**
+     * Form authentication requires two fields that hold the credential 
+     * information for the request.
+     */
+    public void setFormAuthentication(String formUserField, String formPwdField)
+    {
+    	// Set the fields for Form Authentication and clear other authentication methods
+    	
+    }
+    
+    /*
+     * Uses Challenge Response mechanism for authentication
+     */
+    public void setChallengeResponseAuthentication()
+    {
+    	// Set the fields for ChallengeResponse and clear other authentication methods
+    	
+    }
+
+    /* Setters/Getters for Authentication settings */
+	public String getFormPwdField() {
+		return formPwdField;
+	}
+
+	public void setFormPwdField(String formPwdField) {
+		this.formPwdField = formPwdField;
+	}
+
+	public String getFormUserField() {
+		return formUserField;
+	}
+
+	public void setFormUserField(String formUserField) {
+		this.formUserField = formUserField;
+	}
+
+	public boolean isChallangeResponseAuthentication() {
+		return isChallangeResponseAuthentication;
+	}
+
+	public void setChallengeResponseAuthentication(
+			boolean isChallangeResponseAuthentication) {
+		this.isChallangeResponseAuthentication = isChallangeResponseAuthentication;
+	}
+
+	public boolean isFormAuthentication() {
+		return isFormAuthentication;
+	}
+
+	public void setFormAuthentication(boolean isFormAuthentication) {
+		this.isFormAuthentication = isFormAuthentication;
+	}
+	
+	public void configFormAuthentication(String formUserField, String formPwdField)
+	{
+		this.isFormAuthentication = true;
+		this.setChallengeResponseAuthentication(false);
+		
+		this.formPwdField	=	formPwdField;
+		this.formUserField	=	formUserField;
+	}
+	
+	/*
+	 *  (non-Javadoc)
+	 * @see org.apache.jetspeed.sso.SSOSite#setRealm(java.lang.String)
+	 */
+	public void setRealm(String realm)
+	{
+		this.realm = realm;
+	}
+	
+	/*
+	 *  (non-Javadoc)
+	 * @see org.apache.jetspeed.sso.SSOSite#getRealm()
+	 */
+	public String getRealm()
+	{
+		return this.realm;
+	}    
 }

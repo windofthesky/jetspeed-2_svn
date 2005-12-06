@@ -147,6 +147,47 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+	    
+	    <field-descriptor
+	        name="isChallangeResponseAuthentication"
+	        column="CHALLENGE_RESPONSE_AUTH"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="isFormAuthentication"
+	        column="FORM_AUTH"
+	        jdbc-type="INTEGER"
+	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="formUserField"
+	        column="FORM_USER_FIELD"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="128"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="formPwdField"
+	        column="FORM_PWD_FIELD"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="128"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="realm"
+	        column="REALM"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="128"
+	    >
+	    </field-descriptor>
 	     <collection-descriptor
 	        name="principals"
 	        element-class-ref="org.apache.jetspeed.sso.impl.SSOPrincipalImpl"
@@ -176,5 +217,54 @@ limitations under the License.
 	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
 	    </collection-descriptor>
 	</class-descriptor>
+	
+	<!-- SSO Cookie -->
+	
+	<class-descriptor
+	    class="org.apache.jetspeed.sso.impl.SSOCookieImpl"
+	    proxy="dynamic"
+	    table="SSO_COOKIE"
+	>
+	    <documentation>Represents the single sign on cookie</documentation>
+	    <field-descriptor
+	        name="cookieId"
+	        column="COOKIE_ID"
+	        jdbc-type="INTEGER"
+	        primarykey="true"
+	        indexed="true"
+	        autoincrement="true"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="cookie"
+	        column="COOKIE"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="1024"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="createDate"
+	        column="CREATE_DATE"
+	        jdbc-type="TIMESTAMP"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    
+	    <collection-descriptor
+	        name="remotePrincipals"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
+	       proxy="true"
+	        refresh="true"
+	        auto-retrieve="true"
+	        auto-update="object"
+	        auto-delete="object"
+	        indirection-table="SSO_COOKIE_TO_REMOTE"
+	    >
+	        <documentation>This is the reference to principals for a cookie.</documentation>
+	        <fk-pointing-to-this-class column="COOKIE_ID"/>
+	        <fk-pointing-to-element-class column="REMOTE_PRINCIPAL_ID"/>
+	    </collection-descriptor>
+	    </class-descriptor>
 	
 </descriptor-repository>
