@@ -609,9 +609,9 @@
   <!-- ================================================= -->
   
   <goal name="j2:deployDecorations">
-  	<copy todir="${org.apache.jetspeed.portal.dir}/WEB-INF/decorations" >
-  		<fileset dir="${basedir}/src/webapp/WEB-INF/decorations" />
-  	</copy>  
+	<copy todir="${org.apache.jetspeed.portal.dir}/decorations" >
+  		<fileset dir="${basedir}/src/webapp/decorations" />
+  	</copy> 
   </goal>	
   
   <goal name="j2:deployTemplates">
