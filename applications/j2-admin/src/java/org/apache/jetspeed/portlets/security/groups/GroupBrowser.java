@@ -31,6 +31,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -64,45 +65,40 @@ public class GroupBrowser extends BrowserPortlet
     }
            
     public void getRows(RenderRequest request, String sql, int windowSize)
-    throws Exception
     {
         getRows(request, sql, windowSize, "");
     }
     
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
-    throws Exception
     {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
+        
+        resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+        resultSetTitleList.add("group"); // resource bundle key
+
+        List list = new ArrayList();
+
         try
         {
             Iterator groups = groupManager.getGroups(filter);
                         
-            
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Group");
-
-            List list = new ArrayList();
             while (groups.hasNext())
             {
                 Group group = (Group)groups.next();
                 
                 Principal principal = group.getPrincipal();                
                 list.add(principal.getName());
-            }            
-            
-            BrowserIterator iterator = new DatabaseBrowserIterator(
-                    list, resultSetTitleList, resultSetTypeList,
-                    windowSize);
-            setBrowserIterator(request, iterator);
-            iterator.sort("Group");
+            }   
         }
-        catch (Exception e)
+        catch (SecurityException sex)
         {
-            //log.error("Exception in CMSBrowserAction.getRows: ", e);
-            e.printStackTrace();
-            throw e;
-        }        
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_GROUPS, sex.getMessage());
+        }                                    
+        
+        BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList, windowSize);
+        setBrowserIterator(request, iterator);
+        iterator.sort("group"); // resource bundle key
     }
        
     public void doView(RenderRequest request, RenderResponse response)
@@ -131,6 +127,11 @@ public class GroupBrowser extends BrowserPortlet
             this.clearBrowserIterator(request);
         }                
         
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_GROUPS, SecurityResources.ERROR_MESSAGES);
+        if (errorMessages != null )
+        {
+            this.getContext(request).put(SecurityResources.ERROR_MESSAGES, errorMessages);
+        }
         
         super.doView(request, response);
     }
@@ -143,7 +144,7 @@ public class GroupBrowser extends BrowserPortlet
             String selected = request.getParameter("group");
             if (selected != null)
             {
-                Group group = lookupGroup(selected);
+                Group group = lookupGroup(request, selected);
                 if (group != null)
                 {
                     PortletMessaging.publish(request, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED, selected);
@@ -166,14 +167,15 @@ public class GroupBrowser extends BrowserPortlet
             
     }
 
-    private Group lookupGroup(String groupName)
+    private Group lookupGroup(ActionRequest actionRequest, String groupName)
     {
         try
         {
             return groupManager.getGroup(groupName);
         }
-        catch (SecurityException e)
+        catch (SecurityException sex)
         {
+            SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_GROUPS, sex.getMessage());
             return null;
         }
     }

@@ -188,7 +188,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         User user = null;
         if (userName != null)
         {
-            user = lookupUser(userName);
+            user = lookupUser(request, userName);
         }
         
         if (user != null)
@@ -225,12 +225,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 request.setAttribute(VIEW_PA_USER_ATTRIBUTES, paUserAttributes);
                 if ( "true".equals(request.getPreferences().getValue("showPasswordOnUserTab", "false")))
                 {
-                    request.setAttribute(VIEW_CREDENTIAL, getCredential(userName));
+                    request.setAttribute(VIEW_CREDENTIAL, getCredential(request, userName));
                 }
             }
             else if (selectedTab.getId().equals(TAB_ROLE))
             {                
-                Collection userRoles = getRoles(userName);
+                Collection userRoles = getRoles(request, userName);
                 request.setAttribute(VIEW_ROLES, userRoles );
                 
                 // check for refresh on roles list
@@ -276,7 +276,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             else if (selectedTab.getId().equals(TAB_GROUP))
             {
-                Collection userGroups = getGroups(userName);
+                Collection userGroups = getGroups(request, userName);
                 request.setAttribute(VIEW_GROUPS, userGroups);
                 
                 // check for refresh on groups list
@@ -327,7 +327,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             else if (selectedTab.getId().equals(TAB_CREDENTIAL))
             {
-                request.setAttribute(VIEW_CREDENTIAL, getCredential(userName));
+                request.setAttribute(VIEW_CREDENTIAL, getCredential(request, userName));
             }
            
             request.setAttribute(SecurityResources.REQUEST_SELECT_TAB, selectedTab);
@@ -338,7 +338,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             renderProfileInformation(request);            
         }
         // check for ErrorMessages
-        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.ERROR_MESSAGES);
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_USER, SecurityResources.ERROR_MESSAGES);
         if (errorMessages != null )
         {
             request.setAttribute(SecurityResources.ERROR_MESSAGES, errorMessages);
@@ -554,7 +554,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             try
@@ -574,9 +574,9 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 // TODO: send message to site manager portlet
                 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, ex.getMessage());
             }
         }
     }
@@ -603,7 +603,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             try
@@ -615,7 +615,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     userManager.setPassword(userName, null, password);
                     passwordSet = true;
                 }
-                PasswordCredential credential = getCredential(userName);
+                PasswordCredential credential = getCredential(actionRequest, userName);
                 if ( credential != null )
                 {
                     String updateRequiredStr = actionRequest.getParameter("user_cred_updreq");
@@ -657,19 +657,19 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             catch ( InvalidPasswordException ipe )
             {
-                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidPassword"));
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, bundle.getString("chgpwd.error.invalidPassword"));
             }
             catch ( InvalidNewPasswordException inpe )
             {
-                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidNewPassword"));
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, bundle.getString("chgpwd.error.invalidNewPassword"));
             }
             catch ( PasswordAlreadyUsedException paue )
             {
-                SecurityUtil.publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.passwordAlreadyUsed"));
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, bundle.getString("chgpwd.error.passwordAlreadyUsed"));
             }
             catch (SecurityException e)
             {
-                SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
             }
         }
     }
@@ -678,7 +678,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             Iterator attrIter = paUserAttributes.iterator();
@@ -704,7 +704,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
@@ -724,7 +724,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String userAttrName = actionRequest.getParameter("user_attr_name");
@@ -742,7 +742,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);        
         
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
@@ -756,7 +756,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     {
                         attributes.remove(userAttrNames[ix]);
                     }
-                    catch (Exception e) {}
+                    catch (Exception e) 
+                    {
+                      e.printStackTrace();  
+                    }
                 }
             }            
         }
@@ -766,7 +769,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String[] roleNames = actionRequest.getParameterValues("user_role_id");
@@ -784,9 +787,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
-                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                        // TODO: logging
-                        System.err.println("failed to remove user from role: " + userName + ", "  + roleNames[ix] + e);                       
+                        SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                     }                
                 }
             }            
@@ -797,7 +798,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);       
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String roleName = actionRequest.getParameter("role_name");
@@ -809,9 +810,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
-                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                    // TODO: logging
-                    System.err.println("failed to add user to role: " + userName + ", "  + roleName + e);                       
+                    SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                 }
             }
         }
@@ -821,7 +820,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String[] groupNames = actionRequest.getParameterValues("user_group_id");
@@ -839,9 +838,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
-                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                        // TODO: logging
-                        System.err.println("failed to remove user from group: " + userName + ", "  + groupNames[ix] + e);                       
+                        SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                     }                
                 }
             }            
@@ -852,7 +849,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String groupName = actionRequest.getParameter("group_name");
@@ -864,9 +861,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
-                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                    // TODO: logging
-                    System.err.println("failed to add user to group: " + userName + ", "  + groupName + e);                       
+                    SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                 }
             }
         }
@@ -882,7 +877,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         return action.startsWith(USER_ACTION_PREFIX);
     }
     
-    private Collection getRoles(String userName)
+    private Collection getRoles(PortletRequest request, String userName)
     {
         try
         {
@@ -890,13 +885,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         catch (SecurityException e)
         {
-            // TODO: logging
-            System.err.println("roles not found: " + userName + ", " + e);       
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_USER, e.getMessage());
         }
         return new LinkedList();
     }
     
-    private Collection getGroups(String userName)
+    private Collection getGroups(PortletRequest request, String userName)
     {
         try
         {
@@ -904,8 +898,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         catch (SecurityException e)
         {
-            // TODO: logging
-            System.err.println("groups not found: " + userName + ", " + e);       
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_USER, e.getMessage());
         }
         return new LinkedList();
     }
@@ -927,12 +920,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         return credential;
     }
-    private PasswordCredential getCredential(String userName)
+    private PasswordCredential getCredential(PortletRequest request, String userName)
     {
-        return getCredential(lookupUser(userName));
+        return getCredential(lookupUser(request, userName));
     }
     
-    private User lookupUser(String userName)
+    private User lookupUser(PortletRequest request, String userName)
     {
         User user = null;
         try
@@ -941,8 +934,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         catch (Exception e)
         {
-            // TODO: logging
-            System.err.println("user not found: " + userName + ", " + e);
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_USER, e.getMessage());
         }    
         return user;
     }
@@ -962,7 +954,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String locatorName = actionRequest.getParameter("locator_name");
@@ -978,9 +970,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (Exception e)
                 {
-                    SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                    // TODO: logging
-                    System.err.println("failed to set rule for principal: " + userName + ", "  + locatorName + e);                       
+                    SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                 }
             }
             
@@ -991,7 +981,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = (String)PortletMessaging.receive(actionRequest, 
                 SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-        User user = lookupUser(userName);
+        User user = lookupUser(actionRequest, userName);
         if (user != null)
         {
             String[] locatorNames = actionRequest.getParameterValues("user_profile_id");
@@ -1016,9 +1006,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (Exception e)
                     {
-                        SecurityUtil.publishErrorMessage(actionRequest,e.getMessage());
-                        // TODO: logging
-                        System.err.println("failed to remove rule for principal: " + userName + ", "  + locatorNames[ix] + e);                       
+                        SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, e.getMessage());
                     }                
                 }
             }                                    
@@ -1029,10 +1017,14 @@ public class UserDetailsPortlet extends GenericServletPortlet
     {
         String userName = actionRequest.getParameter("jetspeed.user");
         String password = actionRequest.getParameter("jetspeed.password");            
-        if (!SecurityUtil.isEmpty(userName) && !SecurityUtil.isEmpty(password)) 
+        if (!SecurityUtil.isEmpty(userName))
         {
             try
             {            
+                if (SecurityUtil.isEmpty(password))
+                {
+                    throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+                }
                 userManager.addUser(userName, password);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
@@ -1078,13 +1070,15 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     Principal principal = SecurityUtil.getPrincipal(user.getSubject(), UserPrincipal.class);                         
                     profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
-                }
-                
+                }                
             }
-            catch (Exception se)
+            catch (SecurityException sex)
             {
-                ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());                
-                SecurityUtil.publishErrorMessage(actionRequest, bundle.getString("user.exists"));
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, sex.getMessage());
+            }
+            catch (Exception ex)
+            {
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_USER, ex.getMessage());
             }
         }
     }

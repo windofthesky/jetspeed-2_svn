@@ -15,13 +15,13 @@
 package org.apache.jetspeed.portlets.security.roles;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -36,6 +36,7 @@ import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -74,13 +75,11 @@ public class RoleDetails extends BrowserPortlet
     }
     
     public void getRows(RenderRequest request, String sql, int windowSize)
-    throws Exception
     {
         getRows(request, sql, windowSize, null);        
     }
 
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
-    throws Exception
     {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
@@ -96,14 +95,14 @@ public class RoleDetails extends BrowserPortlet
             }
         }
         
-        try
+        List list = new ArrayList();
+        resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+        resultSetTitleList.add("Users in Role");
+        
+        String selectedRole = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
+        if (selectedRole != null)
         {
-            List list = new ArrayList();
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Users in Role");
-            
-            String selectedRole = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);
-            if (selectedRole != null)
+            try
             {
                 Iterator users = userManager.getUsersInRole(selectedRole).iterator();                                    
                 while (users.hasNext())
@@ -116,20 +115,15 @@ public class RoleDetails extends BrowserPortlet
                         list.add(principal.getName());
                     }
                 }
-            }
-            BrowserIterator iterator = new DatabaseBrowserIterator(
-                    list, resultSetTitleList, resultSetTypeList,
-                    windowSize);
-            setBrowserIterator(request, iterator);
-            iterator.sort("Users in Role");
+            } 
+            catch (SecurityException sex)
+            {
+                SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_ROLE, sex.getMessage());
+            }                                    
         }
-        catch (Exception e)
-        {
-            //log.error("Exception in CMSBrowserAction.getRows: ", e);
-            e.printStackTrace();
-            throw e;
-        }        
-        
+        BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList, windowSize);
+        setBrowserIterator(request, iterator);
+        iterator.sort("Users in Role");
     }
            
     public void doView(RenderRequest request, RenderResponse response)
@@ -151,24 +145,30 @@ public class RoleDetails extends BrowserPortlet
         String userChooser = SecurityUtil.getAbsoluteUrl(request, "/Administrative/choosers/multiusers.psml");        
         context.put("userChooser", userChooser);
         
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES_USERS, SecurityResources.MESSAGE_STATUS);
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_STATUS);
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
         }
           
-        String filtered = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_FILTERED);
+        String filtered = (String)PortletMessaging.receive(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_FILTERED);
         if (filtered != null)
         {
             this.getContext(request).put(FILTERED, "on");            
         }
 
-        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES_USERS, SecurityResources.MESSAGE_REFRESH); 
+        String refresh = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_REFRESH); 
         if (refresh != null)
         {        
             this.clearBrowserIterator(request);
         }                
         
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLE, SecurityResources.ERROR_MESSAGES);
+        if (errorMessages != null )
+        {
+            this.getContext(request).put(SecurityResources.ERROR_MESSAGES, errorMessages);
+        }
+
         super.doView(request, response);
     }
         
@@ -200,7 +200,15 @@ public class RoleDetails extends BrowserPortlet
             {
                 addRole(request);
             }
-            
+
+            if (request.getParameter(FILTERED) != null )
+            {
+                PortletMessaging.publish(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_FILTERED, "on");            
+            }
+            else
+            {
+                PortletMessaging.cancel(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_FILTERED);                    
+            }            
         }
         super.processAction(request, response);            
     }
@@ -213,14 +221,17 @@ public class RoleDetails extends BrowserPortlet
             try
             {            
                 roleManager.addRole(role);
-                PortletMessaging.publish(actionRequest, 
-                        SecurityResources.TOPIC_ROLES, 
-                        SecurityResources.MESSAGE_REFRESH, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_REFRESH, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED, role);
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_CHANGED, role);
             }            
-            catch (Exception se)
+            catch (SecurityException sex)
             {
-                ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());                
-                SecurityUtil.publishErrorMessage(actionRequest, bundle.getString("user.exists"));
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_ROLE, sex.getMessage());
+            }
+            catch (NotSerializableException e)
+            {
+                e.printStackTrace();
             }
         }
     }
@@ -233,16 +244,20 @@ public class RoleDetails extends BrowserPortlet
             try
             {            
                 roleManager.removeRole(role);
-                PortletMessaging.publish(actionRequest, 
-                        SecurityResources.TOPIC_ROLES, 
-                        SecurityResources.MESSAGE_REFRESH, "true");
+                try
+                {
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_REFRESH, "true");
+                }
+                catch (NotSerializableException e)
+                {
+                    e.printStackTrace();
+                }
                 PortletMessaging.cancel(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED);                                                
             }
-            catch (Exception se)
+            catch (SecurityException sex)
             {
-                ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());                
-                SecurityUtil.publishErrorMessage(actionRequest, bundle.getString("user.exists"));
-            }
+                SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_ROLE, sex.getMessage());
+            } 
         }
     }
     
@@ -265,21 +280,21 @@ public class RoleDetails extends BrowserPortlet
                         count++;
                     }
                 }
-                catch (Exception e)
+                catch (SecurityException sex)
                 {
-                    System.err.println("failed to add user to role: " + user);
+                    SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_ROLE, sex.getMessage());
                 }
             }
             if (count > 0)
             {
                 try
                 {
-                    PortletMessaging.publish(request, 
-                            SecurityResources.TOPIC_ROLES_USERS, 
-                            SecurityResources.MESSAGE_REFRESH, "true");
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_REFRESH, "true");
                 }
                 catch (Exception e)
-                {}
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -302,23 +317,22 @@ public class RoleDetails extends BrowserPortlet
                         roleManager.removeRoleFromUser(user, role);
                         count++;
                     }
-                    catch (Exception e1)
+                    catch (SecurityException sex)
                     {
-                        System.err.println("failed to remove user from role: " + user);
+                        SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_ROLE, sex.getMessage());
                     }
-                    
                 }
             }
             if (count > 0)
             {
                 try
                 {
-                    PortletMessaging.publish(request, 
-                            SecurityResources.TOPIC_ROLES_USERS, 
-                            SecurityResources.MESSAGE_REFRESH, "true");
+                    PortletMessaging.publish(request, SecurityResources.TOPIC_ROLE, SecurityResources.MESSAGE_REFRESH, "true");
                 }
-                catch (Exception e2)
-                {}
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
         }
     }

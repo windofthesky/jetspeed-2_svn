@@ -34,10 +34,11 @@ public interface SecurityResources
     
     // Message Topics
     public final static String TOPIC_USERS = "users";
+    public final static String TOPIC_USER = "user";
     public final static String TOPIC_GROUPS = "groups";
-    public final static String TOPIC_GROUPS_USERS = "groups.users";
+    public final static String TOPIC_GROUP = "group";
     public final static String TOPIC_ROLES = "roles";
-    public final static String TOPIC_ROLES_USERS = "roles.users";    
+    public final static String TOPIC_ROLE = "role";    
     public final static String TOPIC_PROFILES = "profiles";
 
     /** Messages **/

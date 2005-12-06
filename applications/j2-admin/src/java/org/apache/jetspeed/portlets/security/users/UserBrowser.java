@@ -32,6 +32,7 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -94,6 +95,12 @@ public class UserBrowser extends BrowserPortlet
             this.getContext(request).put(FILTERED, "on");            
         }
         
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.ERROR_MESSAGES);
+        if (errorMessages != null )
+        {
+            this.getContext(request).put(SecurityResources.ERROR_MESSAGES, errorMessages);
+        }
+        
         super.doView(request, response);
     }
         
@@ -120,50 +127,39 @@ public class UserBrowser extends BrowserPortlet
             PortletMessaging.cancel(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED);
         }
         
-        super.processAction(request, response);
-            
+        super.processAction(request, response);            
     }
       
     public void getRows(RenderRequest request, String sql, int windowSize)
-    throws Exception
     {
         getRows(request, sql, windowSize, "");
     }
 
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
-    throws Exception
     {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
+        resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+        resultSetTitleList.add("user"); // resource bundle key
+
+        List list = new ArrayList();
         try
         {
             Iterator users = userManager.getUsers(filter);
-                        
-            
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("User");
 
-            List list = new ArrayList();
             while (users.hasNext())
             {
                 User user = (User)users.next();
-                Principal principal = SecurityUtil.getPrincipal(user.getSubject(),
-                        UserPrincipal.class);                
+                Principal principal = SecurityUtil.getPrincipal(user.getSubject(),UserPrincipal.class);                
                 list.add(principal.getName());
             }            
-            BrowserIterator iterator = new DatabaseBrowserIterator(
-                    list, resultSetTitleList, resultSetTypeList,
-                    windowSize);
-            setBrowserIterator(request, iterator);
-            iterator.sort("User");
         }
-        catch (Exception e)
+        catch (SecurityException sex)
         {
-            //log.error("Exception in CMSBrowserAction.getRows: ", e);
-            e.printStackTrace();
-            throw e;
-        }        
-        
-    }
-    
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_USERS, sex.getMessage());
+        }                                    
+        BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList, windowSize);
+        setBrowserIterator(request, iterator);
+        iterator.sort("user"); // resource bundle key        
+    }    
 }

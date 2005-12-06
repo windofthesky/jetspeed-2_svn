@@ -63,11 +63,7 @@ limitations under the License.
   <portlet:actionURL var="edit_user_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_link}"/>" method="post">
@@ -200,11 +196,7 @@ limitations under the License.
   <portlet:actionURL var="edit_user_attr_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
@@ -269,11 +261,7 @@ limitations under the License.
   <portlet:actionURL var="edit_credential_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
   <form name="Edit_Credential_Form" action="<c:out value="${edit_credential_link}"/>" method="post">
@@ -372,11 +360,7 @@ limitations under the License.
   <portlet:actionURL var="edit_role_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 	<form name="Edit_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
@@ -433,11 +417,7 @@ limitations under the License.
   <portlet:actionURL var="edit_group_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
@@ -495,11 +475,7 @@ limitations under the License.
   <portlet:actionURL var="edit_profile_link" />
   
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 	<form name="Edit_Profile_Form" action="<c:out value="${edit_profile_link}"/>" method="post">
@@ -588,11 +564,7 @@ limitations under the License.
 <h3 class="portlet-section-header"><fmt:message key="security.add.user"/></h3>
 
   <c:if test="${errorMessages != null}">
-    <ul>
-    <c:forEach items="${errorMessages}" var="error">
-      <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-    </ul>
+    <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
 <div class="portlet-section-text">

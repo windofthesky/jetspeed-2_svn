@@ -23,10 +23,10 @@ limitations under the License.
 
 <script>
 function openWindow(pipeline)
-{	
+{ 
     var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,width=200,height=300,scrollbars=yes');
     vWinUsers.opener = self;
-	vWinUsers.focus();
+  vWinUsers.focus();
 }
 </script>
 
@@ -35,6 +35,9 @@ function openWindow(pipeline)
 
 #if ($statusMsg)
 #parse ('/WEB-INF/view/status-include.vm')
+#end
+#if ($errorMessages)
+#parse ('/WEB-INF/view/errors-include.vm')
 #end
 #if ($role)
 #set ($newRole = "false")
@@ -58,23 +61,21 @@ function openWindow(pipeline)
 #if ($newRole == "true")
 <input type="submit" name="role.action.Save" value="$MESSAGES.getString('save')" class="portlet-form-button"/>
 #end
-</form>	      
+</form>       
 
 #if ($newRole == "false")
 <form name='usersInRoleForm' action="$formAction" method="post">
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
-#if ($tableSize > 0)
-   <input type="hidden" name="role" value="$!role">
-   <input type="submit" id="removeCheckedUsers" name="role.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" style="display:none"/>
+  <input type="hidden" name="role" value="$!role">
+  <input type="submit" id="removeCheckedUsers" name="role.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" style="display:none"/>
   <tr>
     #foreach ($column in $title)      
      <th width="10"></th>
       <th align='center' class="portlet-section-header" nowrap width="100%">
-        $column
+        $MESSAGES.getString("$column")
       </th>
     #end
   </tr>
-#end  
   #foreach ( $user in $table )
   <tr>
     #if ($velocityCount % 2 == 0)
@@ -85,15 +86,14 @@ function openWindow(pipeline)
     <td class="$rowstyle" width="10">
         <input type="checkbox" name="box_$user"/>
     </td>
-	  <td class="$rowstyle" nowrap width="100%">
-	    <div align="center">$user</div>
-	  </td>
+    <td class="$rowstyle" nowrap width="100%">
+      <div align="center">$user</div>
+    </td>
    </tr>
   #end
 </table>
 </form>
 
-#if ($tableSize > 0)
 <hr/>
 
 <!-- controls -->
@@ -186,7 +186,6 @@ function openWindow(pipeline)
   </tr>
   </table>    
 </form>
-#end
 
 <form name="securityform" action="$formAction" method="post">
 <table>

@@ -20,13 +20,24 @@ limitations under the License.
 @version $Id: group-details.vm 348264 2005-11-22 22:06:45Z taylor $
 
 *#
+#if ($groupTab == "users")
+#set ($target = "user")
+#set ($Target = "User")
+#set ($targets = "users")
+#set ($Targets = "Users")
+#else
+#set ($target = "role")
+#set ($Target = "Role")
+#set ($targets = "roles")
+#set ($Targets = "Roles")
+#end
 
 <script>
 function openWindow(pipeline)
-{	
-    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,width=200,height=300,scrollbars=yes');
-    vWinUsers.opener = self;
-	vWinUsers.focus();
+{ 
+    var vWin = window.open(pipeline, "${Target}Picker", 'status=no,resizable=yes,width=200,height=300,scrollbars=yes');
+    vWin.opener = self;
+  vWin.focus();
 }
 </script>
 
@@ -36,6 +47,9 @@ function openWindow(pipeline)
 #if ($statusMsg)
 #parse ('/WEB-INF/view/status-include.vm')
 #end
+#if ($errorMessages)
+#parse ('/WEB-INF/view/errors-include.vm')
+#end
 #if ($group)
 #set ($newGroup = "false")
 #else
@@ -43,13 +57,14 @@ function openWindow(pipeline)
 #end
 
 <form name='groupForm' action="$formAction" method="post">
+<input type="hidden" name="groupTab" value="$groupTab"/>
 <table>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('groupname')&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name='group' size="40" value="$!group" 
        class="portlet-form-field-label"
-      #if ($newGroup == "false") readonly #end
+#if ($newGroup == "false") readonly #end
       >
     </td>
   </tr>
@@ -58,51 +73,73 @@ function openWindow(pipeline)
 #if ($newGroup == "true")
 <input type="submit" name="group.action.Save" value="$MESSAGES.getString('save')" class="portlet-form-button"/>
 #end
-</form>	      
+</form>       
 
 #if ($newGroup == "false")
-<form name='usersInGroupForm' action="$formAction" method="post">
-<table cellpadding=0 cellspacing=1 border=0 width='100%' >
-#if ($tableSize > 0)
-   <input type="hidden" name="group" value="$!group">
-   <input type="submit" id="removeCheckedUsers" name="group.action.Remove_Checked_Users" value="$MESSAGES.getString('removecheckedusers')" style="display:none"/>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    #foreach ($column in $title)      
+#set ($tabTarget = $renderResponse.createActionURL()) 
+#if ($groupTab == "users")
+    $tabTarget.setParameter("switchTab", "roles")
+    <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTab" align="center" style="vertical-align:middle">$MESSAGES.getString('users')</td>
+    <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTabLow" align="center" style="vertical-align:middle"><a href="$tabTarget">$MESSAGES.getString('roles')</a></td>
+    <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+#else
+    $tabTarget.setParameter("switchTab", "users")
+    <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTabLow" align="center" style="vertical-align:middle"><a href="$tabTarget">$MESSAGES.getString('users')</a></td>
+    <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="LTab" align="center" style="vertical-align:middle">$MESSAGES.getString('roles')</td>
+    <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+#end
+  </tr>
+</table>
+<br/>
+<form name="${targets}InGroupForm" action="$formAction" method="post">
+<input type="hidden" name="groupTab" value="$groupTab"/>
+<table cellpadding=0 cellspacing=1 border=0 width='100%' >
+  <input type="hidden" name="group" value="$!group">
+  <input type="submit" id="removeChecked$Targets" name="group.action.Remove_Checked_$Targets" value='$MESSAGES.getString("removechecked$targets")' style="display:none"/>
+  <tr>
+#foreach ($column in $title)      
      <th width="10"></th>
       <th align='center' class="portlet-section-header" nowrap>
-        $column
+        $MESSAGES.getString("$column")
       </th>
-    #end
+#end
   </tr>
-#end  
-  #foreach ( $user in $table )
+#foreach ( $entry in $table )
   <tr>
-    #if ($velocityCount % 2 == 0)
-       #set($rowstyle = "portlet-section-body")
-    #else
-       #set($rowstyle = "portlet-section-alternate")
-    #end  
+#if ($velocityCount % 2 == 0)
+#set($rowstyle = "portlet-section-body")
+#else
+#set($rowstyle = "portlet-section-alternate")
+#end  
     <td class="$rowstyle" width="10">
-        <input type="checkbox" name="box_$user"/>
+        <input type="checkbox" name="box_$entry"/>
     </td>
-	  <td class="$rowstyle" nowrap>
-	    <div align="center">$user</div>
-	  </td>
+    <td class="$rowstyle" nowrap>
+      <div align="center">$entry</div>
+    </td>
    </tr>
-  #end
+#end
 </table>
 </form>
 
-#if ($tableSize > 0)
 <hr/>
 
 <!-- controls -->
 <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
-    #if ($prev)
+#if ($prev)
       <td valign="middle" height="30">
         <div align="center">
           <form action="$formAction" method="post">
+            <input type="hidden" name="groupTab" value="$groupTab"/>
             <input type='hidden' name='db.browser.action' value='first' />                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('firstArrow')">
             <input type="hidden" name="start" value="0">
@@ -112,15 +149,17 @@ function openWindow(pipeline)
       <td valign="middle" height="30">
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
+            <input type="hidden" name="groupTab" value="$groupTab"/>
             <input type='hidden' name='db.browser.action' value='prev'/>                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('prevArrow')">
             <input type="hidden" name="start" value="$prev">
           </form>
         </div>
       </td>
-    #end
-    #if ($tableSize > 0)
+#end
+#if ($tableSize > 0)
       <form action="$formAction" method="post">
+      <input type="hidden" name="groupTab" value="$groupTab"/>
       <td valign="middle" height="30">
         <div align="center">
             <input type='hidden' name='db.browser.action' value='change'/>                    
@@ -140,11 +179,12 @@ function openWindow(pipeline)
 
       </form>
       
-    #end    
-    #if ($next)
+#end    
+#if ($next)
       <td valign="middle">
         <div align="center">
           <form action="$formAction" method="post">
+            <input type="hidden" name="groupTab" value="$groupTab"/>
             <input type='hidden' name='db.browser.action' value='next'/>          
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('nextArrow')">
             <input type="hidden" name="start" value="$next">
@@ -154,26 +194,29 @@ function openWindow(pipeline)
       <td valign="middle" height="30">
         <div align="center">
           <form action="$formAction" method="post">
+            <input type="hidden" name="groupTab" value="$groupTab"/>
             <input type='hidden' name='db.browser.action' value='last'/>                    
             <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('lastArrow')">
             <input type="hidden" name="start" value="$tableSize">
           </form>
         </div>
       </td>  
-    #end
-    #if ($tableSize > 0)
+#end
+#if ($tableSize > 0)
       <td valign="middle">
         <div align="center">
           <form action="$formAction" method="post">
+            <input type="hidden" name="groupTab" value="$groupTab"/>
             <input type='hidden' name='db.browser.action' value='refresh'/>
             <input class="portlet-form-button" type="submit" name="eventSubmit_doRefresh" value="$MESSAGES.getString('refresh')" />
           </form>
         </div>
       </td>
-    #end
+#end
   </tr>
 </table>
 <form action="$formAction" method="post">
+    <input type="hidden" name="groupTab" value="$groupTab"/>
     <input type='hidden' name='db.browser.action' value='search'/>                    
     <input type='hidden' name='searchColumn' value='1'/>                        
     
@@ -186,20 +229,21 @@ function openWindow(pipeline)
   </tr>
   </table>    
 </form>
-#end
+
 
 <form name="securityform" action="$formAction" method="post">
+<input type="hidden" name="groupTab" value="$groupTab"/>
 <table>
 <tr>
   <td>
    <input type="submit" name="group.action.Add_New_Group" value="$MESSAGES.getString('addNewGroup')" class="portlet-form-button"  />
   </td>
   <td>
-   <input onclick="javascript:openWindow('$userChooser')" type="button" name="group.action.Add_Users_To_Group" value="$MESSAGES.getString('adduserstogroup')" class="portlet-form-button"  />
+   <input onclick="javascript:openWindow('$popupChooser')" type="button" name="group.action.Add_${Targets}_To_Group" value='$MESSAGES.getString("add${targets}togroup")' class="portlet-form-button"  />
   </td>  
 #if ($tableSize > 0)  
   <td>
-   <input type="button" onclick="javascript:document.forms.usersInGroupForm.removeCheckedUsers.click()" value="$MESSAGES.getString('removecheckedusers')" class="portlet-form-button" />
+   <input type="button" onclick="javascript:document.forms.${targets}InGroupForm.removeChecked${Targets}.click()" value='$MESSAGES.getString("removechecked$targets")' class="portlet-form-button" />
   </td>    
 #end
   <td>
@@ -207,11 +251,8 @@ function openWindow(pipeline)
   </td>  
 </tr>
 </table>
-<input type='hidden' name='users'/>
+<input type='hidden' name="${targets}"/>
 <input type='hidden' name='group' value='$group'/>
 
 </form>
-
-
 #end
-

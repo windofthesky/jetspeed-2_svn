@@ -93,4 +93,22 @@ public abstract class SecurityUtil extends BrowserPortlet
         }                
     }
     
+    public static void publishErrorMessage(PortletRequest request, String topic, String message)
+    {
+        try
+        {
+            ArrayList errors = (ArrayList)PortletMessaging.receive(request,topic,SecurityResources.ERROR_MESSAGES);
+            if ( errors == null )
+            {
+                errors = new ArrayList();
+            }
+            errors.add(message);
+            PortletMessaging.publish(request, topic, SecurityResources.ERROR_MESSAGES, errors);
+        }
+        catch (NotSerializableException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }                
+    }
 }

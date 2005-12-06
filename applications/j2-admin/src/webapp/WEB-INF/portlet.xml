@@ -446,6 +446,38 @@ limitations under the License.
         </portlet-info>
     </portlet>
 
+    <portlet id="RoleMultiChooser">
+      <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+        <value>/WEB-INF/security/roles/role-multi-chooser.vm</value>
+      </init-param>
+      <portlet-name>RoleMultiChooser</portlet-name>
+      <display-name>Choose Multiple Roles</display-name>
+      <description>Multiple Role Chooser Portlet</description>
+      <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleChooserPortlet</portlet-class>
+      <expiration-cache>-1</expiration-cache>
+      <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>EDIT</portlet-mode>
+        <portlet-mode>VIEW</portlet-mode>
+        <portlet-mode>HELP</portlet-mode>
+      </supports>
+      <supported-locale>en</supported-locale>
+      <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>
+      <portlet-preferences>
+        <preference>
+          <name>WindowSize</name>
+          <value>1000</value>
+        </preference>
+      </portlet-preferences>
+      <portlet-info>
+        <title>Roles Select</title>
+        <short-title>Roles</short-title>
+        <keywords>admin,security,roles</keywords>
+      </portlet-info>
+    </portlet>
+    
     <portlet id="GroupChooser">
         <init-param>
             <description>This parameter sets the template used in view mode.</description>

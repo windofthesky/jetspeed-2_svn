@@ -26,11 +26,7 @@ limitations under the License.
 <script language="JavaScript">function t(i,f){if(i.checked) f.value='true';else f.value='false';}</script>
 <h3 class="portlet-section-header">User Detail Preferences</h3>
 <c:if test="${errorMessages != null}">
-  <ul>
-    <c:forEach items="${errorMessages}" var="error">
-    <li style="color:red"><c:out value="${error}"/></li>
-    </c:forEach>
-  </ul>
+  <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
 </c:if>
 <form action="<portlet:actionURL/>" method="post">
 <c:set var="prefs" value="${renderRequest.preferences.map}"/>

@@ -31,6 +31,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -64,45 +65,37 @@ public class RoleBrowser extends BrowserPortlet
     }
            
     public void getRows(RenderRequest request, String sql, int windowSize)
-    throws Exception
     {
         getRows(request, sql, windowSize, "");
     }
     
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
-    throws Exception
     {
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
+        resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+        resultSetTitleList.add("role"); // resource bundle key
+
+        List list = new ArrayList();
         try
         {
             Iterator roles = roleManager.getRoles(filter);
-                        
             
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Role");
-
-            List list = new ArrayList();
             while (roles.hasNext())
             {
                 Role role = (Role)roles.next();
                 
                 Principal principal = role.getPrincipal();                
                 list.add(principal.getName());
-            }            
-            
-            BrowserIterator iterator = new DatabaseBrowserIterator(
-                    list, resultSetTitleList, resultSetTypeList,
-                    windowSize);
-            setBrowserIterator(request, iterator);
-            iterator.sort("Role");
+            }                        
         }
-        catch (Exception e)
+        catch (SecurityException sex)
         {
-            //log.error("Exception in CMSBrowserAction.getRows: ", e);
-            e.printStackTrace();
-            throw e;
-        }        
+            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_ROLES, sex.getMessage());
+        }                                    
+        BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList,windowSize);
+        setBrowserIterator(request, iterator);
+        iterator.sort("role"); // resource bundle key
     }
        
     public void doView(RenderRequest request, RenderResponse response)
@@ -132,6 +125,12 @@ public class RoleBrowser extends BrowserPortlet
             this.clearBrowserIterator(request);
         }                
                 
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_ROLES, SecurityResources.ERROR_MESSAGES);
+        if (errorMessages != null )
+        {
+            this.getContext(request).put(SecurityResources.ERROR_MESSAGES, errorMessages);
+        }
+        
         super.doView(request, response);
     }
 
@@ -143,7 +142,7 @@ public class RoleBrowser extends BrowserPortlet
             String selected = request.getParameter("role");
             if (selected != null)
             {
-                Role role = lookupRole(selected);
+                Role role = lookupRole(request, selected);
                 if (role != null)
                 {
                     PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED, selected);
@@ -166,17 +165,16 @@ public class RoleBrowser extends BrowserPortlet
             
     }
 
-    private Role lookupRole(String roleName)
+    private Role lookupRole(ActionRequest actionRequest, String roleName)
     {
         try
         {
             return roleManager.getRole(roleName);
         }
-        catch (SecurityException e)
+        catch (SecurityException sex)
         {
+            SecurityUtil.publishErrorMessage(actionRequest, SecurityResources.TOPIC_ROLES, sex.getMessage());
             return null;
         }
     }
-    
-    
 }
