@@ -77,6 +77,9 @@ limitations under the License.
 		  <entry key="DecorationLocator">
             <ref bean="DecorationLocator"/>
           </entry>		  
+		  <entry key="DecorationFactory">
+            <ref bean="DecorationFactory"/>
+          </entry>		  				 				 
 		  <entry key="PermissionManager">
             <ref bean="org.apache.jetspeed.security.PermissionManager"/>
           </entry>		            
