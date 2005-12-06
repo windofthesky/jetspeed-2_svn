@@ -17,7 +17,8 @@ limitations under the License.
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
 
-
+#* Loads our custom macros *#
+#parse($layoutDecoration.getResource("decorator-macros.vm"))
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
