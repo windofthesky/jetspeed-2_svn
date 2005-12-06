@@ -43,7 +43,6 @@ DEALINGS IN THE SOFTWARE.
 #defineLayoutObjects()
 
 #* Access page context *#
-#set($myF = $jetspeed.currentFragment)
 #set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
 
 #* select default JSCookMenu theme *#
@@ -57,35 +56,36 @@ DEALINGS IN THE SOFTWARE.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <meta http-equiv="Content-type" content="text/html#if($response.characterEncoding); charset=$response.characterEncoding#end" />
+    <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />
 
 #includeJavaScriptForHead()
 #includeHeaderResource()
-    <title>$jetspeed.page.getTitle($preferedLocale)</title>
+#IncludeStylesheets()
+    <title>#PageTitle()</title>
 
     <meta name="version" content="/* $Id: decorator-top.vm 239262 2005-08-22 22:23:39Z shinsuke $" />
     <meta name="keywords" content="" />
-    <meta name="description" content="$jetspeed.page.getTitle($preferedLocale)" />
+    <meta name="description" content="#PageDescription()" />
 
 <!-- JSCookMenu setup -->
-    <script language="JavaScript" src="content/scripts/JSCookMenu.js"></script>
-    <link rel="stylesheet" href="content/css/${jsCookMenuTheme}/theme.css" type="text/css">
-    <script language="JavaScript" src="content/scripts/${jsCookMenuTheme}/theme.js"></script>
+    <script language="JavaScript" src="#GetPageResource("scripts/JSCookMenu.js")"></script>
+    <link rel="stylesheet" href="#GetPageResource("css/${jsCookMenuTheme}/theme.css")" type="text/css">
+    <script language="JavaScript" src="#GetPageResource("scripts/${jsCookMenuTheme}/theme.js")"></script>
 
   </head>
-  <body marginwidth="0" marginheight="0" class="layout-jscookmenu">
+  <body marginwidth="0" marginheight="0" class="#PageBaseCSSClass()">
 
 <!--  BEGIN: layout/html/jscookmenu/decorator.vm -->
 
-    <div class="layout-jscookmenu">
+    <div class="#PageBaseCSSClass()">
 
 <!-- Banner Content -->
       <div id="banner">
         <table border="0" cellspacing="0" cellpadding="8" width="100%">
           <tr>
             <td>
-              <h1><img src="$response.encodeURL('content/images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0"/></h1>
+              <h1><img src="#GetPageResource('images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0"/></h1>
             </td>
             <td>
               &nbsp;

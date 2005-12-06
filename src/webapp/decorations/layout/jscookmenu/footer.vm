@@ -41,7 +41,7 @@ DEALINGS IN THE SOFTWARE.
       </table> 
     </div>
     <p>
-      <img src="$response.encodeURL('content/images/jetspeed-powered.gif')" alt="Jetspeed 2 Powered" border="0">
+      <img src="#GetPageResource('images/jetspeed-powered.gif')" alt="Jetspeed 2 Powered" border="0">
     </p>
   </body>
 </html>
