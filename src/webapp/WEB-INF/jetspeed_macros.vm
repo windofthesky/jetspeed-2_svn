@@ -1,3 +1,7 @@
+#*
+ * Use this macro at the top of all of your layout decorations so as 
+ * to provide required context objects.
+*#
 #macro (defineLayoutObjects)
   #set($preferedLocale = $JS2RequestContext.locale)
   #set($rootFragment = $jetspeed.currentFragment)
