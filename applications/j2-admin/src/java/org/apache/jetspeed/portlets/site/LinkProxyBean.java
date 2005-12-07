@@ -17,6 +17,7 @@ package org.apache.jetspeed.portlets.site;
 
 import java.io.Serializable;
 
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.portals.bridges.frameworks.ExternalComponentSupport;
@@ -24,12 +25,12 @@ import org.apache.portals.bridges.frameworks.Lookup;
 
 
 /**
- * PageProxyBean
+ * LinkProxyBean
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: FolderProxyBean.java 330359 2005-11-02 21:05:08Z rwatler $
+ * @version $Id: $
  */
-public class PageProxyBean 
+public class LinkProxyBean 
     implements 
         ExternalComponentSupport, 
         Lookup,
@@ -37,7 +38,7 @@ public class PageProxyBean
 {
     private static final long serialVersionUID = 1;
     private transient PageManager pageManager = null;
-    private transient Page page;
+    private transient Link link;
     private String lookupKey;
     private boolean isNew = true;
 
@@ -47,9 +48,9 @@ public class PageProxyBean
     private String version;
     private String resourceType;
     private String name;
-    private String hidden = "f";
+    private String url;
     
-    public PageProxyBean()
+    public LinkProxyBean()
     {        
     }
     
@@ -90,12 +91,12 @@ public class PageProxyBean
         }
     }
     
-    public void update(Page page)
+    public void update(Link link)
     {
-        page.setTitle(this.getTitle());
-        page.setShortTitle(this.getShortTitle());
-        page.setVersion(this.getVersion());
-        page.setHidden(this.hidden.equals("t"));
+        link.setTitle(this.getTitle());
+        link.setShortTitle(this.getShortTitle());
+        link.setVersion(this.getVersion());
+        link.setUrl(this.url);
     }
     
     public boolean lookup(String key)
@@ -105,12 +106,12 @@ public class PageProxyBean
         {
             if (pageManager != null)
             {
-                this.page = pageManager.getPage(key);    
-                setTitle(page.getTitle());                
-                setShortTitle(page.getShortTitle());
-                setVersion(page.getVersion());
-                setName(page.getName());
-                setHidden(page.isHidden() ? "t" : "f");
+                this.link = pageManager.getLink(key);    
+                setTitle(link.getTitle());                
+                setShortTitle(link.getShortTitle());
+                setVersion(link.getVersion());
+                setName(link.getName());
+                setUrl(link.getUrl());
                 setKey(key);
                 isNew = false;
             }
@@ -209,14 +210,14 @@ public class PageProxyBean
     }
 
     
-    public String getHidden()
+    public String getUrl()
     {
-        return hidden;
+        return url;
     }
+
     
-    
-    public void setHidden(String hidden)
+    public void setUrl(String url)
     {
-        this.hidden = hidden;
+        this.url = url;
     }
 }

@@ -23,6 +23,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -30,11 +31,14 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.page.Link;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.portals.messaging.PortletMessaging;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
+
 
 /**
  * This portlet is a tree browser user interface for viewing site resoures:
@@ -68,10 +72,14 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
 
     private TreeControl prepareSiteTree(RenderRequest request)
     {
+        TreeControl control = (TreeControl) request.getPortletSession().getAttribute(SITE_TREE_ATTRIBUTE);
+        
         String refresh = (String)PortletMessaging.consume(request, 
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.MESSAGE_REFRESH);
         
-        TreeControl control = (TreeControl) request.getPortletSession().getAttribute(SITE_TREE_ATTRIBUTE);
+        NodeInfo nodeUpdated = (NodeInfo)PortletMessaging.consume(request,
+                PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.NODE_UPDATED);
+        
         if (refresh != null || control == null)
         {
             Folder root = null;
@@ -100,8 +108,112 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                 control = buildTree(root, request.getLocale());
                 request.getPortletSession().setAttribute(SITE_TREE_ATTRIBUTE, control);
             }
+        } 
+        else if(nodeUpdated != null) 
+        {
+            try 
+            {
+                String action = nodeUpdated.getAction();
+                
+                if(/* node.isLoaded() && */ action.equals("delete")) 
+                {
+                    TreeControlNode node = control.findNode(nodeUpdated.getName());
+                    control.removeNode(node);
+                }
+                else if (action.equals("update"))
+                {
+                    TreeControlNode node = control.findNode(nodeUpdated.getName());
+                    String domain = node.getDomain();
+                    if (domain.equals(PSMLTreeLoader.FOLDER_DOMAIN))
+                    {
+                        Folder folder = pageManager.getFolder(node.getName());
+                        if (folder != null)
+                        {
+                            String title = folder.getTitle();
+                            node.setLabel(title);
+                        }
+                    }
+                    else if (domain.equals(PSMLTreeLoader.PAGE_DOMAIN))
+                    {
+                        Page page = pageManager.getPage(node.getName());
+                        if (page != null)
+                        {
+                            String title = page.getTitle();
+                            node.setLabel(title);
+                        }                        
+                    }
+                    else if (domain.equals(PSMLTreeLoader.LINK_DOMAIN))
+                    {
+                        Link link = pageManager.getLink(node.getName());
+                        if (link!= null)
+                        {
+                            String title = link.getTitle();
+                            node.setLabel(title);
+                        }                        
+                    }                    
+                }
+                else if(/* node.isLoaded() && */ action.equals("insert"))
+                {                    
+                    if (nodeUpdated.getDomain().equals(PSMLTreeLoader.FOLDER_DOMAIN))
+                    {
+                        Folder folder = pageManager.getFolder(nodeUpdated.getName());
+                        if (folder != null)
+                        {                        
+                            TreeControlNode parent = control.findNode(folder.getParent().getPath());
+                            if (parent != null)
+                            {
+                                TreeControlNode childNode = loader.createFolderNode(folder, request.getLocale(), "");
+                                parent.addChild(childNode);                            
+                            }
+                        }
+                    }
+                    else if (nodeUpdated.getDomain().equals(PSMLTreeLoader.PAGE_DOMAIN))
+                    {
+                        Page page = pageManager.getPage(nodeUpdated.getName());
+                        if (page != null)
+                        {                        
+                            TreeControlNode parent = control.findNode(page.getParent().getPath());
+                            if (parent != null)
+                            {
+                                TreeControlNode childNode = loader.createPageNode(page, request.getLocale(), "");
+                                parent.addChild(childNode);                            
+                            }
+                        }                    
+                    }
+                    else if (nodeUpdated.getDomain().equals(PSMLTreeLoader.LINK_DOMAIN))
+                    {
+                        Link link = pageManager.getLink(nodeUpdated.getName());
+                        if (link != null)
+                        {                        
+                            TreeControlNode parent = control.findNode(link.getParent().getPath());
+                            if (parent != null)
+                            {
+                                TreeControlNode childNode = loader.createLinkNode(link, request.getLocale(), "");
+                                parent.addChild(childNode);                            
+                            }
+                        }                    
+                    }                    
+                }
+            } 
+            catch(Exception e) 
+            {
+                e.printStackTrace();
+            }
         }
         return control;
+    }
+        
+    private int getIndex(TreeControlNode parent, TreeControlNode child) {
+        int myindex = -1;
+        TreeControlNode[] children = parent.findChildren();
+        for (int i = 0; i < children.length; i++) {
+            TreeControlNode node = children[i];
+            if(child == node) {
+                myindex = i;
+                break;
+            }
+        }
+        return myindex;
     }
     
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException,
@@ -164,11 +276,17 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                             PortletApplicationResources.CURRENT_FOLDER);
                     PortletMessaging.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
                             PortletApplicationResources.CURRENT_PAGE);
+                    PortletMessaging.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
+                            PortletApplicationResources.CURRENT_LINK);
                     
                     String attrName = PortletApplicationResources.CURRENT_FOLDER;
                     if (domain.equals("PAGE_DOMAIN"))
                     {
                         attrName = PortletApplicationResources.CURRENT_PAGE;
+                    }
+                    else if (domain.equals("LINK_DOMAIN"))
+                    {
+                        attrName = PortletApplicationResources.CURRENT_LINK;
                     }
 
                     PortletMessaging.publish(actionRequest, PortletApplicationResources.SITE_PORTLET, attrName,

@@ -94,3 +94,46 @@ $extraction
     <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
   </tr>
 #end
+
+#macro (form4CheckBoxCell $label $value $id)
+   <tr colspan="4" align="right">
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+    <td nowrap class="portlet-form-field-label" align="right">&nbsp;</td>
+    <td class="portlet-form-input-field" align="left">
+      <input type="checkbox" name="$id" #if ($value=="true") checked=1 #end>&nbsp;$label</input>
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+    </tr>
+#end
+
+#macro(checkBox $name $checkedValue $uncheckedValue $currentValue $label) 
+    <script type="text/javascript"> 
+      function ${name}_listener(cb) 
+      { 
+         var valueElement = document.getElementById('${name}'); 
+         if(cb.checked) 
+         { 
+             valueElement.value = '$checkedValue'; 
+         } 
+         else 
+         { 
+            valueElement.value = '$uncheckedValue'; 
+         } 
+ 
+      } 
+    </script> 
+    #if($currentValue == $checkedValue) 
+        #set($isChecked = true) 
+    #else 
+        #set($isChecked = false) 
+    #end     
+   <tr colspan="4" align="right">
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+    <td nowrap class="portlet-form-field-label" align="right">&nbsp;</td>
+    <td class="portlet-form-input-field" align="left">
+      <input type="checkbox" name="${name}_checkBox" id="${name}_checkBox" value="-1" #if($isChecked)checked#end onClick="${name}_listener(this)">$!label</>
+      <input type="hidden" name="${name}" id="${name}" value="${currentValue}" />       
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+    </tr>    
+#end

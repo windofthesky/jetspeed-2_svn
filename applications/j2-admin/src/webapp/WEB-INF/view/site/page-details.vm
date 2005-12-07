@@ -1,6 +1,7 @@
-<script language="javascript" src="${request.contextPath}/javascript/pam.js"></script>
-
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($req = $rc.Request)
 
 #if ($!pageBean.isNew())
 
@@ -13,12 +14,12 @@
     #formField('Title' "$!pageBean.Title" "40" 'title' $MESSAGES $ERRORS)
     #formField('ShortTitle' "$!pageBean.ShortTitle" "40" 'shortTitle' $MESSAGES $ERRORS)
     #formField('Version' "$!pageBean.Version" "40" 'version' $MESSAGES $ERRORS)
+    #checkBox("hidden" "t" "f" $pageBean.Hidden $MESSAGES.getString('Hidden')) 
 </table>
 <br/>
 <input type="submit" name="Save" value="$MESSAGES.getString('save')" />
-<!-- <a href="#" onClick='return checkSubmit("Remove","${pa.name}")'>$MESSAGES.getString('remove')</a> -->
-<a href="$forward.getView('security')">[$MESSAGES.getString('security')]</a>
+<input type="submit" name="Delete" value="$MESSAGES.getString('remove')" />
+<a href="$req.ContextPath/portal$!pageBean.Key">[View Page]</a>
 </form>
-
 #ErrorMessages($ERRORS)
 #end

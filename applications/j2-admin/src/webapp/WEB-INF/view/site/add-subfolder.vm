@@ -12,6 +12,5 @@
 </table>
 <br/>
 <input type="submit" name="Save" value="$MESSAGES.getString('save')" />
-<a href="$forward.getView('folder-view')">$MESSAGES.getString('folder.details')</a>
 </form>
 #ErrorMessages($ERRORS)

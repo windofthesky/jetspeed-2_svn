@@ -10,7 +10,7 @@
 	#formField('Title' "$!pageBean.Title" "40" 'title' $MESSAGES $ERRORS)
     #formField('ShortTitle' "$!pageBean.ShortTitle" "40" 'shortTitle' $MESSAGES $ERRORS)
     #formField('Version' "$!pageBean.Version" "40" 'version' $MESSAGES $ERRORS)
-	<input type='hidden' name='bridges.view.view' value='add-page'/>
+ 	<input type='hidden' name='bridges.view.view' value='add-page'/> 
 	
 </table>
 <br/>

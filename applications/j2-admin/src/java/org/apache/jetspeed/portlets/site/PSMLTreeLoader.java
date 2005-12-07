@@ -131,8 +131,13 @@ public class PSMLTreeLoader
     	
     	return linkNode;
     }
-        
+
     public void loadChildren(Folder folder, TreeControlNode parent, Locale locale)
+    {
+        loadChildren(folder, parent, locale, -1);
+    }
+    
+    public void loadChildren(Folder folder, TreeControlNode parent, Locale locale, int index)
     {
         NodeSet childFolders = null;
         NodeSet childPages = null;
@@ -164,7 +169,14 @@ public class PSMLTreeLoader
                 {
                     Page childPage = (Page) pagesIter.next();                
                     TreeControlNode childNode = createPageNode(childPage, locale, level);
-                    parent.addChild(childNode);
+                    if(index == -1) 
+                    {
+                        parent.addChild(childNode);                        
+                    } 
+                    else 
+                    {
+                        parent.addChild(index, childNode);
+                    }                                        
                 }
             }
             if (childLinks != null)
@@ -174,7 +186,14 @@ public class PSMLTreeLoader
                 {
                     Link childLink = (Link) linksIter.next();                
                     TreeControlNode childNode = createLinkNode(childLink, locale, level);
-                    parent.addChild(childNode);
+                    if(index == -1) 
+                    {
+                        parent.addChild(childNode);                        
+                    } 
+                    else 
+                    {
+                        parent.addChild(index, childNode);
+                    }                    
                 }
             }
             parent.setLoaded(true);
