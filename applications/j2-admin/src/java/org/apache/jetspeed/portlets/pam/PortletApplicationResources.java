@@ -34,9 +34,11 @@ public interface PortletApplicationResources
     public final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
     public final static String CURRENT_FOLDER = "current_folder";
     public final static String CURRENT_PAGE = "current_page";
+    public final static String CURRENT_LINK = "current_link";
     public final static String PORTLET_ACTION = "portlet_action";
     public final static String REQUEST_SELECT_SITE_TAB = "selected_site_tab";
     public final static String SITE_PORTLET = "SitePortlet";
+    public final static String NODE_UPDATED = "node_updated";
     
     // Message Topics
     public final static String TOPIC_PORTLET_SELECTOR = "portlet.selector";
@@ -47,5 +49,6 @@ public interface PortletApplicationResources
     public static final String MESSAGE_STATUS = "status";
     public static final String MESSAGE_REFRESH = "refresh";
     public static final String MESSAGE_FILTERED = "filtered";    
+    public static final String MESSAGE_SEARCHSTRING = "searchString";
     
 }

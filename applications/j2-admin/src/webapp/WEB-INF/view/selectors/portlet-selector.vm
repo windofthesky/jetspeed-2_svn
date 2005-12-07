@@ -31,13 +31,38 @@ limitations under the License.
     }
 	function rowHover(row)
 	{
-	    row.oldClassName = row.className;
+		row.oldClassName = row.className;
 	    row.className = 'jetdbLight';
 	    row.onmouseout = function()
 	    {
 	        this.className = this.oldClassName;
 	    }
 	}    
+	function collectChecks(outform) 
+	{
+		var result = "";
+		var noncheckedresult = "";
+		var userform = document.forms['userform'];
+		for(var i = 0; i < userform.length; i++)
+		{
+		   var e = userform.elements[i];
+		   if (e.type == "checkbox")
+		   {
+		       if (e.checked == true)
+		       {
+		       	   result = result + "," + e.name;
+		       } else 
+		       {
+		       	   noncheckedresult = noncheckedresult + "," + e.name;
+		       }
+		   }
+		}
+		// adding the ones NOT on this particular form
+		result = userform.allTheCheckedString.value + result;
+		
+		outform.checkedSet.value = result;
+		outform.unCheckedSet.value = noncheckedresult;
+	}
 	function sendChecks(form)
 	{
 		var result = "";
@@ -52,80 +77,89 @@ limitations under the License.
 		       }
 		   }
 		}
+		result = form.allTheCheckedString.value + result;
+		
         var openerForm = opener.document.forms['portletform'];
         var openerEl = openerForm.elements['portlets'];
         openerEl.value = result;
+        alert("we about to add "+result);
         window.close();
         openerForm.submit();		
 	}
     //-->
 </script>
 
-
-#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
-<form name='userform' onSubmit='sendChecks(this)'/>
-<table cellpadding=0 cellspacing=1 border=0 width='100%' >
-  <tr>
-    #foreach ($column in $title)    
-      <td align='center' class="jetdbHeadNoLink" nowrap>
-        $column
-      </td>
-    #end
-      <th class="jetdbHeadNoLink" width="10"></th>        
-  </tr>
-  #foreach ( $portlet in $table )
-  <tr>
-    #if ($velocityCount % 2 == 0)
-       #set($rowstyle = "jetdbEven")
-    #else
-       #set($rowstyle = "jetdbOdd")
-    #end   
-      <td class="$rowstyle" width="40%" onmouseover="rowHover(this)">
-        <div align="left">$!portlet.DisplayName</div>
-      </td>
-      <td class="$rowstyle" width="55%" onmouseover="rowHover(this)">
-        <div align="left">$!portlet.Description</div>
-      </td>      
-	  <td class="$rowstyle" width="10">
-  	    <input type="checkbox" name="box_$portlet.Name"/>
-	  </td>    
-   </tr>
-  #end
-</table>
- <input type="submit" name="select.portlets" value="Select Portlets" class="jetdbButton"  />
- <input type='hidden' name='searchColumn' value='1'/>                      	
- 
-</form>
-
-<!-- controls -->
+<!-- search area -->
+  	<table><tr>
+		<form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
+		<td>
+		<input type="text" name="searchString" size="40" value="$!searchString" class="portlet-form-field-label">    
+		<table>
+			<tr>
+			    <td nowrap class="portlet-section-alternate" align="right">Keyword search:&nbsp;</td>
+			    <td class="portlet-section-alternate" align="left" >	
+			    		<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">&nbsp;&nbsp;&nbsp;
+				</td>
+				<td>
+			    <input type='hidden' name="checkedSet" value = '' /> 
+			    <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input type='hidden' name='db.browser.action' value='search'/>                    
+			  	<input type='hidden' name='searchColumn' value='1'/>                      	
+			    <input class="jetdbButton" type="submit" value="Search">
+				</td>
+			</tr>
+		</table>
+	</form>
+    </td>
+		<td>		
+	  	
+          <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
+          	<input type='hidden' name='db.browser.action' value='refresh'/>
+            <input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input  type="submit" name="eventSubmit_doRefresh" value="Reset Search" />
+            <!-- class="jetdbButton"  too narrow to use -->
+          </form>
+    
+	</td>
+	</tr>
+	</table>
+<hr/>
+<!-- navigation controls -->
 <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
     #if ($prev)
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
           	<input type='hidden' name='db.browser.action' value='first' />                    
-            <input class="jetdbButton" type="submit" value="<<">
+            <input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input class="jetdbButton" type="submit" value="<<">
             <input type="hidden" name="start" value="0">
           </form>
         </div>
       </td>  
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
           	<input type='hidden' name='db.browser.action' value='prev'/>                    
-            <input class="jetdbButton" type="submit" value="<">
+            <input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input class="jetdbButton" type="submit" value="<">
             <input type="hidden" name="start" value="$prev">
           </form>
         </div>
       </td>
     #end
     #if ($tableSize > 0)
-      <form action="$renderResponse.createActionURL()" method="post">
+      <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
       <td valign="middle" height="30">
         <div align="center">
           	<input type='hidden' name='db.browser.action' value='change'/>                    
-            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
+            <input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			<input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
         </div>
       </td>  
       <td valign="middle" height="30">
@@ -146,46 +180,81 @@ limitations under the License.
     #if ($next)
       <td valign="middle">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
+          <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
           	<input type='hidden' name='db.browser.action' value='next'/>          
-            <input class="jetdbButton" type="submit" value=">">
+            <input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input class="jetdbButton" type="submit" value=">">
             <input type="hidden" name="start" value="$next">
           </form>
         </div>
       </td>
       <td valign="middle" height="30">
         <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
-          	<input type='hidden' name='db.browser.action' value='last'/>                    
-            <input class="jetdbButton" type="submit" value=">>">
+          <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
+          	<input type='hidden' name='db.browser.action' value='last'/>
+          	<input type='hidden' name="checkedSet" value = '' />                    
+            <input type='hidden' name="unCheckedSet" value = '' /> 
+			    <input class="jetdbButton" type="submit" value=">>">
             <input type="hidden" name="start" value="$tableSize">
           </form>
         </div>
       </td>  
     #end
-    #if ($tableSize > 0)
-      <td valign="middle">
-        <div align="center">
-          <form action="$renderResponse.createActionURL()" method="post">
-          	<input type='hidden' name='db.browser.action' value='refresh'/>
-            <input class="jetdbButton" type="submit" name="eventSubmit_doRefresh" value="Refresh" />
-          </form>
-        </div>
-      </td>
-    #end
   </tr>
 </table>
-<form action="$renderResponse.createActionURL()" method="post">
-  	<input type='hidden' name='db.browser.action' value='search'/>                    
-  	<input type='hidden' name='searchColumn' value='1'/>                      	
-    <input class="jetdbButton" type="submit" value="Search">
-	<input type="text" name="searchString" size="30" value="" class="portlet-form-field-label">    
-	<table>
-	<tr>
-    <td nowrap class="portlet-section-alternate" align="right">Filter by Keyword:&nbsp;</td>
-    <td>	
-	<input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered">
-	</td>
-	</tr>
-	</table>		
+
+<hr/>
+
+<!-- the rows of portlets -->
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+<form name='userform' onSubmit='sendChecks(this)'/>
+<input type='hidden' name='allTheCheckedString' value='$!selectedPortletsString' />
+<table cellpadding=0 cellspacing=1 border=0 width='100%' >
+  <tr>
+    #foreach ($column in $title)    
+      <td align='center' class="jetdbHeadNoLink" nowrap>
+        $column
+      </td>
+    #end
+      <th class="jetdbHeadNoLink" width="10"></th>        
+  </tr>
+
+  <!--  onmouseover="rowHover(this)" this mouseover used to be in use.. but it's only for cells not UI decent.  -->
+  #foreach ( $portlet in $table )
+  <tr  >
+    #if ($velocityCount % 2 == 0)
+       #set($rowstyle = "jetdbEven")
+    #else
+       #set($rowstyle = "jetdbOdd")
+    #end   
+      <td class="$rowstyle" width="40%" >
+        <div align="left">$!portlet.DisplayName</div>
+      </td>
+      <td class="$rowstyle" width="55%" >
+        <div align="left">$!portlet.Description</div>
+      </td>      
+	  <td class="$rowstyle" width="10">
+  	    <input type="checkbox" name="box_$portlet.Name" 
+  	    #if( $selectedPortlets.contains($portlet.Name) )
+  	    		CHECKED
+  	    #end
+  	    />
+	  </td>    
+   </tr>
+  #end
+
+<tr>
+	<td colspan="3" align="center" >
+ 		there are now $selectedPortlets.size() portlet selected 
+ 		<input type="submit" name="select.portlets" value="Select Portlets"   />
+ 		<!-- class="jetdbButton"  too narrow to use-->
+ 		<input type='hidden' name='searchColumn' value='1'/>
+ 	</td>
+ </tr>                      	
+</table>
+ 
 </form>
+
+
+

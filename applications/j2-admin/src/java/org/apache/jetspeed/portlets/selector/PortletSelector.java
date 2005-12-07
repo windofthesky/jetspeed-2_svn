@@ -18,10 +18,13 @@ import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -57,6 +60,11 @@ import org.apache.portals.messaging.PortletMessaging;
  */
 public class PortletSelector extends BrowserPortlet
 {
+    
+    protected static final String CHECKEDSET = "checkedSet";
+    protected static final String UNCHECKEDSET = "unCheckedSet";
+   
+
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
     protected PermissionManager permissionManager;
@@ -98,15 +106,99 @@ public class PortletSelector extends BrowserPortlet
         {
             this.getContext(request).put(FILTERED, "on");            
         }
-                
+        
+        String searchString = (String)PortletMessaging.receive(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SEARCHSTRING);
+        if (searchString != null)
+        {
+            this.getContext(request).put(SEARCH_STRING, searchString);            
+        }
+        
+        Set selectedCheckBoxes = (Set) PortletMessaging.receive(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SELECTED);
+        if(selectedCheckBoxes == null) {
+            selectedCheckBoxes = new HashSet();
+        }
+        this.getContext(request).put("selectedPortlets",selectedCheckBoxes);
+        String selectedPortletsString = getAsString(selectedCheckBoxes);
+        this.getContext(request).put("selectedPortletsString", selectedPortletsString);
+        
+        
         super.doView(request, response);
     }
 
+    private String getAsString(Set s) 
+    {
+        StringBuffer sb = new StringBuffer();
+        if(s != null) 
+        {
+            Iterator it = s.iterator();
+            while(it.hasNext()) 
+            {
+                String portletName = (String) it.next();
+                if(sb.length() > 0) {
+                    sb.append(",");
+                }
+                sb.append("box_"+portletName);
+            }
+        }
+        return sb.toString();
+    }
+    
+    private Set getCheckBoxSet(ActionRequest request) {
+        Set s = new HashSet();
+        String checkBoxesString =  request.getParameter(CHECKEDSET);
+        StringTokenizer st = new StringTokenizer(checkBoxesString,",");
+        while(st.hasMoreTokens() ) 
+        {
+            String checkBox = st.nextToken();
+            if(checkBox.startsWith("box_")) {
+                String portletName = checkBox.substring(4);
+                s.add(portletName);
+            } else {
+                s.add(checkBox);
+            }
+        }
+        // wait we need to subtracted the unchecked stuff
+        String unCheckBoxesString =  request.getParameter(UNCHECKEDSET);
+        StringTokenizer st2 = new StringTokenizer(unCheckBoxesString,",");
+        Set uns = new HashSet();
+        while(st2.hasMoreTokens() ) 
+        {
+            String checkBox = st2.nextToken();
+            if(checkBox.startsWith("box_")) {
+                String portletName = checkBox.substring(4);
+                uns.add(portletName);
+            } else {
+                uns.add(checkBox);
+            }
+        }
+        // here's the actual removal
+        s.removeAll(uns);
+        
+        return s;
+    }
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {
         String filtered = (String)request.getParameter(FILTERED);
-        if (filtered != null)
+        
+        Set checkBoxes = getCheckBoxSet(request);
+        PortletMessaging.publish(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SELECTED, checkBoxes);            
+        
+        String searchString = (String)request.getParameter(SEARCH_STRING);
+        // huh, apparently this messaging API won't basically take a null and assume that's equivalent to a cancel.  In fact the null won't even
+        // overwrite the previous value.. it does nothing...
+        // So, we'll write some extra code to get around that
+        if((searchString != null) && (searchString.trim().length() > 0) )
+        {
+            PortletMessaging.publish(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SEARCHSTRING, searchString);
+        } else
+        {
+            PortletMessaging.cancel(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SEARCHSTRING);
+        }
+        
+        // if the filter parameter is non null AND also has some real chars... then we'll be filtered.
+        // otherwise assume no filter
+        if ((filtered != null) && (filtered.trim().length() > 0) )
         {
             PortletMessaging.publish(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_FILTERED, "on");            
         }
