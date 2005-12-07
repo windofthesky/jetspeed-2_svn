@@ -80,7 +80,7 @@ approaches described here can be applied to writing decroations in other scripti
 	<p>
 		The decorator.properties file holds basic information about your layout
 		decoration.  In all actuallity, this file can be blank, but we still require
-		it is present as it is used by other APIs to "discover" available decorations.  
+		that it be present as it is used by other APIs to "discover" available decorations.  
 		With that being said, it is safe to assume that all the properties defined below 
 		are optional.
 		<table>
