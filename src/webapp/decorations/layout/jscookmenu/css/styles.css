@@ -117,4 +117,24 @@ body.layout-jscookmenu
   float: left;  
 }
 
+/** OneColumn Sepcific widths */
+.layout-jscookmenu .portal-layout-OneColumn .portal-layout-column
+{  
+  padding-left:1%;
+  padding-right:1%;
+  width: 97%;
+  float: left;  
+}
+
+
+/** ThreeColumn Sepcific widths */
+.layout-jscookmenu .portal-layout-ThreeColumns .portal-layout-column
+{  
+  padding-left:1%;
+  width: 31%;
+  float: left;  
+}
+
+
+
 
