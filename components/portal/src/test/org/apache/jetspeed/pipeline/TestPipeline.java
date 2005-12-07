@@ -53,10 +53,11 @@ public class TestPipeline extends TestCase
         assertEquals("PasswordCredentialValve", valves[4].toString());
         assertEquals("LoginValidationValve", valves[5].toString());
         assertEquals("ProfilerValve", valves[6].toString());
-        assertEquals("ContainerValve", valves[7].toString());
-        assertEquals("ActionValveImpl", valves[8].toString());
-        assertEquals("AggregatorValve", valves[9].toString());
-        assertEquals("CleanupValveImpl", valves[10].toString());
+        assertEquals("DecorationValve", valves[7].toString());
+        assertEquals("ContainerValve", valves[8].toString());
+        assertEquals("ActionValveImpl", valves[9].toString());
+        assertEquals("AggregatorValve", valves[10].toString());
+        assertEquals("CleanupValveImpl", valves[11].toString());
         
         
         assertNotNull(engine.getPipeline("action-pipeline"));
