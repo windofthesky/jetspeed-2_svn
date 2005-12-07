@@ -419,7 +419,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     synchronized (this)
                     {
                         // construct and cache default velocity engine
-                        if (defaultVelocityEngine != null)
+                        if (defaultVelocityEngine == null)
                         {
                             defaultVelocityEngine = initVelocity((TemplateDescriptor)null);
                         }
@@ -586,7 +586,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                 synchronized (this)
                 {
                     // construct and cache default velocity engine
-                    if (defaultVelocityEngine != null)
+                    if (defaultVelocityEngine == null)
                     {
                         defaultVelocityEngine = initVelocity((TemplateDescriptor)null);
                     }
