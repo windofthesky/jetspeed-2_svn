@@ -78,8 +78,6 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
 
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        System.out.println("*** in doView");
-        
         response.setContentType("text/html");
         
         // Get the messages from the browser
