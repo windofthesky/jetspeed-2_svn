@@ -119,7 +119,7 @@ approaches described here can be applied to writing decroations in other scripti
    <subsection name='Top o&apos; the Page to ya: header.vm'>
 	<p>
 		This represnts the top portion of your portal page.  Below is a section
-		by section walkthrough of the basics required to write a funtional header
+		by section walkthrough of the basics required to write a functional header
 		template.
 		<br/><br/>
 		<strong>NOTICE:</strong> It is assumed that the reader is proficient in both
