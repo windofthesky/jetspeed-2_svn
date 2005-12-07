@@ -109,3 +109,12 @@ body.layout-jscookmenu
   padding: 2px;
 }
 
+/** TwoColumn Sepcific widths */
+.layout-jscookmenu .portal-layout-TwoColumns .portal-layout-column
+{  
+  padding-left:1%;
+  width: 48%;
+  float: left;  
+}
+
+
