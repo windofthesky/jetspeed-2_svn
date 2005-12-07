@@ -213,6 +213,11 @@ public class TreeControlNode implements Serializable
         this.title = title;
     }
 
+    public void setLabel(String label)
+    {
+        this.label = label;
+    }
+    
 
     /**
      * Is this the last node in the set of children for our parent node?
