@@ -84,4 +84,35 @@
  *#	
 #macro (GetPageResource $_path)#GetResource($layoutDecoration $_path) #end
 	
+#*
+  Dispalys the standard action bar for this page.
+*#
+#macro (PageActionBar)
+ #set($_actions = $layoutDecoration.actions)
 
+ #if($_actions.size() >0)
+  <div id="portal-page-actions" >		
+  #foreach ($_action in $_actions)
+   
+   <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="${_action.Link}" alt="${_action.Alt}" border="0" /></a>
+  #end
+  #if($editing == true)
+   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
+
+   <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Add a Portlet"/></a>
+  #end 	  
+ </div>
+ #end
+#end
+
+#macro(PortletActionBar $_decoration)
+ #set($_actions = $_decoration.actions)
+  
+ <div class="PActionBar">
+    #foreach ($_action in $_actions)
+
+	<a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" ><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
+    #end
+    
+ </div>
+#end
