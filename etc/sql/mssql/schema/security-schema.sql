@@ -31,13 +31,13 @@ END
 
 CREATE TABLE SECURITY_PRINCIPAL
 (
-                    PRINCIPAL_ID INT NOT NULL,
-                    CLASSNAME VARCHAR (254) NOT NULL,
-                    IS_MAPPING_ONLY INT NOT NULL,
-                    IS_ENABLED INT NOT NULL,
-                    FULL_PATH VARCHAR (254) NOT NULL,
-                    CREATION_DATE DATETIME NOT NULL,
-                    MODIFIED_DATE DATETIME NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
+            CLASSNAME VARCHAR (254) NOT NULL,
+            IS_MAPPING_ONLY INT NOT NULL,
+            IS_ENABLED INT NOT NULL,
+            FULL_PATH VARCHAR (254) NOT NULL,
+            CREATION_DATE DATETIME NOT NULL,
+            MODIFIED_DATE DATETIME NOT NULL,
 
     CONSTRAINT SECURITY_PRINCIPAL_PK PRIMARY KEY(PRINCIPAL_ID),
     UNIQUE (FULL_PATH));
@@ -78,12 +78,12 @@ END
 
 CREATE TABLE SECURITY_PERMISSION
 (
-                    PERMISSION_ID INT NOT NULL,
-                    CLASSNAME VARCHAR (254) NOT NULL,
-                    NAME VARCHAR (254) NOT NULL,
-                    ACTIONS VARCHAR (254) NOT NULL,
-                    CREATION_DATE DATETIME NOT NULL,
-                    MODIFIED_DATE DATETIME NOT NULL,
+            PERMISSION_ID INT NOT NULL,
+            CLASSNAME VARCHAR (254) NOT NULL,
+            NAME VARCHAR (254) NOT NULL,
+            ACTIONS VARCHAR (254) NOT NULL,
+            CREATION_DATE DATETIME NOT NULL,
+            MODIFIED_DATE DATETIME NOT NULL,
 
     CONSTRAINT SECURITY_PERMISSION_PK PRIMARY KEY(PERMISSION_ID));
 
@@ -127,8 +127,8 @@ END
 
 CREATE TABLE PRINCIPAL_PERMISSION
 (
-                    PRINCIPAL_ID INT NOT NULL,
-                    PERMISSION_ID INT NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
+            PERMISSION_ID INT NOT NULL,
 
     CONSTRAINT PRINCIPAL_PERMISSION_PK PRIMARY KEY(PRINCIPAL_ID,PERMISSION_ID));
 
@@ -170,21 +170,21 @@ END
 
 CREATE TABLE SECURITY_CREDENTIAL
 (
-                    CREDENTIAL_ID INT NOT NULL,
-                    PRINCIPAL_ID INT NOT NULL,
-                    COLUMN_VALUE VARCHAR (254) NOT NULL,
-                    TYPE SMALLINT NOT NULL,
-                    CLASSNAME VARCHAR (254) NULL,
-                    UPDATE_REQUIRED INT NOT NULL,
-                    IS_ENCODED INT NOT NULL,
-                    IS_ENABLED INT NOT NULL,
-                    AUTH_FAILURES SMALLINT NOT NULL,
-                    IS_EXPIRED INT NOT NULL,
-                    CREATION_DATE DATETIME NOT NULL,
-                    MODIFIED_DATE DATETIME NOT NULL,
-                    PREV_AUTH_DATE DATETIME NULL,
-                    LAST_AUTH_DATE DATETIME NULL,
-                    EXPIRATION_DATE DATETIME NULL,
+            CREDENTIAL_ID INT NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
+            COLUMN_VALUE VARCHAR (254) NOT NULL,
+            TYPE SMALLINT NOT NULL,
+            CLASSNAME VARCHAR (254) NULL,
+            UPDATE_REQUIRED INT NOT NULL,
+            IS_ENCODED INT NOT NULL,
+            IS_ENABLED INT NOT NULL,
+            AUTH_FAILURES SMALLINT NOT NULL,
+            IS_EXPIRED INT NOT NULL,
+            CREATION_DATE DATETIME NOT NULL,
+            MODIFIED_DATE DATETIME NOT NULL,
+            PREV_AUTH_DATE DATETIME NULL,
+            LAST_AUTH_DATE DATETIME NULL,
+            EXPIRATION_DATE DATETIME NULL,
 
     CONSTRAINT SECURITY_CREDENTIAL_PK PRIMARY KEY(CREDENTIAL_ID));
 
@@ -224,14 +224,61 @@ END
 
 CREATE TABLE SSO_SITE
 (
-                    SITE_ID INT NOT NULL,
-                    NAME VARCHAR (254) NOT NULL,
-                    URL VARCHAR (254) NOT NULL,
-                    ALLOW_USER_SET INT default 0 NULL,
-                    REQUIRES_CERTIFICATE INT default 0 NULL,
+            SITE_ID INT NOT NULL,
+            NAME VARCHAR (254) NOT NULL,
+            URL VARCHAR (254) NOT NULL,
+            ALLOW_USER_SET INT default 0 NULL,
+            REQUIRES_CERTIFICATE INT default 0 NULL,
+            CHALLENGE_RESPONSE_AUTH INT default 0 NULL,
+            FORM_AUTH INT default 0 NULL,
+            FORM_USER_FIELD VARCHAR (128) NULL,
+            FORM_PWD_FIELD VARCHAR (128) NULL,
+            REALM VARCHAR (128) NULL,
 
     CONSTRAINT SSO_SITE_PK PRIMARY KEY(SITE_ID),
     UNIQUE (URL));
+
+
+
+
+
+/* ---------------------------------------------------------------------- */
+/* SSO_COOKIE                                                      */
+/* ---------------------------------------------------------------------- */
+
+IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SSO_COOKIE')
+BEGIN
+     DECLARE @reftable_6 nvarchar(60), @constraintname_6 nvarchar(60)
+     DECLARE refcursor CURSOR FOR
+     select reftables.name tablename, cons.name constraintname
+      from sysobjects tables,
+           sysobjects reftables,
+           sysobjects cons,
+           sysreferences ref
+       where tables.id = ref.rkeyid
+         and cons.id = ref.constid
+         and reftables.id = ref.fkeyid
+         and tables.name = 'SSO_COOKIE'
+     OPEN refcursor
+     FETCH NEXT from refcursor into @reftable_6, @constraintname_6
+     while @@FETCH_STATUS = 0
+     BEGIN
+       exec ('alter table '+@reftable_6+' drop constraint '+@constraintname_6)
+       FETCH NEXT from refcursor into @reftable_6, @constraintname_6
+     END
+     CLOSE refcursor
+     DEALLOCATE refcursor
+     DROP TABLE SSO_COOKIE
+END
+;
+
+CREATE TABLE SSO_COOKIE
+(
+            COOKIE_ID INT NOT NULL,
+            COOKIE VARCHAR (1024) NOT NULL,
+            CREATE_DATE DATETIME NOT NULL,
+
+    CONSTRAINT SSO_COOKIE_PK PRIMARY KEY(COOKIE_ID));
 
 
 
@@ -247,7 +294,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SSO_SITE_TO_PRINC
     ALTER TABLE SSO_SITE_TO_PRINCIPALS DROP CONSTRAINT SSO_SITE_TO_PRINCIPALS_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SSO_SITE_TO_PRINCIPALS')
 BEGIN
-     DECLARE @reftable_6 nvarchar(60), @constraintname_6 nvarchar(60)
+     DECLARE @reftable_7 nvarchar(60), @constraintname_7 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -259,11 +306,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SSO_SITE_TO_PRINCIPALS'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_6, @constraintname_6
+     FETCH NEXT from refcursor into @reftable_7, @constraintname_7
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_6+' drop constraint '+@constraintname_6)
-       FETCH NEXT from refcursor into @reftable_6, @constraintname_6
+       exec ('alter table '+@reftable_7+' drop constraint '+@constraintname_7)
+       FETCH NEXT from refcursor into @reftable_7, @constraintname_7
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -273,8 +320,8 @@ END
 
 CREATE TABLE SSO_SITE_TO_PRINCIPALS
 (
-                    SITE_ID INT NOT NULL,
-                    PRINCIPAL_ID INT NOT NULL,
+            SITE_ID INT NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
 
     CONSTRAINT SSO_SITE_TO_PRINCIPALS_PK PRIMARY KEY(SITE_ID,PRINCIPAL_ID));
 
@@ -292,7 +339,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SSO_PRINCIPAL_TO_
     ALTER TABLE SSO_PRINCIPAL_TO_REMOTE DROP CONSTRAINT SSO_PRINCIPAL_TO_REMOTE_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SSO_PRINCIPAL_TO_REMOTE')
 BEGIN
-     DECLARE @reftable_7 nvarchar(60), @constraintname_7 nvarchar(60)
+     DECLARE @reftable_8 nvarchar(60), @constraintname_8 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -304,11 +351,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SSO_PRINCIPAL_TO_REMOTE'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_7, @constraintname_7
+     FETCH NEXT from refcursor into @reftable_8, @constraintname_8
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_7+' drop constraint '+@constraintname_7)
-       FETCH NEXT from refcursor into @reftable_7, @constraintname_7
+       exec ('alter table '+@reftable_8+' drop constraint '+@constraintname_8)
+       FETCH NEXT from refcursor into @reftable_8, @constraintname_8
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -318,8 +365,8 @@ END
 
 CREATE TABLE SSO_PRINCIPAL_TO_REMOTE
 (
-                    PRINCIPAL_ID INT NOT NULL,
-                    REMOTE_PRINCIPAL_ID INT NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
+            REMOTE_PRINCIPAL_ID INT NOT NULL,
 
     CONSTRAINT SSO_PRINCIPAL_TO_REMOTE_PK PRIMARY KEY(PRINCIPAL_ID,REMOTE_PRINCIPAL_ID));
 
@@ -337,7 +384,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SSO_SITE_TO_REMOT
     ALTER TABLE SSO_SITE_TO_REMOTE DROP CONSTRAINT SSO_SITE_TO_REMOTE_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SSO_SITE_TO_REMOTE')
 BEGIN
-     DECLARE @reftable_8 nvarchar(60), @constraintname_8 nvarchar(60)
+     DECLARE @reftable_9 nvarchar(60), @constraintname_9 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -349,11 +396,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SSO_SITE_TO_REMOTE'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_8, @constraintname_8
+     FETCH NEXT from refcursor into @reftable_9, @constraintname_9
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_8+' drop constraint '+@constraintname_8)
-       FETCH NEXT from refcursor into @reftable_8, @constraintname_8
+       exec ('alter table '+@reftable_9+' drop constraint '+@constraintname_9)
+       FETCH NEXT from refcursor into @reftable_9, @constraintname_9
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -363,10 +410,55 @@ END
 
 CREATE TABLE SSO_SITE_TO_REMOTE
 (
-                    SITE_ID INT NOT NULL,
-                    PRINCIPAL_ID INT NOT NULL,
+            SITE_ID INT NOT NULL,
+            PRINCIPAL_ID INT NOT NULL,
 
     CONSTRAINT SSO_SITE_TO_REMOTE_PK PRIMARY KEY(SITE_ID,PRINCIPAL_ID));
+
+
+
+
+
+/* ---------------------------------------------------------------------- */
+/* SSO_COOKIE_TO_REMOTE                                                      */
+/* ---------------------------------------------------------------------- */
+
+IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SSO_COOKIE_TO_REMOTE_FK_1')
+    ALTER TABLE SSO_COOKIE_TO_REMOTE DROP CONSTRAINT SSO_COOKIE_TO_REMOTE_FK_1;
+IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SSO_COOKIE_TO_REMOTE_FK_2')
+    ALTER TABLE SSO_COOKIE_TO_REMOTE DROP CONSTRAINT SSO_COOKIE_TO_REMOTE_FK_2;
+IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SSO_COOKIE_TO_REMOTE')
+BEGIN
+     DECLARE @reftable_10 nvarchar(60), @constraintname_10 nvarchar(60)
+     DECLARE refcursor CURSOR FOR
+     select reftables.name tablename, cons.name constraintname
+      from sysobjects tables,
+           sysobjects reftables,
+           sysobjects cons,
+           sysreferences ref
+       where tables.id = ref.rkeyid
+         and cons.id = ref.constid
+         and reftables.id = ref.fkeyid
+         and tables.name = 'SSO_COOKIE_TO_REMOTE'
+     OPEN refcursor
+     FETCH NEXT from refcursor into @reftable_10, @constraintname_10
+     while @@FETCH_STATUS = 0
+     BEGIN
+       exec ('alter table '+@reftable_10+' drop constraint '+@constraintname_10)
+       FETCH NEXT from refcursor into @reftable_10, @constraintname_10
+     END
+     CLOSE refcursor
+     DEALLOCATE refcursor
+     DROP TABLE SSO_COOKIE_TO_REMOTE
+END
+;
+
+CREATE TABLE SSO_COOKIE_TO_REMOTE
+(
+            COOKIE_ID INT NOT NULL,
+            REMOTE_PRINCIPAL_ID INT NOT NULL,
+
+    CONSTRAINT SSO_COOKIE_TO_REMOTE_PK PRIMARY KEY(COOKIE_ID,REMOTE_PRINCIPAL_ID));
 
 
 
@@ -382,7 +474,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SECURITY_USER_ROL
     ALTER TABLE SECURITY_USER_ROLE DROP CONSTRAINT SECURITY_USER_ROLE_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SECURITY_USER_ROLE')
 BEGIN
-     DECLARE @reftable_9 nvarchar(60), @constraintname_9 nvarchar(60)
+     DECLARE @reftable_11 nvarchar(60), @constraintname_11 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -394,11 +486,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SECURITY_USER_ROLE'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_9, @constraintname_9
+     FETCH NEXT from refcursor into @reftable_11, @constraintname_11
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_9+' drop constraint '+@constraintname_9)
-       FETCH NEXT from refcursor into @reftable_9, @constraintname_9
+       exec ('alter table '+@reftable_11+' drop constraint '+@constraintname_11)
+       FETCH NEXT from refcursor into @reftable_11, @constraintname_11
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -408,8 +500,8 @@ END
 
 CREATE TABLE SECURITY_USER_ROLE
 (
-                    USER_ID INT NOT NULL,
-                    ROLE_ID INT NOT NULL,
+            USER_ID INT NOT NULL,
+            ROLE_ID INT NOT NULL,
 
     CONSTRAINT SECURITY_USER_ROLE_PK PRIMARY KEY(USER_ID,ROLE_ID));
 
@@ -427,7 +519,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SECURITY_USER_GRO
     ALTER TABLE SECURITY_USER_GROUP DROP CONSTRAINT SECURITY_USER_GROUP_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SECURITY_USER_GROUP')
 BEGIN
-     DECLARE @reftable_10 nvarchar(60), @constraintname_10 nvarchar(60)
+     DECLARE @reftable_12 nvarchar(60), @constraintname_12 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -439,11 +531,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SECURITY_USER_GROUP'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_10, @constraintname_10
+     FETCH NEXT from refcursor into @reftable_12, @constraintname_12
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_10+' drop constraint '+@constraintname_10)
-       FETCH NEXT from refcursor into @reftable_10, @constraintname_10
+       exec ('alter table '+@reftable_12+' drop constraint '+@constraintname_12)
+       FETCH NEXT from refcursor into @reftable_12, @constraintname_12
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -453,8 +545,8 @@ END
 
 CREATE TABLE SECURITY_USER_GROUP
 (
-                    USER_ID INT NOT NULL,
-                    GROUP_ID INT NOT NULL,
+            USER_ID INT NOT NULL,
+            GROUP_ID INT NOT NULL,
 
     CONSTRAINT SECURITY_USER_GROUP_PK PRIMARY KEY(USER_ID,GROUP_ID));
 
@@ -472,7 +564,7 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='RI' AND name='SECURITY_GROUP_RO
     ALTER TABLE SECURITY_GROUP_ROLE DROP CONSTRAINT SECURITY_GROUP_ROLE_FK_2;
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type = 'U' AND name = 'SECURITY_GROUP_ROLE')
 BEGIN
-     DECLARE @reftable_11 nvarchar(60), @constraintname_11 nvarchar(60)
+     DECLARE @reftable_13 nvarchar(60), @constraintname_13 nvarchar(60)
      DECLARE refcursor CURSOR FOR
      select reftables.name tablename, cons.name constraintname
       from sysobjects tables,
@@ -484,11 +576,11 @@ BEGIN
          and reftables.id = ref.fkeyid
          and tables.name = 'SECURITY_GROUP_ROLE'
      OPEN refcursor
-     FETCH NEXT from refcursor into @reftable_11, @constraintname_11
+     FETCH NEXT from refcursor into @reftable_13, @constraintname_13
      while @@FETCH_STATUS = 0
      BEGIN
-       exec ('alter table '+@reftable_11+' drop constraint '+@constraintname_11)
-       FETCH NEXT from refcursor into @reftable_11, @constraintname_11
+       exec ('alter table '+@reftable_13+' drop constraint '+@constraintname_13)
+       FETCH NEXT from refcursor into @reftable_13, @constraintname_13
      END
      CLOSE refcursor
      DEALLOCATE refcursor
@@ -498,8 +590,8 @@ END
 
 CREATE TABLE SECURITY_GROUP_ROLE
 (
-                    GROUP_ID INT NOT NULL,
-                    ROLE_ID INT NOT NULL,
+            GROUP_ID INT NOT NULL,
+            ROLE_ID INT NOT NULL,
 
     CONSTRAINT SECURITY_GROUP_ROLE_PK PRIMARY KEY(GROUP_ID,ROLE_ID));
 
@@ -570,6 +662,13 @@ END
 /* SSO_SITE                                                      */
 /* ---------------------------------------------------------------------- */
 
+
+
+
+/* ---------------------------------------------------------------------- */
+/* SSO_COOKIE                                                      */
+/* ---------------------------------------------------------------------- */
+
 BEGIN
 ALTER TABLE SSO_SITE_TO_PRINCIPALS
     ADD CONSTRAINT SSO_SITE_TO_PRINCIPALS_FK_1 FOREIGN KEY (SITE_ID)
@@ -605,6 +704,7 @@ BEGIN
 ALTER TABLE SSO_PRINCIPAL_TO_REMOTE
     ADD CONSTRAINT SSO_PRINCIPAL_TO_REMOTE_FK_2 FOREIGN KEY (REMOTE_PRINCIPAL_ID)
     REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+    /* ON DELETE CASCADE - cannot be used: Introducing FOREIGN KEY constraint 'X_FK_N' on table 'X' may cause cycles or multiple cascade paths. */
 END    
 ;
 
@@ -639,6 +739,29 @@ END
 /* ---------------------------------------------------------------------- */
 
 BEGIN
+ALTER TABLE SSO_COOKIE_TO_REMOTE
+    ADD CONSTRAINT SSO_COOKIE_TO_REMOTE_FK_1 FOREIGN KEY (COOKIE_ID)
+    REFERENCES SSO_COOKIE (COOKIE_ID)
+    ON DELETE CASCADE 
+END    
+;
+
+BEGIN
+ALTER TABLE SSO_COOKIE_TO_REMOTE
+    ADD CONSTRAINT SSO_COOKIE_TO_REMOTE_FK_2 FOREIGN KEY (REMOTE_PRINCIPAL_ID)
+    REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+    ON DELETE CASCADE 
+END    
+;
+
+
+
+
+/* ---------------------------------------------------------------------- */
+/* SSO_COOKIE_TO_REMOTE                                                      */
+/* ---------------------------------------------------------------------- */
+
+BEGIN
 ALTER TABLE SECURITY_USER_ROLE
     ADD CONSTRAINT SECURITY_USER_ROLE_FK_1 FOREIGN KEY (ROLE_ID)
     REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
@@ -650,6 +773,7 @@ BEGIN
 ALTER TABLE SECURITY_USER_ROLE
     ADD CONSTRAINT SECURITY_USER_ROLE_FK_2 FOREIGN KEY (USER_ID)
     REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+    /* ON DELETE CASCADE - cannot be used: Introducing FOREIGN KEY constraint 'X_FK_N' on table 'X' may cause cycles or multiple cascade paths. */
 END    
 ;
 
@@ -672,6 +796,7 @@ BEGIN
 ALTER TABLE SECURITY_USER_GROUP
     ADD CONSTRAINT SECURITY_USER_GROUP_FK_2 FOREIGN KEY (USER_ID)
     REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+    /* ON DELETE CASCADE - cannot be used: Introducing FOREIGN KEY constraint 'X_FK_N' on table 'X' may cause cycles or multiple cascade paths. */
 END    
 ;
 
@@ -694,5 +819,9 @@ BEGIN
 ALTER TABLE SECURITY_GROUP_ROLE
     ADD CONSTRAINT SECURITY_GROUP_ROLE_FK_2 FOREIGN KEY (ROLE_ID)
     REFERENCES SECURITY_PRINCIPAL (PRINCIPAL_ID)
+    /* ON DELETE CASCADE - cannot be used: Introducing FOREIGN KEY constraint 'X_FK_N' on table 'X' may cause cycles or multiple cascade paths. */
 END    
 ;
+
+
+
