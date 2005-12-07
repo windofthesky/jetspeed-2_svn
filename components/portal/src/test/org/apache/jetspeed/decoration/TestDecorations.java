@@ -227,8 +227,8 @@ public class TestDecorations extends MockObjectTestCase
         StringReaderInputStream is1 = new StringReaderInputStream("id=myLayoutDecoration");
         StringReaderInputStream is2 = new StringReaderInputStream("id=myPortletDecoration");
         
-        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/myLayoutDecorator/decorator.properties")}, is1);
-        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/myPortletDecoration/decorator.properties")}, is2);
+        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/layout/myLayoutDecorator/decorator.properties")}, is1);
+        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/portlet/myPortletDecoration/decorator.properties")}, is2);
         
         Mock servletRequestMock = new Mock(HttpServletRequest.class);
         Mock sessionMock = new Mock(HttpSession.class);
