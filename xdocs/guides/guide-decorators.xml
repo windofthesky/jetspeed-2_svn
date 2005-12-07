@@ -48,13 +48,15 @@ approaches described here can be applied to writing decroations in other scripti
 </p>
 </section>
 <section name="Decoration File Structure">
-	All decorations are store in a directory directly off of the web applications
+<p>
+	All decorations are stored in a directory directly off of the web applications
 	root called <code>decrorations</code>.  The two primary directories under the 
 	here are <code>layout</code> for layout decorations and <code>portlet</code>
 	for portlet decorations.  Individual decoartions are housed in thier own directories
 	underneath these two directories.  The name of the directory you create for under either
 	<code>layout</code> or <code>portlet</code> is how Jetspeed will locate your decoration.  We
-	will go into further detail on how this works later on in this guide.		
+	will go into further detail on how this works later on in this guide.
+</p>		
 </section>
 
 <section name="Anatomy of a Layout(Page) Decoration">
