@@ -1,5 +1,5 @@
 
-var cmThemeIEBase = 'images/ThemeIE/';
+var cmThemeIEBase = 'decorations/layout/jscookmenu/images/ThemeIE/';
 
 var cmThemeIE =
 {

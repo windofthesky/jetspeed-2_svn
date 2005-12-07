@@ -1,6 +1,6 @@
 
 // directory of where all the images are
-var cmThemePanelBase = 'images/ThemePanel/';
+var cmThemePanelBase = 'decorations/layout/jscookmenu/images/ThemePanel/';
 
 var cmThemePanel =
 {

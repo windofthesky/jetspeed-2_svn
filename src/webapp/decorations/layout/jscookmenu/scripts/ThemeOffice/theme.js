@@ -1,6 +1,6 @@
 
 // directory of where all the images are
-var cmThemeOfficeBase = 'images/ThemeOffice/';
+var cmThemeOfficeBase = 'decorations/layout/jscookmenu/images/ThemeOffice/';
 
 var cmThemeOffice =
 {
