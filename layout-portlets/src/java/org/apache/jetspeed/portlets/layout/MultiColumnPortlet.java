@@ -32,13 +32,10 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -181,8 +178,47 @@ public class MultiColumnPortlet extends LayoutPortlet
         String layoutChange = request.getParameter("layout");
         String editingPage = request.getParameter("editingPage");
         String fragmentChange = request.getParameter("fragmentToMove");
-        
-        if (request.getParameter("move") != null 
+        String jsSubmitPage = request.getParameter("jsSubmitPage");
+        String jsPageName = request.getParameter("jsPageName");
+
+        if (jsSubmitPage != null && jsPageName != null && editingPage != null)
+        {
+            try
+            {                
+                if (jsPageName.indexOf(Folder.PATH_SEPARATOR) == -1 && jsPageName.length() > 0)
+                {
+                    Page currentPage = pageManager.getPage(editingPage);
+                    if (currentPage != null)
+                    {
+                        Folder parent = (Folder)currentPage.getParent();
+                        if (parent != null)
+                        {
+                            String path = parent.getPath();
+                            if (path.endsWith(Folder.PATH_SEPARATOR))
+                            {
+                                path = path + jsPageName;
+                            }
+                            else
+                            {
+                                path = path + Folder.PATH_SEPARATOR + jsPageName;
+                            }
+                            Page page = pageManager.newPage(path);
+                            // TODO: Get System Wide defaults for decorators
+                            page.getRootFragment().setName("jetspeed-layouts::VelocityTwoColumns");
+                            page.setDefaultDecorator("tigris", Fragment.LAYOUT);
+                            page.setDefaultDecorator("tigris", Fragment.PORTLET);
+                            page.setTitle(jsPageName);
+                            pageManager.updatePage(page);
+                        }
+                    }                
+                }
+            }
+            catch (Exception e)
+            {
+                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+            }                        
+        }
+        else if (request.getParameter("move") != null 
                 &&  fragmentChange != null
                 && editingPage != null)
         {        
