@@ -60,8 +60,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     private Set layoutDecorationsDir = Collections.EMPTY_SET;
     private Set portletDecorationsDir = Collections.EMPTY_SET;
     
-    private Set layoutDecorationsList = Collections.EMPTY_SET;;
-    private Set portletDecorationsList = Collections.EMPTY_SET;;
+    private Set layoutDecorationsList = Collections.EMPTY_SET;
+    private Set portletDecorationsList = Collections.EMPTY_SET;
 
     public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
     {
