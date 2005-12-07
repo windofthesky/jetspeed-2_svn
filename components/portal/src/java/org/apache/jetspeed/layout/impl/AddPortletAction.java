@@ -115,17 +115,23 @@ public class AddPortletAction
             Fragment fragment = pageManager.newFragment();
             fragment.setType(Fragment.PORTLET);
             fragment.setName(portletId);
-            // TODO: this does not handle nested layouts            
-            Fragment root = requestContext.getPage().getRootFragment();
-            root.getFragments().add(fragment);
+            fragment.setLayoutColumn(iCol);
+            fragment.setLayoutRow(iRow);
             
             Coordinate coordinate = placement.add(fragment, new CoordinateImpl(iCol, iRow, iCol, iRow));
             Page page = placement.syncPageFragments();                                                
             
-            if (pageManager != null)
-                pageManager.updatePage(page);
+            // TODO: this does not handle nested layouts            
+            Fragment root = requestContext.getPage().getRootFragment();
+            root.getFragments().add(fragment);            
+            pageManager.updatePage(page);
 
             resultMap.put(STATUS, "success");
+            resultMap.put(NEWCOL, String.valueOf(coordinate
+                    .getNewCol()));
+            resultMap.put(NEWROW, String.valueOf(coordinate
+                    .getNewRow()));
+            
         } 
         catch (Exception e)
         {

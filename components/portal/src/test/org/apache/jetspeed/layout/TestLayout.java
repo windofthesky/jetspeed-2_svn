@@ -87,7 +87,7 @@ public class TestLayout extends TestCase
         cm.stop();
     }
 
-    public void xtestNullRequestContext()
+    public void testNullRequestContext()
     {
         // Get the layout that has a null request context        
         try
@@ -100,7 +100,7 @@ public class TestLayout extends TestCase
         }
     }
 
-    public void xtestNullParameters()
+    public void testNullParameters()
     {
         try
         {
@@ -168,7 +168,7 @@ public class TestLayout extends TestCase
         //moveSuccess("moveabs", "2", "0", "1", "0", "2", "0", "1");
     }
     
-    public void xtestMoveSuccess()
+    public void testMoveSuccess()
     {
         moveSuccess("moveabs", "1", "0", "0", "0", "0", "0", "0"); // Doesn't
                                                                     // really
@@ -264,7 +264,7 @@ public class TestLayout extends TestCase
                                                                     // move
     }
 
-    public void xtestMoveFailure()
+    public void testMoveFailure()
     {
         moveFailure("moveabs", "bogus", "0", "0", "0", "0"); // non integer
                                                                 // portlet id

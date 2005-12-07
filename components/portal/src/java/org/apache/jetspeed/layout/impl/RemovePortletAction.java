@@ -76,7 +76,9 @@ public class RemovePortletAction
             String portletId = requestContext.getRequestParameter(PORTLETID);
             if (portletId == null) 
             { 
-                throw new Exception("portlet id not provided"); 
+                success = false;
+                resultMap.put(REASON, "Portlet ID not provided");
+                return success;
             }
 
             resultMap.put(PORTLETID, portletId);
@@ -91,16 +93,21 @@ public class RemovePortletAction
             // Use the Portlet Placement Manager to accomplish the removal
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
             Fragment fragment = placement.getFragmentById(portletId);
-            Coordinate coordinate = placement.remove(fragment);
-
-            Page page = placement.syncPageFragments();
-            if (pageManager != null)
-                pageManager.updatePage(page);
+            if (fragment == null)
+            {
+                success = false;
+                resultMap.put(REASON, "Fragment not found");
+                return success;                
+            }
+            //Coordinate coordinate = placement.remove(fragment);
+            Page page = requestContext.getPage();
+            page.removeFragmentById(fragment.getId());            
+            pageManager.updatePage(page);
             
             // Build the results for the response
             resultMap.put(STATUS, "success");
-            resultMap.put(OLDCOL, String.valueOf(coordinate.getOldCol()));
-            resultMap.put(OLDROW, String.valueOf(coordinate.getOldRow()));
+            resultMap.put(OLDCOL, String.valueOf(fragment.getLayoutColumn()));
+            resultMap.put(OLDROW, String.valueOf(fragment.getLayoutRow()));
         } 
         catch (Exception e)
         {
