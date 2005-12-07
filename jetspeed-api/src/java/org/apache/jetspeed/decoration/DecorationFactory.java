@@ -16,6 +16,7 @@
 package org.apache.jetspeed.decoration;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -117,14 +118,14 @@ public interface DecorationFactory
      * 
      * @return A list of page decorations of type <code>String</code>
      */
-    List getPageDecorations(RequestContext request);
+    Set getPageDecorations(RequestContext request);
 
     /**
      * Get the portal-wide list of portlet decorations.
      * 
      * @return A list of portlet decorations of type <code>String</code>
      */    
-    List getPortletDecorations(RequestContext request);
+    Set getPortletDecorations(RequestContext request);
     
     /**
      * Get the portal-wide list of available layouts.

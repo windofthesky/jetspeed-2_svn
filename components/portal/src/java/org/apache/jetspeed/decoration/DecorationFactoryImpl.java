@@ -17,11 +17,14 @@ package org.apache.jetspeed.decoration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -53,6 +56,12 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     private final PortletRegistry registry;
 
     private ServletContext servletContext;
+    
+    private Set layoutDecorationsDir = Collections.EMPTY_SET;
+    private Set portletDecorationsDir = Collections.EMPTY_SET;
+    
+    private Set layoutDecorationsList = Collections.EMPTY_SET;;
+    private Set portletDecorationsList = Collections.EMPTY_SET;;
 
     public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
     {
@@ -235,18 +244,16 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of page decorations of type <code>Decoration</code>
      */
-    public List getPageDecorations(RequestContext request)
+    public Set getPageDecorations(RequestContext request)
     {
-        List list = new LinkedList();
-        /// TODO: hard code until Scotts commits arrive with new directory format
-        list.add("clear");
-        list.add("jetspeed");
-        list.add("jscookmenu");
-        list.add("metal");
-        list.add("minty-blue");
-        list.add("simple");
-        list.add("tigris");
-        return list;
+        Set decorations = servletContext.getResourcePaths(decorationsPath.toString()+"/layout");
+        if(!layoutDecorationsDir.equals(decorations))
+        {
+            layoutDecorationsList = getListing(decorations);
+            layoutDecorationsDir = decorations;
+            
+        }
+        return layoutDecorationsList;
     }
 
         /**
@@ -254,20 +261,16 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of portlet decorations of type <code>String</code>
      */
-    public List getPortletDecorations(RequestContext request)
+    public Set getPortletDecorations(RequestContext request)
     {
-        List list = new LinkedList();
-        /// TODO: hard code until Scotts commits arrive with new directory format
-        list.add("blue-gradient");
-        list.add("clear");
-        list.add("gray-gradient");
-        list.add("gray-gradient-noborder");
-        list.add("jetspeed");
-        list.add("metal");
-        list.add("minty-blue");
-        list.add("pretty-single-portlet");
-        list.add("tigris");
-        return list;
+        Set decorations = servletContext.getResourcePaths(decorationsPath.toString()+"/portlet");
+        if(!portletDecorationsDir.equals(decorations))
+        {
+            portletDecorationsList = getListing(decorations);
+            portletDecorationsDir = decorations;
+            
+        }
+        return portletDecorationsList;
     }
 
     /**
@@ -296,6 +299,22 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
         }
         return list;
+    }
+    
+    protected Set getListing(Set rawList)
+    {
+        Iterator itr = rawList.iterator();
+        Set filteredList = new HashSet();
+        while(itr.hasNext())
+        {
+            Path path = new Path((String) itr.next());
+            if(path.getFileName() == null && validator.resourceExists(path.toString()+"decorator.properties"))
+            {
+                int offset = path.length() - 1;
+                filteredList.add(path.getSegment(offset));
+            }
+        }
+        return filteredList;
     }
 
 }
