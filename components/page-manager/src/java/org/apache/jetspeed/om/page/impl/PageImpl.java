@@ -218,9 +218,6 @@ public class PageImpl extends DocumentImpl implements Page
      */
     public Fragment removeFragmentById(String id)
     {
-        // check for page edit access
-        checkAccess(SecuredResource.EDIT_ACTION);
-
         // remove fragment by id
         FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
         if (rootFragment != null)
