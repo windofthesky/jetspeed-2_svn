@@ -33,7 +33,7 @@
         </property>
         <property name="transactionAttributes">
             <props>
-                <prop key="addSite">PROPAGATION_REQUIRED</prop>
+                <prop key="addSite*">PROPAGATION_REQUIRED</prop>
                 <prop key="removeSite">PROPAGATION_REQUIRED</prop>
                 <prop key="addCredentialsForSite">PROPAGATION_REQUIRED</prop>
                 <prop key="updateCredentialsForSite">PROPAGATION_REQUIRED</prop>

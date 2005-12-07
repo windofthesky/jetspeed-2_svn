@@ -1073,6 +1073,70 @@ public class PersistenceBrokerSSOProvider extends
         }        
     }
     
+    /**
+     * Add a new site that uses Form Authentication
+     * @param siteName
+     * @param siteUrl
+     * @param realm
+     * @param userField
+     * @param pwdField
+     * @throws SSOException
+     */
+    public void addSiteFormAuthenticated(String siteName, String siteUrl, String realm, String userField, String pwdField)
+    throws SSOException
+    {
+    	try
+        {
+            SSOSite ssoSite = new SSOSiteImpl();
+            ssoSite.setSiteURL(siteUrl);
+            ssoSite.setName(siteName);
+            ssoSite.setCertificateRequired(false);
+            ssoSite.setAllowUserSet(true);
+            ssoSite.setRealm(realm);
+            ssoSite.setFormAuthentication(true);
+            ssoSite.setFormUserField(userField);
+            ssoSite.setFormPwdField(pwdField);
+            getPersistenceBrokerTemplate().store(ssoSite);
+            this.mapSite.put(siteName, ssoSite);            
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to add SSO Site: " + siteName;
+            logger.error(msg, e);
+            throw new SSOException(msg, e);
+        }  
+    }
+    
+    /**
+     * Add a new site that uses ChallengeResponse Authentication
+     * @param siteName
+     * @param siteUrl
+     * @param realm
+     * @throws SSOException
+     */
+    public void addSiteChallengeResponse(String siteName, String siteUrl, String realm)
+    throws SSOException
+    {
+    	try
+        {
+            SSOSite ssoSite = new SSOSiteImpl();
+            ssoSite.setSiteURL(siteUrl);
+            ssoSite.setName(siteName);
+            ssoSite.setCertificateRequired(false);
+            ssoSite.setAllowUserSet(true);
+            ssoSite.setRealm(realm);
+            ssoSite.setChallengeResponseAuthentication(true);
+             getPersistenceBrokerTemplate().store(ssoSite);
+            this.mapSite.put(siteName, ssoSite);            
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to add SSO Site: " + siteName;
+            logger.error(msg, e);
+            throw new SSOException(msg, e);
+        }  
+    }
+    
     public void addSite(String siteName, String siteUrl)
     throws SSOException
     {

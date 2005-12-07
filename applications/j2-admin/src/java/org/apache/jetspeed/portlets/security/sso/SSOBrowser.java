@@ -115,7 +115,18 @@ public class SSOBrowser extends BrowserPortlet
             Context context = this.getContext(request);
             context.put("currentUrl", selectedSite);
             String selectedName = (String)PortletMessaging.receive(request, "site", "selectedName");
-            context.put("currentName", selectedName);            
+            context.put("currentName", selectedName);  
+            
+            String realm = (String)PortletMessaging.receive(request, "site", "realm");
+            context.put("currentRealm", realm);  
+            String userField = (String)PortletMessaging.receive(request, "site", "idField");
+            context.put("currentFFID", userField);  
+            String pwdFiled = (String)PortletMessaging.receive(request, "site", "pwdField");
+            context.put("currentFFPWD", pwdFiled);
+
+            
+            
+            
         }
         StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "SSOBrowser", "status");
         if (msg != null)
@@ -140,6 +151,9 @@ public class SSOBrowser extends BrowserPortlet
                     PortletMessaging.publish(request, "site", "selectedUrl", selectedSite);
                     PortletMessaging.publish(request, "site", "selectedName", site.getName());
                     PortletMessaging.publish(request, "site", "change", selectedSite);
+                    PortletMessaging.publish(request, "site", "realm", site.getRealm());
+                    PortletMessaging.publish(request, "site", "idField", site.getFormUserField());
+                    PortletMessaging.publish(request, "site", "pwdField", site.getFormPwdField());
                 }
             }
             String refresh = request.getParameter("sso.refresh");
@@ -154,7 +168,10 @@ public class SSOBrowser extends BrowserPortlet
             else if (neue != null)
             {
                 PortletMessaging.cancel(request, "site", "selected");
-                PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                PortletMessaging.cancel(request, "site", "selectedUrl");      
+                PortletMessaging.cancel(request, "site", "realm");
+                PortletMessaging.cancel(request, "site", "idField");
+                PortletMessaging.cancel(request, "site", "pwdField");
             }
             else if (delete != null && (!(isEmpty(delete))))
             {
@@ -167,7 +184,10 @@ public class SSOBrowser extends BrowserPortlet
                         sso.removeSite(site);
                         this.clearBrowserIterator(request);
                         PortletMessaging.cancel(request, "site", "selected");
-                        PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                        PortletMessaging.cancel(request, "site", "selectedUrl");   
+                        PortletMessaging.cancel(request, "site", "realm");
+                        PortletMessaging.cancel(request, "site", "idField");
+                        PortletMessaging.cancel(request, "site", "pwdField");
                     }
                 }
                 catch (SSOException e)
@@ -179,6 +199,11 @@ public class SSOBrowser extends BrowserPortlet
             {
                 String siteName = request.getParameter("site.name");                
                 String siteUrl = request.getParameter("site.url");
+                
+                String siteRealm = request.getParameter("site.realm");                
+                String siteFormID = request.getParameter("site.form_field_ID");
+                String siteFormPWD = request.getParameter("site.form_field_PWD");
+                 
                 if (!(isEmpty(siteName) || isEmpty(siteUrl)))
                 {
                     try
@@ -197,14 +222,42 @@ public class SSOBrowser extends BrowserPortlet
                         {
                             site.setName(siteName);
                             site.setSiteURL(siteUrl);
+                            site.setRealm(siteRealm);
+                            if (siteFormID != null && siteFormID.length() > 0
+                            	&& siteFormPWD != null && siteFormPWD.length() > 0	)
+                            {
+                            	// Form authentication
+                            	site.setFormAuthentication(true);
+                            	site.setFormUserField(siteFormID);
+                            	site.setFormPwdField(siteFormPWD);
+                            }
+                            else
+                            {
+                            	//Challenge response authentication
+                            	site.setChallengeResponseAuthentication(true);
+                            }
+                            
                             sso.updateSite(site);
                             this.clearBrowserIterator(request);
                             PortletMessaging.publish(request, "site", "selectedName", siteName);
-                            PortletMessaging.publish(request, "site", "selectedUrl", siteUrl);                            
+                            PortletMessaging.publish(request, "site", "selectedUrl", siteUrl);    
+                            PortletMessaging.publish(request, "site", "realm", siteRealm);
+                            PortletMessaging.publish(request, "site", "idField",siteFormID);
+                            PortletMessaging.publish(request, "site", "pwdField", siteFormPWD);
+
                         }
                         else
                         {
-                            sso.addSite(siteName, siteUrl);
+                        	if (siteFormID != null && siteFormID.length() > 0
+                                	&& siteFormPWD != null && siteFormPWD.length() > 0	)
+                            {
+                    			sso.addSiteFormAuthenticated(siteName, siteUrl, siteRealm, siteFormID,siteFormPWD);
+                    		
+                            }
+                        	else
+                        	{
+                        		sso.addSiteChallengeResponse(siteName, siteUrl, siteRealm);
+                        	}
                             this.clearBrowserIterator(request);
                         }
                     }

@@ -148,4 +148,24 @@ public interface SSOProvider
      */
     public Collection getSitesForPrincipal(String userId);
     
+    /**
+     * Add a new site that uses Challenge / Response Authentication
+     * @param siteName
+     * @param siteUrl
+     * @param realm
+     * @throws SSOException
+     */
+    public void addSiteChallengeResponse(String siteName, String siteUrl, String realm) throws SSOException;
+    
+    /**
+     * Add a new site that uses Form Authentication
+     * @param siteName
+     * @param siteUrl
+     * @param realm
+     * @param userField
+     * @param pwdField
+     * @throws SSOException
+     */
+    public void addSiteFormAuthenticated(String siteName, String siteUrl, String realm, String userField, String pwdField) throws SSOException;
+    
 }

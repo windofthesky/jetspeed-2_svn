@@ -90,6 +90,27 @@ limitations under the License.
       <input type="text" name="site.url" size="40" value="$!currentUrl" class="portlet-form-field-label">
     </td>
   </tr>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('realm')&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="text" name="site.realm" size="40" value="$!currentRealm" class="portlet-form-field-label">
+    </td>
+  </tr>
+  <tr  align="right">
+  <td colspan="2" nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('form_authentication_info')&nbsp;</td>
+  </tr>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('form_field_id')&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="text" name="site.form_field_ID" size="40" value="$!currentFFID" class="portlet-form-field-label">
+    </td>
+  </tr>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">$MESSAGES.getString('form_field_PWD')&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="text" name="site.form_field_PWD" size="40" value="$!currentFFPWD" class="portlet-form-field-label">
+    </td>
+  </tr>
 </table>
 <br/>
 <input name='ssoDelete' type='hidden' value=''/>
