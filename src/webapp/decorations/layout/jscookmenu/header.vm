@@ -49,7 +49,7 @@ DEALINGS IN THE SOFTWARE.
 #set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
 
 #* select default JSCookMenu theme *#
-#set($jsCookMenuTheme = $JSCOOKMENU_PANEL_THEME)
+#set($jsCookMenuTheme = $JSCOOKMENU_JETSPEED_THEME)
 
 #* Access page menus *#
 #set($siteNavigationsStandardMenu = $site.getMenu("site-navigations"))

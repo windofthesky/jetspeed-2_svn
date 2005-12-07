@@ -50,6 +50,7 @@ DEALINGS IN THE SOFTWARE.
   #set($BREADCRUMBS_STYLE = "BreadcrumbsStyle")
 
   #* Constants for JSCookMenu themes *#
+  #set($JSCOOKMENU_JETSPEED_THEME = "ThemeJetspeed")
   #set($JSCOOKMENU_PANEL_THEME = "ThemePanel")
   #set($JSCOOKMENU_OFFICE_THEME = "ThemeOffice")
   #set($JSCOOKMENU_IE_THEME = "ThemeIE")
