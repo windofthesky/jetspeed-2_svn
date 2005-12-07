@@ -207,7 +207,8 @@ public class TreeControl implements Serializable
      *
      * @param node The <code>TreeControlNode</code> to be deregistered
      */
-    void removeNode(TreeControlNode node) {
+    public void removeNode(TreeControlNode node) 
+    {
 
         synchronized (registry) {
             TreeControlNode children[] = node.findChildren();
