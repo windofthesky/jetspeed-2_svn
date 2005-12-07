@@ -34,13 +34,12 @@
         <property name="transactionAttributes">
             <props>
                 <prop key="addSite*">PROPAGATION_REQUIRED</prop>
+                <prop key="updateSite*">PROPAGATION_REQUIRED</prop>
                 <prop key="removeSite">PROPAGATION_REQUIRED</prop>
                 <prop key="addCredentialsForSite">PROPAGATION_REQUIRED</prop>
                 <prop key="updateCredentialsForSite">PROPAGATION_REQUIRED</prop>
                 <prop key="removeCredentialsForSite">PROPAGATION_REQUIRED</prop>
-                <prop key="login">PROPAGATION_REQUIRED</prop>
-                <prop key="logout">PROPAGATION_REQUIRED</prop>
-                <prop key=" setRealmForSite">PROPAGATION_REQUIRED</prop>
+                <prop key="setRealmForSite">PROPAGATION_REQUIRED</prop>
                 <prop key="*">PROPAGATION_SUPPORTS</prop>
             </props>
         </property>

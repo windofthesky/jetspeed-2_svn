@@ -552,7 +552,7 @@ public class PersistenceBrokerSSOProvider extends
 		// New credential object for remote principal
 		 InternalCredentialImpl credential = 
             new InternalCredentialImpl(remotePrincipal.getPrincipalId(),
-            		pwd, 0, DefaultPasswordCredentialImpl.class.getName());
+            		this.scramble(pwd), 0, DefaultPasswordCredentialImpl.class.getName());
 		 
 		 if ( remotePrincipal.getCredentials() == null)
 		 	remotePrincipal.setCredentials(new ArrayList(0));
@@ -715,7 +715,7 @@ public class PersistenceBrokerSSOProvider extends
 			// New credential object
 			 if ( credential != null) 
 				// Remove credential and principal from mapping
-				 credential.setValue(pwd);
+				 credential.setValue(this.scramble(pwd));
 			
 			// Update database and reset cache
 			 try
@@ -828,7 +828,7 @@ public class PersistenceBrokerSSOProvider extends
 		//	Create new context
 		String name = stripPrincipalName(remotePrincipal.getFullPath());
 		
-		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, credential.getValue());
+		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, this.unscramble(credential.getValue()));
 		
 		return context;
 	}
@@ -1290,10 +1290,13 @@ public class PersistenceBrokerSSOProvider extends
 	            			
 	            			if (credential != null)
 	            			{
+	            				if (log.isInfoEnabled())
+	            					log.info("SSOComponent -- Remote Principal ["+stripPrincipalName(remotePrincipal.getFullPath())+"] has credential ["+this.unscramble(credential.getValue())+ "]");
+	            				
 	            				client.getState().setCredentials(
 	            		    			site.getRealm(),
 	            		                urlObj.getHost(),
-	            		                new UsernamePasswordCredentials(stripPrincipalName(remotePrincipal.getFullPath()),  credential.getValue())
+	            		                new UsernamePasswordCredentials(stripPrincipalName(remotePrincipal.getFullPath()),  this.unscramble(credential.getValue()))
 	            		            );
 	            				
 	            				// Build URL if it's Form authentication
@@ -1302,7 +1305,7 @@ public class PersistenceBrokerSSOProvider extends
 		        				// Check if it's form based or ChallengeResponse
 	        					if (site.isFormAuthentication())
 	        					{
-	        						siteURL.append("?").append(site.getFormUserField()).append("=").append(stripPrincipalName(remotePrincipal.getFullPath())).append("&").append(site.getFormPwdField()).append("=").append(credential.getValue());
+	        						siteURL.append("?").append(site.getFormUserField()).append("=").append(stripPrincipalName(remotePrincipal.getFullPath())).append("&").append(site.getFormPwdField()).append("=").append(this.unscramble(credential.getValue()));
 	        					}
 	            				
 	            				get = new GetMethod(siteURL.toString());
@@ -1401,5 +1404,33 @@ public class PersistenceBrokerSSOProvider extends
 		get.releaseConnection();
 		
 		return bis;
+    }
+    
+    /*
+     * Simple encryption decryption routines since the API creates credentials 
+     * together with an user.
+     * TODO: re-implement when Security API is more flexible
+     */
+    static char[] scrambler ="Jestspeed-2 is getting ready for release".toCharArray();
+    
+    private String scramble(String pwd)
+    {
+    	return new String( xor(pwd.toCharArray(), scrambler));
+    }
+    
+    private String unscramble(String pwd)
+    {
+    	return new String(xor(pwd.toCharArray(),scrambler));
+    }
+    
+    private char[] xor(char[] a, char[]b)
+    {
+    	int len = Math.min(a.length, b.length);
+    	char[] result = new char[len];
+    	for(int i=0; i<len;i++)
+    	{
+    		result[i] = (char) (a[i] ^ b[i]);
+    	}
+    	return result;
     }
 }
