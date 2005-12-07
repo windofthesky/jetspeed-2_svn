@@ -20,10 +20,113 @@
 		<subtitle>Features</subtitle>
 		<authors>
 			<person name="David Le Strat" email="dlestrat@apache.org" />
+			<person name="Marky Goldstein" email="ready@rosa.com" />
 		</authors>
 	</properties>
 	<body>
 		<section name="Features">
+			<p>
+				Jetspeed 2 is an enterprise ready Portal Server, that
+				runs on many platforms and integrates with many
+				technologies. It has the following features:
+			</p>
+			<ul>
+				<li>Component based Architecture</li>
+				<li>
+					Scalable architecture featuring multi-threaded
+					functionality
+				</li>
+				<li>Inbuilt User Management</li>
+				<li>Manage Page in Sitetree</li>
+				<li>
+					Supports JSR-168 portlets (Java Portlet API
+					specification)
+				</li>
+				<li>
+					Supports for many technology bridges (JSF, Struts,
+					PHP, Velocity, Perl, etc.)
+				</li>
+				<li>Inbuilt Profile Management</li>
+				<li>
+					Provides its own Content Management facilities,
+					integrates well with many Content Management
+					Systems.
+				</li>
+				<li>Easy to install</li>
+				<li>Secure infracstructure</li>
+				<li>SSO support and functionalities</li>
+				<li>Support for many databases</li>
+				<li>Multilanguage support</li>
+				<li>Search functionality</li>
+				<li>Deployment tools</li>
+				<li>Portal Statistics functionality</li>
+				<li>Comes with many demo applications</li>
+				<li>Caching</li>
+				<li>
+					Template-based layouts including JSP and Velocity
+				</li>
+				<li>
+					Supports remote XML content feeds via Open Content
+					Syndication
+				</li>
+				<li>Custom default home page configuration</li>
+				<li>Database and LDAP user authentication</li>
+				<li>In-memory cache for quick page rendering</li>
+				<li>
+					<a href="http://my.netscape.com/publish/">Rich Site Summary</a>
+					support for syndicated content
+				</li>
+				<li>
+					Integration with Cocoon, WebMacro and Velocity so
+					that you can develop with the newest XML/XSL
+					technology.
+				</li>
+				<li>Wireless Markup Language (WML) support</li>
+				<li>XML based configuration registry of portlets</li>
+				<li>Full Web Application Archive (WAR) support</li>
+				<li>Web Application development infrastructure</li>
+				<li>Local caching of remote content</li>
+				<li>
+					Synchronization with <a href="http://www.avantgo.com/">Avantgo</a>
+				</li>
+				<li>
+					Fully portable across all platforms that support JDK
+					1.2 and Servlet 2.2
+				</li>
+				<li>Integrated with Turbine modules and services</li>
+				<li>
+					Profiler Service to access portal pages based on
+					user, security (groups, roles, acls), media types,
+					and language
+				</li>
+				<li>
+					Persistence Service available to all portlets to
+					easily store state per user, page and portlet
+				</li>
+				<li>
+					Skins so that users can choose colors and display
+					attributes
+				</li>
+				<li>
+					Customizer for selecting portlets and defining
+					layouts for individual pages
+				</li>
+				<li>PSML can be stored in a Database.</li>
+				<li>
+					User, group, role and permission administration via
+					Jetspeed security portlets.
+				</li>
+				<li>Role-based security access to portlets.</li>
+
+				<li>
+					Jetspeed Cluster and Messaging (JMS Support): for
+					running Jetspeed as a clustered portal.
+				</li>
+				<li>
+					Generic View Processors to render content uniformly
+					in your Java code to JSP, XSLT, or Velocity.
+				</li>
+			</ul>
 		</section>
 	</body>
 </document>
