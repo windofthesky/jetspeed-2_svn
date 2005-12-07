@@ -14,28 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url("../../css/portal-standard.css");
 
-body {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    padding: 1em;
-    background: #fff;
-    color: #000;
+/* --------------------------------- */
+/* Portlet Data Scroller Table       */
+/* --------------------------------- */
 
+.portlet-scroller-grid td {
+    horizontal-align: center;
 }
 
-a:link, a:visited {
-    color: blue;
+.portlet-scroller {
+    horizontal-align: center;
 }
 
-a:hover {
-    color: #f30 !important;
+.portlet-paginator {
+    horizontal-align: center;
 }
-
-.layout-simple .portal-layout
-{
-  padding-top: 25px;
-}
-       

@@ -85,21 +85,9 @@ limitations under the License.
         &nbsp;
 #end
      <!-- Page Action Bar -->
-    #if ($actions.size()>0)
-    <div id="portal-page-actions" >
-      #foreach ($action in $layoutDecoration.actions)
-        <a href="${action.Action}" title="${action.Name}" class="pageAction" ><img src="${action.Link}" alt="${action.Alt}" border="0" /></a>
-	  #end
-	  #if($editing == true)    		  	  
-	    #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
+     #PageActionBar()
 
-        <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Add a Portlet"/></a>
-	  #end 
-	  
-    </div>
-    #end
-
-      </div>
+   </div>
 
 <!-- Content Table -->
       <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">

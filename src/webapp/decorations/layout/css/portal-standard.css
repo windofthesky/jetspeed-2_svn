@@ -14,28 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url("../../css/portal-standard.css");
-
-body {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    padding: 1em;
-    background: #fff;
-    color: #000;
-
-}
-
-a:link, a:visited {
-    color: blue;
-}
-
-a:hover {
-    color: #f30 !important;
-}
-
-.layout-simple .portal-layout
-{
-  padding-top: 25px;
-}
-       
+/**
+ *  Inlcudes ALL of the CSS styles under /decroations/layout/css
+ */
+@import url("./PLT.C.All.css");
+@import url("./standard-columns.css");
+@import url("./html-tables.css");
+@import url("./data-scoller.css");
+@import url("./database-browser.css");
+@import url("./tree-component.css");

@@ -14,28 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url("../../css/portal-standard.css");
+/* --------------------------------- */
+/* Tree component                    */
+/* --------------------------------- */
 
-body {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    padding: 1em;
-    background: #fff;
-    color: #000;
-
+.portlet .tree {
+   lineheight: 18px;
+   font-family: arial, sans-serif;
 }
 
-a:link, a:visited {
-    color: blue;
+.portlet .tree-node {
+   padding: 2px 15px 2px 5px;
 }
 
-a:hover {
-    color: #f30 !important;
+.portlet .tree-node a {
+   text-decoration: none;
 }
 
-.layout-simple .portal-layout
-{
-  padding-top: 25px;
+.portlet .tree-node-selected {
+   padding: 2px 15px 2px 5px;
 }
-       
+
+.portlet .tree-node-selected a {
+   text-decoration: none;
+   font-weight: bold;
+}

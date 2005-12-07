@@ -14,6 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+.portlet-simple
+{
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  voice-family: inherit;
+  font-size: x-small;
+}
 
 .portlet-simple .PTitle
 {
@@ -347,21 +353,7 @@ color: #555;
 padding: 4px;
 }
 
-/* font */
-.portlet-simple .portlet-menu,
-.portlet-simple .portlet-menu-item,
-.portlet-simple .portlet-menu-item-selected,
-.portlet-simple .portlet-menu-item-hover,
-.portlet-simple .portlet-menu-item-hover-selected,
-.portlet-simple .portlet-menu-cascade-item,
-.portlet-simple .portlet-menu-cascade-item-selected,
-.portlet-simple .portlet-menu-description,
-.portlet-simple .portlet-menu-caption
-{
-font-family: Verdana, Helvetica, Arial, sans-serif;
-voice-family: inherit;
-font-size: x-small;
-}
+
 
 /* --------------------------------- */
 /* WSRP (10.6.5 Tables)              */

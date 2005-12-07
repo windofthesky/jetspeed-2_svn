@@ -34,12 +34,10 @@ limitations under the License.
     </td>
     <td align="right" valign="middle" class="PTitle" >
       <table border="0" cellpadding="0" cellspacing="0" >
-      <tr>       
-      #foreach ($action in $actions)
-      <td align="right" valign="middle" class="PTitle" >
-      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      <td/>
-      #end
+      <tr>
+        <td align="right" valign="middle" class="PTitle" >
+          #PortletActionBar($decoration)
+        <td/>
       </tr>  
       </table>
     </td>

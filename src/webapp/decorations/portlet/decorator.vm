@@ -26,18 +26,13 @@ the root of your decortaion.  This will be used instead of the default.
 
 <!-- Begin: Fragment: ${f.id} Decoration: ${decoratorId} -->
 
-<div id="${f.id}" class="${decoration.baseCSSClass}">
+<div id="${f.id}" class="portlet ${decoration.baseCSSClass}">
   <div class="PTitle" >
     <div class="PTitleContent">	
       $!jetspeed.getTitle($jetspeed.getPortletEntity($f), $f)
     </div>
     
-    <div class="PActionBar">
-      #foreach ($action in $actions)
-		<a href="${action.Action}" title="${action.Name}" ><img src="${action.link}" alt="${action.Alt}" border="0" /></a>
-      #end
-    
-	</div>
+    #PortletActionBar($decoration)
 	
   </div>
   #if (!$jetspeed.isHidden($f) || $jetspeed.WindowState != "minimized")

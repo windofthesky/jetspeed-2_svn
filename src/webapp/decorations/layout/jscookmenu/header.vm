@@ -109,6 +109,7 @@ DEALINGS IN THE SOFTWARE.
       <div id="breadcrumbs">
 #if(!$breadcrumbsStandardMenu.empty)
 #includeLinksNavigation($breadcrumbsStandardMenu $LEFT_TO_RIGHT "" $BREADCRUMBS_STYLE "")
+#PageActionBar()
 #else
         &nbsp;
 #end
@@ -122,6 +123,7 @@ DEALINGS IN THE SOFTWARE.
 #if(!$additionalLinksStandardMenu.empty)
           <td valign="top" width="20%">
 #includeJSCookMenuDefinition("leftverticalmenu" $additionalLinksStandardMenu)
+         
             <div id="leftverticalmenu"></div>
 #includeJSCookMenuDraw("leftverticalmenu" $jsCookMenuTheme $TOP_TO_BOTTOM)
           </td>

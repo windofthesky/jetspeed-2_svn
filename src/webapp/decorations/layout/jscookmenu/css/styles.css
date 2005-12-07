@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+@import url("../../css/portal-standard.css");
+
 body
 {
     font-family: Verdana, Helvetica, Arial, sans-serif;
@@ -91,12 +93,15 @@ body.layout-jscookmenu
 
 #portal-page-actions A img
 {
-   display: inline;   
+   display: inline;  
+
 }
 
 #portal-page-actions
 {
-   text-align: right;   
+   float:right;
+   position: relative;
+   top: -12px;
 }
 
 .portal-layout-column
@@ -108,33 +113,3 @@ body.layout-jscookmenu
 {
   padding: 2px;
 }
-
-/** TwoColumn Sepcific widths */
-.layout-jscookmenu .portal-layout-TwoColumns .portal-layout-column
-{  
-  padding-left:1%;
-  width: 48%;
-  float: left;  
-}
-
-/** OneColumn Sepcific widths */
-.layout-jscookmenu .portal-layout-OneColumn .portal-layout-column
-{  
-  padding-left:1%;
-  padding-right:1%;
-  width: 97%;
-  float: left;  
-}
-
-
-/** ThreeColumn Sepcific widths */
-.layout-jscookmenu .portal-layout-ThreeColumns .portal-layout-column
-{  
-  padding-left:1%;
-  width: 31%;
-  float: left;  
-}
-
-
-
-

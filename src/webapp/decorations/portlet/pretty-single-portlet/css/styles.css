@@ -14,543 +14,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+.pretty-single-portlet
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
 
-
-.portlet-pretty-single-portlet .PTitle 
+.pretty-single-portlet .PTitle
 {
 	display: none;
 }
 
 
-.portlet-pretty-single-portlet .PContent
-{    
-
+.pretty-single-portlet .PContent
+{
     font-size: small;
-}
-
-
-
-
-/* --------------------------------- */
-/* PLT.C.1 Links (Anchor)            */
-/* --------------------------------- */
-
-.portlet-pretty-single-portlet A:link, 
-.portlet-pretty-single-portlet A:visited {
-    text-decoration: underline;
-}
-
-.portlet-pretty-single-portlet A:hover, 
-.portlet-pretty-single-portlet A:active {
-    text-decoration: underline;
-}
-
-/* font */
-.portlet-pretty-single-portlet A:link,
-.portlet-pretty-single-portlet A:visited,
-.portlet-pretty-single-portlet A:hover,
-.portlet-pretty-single-portlet A:active
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: 12px;
-}
-
-
-/* --------------------------------- */
-/* PLT.C.2 Fonts                     */
-/* --------------------------------- */
-
-.portlet-pretty-single-portlet .portlet-font {
-    color: black;
-}
-.portlet-pretty-single-portlet .portlet-font-dim {
-    color: gray;
-}
-
-/* font */
-.portlet-pretty-single-portlet .portlet-font,
-.portlet-pretty-single-portlet .portlet-font-dim
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-
-/* --------------------------------- */
-/* PLT.C.3 Messages                  */
-/* --------------------------------- */
-.portlet-pretty-single-portlet .portlet-msg-status {
-    background: url(../../../images/icon_status_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-.portlet-pretty-single-portlet .portlet-msg-info {
-    background: url(../../../images/icon_info_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-.portlet-pretty-single-portlet .portlet-msg-error {
-    background: url(../../../images/icon_error_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-.portlet-pretty-single-portlet .portlet-msg-alert {
-    background: url(../../../images/icon_warning_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-.portlet-pretty-single-portlet .portlet-msg-success {
-    background: url(../../../images/icon_success_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-/* font */
-.portlet-pretty-single-portlet .portlet-msg-status,
-.portlet-pretty-single-portlet .portlet-msg-info,
-.portlet-pretty-single-portlet .portlet-msg-error,
-.portlet-pretty-single-portlet .portlet-msg-alert,
-.portlet-pretty-single-portlet .portlet-msg-success
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-/* --------------------------------- */
-/* PLT.C.4 Sections                  */
-/* --------------------------------- */
-.portlet-pretty-single-portlet .portlet-section-header {
-    background-image: url(../../../images/nw_maj_rond.gif);
-    background-repeat: no-repeat;
-    color: #fff;
-    background-color: #036;
-    padding: 5px;
-    margin-right: 2px;
-    margin-left: 2px;
-    clear: both;
-}
-
-.portlet-pretty-single-portlet .portlet-section-body {
-    background: #efefef;
     border: none;
-    padding: 2px 3px;
-    text-align: left;
-    vertical-align: top;
-    text-align: left;
 }
 
-.portlet-pretty-single-portlet .portlet-section-alternate {
-    background: #ddd;
-    border: none;
-    padding: 2px 3px;
-    text-align: left;
-    vertical-align: top;
-    text-align: left;
-}
-
-.portlet-pretty-single-portlet .portlet-section-selected {
-    /* TODO : ex. change color */
-    background: #ffe;
-    border: none;
-    padding: 2px 3px;
-    text-align: left;
-    vertical-align: top;
-    text-align: left;
-    font-weight:bold;
-}
-
-.portlet-pretty-single-portlet .portlet-section-subheader {
-    background-image: url(../../../images/nw_maj_rond.gif);
-    background-repeat: no-repeat;
-    color: #fff;
-    background-color: #888;
-    padding: 5px;
-    margin-right: 2px;
-    margin-left: 2px;
-    clear: both;
-}
-
-.portlet-pretty-single-portlet .portlet-section-footer {
-    background-repeat: no-repeat;
-    background-position: bottom left;
-    background-color: #ddd;
-    background-image: url(../../../images/sw_med_rond.gif);
-    color: #000;
-    padding: 5px;
-    margin: .67em 2px;
-    margin-top: 0;
-}
-
-.portlet-pretty-single-portlet .portlet-section-text {
-    padding: 1em;
-    padding-bottom: .3em;
-    padding-left: 1em;
-}
-
-/* font */
-.portlet-pretty-single-portlet .portlet-section-header,
-.portlet-pretty-single-portlet .portlet-section-body,
-.portlet-pretty-single-portlet .portlet-section-alternate,
-.portlet-pretty-single-portlet .portlet-section-selected,
-.portlet-pretty-single-portlet .portlet-section-subheader,
-.portlet-pretty-single-portlet .portlet-section-footer,
-.portlet-pretty-single-portlet .portlet-section-text,
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-/* --------------------------------- */
-/* PLT.C.5 Forms                     */
-/* --------------------------------- */
-.portlet-pretty-single-portlet .portlet-form-label {
-}
-
-.portlet-pretty-single-portlet .portlet-form-input-field {
-}
-
-.portlet-pretty-single-portlet .portlet-form-button {
-}
-
-.portlet-pretty-single-portlet .portlet-icon-label {
-}
-
-.portlet-pretty-single-portlet .portlet-dlg-icon-label {
-}
-
-.portlet-pretty-single-portlet .portlet-form-field-label {
-}
-
-.portlet-pretty-single-portlet .portlet-form-field {
-}
-
-/* font */
-.portlet-pretty-single-portlet .portlet-section-header,
-.portlet-pretty-single-portlet .portlet-section-body,
-.portlet-pretty-single-portlet .portlet-section-alternate,
-.portlet-pretty-single-portlet .portlet-section-selected,
-.portlet-pretty-single-portlet .portlet-section-subheader,
-.portlet-pretty-single-portlet .portlet-section-footer,
-.portlet-pretty-single-portlet .portlet-section-text,
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-/* --------------------------------- */
-/* PLT.C.6 Menus                     */
-/* --------------------------------- */
-.portlet-pretty-single-portlet .portlet-menu {
-    background: #efefef;
-    margin-bottom: 6px;
-    border-right: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    padding: 4px 4px 4px 0;
-    padding-bottom: .3em;
-    padding-left: 1em;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-item {
-    text-decoration: none;
-    color: blue;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-item-selected {
-    text-decoration: none;
-    color: #555 !important;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-item-hover {
-    text-decoration: none;
-    color: #f30 !important;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-item-hover-selected {
-    text-decoration: none;
-    color: #555 !important;
-    font-weight: bold;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-cascade-item {
-    text-decoration: none;
-    margin-top: .3em;
-    padding-bottom: 0;
-    color: blue;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-cascade-item-selected {
-    text-decoration: none;
-    color: #555 !important;
-    font-weight: bold;
-}
-
-.portlet-pretty-single-portlet .portlet-menu-description {
-}
-
-.portlet-pretty-single-portlet .portlet-menu-caption {
-    border-bottom: 1px solid #666;
-    border-right: 1px solid #666;
-    background: #ddd;
-    color: #555;
-    padding: 4px;
-}
-
-/* font */
-.portlet-pretty-single-portlet .portlet-menu,
-.portlet-pretty-single-portlet .portlet-menu-item,
-.portlet-pretty-single-portlet .portlet-menu-item-selected,
-.portlet-pretty-single-portlet .portlet-menu-item-hover,
-.portlet-pretty-single-portlet .portlet-menu-item-hover-selected,
-.portlet-pretty-single-portlet .portlet-menu-cascade-item,
-.portlet-pretty-single-portlet .portlet-menu-cascade-item-selected,
-.portlet-pretty-single-portlet .portlet-menu-description,
-.portlet-pretty-single-portlet .portlet-menu-caption
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-/* --------------------------------- */
-/* PLT.C.6 Menus (arrowfolder style) */
-/* --------------------------------- */
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu {
-    background: #efefef;
-    margin-bottom: 6px;
-    border-right: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    padding: 4px 4px 4px 0;
-    padding-bottom: .3em;
-    padding-left: 1em;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item {
-    text-decoration: none;
-    color: blue;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowdoc_sml.gif);
-    background-repeat: no-repeat;
-
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-selected {
-    text-decoration: none;
-    color: #555 !important;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowdoc_sml.gif);
-    background-repeat: no-repeat;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-hover {
-    text-decoration: none;
-    color: #f30 !important;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowdoc_sml.gif);
-    background-repeat: no-repeat;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-hover-selected {
-    text-decoration: none;
-    color: #555 !important;
-    font-weight: bold;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowdoc_sml.gif);
-    background-repeat: no-repeat;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-cascade-item {
-    text-decoration: none;
-    margin-top: .3em;
-    padding-bottom: 0;
-    color: blue;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowfolderclosed1_sml.gif);
-    background-repeat: no-repeat;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-cascade-item-selected {
-    text-decoration: none;
-    color: #555 !important;
-    font-weight: bold;
-    padding-left: 34px;
-    background-image: url(../../../images/icon_arrowfolderopen2_sml.gif);
-    background-repeat: no-repeat;
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-description {
-}
-
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-caption {
-    border-bottom: 1px solid #666;
-    border-right: 1px solid #666;
-    background: #ddd;
-    color: #555;
-    padding: 4px;
-}
-
-/* font */
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-selected,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-hover,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-item-hover-selected,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-cascade-item,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-cascade-item-selected,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-description,
-.portlet-pretty-single-portlet .arrowfolder .portlet-menu-caption
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-/* --------------------------------- */
-/* Tree component                    */
-/* --------------------------------- */
-
-.portlet-pretty-single-portlet .tree {
-   lineheight: 18px;
-   font-family: arial, sans-serif;
-}
-
-.portlet-pretty-single-portlet .tree-node {
-   padding: 2px 15px 2px 5px;
-}
-
-.portlet-pretty-single-portlet .tree-node a {
-   text-decoration: none;
-}
-
-.portlet-pretty-single-portlet .tree-node-selected {
-   padding: 2px 15px 2px 5px;
-}
-
-.portlet-pretty-single-portlet .tree-node-selected a {
-   text-decoration: none;
-   font-weight: bold;
-}
-
-/* --------------------------------- */
-/* Portlet Table                     */
-/* --------------------------------- */
-.portlet-pretty-single-portlet th, td, input {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-}
-
-.portlet-pretty-single-portlet table, 
-.portlet-pretty-single-portlet th, 
-.portlet-pretty-single-portlet td {
-    vertical-align: top;
-    font-size: 10pt;    
-    border: none;
-    white-space: normal;
-    /* action buttons shifts right a few millimeters by the following */
-}
-
-.portlet-pretty-single-portlet th
-{
-   font-size: 12pt;  
-}
-
-.portlet-pretty-single-portlet .portlet-table-header {
-    background-color: #bbb;
-    border: 0.75px solid #fff;
-    padding: 2px 3px;
-    text-align: left;
-}
-
-.portlet-pretty-single-portlet .portlet-table-footer {
-    font-size: x-small;
-    padding: 5px;
-    margin: .67em 2px;
-    margin-top: 0;
-    background-color: #ddd;
-    background-image: url(../images/sw_med_rond.gif);
-    background-repeat: no-repeat;
-    background-position: bottom left;
-}
-
-
-.portlet-pretty-single-portlet .portlet-table-row1 td {
-    font-size: small;
-    background: #ddd;
-    border-bottom: 1px solid #fff;
-}
-
-.portlet-pretty-single-portlet .portlet-table-row2 td {
-    font-size: small;
-    background: #efefef;
-    border-bottom: 1px solid #fff;
-}
-
-.portlet-pretty-single-portlet .portlet-table-col1 {
-    border-right: 1px solid #fff;
-    padding: 2px 15px 2px 5px;
-}
-
-.portlet-pretty-single-portlet .portlet-table-col2 {
-    border-left: 1px solid #fff;
-    padding: 2px 15px 2px 5px;
-}
-
-/* --------------------------------- */
-/* Portlet Data Scroller Table       */
-/* --------------------------------- */
-
-.portlet-pretty-single-portlet .portlet-scroller-grid td {
-    horizontal-align: center;
-}
-
-.portlet-pretty-single-portlet .portlet-scroller {
-    horizontal-align: center;
-}
-
-.portlet-pretty-single-portlet .portlet-paginator {
-    horizontal-align: center;
-}
 
 /* Custom stuff for UGS added by EDB */
-.portlet-pretty-single-portlet p.corelink
+.pretty-single-portlet p.corelink
 {
     margin-top: 0.5em;
     margin-bottom: 0em;
     font-size: 12px;
 }
 
-.portlet-pretty-single-portlet p.abstract
+.pretty-single-portlet p.abstract
 {
     margin-top: 0em;
     margin-bottom: 0.5em;
     font-size: 11px;
 }
 
-.portlet-pretty-single-portlet p.title
+.pretty-single-portlet p.title
 {
     font-family: Arial, Helvetica, sans-serif; 
     font-size: 17px; 
@@ -560,14 +60,14 @@ limitations under the License.
     margin-bottom: 0em;
 }
 
-.portlet-pretty-single-portlet p.download
+.pretty-single-portlet p.download
 {
     font-size:12px;
     margin-top:0.25em;
     margin-bottom:0em;
 }
 
-.portlet-pretty-single-portlet p.side
+.pretty-single-portlet p.side
 { 
     font-size: 12px;
     margin-left: 0.85em;
@@ -577,7 +77,7 @@ limitations under the License.
     0.25em;
 }
 
-.portlet-pretty-single-portlet img
+.pretty-single-portlet img
 {
     display: inline;
     margin: 0em;
