@@ -19,7 +19,7 @@ limitations under the License.
     <title>Jetspeed Single Sign On</title>
     <subtitle>Documentation for Jetspeed-2 SSO (Single Sign On)</subtitle>
     <authors>
-      <person name="Roger Ruttimann" email="togerrut@apache.org"/>
+      <person name="Roger Ruttimann" email="rogerrut@apache.org"/>
     </authors>
   </properties>
   <body>
@@ -31,9 +31,9 @@ sub project documentation.
 <p>
 The SSO feature includes three main components:
 <ul>
-	<li>The SSO Provider service which handles the backend operations <a href="multiproject/jetspeed-sso/sso-overview.html">SSO Provider</a></li>
-	<li>The SSO Management Portlet <a href="multiproject/jetspeed-sso/sso-overview.html">SSO Admin Portlet</a></li>
-	<li>The SSO Proxy Portlet <a href="multiproject/jetspeed-sso/sso-overview.html">SSO Proxy Portlet</a></li>
+	<li>The SSO Provider service which handles the backend operations <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Provider</a></li>
+	<li>The SSO Management Portlet <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Admin Portlet</a></li>
+	<li>The SSO Proxy Portlet <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Proxy Portlet</a></li>
 </ul>
 </p>
 </section>
