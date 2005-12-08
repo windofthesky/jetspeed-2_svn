@@ -150,7 +150,9 @@
  #set($_cssClass= "$_cssClass selected")
 #end<a href="$!{_url}" class="link" title="${_element.getTitle($preferedLocale)}">${_element.getTitle($preferedLocale)}</a><span class="separator"></span>
 #end
-#end      
+#end  
+
+#if($_seperatorCount > 0)</div>#end
 </div>
 #end
 
