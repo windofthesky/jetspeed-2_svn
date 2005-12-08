@@ -126,6 +126,9 @@
 					Generic View Processors to render content uniformly
 					in your Java code to JSP, XSLT, or Velocity.
 				</li>
+				<li>
+					Portal Engine AJAX API.
+				</li>
 			</ul>
 		</section>
 	</body>
