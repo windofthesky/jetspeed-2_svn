@@ -54,6 +54,20 @@ Please find the bridge documentation in the <a href="multiproject/security/index
 </p>
 </section>
 
+<section name="Perl Portlet Bridge">
+<p>
+Jetspeed 2 provides a Portlet bridge for Perl applications.  Please visit the <a href="multiproject/portals-bridges-perl/index.html">Apache Portals Perl Portlet Bridge</a>
+sub project documentation.
+</p>
+</section>
+
+<section name="PHP Portlet Bridge">
+<p>
+Jetspeed 2 provides a Portlet bridge for PHP applications.  Please visit the <a href="multiproject/portals-bridges-php/index.html">Apache Portals PHP Portlet Bridge</a>
+sub project documentation.
+</p>
+
+
 </body>
 </document>
 
