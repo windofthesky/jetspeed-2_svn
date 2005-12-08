@@ -27,7 +27,6 @@ limitations under the License.
 	<base href="#BaseHref()">
     <title>#PageTitle()</title>
 #includeJavaScriptForHead()
-#includeHeaderResource()
 #IncludeStylesheets()
 </head>
 <body class="#PageBaseCSSClass()">
@@ -53,6 +52,7 @@ limitations under the License.
 </p>
   <p>
   #includeTabsNavigation($site.siblingPages)
+  #PageActionBar()
   </p>
 </p>
     
