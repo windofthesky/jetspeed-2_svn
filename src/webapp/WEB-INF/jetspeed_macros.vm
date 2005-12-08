@@ -14,10 +14,10 @@
 #macro (includeJavaScriptForHead)
  <script type="text/javascript"><!--
     function openWindow(pipeline)
-    {	
+    {    
       var vWinUsers = window.open(pipeline, 'PortletSelector', 'status=no,resizable=yes,width=500,height=600,scrollbars=yes');
       vWinUsers.opener = self;
-	  vWinUsers.focus();
+      vWinUsers.focus();
     }
  //--></script>
 #end
@@ -33,7 +33,7 @@
 #*
  * Returns the correct Content-type string for use within the Content-type
  * meta tag.
-*#	
+*#    
 #macro (ContentType)text/html#if($response.characterEncoding); charset=$response.characterEncoding#end#end
 
 #*
@@ -52,15 +52,15 @@
  * Returns the site version string for use within the
  * <meta name="version" /> meta tag
  *#
-#macro (SiteVersionTag)$$Id$$ #end	
-	
+#macro (SiteVersionTag)$$Id$$ #end    
+    
 #**
 * Includes all of the stylesheets for this Page's theme.
 *#
 #macro (IncludeStylesheets)
- #foreach($style in $theme.styleSheets)		
-	
-	<link rel="stylesheet" type="text/css" media="screen, projection" href="$style"  />
+ #foreach($style in $theme.styleSheets)        
+    
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="$style"  />
  #end
 #end
 
@@ -74,16 +74,16 @@
 #**
  * Returns the fully-qualified path the specified resources using
  * $decorator
- *#	
+ *#    
 #macro (GetResource $_decorator $_path)$!{_decorator.getResource($_path)}#end
 
 #**
  * Returns the fully-qualified path the specified resources using
  * the $layoutDecorator that is defined by calling the #defineLayoutObjects()
  * macro.
- *#	
+ *#    
 #macro (GetPageResource $_path)#GetResource($layoutDecoration $_path) #end
-	
+    
 #*
   Dispalys the standard action bar for this page.
 *#
@@ -91,7 +91,7 @@
  #set($_actions = $layoutDecoration.actions)
 
  #if($_actions.size() >0)
-  <div id="portal-page-actions" >		
+  <div id="portal-page-actions" >        
   #foreach ($_action in $_actions)
    
    <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="${_action.Link}" alt="${_action.Alt}" border="0" /></a>
@@ -100,7 +100,7 @@
    #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
 
    <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Add a Portlet"/></a>
-  #end 	  
+  #end       
  </div>
  #end
 #end
@@ -110,9 +110,73 @@
   
  <div class="PActionBar">
     #foreach ($_action in $_actions)
-
-	<a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" ><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
-    #end
-    
+     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" ><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
+    #end    
  </div>
+#end
+
+#macro(PagesMenu)
+    #set($_pages = $site.getMenu("pages").elements)
+    <div id="pages-menu" class="menu">
+    #foreach($_page in $_pages)
+        #if($_page.isSelected($site))
+            #set($_cssClass = "link page-link selected")
+        #else
+            #set($_cssClass = "link page-link")
+        #end
+        
+        <a href="portal${_page.url}" class="$!{_cssClass}" title="${_page.getTitle($preferedLocale)}">$_page.getTitle($preferedLocale)</a>
+        <span class="separator"></span>
+    #end    
+    </div>
+#end
+
+#macro(NavigationsMenu)
+    #set($_navigations= $site.getMenu("navigations").elements)
+    #set($_seperatorCount = 0)    
+    <div id="navgiations-menu" class="menu">
+    #foreach($_element in $_navigations)
+        #set($_type = $_element.elementType)
+        
+        #if($_type == "separator")
+          #if($_seperatorCount > 0)            
+           </div>
+          #end
+          #set($_seperatorCount = $_seperatorCount + 1)          
+           <div id="seperator-${_seperatorCount}" class="menu-group">
+             <span class="title">$_element.getText($preferedLocale)</span>
+        #elseif($_type == "option")
+           #if($_element.type == "link")
+             #set($_url = $_element.url)
+             #set($_cssClass = "link external-link")
+           #else
+             #set($_url = "portal${_element.url}")
+             #set($_cssClass = "link page-link")
+           #end     
+           
+           #if($_element.isSelected($site))
+             #set($_cssClass= "$_cssClass selected")
+           #end
+             <a href="$!{_url}" class="link" title="${_element.getTitle($preferedLocale)}">${_element.getTitle($preferedLocale)}</a>
+             <span class="separator"></span>
+        #end
+    #end      
+    </div>
+#end
+
+#macro (Breadcrumbs)
+  #set($_breadcrumbs = $site.getMenu("breadcrumbs").elements)
+  
+  <div id="breadcrumbs-menu" class="menu breadcrumbs">
+    #foreach($_breadcrumb in $_breadcrumbs)
+        #if($_breadcrumb.isSelected($site))
+            #set($_cssClass = "link breadcrumb-link selected")
+        #else
+            #set($_cssClass = "link breadcrumb-link")
+        #end
+        
+        <a href="portal${_breadcrumb.url}" class="$!{_cssClass}" title="${_breadcrumb.getTitle($preferedLocale)}">$_breadcrumb.getTitle($preferedLocale)</a>
+        <span class="separator"></span>
+    #end    
+   </div>
 #end
