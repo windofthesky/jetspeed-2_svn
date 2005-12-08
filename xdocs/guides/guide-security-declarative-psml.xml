@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-Copyright 2004 The Apache Software Foundation
+Copyright 2004-2005 The Apache Software Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ limitations under the License.
     <subtitle>Guide to Declarative Security through PSML</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org"/>
+      <person name="Randy Watler" email="rwatler@apache.org"/>
     </authors>
   </properties>
   <body>
@@ -30,17 +31,18 @@ limitations under the License.
 	<li><a href="#Declarative and Global Constraints">Declarative and Global Constraints</a></li>	 
     <li><a href="#Folder Constraints">Folder Constraints</a></li>
     <li><a href="#Page Constraints">Page Constraints</a></li>    
+    <li><a href="#Fragment Constraints">Fragment Constraints</a></li>    
     <li><a href="#Spring Configuration">Spring Configuration</a></li>    
-    <li><a href="#Subsite Security">Subsite Security</a></li>        
 </ul>
 </p>
 <p>
 Security Constraints are applied to pages and folders.  Security Constraints either grant or deny 
-access to pages and folders.  Constraints can be defined in one of three places:
+access to pages and folders.  Constraints can be defined in one or all of these four places:
 <ul>
     <li>1. <b>Global:</b> As declarations in the <b><i>page.security</i></b> file found in the root of the PSML tree.</li>
-    <li>2. <b>Folder:</b> In the <b><i>folder.metadata</i></b> file optionally located in every directory</li>    
-    <li>3. <b>Page:</b> In PSML files to constraint access to specific pages</li>
+    <li>2. <b>Folder:</b> In the <b><i>folder.metadata</i></b> file optionally located in every directory.</li>    
+    <li>3. <b>Page:</b> In PSML files to constrain access to specific pages.</li>
+    <li>4. <b>Fragment:</b> In page PSML files to constrain access to a specific fragment within a page.</li>
 </ul>
 </p>
 <subsection name='Grants'>
@@ -200,11 +202,11 @@ The * can be applied to roles, groups, users or permissions to imply ALL.
 </section>
 <section name='Declarative and Global Constraints'>
 <p>
-Declarative constraints are declared in the <b><i>page.security</i></b> file of the root of a site or subsite.
+Declarative constraints are declared in the <b><i>page.security</i></b> file of the root of a site.
 Declarative constraints are referenced in pages and folders with the <b><i>security-constraints-ref</i></b> tag.
 Global constraints are also declarative constraints. They are also defined and found in the <b><i>page.security</i></b> file in the root PSML repository.
 The difference with global constraints is that they implicitly apply to all folders and pages within the scope of the page.security file, (i.e. the site).
-Note that there can be more than one <b><i>page.security</i></b> files in a subsite Jetspeed installation.
+Note that there can be only one <b><i>page.security</i></b> file in a Jetspeed installation.
 </p>
 <source><![CDATA[
   <security-constraints-def name="admin">
@@ -302,16 +304,42 @@ constraints. Here is an example of both, the first being a referential constrain
 Note that all security constraints must be placed within a <b><i>security-constraints</i></b> collection.
 </p>
 </section>
+<section name='Fragment Constraints'>
+<p>
+As with Page Security constraints, Fragment Security constraints are placed within
+<b><il>security-constraints list</il></b> in <b><i>PSML</i></b> page files and are
+again optional. As expected, the absence of a security constraints list implies the
+fragment will inherit the constraints of the page of which it is a part. Note that
+only the view permission is checked against these constraints. Other permissions
+are tested only against the containing page.
+</p>
+</section>
 <section name="Spring Configuration">
 <p>
-TODO: page-manager.xml enabling
+Declarative Security Constraints are enabled by default in the Spring configuration of the
+Page Manager component. Here is the default Page Manager bean configuration from the
+<b><i>page-manager.xml</i></b> spring assembly configuration file:
 </p>
-</section>
-<section name="Subsite Security">
+<source><![CDATA[
+  <bean id="org.apache.jetspeed.page.PageManager" 
+       name="pageManager"
+       class="org.apache.jetspeed.page.psml.CastorXmlPageManager">         
+       <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
+       <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
+       <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>
+       <constructor-arg index="3"><ref bean="PageFileCache"/></constructor-arg>        
+       <!-- permissions security enabled flag, default=false -->
+       <constructor-arg index="4"><value>false</value></constructor-arg>
+       <!-- constraints security enabled flag, default=true -->
+       <constructor-arg index="5"><value>true</value></constructor-arg>
+  </bean>
+]]></source>
 <p>
-subsite security
+Here the 6th, (index="5"), boolean constructor argument specifies whether or
+not the "constraints security" model is enabled. If the Declarative Security Constraints
+are not enabled, all inline, referenced, and global security constraints will be ignored. 
 </p>
 </section>
+
 </body>
 </document>
-

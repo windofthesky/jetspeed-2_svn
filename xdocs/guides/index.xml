@@ -44,7 +44,6 @@
 			<li><a href="guide-database.html">Guide to database configuration</a></li>
 			<li><a href="guide-app-servers.html">Guide to application servers configuration</a></li>
 			<li><a href="guide-security.html">Guide to configuring Jetspeed-2 security</a></li>
-			<li><a href="guide-security-declarative-psml.html">Guide to portal entities declarative security through PSML</a></li>
 			<li><a href="guide-sso.html">Guide to using Jetspeed-2 single sign-on</a></li>
 			<li><a href="guide-user-attributes.html">Guide to defining user attributes (PLT.17 user information configuration)</a></li>
 			<li><a href="guide-profilers.html">Guide to using profilers</a></li>
@@ -55,6 +54,8 @@
 		<ul>
 			<li><a href="guide-portal-design.html">Guide to portal design</a></li>
 			<li><a href="guide-psml.html">Guide to PSML</a></li>
+			<li><a href="guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
+			<li><a href="guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
 			<li><a href="guide-site.html">Guide to working with a Jetspeed-2 site</a></li>
 			<li><a href="guide-l10n.html">Guide to localization with Jetspeed-2</a></li>
 			<li><a href="guide-simple-portlet.html">Guide to a very simple portlet with Jetspeed-2</a></li>
