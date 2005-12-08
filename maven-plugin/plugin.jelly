@@ -944,5 +944,23 @@
       <ant:fail message="Unable to download ${depFullname}" />    
     </j:if>    
   </goal>
-  
+
+  <goal name="j2:buildDerbyInstaller">
+    <ant:property name="install.name" value="Jetspeed2.0-derby" /> 
+    <ant:copy file="${basedir}/installer2/antinstall-config-derby.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
+    <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
+  </goal> 
+ 
+  <goal name="j2:buildMultiInstaller">
+    <ant:property name="install.name" value="Jetspeed2.0-MultiDB" />
+    <ant:copy file="${basedir}/installer2/antinstall-config-multi.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
+    <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
+  </goal>
+ 
+  <goal name="j2:cleanInstaller">
+     <ant:delete file="${basedir}/installer2/antinstall-config.xml" />
+     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="clean" />
+  </goal>
+
 </project>
+
