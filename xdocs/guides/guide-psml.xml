@@ -209,7 +209,7 @@ The &lt;page&gt; element contains a number of other PSML elements:
     </tr>
     <tr>
     <td>title?</td>
-    <td>Simple element containing text for the default page title. The title of the page is considered its 'long' description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the page element.</td>
+    <td>Simple element containing text for the default page title. The title of the page is considered its long description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the page element.</td>
     </tr>
     <tr>
     <td>short-title?</td>
@@ -553,7 +553,7 @@ The &lt;folder&gt; element contains a number of other PSML elements:
     </tr>
     <tr>
     <td>title?</td>
-    <td>Simple element containing text for the default folder title. The title of the folder is considered its 'long' description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the folder element.</td>
+    <td>Simple element containing text for the default folder title. The title of the folder is considered its long description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the folder element.</td>
     </tr>
     <tr>
     <td>short-title?</td>
@@ -615,7 +615,7 @@ The &lt;link&gt; element contains a number of other PSML elements:
     </tr>
     <tr>
     <td>title?</td>
-    <td>Simple element containing text for the default link title. The title of the link is considered its 'long' description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the link element.</td>
+    <td>Simple element containing text for the default link title. The title of the link is considered its long description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, Jetspeed2 will attempt to define a title from the name of the file that contains the link element.</td>
     </tr>
     <tr>
     <td>short-title?</td>
@@ -673,7 +673,7 @@ The &lt;page-security&gt; element contains two security constraints related PSML
 <p>Example: <a href="#PSML">see intoductory examples above.</a></p>  
 </section>
 
-<section name='Titles and Metadata'>
+<section name='PSML Titles and Metadata'>
 <p>
 The <a href="#Page">page</a>, <a href="#Folder">folder</a>, and <a href="#Link">link</a> &lt;metadata&gt; element is used to define locale specific title and short title text.
 Any number of these elements may appear within a containing PSML element, but multiple named values should not be specified for a single locale.
