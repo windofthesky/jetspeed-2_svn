@@ -80,11 +80,6 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
         {
             if ( request.getRequest().getUserPrincipal() == null )
             {
-                if (request.getSessionAttribute(LOGIN_CHECK) == null)
-                {
-                    clearSessionAttributes(request);
-                    request.getRequest().setAttribute(LOGIN_CHECK, "true");
-                }
                 if ( request.getSessionAttribute(LoginConstants.RETRYCOUNT) != null )
                 {
                     // we have a login attempt failure
@@ -136,6 +131,15 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                     }
                 }
             }
+            else
+            {
+                if (request.getSessionAttribute(LOGIN_CHECK) == null)
+                {
+                    clearSessionAttributes(request);
+                    request.getRequest().getSession().setAttribute(LOGIN_CHECK, "true");
+                }                
+            }
+            
             context.invokeNext(request);
         }
         catch (Exception e)
@@ -151,7 +155,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
         while (attributes.hasNext())
         {
             String attribute = (String)attributes.next();
-            request.getRequest().removeAttribute(attribute);
+            request.getRequest().getSession().removeAttribute(attribute);
         }
     }
 
