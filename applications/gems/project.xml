@@ -20,7 +20,7 @@
     <extend>${basedir}/../../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>portals-gems</artifactId>
-    <groupId>portals-gems</groupId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
     <name>Apache Portals Gems</name>
 
     <package>org.apache.portals.gems</package>

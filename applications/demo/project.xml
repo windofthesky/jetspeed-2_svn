@@ -136,7 +136,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>portals-gems</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>portals-gems</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>

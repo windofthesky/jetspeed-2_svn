@@ -87,7 +87,7 @@ limitations under the License.
 
     <!-- Portals Bridges -->
     <dependency>
-        <id>portals-gems:portals-gems</id>
+        <id>org.apache.portals.jetspeed-2:portals-gems</id>
         <version>${jetspeed.version}</version>
         <type>jar</type>
         <properties>
