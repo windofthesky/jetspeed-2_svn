@@ -37,7 +37,7 @@
         <!-- Security implementation -->
         <dependency>
             <id>jetspeed-security</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -47,7 +47,7 @@
         <!-- Prefs implementation -->
         <dependency>
             <id>jetspeed-prefs</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -56,7 +56,7 @@
 
         <dependency>
             <id>jetspeed-api</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <id>jetspeed-cm</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -72,7 +72,7 @@
         </dependency>
         
         <dependency>
-			<groupId>portals-bridges</groupId>
+			<groupId>org.apache.portals.bridges</groupId>
 			<artifactId>portals-bridges-common</artifactId>
 			<version>${portals.bridges.common.version}</version>
 			<type>jar</type>
@@ -81,7 +81,7 @@
 			</properties>
 		</dependency>	
 	    <dependency>
-	      <groupId>portals-bridges</groupId>
+	      <groupId>org.apache.portals.bridges</groupId>
 	      <artifactId>portals-bridges-velocity</artifactId>
 	      <version>${portals.bridges.velocity.version}</version>
 	      <properties>
@@ -101,7 +101,7 @@
         <!-- Testing only -->
         <dependency>
             <id>jetspeed-rdbms</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <id>jetspeed-commons</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>

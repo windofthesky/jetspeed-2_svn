@@ -36,20 +36,20 @@ limitations under the License.
   <dependencies>  
   	
   	<dependency>
-      <id>jetspeed2:jetspeed-rewriter</id>
+      <id>org.apache.portals.jetspeed-2:jetspeed-rewriter</id>
       <version>${jetspeed.version}</version>
     </dependency>
  
   	<dependency>
-      <id>jetspeed2:jetspeed-components</id>
+      <id>org.apache.portals.jetspeed-2:jetspeed-components</id>
       <version>${jetspeed.version}</version>
     </dependency>
    	<dependency>
-      <id>jetspeed2:jetspeed-commons</id>
+      <id>org.apache.portals.jetspeed-2:jetspeed-commons</id>
       <version>${jetspeed.version}</version>
     </dependency>
    	<dependency>
-      <id>jetspeed2:jetspeed-api</id>
+      <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
       <version>${jetspeed.version}</version>
     </dependency>     
     <dependency>
@@ -68,7 +68,7 @@ limitations under the License.
       </properties>      
     </dependency>    
 	<dependency>
-		<groupId>portals-bridges</groupId>
+		<groupId>org.apache.portals.bridges</groupId>
 		<artifactId>portals-bridges-common</artifactId>
 		<version>${portals.bridges.common.version}</version>
 		<type>jar</type>
@@ -77,7 +77,7 @@ limitations under the License.
 		</properties>
 	</dependency>	
     <dependency>
-      <groupId>portals-bridges</groupId>
+      <groupId>org.apache.portals.bridges</groupId>
       <artifactId>portals-bridges-velocity</artifactId>
       <version>${portals.bridges.velocity.version}</version>
       <properties>

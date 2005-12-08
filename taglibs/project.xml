@@ -21,7 +21,7 @@ limitations under the License.
   <pomVersion>3</pomVersion>
   <artifactId>jetspeed2-taglibs</artifactId>
   <name>Jetspeed 2 TagLibs</name>
-  <groupId>jetspeed2</groupId>
+  <groupId>org.apache.portals.jetspeed-2</groupId>
   
 
   <organization>

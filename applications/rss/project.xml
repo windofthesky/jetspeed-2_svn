@@ -19,7 +19,7 @@ limitations under the License.
 <project>
 	<extend>${basedir}/../../project-info.xml</extend>
 	<artifactId>rss</artifactId>
-    <groupId>jetspeed2</groupId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
 	<name>Jetspeed-2 Language Selector Portlet</name>
 	<description>Jetspeed-2 Language Selector Portlet</description>
 	<shortDescription>Language Selector Portlet</shortDescription>
@@ -109,7 +109,7 @@ limitations under the License.
 			</properties>
 		</dependency>
 		<dependency>
-			<id>portals-bridges:portals-bridges-common</id>
+			<id>org.apache.portals.bridges:portals-bridges-common</id>
 			<version>${portals.bridges.common.version}</version>
 			<type>jar</type>
 			<properties>
@@ -117,7 +117,7 @@ limitations under the License.
 			</properties>
 		</dependency>
 		<dependency>
-			<id>portals-bridges:portals-bridges-velocity</id>
+			<id>org.apache.portals.bridges:portals-bridges-velocity</id>
 			<version>${portals.bridges.velocity.version}</version>
 			<type>jar</type>
 			<properties>

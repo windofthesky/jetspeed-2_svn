@@ -20,7 +20,7 @@
     <extend>${basedir}/../../core-build.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>jetspeed-portal-site</artifactId>
-    <groupId>jetspeed2</groupId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
     <name>Jetspeed-2 Portal Site</name>
 
     <package>org.apache.jetspeed</package>
@@ -38,44 +38,44 @@
 
     <dependencies>
         <dependency>
-            <id>jetspeed2:jetspeed-commons</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-commons</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-api</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
             <id>jetspeed-cm</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-page-manager</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-page-manager</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-locator</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-locator</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-registry</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-registry</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-file-cache</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-file-cache</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-id-generator</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-id-generator</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-security</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-security</id>
             <version>${jetspeed.version}</version>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-rdbms</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-rdbms</id>
             <version>${jetspeed.version}</version>
         </dependency>
     </dependencies>

@@ -21,7 +21,7 @@
     <pomVersion>3</pomVersion>
     <artifactId>demo</artifactId>
     <name>Jetspeed-2 Demo Portlet Application</name>
-    <groupId>jetspeed2</groupId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
     <description>Demo Portlets Container</description>
     <shortDescription>Demo Portlets Container</shortDescription>
     <repository>
@@ -127,7 +127,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-commons</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>
@@ -145,7 +145,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
             <version>${portals.bridges.common.version}</version>
             <type>jar</type>
@@ -154,7 +154,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
             <version>${portals.bridges.velocity.version}</version>
             <type>jar</type>
@@ -197,7 +197,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-web-content</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>
@@ -206,7 +206,7 @@
             </properties>
         </dependency>
         <dependency>
-	        <groupId>jetspeed2</groupId>
+	        <groupId>org.apache.portals.jetspeed-2</groupId>
 	        <artifactId>jetspeed-components</artifactId>
       		<version>${jetspeed.version}</version>
 			 <type>jar</type>
@@ -222,7 +222,7 @@
 	      </properties>
 	    </dependency>
 	    <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-components</artifactId>
             <version>
                 ${jetspeed.version}
@@ -240,7 +240,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-rewriter</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>

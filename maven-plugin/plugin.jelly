@@ -463,7 +463,7 @@
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
     <copy file="${maven.repo.local}/org.apache.pluto/jars/pluto-${pluto.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
+    <copy file="${maven.repo.local}/${bridges.groupId}/jars/portals-bridges-common-${portals.bridges.common.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/org.apache.derby/jars/derby-${derby.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>

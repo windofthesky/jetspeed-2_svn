@@ -60,42 +60,42 @@
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-commons</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-commons</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-api</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-cm</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-cm</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-page-manager</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-page-manager</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-registry</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-registry</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
         <dependency>
-            <id>jetspeed2:jetspeed-portal</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-portal</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -103,7 +103,7 @@
         </dependency>
         <dependency>
             <id>portals-bridges-common</id>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <version>${portals.bridges.common.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -111,7 +111,7 @@
         </dependency>
         <dependency>
             <id>portals-bridges-velocity</id>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <version>${portals.bridges.velocity.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>

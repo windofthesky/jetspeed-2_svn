@@ -67,19 +67,19 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
             <version>${portals.bridges.common.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
             <version>${portals.bridges.velocity.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-api</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>
@@ -88,7 +88,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-sso</artifactId>
             <version>${jetspeed.version}</version>
             <type>jar</type>

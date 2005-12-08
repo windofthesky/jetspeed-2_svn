@@ -20,7 +20,7 @@ limitations under the License.
     <extend>jetspeed-components.xml</extend>
 	<dependencies>
 		<dependency>
-			<id>jetspeed2:jetspeed-portal</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-portal</id>
 			<version>
 				${jetspeed.version}
 			</version>

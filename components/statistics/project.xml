@@ -36,7 +36,7 @@
 
         <dependency>
             <id>jetspeed-api</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -54,7 +54,7 @@
 
         <dependency>
             <id>jetspeed-registry</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -63,7 +63,7 @@
         
         <dependency>
             <id>jetspeed-rdbms</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -72,7 +72,7 @@
         
         <dependency>
             <id>jetspeed-security</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>
@@ -81,7 +81,7 @@
         <!-- test only -->
         <dependency>
             <id>jetspeed-cm</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>false</war.bundle>

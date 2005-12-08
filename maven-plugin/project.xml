@@ -20,7 +20,7 @@
     <extend>${basedir}/../project-info.xml</extend>
     <pomVersion>3</pomVersion>
     <artifactId>maven-jetspeed2-plugin</artifactId>
-    <groupId>jetspeed2</groupId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
     <name>Jetspeed 2 Maven Plugin</name>
     <currentVersion>${jetspeed.version}</currentVersion>
     <description>Plugin for assisting with portlet development</description>

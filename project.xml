@@ -19,7 +19,7 @@ limitations under the License.
 <project>
   <extend>full-portal.xml</extend>
   <name>Jetspeed 2 Enterprise Portal</name>
-  <groupId>jetspeed2</groupId>
+  <groupId>org.apache.portals.jetspeed-2</groupId>
   <artifactId>jetspeed</artifactId>
   <currentVersion>${jetspeed.version}</currentVersion>
 </project>

@@ -21,9 +21,9 @@ limitations under the License.
 	<dependencies>
 		<dependency>
 			<id>jetspeed-cm</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -31,9 +31,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>content-server</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -41,9 +41,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-components</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -51,9 +51,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-deploy-tools</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -61,9 +61,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-rdbms</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -71,9 +71,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-prefs</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -81,9 +81,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-search</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -91,9 +91,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-security</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -101,81 +101,81 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-registry</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-id-generator</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-id-generator</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-file-cache</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-file-cache</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-api</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-api</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>false</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-commons</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-commons</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>false</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-locator</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-locator</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-capability</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-capability</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-profiler</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-profiler</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-page-manager</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-page-manager</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -183,18 +183,18 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-portal-site</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
 		<dependency>
-			<id>jetspeed2:jetspeed-portlet-factory</id>
+			<id>org.apache.portals.jetspeed-2:jetspeed-portlet-factory</id>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -202,9 +202,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-sso</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -212,9 +212,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>jetspeed-statistics</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -222,9 +222,9 @@ limitations under the License.
 		</dependency>        
 		<dependency>
 			<id>jetspeed-header-resource</id>
-			<groupId>jetspeed2</groupId>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
 			<version>
-				2.0-dev
+				${jetspeed.version}
 			</version>
 			<properties>
 	           <war.bundle>true</war.bundle>
@@ -281,9 +281,9 @@ limitations under the License.
 		 
         <!-- Portals Bridges Apis -->
 		<dependency>
-			<id>portals-bridges:portals-bridges-common</id>
+			<id>org.apache.portals.bridges:portals-bridges-common</id>
 			<version>
-				0.4-dev
+				${portals.bridges.version}
 			</version>
 			<properties>
 				<war.bundle>false</war.bundle>
@@ -291,9 +291,9 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<id>portals-bridges-velocity</id>
-			<groupId>portals-bridges</groupId>
+			<groupId>org.apache.portals.bridges</groupId>
 			<version>
-				0.4-dev
+				${portals.bridges.version}
 			</version>
 			<properties>
 				<war.bundle>true</war.bundle>

@@ -72,7 +72,7 @@
 
         <dependency>
             <id>jetspeed-commons</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <sar.bundle>true</sar.bundle>
@@ -91,7 +91,7 @@
         <!-- Components -->
         <dependency>
             <id>jetspeed-security</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <sar.bundle>true</sar.bundle>
@@ -100,7 +100,7 @@
 
         <dependency>
             <id>jetspeed-cm</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <sar.bundle>true</sar.bundle>
@@ -109,7 +109,7 @@
 
         <dependency>
             <id>jetspeed-api</id>
-            <groupId>jetspeed2</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <version>${jetspeed.version}</version>
             <properties>
                 <sar.bundle>true</sar.bundle>

@@ -26,7 +26,7 @@ limitations under the License.
 
     <dependencies>       
         <dependency>
-          <id>jetspeed2:jetspeed-api</id>
+          <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
           <version>${jetspeed.version}</version>
         </dependency>	
     </dependencies>

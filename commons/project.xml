@@ -37,7 +37,7 @@
     <dependencies>
 
         <dependency>
-            <id>jetspeed2:jetspeed-api</id>
+            <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
             <version>${jetspeed.version}</version>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -52,7 +52,7 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>portals-bridges</groupId>
+            <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-common</artifactId>
             <version>${portals.bridges.common.version}</version>
         </dependency>
