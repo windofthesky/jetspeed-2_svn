@@ -58,6 +58,7 @@
 			<li><a href="guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
 			<li><a href="guide-site.html">Guide to working with a Jetspeed-2 site</a></li>
 			<li><a href="guide-l10n.html">Guide to localization with Jetspeed-2</a></li>
+			<li><a href="guide-ajax-api.html">Guide to Jetspeed-2 AJAX API</a></li>
 			<li><a href="guide-simple-portlet.html">Guide to a very simple portlet with Jetspeed-2</a></li>
 			<li><a href="guide-portlet-bridges.html">Guide to portlet bridges</a></li>				
 		</ul>
