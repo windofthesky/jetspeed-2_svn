@@ -72,18 +72,23 @@
         	The <code>PortalStatistics</code> component is configured in <code>WEB-INF/assembly/statistics.xml</code> and
         	requires the following configuration parameters:
         	<ul>
-        	<li><b>logToCLF</b>: Whether to log to a comma limited file.</li>
+               <li><b>logToCLF</b>: Whether to log to a Common Log Format file.</li>
         	<li><b>logToDatabase</b>: Whether to record the statistics in the database.</li>
-        	<li><b>maxRecordToFlush_Portlet</b>: The maximum number of events that can be recorded at once for portlet statistics.</li>
-        	<li><b>maxRecordToFlush_User</b>: The maximum number of events that can be recorded at once for user statistics.</li>
-        	<li><b>maxRecordToFlush_Page</b>: The maximum number of events that can be recorded at once for page statistics.</li>
-        	<li><b>maxTimeMsToFlush_Portlet</b>: The frequency for recording portlets events.</li>
-        	<li><b>maxTimeMsToFlush_User</b>: The frequency for recording users events.</li>
-        	<li><b>maxTimeMsToFlush_Page</b>: The frequency for recording pages events.</li>
+               <li><b>maxRecordToFlush_Portlet</b>: The maximum number of portlet events that can be in the portlet statistics FIFO before a flush occurs.</li>
+               <li><b>maxRecordToFlush_User</b>: The maximum number of user events that can be in the user statistics FIFO before a flush occurs.</li>
+               <li><b>maxRecordToFlush_Page</b>: The maximum number of page events that can be in the page statistics FIFO before a flush occurs.</li>
+               <li><b>maxTimeMsToFlush_Portlet</b>: The maximum length of time between FIFO flushes for the portlet statistics FIFO. </li>
+               <li><b>maxTimeMsToFlush_User</b>: The maximum length of time between FIFO flushes for the user statistics FIFO. </li>
+               <li><b>maxTimeMsToFlush_Page</b>: The maximum length of time between FIFO flushes for the page statistics FIFO. </li>
         	<li><b>jetspeedDSEntry</b>: The reference to the Jetspeed data source.</li>
         	</ul>
         	</p>
         	<p>
+                The FIFO parameters may be adjusted depending on site specific needs.  For example, tuning the events and times down makes the system less likely to loose events in the
+                case of a failure, and also makes the user experience viewing the statistics more responsive to recent events. On the other hand, tuning them higher will reduce the overhead
+                to the database.  Generally newer sites with fewer users should use smaller tuning parameters and larger more mature sites should use larger ones.
+                </p>
+                <p>
         	A sample configuration is provided below:
         	<source>
     &lt;bean id="PortalStatistics" 
