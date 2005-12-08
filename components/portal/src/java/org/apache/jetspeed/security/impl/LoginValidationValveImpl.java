@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
@@ -39,15 +43,17 @@ import org.apache.jetspeed.security.UserPrincipal;
 public class LoginValidationValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.LoginValidationValve
 {
     private static final Log log = LogFactory.getLog(LoginValidationValveImpl.class);
+    private static final String LOGIN_CHECK = "org.apache.jetspeed.login.check";
     
     private int maxNumberOfAuthenticationFailures;
-    
+    private List sessionAttributes; 
     /**
      * Creates a LoginValidationValveImpl instance which doesn't evaluate the maxNumberOfAuthenticationFailures 
      * for LoginConstant.ERROR_FINAL_LOGIN_ATTEMPT error reporting.
      */
-    public LoginValidationValveImpl()
+    public LoginValidationValveImpl(List sessionAttributes)
     {
+        this.sessionAttributes = sessionAttributes;
     }
 
     /**
@@ -62,6 +68,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
     public LoginValidationValveImpl(int maxNumberOfAuthenticationFailures)
     {
         this.maxNumberOfAuthenticationFailures = maxNumberOfAuthenticationFailures;
+        this.sessionAttributes = new LinkedList();
     }
 
     /**
@@ -73,6 +80,11 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
         {
             if ( request.getRequest().getUserPrincipal() == null )
             {
+                if (request.getSessionAttribute(LOGIN_CHECK) == null)
+                {
+                    clearSessionAttributes(request);
+                    request.getRequest().setAttribute(LOGIN_CHECK, "true");
+                }
                 if ( request.getSessionAttribute(LoginConstants.RETRYCOUNT) != null )
                 {
                     // we have a login attempt failure
@@ -130,6 +142,16 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
         {
             log.error("Exception in request pipeline: " + e.getMessage(), e);
             throw new PipelineException(e.toString(), e);
+        }
+    }
+    
+    private void clearSessionAttributes(RequestContext request)
+    {       
+        Iterator attributes = this.sessionAttributes.iterator();
+        while (attributes.hasNext())
+        {
+            String attribute = (String)attributes.next();
+            request.getRequest().removeAttribute(attribute);
         }
     }
 

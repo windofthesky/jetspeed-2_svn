@@ -61,9 +61,14 @@ limitations under the License.
   
   <bean id="loginValidationValve"
         class="org.apache.jetspeed.security.impl.LoginValidationValveImpl"
-        init-method="initialize"
-  />
-  
+        init-method="initialize">
+	  <!-- remove (from the session) the following list of session attributes upon login -->
+       <constructor-arg index="0">
+            <list>
+                <value>org.apache.jetspeed.powertool.actions</value>
+            </list>		   
+	   </constructor-arg>	  
+  </bean>
   <bean id="profilerValve"
         class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl"
         init-method="initialize"
