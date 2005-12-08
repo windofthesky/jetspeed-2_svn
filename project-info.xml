@@ -140,6 +140,8 @@ limitations under the License.
             <name>Randy Watler</name>
             <id>rwatler</id>
             <email>rwatler@apache.org</email>
+            <timezone>-6</timezone>
+            <organization>Convergys Corporation</organization>
             <roles>
                 <role>Java Developer</role>
             </roles>
