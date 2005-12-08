@@ -59,10 +59,27 @@ limitations under the License.
 		}
 		// adding the ones NOT on this particular form
 		result = userform.allTheCheckedString.value + result;
-		
 		outform.checkedSet.value = result;
 		outform.unCheckedSet.value = noncheckedresult;
 	}
+	
+	
+	
+	function eliminateDuplicates(instr) 
+	{
+		var dicta = new Object;
+		var anarray = instr.split(",");
+		for(var i=0; i<anarray.length; i++)
+         {
+         	dicta[anarray[i]]= anarray[i];
+         }
+         var uniques = new Array;
+         for (var k in dicta) {
+   			uniques.push(dicta[k]);
+   		 }
+   		return uniques.join(",");
+	}
+	
 	function sendChecks(form)
 	{
 		var result = "";
@@ -77,12 +94,12 @@ limitations under the License.
 		       }
 		   }
 		}
-		result = form.allTheCheckedString.value + result;
 		
+		result = form.allTheCheckedString.value + result;
+	    result = eliminateDuplicates(result);
         var openerForm = opener.document.forms['portletform'];
         var openerEl = openerForm.elements['portlets'];
         openerEl.value = result;
-        alert("we about to add "+result);
         window.close();
         openerForm.submit();		
 	}
@@ -246,11 +263,11 @@ limitations under the License.
 
 <tr>
 	<td colspan="3" align="center" >
- 		there are now $selectedPortlets.size() portlet selected 
- 		<input type="submit" name="select.portlets" value="Select Portlets"   />
+		<input type="submit" name="select.portlets" value="Select Portlets"   />
  		<!-- class="jetdbButton"  too narrow to use-->
  		<input type='hidden' name='searchColumn' value='1'/>
  	</td>
+
  </tr>                      	
 </table>
  

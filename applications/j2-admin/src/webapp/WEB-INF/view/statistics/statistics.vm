@@ -1,5 +1,17 @@
 <h3 class="portlet-section-header">Portal Statistics</h3>
 
+<script language="JavaScript" type="text/javascript">
+    <!--
+
+	function checkAndSubmit() {
+		// should check that listsize is valid
+		//document.criteriaForm.listsize.value;
+		document.criteriaForm.submit();
+	}
+	
+    //-->
+</script>
+
 <div id="StatisticsPortlet"  class="portlet-section-text"> 
 	<form name="criteriaForm" action="$renderResponse.createActionURL()" method="post">
 	<table>
@@ -7,10 +19,10 @@
 	total sessions in progress: $!totalsessions
 	</td></tr>
 	<tr><td>
-	<table class=""portlet-section-body">
-	<tr  class="portlet-section-subheader"><th>
+	<table class="portlet-section-body">
+	<tr  class="portlet-section-subheader"><td>
 	 statistics are for
-	 </hr></tr>
+	 </td></tr>
 	 <tr class="portlet-section-alternate"><td>
 	 <SELECT name="queryType" onChange="criteriaForm.submit();">
 	 <OPTION 
@@ -36,7 +48,7 @@
 	 </table>
 	 </td><td>
  
-	 <table class=""portlet-section-body">
+	 <table class="portlet-section-body">
 	 <tr class="portlet-section-subheader"><th colspan="2" align="center" >for time periods </th></tr>
 	 <tr class="portlet-section-alternate"><td>
 	 		<input type="radio" name="timeperiod" value="1" onclick="criteriaForm.submit();"
@@ -108,7 +120,7 @@
 	</table>
 	<table><tr><td>
 	<center>stats for all ${criteria.queryType}s</center>
-    <table class="class="portlet-section-body" >
+    <table class="portlet-section-body" >
 	<tr class="portlet-section-subheader"><TH><b>stat name</b></TH><TH><b align="right" >value</b></TH></TR>
 	<tr class="portlet-section-alternate"><TD>total hits</TD><TD align="right" >$!results.hitCount</TD></TR>
 	<tr class="portlet-section-body"><TD>max time</TD><TD align="right" >$!results.maxProcessingTime</TD></TR>
@@ -116,8 +128,8 @@
 	<tr class="portlet-section-body"><TD>min time</TD><TD align="right" >$!results.minProcessingTime</TD></TR>
     </table>
     </td><td>
-    <center>Top $criteria.listsize ${criteria.queryType}s sorted by $criteria.sorttype $criteria.sortorder</center>
-    <table class="class="portlet-section-body" >
+    <center>Top <input type="text" size="3" name="listsize" onchange="checkAndSubmit(); " value="$criteria.listsize" /> ${criteria.queryType}s sorted by $criteria.sorttype $criteria.sortorder</center>
+    <table class="portlet-section-body" >
 	<tr class="portlet-section-subheader">
 		<TH><b>$criteria.queryType</b>
 			</TH><TH><b>count</b></TH>
@@ -132,7 +144,7 @@
   			<td align="right" > $row.get("max") </td>
   			<td align="right" > $row.get("avg") </td>
   			<td align="right" > $row.get("min") </td>  			
-  		<tr>
+  		</tr>
   		
   	#end
     </table>

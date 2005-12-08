@@ -124,7 +124,23 @@ public class StatisticsPortlet extends GenericVelocityPortlet
         {
             timeperiod = "all";
         }
-        criteria.setListsize("5");
+        
+        String listsizeStr = request.getParameter("listsize");
+        if(listsizeStr == null) 
+        {
+            listsizeStr = "5";
+        } else 
+        {
+           try
+            {
+                Integer.parseInt(listsizeStr);
+            } catch (NumberFormatException e)
+            {
+                // if we can't parse it.. just make it 5
+                listsizeStr = "5";
+            }
+        }
+        criteria.setListsize(listsizeStr);
         criteria.setSorttype("count");
         criteria.setSortorder("desc");
 
