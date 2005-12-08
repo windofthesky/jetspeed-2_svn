@@ -945,6 +945,37 @@
     </j:if>    
   </goal>
 
+  <goal name="j2:buildMultiDbSQL" >
+     <!-- this task builds up ALL the sql for each of the different possible database systems.  The installer may need these -->
+     <!-- it's done this way because the portal.conf.sql task clears the directory before running -->
+     <delete dir="installer2/temp-portal-sql" />
+     <j:set var="org.apache.jetspeed.production.database.default.name" value="derby"/>
+     <attainGoal name="j2:portal.conf.sql"/>  
+     <!-- now copy this output to the side -->
+     <copy todir="installer2/temp-portal-sql" >
+        <fileset dir="${portal.sql.target.dir}"/>
+     </copy> 
+     <j:set var="org.apache.jetspeed.production.database.default.name" value="mysql"/>
+     <attainGoal name="j2:portal.conf.sql"/>                   
+     <copy todir="installer2/temp-portal-sql" >
+        <fileset dir="${portal.sql.target.dir}"/>
+     </copy>
+     <j:set var="org.apache.jetspeed.production.database.default.name" value="mssql"/>
+     <attainGoal name="j2:portal.conf.sql"/>                   
+     <copy todir="installer2/temp-portal-sql" >
+        <fileset dir="${portal.sql.target.dir}"/>
+     </copy>
+     <j:set var="org.apache.jetspeed.production.database.default.name" value="oracle"/>
+     <attainGoal name="j2:portal.conf.sql"/>
+     <copy todir="installer2/temp-portal-sql" >
+        <fileset dir="${portal.sql.target.dir}"/>
+     </copy>
+     <copy todir="${portal.sql.target.dir}" >
+        <fileset dir="installer2/temp-portal-sql"/>
+     </copy>
+
+  </goal>
+
   <goal name="j2:buildDerbyInstaller">
     <ant:property name="install.name" value="Jetspeed2.0-derby" /> 
     <ant:copy file="${basedir}/installer2/antinstall-config-derby.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
@@ -952,6 +983,7 @@
   </goal> 
  
   <goal name="j2:buildMultiInstaller">
+    <attainGoal name="j2:buildMultiDbSQL" />
     <ant:property name="install.name" value="Jetspeed2.0-MultiDB" />
     <ant:copy file="${basedir}/installer2/antinstall-config-multi.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />

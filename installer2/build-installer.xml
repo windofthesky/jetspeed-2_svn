@@ -53,8 +53,10 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
   <!-- get the base tomcat install -->
   <!-- first download the zip files -->
   <echo> now downloading tomcat installs..  this may take a while </echo>
+<!--
   <get usetimestamp="true" dest="./apache-tomcat-5.5.12.zip" src="http://www.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-5/v5.5.12/bin/apache-tomcat-5.5.12.zip" />
   <get usetimestamp="true" dest="./apache-tomcat-5.5.12-compat.zip" src="http://www.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-5/v5.5.12/bin/apache-tomcat-5.5.12-compat.zip" />
+-->
   <!-- now unzip them -->
   <echo> done with downloads, now unzipping </echo>
   <unzip src="./apache-tomcat-5.5.12.zip" dest="./apache-tomcat" />
@@ -89,7 +91,7 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
        <fileset dir="${maven.repo.local}/org.apache.pluto/jars/" >
             <include name="**/pluto*.jar" />
        </fileset>
-       <fileset dir="${maven.repo.local}/portals-bridges/jars/" >
+       <fileset dir="${maven.repo.local}/${bridges.groupId}/jars/" >
             <include name="**/portals-bridges-common-*.jar" />
        </fileset>
        <fileset dir="${maven.repo.local}/org.apache.derby/jars/" >
@@ -126,24 +128,26 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
               </fileset>
 		<!-- these are the "fancy" installs from bridges -->
            </copy>
+           <echo> copy files from bridges from ${maven.repo.local}/${bridges.groupId} </echo>
+           <echo> file : perl-${portals.bridges.perl.version}.war </echo>
            <copy tofile="portlet_apps/perl.war">
-              <fileset dir="${maven.repo.local}/portals-bridges/wars/" >
+              <fileset dir="${maven.repo.local}/${bridges.groupId}/wars/" >
                   <filename name="perl-${portals.bridges.perl.version}.war" />
               </fileset>
 	   </copy>
            <copy tofile="portlet_apps/php.war">
-              <fileset dir="${maven.repo.local}/portals-bridges/wars/" >
+              <fileset dir="${maven.repo.local}/${bridges.groupId}/wars/" >
                   <filename name="php-${portals.bridges.php.version}.war" />
               </fileset>
 	   </copy>
            <copy tofile="portlet_apps/jsf-demo.war">
-              <fileset dir="${maven.repo.local}/portals-bridges/wars/" >
+              <fileset dir="${maven.repo.local}/${bridges.groupId}/wars/" >
                   <filename name="jsf-demo-${portals.bridges.jsf.version}.war" />
               </fileset>
 	   </copy>
            <copy tofile="portlet_apps/jpetstore.war">
-              <fileset dir="${maven.repo.local}/portals-bridges/wars/" >
-                  <filename name="jpetstore-0.4-dev.war" />
+              <fileset dir="${maven.repo.local}/${bridges.groupId}/wars/" >
+                  <filename name="jpetstore-${portals.bridges.jpetstore.version}.war" />
               </fileset>
               
           </copy>
@@ -180,11 +184,13 @@ and exists for preparing the files to deploy to sourceforge
 			</zipfileset>
 		</zip>
 	</target>
+        <target name="cleanDLs" >
+             <delete file="./apache-tomcat-5.5.12.zip" failonerror="false" />
+             <delete file="./apache-tomcat-5.5.12-compat.zip" failonerror="false" />
+        </target>
 	<target name="clean">
              <delete dir="Jetspeed_Portal" failonerror="false" />
              <delete dir="temp" failonerror="false" />
-             <delete file="./apache-tomcat-5.5.12.zip" failonerror="false" />
-             <delete file="./apache-tomcat-5.5.12-compat.zip" failonerror="false" />
 	     <delete file="installpack.zip" failonerror="false" />
              <delete file="Jetspeed2.0-install.jar" failonerror="false" />
              <delete file="Jetspeed2.0-MultiDB-install.jar" failonerror="false" /> 
