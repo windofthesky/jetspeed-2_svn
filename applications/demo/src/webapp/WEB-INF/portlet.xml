@@ -727,5 +727,36 @@ limitations under the License.
     </portlet-preferences>                      		
 </portlet> 
 
+<portlet id="SSOProxyPortlet">
+    <portlet-name>SSOProxyPortletPortlet</portlet-name>
+    <display-name>SSOProxyPortlet</display-name>
+    <description>
+            SSO Proxy Portlet
+        </description>
+		<init-param>
+		<name>EditPage</name>
+		  <value>/WEB-INF/view/edit-sso-proxy.vm</value>
+		</init-param>
+    <portlet-class>org.apache.jetspeed.portlet.sso.SSOProxyPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>SSOProxyPortlet</title>
+      <short-title>SSOProxyPortlet</short-title>
+      <keywords>SSO,Proxy,Security</keywords>
+    </portlet-info>
+    <portlet-preferences>
+       <preference>
+         <name>ForceSSORefresh</name>
+         <value>false</value>
+        </preference>
+    </portlet-preferences>
+  </portlet>
+
 </portlet-app>
 

@@ -69,7 +69,6 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     
     /** ACTION_PARAMETER_SSOPROXY*/
     static final String ACTION_PARAMETER_SSOPROXY = "SSOProxy";
-
     
     /** Preference values */
     /** DestinationURL */
@@ -83,6 +82,10 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     
     /** Encoding*/
     static final String ENCODING = "Encoding";
+    
+    private String destinationURL;
+    private String ssoSite;
+    private String encoding;
 
     public void init(PortletConfig config) throws PortletException
     {
@@ -92,12 +95,27 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
         if (null == sso)
         {
            throw new PortletException("Failed to find SSO Provider on portlet initialization");
-        }        
+        }
+        
     }
     
     public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
+       	String ssoProxyAction = request.getParameter(ACTION_PARAMETER_SSOPROXY); 
+       	System.out.println("SSOProxy Action value [" + ssoProxyAction + "]");
+       	
+     	if ( ssoProxyAction != null && ssoProxyAction.length() > 0)
+     		this.destinationURL = ssoProxyAction;
+     	else
+     		this.destinationURL = request.getParameter(this.DESTINATION_URL);
+     	
+     	
+        this.ssoSite = request.getParameter(SSO_SITE);
+        this.encoding = request.getParameter(ENCODING);
+        if (this.encoding == null)
+        	this.encoding =  this.defaultEncoding;
+
         // save the prefs
         super.processAction(request, actionResponse);
     }
@@ -105,12 +123,9 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String destinationURL = request.getPreferences().getValue(DESTINATION_URL, "");
-        String ssoSite = request.getPreferences().getValue(SSO_SITE, "");
         String forceRefresh = request.getPreferences().getValue(FORCE_SSO_REFRESH, "false");
-        String encoding = request.getPreferences().getValue(ENCODING, this.defaultEncoding);
 
-        if (destinationURL == null)
+        if (destinationURL == null || destinationURL.length() == 0)
         {
             // No destination configured Switch to configure View
              request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
@@ -118,6 +133,9 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
             super.doView(request, response);
             return;
         }
+        
+//      Set the content type
+        response.setContentType("text/html");
         
         /*
          * Call into the SSO Proxy and process the result page
@@ -130,15 +148,16 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
        
         try
         {
+        	StringBuffer page= new StringBuffer();
             Subject subject = getSubject(); 
             if (ssoSite == null || ssoSite.length() ==0)
-            	bis = sso.useSSO(subject, destinationURL,doRefresh);
+            	page.append(sso.useSSO(subject, destinationURL,doRefresh));
             else
-            	bis = sso.useSSO(subject, destinationURL,ssoSite, doRefresh);
+            	page.append(sso.useSSO(subject, destinationURL,ssoSite, doRefresh));
             
             // Authentication done at least once
             this.isAuthenticated = true;
-            
+            /*
             bis.mark(BLOCK_SIZE);
             String pageEncoding = getContentCharSet(bis);
             if (pageEncoding == null)
@@ -147,7 +166,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
             }
             
             Reader read = new InputStreamReader(bis, encoding);
-            StringBuffer page= new StringBuffer();
+            
             
 			char[] bytes = new char[BLOCK_SIZE];
 			
@@ -160,7 +179,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
 			
             //Done
             read.close();
-            
+            */
             // Rewrite
 			// Post Process for generated page		
 			PortletURL actionURL = response.createActionURL();
@@ -175,17 +194,9 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
         }
         catch (SSOException e)
         {
-            if (e.getMessage().equals(SSOException.NO_CREDENTIALS_FOR_SITE))
-            {
-                // no credentials configured in SSO store
-                // switch to SSO Configure View
-                request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
-                setupPreferencesEdit(request, response);    
-            }
-            else
-            {
-                throw new PortletException(e);
-            }
+        	response.getWriter().println("<P>Error rendering page. Error message<BR>" + e.getMessage() + "</P>");
+        	
+        	this.destinationURL ="";   
         }          
     }
     

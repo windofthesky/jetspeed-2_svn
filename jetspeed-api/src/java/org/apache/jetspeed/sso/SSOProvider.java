@@ -49,7 +49,7 @@ public interface SSOProvider
     * @return
     * @throws SSOException
     */
-   public BufferedInputStream useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException;
+   public String useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException;
    
    /**
     * Same as the method above except that the user will be authenticated against all
@@ -61,7 +61,7 @@ public interface SSOProvider
     * @return
     * @throws SSOException
     */
-   public BufferedInputStream useSSO(Subject subject, String url, boolean bRefresh) throws SSOException;
+   public String useSSO(Subject subject, String url, boolean bRefresh) throws SSOException;
    
     
    /**

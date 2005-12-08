@@ -118,7 +118,7 @@ public class PersistenceBrokerSSOProvider extends
      *  (non-Javadoc)
      * @see org.apache.jetspeed.sso.SSOProvider#useSSO(java.lang.String, java.lang.String, java.lang.String)
      */
-    public BufferedInputStream useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException
+    public String useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException
     {
     	// Get the principal from the subject
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
@@ -155,7 +155,7 @@ public class PersistenceBrokerSSOProvider extends
      *  (non-Javadoc)
      * @see org.apache.jetspeed.sso.SSOProvider#useSSO(java.lang.String, java.lang.String)
      */
-    public BufferedInputStream useSSO(Subject subject, String url, boolean bRefresh) throws SSOException
+    public String useSSO(Subject subject, String url, boolean bRefresh) throws SSOException
     {
     	String content = null;
        	// Get the principal from the subject
@@ -1234,12 +1234,13 @@ public class PersistenceBrokerSSOProvider extends
         return  (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
     
-    private BufferedInputStream getContentFromURL(String proxyID, String destUrl, SSOSite[] sites, boolean bRefresh ) throws SSOException
+    private String getContentFromURL(String proxyID, String destUrl, SSOSite[] sites, boolean bRefresh ) throws SSOException
     {
     	URL urlObj = null;
     	
     	// Result Buffer
-    	BufferedInputStream bis = null;
+    	//BufferedInputStream bis = null;
+    	String resultPage;
     	
     	String strErrorMessage = "SSO Component Error. Failed to get content for URL " + destUrl;
     	
@@ -1333,22 +1334,24 @@ public class PersistenceBrokerSSOProvider extends
 	            	                	if (log.isInfoEnabled() )
 	            	                		log.info("SSO Component --SSO Site and destination URL match. Go and get the content." );
 	            	                	
-	            	                	try
-	            	            		{
-	            	            			bis = new BufferedInputStream(get.getResponseBodyAsStream());
-	            	            		}
-	            	            		catch(IOException ioe)
-	            	            		{
-	            	            			log.error(strErrorMessage, ioe);
-	            	            			throw new SSOException (strErrorMessage, ioe);	
-	            	            		}
+	            	                	//try
+	            	            		//{
+	            	            			//bis = new BufferedInputStream(get.getResponseBodyAsStream());
+	            	            			resultPage = get.getResponseBodyAsString();
+	            	            		//}
+	            	            		//catch(IOException ioe)
+	            	            		//{
+	            	            		//	log.error(strErrorMessage, ioe);
+	            	            		//	throw new SSOException (strErrorMessage, ioe);	
+	            	            		//}
 
 	            	            		get.releaseConnection();
 	            	            		
 	            	            		//	Add the client object to the cache
 	            	        	    	this.clientProxy.put(proxyID, client);
 	            	            		
-	            	            		return bis;
+	            	            		//return bis;
+	            	        	    	return resultPage;
 	            	                }
 	            	        
 		            			} catch (Exception e) {
@@ -1384,26 +1387,28 @@ public class PersistenceBrokerSSOProvider extends
         }
 		
 		
-		try
-		{
-			bis = new BufferedInputStream(get.getResponseBodyAsStream());
-		}
-		catch(IOException ioe)
-		{
-			log.error(strErrorMessage, ioe);
-			throw new SSOException (strErrorMessage, ioe);
-			
-		}
-		catch (Exception e)
-		{
-			log.error(strErrorMessage, e);
-			throw new SSOException (strErrorMessage, e);
-			
-		}
+		//try
+		//{
+			//bis = new BufferedInputStream(get.getResponseBodyAsStream());
+			resultPage = get.getResponseBodyAsString();
+		//}
+		//catch(IOException ioe)
+		//{
+		//	log.error(strErrorMessage, ioe);
+		//	throw new SSOException (strErrorMessage, ioe);
+		//	
+		//}
+		//catch (Exception e)
+		//{
+		//	log.error(strErrorMessage, e);
+		//	throw new SSOException (strErrorMessage, e);
+		//	
+		//}
 		
 		get.releaseConnection();
 		
-		return bis;
+		//return bis;
+		return resultPage;
     }
     
     /*
