@@ -91,7 +91,7 @@
             excludes="applications/project.xml,taglibs/project.xml,portals-bridges/project.xml" goals="clean"
             banner="Cleaning" ignoreFailures="true" />
         <maven:reactor basedir="${basedir}"
-            includes="layout-portlets/project.xml,maven-plugin/project.xml,taglibs/project.xml" goals="clean"
+            includes="layout-portlets/project.xml,maven-plugin/project.xml,taglibs/treecontrol/project.xml" goals="clean"
             banner="Cleaning" ignoreFailures="true" />
     </goal>
 
