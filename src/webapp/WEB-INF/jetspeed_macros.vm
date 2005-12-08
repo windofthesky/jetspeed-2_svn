@@ -116,52 +116,42 @@
 #end
 
 #macro(PagesMenu)
-    #set($_pages = $site.getMenu("pages").elements)
-    <div id="pages-menu" class="menu">
-    #foreach($_page in $_pages)
-        #if($_page.isSelected($site))
-            #set($_cssClass = "link page-link selected")
-        #else
-            #set($_cssClass = "link page-link")
-        #end
-        
-        <a href="portal${_page.url}" class="$!{_cssClass}" title="${_page.getTitle($preferedLocale)}">$_page.getTitle($preferedLocale)</a>
-        <span class="separator"></span>
-    #end    
-    </div>
+#set($_pages = $site.getMenu("pages").elements)
+<div id="pages-menu" class="menu">#foreach($_page in $_pages)
+#if($_page.isSelected($site))
+	#set($_cssClass = "link page-link selected")
+#else
+	#set($_cssClass = "link page-link")
+#end
+<a href="portal${_page.url}" class="$!{_cssClass}" title="${_page.getTitle($preferedLocale)}">$_page.getTitle($preferedLocale)</a><span class="separator"></span>#end  
+</div>
 #end
 
 #macro(NavigationsMenu)
-    #set($_navigations= $site.getMenu("navigations").elements)
-    #set($_seperatorCount = 0)    
-    <div id="navgiations-menu" class="menu">
-    #foreach($_element in $_navigations)
-        #set($_type = $_element.elementType)
-        
-        #if($_type == "separator")
-          #if($_seperatorCount > 0)            
-           </div>
-          #end
-          #set($_seperatorCount = $_seperatorCount + 1)          
-           <div id="seperator-${_seperatorCount}" class="menu-group">
-             <span class="title">$_element.getText($preferedLocale)</span>
-        #elseif($_type == "option")
-           #if($_element.type == "link")
-             #set($_url = $_element.url)
-             #set($_cssClass = "link external-link")
-           #else
-             #set($_url = "portal${_element.url}")
-             #set($_cssClass = "link page-link")
-           #end     
-           
-           #if($_element.isSelected($site))
-             #set($_cssClass= "$_cssClass selected")
-           #end
-             <a href="$!{_url}" class="link" title="${_element.getTitle($preferedLocale)}">${_element.getTitle($preferedLocale)}</a>
-             <span class="separator"></span>
-        #end
-    #end      
-    </div>
+#set($_navigations= $site.getMenu("navigations").elements)
+#set($_seperatorCount = 0)    
+<div id="navgiations-menu" class="menu">#foreach($_element in $_navigations)
+#set($_type = $_element.elementType)
+#if($_type == "separator")
+#if($_seperatorCount > 0)            
+</div>
+#end
+#set($_seperatorCount = $_seperatorCount + 1)          
+<div id="seperator-${_seperatorCount}" class="menu-group"><span class="title">$_element.getText($preferedLocale)</span>
+#elseif($_type == "option")
+#if($_element.type == "link")
+  #set($_url = $_element.url)
+  #set($_cssClass = "link external-link")
+#else
+  #set($_url = "portal${_element.url}")
+  #set($_cssClass = "link page-link")
+#end     
+#if($_element.isSelected($site))
+ #set($_cssClass= "$_cssClass selected")
+#end<a href="$!{_url}" class="link" title="${_element.getTitle($preferedLocale)}">${_element.getTitle($preferedLocale)}</a><span class="separator"></span>
+#end
+#end      
+</div>
 #end
 
 #macro (Breadcrumbs)
