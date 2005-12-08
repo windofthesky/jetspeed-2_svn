@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Single Sign On (SSO) Framework</title>
+        <authors>
+            <person name="Roger Ruttimann" email="rogerrut@apache.org" />
+        </authors>
+    </properties>
+    <body>
+
+
+<section name="Introduction">
+<p>Jetspeed-2 (J2) Single Sign-on (SSO) feature is a credential store implemented as a component. It uses J2 security implementation for storing credentials. A management portlet allows the editing of SSO sites and remote credentials. It supports Basic Authentication and Form Based authentication and supports cookies.</p>
+<p>The SSO Management feature enables you to create "single sign-on" access, a permission-based access to applications and underlying tools, which provides an added layer of security and administarative control of Jetspeed-2 content. SSO Management enables the Users of Groups (several Users initially defined in the Group Management tab) to sign-on a single time for jetspeed-2 portal and specified sites and databases.</p>
+</section>
+<section name="SSOProxy Portlet">
+<para>As the name indicates the SSOProxy portlet is the proxy between the portal and authenticated sites. In the preferences a user defines the destination page which might need authentication itself or has links to authenticated pages (inside or outside the portal).</para>
+<para>The SSOProxy Portlet authenticates all SSO sites for the user before it goes to the destination URL defined in the preferences. The SSOProxy keeps a cache of of the proxy client so that the authentication only takes place the first time.</para>
+<para/>
+</section>
+<section name="SSO Provider service">
+<para>The SSO Provider is a part of the jetspeed service framework and is available to any portlet and not just the SSOProxy Portlet. The component takes care of storing the sites and credentials and has an API to get content from a url.</para>
+<para/>
+</section>
+<section name="SSO Management">
+<para>The SSO management portlet helps to administer SSO credentials and assigning them to Portal Users.</para>
+<table>
+                <tr>
+                    <td style="background-color:#FFFFFF;" align="center">
+                        <img src="image/sso-manage.png" border="0" />
+                    </td>
+                </tr>
+            </table>
+            </section>
+                </body>
+</document>
