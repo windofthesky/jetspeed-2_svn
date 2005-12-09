@@ -9,24 +9,13 @@ Subject: Jetspeed 2.0 Final Released
 
 Message:
 
-The Apache Portals Jetspeed Team is pleased to announce the final release of 
-the Jetspeed 2.0 Open Source Enterprise Portal. This final release is 
-fully-compliant with the Portlet Specification 1.0 (JSR-168).
-Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully 
-CERTIFIED to the Java Portlet Standard.
+The Apache Portals Jetspeed Team is pleased to announce the final release of the Jetspeed 2.0 Open Source Enterprise Portal. This final release is fully-compliant with the Portlet Specification 1.0 (JSR-168).
+Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully CERTIFIED to the Java Portlet Standard.
 
-The Jetspeed team will be presenting the new 2.0 release at ApacheCon US 2005
-on December 10th in San Diego.
+The Jetspeed team will be presenting the new 2.0 release at ApacheCon US 2005 on December 10th in San Diego.
 
 Jetspeed is a full implementation of the Java Portlet API. 
-Notable features include security components backed by LDAP and database implementations and some
-robust administration interfaces. Custom portals can be built and  deployed
-using the Jetspeed plugin for Maven. Developers can use the Jetspeed PSML
-language to assemble portlets and the Apache Portals Bridges project to
-'bridge' portals with existing technologies including Struts, JSF, PHP,
-Perl. For GUI designers, Jetspeed comes with several built-in  templates used
-to decorate portals and portlets. Join the growing community of Jetspeed
-users and developers at ApacheCon. David Sean Taylor will be  presenting a
+Notable features include security components backed by LDAP and database implementations and some robust administration interfaces. Custom portals can be built and  deployed using the Jetspeed plugin for Maven. Developers can use the Jetspeed PSML language to assemble portlets and the Apache Portals Bridges project to 'bridge' portals with existing technologies including Struts, JSF, PHP, Perl. For GUI designers, Jetspeed comes with several built-in  templates used to decorate portals and portlets. Join the growing community of Jetspeed users and developers at ApacheCon. David Sean Taylor will be  presenting a
 Jetspeed tutorial that shouldn't be missed by anyone interested in the
 technology. 
 
@@ -112,6 +101,8 @@ Application Servers Supported:
 * Websphere 5.1, 6.0
 * JBoss 
 
+----------------------------------------------------------------------
+
 The release is available for download from the Apache Download Mirrors:
 
      http://portals.apache.org/jetspeed-2/download.html
@@ -125,8 +116,4 @@ We hope you enjoy using Jetspeed! If you have any questions, please consult:
   For news and information, see:
 
     * http://portals.apache.org/news.html
-
-
-
-
 
