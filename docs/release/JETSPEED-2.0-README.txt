@@ -3,9 +3,11 @@
    December 8, 2005
 --------------------------
 
-The Apache Portals Jetspeed Team is pleased to announce the final release of the Jetspeed-2 Open Source Enterprise Portal. 
-This final release is fully-compliant with the Portlet Specification 1.0 (JSR-168).
-Jetspeed-2 has pased the TCK (Test Compatibility Kit) suite and is  fully CERTIFIED to the Java Portlet Standard.
+The Apache Portals Jetspeed Team is pleased to announce the final release of 
+the Jetspeed-2 Open Source Enterprise Portal. This final release is 
+fully-compliant with the Portlet Specification 1.0 (JSR-168).
+Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully 
+CERTIFIED to the Java Portlet Standard.
 
 
 Features of the Final Release Include:
@@ -36,8 +38,8 @@ Portal Core Features:
 * Jetspeed SSO (Single Sign-on)
 * Rules-based Profiler for page and resource location
 * Integrates with most popular databases including
-   - Derby, MySQL, MS SQL, Postgres, Oracle, DB2, Hypersonic
-* Client indepdent capability engine (html, xhtml, wml,vml)
+   - Derby, MySQL, MS SQL, Oracle, Postgres, DB2
+* Client independent capability engine (HTML, XHTML, WML, VML)
 * Internationalization: Localized Portal Resources in 12 Languages
 * Statistics Logging Engine
 * Portlet Registry
@@ -70,7 +72,7 @@ Customization Features:
 Portal Design Features:
 * Deployment Jetspeed Portlet and Page Skins (Decorators) CSS Components
 * Configurable CSS Page Layouts
-* Easy to Use Macro Language for Skin and Layout Components
+* Easy to Use Velocity Macro Language for Skin and Layout Components
 
 Development Tools
 * Automated Maven Build
@@ -90,6 +92,13 @@ The release is available for download from the Apache Download Mirrors:
 http://www.apache.org/dyn/closer.cgi 
 
 ----------------------------------------------------------------------------------------
+
+---------------------------
+ Installation Requirements
+---------------------------
+1. JVM 1.4.2_04 or greater
+2. 256 MB of Disk Space
+3. 512 MB of Memory
 
 ---------------------------
  Installation Instructions
