@@ -23,7 +23,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -186,16 +185,12 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                             {
                                 if (parent.isLoaded() == false)
                                 {
-                                    System.out.println("before children " + parent.isLoaded());
                                     loader.loadChildren(parentFolder, parent, request.getLocale());
-                                    System.out.println("after children " + parent.isLoaded());                                    
                                 }
                                 else
                                 {
-                                    System.out.println("before add child " + parent.isLoaded());                                                                                                            
                                     TreeControlNode childNode = loader.createPageNode(page, request.getLocale(), "");
                                     parent.addChild(childNode);
-                                    System.out.println("after add child " + parent.isLoaded());                                                                        
                                 }
                             }
                         }                    
