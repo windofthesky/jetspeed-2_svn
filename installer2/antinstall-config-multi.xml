@@ -82,10 +82,20 @@ the installer script should put the locations of these resources on the classpat
     <page type="input" name="databaseInfo" displayText="Database information">
         
         <comment
-            displayText="Please fill in the fields below with the approriate database information. The default values should work"/>
-        
-        <text property="dbName" displayText="Database type"
+            displayText="Please fill in the fields below with the approriate database information."/>
+        <comment  displayText=" The default values should install Apache Derby as the Database."/>
+        <large-select property="dbName" displayText="Database type" defaultValue="derby" >
+           <option text="derby"  value="derby" />
+           <option text="mysql"  value="mysql" />
+           <option text="hsql"  value="hsql" />
+           <option text="postgres"  value="postgres" />
+           <option text="sapdb"  value="sapdb" />
+           <option text="oracle"  value="oracle" />
+           <option text="mssql"  value="mssql" />
+        </large-select> 
+<!--        <text property="dbName" displayText="Database type"
             defaultValue="derby"/>
+-->
         <text property="dbUser" displayText="Database User Name"/>
         <text property="dbPassword" displayText="Database Password"/>
         

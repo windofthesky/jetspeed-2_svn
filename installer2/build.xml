@@ -121,6 +121,7 @@
     </target>
 	<target name="j2admin">
 			<copy todir="${installDir}/webapps/jetspeed/WEB-INF/deploy" file="${basedir}/portlet_apps/j2-admin.war" />		   
+                        <delete file="${installDir}/webapps/jetspeed/WEB-INF/deploy/zipsucks" />
 	</target>
 	<target name="jpetstorePortlets">
 			<copy todir="${installDir}/webapps/jetspeed/WEB-INF/deploy" file="${basedir}/portlet_apps/jpetstore.war" />		   
