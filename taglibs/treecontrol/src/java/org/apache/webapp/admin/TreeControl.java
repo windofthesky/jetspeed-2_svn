@@ -170,8 +170,10 @@ public class TreeControl implements Serializable
         synchronized (registry) {
             String name = node.getName();
             if (registry.containsKey(name))
-                throw new IllegalArgumentException("Name '" + name +
-                                                   "' is not unique");
+            {
+//                throw new IllegalArgumentException("Name '" + name +
+//                                                   "' is not unique");
+            }
             node.setTree(this);
             registry.put(name, node);
         }

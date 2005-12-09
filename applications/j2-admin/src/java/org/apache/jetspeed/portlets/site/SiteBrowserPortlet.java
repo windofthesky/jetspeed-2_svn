@@ -158,25 +158,41 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                     {
                         Folder folder = pageManager.getFolder(nodeUpdated.getName());
                         if (folder != null)
-                        {                        
-                            TreeControlNode parent = control.findNode(folder.getParent().getPath());
+                        {
+                            Folder parentFolder = (Folder)folder.getParent();                            
+                            TreeControlNode parent = control.findNode(parentFolder.getPath());
                             if (parent != null)
                             {
-                                TreeControlNode childNode = loader.createFolderNode(folder, request.getLocale(), "");
-                                parent.addChild(childNode);                            
+                                if (parent.isLoaded() == false)
+                                {
+                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                }
+                                else
+                                {
+                                    TreeControlNode childNode = loader.createFolderNode(folder, request.getLocale(), "");
+                                    parent.addChild(childNode);                                    
+                                }
                             }
                         }
                     }
                     else if (nodeUpdated.getDomain().equals(PSMLTreeLoader.PAGE_DOMAIN))
-                    {
+                    {                        
                         Page page = pageManager.getPage(nodeUpdated.getName());
                         if (page != null)
-                        {                        
-                            TreeControlNode parent = control.findNode(page.getParent().getPath());
+                        {                 
+                            Folder parentFolder = (Folder)page.getParent();
+                            TreeControlNode parent = control.findNode(parentFolder.getPath());
                             if (parent != null)
                             {
-                                TreeControlNode childNode = loader.createPageNode(page, request.getLocale(), "");
-                                parent.addChild(childNode);                            
+                                if (parent.isLoaded() == false)
+                                {
+                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                }
+                                else
+                                {
+                                    TreeControlNode childNode = loader.createPageNode(page, request.getLocale(), "");
+                                    parent.addChild(childNode);                                    
+                                }
                             }
                         }                    
                     }
@@ -184,12 +200,20 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                     {
                         Link link = pageManager.getLink(nodeUpdated.getName());
                         if (link != null)
-                        {                        
-                            TreeControlNode parent = control.findNode(link.getParent().getPath());
+                        {
+                            Folder parentFolder = (Folder)link.getParent();                                                            
+                            TreeControlNode parent = control.findNode(parentFolder.getPath());
                             if (parent != null)
                             {
-                                TreeControlNode childNode = loader.createLinkNode(link, request.getLocale(), "");
-                                parent.addChild(childNode);                            
+                                if (parent.isLoaded() == false)
+                                {
+                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                }                                
+                                else
+                                {
+                                    TreeControlNode childNode = loader.createLinkNode(link, request.getLocale(), "");
+                                    parent.addChild(childNode);                                    
+                                }
                             }
                         }                    
                     }                    
