@@ -84,11 +84,11 @@
 			</subsection>
 			<subsection name="Jetspeed-2 Status">
 				<p>
-					Jetspeed-2 is currently under development. The first
-					production release is expected in Q4 2005. Even
-					though it is not officially released, there are
-					several production portals using Jetspeed-2 that are
-					already on-line.
+					The first production release of Jetspeed-2 was released
+					on December 8, 2005.  Future development areas include 
+					improved caching and clustering support, further AJAX integration,
+				    new portlet applications, WSRP support, better design
+					and use experience.
 				</p>
 			</subsection>
 			<subsection name="About Jetspeed-2">
