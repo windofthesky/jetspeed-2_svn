@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed-2 Statistics</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Statistics Overview">
+        	<p>
+        	Jetspeed-2 provides components for collecting portal data for various application events.
+        	</p>
+        	<subsection name="Collecting Portal Data">
+        	<p>
+        	<code>PortalStatistics</code> provides APIs for collecting portal application events.  The following event types
+        	are supported out of the box:
+        	<ul>
+        	<li>Portlet rendering statistics.</li>
+        	<li>Page rendering statistics.</li>
+        	<li>User access statistics.</li>
+        	</ul>
+        	The <code>PortalStatistics</code> implementation logs usage data based on the 
+        	<a href="http://httpd.apache.org/docs/logs.html">Apache Common Log Format (CLF)</a>
+        	where each log entry is formatted in the form:
+        	<source>
+    %h %l %u %t \"%r\" %>s %b</source>
+    		where:
+			<ul>
+			<li><b>%h </b>- remote host</li>
+			<li><b>%l </b>- remote log name</li>
+			<li><b>%u </b>- remote user</li>
+			<li><b>%t </b>- time in common log time format</li>
+			<li><b>%r </b>- first line of HTTP request</li>
+			<li><b>%s </b>- HTTP status code</li>
+			<li><b>%b </b>- number of bytes sent (&quot;-&quot; if no bytes sent).</li>
+			</ul>
+        	<br/>
+        	<img src="images/portalstatistics-c.gif" border="0" />
+        	</p>
+        	<p>
+        	Statistics data is stored in 3 relational tables as illustrated below:
+        	<br/><br/>
+        	<img src="images/statistics-db.gif" border="0" />
+        	</p>
+        	<p>
+        	Each event type is mapped to a data holder that gets persisted in the statistics tables illustrated above.
+        	<img src="images/logrecord-c.gif" border="0" />
+        	<br/>
+        	Jetspeed-2 persists the collected data in batches through the <code>BatchedStatistics</code> component.
+        	<br/><br/>
+        	<img src="images/batchedstatistics-c.gif" border="0" />
+        	</p>
+        	</subsection>
+        	<subsection name="PortalStatistics Configuration">
+        	<p>
+        	The <code>PortalStatistics</code> component is configured in <code>WEB-INF/assembly/statistics.xml</code> and
+        	requires the following configuration parameters:
+        	<ul>
+               <li><b>logToCLF</b>: Whether to log to a Common Log Format file.</li>
+        	<li><b>logToDatabase</b>: Whether to record the statistics in the database.</li>
+               <li><b>maxRecordToFlush_Portlet</b>: The maximum number of portlet events that can be in the portlet statistics FIFO before a flush occurs.</li>
+               <li><b>maxRecordToFlush_User</b>: The maximum number of user events that can be in the user statistics FIFO before a flush occurs.</li>
+               <li><b>maxRecordToFlush_Page</b>: The maximum number of page events that can be in the page statistics FIFO before a flush occurs.</li>
+               <li><b>maxTimeMsToFlush_Portlet</b>: The maximum length of time between FIFO flushes for the portlet statistics FIFO. </li>
+               <li><b>maxTimeMsToFlush_User</b>: The maximum length of time between FIFO flushes for the user statistics FIFO. </li>
+               <li><b>maxTimeMsToFlush_Page</b>: The maximum length of time between FIFO flushes for the page statistics FIFO. </li>
+        	<li><b>jetspeedDSEntry</b>: The reference to the Jetspeed data source.</li>
+        	</ul>
+        	</p>
+        	<p>
+                The FIFO parameters may be adjusted depending on site specific needs.  For example, tuning the events and times down makes the system less likely to loose events in the
+                case of a failure, and also makes the user experience viewing the statistics more responsive to recent events. On the other hand, tuning them higher will reduce the overhead
+                to the database.  Generally newer sites with fewer users should use smaller tuning parameters and larger more mature sites should use larger ones.
+                </p>
+                <p>
+        	A sample configuration is provided below:
+        	<source>
+    &lt;bean id="PortalStatistics" 
+      class="org.apache.jetspeed.statistics.impl.PortalStatisticsImpl"
+      init-method="springInit"
+      destroy-method="springDestroy"&gt;
+      &lt;!-- logToCLF --&gt;
+      &lt;constructor-arg index='0' type="boolean"&gt;&lt;value&gt;false&lt;/value&gt;&lt;/constructor-arg&gt;
+      &lt;!-- logToDatabase --&gt;
+      &lt;constructor-arg index='1' type="boolean"&gt;&lt;value&gt;true&lt;/value&gt;&lt;/constructor-arg&gt;	
+      &lt;!-- maxRecordToFlush_Portal --&gt;
+      &lt;constructor-arg index='2'&gt;&lt;value&gt;300&lt;/value&gt;&lt;/constructor-arg&gt;
+      &lt;!-- maxRecordToFlush_User --&gt;
+      &lt;constructor-arg index='3'&gt;&lt;value&gt;50&lt;/value&gt;&lt;/constructor-arg&gt;	
+      &lt;!-- maxRecordToFlush_Page --&gt;
+      &lt;constructor-arg index='4'&gt;&lt;value&gt;100&lt;/value&gt;&lt;/constructor-arg&gt;	
+      &lt;!-- maxTimeMsToFlush_Portal --&gt;
+      &lt;constructor-arg  index='5'&gt;&lt;value&gt;300000&lt;/value&gt;&lt;/constructor-arg&gt;		
+      &lt;!-- maxTimeMsToFlush_User --&gt;
+      &lt;constructor-arg  index='6'&gt;&lt;value&gt;5000&lt;/value&gt;&lt;/constructor-arg&gt;
+      &lt;!-- maxTimeMsToFlush_Page --&gt;
+      &lt;constructor-arg  index='7&gt;&lt;value&gt;60000&lt;/value&gt;&lt;/constructor-arg&gt;
+      &lt;!-- jetspeedDSEntry --&gt;
+      &lt;constructor-arg  index='8'&gt;&lt;ref bean="JetspeedDS"/&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;</source>
+        	</p>
+        	</subsection>
+		</section>
+    </body>
+</document>
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <title >Non-Java Portlets</title>  
+  <metadata name="title" xml:lang="fr">Portlet non-Java</metadata>
+  <metadata name="title" xml:lang="ja">Non-Javaポートレット</metadata>
+  <metadata name="title" xml:lang="es">Portlets sin Java</metadata>
+  <metadata name="title" xml:lang="zh">非Java Portlets</metadata>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
+</folder>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <title >Default Title for Folder 1</title>  
+  <metadata name="title" xml:lang="fr">Titre francais pour la chemise 1</metadata>
+  <metadata name="title" xml:lang="en">English Title for Folder 1</metadata>
+    
+
+</folder>

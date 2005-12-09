@@ -1,0 +1,501 @@
+<?xml version="1.0"?>
+<mapping>
+  <class name="org.apache.jetspeed.om.page.psml.PageImpl">
+    <map-to xml="page"/>
+
+    <field name="id" type="java.lang.String">
+      <bind-xml name="id" node="attribute"/>
+    </field>
+
+    <field name="hidden" type="boolean">
+      <bind-xml name="hidden" node="attribute"/>
+    </field>
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
+      <bind-xml name="security-constraints"/>
+    </field>
+
+    <field name="version" type="java.lang.String">
+      <bind-xml name="version" node="attribute"/>
+    </field>
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title"/>
+    </field>
+    
+    <field name="defaults"
+           type="org.apache.jetspeed.om.page.psml.DefaultsImpl">
+      <bind-xml name="defaults"/>
+    </field>
+
+    <field name="rootFragment"
+           type="org.apache.jetspeed.om.page.psml.FragmentImpl">
+      <bind-xml name="fragment"/>
+    </field>
+
+    <field name="metadataFields"
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+
+    <field name="menuDefinitions"
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
+           collection="collection">
+      <bind-xml name="menu"/>
+    </field>
+  </class>
+  
+  <class name="org.apache.jetspeed.om.page.PageLocalizedFieldImpl">
+    <map-to xml="metadata"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="language" type="java.lang.String">
+      <bind-xml name="xml:lang" node="attribute"/>
+    </field>
+
+    <field name="value" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
+    <map-to xml="fragment"/>
+
+    <field name="id" type="java.lang.String">
+      <bind-xml name="id" node="attribute"/>
+    </field>
+
+    <field name="type" type="java.lang.String">
+      <bind-xml name="type" node="attribute"/>
+    </field>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>
+
+    <field name="state" type="java.lang.String">
+      <bind-xml name="state" node="attribute"/>
+    </field>
+
+    <field name="decorator" type="java.lang.String">
+      <bind-xml name="decorator" node="attribute"/>
+    </field>
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
+      <bind-xml name="security-constraints"/>
+    </field>
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title"/>
+    </field>
+
+    <field name="fragments"
+           type="org.apache.jetspeed.om.page.psml.FragmentImpl" 
+           collection="vector">
+      <bind-xml name="fragment"/>
+    </field>
+
+    <field name="propertiesList"
+           type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="vector">
+      <bind-xml name="property"/>
+    </field>
+    
+    <field name="preferences"
+           type="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl" collection="arraylist">
+      <bind-xml name="preference"/>
+    </field>
+  </class>
+    
+  <class name="org.apache.jetspeed.om.page.psml.LinkImpl">
+    <map-to xml="link"/>
+
+    <field name="target" type="java.lang.String">
+      <bind-xml name="target" node="attribute"/>
+    </field>
+    
+     <field name="hidden" type="boolean">
+      <bind-xml name="hidden" node="attribute"/>
+    </field>
+
+    <field name="version" type="java.lang.String">
+      <bind-xml name="version" node="attribute"/>
+    </field>
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
+      <bind-xml name="security-constraints"/>
+    </field>
+    
+    <field name="url" type="java.lang.String">
+      <bind-xml name="url" />
+    </field>
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title"/>
+    </field>
+    
+     <field name="metadataFields"
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+  </class>
+  
+  <class name="org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl">
+    <map-to xml="folder"/>
+
+    <field name="hidden" type="boolean">
+      <bind-xml name="hidden" node="attribute"/>
+    </field>    
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
+      <bind-xml name="security-constraints"/>
+    </field>
+
+    <field name="version" type="java.lang.String">
+      <bind-xml name="version" node="attribute"/>
+    </field>
+    
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title"/>
+    </field>
+    
+    <field name="defaultPage" type="java.lang.String">
+      <bind-xml name="default-page"/>
+    </field>
+
+    <field name="documentOrder"
+           type="java.lang.String" 
+           collection="collection">
+      <bind-xml name="document-order"/>
+    </field>    
+
+    <field name="metadataFields"
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+
+    <field name="menuDefinitions"
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl" 
+           collection="collection">
+      <bind-xml name="menu"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl">
+    <map-to xml="menu"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>    
+
+    <field name="options" type="java.lang.String">
+      <bind-xml name="options" node="attribute"/>
+    </field>    
+
+    <field name="depth" type="integer">
+      <bind-xml name="depth" node="attribute"/>
+    </field>    
+
+    <field name="paths" type="boolean">
+      <bind-xml name="paths" node="attribute"/>
+    </field>    
+
+    <field name="regexp" type="boolean">
+      <bind-xml name="regexp" node="attribute"/>
+    </field>    
+
+    <field name="profile" type="java.lang.String">
+      <bind-xml name="profile" node="attribute"/>
+    </field>    
+
+    <field name="order" type="java.lang.String">
+      <bind-xml name="order" node="attribute"/>
+    </field>    
+
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>    
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title"/>
+    </field>
+    
+    <field name="metadataFields"
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+
+    <field name="menuElementImpls"
+           type="org.apache.jetspeed.om.folder.psml.MenuElementImpl" 
+           collection="collection">
+      <bind-xml name="menu-element"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuElementImpl">
+    <map-to xml="menu-element"/>
+
+    <field name="options"
+           type="org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl">
+      <bind-xml name="options"/>
+    </field>
+
+    <field name="menu"
+           type="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl">
+      <bind-xml name="menu"/>
+    </field>
+
+    <field name="separator"
+           type="org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl">
+      <bind-xml name="separator"/>
+    </field>
+
+    <field name="include"
+           type="org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl">
+      <bind-xml name="include"/>
+    </field>
+
+    <field name="exclude"
+           type="org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl">
+      <bind-xml name="exclude"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl">
+    <map-to xml="options"/>
+
+    <field name="options" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>    
+
+    <field name="depth" type="integer">
+      <bind-xml name="depth" node="attribute"/>
+    </field>    
+
+    <field name="paths" type="boolean">
+      <bind-xml name="paths" node="attribute"/>
+    </field>    
+
+    <field name="regexp" type="boolean">
+      <bind-xml name="regexp" node="attribute"/>
+    </field>    
+
+    <field name="profile" type="java.lang.String">
+      <bind-xml name="profile" node="attribute"/>
+    </field>    
+
+    <field name="order" type="java.lang.String">
+      <bind-xml name="order" node="attribute"/>
+    </field>    
+
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>    
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl">
+    <map-to xml="separator"/>
+
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>    
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title"/>
+    </field>
+    
+    <field name="textChild" type="java.lang.String">
+      <bind-xml name="text"/>
+    </field>
+    
+    <field name="textBody" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>
+    
+    <field name="metadataFields"
+           type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl">
+    <map-to xml="include"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>    
+
+    <field name="nest" type="boolean">
+      <bind-xml name="nest" node="attribute"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl">
+    <map-to xml="exclude"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>    
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.DefaultsImpl">
+    <map-to xml="defaults"/>
+
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>
+
+    <field name="layoutDecorator" type="java.lang.String">
+      <bind-xml name="layout-decorator" node="attribute"/>
+    </field>
+    
+    <field name="portletDecorator" type="java.lang.String">
+      <bind-xml name="portlet-decorator" node="attribute"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.PropertyImpl">
+    <map-to xml="property"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="value" type="java.lang.String">
+      <bind-xml name="value" node="attribute"/>
+    </field>
+
+    <field name="layout" type="java.lang.String">
+      <bind-xml name="layout" node="attribute"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
+    <map-to xml="security-constraints"/>
+
+    <field name="owner" type="java.lang.String">
+      <bind-xml name="owner"/>
+    </field>
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.SecurityConstraintImpl"
+           collection="collection">
+      <bind-xml name="security-constraint"/>
+    </field>
+
+    <field name="securityConstraintsRefs"
+           type="java.lang.String"
+           collection="collection">
+      <bind-xml name="security-constraints-ref"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.SecurityConstraintImpl">
+    <map-to xml="security-constraint"/>
+
+    <field name="usersAsString" type="java.lang.String">
+      <bind-xml name="users"/>
+    </field>
+
+    <field name="rolesAsString" type="java.lang.String">
+      <bind-xml name="roles"/>
+    </field>
+
+    <field name="groupsAsString" type="java.lang.String">
+      <bind-xml name="groups"/>
+    </field>
+
+    <field name="permissionsAsString" type="java.lang.String">
+      <bind-xml name="permissions"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.PageSecurityImpl">
+    <map-to xml="page-security"/>
+
+    <field name="version" type="java.lang.String">
+      <bind-xml name="version" node="attribute"/>
+    </field>
+
+    <field name="securityConstraintsDefs"
+           type="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl"
+           collection="collection">
+      <bind-xml name="security-constraints-def"/>
+    </field>
+
+    <field name="globalSecurityConstraintsRefs"
+           type="java.lang.String"
+           collection="collection">
+      <bind-xml name="global-security-constraints-ref"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl">
+    <map-to xml="security-constraints-def"/>
+
+    <field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="securityConstraints"
+           type="org.apache.jetspeed.om.page.SecurityConstraintImpl"
+           collection="collection">
+      <bind-xml name="security-constraint"/>
+    </field>
+  </class>
+  
+
+  <class name="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl">
+    <map-to xml="preference"/>
+
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+    
+    <field name="readOnly" type="boolean">
+      <bind-xml name="readOnly" node="attribute"/>
+    </field>
+    
+    <field name="valueList"
+           type="java.lang.String" 
+           collection="arraylist" >
+      <bind-xml name="value" node="element" />
+    </field>
+  </class>
+
+</mapping>

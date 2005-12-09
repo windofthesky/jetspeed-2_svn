@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder hidden="true">	
+  <title >Folder 3</title>
+  <default-page>test001.psml</default-page>  
+  <document-order>Jetspeed2Wiki.link</document-order>
+  <document-order>Jetspeed2.link</document-order>  
+  <document-order>apache_portals.link</document-order>
+  <document-order>apache.link</document-order>
+  <document-order>test001.psml</document-order>
+  <document-order>default-page.psml</document-order>
+</folder>

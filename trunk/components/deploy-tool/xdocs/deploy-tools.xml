@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed-2 Deploy Tools</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="The Role of Jetspeed-2 Deploy Tools">
+        	<subsection name="JetspeedDeploy and the DeploymentManager">
+        	<p>
+        	<code>JetspeedDeploy</code> prepares portlet applications for deployment within Jetspeed-2. When a new
+        	portlet deployment event is registered, the <code>DeployPortletAppEventListener</code> invokes <code>JetspeedDeploy</code>
+        	to prepare the portlet application for deployment.
+        	<source>
+    new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), stripLoggers);
+            </source>
+        	</p>
+        	<p>
+        	<code>JetspeedDeploy</code> copies the web application archives (.war) from the input directory to the
+        	output directory and parses the <code>web.xml</code>, <code>portlet.xml</code>, and <code>context.xml</code>
+        	to ensure their compliance with the Jetspeed-2 portal engine. 
+        	</p>
+        	<p>
+            <img src="images/jetspeed-deploy-c.gif" border="0"/><br/><br/>
+            </p>
+            <p>
+            <code>JetspeedDeploy</code> invokes the <code>JetspeedWebApplicationRewriter</code> to infuse the <code>web.xml</code>
+            with the <code>JetspeedContainer</code> servlet if it does not already exist:
+            <source>
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;JetspeedContainer&lt;/servlet-name&gt;
+    &lt;display-name&gt;Jetspeed Container&lt;/display-name&gt;
+    &lt;description&gt;MVC Servlet for Jetspeed Portlet Applications&lt;/description&gt;
+    &lt;servlet-class&gt;org.apache.jetspeed.container.JetspeedContainerServlet&lt;/servlet-class&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;contextName&lt;/param-name&gt;
+      &lt;param-value&gt;${portlet-application-name}&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;load-on-startup&gt;0&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  ...
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;JetspeedContainer&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/container/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+            </source>
+            </p>
+            <p>
+            In the same fashion, the <code>JetspeedDeploy</code> invokes the <code>JetspeedContextRewriter</code> to manipulate
+            a portlet application <code>context.xml</code> file.  For more information about Tomcat <code>context.xml</code>, 
+            see <a href="http://tomcat.apache.org/tomcat-5.0-doc/deployer-howto.html#Context%20descriptors">tomcat's documentation</a>.
+            </p>
+        	</subsection>
+            <subsection name="JetspeedDeploy Standalone Usage">
+            <p>
+            <code>JetspeedDeploy</code> can also be invoke through the command line:
+            <source>
+    java -jar jetspeed-deploy-tools-&lt;version&gt;.jar -s inputWarPath outputWarPath
+            </source>
+            where:
+            <ul>
+            <li><code>-s</code>: flag indicating whether or not to strip to loggers from the application. When the flag is present, the
+            loggers available in the application will be removed.</li>
+            <li><code>inputWarPath</code>: the path of the war to process.</li>
+            <li><code>outputWarPath</code>: the path of the processed war.</li>
+            </ul>
+            </p>  
+            </subsection>
+        </section>
+    </body>
+</document>
+

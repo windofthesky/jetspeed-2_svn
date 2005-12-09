@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Supporting Projects</title>
+		<subtitle>Supporting Projects</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Supporting Projects">
+		<table>
+          <tr>
+            <th>Project</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href="http://db.apache.org/derby/"><img src="images/supporters/derby.gif" border="0" /></a></td>
+            <td><a href="http://db.apache.org/derby/">Derby</a> provides Jetspeed-2 default embedded database engine.</td>
+          </tr>
+          <tr>
+            <td><a href="http://directory.apache.org/subprojects/apacheds/index.html"><img src="images/supporters/directory.gif" border="0" /></a></td>
+            <td>Apache <a href="http://directory.apache.org/subprojects/apacheds/index.html">Directory Server</a> provides Jetspeed-2 default embedded LDAP engine.</td>
+          </tr>
+          <tr>
+            <td><a href="http://lucene.apache.org/"><img src="images/supporters/lucene.gif" border="0" /></a></td>
+            <td><a href="http://lucene.apache.org/">Lucene</a> provides Jetspeed-2 embedded search engine.</td>
+          </tr>
+          <tr>
+            <td><a href="http://db.apache.org/ojb/"><img src="images/supporters/ojb.gif" border="0" /></a></td>
+            <td><a href="http://db.apache.org/ojb/">OJB</a> provides Jetspeed-2 default persistence layer.  Jetspeed-2 uses
+            OJB's PersistenceBroker API.</td>
+          </tr>
+          <tr>
+            <td><a href="http://portals.apache.org/pluto/"><img src="images/supporters/pluto.gif" border="0" /></a></td>
+            <td><a href="http://portals.apache.org/pluto/">Pluto</a> provides Jetspeed-2 portlet container. 
+            Pluto is the Reference Implementation of the Java Portlet Specfication. </td>
+          </tr>
+          <tr>
+            <td><a href="http://www.springframework.org"><img src="images/supporters/springframework.gif" border="0" /></a></td>
+            <td>The <a href="http://www.springframework.org">Spring Framework</a> provides Jetspeed-2 default component framework.</td>
+          </tr>
+		</table>
+		</section>
+	</body>
+</document>
+

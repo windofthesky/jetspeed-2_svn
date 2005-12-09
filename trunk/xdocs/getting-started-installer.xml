@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>
+			Getting Started with Jetspeed 2 using the installer
+		</title>
+		<subtitle>Installing Jetspeed-2 with the installer</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Jetspeed-2 Installer">
+			<subsection name="Getting Started with the Installer">
+			<p>
+			Once you have <a href="download.html">downloaded</a> the intaller.  Jetspeed-2 provides 2 installers:
+			<ul>
+			<li>An installer with derby as an embedded database: 
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></li>
+			<li>An installer for installing Jetspeed-2 on a third party database: 
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDB-install.jar</a></li>
+			</ul>
+			</p>
+			<p>
+			To install Jetspeed-2 with the installer, run depending on which installer you've downloaded:
+			<source>
+java -jar Jetspeed2.0-MultiDB-install.jar
+or
+java -jar Jetspeed2.0-derby-install.jar
+			</source>
+			</p>	
+			<p>
+			For the Multi-DB installer you will need to supply:
+			<ul>
+			<li>A username</li>
+			<li>A password</li>
+			<li>A JDBC connection string</li>
+			<li>A JDBC driver name</li>
+			<li>The location of a valid JDBC driver.  The installer will copy this to the installed location.</li>
+			</ul>
+			Finally the database must be empty because the installer does not know how to drop tables.
+			</p>
+			</subsection>
+			<subsection name="Starting Jetspeed-2">
+			<p>
+			Startup Tomcat. On linux, execute :
+			</p>
+			<source>
+/usr/local/ApacheJetspeed2.0/bin/startup.sh
+			</source>
+			<p>
+			On windows, execute :
+			</p>
+   			<source>
+c:\Program Files\Apache Jetspeed 2.0\bin\startup.bat
+   			</source>
+   			<p>
+   			The very first invocation of the portal requires approximately one minute for initial 
+   			startup and final installation. Please wait one minute, and then start up a web browser 
+			and navigate to <a href="http://localhost:8080/jetspeed/portal">http://localhost:8080/jetspeed/portal</a>.
+			</p>
+			</subsection>
+			<subsection name="Login to Jetspeed-2">
+			<p>
+			Sample accounts to login as:
+			<source>
+admin/admin
+manager/manager
+user/user</source>
+ 			</p>
+			</subsection>
+		</section>
+	</body>
+</document>

@@ -1,0 +1,4 @@
+<link target="parent">
+ <title>PDF Portlet</title>
+ <url>http://localhost:8080/jetspeed/fileserver/_content/sample_pdf.pdf</url>
+</link>

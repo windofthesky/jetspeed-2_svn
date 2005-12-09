@@ -1,0 +1,39 @@
+<jetspeed-seed-data>
+    <roles>admin, guest, user</roles>
+    <groups>dev, test</groups>
+    
+     <user name='joe' password='xxx' template='/_user/template/'>
+       <roles>admin, user</roles>
+       <groups>dev</groups>
+       <user-info>
+           <info>
+               <name>user.first.name</name>
+               <value>Joseph</value>
+           </info>
+           <info>
+               <name>user.last.name</name>
+               <value>Stalin</value>
+           </info>
+       </user-info>
+       
+       <preferences/>
+       
+       <folder-template>/_user/template/</folder-template>
+       <profile-rules>
+           <rule name='page'>userrolefallback</rule>
+           <rule name='page'>userrolefallback</rule>
+       </profile-rules>
+    </user>
+
+    <permission type='folder' resource='/' actions='view, edit'>
+        <roles>admin, user</roles>
+        <groups>dev</groups>
+        <users>joe</users>
+    </permission>
+
+    <profiling-rule name='j2' class='org.apache.jetspeed.profile.RuleImpl' description='whatever'>
+        <criterion order='0' type='user' name='user' value='*' fallback='continue' />
+        <criterion order='1' type='path.session' name='path' value='default-page.psml' fallback='continue' />        
+    </profiling-rule>
+    
+</jetspeed-seed-data>

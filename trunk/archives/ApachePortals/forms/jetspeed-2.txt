@@ -1,0 +1,101 @@
+
+The Apache Portals PMC has agreed to accept the jetspeed-2 project.
+To aid in the process, please create these below: 
+
+[1] Mailing List (i) addresses 
+
+  I.   jetspeed-2-dev@portals.apache.org
+  II.  jetspeed-2-user@portals.apache.org
+  III. jetspeed-2-cvs@portals.apache.org
+
+(ii) remote moderators ...
+
+David Sean Taylor (taylor@apache.org)
+
+(iii) archives 
+  mbox
+  I.     http://portals.apache.org/mail/jetspeed-2/dev/YYYYMM.gz
+  II.    http://portals.apache.org/mail/jetspeed-2/user/YYYYMM.gz
+  III.   http://portals.apache.org/mail/jetspeed-2/cvs/YYYYMM.gz
+
+(iv) options 
+
+  I.   Reply-To: Header       [X] yes   [ ] no
+    NOTE: jetspeed-2-cvs@portals.apache.org -> jetspeed-2-dev@portals.apache.org
+  II.  Prefix in Subject      [ ] yes   [X] no
+  III. Eyebrowse              [X] yes   [ ] no
+  IV.  Moderation Message     [X] short [ ] long
+  V.   Message Trailer        [X] yes   [ ] no
+   (a).   jetspeed-2-dev@portals.apache.org
+
+=====================(CUT HERE)====================================== 
+---------------------------------------------------------------------
+To unsubscribe, e-mail:   jetspeed-2-dev-unsubscribe@portals.apache.org
+For additional commands, e-mail: jetspeed-2-dev-help@portals.apache.org
+Apache jetspeed-2 Project -- URL: http://portals.apache.org/jetspeed-2/
+=====================(END)=========================================== 
+   (b).  jetspeed-2-user@portals.apache.org
+
+=====================(CUT HERE)====================================== 
+---------------------------------------------------------------------
+To unsubscribe, e-mail:   jetspeed-2-user-unsubscribe@portals.apache.org
+For additional commands, e-mail: jetspeed-2-user-help@portals.apache.org
+Apache jetspeed-2 Project -- URL: http://portals.apache.org/jetspeed-2/
+=====================(END)=========================================== 
+   (c). jetspeed-2-cvs@portals.apache.org
+
+=====================(CUT HERE)====================================== 
+---------------------------------------------------------------------
+To unsubscribe, e-mail:   jetspeed-2-cvs-unsubscribe@portals.apache.org
+For additional commands, e-mail: jetspeed-2-cvs-help@portals.apache.org
+=====================(END)=========================================== 
+[2] Source Tracker (i) CVS Module 
+
+     /home/cvs/portals-jetspeed-2/
+     /home/cvspublic/portals-jetspeed-2/
+
+or 
+
+(ii) SVN 
+
+     Greg, Sander, Justin, et al ... please fill in
+
+[3] Initial Committer list 
+
+Santiago Gala santiago@apache.org
+David Sean Taylor taylor@apache.org
+Raphael Luta raphael@apache.org
+Mark Orciuch mark_oriuch@nqsltd.com
+Paul Spencer paulsp@apache.org
+Scott Weaver weaver@apache.org
+Roger Ruttimann roger.ruttimann@earthlink.net
+David Le Strat dlestrat@apache.org
+Jeremy Ford jford@apache.org
+Glenn Golden ggolden@umich.edu  
+Jun Yang jyang@apache.org
+Aurelien Pernoud aurelien@apache.org
+
+
+[4] Issue Tracker
+ (i) JIRA URL: http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492
+
+  DONE
+
+or 
+
+(iii) Jira 
+
+ per-separately releasable package
+ Project Name:
+ Project Lead:
+ Preferred Project Abbreviation(s):
+ A list of Jira accounts to mark as project developers
+ ...
+ [if necessary, provision can be made to have admins list different from developer list]
+
+As an example, although Jakarta Commons is a single CVS module, each
+project would be a separate Jira project, although sharing a common
+permissions schema. 
+
+Once the project is setup in Jira, it would will be responsible to
+setup its own components, versions, etc.

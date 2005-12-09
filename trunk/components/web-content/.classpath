@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<classpath>
+  <classpathentry excluding="" kind="src" path="src\java">
+  </classpathentry>
+  <classpathentry output="target\test-classes" kind="src" path="src\test">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar">
+  </classpathentry>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-aop-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-context-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-dao-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-orm-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/aopalliance/jars/aopalliance-1.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-M1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-httpclient/jars/commons-httpclient-2.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-lang/jars/commons-lang-2.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.3.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-configuration/jars/commons-configuration-1.0-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.6.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-collections/jars/commons-collections-3.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-io/jars/commons-io-0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xerces-2.3.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/xml-apis/jars/xml-apis-2.0.2.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/velocity/jars/velocity-1.4.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/velocity-tools/jars/velocity-tools-view-1.1-beta1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-velocity-0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-common-0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portlet-api/jars/portlet-api-1.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.3.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/hsqldb/jars/hsqldb-1.7.1.jar">
+  </classpathentry>
+  <classpathentry kind="output" path="target\classes">
+  </classpathentry>
+</classpath>

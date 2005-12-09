@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<document>
+
+<properties>
+  <author email="taylor@apache.org">David Sean Taylor</author>
+  <title>News and Status</title>
+</properties>
+
+<body>
+
+<section name="News">
+
+<h4>22 April 2004 - Jakarta Jetspeed 1.5 Released</h4>
+<p>
+* New Features *
+<ul>
+<li>
+ 1. Security refactored to allow assigning roles within groups
+</li>
+<li>
+ 2. Jetspeed 1.5 Tutorial moved off of Bluesunrise and converted to Maven documentation format.
+</li>
+<li>
+ 3. Jetspeed Maven Plugin for creating and working with Jetspeed-based projects
+</li>
+<li>
+ 4. Build converted to Maven. Ant build deprecated.
+</li>
+<li>
+ 5. Jetspeed site converted to use Maven, and moved to http://portals.apache.org/jetspeed-1
+</li>
+<li>
+ 6. Jetspeed becomes a part of the Apache Portals project http://portals.apache.org
+</li>
+<li>
+ 7. Email Portlet
+</li>
+<li>
+ 8. Redirect Portlet
+</li>
+<li>
+ 9. Enhanced portlet filtering on the layout customize
+</li>
+<li>
+10. New skins and updated look and feel of the default portal
+</li>
+<li>
+11. Portlets and decorators (controls) can now be completely hidden if user doesn't have secure access to the portlet.
+</li>
+<li>
+12. GenericMVC portlet now can render in parallel with other portlets on the page
+</li>
+<li>
+13. Added filtering on portlet registry browser
+</li>
+<li>
+14. Drag and drop controller for the layout designer  
+</li>
+<li>
+15. Upgrade to Torque 3.1 and Torque Plugin
+</li>
+</ul>
+</p>
+
+<h4>25 March 2004 - Apache Portals Project Launched</h4>
+<p>
+The Apache Portals project is officially launched at the Apache Software Foundation
+</p>
+
+<hr noshade="" size="1"/>
+
+</section>
+
+<section name="Status">
+
+<p>
+<a href="status/2004-03.html">March 2004 Status</a>
+</p>
+
+<hr noshade="" size="1"/>
+
+</section>
+</body>
+
+</document>
+

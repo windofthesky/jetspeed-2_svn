@@ -1,0 +1,330 @@
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+   <head>
+      <title>Apache Portals Project Charter</title>
+   </head>
+   <body>
+<hr><h1><center>Apache Portals Project Charter</center></h1>   
+<p>
+<ul>
+<li><a href="#1">1. Introduction</a>
+<li><a href="#2">2. Mission</a>
+<li><a href="#3">3. History</a>
+<li><a href="#4">4. Organization</a>
+<li><a href="#5">5. The Project Management Committee</a>
+<li><a href="#6">6. SubProjects</a>
+<li><a href="#7">7. Contributors</a>
+<li><a href="#8">8. Committers</a>
+<li><a href="#9">9. Infrastructure</a>
+<li><a href="#10">10. Licensing</a>
+<li><a href="#11">11. The Development Process</a>
+<li><a href="#12">12. SubProject Requirements</a>
+<li><a href="#13">13. Relationship to other Apache Projects</a>
+<li><a href="#14">14 Terms and Definitions</a>
+</ul>
+<hr>
+<a name="1"><h3>1. Introduction</h3></a>
+<p>
+<b>Apache Portals</b> is a collaborative software development project dedicated to providing robust, full-featured, 
+commercial-quality, and freely available Portal related software on a wide variety of platforms and programming languages.
+This project is managed in cooperation with various individuals worldwide (both independent and company-affiliated experts), 
+who use the Internet to communicate, plan, and develop Portal software and related documentation.
+</p>
+<p>
+<b>Apache Portals</b> is also known as <b>portals.apache.org</b>, located at <b>http://portals.apache.org</b>
+</p> 
+<p>
+This charter describes the mission, history, organization, and processes of the project.
+</p>
+<a name="2"><h3>2. Mission</h3></a>
+<p>
+<b>portals.apache.org</b> exists to promote the use of open source portal technology.
+We view portals as an important technology in in the growing portal and web application environments.  
+We intend to build freely available portal software in order to promote the use of this technology.
+</p>
+To provide reference implementations Java and W3C Standards such as the
+<ul>
+<li>Java Portlet Standard
+<li>WSRP Portlet Standard
+</ul>
+To provide portal implementations including:
+<ul>
+<li>Cocoon Portal
+<li>Jetspeed-1
+<li>Jetspeed-2
+<li>PHP Portals (TBD)
+</ul>
+To provide fully working and standardized portlet applications:
+<ul>
+<li>Jetspeed Content Replication Engine
+<li>Jetspeed Portal Administration Application
+<li>(TBD)
+</ul>
+To provide common frameworks and tools for developing portal software
+<ul>
+<li>CPS (Cornerstone Portlet Services)
+<li>Struts Portlet Application Framework 
+<li>Python Portlet Application Framework 
+<li>Turbine Portlet Application Framework 
+</ul>
+To provide portal interoperability frameworks and tools for programming languages including
+<ul>
+<li>Java
+<li>Perl
+<li>PHP
+<li>Python
+<li>...
+</ul>
+</p>
+<a name="3"><h3>3. History</h3></a>
+<p>
+This project was established under the direction of the Apache Software Foundation in January 2004
+to facilitate joint open-source development of portal software.
+</p>
+<a name="4"><h3>4. Organization</h3></a>
+<p>
+<b>portals.apache.org</b> exists as an umbrella project for sub-projects and as a ground for introducing new projects
+and portal applications at Apache. At the time of the writing of this charter, the following projects
+are included in the Apache Portals project from Jakarta:
+<ul>
+<li>Cocoon Portal
+<li>Cornerstone (CPS)
+<li>Jetspeed-1
+<li>Jetspeed-2
+<li>Pluto
+<li>WSRP-4J
+</ul>
+</p>
+
+<a name="5"><h3>5. The Project Management Committee</h3></a>
+5.1 The <b>portals.apache.org project</b> is managed by a small, core group of
+contributors known as the Project Management Committee [PMC], with representation from all sub-projects.  
+<p>
+5.2 The activities of the PMC are coordinated by the Chairperson,
+who is an officer of the corporation and reports to the Apache
+Board.  The Chairperson will, on the request of the Apache Board, 
+provide reports to the Board on issues related  to the running of 
+the portals.apache.org project. 
+<p>
+5.3 The PMC has the following responsibilities:
+<p>
+a) Accepting new subproject proposals, formally submitting these proposals for committer vote, 
+and creating the subproject (see SUBPROJECTS below). 
+This is done in collaboration with the Incubator (see <a href="http://incubator.apache.org">http://incubator.apache.org</a>).
+<p>
+b) Facilitating code or other donations by individuals or companies in collaboration with the Incubator.
+<p>
+c) Resolving license issues and other legal issues in conjunction with the ASF board.
+<p>
+d) Ensuring that administrative and infrastructure work is completed.
+<p>
+e) Facilitating relationships among projects and subprojects.
+<p>
+f) Facilitating relationships between portals.apache.org and the external world.
+<p>
+g) Overseeing portals.apache.org to ensure that the mission defined in this document is being fulfilled.
+<p>
+h) Resolving conflicts within the project.
+<p>
+i) Reporting to the ASF board (through the Chair) on the progress of the project.
+<p>
+5.4 To become a member of the PMC, an individual must be nominated by a
+contributor, unanimously approved by all PMC members, and approved by
+a two-thirds majority of committers. In most cases, developers will
+have actively contributed to development for at least six months
+before being considered for membership on the PMC. 
+<p>
+5.5 In cases where the sub-project is unable to directly provide a 
+representative on the PMC, another member of the PMC will be required 
+to represent that sub-project on the PMC.  This will be strongly
+discouraged.  It is preferable that all sub-projects have direct 
+representation on the PMC.
+<p>
+5.6 Once the PMC selection process has completed, the PMC will provide 
+a recommendation to the Apache Board for the position of Chairperson 
+of the PMC. 
+<p>
+5.7 This recommendation will be made on the basis of an election held 
+within the PMC.  The election will be performed using a simple
+majority vote of PMC members.
+<p>
+5.8 Upon agreement by the Apache Board, the recommended Chairperson will, 
+if they are not already, be appointed an officer of the corporation.  
+See <a href="http://www.apache.org/foundation/bylaws.html">http://www.apache.org/foundation/bylaws.html</a> for more information.
+<p>
+5.9 In the unlikely event that a member of the PMC becomes disruptive to
+the process, ceases to make codebase contributions for an extended 
+period, or ceases to take part in PMC votes for an extended period of
+time, said member may be removed by unanimous vote of remaining PMC members.
+<p>
+5.10 The PMC is responsible for maintaining and updating this
+charter. Development must follow the process outlined below, so any
+change to the development process necessitates a change to the
+charter. Changes must be unanimously approved by all members of the
+PMC. A contributor may challenge a change to the charter at any time
+and ask for a vote of all portals.apache.org active committers, in which
+case a two-thirds majority must approve the change.
+
+<a name="6"><h3>6. SubProjects</h3></a>
+
+6.1 portals.apache.org is comprised of subprojects; a subproject is
+responsible for component or application whose scope is well defined.  
+Each subproject has its own set of developers, and is responsible 
+for approving its own committers.
+<p>
+6.2 A new subproject proposal is submitted to the PMC, and then accepted
+by a majority portals.apache.org active committer vote.
+<p>
+6.3 A subproject may be removed by unanimous vote of the PMC, subject to the
+approval of the ASF board.  A contributor may challenge the removal of a 
+subproject at any time and ask for a vote of all active committers, in
+which case a two-thirds majority must approve the change.
+<p>
+<p>
+<a name="7"><h3>7. Contributors</h3></a>
+
+7.1 Like all Apache projects, the Portals project is a meritocracy -- the more
+work you do, the more you are allowed to do. Contributions will include participating in 
+mailing lists, reporting bugs, providing patches and proposing changes to a product.
+<p>
+
+7.2 Developers who make regular and substantial contributions may become
+committers as described below.
+<p>
+
+<a name="8"><h3>8. Committers</h3></a>
+
+8.1 Each subproject has a set of committers. Committers are contributors who
+have read/write access to the source code repository. New committers
+are added when a contributor is nominated by a committer and approved by
+at least three of the active committers for that subproject with no
+opposing votes.  In most cases, new committers will already be
+participating in the development process by submitting suggestions
+and/or fixes via the bug report page or mailing lists.
+<p>
+8.2 For the purposes of voting, committers will be classed as "active" or
+"inactive". Only active committers will be included in the totals used to 
+determine the success or failure of a particular vote.
+<p>
+8.3 Committers remain active as long as they are contributing code or
+posting to the subproject mailing lists.  If a committers has neither
+contributed code nor posted to the subproject mailing lists in 3
+months, the PMC representatives for that subproject will e-mail the 
+committer, the subproject development list, and the PMC mailing list 
+notifying the committer that they are going to be moved to inactive 
+status.  If there is no response in 72 hours, the committer will become 
+inactive.
+<p>
+8.4 An inactive status will not prevent a committer committing new code
+changes or posting to the mailing lists.  Either of these activities will
+automatically re-activate the committer for the purposes of voting.
+<p>
+<a name="9"><h3>9. Infrastructure</h3></a>
+
+9.1 The portals.apache.org project site must provide the following:
+<p>
+a) Bug Database -- This is a system for tracking bugs and feature
+requests.
+
+<p>
+b) Subproject Source Repositories -- These are several CVS repositories
+containing both the source code and documentation for the
+subprojects. Each subproject will have a set of committers to its
+repository.
+<p>
+c) Website -- An portals.apache.org website will contain information about
+the portals.apache.org project, including documentation, downloads of
+releases, and this charter. Each subproject will have its own website
+with subproject information.
+<p>
+d) PMC Mailing List -- This list is for PMC business requiring
+confidentiality, particularly when an individual or company requests
+discretion. All other PMC business should be done on the general
+mailing list.
+<p>
+e) General Mailing List -- This mailing list is open to the public. It is
+intended for discussions that cross subprojects.
+<p>
+f) Subproject Mailing Lists -- Each subproject should have a devoted mailing
+list. Many subprojects may wish to have both user and development
+lists. The individual subprojects may decide on the exact structure of
+their mailing lists.
+<p>
+<a name="10"><h3>10. Licensing</h3></a>
+
+10.1 All contributions to the portals.apache.org project adhere to the 
+"ASF Source Code License." All further contributions must be made under the
+same terms. All contributed files must contain the full text of the ASF 
+Source Code License.
+<p>
+<a name="11"><h3>11. The Development Process</h3></a>
+
+11.1 The development process is intentionally lightweight; like other
+Apache projects, the committers decide which changes may be committed
+to the repository. Three +1 ('yes' votes) with no -1 ('no' votes or
+vetoes) are needed to approve a code change. For efficiency, some code
+changes from some contributors (e.g. feature additions, bug fixes) may
+be approved in advance, in which case they may be committed first and
+changed as needed, with conflicts resolved by majority vote of the
+committers.
+<p>
+<a name="12"><h3>12. SubProject Requirements</h3></a>
+
+12.1 Each subproject must have a set of requirements as well as an
+up-to-date release plan and design document on its dedicated web page.
+<p>
+12.2 It is recommended that each subproject have a smoke-test system 
+that works at least as a basic integration test.
+<p>
+<a name="13"><h3>13. Relationship to other Apache Projects</h3></a>
+
+13.1 The portals.apache.org project should work closely with other Apache
+projects, such as XML, Jakarta and the Apache Server, to avoid redundancy
+and achieve a coherent architecture among portals.apache.org and these
+projects.
+<hr>
+
+<a name="14"><h3>14 Terms and Definitions</h3></a>
+<ul>
+<li><b>Portal</b> - A portal is a web based application that –commonly- provides personalization, single
+sign on, content aggregation from different sources and hosts the presentation layer of 
+Information Systems. Aggregation is the action of integrating content from different
+sources within a web page. A portal may have sophisticated personalization features to
+provide customized content to users. Portal pages may have different set of portlets
+creating content for different users.
+<li><b>Portlet</b> - A portlet is a Java technology based web component, managed by a portlet container, that
+processes requests and generates dynamic content. Portlets are used by portals as
+pluggable user interface components that provide a presentation layer to Information
+Systems.
+<li><b>Portlet Application</b> - Portlets, servlets and JSPs are bundled in an extended web application called portlet
+application. Portlets, servlets and JSPs within the same portlet application share
+classloader, application context and session.
+<p>
+<li><b>PMC</b> - The Portals PMC is a management board for all Portals projects.
+<li><b>Project</b> - The Apache Portals Project, referred to as <b>portals.apache.org</b> is a top level 
+                     project of the Apache Software Foundation.
+<li><b>Subproject</b> - Any project existing under the Apache Portals Project top-level project.
+                       <b>portals.apache.org</b> is comprised of a number of subprojects; a subproject is responsible for a component or application whose scope is well defined.
+<li><b>Contributor</b> - Anyone who makes a contribution to the development of the portals.apache.org project or a subproject.
+<li><b>Committer</b> - Each Portals subproject has a set of committers. Committers can have rights to one or more subprojects as granted by the PMC.
+                       Committers are contributors who have read/write access to the source code repository.
+<li><b>The ASF Board</b> - The management board of the Apache Software Foundation.
+</ul>
+
+</body>
+</html>
+

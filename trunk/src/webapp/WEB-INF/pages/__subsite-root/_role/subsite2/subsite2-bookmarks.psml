@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+
+  <defaults layout-decorator="jetspeed" portlet-decorator="jetspeed"/>
+
+  <title>Subsite2 Bookmarks</title>
+  <metadata name="title" xml:lang="ja">サブサイト２ブックマーク</metadata>
+  <metadata name="title" xml:lang="es">Favoritos (Subportal 2)</metadata>
+  <metadata name="title" xml:lang="zh">子站点2书签</metadata>
+
+
+  <fragment id="sub2-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="sub2-21" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="OneColumn" name="row" value="0" />
+    </fragment>
+  </fragment>
+
+</page>

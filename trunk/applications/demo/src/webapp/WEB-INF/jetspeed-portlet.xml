@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<portlet-app id="demo" version="1.0" 
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
+    xmlns:js="http://portals.apache.org/jetspeed" 
+    xmlns:dc="http://www.purl.org/dc">
+    
+    <dc:title>Title 1</dc:title>
+    <dc:title xml:lang="en">Eng Title</dc:title>
+    <dc:title xml:lang="fr">Fr Title</dc:title>
+    <dc:subject xml:lang="sp">Spanish Subject</dc:subject>
+    <dc:creator>Default Jeremy Ford</dc:creator>
+    <dc:coverage>Default Coverage</dc:coverage>
+    <dc:contributor>Default Contributor</dc:contributor>
+    <dc:description>Default Description</dc:description>
+    <dc:format>Default Format</dc:format>
+    <dc:identifer>Default Identifier</dc:identifer>
+    <dc:language>Default Language</dc:language>
+    <dc:publisher>Default Publisher</dc:publisher>
+    <dc:relation>Default Relation</dc:relation>
+    <dc:right>Default Right</dc:right>
+    <dc:source>Default Source</dc:source>
+    <dc:type>Default Type</dc:type>
+    <js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
+    
+
+    <portlet id="HelloPortlet">
+        <portlet-name>HelloPortlet</portlet-name>
+        <dc:title>HelloWorldTitle</dc:title>
+        <dc:title xml:lang="en">En HelloWorldTitle</dc:title>
+        <dc:title xml:lang="fr">Fr HelloWorldTitle</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        <dc:description>This is the hello world of portlets, it doesn't do much</dc:description>
+        <!--
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+        
+    </portlet>
+    
+ 
+    
+    <portlet>
+        <portlet-name>PreferencePortlet</portlet-name>
+        <dc:title>Preference Test</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    <portlet>
+        <portlet-name>DisplayRequestPortlet</portlet-name>
+        <dc:title>Display the Portlet Request Information</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    <portlet>
+        <portlet-name>PickANumberPortlet</portlet-name>
+        <dc:title>Pick a Number</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>AttributeScopePortlet</portlet-name>
+        <dc:title>Attribute Scope Demo Portlet</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    <portlet>
+        <portlet-name>CustomerList</portlet-name>
+        <dc:title>Customer List</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    <portlet>
+        <portlet-name>CustomerInfo</portlet-name>
+        <dc:title>Customer Information</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+    
+    <portlet>
+        <portlet-name>CustomerDetail</portlet-name>
+        <dc:title>Customer Detail</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+        
+        <!--
+        <dc:subject xml:lang="sp"></dc:subject>
+        <dc:coverage></dc:coverage>
+        <dc:contributor></dc:contributor>
+        <dc:description></dc:description>
+        <dc:format></dc:format>
+        <dc:identifer></dc:identifer>
+        <dc:language></dc:language>
+        <dc:publisher></dc:publisher>
+        <dc:relation></dc:relation>
+        <dc:right></dc:right>
+        <dc:source></dc:source>
+        <dc:type></dc:type>
+        <js:metadata name=""></js:metadata>
+        -->
+    </portlet>
+
+	<js:services>
+	    <js:service name='SSO'/>
+	</js:services>
+	
+</portlet-app>

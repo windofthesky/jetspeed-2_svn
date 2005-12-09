@@ -1,0 +1,12 @@
+target
+*.log
+.project
+.classpath
+hsqldb
+bin
+*.log*
+.checkclipse
+.encoding
+.settings
+build.properties
+.springBeansProject

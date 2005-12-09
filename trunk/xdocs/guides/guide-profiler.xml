@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Profiler</title>
+    <subtitle>Documentation for Jetspeed-2 Profiler</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name="Profiler Overview">
+<p>
+The Jetspeed Profiler is a portal resource location rule-based engine.
+As of Jetspeed version 2.0, the profiler locates the following kinds of portal resources:
+<ul>
+    <li>PSML pages</li>
+    <li>Folders</li>
+    <li>Menus</li>
+</ul>
+When a request is received by the portal, the profiler will map the request to a resource
+based on a normalized set of runtime parameters and state such as request parameters, HTTP headers,
+and session attributes. The Profiler is invoked during the Jetspeed request processing pipeline in 
+the profiler valve. This valve requires that the request context is already populated with 
+the portal request and response, capabilities, language and user information. 
+The runtime parameters make up the profile criterion which the profiler uses to locate 
+portal resources.  
+</p>
+<p>
+The profiler works hand in hand with the Site and Page Manager components.
+The profiler takes runtime information as input, generalized that information
+into     
+</p>
+</section>
+<section name="Profiling Rules">
+<p>
+ 
+A ProfilingRule defines a list of criteria used when evaluating a request
+to determine the location of a specific resource. Profiling rules are 
+used by the profiler to generically locate portal resources
+based on the decoupled criteria for known portlet request data.
+A rule consists of an ordered list of criteria which should be applied
+in a given order. Following this rule's order, the profiling engine applies
+each criteria of the rulusing a less-specific algorithm until the least 
+specific resource criterion is considered. When all criteria are exhausted, 
+the rule will fail and a fallback resource will be required.    
+</p>
+<subsection name='Rule Criterion'>
+<p>
+RuleCriteria are templates for locating profile properties. 
+The default implementation has a profiling policy defined in this proposal based on resource-specific URLs, Mime-Types and language preferences. More complex implementations will need to use other inputs in mapping to resources such as Cookies, IP Address Ranges, Statistical Resource Usage Analysis, Business Rules inside of servlets or EJBs,...
+    
+</p>
+</subsection>
+<subsection name='Rule Criterion Resolvers'>
+<p>
+
+<table>
+    <tr>
+    <th>Resolver</th>
+    <th>Description</th>
+    <th>Example</th>
+    </tr>
+    <tr>
+        <td>request</td>
+        <td>resolve by matching to a request parameter name</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>session</td>
+        <td>resolve by matching to a session attribute name</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>request.session</td>
+        <td>resolve by matching to a request attribute name first, then matching to a session attribute name</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>hard.coded</td>
+        <td>resolve with a hard.coded value</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>group.role.user</td>
+        <td>fallback controller: search for resource under folders of the current users group, then role, then users own folder</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>user</td>
+        <td>match resources in the current user directory</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>group</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>role</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>mediatype</td>
+        <td>match media type in the request context</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>country</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>user.agent</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>language</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>roles</td>
+        <td>Role Fallback</td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>path</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>page</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>path.session</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>user.attribute</td>
+        <td></td>
+        <td></td>        
+    </tr>
+    <tr>
+        <td>navigation</td>
+        <td>change the current navigation path</td>
+        <td></td>        
+    </tr>
+    
+</table>        
+    
+</p>
+</subsection>
+<subsection name='Principal Rules'>
+</subsection>
+</section>
+<section name="Profile Locators">
+<p>
+Profile Locators are used to locate profiled portal resources such as
+pages, documents, and fragments. A locator contains properties describing
+the actually resource to be located. Since the locator is based on properties
+that are usually related to a user or other subject's profile, it is referred
+to as a profile locator.    
+</p>
+<subsection name='Profile Locator Paths'>
+<p>
+</p>
+</subsection>
+</section>
+<section name="Component Configuration">
+<p>
+</p>
+</section>
+
+</body>
+</document>
+

@@ -1,0 +1,16 @@
+<processing>
+  <job name="Install">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/ant/bin/ant">
+     <arg>-f</arg><arg>$INSTALL_PATH/build.xml</arg>
+     <arg>-lib</arg><arg>$INSTALL_PATH/ant/lib</arg>
+    </executefile>
+  </job>
+  <job name="Install">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/ant/bin/ant.bat">
+     <arg>-f</arg><arg>$INSTALL_PATH/build.xml</arg>
+     <arg>-lib</arg><arg>$INSTALL_PATH/ant/lib</arg>
+    </executefile>
+  </job>
+</processing> 

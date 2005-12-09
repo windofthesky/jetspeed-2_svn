@@ -1,0 +1,124 @@
+--------------------------  
+ Jetspeed 2.0-M2 Release
+   April 2, 2005
+--------------------------
+
+* PALM - Portlet Application Lifecycle Manager 
+    A new administrative portlet for managing the lifecycle of portlet applications
+    Supports start, stop, undeploy and delete operations
+
+* JBoss Support 
+   Jetspeed tested and running on JBoss versions 3.2.7 and 4.0.1sp1
+    
+* New Improved Deployment
+   Deployment overhauled to support application server controlled deployment.
+   Class loader and cross-context session control issues resolved.
+
+* Struts Bridge Enhancements
+
+* Navigations Refactoring 
+
+* Enhanced credential security and validation, Login/Password Enhancements 
+
+* LDAP Authentication support added.
+
+* Secure Access to Site Resources (Pages, Folders)
+
+* Profiler, Layout, PSML Security Documentation 
+
+* SSO Enhancements
+
+* Improved JSF Support
+
+* Finer grain Spring configuration
+
+* Main Jetspeed context no longer requires /jetspeed
+ 
+-----------
+Bug fixes
+-----------
+see M2-bugfixes.html
+
+---------------------
+ Tested App Servers:
+---------------------
+ * Tomcat 5.0.30
+ * Tomcat 5.5.8
+ * JBoss 3.2.7
+ * JBoss 4.0.1sp1
+ 
+ (Tomcat 5.5 requires a different jetspeed.xml found in the source tree under src/resources/jetspeed-tomcat-5.5.xml)
+
+ Check out our wiki page for details: http://wiki.apache.org/portals/Jetspeed2
+
+
+---------------------
+ NO Longer Supported:
+---------------------
+ * Tomcat 4.1.x
+
+Support for Tomcat 4.1.x has been dropped.
+
+---------------------------
+ Installation Instructions
+---------------------------
+
+1. Download jetspeed-2.0-M2-Tomcat-5.0.30.tar.gz, or
+   Download jetspeed-2.0-M2-Tomcat-5.0.30.zip (windows), or
+   Download jetspeed-2.0-M2-Tomcat-5.5.8.tar.gz, or 
+   Download jetspeed-2.0-M2-Tomcat-5.5.8.zip (windows)
+2. Expand jetspeed-2.0-M2-Tomcat-<version>.tar.gz into a clean directory (as example we will use 'jetspeed')
+   
+   cd /jetspeed
+   tar xfz jetspeed-2.0-M2-Tomcat-<version>.tar.gz
+
+   For Windows:
+   
+   cd c:\jetspeed
+   unzip jetspeed-2.0-M2-Tomcat-<version>.zip 
+
+3. start the database
+
+   cd /jetspeed/jetspeed-database
+   start-database.sh
+   
+   For Windows:
+   
+   cd c:\jetspeed\jetspeed-database
+   start-database.bat
+
+4. startup Tomcat 
+
+   execute /jetspeed/jakarta-tomcat-<version>/bin/startup.sh
+   
+   For Windows:
+   
+   execute c:\jetspeed\jakarta-tomcat-<version>\bin\startup.bat
+   
+
+5. start up a web browser and navigate to http://localhost:8080/jetspeed/portal
+
+
+------------------------------
+ Configuring Another Database
+------------------------------
+
+1. cd $TOMCAT_HOME/jetspeed-database/scripts
+2. edit the build.properties, set the properties for your database connection, save.
+3. create a database schema/catalog to hold your database tables 
+4. type 'ant' to run the database population scripts
+5. edit the jetspeed.xml properties 
+    - $TOMCAT_HOME/conf/Catalina/localhost/jetspeed.xml
+   
+    and set your database connection
+
+6. copy your database driver into Tomcat's common/endorsed directory
+
+7. start up a web browser, navigate to http://localhost:8080/jetspeed/portal
+
+ Sample accounts to login as:
+    
+ admin/admin
+ manager/manager
+ user/user
+ 

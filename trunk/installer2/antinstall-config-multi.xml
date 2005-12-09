@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
+    "http://antinstaller.sf.net/dtd/antinstall-config-0.7.dtd">
+<!--
+
+This is an example installer from which you can start a project
+Edit this file to select the properties you want decided, at the end
+of the installation screen the properties will be available in a file
+in the current directory for your ant script
+
+
+lookAndFeel="com.jgoodies.plaf.windows.ExtWindowsLookAndFeel"  - not recommended since it is not linux compatible due to Micro$oft License restrictions
+
+lookAndFeel="net.sourceforge.mlf.metouia.MetouiaLookAndFeel"  - good, and cross platform
+
+lookAndFeel="com.jgoodies.plaf.plastic.Plastic3DLookAndFeel"  - good, and cross platform
+
+lookAndFeel="com.jgoodies.plaf.plastic.PlasticXPLookAndFeel"  - good, and cross platform
+
+lookAndFeel="com.jgoodies.plaf.plastic.PlasticLookAndFeel" - good but flat, and cross platform
+-->
+
+<!--
+
+defaultImageResource,windowIcon,resource and imageResource load from the classpath
+the installer script should put the locations of these resources on the classpath
+
+-->
+<installer ui="swing,text" verbose="false"
+    lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
+    name="Jetspeed 2.0 Installer" windowIcon="/resources/feather-small.png"
+    defaultImageResource="/resources/apache-portals.gif" minJavaVersion="1.4">
+    <!--  each page element represents a page of the installer -->
+    <page type="input" name="intro" displayText="Jetspeed 2.0">
+        <comment displayText="Welcome to Jetspeed 2.0!" title="true"/>
+        <comment
+            displayText="This installer program will guide you through an install of Jetspeed 2.0 Portal."/>
+    </page>
+    <!--  type="license" shows a license page to click through -->
+    <page type="license" name="license" displayText="License conditions"
+        resource="/resources/LICENSE.TXT">
+    </page>
+    <!--  type="input" shows a list of editable options for the installer -->
+    <page type="input" name="properties" displayText="Required install options">
+        <directory property="installDir" 
+            defaultValue="/usr/local/ApacheJetspeed2.0"
+            defaultValueWin="${env.ProgramFiles}\Apache Jetspeed 2.0"
+            displayText="Select an installation directory" create="true"/>
+    </page>
+    <page type="input" name="requiredComponents" displayText="Required Components">
+        <comment displayText="Required Components - Click Next" bold="true"/>
+        <target displayText="Core components" target="install" defaultValue="true"
+            force="true"/>
+        <target displayText="Create Database" target="generateDb"
+            defaultValue="true" force="true"/>
+        <target displayText="Layout Portlets" target="layoutPortlets"
+            defaultValue="true" force="true"/>
+        <target displayText="Portal Administration Portlets"
+            target="j2admin" defaultValue="true" force="true"/>
+        
+    </page>
+    
+    <page type="input" name="optionalPortlets" displayText="Optional Portlets">
+        
+        <comment displayText="Choose the components you want to install" bold="true"/>
+        <target displayText="Demo Portlets" target="demoPortlets"
+            defaultValue="true" force="false"/>
+        <target displayText="JPetstore Portlets" target="jpetstorePortlets"
+            defaultValue="true" force="false"/>
+        <target displayText="JSF Portlets" target="jsfPortlets" defaultValue="true"
+            force="false"/>
+        <target displayText="PERL Portlets" target="perlPortlets"
+            defaultValue="true" force="false"/>
+        <target displayText="PHP Portlets" target="phpPortlets" defaultValue="true"
+            force="false"/>
+        <target displayText="RSS Portlets" target="rssPortlets" defaultValue="true"
+            force="false"/>
+    </page>
+    
+    <!--  These are some other input types       -->
+        
+    <page type="input" name="databaseInfo" displayText="Database information">
+        
+        <comment
+            displayText="Please fill in the fields below with the approriate database information. The default values should work"/>
+        
+        <text property="dbName" displayText="Database type"
+            defaultValue="derby"/>
+        <text property="dbUser" displayText="Database User Name"/>
+        <text property="dbPassword" displayText="Database Password"/>
+        
+        <text property="jdbcUrl" displayText="JDBC Connection String"
+            defaultValue="jdbc:derby:${installDir}/webapps/jetspeed/WEB-INF/productiondb;create=true"/>
+        <text property="jdbcDriverClass" displayText="JDBC Driver Classname"
+            defaultValue="org.apache.derby.jdbc.EmbeddedDriver"/>
+        
+        <file property="jdbcDriverJar"
+            defaultValue="${installDir}/shared/lib/derby-10.1.1.0.jar"
+            defaultValueWin="${installDir}/shared/lib/derby-10.1.1.0.jar"
+            displayText="JDBC driver" checkExists="false"/>
+        
+    </page> 
+    <!--  page type="progress" shows a progress page with the install button 
+    
+    Its target is set to cleanuptarget since it is the last page this target will be run last-->
+    <page type="progress" name="progress" displayText="Installation progress">
+    </page> </installer>

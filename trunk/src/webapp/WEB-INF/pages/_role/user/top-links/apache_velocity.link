@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<link target="top">
+ <title>[USER] Apache Velocity</title>
+  <metadata name="title" xml:lang="ja">[ユーザー] Apache Velocity</metadata>
+  <metadata name="title" xml:lang="es">[USUARIO] Apache Velocity</metadata>
+  <metadata name="title" xml:lang="zh">[用户] Apache Velocity</metadata>
+
+ <url>http://jakarta.apache.org/velocity</url>
+</link>

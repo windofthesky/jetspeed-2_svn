@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>For Jetspeed-1 Users</title>
+		<subtitle>For Jetspeed-1 Users</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="For Jetspeed-1 Users">
+	    <p>Jetspeed-2 is a new project, written from groundup and does not have any dependencies on Jetspeed-1.		   
+		   Jetspeed-2 is based on industry standards, designed for high-volume enterprise portals applications.
+		   The foremost difference is Jetspeeds Component Oriented Architecture, all assembled together with Spring.
+		   Components replace Turbine services with a standardized component model. 
+		   Deployment of new portlet applications, which was completely missing in Jetspeed-1, 
+		   is implemented to the Portlet API specification. Turbines file-based configuration 
+		   for properties are replaced managed components. Jetspeed-2 is fully decoupled from 
+		   the legacy projects that were intertwined in the Jetspeed-1 architecture.
+		   </p>
+		</section>
+		<section name="Whats New in Jetspeed-2">
+			<ul>
+			<li>1.	Fully Compliant with Java Portlet API Standard</li>
+			<li>2.	Separation of Portlet Applications From Portal</li>
+			<li>3.	Live Deployment Model for Portlet Applications and Portal Layouts</li>
+			<li>4.	Spring Component Based Architecture</li>
+			<li>5.	Multi-threaded Portlet Aggregation Engine</li>
+			<li>6.	Scalable Architecture</li>
+			<li>7.	Pipeline-based Request Processing</li>
+			<li>8.	JAAS Security</li>
+			<li>9.	Bridges Integration with Struts, JSF, PHP, Perl, Velocity</li>
+			<li>19.	CMS-based Site Navigations</li>	
+		</ul>				
+		</section>
+		<section name="Whats the same in Jetspeed-2">		
+			<p>Not much.</p>
+			<p>
+			In fact Jetspeed-2 does not re-use any of the code in Jetspeed-1. 
+			Some concepts are continued in Jetspeed-2, but with new design and implementations. 
+			The table below shows some of the concepts continued in Jetspeed-2 from Jetspeed-1. 
+			Note that even though the concepts are continued, they are have changed, 
+			in some cases significantly:
+				</p>
+			<ul>
+			<li>1.	PSML – Portlet Structured Markup Language. 
+				    Defines the layout of portlets on a page. 
+				    While the purpose is still the same, the XML format has changed. 
+				    Porting is possible, requires a migration tool. 
+				    PSML now fits into an overall Jetspeed Navigation Site as a page-type resource.
+				    No PSML porting tool is currently available. However, an XSLT transform could be a good choice.
+			</li>	
+			<li>2.	Portal Wide Security Policy and Constraints – Jetspeed-2 has two kinds of security 
+				    mechanisms: JAAS-based security policies, and declarative security constraints 
+				    much like Jetspeed-1 constraints. Where as Jetspeed-1 constraints were limited
+				    to PSML, Jetspeed-2 declarative security constraints are also applied to folders
+				    and links.</li>
+			<li>3.	Portlets – Portlets now must adhere to the new Portlet API. 
+				    No porting tool is currently available. 
+				    The Jetspeed-1 Portlet API will not be continued in Jetspeed-2.
+				    </li>
+			<li>4.  Turbine Services are out (Fulcrum). Jetspeed-2 is based on Spring components.</li>	
+			<li>5.  Registries – The Jetspeed-1 Registries are discontinued in Jetspeed-2. 
+				    All portlets are now stored in a Registry database in Jetspeed-2. 
+				    No porting tool is available. 
+				    Recommend converting your portlets to JSR-168 portlets, 
+				   packaging all portlets in a portlet application, 
+				   and deploying as standard WAR file. 
+				   Other registries are all deprecated.</li>
+			<li>6. JSP and Velocity Templates – Templates can be re-used to some extend. 
+				   Any references to Rundata or any other Turbine or Jetspeed-1 tools or 
+				   tags must be converted.</li>				
+			<li>7. Controls and Controllers – These concepts have changed, and are now called 
+				   decorators and layouts. The Turbine module concept, which backed controls 
+				   and controllers, is no longer supported. Layouts and decorators are now 
+				   only implemented as portlets, or as just plain markup. Layouts and templates 
+				   can be deployed to the portal as a deployable unit.</li>
+			<li>8. Jetspeed Configurations and Jetspeed Component Assemblies replace Property Files. 
+				   Component (services) should be assembled, not defined in property files. 
+				   Many of the features in Jetspeed-1 were represented as read-only properties in 
+				   the Jetspeed-1 static property files. Jetspeed-2 components can be configured with JMX.</li>
+			</ul>
+			</section>
+			<section name='Turbine Gone'>
+				<p>
+				Jetspeed-1 is tightly coupled to the Turbine MVC-2 framework, and this coupling permeates 
+				many areas of the Jetspeed API.  Jetspeed-2 does not rely on Turbine as the MVC-2 controller. 
+				Instead, we follow the separation of concerns pattern, and concentrates on doing one thing and doing it well. 
+				That is, implementing a portal. Where as Jetspeed-1 coupled MVC Controller, portal engine, and portlet container 
+				all into one deeply coupled servlet, Jetspeed-2 separates these concerns clearly in its architecture. 
+				The portal engine is Jetspeed-2. It is the MVC for page aggregation, leveraging the dispatching nature 
+				of the servlet architecture, and delegating the actual rendering of portlets to portlet application frameworks.  
+				These portlet applications can in turn have their own MVC frameworks, such as Struts portlet applications, 
+				JSF portlet applications, or Turbine portlet application frameworks.				
+				</p>
+			</section>
+		    <section name='RunData No More'>
+				<p>
+				Most notably missing from Portlet API portlets is the RunData class. 
+				The Jetspeed-1 API uses the RunData class ubiquitously, serving as a wrapper for both the servlet request and response. 
+				Other dependencies on Turbine include Portlet Actions, Portlet Aggregation Engine (ECS), 
+				the Service Architecture, Configuration and Turbine Modules. None of these exist in the newer version.
+				</p>					
+				<table>
+					<tr>
+					<th>Jetspeed-1</th>
+					<th>Jetspeed-2</th>
+					</tr>	
+					<tr>
+						<td>Run Data</td>
+						<td>Portlet API: Portlet Request and Portlet Response</td>						
+					</tr>
+					<tr>
+						<td>Portlet Aggregation Engine (ECS)</td>
+						<td>Jetspeed-2 Multi-threaded Portlet Container Engine</td>						
+					</tr>
+					<tr>
+						<td>Turbine Service Architecture</td>
+						<td>Jetspeed-2 Components</td>						
+					</tr>
+					<tr>
+						<td>Property Configuration Files</td>
+						<td>Spring Configurations, JMX</td>						
+					</tr>
+					<tr>
+						<td>Turbine Modules (Actions)</td>
+						<td>Portlet API Actions </td>						
+					</tr>
+					
+				</table>
+			</section>
+			<section name='Pluto is the Portlet Container'>
+				<p>The Jetspeed-2 portal does not implement the Portlet container. 
+					<a href='http://portals.apache.org/pluto'>Pluto</a> implements the JSR 168 interface 
+					contract for portlets running inside our portal.
+					The Pluto container handles all communication with portlets for the portal. 														
+				</p>					
+			</section>
+		    <section name='Aggregating, Isnt It?'>
+				<p>The aggregation engine and the Jetspeed-1 Portlet API are both coupled to a deprecated Jakarta package ECS 
+					(Element Construction Set). ECS generates HTML with Java code, storing the content in temporary 
+					Java objects before sending the HTML out to the servlet output stream. This wasteful use of Java objects 
+					leads to fragmentation on memory, accelerated garbage collection, and paging in high volume sites. 
+					The servlet API clearly provides a content stream for streaming out portlet content.  Jetspeed-2 models 
+					its aggregation engine upon the Portlet APIs streams and readers, analogous to the stream-based Servlet 
+					API for rendering content.</p>
+			</section>
+		    <section name='State and Life Cycle'>
+				<p>The Portlet API clearly defines the lifecycle of a portlet, the event sequences for actions, 
+				   and how the container can cache content from a portlet. The Portlet Lifecycle was not clearly 
+				   defined in Jetspeed-1. The portlet API clearly states that only one instance of a portlet will 
+				   reside in memory inside a container. The state of the portlet is directly related to the servlet state 
+				   for the current user session. While this may seem obvious, portlet state and lifetime was not clearly 
+				   defined in Jetspeed-1.					
+				</p>
+			</section>
+			<section name='Actions'>
+				<p>In version 1, actions were coupled to Turbine and not properly integrated into the Portlet class. 
+					In fact, actions were separate objects from portlets. In the Portlet API, actions are methods on the portlet. 
+					Action event handling and sequencing is clearly defined in the specification.</p>
+			</section>
+		    <section name='Standard Deployment'>
+				<p>Jetspeed-1 does not have a standardized method of deploying portlets and their supporting files, 
+					commonly referred to as portlet applications. In order to import an application, one must package 
+					registry files, class and jar files, PSML and templates so that they match the Jetspeed web application format.</p>
+				<p>In Jetspeed-2, the Portlet API defines a standard deployment descriptor for deploying Portal Applications into Jetspeed. 
+					Portal applications must be deployed to the portal. Analogous to the servlets packaged in a web-application (WAR)
+					 deployment model, portals support portlets packaged in a portal-application deployment model. 
+					The Portal Application archive follows the same format as the WAR format defined in the Servlet specification 
+					with an additional Portlet deployment descriptor file. The clear advantage in Jetspeed-2 is the ability to deploy 
+					live portlet applications to the server in a standardized format.</p>
+			</section>
+		    <section name='Resources and Deployment'>
+				<p>Jetspeed-1 resources such as portal templates, images, skins, controllers, controls, are all merged into the single 
+				   Jetspeed web application with no deployment model. For example, to override the default skin or top banner, the 
+				   resource files are copied into the portal directory, property files updated to point to the new resources, and the 
+				   server must be restarted. This made for the process of tailoring Jetspeed-1 portals to real production portals 
+				   a process of property and file merging. In fact Jetspeed-1 now has a Maven plug-in to manage production portals 
+				   separately from the core Jetspeed-1 portal. The need for this kind of tool covers up the fact that Jetspeed-1 
+					is missing a good deployment model for portal resources, requiring difficult portal maintenance procedures.</p>
+				<p>For a Jetspeed-2 production portal, portal resources are packaged in a Jetspeed-specific archive format. 
+					Thus portal resources (top banners, skins, images, style sheets) can all be deployed to dynamically tailor 
+					the portal at runtime.</p>
+			</section>
+		    <section name='the Standard'>
+				<p>JSR168 is the Portlet specification enables interoperability between Portlets and Portals. 
+					The specification defines a set of APIs that addresses standardization of portlet aggregation, 
+					personalization, presentation and security.  The goals of JSR168 are to: </p>
+				<ul>
+					<li>Define common Portal metaphor </li>
+					<li>Define a standard Portlet Java API </li>
+					<li>Ensure interoperability and portability</li>
+					<li>Enable multiple markups support </li>
+					<li>Ensure compatibility with other technologies </li>					
+				</ul>
+				<p>The Jetspeed-2 Portlet Server supports the JSR 168 standard. 
+				   This is an important initiative, introducing true portlet portability.</p>
+			</section>
+	</body>
+</document>
+

@@ -1,0 +1,19 @@
+<project>
+    <extend>${basedir}/../project-info.xml</extend>
+    <pomVersion>3</pomVersion>
+    <artifactId>BAD</artifactId>
+    <name>This should not be built</name>
+    <groupId>BAD</groupId>
+    <dependencies>
+        <dependency>
+            <groupId>portlet-api</groupId>
+            <artifactId>portlet-api</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+    </dependencies>
+    <properties/>
+</project>

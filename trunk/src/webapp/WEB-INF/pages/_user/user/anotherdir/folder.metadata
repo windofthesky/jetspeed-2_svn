@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <title>[USER] ANOTHER Folder</title>  
+  <metadata name="title" xml:lang="ja">[ユーザー] 別フォルダ</metadata>
+  <metadata name="title" xml:lang="es">Otra Carpeta [USUARIO]</metadata>
+  <metadata name="title" xml:lang="zh">[用户] 另一个文件夹</metadata>
+
+</folder>

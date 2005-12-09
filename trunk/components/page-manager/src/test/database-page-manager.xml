@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<beans>
+
+    <!-- Page Manager -->
+    <bean id="org.apache.jetspeed.page.PageManagerImpl" 
+          name="pageManagerImpl"
+          init-method="init"
+          class="org.apache.jetspeed.page.impl.DatabasePageManager">
+        <!-- OJB configuration file resource path -->
+        <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
+        <!-- folder/page/link cache size, default=128, min=128 -->
+        <constructor-arg index="1"><value>128</value></constructor-arg>
+        <!-- folder/page/link cache expires seconds, default=150, infinite=0, min=30 -->
+        <constructor-arg index="2"><value>0</value></constructor-arg>
+        <!-- permissions security enabled flag, default=false -->
+        <constructor-arg index="3"><value>false</value></constructor-arg>
+        <!-- constraints security enabled flag, default=true -->
+        <constructor-arg index="4"><value>false</value></constructor-arg>
+    </bean>
+
+    <!-- Transaction Proxying -->
+    <bean id="org.apache.jetspeed.page.PageManager" name="pageManager" parent="baseTransactionProxy">
+        <property name="proxyInterfaces">
+            <value>org.apache.jetspeed.page.PageManager</value>
+        </property>
+        <property name="target">
+            <ref bean="pageManagerImpl" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_SUPPORTS</prop>
+                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+            </props>
+        </property>
+    </bean>
+
+
+</beans>

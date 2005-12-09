@@ -1,0 +1,94 @@
+1. update project.xml and etc/project-dependencies/*.xml in all projects to 2.0-Mx
+
+2. delete old versions of jars from shared/lib
+
+3. checkout to a clean directory
+
+4. build with tests on all db platforms (hsql, mysql, oracle...)
+
+5. test running app in Tomcat
+
+6. build with Hypersonic
+    maven -o allClean allBuild
+    maven -o quickStart
+
+7. From Tomcat dir, make a copy of the binary release in format:
+    {tomcat-root}
+        |
+        | - webapps/jetspeed 
+        | - jetspeed.xml
+        | - conf/Catalina/localhost/jetspeed.xml
+        | -
+        | - jetspeed-database
+               |- hsql
+                   -| Production
+               |
+               |- scripts
+
+            - start-database.sh
+            - start-database.bat
+            - hsqldb-1.7.1.jar
+
+   remove everything else but the files above making an overlay
+
+8. create a windows zip and unix tar.gz of the directory named:
+
+    jetspeed-2.0-M1.zip
+    jetspeed-2.0-M1.tar.gz
+
+9. create the README for the specific version, see docs/release/JETSPEED-README-2.0-M1.txt
+
+10. tag the release from Eclipse or command line using tag format:
+ 
+      JETSPEED-RELEASE-2-0-M1
+
+11. get a clean checkout, don't build anything
+
+12. create a tar and zip of the entire build directory jakarta-jetspeed-2 named:
+
+    jetspeed-2.0-M1-src.tar.gz
+    jetspeed-2.0-M1-src.zip
+
+13. Sign the distributions
+
+    distribution dir == /www/www.apache.org/dist/portals/jetspeed-2/
+
+    a. Download the KEYS from the distribution directory 
+    b. Export your public key 
+                                        
+        gpg --list-sigs <your name> >> KEYS
+        gpg --armor --export <your name>) >> KEYS
+
+    b. Add the contents of th KEYS to your public ring 
+
+        gpg --import KEYS
+
+    c. Generate the .asc files using:
+
+        gpg -sab jetspeed-2.0-M1.zip
+        gpg -sab jetspeed-2.0-M1.tar.gz
+        gpg -sab jetspeed-2.0-M1-src.zip
+        gpg -sab jetspeed-2.0-M1-src.tar.gz
+
+    d. Generate the .md5 hashes:
+
+        openssl md5 < jetspeed-2.0-M1.zip > jetspeed-2.0-M1.zip.md5
+        openssl md5 < jetspeed-2.0-M1.tar.gz > jetspeed-2.0-M1.tar.gz.md5
+        openssl md5 < jetspeed-2.0-M1-src.zip > jetspeed-2.0-M1-src.zip.md5
+        openssl md5 < jetspeed-2.0-M1-src.tar.gz > jetspeed-2.0-M1-src.tar.gz.md5
+
+    e. upload the files to the distributions directory
+
+ 14. Create Symbolic Links to Current 
+
+ left off here...
+
+ xx. Write and post release announcements to mailing lists:
+
+    general@portals.apache.org
+    jetspeed-dev@jakarta.jetspeed.org
+    jetspeed-users@jakarta.jetspeed.org
+    announcements@jakarta.apache.org
+
+
+

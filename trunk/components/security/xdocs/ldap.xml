@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<!--
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Security Services Configuration</title>
+        <authors>
+            <person name="David Le Strat" email="dlestrat@apache.org" />
+            <person name="Ate Douma" email="ate@douma.nu" />
+        </authors>
+    </properties>
+    <body>
+
+        <section name="LDAP Configuration">
+            <p>
+                Jetspeed 2 provides an embedded LDAP configuration through the <a
+                href="http://directory.apache.org/subprojects/apacheds/index.html">Apache Directory Server</a>
+                . A external LDAP directory can also be onfigured in order to leverage the LDAP security functionality.
+            </p>
+            <subsection name="Configuring Jetspeed 2 to Use LDAP">
+            <p>
+            The following two files provide assembly configuration for authenticating with LDAP:
+            <ul>
+                <li><i><a 
+                href="http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/security/etc/security-spi-ldap.xml?view=markup">security-spi-ldap.xml</a>:</i> Provides
+                the configuration information for LDAP binding.  See configuration details below.</li>
+                <li><i><a 
+                href="http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/security/etc/security-spi-ldap-atn.xml?view=markup">security-spi-ldap-atn.xml</a>:</i> Provides
+                the SPI configuration for authentication.  It replaces the default implementations of <i>CredentialHandler</i> and <i>UserSecurityHandler</i> 
+                with an LDAP specific implementation.</li>
+            </ul>
+            </p>
+            <p>
+            In order to configure Jetspeed 2 to use LDAP, add <i>security-spi-ldap.xml</i> and <i>security-spi-ldap-atn.xml</i> to the Jetspeed 2 application
+            assembly directory and remove the default authentication SPI file <i>security-spi-atn.xml</i>.
+            In the source, this directory is located at:
+            <source>${jetspeed-source-home}/src/webapp/WEB-INF/assembly/</source>
+            If your application is deployed in Tomcat, this directory is located at:
+            <source>${tomcat-home}/webapps/jetspeed/WEB-INF/assembly</source> 
+            </p>
+            <p>
+            The <i>security-spi-ldap.xml</i> configuration file requires the following values to be set:
+            </p>
+            <table>
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.initialContextFactory</td>
+                    <td>
+                    The initial context factory used for binding to LDAP.  The LDAP assembly is configured
+                    by default with the Sun LDAP context factory: <i>com.sun.jndi.ldap.LdapCtxFactory</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.ldapServerName</td>
+                    <td>
+                    The location of the LDAP server to connect to.  By default the LDAP assembly uses
+                    <i>localhost</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.ldapServerPort</td>
+                    <td>
+                    The port of the LDAP server to connect to.  By default the LDAP assembly uses
+                    Apache Directory Server default port <i>10389</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.rootDn</td>
+                    <td>
+                    The user distinguished name used by the application to connect to the LDAP server.
+                    By default the LDAP assembly uses Apache Directory Server system admin user <i>uid=admin,ou=system</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.rootPassword</td>
+                    <td>
+                    The password used by the application to connect to the LDAP server.
+                    By default the LDAP assembly uses Apache Directory Server system admin password <i>secret</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.rootContext</td>
+                    <td>
+                    The root context for the LDAP directory set up.  By default, Jetspeed 2 uses the same root context
+                    as the root context provided in the <a href="http://docs.safehaus.org/display/APACHEDS/The+Apache+Directory+Tutorial">Apache Directory Server tutorial</a>:
+                    <i>o=sevenSeas</i>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.defaultDnSuffix</td>
+                    <td>
+                    Provides the ability to add a suffix to the principal.  This is empty by default.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.ou.users</td>
+                    <td>
+                    The default organizational unit for users.
+                    </td>
+                </tr>
+                <tr>
+                    <td>org.apache.jetspeed.ldap.ou.groups</td>
+                    <td>
+                    The default organizational unit for groups.
+                    </td>
+                </tr>
+            </table>
+            </subsection>
+            <subsection name="Starting LDAP">
+            <p>
+            Jetspeed 2 maven plugin provides a easy way to get started with Apache Directory Server. To start the LDAP
+            server run:
+            <pre>maven j2:start.ldap.server</pre>
+            See <a href="../../j2-maven-plugin.html#LDAP_Management_Goals">the J2 maven plugin documentation</a> for more information.
+            </p>
+            </subsection>
+            <subsection name="Connecting to LDAP">
+            <p>
+            Many client are available for connecting to LDAP.  The Apache Directory Server provides 
+            <a href="http://docs.safehaus.org/display/APACHEDS/Connecting+to+Apache+Directory+Server">a nice tutorial</a> on how
+            to connect to Apache DS with different clients.
+            </p>
+            <p>
+            If you decide to use <a href="http://www.jxplorer.org/">JXplorer</a>, your client connection window should look
+            as follow:<br/>
+            <div align="center"><img src="images/ldap-client-connection.gif" border="0"/></div>
+            </p>
+            </subsection>
+            <subsection name="Loading Test User Accounts">
+            <p>
+            Jetspeed 2 provides 
+            <a href="http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/etc/apacheds/j2-apacheds.ldif?view=markup">a sample ldiff file</a> 
+            for loading user test data. Import the ldif into your LDAP.  In JXplorer, users can select <i>LDIF -> Import File</i> and choose the
+            file to import. 
+            </p>
+            <p>
+            Once the data is imported and all above steps have been performed, start or restart your application server.
+            You can now login to Jetspeed with the accounts available in LDAP. For instance <i>admin/admin</i>.
+            </p>
+            <p>
+            The LDAP configuration also fully integrates with Jetspeed <i>UserManager</i>, and therefore admin functionality
+            such as the user management section, retrieve user from LDAP as well as shown below:<br/>
+            <div align="center"><img src="images/j2-admin-user-mgt.gif" border="0"/></div>
+            </p>
+            </subsection>
+        </section>
+    </body>
+</document>

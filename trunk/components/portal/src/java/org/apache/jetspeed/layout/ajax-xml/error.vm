@@ -1,0 +1,6 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+	<reason>$reason</reason>
+    <id>$id</id>
+</js>

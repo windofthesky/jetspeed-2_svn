@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="./" default="clean-build" name="anthilbuild">
+
+  <target name="clean-build">
+    <exec dir="${org.apache.jetspeed.project.home}" executable="maven" failonerror="true">
+    	<arg value="allClean" />
+    	<arg value="allBuild" />
+    </exec>
+  </target>
+  
+</project>

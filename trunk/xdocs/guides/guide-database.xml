@@ -1,0 +1,225 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed 2 Database Configuration</title>
+		<subtitle>Welcome to Jetspeed 2</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Default Database">
+			<p>
+				The default database distributed with Jetspeed-2 is the
+				Hypersonic SQL Java Database (HSQL). HSQL runs in its
+				own process outside of Jetspeed-2. It is not a
+				production-ready database, however it allows you to get
+				up and running quickly. To move on to a more robust
+				database, follow the instructions in the next section.
+			</p>
+		</section>
+		<section name="MySQL">
+			<p>
+				To run with My SQL, add the following properties to your
+				$HOME/build.properties:
+			</p>
+			<source test="">
+				<![CDATA[
+
+# -------------------------------------------------------------------------
+# configure MySQL Test DB (only needed when running unit tests)
+# -------------------------------------------------------------------------
+org.apache.jetspeed.test.database.default.name=mysql
+org.apache.jetspeed.test.database.url = jdbc:mysql://j2-server/j2test
+org.apache.jetspeed.test.database.driver = com.mysql.jdbc.Driver
+org.apache.jetspeed.test.database.user = jetspeed2
+org.apache.jetspeed.test.database.password = whatever
+# -------------------------------------------------------------------------
+# configure MySQL Production DB
+# -------------------------------------------------------------------------
+org.apache.jetspeed.production.database.default.name=mysql
+org.apache.jetspeed.production.database.url = jdbc:mysql://j2-server/j2
+org.apache.jetspeed.production.database.driver = com.mysql.jdbc.Driver
+org.apache.jetspeed.production.database.user = jetspeed2
+org.apache.jetspeed.production.database.password = whatever
+# -------------------------------------------------------------------------
+
+]]>
+			</source>
+			<p>
+				In the example above, you will need to have a MySQL
+				server running on a host named 'j2-server' with a
+				database called 'j2' for production.
+				<br />
+				If you are going to run the unit tests you will also
+				need an additional test database called 'j2test'.
+				<br />
+				A user named 'jetspeed2' should be granted access to
+				both the 'j2' and 'j2test' databases.
+			</p>
+
+			<subsection name="MySQL Known Issues">
+				<p>None</p>
+			</subsection>
+
+		</section>
+
+		<section name="Oracle">
+			<p>
+				To run with Oracle, add the following properties to your
+				$HOME/build.properties:
+			</p>
+
+			<source test="">
+				<![CDATA[
+
+# -------------------------------------------------------------------------
+# configure Oracle Test DB (only needed when running unit tests)
+# -------------------------------------------------------------------------
+# org.apache.jetspeed.test.database.default.name=oracle
+# org.apache.jetspeed.test.database.ojb.platform=oracle9i
+# org.apache.jetspeed.test.database.url = jdbc:oracle:thin:@j2-sever:1521:j2db
+# org.apache.jetspeed.test.database.driver = oracle.jdbc.driver.OracleDriver
+# org.apache.jetspeed.test.database.user = j2test
+# org.apache.jetspeed.test.database.password = whatever
+# -------------------------------------------------------------------------
+# configure Oracle Production DB
+# -------------------------------------------------------------------------
+# org.apache.jetspeed.production.database.default.name=oracle
+# org.apache.jetspeed.production.database.ojb.platform=oracle9i
+# org.apache.jetspeed.production.database.url = jdbc:oracle:thin:@j2-server:1521:j2db
+# org.apache.jetspeed.production.database.driver = oracle.jdbc.driver.OracleDriver
+# org.apache.jetspeed.production.database.user = j2
+# org.apache.jetspeed.production.database.password = whatever
+# -------------------------------------------------------------------------
+
+]]>
+			</source>
+			<p>
+				In the example above, you will need to have a Oracle
+				server running on a host named 'j2-server' and have an
+				Oracle database SID named 'j2db' installed on that
+				server. Also, you will need a database user (schema)
+				called 'j2' for production usage.
+				<br />
+				If you are going to run the unit tests you will need an
+				additional user called 'j2test'.
+			</p>
+
+			<subsection name="Oracle Known Issues">
+				<p>
+					Only for the first time you create the database for
+					Oracle, there is an issue with the drop statements.
+					To get around this problem, set your properties as
+					above in your $HOME/build.properties, and then run
+					these commands using the
+					<a href="j2-maven-plugin.html">
+						Jetspeed 2 Maven plugin
+					</a>
+					:
+				</p>
+				<source test="">
+					<![CDATA[
+
+maven j2:db.scripts.gen
+maven j2:dropdrops
+maven j2:db.create.test (only when running unit tests)
+maven j2:db.create.production
+
+]]>
+				</source>
+			</subsection>
+
+		</section>
+
+		<section name="Drivers">
+			<p>
+				JDBC drivers are configured to work with the Maven build
+				by adding your specified JDBC driver jars to the Maven
+				class path. Specify the jars with the
+				<b>org.apache.jetspeed.test.jdbc.drivers.path</b>
+				and
+				<b>org.apache.jetspeed.production.jdbc.drivers.path</b>
+				properties in your $HOME/build.properties.
+			</p>
+			<p>
+				NOTE: The Hypersonic JDBC driver is distributed with
+				Jetspeed and require no configuration.
+			</p>
+			<source test="">
+				<![CDATA[
+
+# My SQL Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+
+# Oracle 9i Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+
+# Oracle 8i Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=
+     /Portal/lib/oracle/classes12.jar;
+org.apache.jetspeed.production.jdbc.drivers.path=
+     /Portal/lib/oracle/classes12.jar;
+
+]]>
+			</source>
+
+			<subsection name="Distributing Drivers">
+				<p>
+					When Jetspeed is deployed to an application server
+					using the maven deploy target, only the Hypersonic
+					JDBC driver is copied into the web application. To
+					distribute a specific driver (i.e. Oracle, MySQL),
+					you will need to copy the driver into the
+					application server's common class path for shared
+					code.
+				</p>
+				<table>
+					<tr>
+						<th>Application Server</th>
+						<th>Procedure</th>
+					</tr>
+					<tr>
+						<td>Tomcat 5 and 5.5</td>
+						<td>
+							copy driver(s) to ${TOMCAT_HOME}/endorsed/
+						</td>
+					</tr>
+
+				</table>
+
+			</subsection>
+			<subsection name="Datasource Configuration with Jetspeed-2">
+			<p>
+			Jetspeed-2 requires a datasource to be configured in the application server on which it is being deployed.
+			For more information, see the <a href="../multiproject/jetspeed-rdbms/index.html">RDBMS component documentation</a>.
+			</p>
+			</subsection>
+
+		</section>
+	</body>
+</document>

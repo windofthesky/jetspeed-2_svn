@@ -1,0 +1,4 @@
+target
+maven.log
+jcoverage.ser
+junit*.properties

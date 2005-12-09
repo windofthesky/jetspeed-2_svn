@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<link target="top">
+ <title>[USER] Apache Jakarta</title>
+  <metadata name="title" xml:lang="ja">[ユーザー] Apache Jakarta</metadata>
+  <metadata name="title" xml:lang="es">Apache Jakarta [USUARIO]</metadata>
+  <metadata name="title" xml:lang="zh">[用户] Apache Jakarta</metadata>
+
+ <url>http://jakarta.apache.org</url>
+</link>

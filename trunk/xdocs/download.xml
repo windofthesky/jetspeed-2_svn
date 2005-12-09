@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>How to Download Jetspeed-2</title>
+		<subtitle>Documentation on How to Download Jetspeed-2</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Download Jetspeed-2 Distribution">
+			<p>
+				Jetspeed-2 is distributed in several formats for your
+				convenience and distributed under the
+				<a href="license.html">
+					Apache License, version 2.0
+				</a>
+				.
+			</p>
+			<subsection name="Jetspeed-2 Installer Distribution">
+			<table>
+				<tr>
+					<th>Distribution</th>
+					<th>Mirrors</th>
+				</tr>
+				<tr>
+					<td>Jetspeed-2 (with embedded Derby database)</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></td>
+				</tr>
+				<tr>
+					<td>Jetspeed-2 (with your pre-installed database)</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDb-install.jar</a></td>
+				</tr>
+			</table>
+			</subsection>
+			<subsection name="System Requirements">
+				<p>
+				The list of systems requirements for Jetspeed-2 is available <a href="getting-started.html#Requirements">here</a>.
+				</p>
+			</subsection>
+			<subsection name="Installation Instructions">
+				<p>
+				Jetspeed-2 can be install from the source or from the binary distributions.  See the following guides on:
+					<ul>
+						<li><a href="getting-started-installer.html">Getting Started with Jetspeed-2 Installer</a></li>
+						<li><a href="getting-started-source.html">Getting Started with Jetspeed-2 Source</a></li>
+						<li><a href="getting-started-binary.html">Getting Started with Jetspeed-2 Binary</a></li>
+					</ul>
+				</p>
+			</subsection>
+		</section>
+
+	</body>
+</document>
+

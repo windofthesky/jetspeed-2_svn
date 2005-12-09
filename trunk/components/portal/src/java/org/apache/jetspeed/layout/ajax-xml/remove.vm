@@ -1,0 +1,8 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <id>$id</id> 
+    <old_position>
+        <col>$oldcol</col><row>$oldrow</row>
+    </old_position>
+</js>

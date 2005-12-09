@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Developer Links</title>
+  <author email="taylor@apache.org">David Sean Taylor</author>
+ </properties>
+
+<body>
+
+<section name="Developer Links">
+
+<p>
+This document contains links that can aid you in the development of turbine
+</p>
+
+<ul>
+<li>Portlet API Specs: 
+  <a href="http://www.bluesunrise.com/portlet-api/index.html"><b>Portlet API 1.0 Javadocs</b></a>, 
+  <a href="http://www.jcp.org/en/jsr/detail?id=168"><b>Portlet API Home</b></a>
+</li>
+
+<li>WSRP: 
+  <a href="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsrp"><b>WSRP Home</b></a>
+</li>
+
+<li>Servlet Specs: 
+  <a href="http://java.sun.com/cgi-bin/download3.cgi?config-file=servlet2_2-spec.config&amp;platform=pdf&amp;type=spec&amp;button=continue"><b>2.2</b></a>, 
+  <a href="http://java.sun.com/Download4?config-file=servlet-2_3-pfd2-spec.config&amp;platform=pdf&amp;type=spec&amp;button=Continue"><b>2.3</b></a>
+</li>
+<li>Servlet API: 
+  <a href="http://java.sun.com/products/servlet/2.2/javadoc/"><b>2.2</b></a>, 
+  <a href="http://java.sun.com/products/servlet/2.3/javadoc/"><b>2.3</b></a>
+</li>
+
+<li>Servlet Deltas: 
+  <a href="http://www.servlets.com/soapbox/servlet22.html"><b>2.1-&gt;2.2</b></a>, 
+  <a href="http://www.servlets.com/soapbox/servlet23.html"><b>2.2-&gt;2.3</b></a></li>
+<li>HTTP RFCs: 
+<b><a href="http://www.servlets.com/rfcs/rfc1945.txt">1.0</a></b>, 
+<b><a href="http://www.servlets.com/rfcs/rfc2616.txt">1.1</a></b>
+</li>
+<li>File Upload RFCs: 
+	<a href="http://www.servlets.com/rfcs/rfc1867.txt"><b>1867</b></a>, 
+	<b><a href="http://www.servlets.com/rfcs/rfc2388.txt">2388</a></b></li>
+<li>HTML Specs: 
+<b><a href="http://www.w3.org/TR/REC-html32">3.2</a></b>, 
+<b><a href="http://www.w3.org/TR/html4/">4.0</a></b>
+</li>
+<li>Cookie Specs: 
+<a href="http://home.netscape.com/newsref/std/cookie_spec.html"><b>Netscape</b></a>, 
+<b><a href="http://www.servlets.com/rfcs/rfc2109.txt">2109</a></b>
+</li>
+</ul>
+
+<p>
+Be free to add your own links.
+</p>
+
+</section>
+
+</body>
+</document>

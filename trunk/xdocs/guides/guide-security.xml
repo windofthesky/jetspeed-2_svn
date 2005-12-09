@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Guide to Security</title>
+		<subtitle>Security Configuration Overview</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Configuring Jetspeed-2 Security">
+			<p>
+				An overview of Jetspeed-2 security architecture is
+				available
+				<a href="../multiproject/jetspeed-security/arch.html">
+					here
+				</a>
+				.
+			</p>
+			<subsection name="Guide to Authentication Configuration">
+				<p>
+					Jetspeed-2 provides a
+					<a
+						href="../multiproject/jetspeed-security/login-module.html">
+						LoginModule implementation
+					</a>
+					that leverage the security SPI model to interact
+					with multiple authentication mechanisms.
+				</p>
+				<p>
+					Jetspeed authentication configuration is managed by the <i>security-spi-atn.xml</i> located in 
+					the <a href="guide-portal-assembly.html">portal application assembly directory</a>.  Jetspeed-2
+					supports authentication against:
+					<ul>
+						<li>A <a href="../multiproject/jetspeed-security/config.html#security-spi-atn_xml">relational database</a> (default authentication implementation).</li>
+						<li>A <a href="../multiproject/jetspeed-security/ldap.html">LDAP authentication</a> implementation.</li>
+				    </ul>
+				</p>
+			</subsection>
+			<subsection name="Guide to Authorization Configuration">
+				<p>
+					Jetspeed-2 provides a <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-security/atz-jaas.html">relational database backed JAAS policy implementation</a>.
+				</p>
+				<p>
+					Jetspeed-2 authorization implementation relies on a SPI model as well and is configured through <code>security-spi-atz.xml</code>.
+					Configuration details are available <a href="../multiproject/jetspeed-security/config.html">here</a>.
+				</p>
+			</subsection>
+		</section>
+	</body>
+</document>

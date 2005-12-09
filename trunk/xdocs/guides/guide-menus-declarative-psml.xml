@@ -1,0 +1,441 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2005 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Guide to Declarative Menus in PSML</title>
+    <subtitle>Guide to Declarative Menus in PSML</subtitle>
+    <authors>
+      <person name="Randy Watler" email="rwatler@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name="Declarative Menus">
+<p>
+Declarative menus are used to add new or customize default navigation elements in displayed portal pages.
+These PSML declarations are part of the <a href="guide-psml.html#Page">page</a> and <a href="guide-psml.html#Folder">folder</a> elements.
+As with other PSML elements, effective menu declarations available for a given page are those that are explicity
+defined in the page along with all defined in parent folders. For this reason, global site menus are defined in
+the PSML associated with the site root folder. Menu definitions in a specific page or folder override
+menus with the same name found in parent folders.
+</p>
+<p>
+Portal layout decorators access page menu declarations by name while rendering portal content. Menus are
+used to create dynamic navigation panes, portal page tabs, bread crumb links, and pull downs.
+The Portal Site Component is responsible for fleshing out the dynamic menu definition options with page specific PSML
+elements from the site. For instance, a global menu declaration would typically be involved in the following
+sequence of events while a portal page is being composed:
+<ol>
+	<li>The portal layout decorator would request a menu definition by name,</li>
+	<li>the definition would be inherited by the current page and located in the root folder PSML,</li>
+	<li>the Portal Site Component would interpret the menu definition in the context of the current page and populate <a href="guide-psml.html#Page">page</a>, <a href="guide-psml.html#Folder">folder</a>, and <a href="guide-psml.html#Link">link</a> menu options,</li>
+	<li>the decorator would display the menu rendering titles and text from the menu definition itself and the computed menu options into portal navigation content.</li>
+</ol>
+</p>
+<p>
+There are default global menu declarations supported internally by the Portal Site Component that do not need to
+be explicitly defined in any page or folder PSML elements of the site: 
+<ul>
+	<li><b>pages</b>: relative pages menu used to define the page tabs above the portal.</li>
+	<li><b>breadcrumbs</b>: paths to page used to provide history links below the page tabs.</li>
+	<li><b>navigations</b>: relative subfolders and root level links menu used to define the navigation pane beside the portal.</li>
+	<li><b>back</b>: parent folder menu used to define the single "back" link above the portal page tabs.</li>
+</ul>
+As one would expect, these built in menu definitions can be overridden by declaring menus in the site PSML with the same name. 
+</p>
+<p>
+<ul>
+	<li><a href="#Menu_Definition">Menu Definition</a></li>
+    <ul>
+	    <li><a href="#Menu_Options_Definition">Options</a></li>
+	    <li><a href="#Menu_Separator_Definition">Separator</a></li>
+	    <li><a href="#Menu_Include_Definition">Include</a></li>
+	    <li><a href="#Menu_Exclude_Definition">Exclude</a></li>
+    </ul>
+	<li><a href="#Page_Layout_Decorators">Page Layout Decorators</a></li>
+	<li><a href="#Portal_Site_Component">Portal Site Component</a></li>
+</ul>
+</p>
+</section>
+
+<section name='Menu Definition'>
+<p>
+The &lt;menu&gt; element defines a menu to be used by the layout decorators or a nested menu within another menu.
+There are many valid attributes for the menu element:
+</p>
+<table>
+    <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>name</td>
+    <td>Identifies menu name for retrieval from template code and/or menu reference. This attribute is required for top level nodes and ignored for nested menus.</td>
+    </tr>
+    <tr>
+    <td>options</td>
+    <td>Specifies root document path for this menu if deep inclusion of documents and folders is specified by this menu. This attribute may also define document paths that specify page, folder, or link menu options. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page.</td>
+    </tr>
+    <tr>
+    <td>depth</td>
+    <td>Specifies deep inclusion of documents from option folders, (depth &lt; 0 specifies infinite depth). Menu options are created to represent each visible page or link in the site; folders are converted into nested menus constrained by this setting.</td>
+    </tr>
+    <tr>
+    <td>paths</td>
+    <td>Boolean attribute to control the inclusion of ordered path options from root folder to the specified options. This setting is used to generate "history" or "bread crumb" menus.</td>
+    </tr>
+    <tr>
+    <td>regexp</td>
+    <td>A boolean attribute the specifies whether wild card/regular expression processing be performed on options values. File system command line regular expression syntax is supported.</td>
+    </tr>
+    <tr>
+    <td>profile</td>
+    <td>Specified name of Profile Locator to be used when evaluating option values. This attribute also sets the default profile value for options and nested menus. Specifying '*' forces the acceptance of all Profile Locator names; this can be used to override parent menu selects a profile name.</td>
+    </tr>
+    <tr>
+    <td>order</td>
+    <td>Comma separated list of regexp patterns matched against list or regular expression document path values to determine order of matched options. This attribute will be applied as a default options value for any options elements, but is not used to reorder multiple options children matches. If not specified, multiple options are included in the order returned by the underlying folder document orderings. Option paths not matched by this attribute are appended after ordered matches.</td>
+    </tr>
+    <tr>
+    <td>skin</td>
+    <td>Optional decorator defined layout hint for the menu. This attribute is also used as the default skin value for options and nested menus. This hint is not currently used by Jetspeed2 decorators.</td>
+    </tr>
+</table>
+<p>
+The &lt;menu&gt; element contains a number of other menu definition PSML elements. With the exception of the title and metadata elements, the relative order of these elements determines the order that the layout decorators present them:
+</p>
+<table>
+    <tr>
+    <th>Element</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>title?</td>
+    <td>Simple element text specifies default locale-independent title for the menu. The title of the menu is considered its long description and is used as rollover text in some decorators if the short title is available for the menu text. If not specified, the name of the menu will be used.</td>
+    </tr>
+    <tr>
+    <td>short-title?</td>
+    <td>Simple element text specifies default locale-independent short title for the menu. The short title, if available, is used as menu text in some decorators. If not specified, the title text is used.</td>
+    </tr>
+    <tr>
+    <td><a href="guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
+    <td>Optionally specifies additional locale-specific titles and short titles.</td>
+    </tr>
+    <tr>
+    <td><a href="#Menu_Options_Definition">options</a>*</td>
+    <td>This ordered menu element specifies content elements for this menu definition.</td>
+    </tr>
+    <tr>
+    <td><a href="#Menu_Separator_Definition">separator</a>*</td>
+    <td>An ordered menu element used to specify text lines to be included inline in this menu definition.</td>
+    </tr>
+    <tr>
+    <td>menu*</td>
+    <td>Another ordered menu element used to define a nested menu contained in this menu definition.</td>
+    </tr>
+    <tr>
+    <td><a href="#Menu_Include_Definition">include</a>*</td>
+    <td>Specifies a menu to nest within or options from a another menu to be included in this menu definition. The name of the menu to include is the text of this ordered menu element.</td>
+    </tr>
+    <tr>
+    <td><a href="#Menu_Exclude_Definition">exclude</a>*</td>
+    <td>Specifies options and nested menus from another menu to be excluded from this menu definition. The name of the menu with elements to exclude is the text of this ordered menu element.</td>
+    </tr>
+</table>
+<p>Examples:</p>  
+<source><![CDATA[
+<menu name="simple">
+    <options>/some-top-page.psml,/custom/some-other-page.psml</options>
+</menu>
+]]></source>
+<source><![CDATA[
+<menu name="top-2-levels" options="/" depth="2" skin="dhtml-pull-down"/>
+]]></source>
+<source><![CDATA[
+<menu name="top-role-pages" regexp="true" options="/*" profile="roles"/>
+]]></source>
+<source><![CDATA[
+<menu name="top-custom">
+    <title>Top Menu</title>
+    <metadata name="title" xml:lang="fr">Haut</metadata>
+    <options regexp="true" profile="groups">/group-pages/*</options>
+    <menu options="/" profile="page">
+        <separator>
+            <text>-- Top Pages --</text>
+            <title>Top Pages</title>
+        </separator>
+        <options regexp="true">/*</options>
+        <separator>
+            <title>Custom Pages</title>
+        </separator>
+        <options depth="2">/custom-folder/</options>
+    </menu>
+    <exclude>top-role-pages</exclude>
+    <separator>More Top Pages</separator>
+    <include nest="true">top-role-pages</include>
+</menu>
+]]></source>
+<p>The definitions for the default global menu declarations supported internally by the Portal Site Component:</p>  
+<source><![CDATA[
+<menu name="pages" regexp="true" options="*.psml"/>
+]]></source>
+<source><![CDATA[
+<menu name="breadcrumbs" options="~" paths="true"/>
+]]></source>
+<source><![CDATA[
+<menu name="navigations">
+  <separator>Folders</separator>
+  <options regexp="true">./*/</options>
+  <include>page-navigations</include>
+  <separator>Additional Links</separator>
+  <options regexp="true">/*.link</options>
+</menu>
+]]></source>
+<source><![CDATA[
+<menu name="back" options="../"/>
+]]></source>
+<p>Note that the separator text of these definitions is localized internally.</p>  
+</section>
+
+<section name='Menu Options Definition'>
+<p>
+The &lt;options&gt; element defines a single or multiple options within a <a href="#Menu_Definition">menu</a>. The text of this simple element specifies document paths that yield page, folder, or link menu options. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page. This element shares many attributes in common with the menu element:
+</p>
+<table>
+    <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>depth</td>
+    <td>Specifies deep inclusion of documents from option folders, (depth &lt; 0 specifies infinite depth). Menu options are created to represent each visible page or link in the site; folders are converted into nested menus constrained by this setting.</td>
+    </tr>
+    <tr>
+    <td>paths</td>
+    <td>Boolean attribute to control the inclusion of ordered path options from root folder to the specified options. This setting is used to generate "history" or "bread crumb" menus.</td>
+    </tr>
+    <tr>
+    <td>regexp</td>
+    <td>A boolean attribute the specifies whether wild card/regular expression processing be performed on options values. File system command line regular expression syntax is supported.</td>
+    </tr>
+    <tr>
+    <td>profile</td>
+    <td>Specified name of Profile Locator to be used when evaluating option values. This attribute also sets the default profile value for options and nested menus. Specifying '*' forces the acceptance of all Profile Locator names; this can be used to override parent menu selects a profile name.</td>
+    </tr>
+    <tr>
+    <td>order</td>
+    <td>Comma separated list of regexp patterns matched against list or regular expression document path values to determine order of matched options. This attribute will be applied as a default options value for any options elements, but is not used to reorder multiple options children matches. If not specified, multiple options are included in the order returned by the underlying folder document orderings. Option paths not matched by this attribute are appended after ordered matches.</td>
+    </tr>
+    <tr>
+    <td>skin</td>
+    <td>Optional decorator defined layout hint for the menu options. This hint is not currently used by Jetspeed2 decorators.</td>
+    </tr>
+</table>
+<p>Example:</p>
+<source><![CDATA[
+<menu>
+    ...
+    <options regexp="true" order="*.psml,*.link">/some-top-page.psml,/custom/some-other-page.psml,/*.link</options>
+    ...
+</menu>
+]]></source>
+</section>
+
+<section name='Menu Separator Definition'>
+<p>
+The &lt;separator&gt; element defines a separator to be included in a <a href="#Menu_Definition">menu</a>. The separator will be included only if <a href="#Menu_Options_Definition">options</a> or nested menus appear below this element within a menu definition. The text of the separator can be specified in the contained text of this element or in the text menu definition element.
+There is only one attribute accepted by the separator element:
+</p>
+<table>
+    <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>skin</td>
+    <td>Optional decorator defined layout hint for the menu separator. This hint is not currently used by Jetspeed2 decorators.</td>
+    </tr>
+</table>
+<p>
+The &lt;separator&gt; element contains a number of other menu definition PSML elements:
+</p>
+<table>
+    <tr>
+    <th>Element</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>title?</td>
+    <td>Simple element text specifies default locale-independent title for the separator. The title of the separator is considered its long description and is used as rollover text in some decorators if the separator text is available.</td>
+    </tr>
+    <tr>
+    <td>text?</td>
+    <td>Simple element text specifies default locale-independent text for the separator. The required separator text, whether specified by this attribute or as the contained text of the separator element, is the text to be inserted in the menu by the layout decorator.</td>
+    </tr>
+    <tr>
+    <td><a href="guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
+    <td>Optionally specifies additional locale-specific titles and separator text.</td>
+    </tr>
+</table>
+<p>Examples:</p>  
+<source><![CDATA[
+<menu>
+    ...
+    <separator>-------------</separator>
+    ...
+    <separator>
+        <text>-- Top 10 Pages --</text>
+        <metadata name="text" xml:lang="fr">Haut Pages</metadata>
+        <title>Top 10 pages as voted by the Jetspeed2 users!</title>
+    </separator>
+    ...
+</menu>
+]]></source>
+</section>
+
+<section name='Menu Include Definition'>
+<p>
+The &lt;include&gt; element includes <a href="#Menu_Options_Definition">options</a> or nested <a href="#Menu_Definition">menus</a> from another menu. The name of the menu to include is specified as the text value of this element.
+There is only one valid attribute for the include element:
+</p>
+<table>
+    <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>nest</td>
+    <td>Boolean flag that controls whether the specified menu is to be nested. If this attribute is set to 'true', the included menu will be nested as a submenu; otherewise, all options and nested menus from the specified menu will be inserted inline into this menu.</td>
+    </tr>
+</table>
+<p>Examples:</p>  
+<source><![CDATA[
+<menu>
+    ...
+    <include nest="true">navigations</include>
+    ...
+</menu>
+]]></source>
+</section>
+
+<section name='Menu Exclude Definition'>
+<p>
+The &lt;exclude&gt; element excludes <a href="#Menu_Options_Definition">options</a> or nested <a href="#Menu_Definition">menus</a> from another menu. This option is used primarily to remove menu options that already appear on the portal page in another menu from this menu. Matching options or menus will be excluded only if they appear above this element within a menu definition. The name of the menu to include is specified as the text value of this simple element.
+</p>
+<p>Examples:</p>  
+<source><![CDATA[
+<menu>
+    ...
+    <exclude>pages</exclude>
+    ...
+</menu>
+]]></source>
+</section>
+
+<section name='Page Layout Decorators'>
+<p>
+The page layout decorators request menus from the Portal Site Component when the page is being rendered in the Jetspeed2 pipeline.
+The decorators expect certain menus to be provided by the PSML declarations. Before custom menus can be displayed in the portal,
+the decorators need to be modified to render the custom menu. Here is an example taken from a Velocity layout decorator header.vm file:
+</p>
+<source><![CDATA[
+...
+#set($pagesStandardMenu = $site.getMenu("pages"))
+#if(!$pagesStandardMenu.empty)
+  <div class="tabs">
+#includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
+  </div>
+#end
+...
+]]></source>
+<p>
+This code block renders the standard pages tabs menu within a portal page. The Portal Site Component is exposed as the <i>$site</i>
+Velocity context variable. The test for an empty menu definition is designed to ensure that empty menus are not rendered into the page
+content. Finally, a decorator macro is executed to expand the menu content. This approach is taken in general to support the rendering
+of nested menus with recursive invocations of the macro. In this case, the decorator is expecting only page options. Here is the
+macro implementation used to render the pages tabs menu:
+</p>
+<source><![CDATA[
+#macro (includeTabsNavigation $_menu $_orientation)
+  <table border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    #foreach($element in $_menu.elements.iterator())
+      #if($element.elementType == "option")
+        #set($tabTitle = $element.getTitle($preferedLocale))
+        #set($tabName = $element.getShortTitle($preferedLocale))
+        #if($_orientation == $LEFT_TO_RIGHT)
+          #if($element.isSelected($site))
+            <td class="LTabLeft" nowrap="true">&nbsp;</td>
+            <td class="LTab" align="center" valign="middle" nowrap="true" title="$!tabTitle">${tabName}</td>
+            <td class="LTabRight"  nowrap="true">&nbsp;</td>
+          #else
+            #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
+            <td class="LTabLeftLow"  nowrap="true">&nbsp;</td>
+            <td class="LTabLow" align="center" valign="middle" nowrap="true" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
+            <td class="LTabRightLow"  nowrap="true">&nbsp;</td>
+          #end
+        #end
+      #end
+    #end
+  </tr>
+  </table>
+#end
+]]></source>
+<p>
+This macro iterates over the computed page menu options supplied by the Portal Site Component, rendering a series of table
+data HTML elements that make up each displayed tab. The whole menu is rendered as a HTML table with a single row.
+</p>
+<p>
+The declarative menu Portal Site Component objects exposed to the layout decorators are documented in the 
+<a href="../multiproject/jetspeed-api/apidocs/index.html">Jetspeed API</a>. Here is a list of the primary interfaces
+that make up this interface:
+<ul>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/Menu.html">org.apache.jetspeed.portalsite.Menu</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuElement.html">org.apache.jetspeed.portalsite.MenuElement</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuOption.html">org.apache.jetspeed.portalsite.MenuOption</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuSeparator.html">org.apache.jetspeed.portalsite.MenuSeparator</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/PortalSiteRequestContext.html">org.apache.jetspeed.portalsite.PortalSiteRequestContext</a></li>
+</ul>
+Please refer to the <a href="../multiproject/jetspeed-api/apidocs/index.html">javadocs</a> for these interfaces and
+sample Velocity decorators for more information.
+</p>
+<p>
+Jetspeed2 provides many sample decorators including those that will render tabs, navigation panes with nested submenus,
+history breadcrumb links, and even DHTML JSCookMenu nested pulldown menus... all from the declarative menu elements
+documented here. 
+</p>
+</section>
+
+<section name='Portal Site Component'>
+<p>
+The Jetspeed2 Portal Site Component has two closely related responsibilities:
+<ol>
+	<li>Map portal request urls from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
+    <li>construct site navigational menus and their options that reflect what is available to the user from the site.</li>
+</ol>
+At first glance, these functions seem relatively simple: searching within and traversing the <a href="guide-psml.html">PSML site definition</a>.
+However, once the complexities of the <a href="guide-profiler.html">Profiler</a> aggregation and <a href="guide-security-declarative-psml.html">Security Constraints</a> filtering are taken into account, the mapping is no longer trivial.
+</p>
+<p>
+It is important to note that menu options are matched against the Portal Site Component mapped view of the PSML site. The
+document paths specified in the menu elements are not the physical paths used to navigate the PSML folders and pages. Instead,
+paths that mirror portal requests are used to select PSML elements to include as menu options. In this manner, profiling and
+security are automatically factored into the menu option population... rather as if running the request url mapping in reverse.
+</p>
+</section>
+
+</body>
+</document>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>		
+
+  <!-- datasource bean -->
+  <bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry">
+    <property name="driverClassName">
+      <value>${org.apache.jetspeed.database.driver}</value>
+    </property>
+    <property name="url">
+      <value>${org.apache.jetspeed.database.url}</value>
+    </property>
+    <property name="username">
+      <value>${org.apache.jetspeed.database.user}</value>
+    </property>
+    <property name="password">
+      <value>${org.apache.jetspeed.database.password}</value>
+    </property>
+  </bean>     
+     
+  <!-- properties configurer used to pick up system properties -->
+  <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+</beans>
