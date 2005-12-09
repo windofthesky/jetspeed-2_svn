@@ -67,7 +67,7 @@ java -jar Jetspeed2.0-derby-install.jar
 			On windows, execute :
 			</p>
    			<source>
-   			c:\Program Files\Apache Jetspeed 2.0\bin\startup.bat
+c:\Program Files\Apache Jetspeed 2.0\bin\startup.bat
    			</source>
    			<p>
    			The very first invocation of the portal requires approximately one minute for initial 
@@ -78,9 +78,10 @@ java -jar Jetspeed2.0-derby-install.jar
 			<subsection name="Login to Jetspeed-2">
 			<p>
 			Sample accounts to login as:
-			<source>admin/admin
- manager/manager
- user/user</source>
+			<source>
+admin/admin
+manager/manager
+user/user</source>
  			</p>
 			</subsection>
 		</section>
