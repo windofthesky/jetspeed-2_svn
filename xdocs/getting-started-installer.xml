@@ -31,7 +31,7 @@
 			Once you have <a href="download.html">downloaded</a> the intaller.  Jetspeed-2 provides 2 installers:
 			<ul>
 			<li>An installer with derby as an embedded database: <a href="">Jetspeed2.0-derby-install.jar</a></li>
-			<li>An installer for installing Jetspeed-2 on a third party database: <a href="">Jetspeed2.0-derby-install.jar</a></li>
+			<li>An installer for installing Jetspeed-2 on a third party database: <a href="">Jetspeed2.0-MultiDB-install.jar</a></li>
 			</ul>
 			</p>
 			<p>
