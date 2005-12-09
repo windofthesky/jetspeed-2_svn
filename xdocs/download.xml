@@ -40,11 +40,11 @@
 				</tr>
 				<tr>
 					<td>Jetspeed-2 (with embedded Derby database)</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></td>
 				</tr>
 				<tr>
 					<td>Jetspeed-2 (with your pre-installed database)</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDb-install.jar</a></td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDb-install.jar</a></td>
 				</tr>
 			</table>
 			</subsection>
