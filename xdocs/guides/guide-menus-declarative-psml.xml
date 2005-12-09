@@ -347,11 +347,93 @@ The &lt;exclude&gt; element excludes <a href="#Menu_Options_Definition">options<
 
 <section name='Page Layout Decorators'>
 <p>
+The page layout decorators request menus from the Portal Site Component when the page is being rendered in the Jetspeed2 pipeline.
+The decorators expect certain menus to be provided by the PSML declarations. Before custom menus can be displayed in the portal,
+the decorators need to be modified to render the custom menu. Here is an example taken from a Velocity layout decorator header.vm file:
+</p>
+<source><![CDATA[
+...
+#set($pagesStandardMenu = $site.getMenu("pages"))
+#if(!$pagesStandardMenu.empty)
+  <div class="tabs">
+#includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
+  </div>
+#end
+...
+]]></source>
+<p>
+This code block renders the standard pages tabs menu within a portal page. The Portal Site Component is exposed as the <i>$site</i>
+Velocity context variable. The test for an empty menu definition is designed to ensure that empty menus are not rendered into the page
+content. Finally, a decorator macro is executed to expand the menu content. This approach is taken in general to support the rendering
+of nested menus with recursive invocations of the macro. In this case, the decorator is expecting only page options. Here is the
+macro implementation used to render the pages tabs menu:
+</p>
+<source><![CDATA[
+#macro (includeTabsNavigation $_menu $_orientation)
+  <table border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    #foreach($element in $_menu.elements.iterator())
+      #if($element.elementType == "option")
+        #set($tabTitle = $element.getTitle($preferedLocale))
+        #set($tabName = $element.getShortTitle($preferedLocale))
+        #if($_orientation == $LEFT_TO_RIGHT)
+          #if($element.isSelected($site))
+            <td class="LTabLeft" nowrap="true">&nbsp;</td>
+            <td class="LTab" align="center" valign="middle" nowrap="true" title="$!tabTitle">${tabName}</td>
+            <td class="LTabRight"  nowrap="true">&nbsp;</td>
+          #else
+            #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
+            <td class="LTabLeftLow"  nowrap="true">&nbsp;</td>
+            <td class="LTabLow" align="center" valign="middle" nowrap="true" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
+            <td class="LTabRightLow"  nowrap="true">&nbsp;</td>
+          #end
+        #end
+      #end
+    #end
+  </tr>
+  </table>
+#end
+]]></source>
+<p>
+This macro iterates over the computed page menu options supplied by the Portal Site Component, rendering a series of table
+data HTML elements that make up each displayed tab. The whole menu is rendered as a HTML table with a single row.
+</p>
+<p>
+The declarative menu Portal Site Component objects exposed to the layout decorators are documented in the 
+<a href="../multiproject/jetspeed-api/apidocs/index.html">Jetspeed API</a>. Here is a list of the primary interfaces
+that make up this interface:
+<ul>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/Menu.html">org.apache.jetspeed.portalsite.Menu</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuElement.html">org.apache.jetspeed.portalsite.MenuElement</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuOption.html">org.apache.jetspeed.portalsite.MenuOption</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/MenuSeparator.html">org.apache.jetspeed.portalsite.MenuSeparator</a></li>
+	<li><a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/PortalSiteRequestContext.html">org.apache.jetspeed.portalsite.PortalSiteRequestContext</a></li>
+</ul>
+Please refer to the <a href="../multiproject/jetspeed-api/apidocs/index.html">javadocs</a> for these interfaces and
+sample Velocity decorators for more information.
+</p>
+<p>
+Jetspeed2 provides many sample decorators including those that will render tabs, navigation panes with nested submenus,
+history breadcrumb links, and even DHTML JSCookMenu nested pulldown menus... all from the declarative menu elements
+documented here. 
 </p>
 </section>
 
 <section name='Portal Site Component'>
 <p>
+The Jetspeed2 Portal Site Component has two closely related responsibilities:
+<ol>
+	<li>Map portal request urls from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
+    <li>construct site navigational menus and their options that reflect what is available to the user from the site.</li>
+</ol>
+At first glance, these functions seem relatively simple: searching within and traversing the <a href="guide-psml.html">PSML site definition</a>.
+However, once the complexities of the <a href="guide-profiler.html">Profiler</a> aggregation and <a href="guide-security-declarative-psml.html">Security Constraints</a> filtering are taken into account, the mapping is no longer trivial.
+</p>
+<p>
+It is important to note that menu options are matched against the Portal Site Component mapped view of the PSML site. The
+document paths specified in the menu elements are not the physical paths used to navigate the PSML folders and pages. Instead,
+paths that mirror portal requests are used to select PSML elements to include as menu options. In this manner, profiling and
+security are automatically factored into the menu option population... rather as if running the request url mapping in reverse.
 </p>
 </section>
 
