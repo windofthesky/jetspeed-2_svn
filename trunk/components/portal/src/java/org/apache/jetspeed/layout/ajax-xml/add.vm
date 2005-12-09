@@ -1,6 +1,0 @@
-<js>
-    <status>$status</status>
-    <action>$action</action>
-    <id>$id</id> 
-    <new_position><col>$newcol</col><row>$newrow</row></new_position>
-</js>

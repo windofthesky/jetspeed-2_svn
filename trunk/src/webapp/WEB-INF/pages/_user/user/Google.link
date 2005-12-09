@@ -1,8 +1,0 @@
-<link target="top">
- <title>[USER] Google Web Search</title>
-  <metadata name="title" xml:lang="ja">[ユーザー] グーグルウェブ検索</metadata>
-  <metadata name="title" xml:lang="es">Búsqueda en Google [USUARIO]</metadata>
-  <metadata name="title" xml:lang="zh">[用户] Google网络检索</metadata>
-
- <url>http://www.google.com</url>
-</link>
