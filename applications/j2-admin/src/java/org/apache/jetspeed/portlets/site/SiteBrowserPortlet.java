@@ -165,7 +165,7 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                             {
                                 if (parent.isLoaded() == false)
                                 {
-                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                    loader.loadChildren(parentFolder, parent, request.getLocale());
                                 }
                                 else
                                 {
@@ -186,12 +186,16 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                             {
                                 if (parent.isLoaded() == false)
                                 {
-                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                    System.out.println("before children " + parent.isLoaded());
+                                    loader.loadChildren(parentFolder, parent, request.getLocale());
+                                    System.out.println("after children " + parent.isLoaded());                                    
                                 }
                                 else
                                 {
+                                    System.out.println("before add child " + parent.isLoaded());                                                                                                            
                                     TreeControlNode childNode = loader.createPageNode(page, request.getLocale(), "");
-                                    parent.addChild(childNode);                                    
+                                    parent.addChild(childNode);
+                                    System.out.println("after add child " + parent.isLoaded());                                                                        
                                 }
                             }
                         }                    
@@ -207,7 +211,7 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
                             {
                                 if (parent.isLoaded() == false)
                                 {
-                                    loader.loadChildren(parentFolder, parent.getParent(), request.getLocale());
+                                    loader.loadChildren(parentFolder, parent, request.getLocale());
                                 }                                
                                 else
                                 {
