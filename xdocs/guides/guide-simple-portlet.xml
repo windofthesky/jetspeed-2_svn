@@ -48,7 +48,7 @@ public class Simplest extends javax.portlet.GenericPortlet
 				<p>
 				Compile the class using the command,
 				<source>
-javac -cp ~/.maven/repository/jetspeed2/jars/portlet-api-1.0.jar Simplest.java
+javac -cp ~/.maven/repository/org.apache.portals.jetspeed-2/jars/portlet-api-1.0.jar Simplest.java
 				</source>
 				</p>
 			</subsection>
