@@ -21,115 +21,111 @@
 		<authors>
 			<person name="David Le Strat" email="dlestrat@apache.org" />
 			<person name="Marky Goldstein" email="ready@rosa.com" />
+			<person name="David Sean Taylor" email="taylor@apache.org" />
 		</authors>
 	</properties>
 	<body>
 		<section name="Features">
-			<p>
-				Jetspeed 2 is an enterprise ready Portal Server, that
-				runs on many platforms and integrates with many
-				technologies. It has the following features:
+<p>
+			The Apache Portals Jetspeed Team is pleased to announce the final 
+			release of the Jetspeed-2 Open Source Enterprise Portal. This final release is 
+			fully-compliant with the Portlet Specification 1.0 (JSR-168). Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is 
+			fully CERTIFIED to the Java Portlet Standard.
 			</p>
+			<subsection name="Standardized">
 			<ul>
-				<li>Component based Architecture</li>
-				<li>
-					Scalable architecture featuring multi-threaded
-					functionality
-				</li>
-				<li>Inbuilt User Management</li>
-				<li>Manage Page in Sitetree</li>
-				<li>
-					Supports JSR-168 portlets (Java Portlet API
-					specification)
-				</li>
-				<li>
-					Supports for many technology bridges (JSF, Struts,
-					PHP, Velocity, Perl, etc.)
-				</li>
-				<li>Inbuilt Profile Management</li>
-				<li>
-					Provides its own Content Management facilities,
-					integrates well with many Content Management
-					Systems.
-				</li>
-				<li>Easy to install</li>
-				<li>Secure infracstructure</li>
-				<li>SSO support and functionalities</li>
-				<li>Support for many databases</li>
-				<li>Multilanguage support</li>
-				<li>Search functionality</li>
-				<li>Deployment tools</li>
-				<li>Portal Statistics functionality</li>
-				<li>Comes with many demo applications</li>
-				<li>Caching</li>
-				<li>
-					Template-based layouts including JSP and Velocity
-				</li>
-				<li>
-					Supports remote XML content feeds via Open Content
-					Syndication
-				</li>
-				<li>Custom default home page configuration</li>
-				<li>Database and LDAP user authentication</li>
-				<li>In-memory cache for quick page rendering</li>
-				<li>
-					<a href="http://my.netscape.com/publish/">Rich Site Summary</a>
-					support for syndicated content
-				</li>
-				<li>
-					Integration with Cocoon, WebMacro and Velocity so
-					that you can develop with the newest XML/XSL
-					technology.
-				</li>
-				<li>Wireless Markup Language (WML) support</li>
-				<li>XML based configuration registry of portlets</li>
-				<li>Full Web Application Archive (WAR) support</li>
-				<li>Web Application development infrastructure</li>
-				<li>Local caching of remote content</li>
-				<li>
-					Synchronization with <a href="http://www.avantgo.com/">Avantgo</a>
-				</li>
-				<li>
-					Fully portable across all platforms that support JDK
-					1.2 and Servlet 2.2
-				</li>
-				<li>Integrated with Turbine modules and services</li>
-				<li>
-					Profiler Service to access portal pages based on
-					user, security (groups, roles, acls), media types,
-					and language
-				</li>
-				<li>
-					Persistence Service available to all portlets to
-					easily store state per user, page and portlet
-				</li>
-				<li>
-					Skins so that users can choose colors and display
-					attributes
-				</li>
-				<li>
-					Customizer for selecting portlets and defining
-					layouts for individual pages
-				</li>
-				<li>PSML can be stored in a Database.</li>
-				<li>
-					User, group, role and permission administration via
-					Jetspeed security portlets.
-				</li>
-				<li>Role-based security access to portlets.</li>
-
-				<li>
-					Jetspeed Cluster and Messaging (JMS Support): for
-					running Jetspeed as a clustered portal.
-				</li>
-				<li>
-					Generic View Processors to render content uniformly
-					in your Java code to JSP, XSLT, or Velocity.
-				</li>
-				<li>
-					Portal Engine AJAX API.
-				</li>
+			<li>Fully compliant with Java Portlet API Standard 1.0 (JSR 168)</li>
+			<li>Passed JSR-168 TCK Compatibility Test Suite</li>
+			<li>J2EE Security based on JAAS Standard, JAAS DB Portal Security Policy</li>
+			<li>LDAP Support for User Authentication</li>
 			</ul>
+			</subsection>
+			<subsection name="Foundation Component Architecture">
+			<ul>
+			<li>Spring-based Components and Scalable Architecture</li>
+			<li>Configurable Pipeline Request Processor</li>
+			<li>Auto Deployment of Portlet Applications</li>
+			<li>Jetspeed Component Java API</li>
+			<li>Jetspeed AJAX XML API</li>
+			<li>PSML: Extended Portlet Site Markup Language
+    		<ul><li>Database Persistent</li>
+    			<li>Content Management Facilities</li>
+    			<li>Security Constraints</li></ul>
+    		</li>
+    		</ul>
+    		</subsection>
+			<subsection name="Portal Core Features">
+			<ul>
+			<li>Declarative Security Constraints and JAAS Database Security Policy</li>
+			<li>Runtime Portlet API Standard Role-based Security</li>
+			<li>Portal Content Management and Navigations: Pages, Menus, Folders, Links</li>
+			<li>Multithreaded Aggregation Engine</li>
+			<li>PSML Folder CMS Navigations, Menus, Links</li>
+			<li>Jetspeed SSO (Single Sign-on)</li>
+			<li>Rules-based Profiler for page and resource location</li>
+			<li>Integrates with most popular databases including Derby, MySQL, MS SQL, Postgres, Oracle, DB2, Hypersonic</li>
+			<li>Client independent capability engine (html, xhtml, wml,vml)</li>
+			<li>Internationalization: Localized Portal Resources in 12 Languages</li>
+			<li>Statistics Logging Engine</li>
+			<li>Portlet Registry</li>
+			<li>Full Text Search of Portlet Resources with Lucene</li>
+			<li>User Registration</li>
+			<li>Forgotten Password</li>
+			<li>Rich Login and Password Configuration Management</li>
+			</ul>
+			</subsection>
+			<subsection name="Administrative Portlets">
+			<ul>
+			<li>User, Role, Group, Password, and Profile Management</li>
+			<li>JSR 168 Generic User Attributes Editor:
+			<ul><li>JSR 168 Preferences Editor</li>
+				<li>Site Manager</li>
+				<li>SSO Manager</li>
+				<li>Portlet Application and Lifecycle Management</li>
+				<li>Profiler Administration</li>
+				<li>Statistics Reports</li></ul>
+			</li>
+			</ul>
+			</subsection>
+			<subsection name="Web Framework Support and Sample Portlets">
+			<ul>
+			<li>Bridges to other Web Frameworks: JSF, Struts, PHP, Perl, Velocity</li>
+			<li>Sample Portlets:
+			<ul><li>RSS, IFrame, Calendar XSLT, Bookmark, Database Browser</li>
+				<li>Integration with Display Tags, Spring MVC</li></ul>
+			</li>
+			</ul>
+			</subsection>
+			<subsection name="Customization Features">
+			<ul>
+			<li>Administrative Site Manager</li>
+			<li>Page Customizer</li>
+			</ul>
+			</subsection>
+			<subsection name="Portal Design Features">
+			<ul>
+			<li>Deployment Jetspeed Portlet and Page Skins (Decorators) CSS Components</li>
+			<li>Configurable CSS Page Layouts</li>
+			<li>Easy to Use Velocity Macro Language for Skin and Layout Components</li>
+			</ul>
+			</subsection>
+			<subsection name="Development Tools">
+			<ul>
+			<li>Automated Maven Build</li>
+			<li>Jetspeed-2 Maven Plugin for Custom Portal Development</li>
+			<li>AutoDeployment of Portlet Applications, Portal Resources</li>
+			<li>Deployment Tools</li>
+			<li>Plugin Goals integrated with Auto Deployment Feature</li>
+			</ul>
+			</subsection>
+			<subsection name="Application Servers Supported">
+			<ul>
+			<li>Tomcat 5.0.x</li>
+			<li>Tomcat 5.5.x</li>
+			<li>Websphere 5.1, 6.0</li>
+			<li>JBoss</li>
+			</ul>
+			</subsection>
 		</section>
 	</body>
 </document>

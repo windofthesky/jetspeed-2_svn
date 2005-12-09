@@ -30,8 +30,10 @@
 			<p>
 			Once you have <a href="download.html">downloaded</a> the intaller.  Jetspeed-2 provides 2 installers:
 			<ul>
-			<li>An installer with derby as an embedded database: <a href="">Jetspeed2.0-derby-install.jar</a></li>
-			<li>An installer for installing Jetspeed-2 on a third party database: <a href="">Jetspeed2.0-MultiDB-install.jar</a></li>
+			<li>An installer with derby as an embedded database: 
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></li>
+			<li>An installer for installing Jetspeed-2 on a third party database: 
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDB-install.jar</a></li>
 			</ul>
 			</p>
 			<p>
@@ -53,6 +55,33 @@ java -jar Jetspeed2.0-derby-install.jar
 			</ul>
 			Finally the database must be empty because the installer does not know how to drop tables.
 			</p>
+			</subsection>
+			<subsection name="Starting Jetspeed-2">
+			<p>
+			Startup Tomcat. On linux, execute :
+			</p>
+			<source>
+/usr/local/ApacheJetspeed2.0/bin/startup.sh
+			</source>
+			<p>
+			On windows, execute :
+			</p>
+   			<source>
+   			c:\Program Files\Apache Jetspeed 2.0\bin\startup.bat
+   			</source>
+   			<p>
+   			The very first invocation of the portal requires approximately one minute for initial 
+   			startup and final installation. Please wait one minute, and then start up a web browser 
+			and navigate to <a href="http://localhost:8080/jetspeed/portal">http://localhost:8080/jetspeed/portal</a>.
+			</p>
+			</subsection>
+			<subsection name="Login to Jetspeed-2">
+			<p>
+			Sample accounts to login as:
+			<source>admin/admin
+ manager/manager
+ user/user</source>
+ 			</p>
 			</subsection>
 		</section>
 	</body>

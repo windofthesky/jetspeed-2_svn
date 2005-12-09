@@ -35,28 +35,16 @@
 			<subsection name="Jetspeed-2 Installer Distribution">
 			<table>
 				<tr>
-					<th />
+					<th>Distribution</th>
 					<th>Mirrors</th>
-					<th>Checksum</th>
-					<th>Signature</th>
 				</tr>
 				<tr>
-					<td>Jetspeed-2 (tar.bz2)</td>
-					<td>Link here</td>
-					<td>Link here</td>
-					<td>Link here</td>
+					<td>Jetspeed-2 (with embedded Derby database)</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></td>
 				</tr>
 				<tr>
-					<td>Jetspeed-2 (tar.gz)</td>
-					<td>Link here</td>
-					<td>Link here</td>
-					<td>Link here</td>
-				</tr>
-				<tr>
-					<td>Jetspeed-2 (zip)</td>
-					<td>Link here</td>
-					<td>Link here</td>
-					<td>Link here</td>
+					<td>Jetspeed-2 (with your pre-installed database)</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDb-install.jar</a></td>
 				</tr>
 			</table>
 			</subsection>

@@ -30,7 +30,7 @@
 	</properties>
 	<body>
 		<section name="Naming Conventions and Basic Assumptions">
-			<subsection name="Basic Assumptions">
+			<subsection name="Source Basic Assumptions">
 				<ul>
 					<li>
 						Unless otherwise specified, you should be
@@ -85,7 +85,7 @@
 					</li>
 				</ul>
 			</subsection>
-			<subsection name="Subversion (SVN)">
+			<subsection name="Source Subversion (SVN)">
 				<p>
 					<a href="http://subversion.tigris.org">
 						Subversion (SVN)
@@ -103,7 +103,7 @@
 					plugin is available for SVN access.
 				</p>
 			</subsection>
-			<subsection name="Maven">
+			<subsection name="Maven Setup">
 				<p>
 					We will not go into the specifics of Maven as that
 					is beyond the scope of this document. However, here
