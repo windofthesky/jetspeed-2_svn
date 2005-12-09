@@ -58,8 +58,8 @@
 				Jetspeed-2 can be install from the source or from the binary distributions.  See the following guides on:
 					<ul>
 						<li><a href="getting-started-installer.html">Getting Started with Jetspeed-2 Installer</a></li>
-						<li><a href="getting-started-source.html">Getting Started with Jetspeed-2 Source</a></li>
-						<li><a href="getting-started-binary.html">Getting Started with Jetspeed-2 Binary</a></li>
+						<li><a href="getting-started-source.html">Getting Started with Building from Jetspeed-2 Source</a></li>
+						<li><a href="getting-started-binary.html">Getting Started with Building from Jetspeed-2 Maven Plugin</a></li>
 					</ul>
 				</p>
 			</subsection>

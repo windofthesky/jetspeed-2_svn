@@ -25,15 +25,15 @@ limitations under the License.
   <body>
 <section name="Single Sign On (SSO)">
 <p>
-Jetspeed 2 provides a Single-Sign-On component for storing credentails for a protected site which can be an URL or application.  Please visit the <a href="multiproject/jetspeed-sso/index.html">Jetspeed-2 Single Sign On</a>
+Jetspeed 2 provides a Single-Sign-On component for storing credentails for a protected site which can be an URL or application.  Please visit the <a href="../multiproject/jetspeed-sso/index.html">Jetspeed-2 Single Sign On</a>
 sub project documentation.
 </p>
 <p>
 The SSO feature includes three main components:
 <ul>
-	<li>The SSO Provider service which handles the backend operations <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Provider</a></li>
-	<li>The SSO Management Portlet <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Admin Portlet</a></li>
-	<li>The SSO Proxy Portlet <a href="../multiproject/jetspeed-sso/sso-overview.html">SSO Proxy Portlet</a></li>
+	<li>The SSO Provider service which handles the backend operations <a href="../multiproject/jetspeed-sso/index.html">SSO Provider</a></li>
+	<li>The SSO Management Portlet <a href="../multiproject/jetspeed-sso/index.html">SSO Admin Portlet</a></li>
+	<li>The SSO Proxy Portlet <a href="../multiproject/jetspeed-sso/index.html">SSO Proxy Portlet</a></li>
 </ul>
 </p>
 </section>
