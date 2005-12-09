@@ -153,5 +153,25 @@ Release Notes
    to function. The default settings are configured to a mail server on localhost
    with no username or password. To change these settings, edit the Spring configuration
    for the mailSender component, located in the jetspeed/WEB-INF/assembly/administration.xml file.
-   
+
+3. Multi-Database installer Notes
+
+   a. Valid values for the 'database type':
+		derby 
+		mssql
+		mysql
+		oracle
+		hsql
+		postgres
+		sapdb
+
+   b. With the exception of Derby, you will need to create an empty database schema in 
+      your particular database to store the Jetspeed tables.
+      
+   c. With the exception of Derby, you can not run the installer twice against the 
+     same database schema. You have to manually drop the tables yourself before 
+     running the installer a second time.
+
+
+
 

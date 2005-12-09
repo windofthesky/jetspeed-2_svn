@@ -47,13 +47,17 @@ java -jar Jetspeed2.0-derby-install.jar
 			<p>
 			For the Multi-DB installer you will need to supply:
 			<ul>
+			<li>A Database type. Valid values [derby, mssql, mysql, oracle, hsql, postgres, sapdb]</li>
 			<li>A username</li>
 			<li>A password</li>
 			<li>A JDBC connection string</li>
 			<li>A JDBC driver name</li>
 			<li>The location of a valid JDBC driver.  The installer will copy this to the installed location.</li>
 			</ul>
-			Finally the database must be empty because the installer does not know how to drop tables.
+            With the exception of Derby, you will need to create an empty database schema in 
+            your particular database to store the Jetspeed tables. With the exception of Derby, you can not run the 
+		    installer twice against the same database schema. You have to manually drop the tables yourself before 
+            running the installer a second time.				
 			</p>
 			</subsection>
 			<subsection name="Starting Jetspeed-2">
