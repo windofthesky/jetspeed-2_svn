@@ -79,10 +79,6 @@
 					that it downloads when you run your builds. This is
 					also were Maven puts your jars and wars that you
 					build.
-					<b>
-						???? How does fit with the last line in the
-						paragraph
-					</b>
 					Jar files will be stored in a directory structure
 					that has the format of
 					${groupId}/${projectId}/jars/${projectId}-{$version}.jar.
@@ -291,8 +287,7 @@
 					be configured properly in your
 					<code>${USER_HOME}/build.properties</code>
 					:
-					<source>
-						<![CDATA[basedir = c:/myportal
+					<source><![CDATA[basedir = c:/myportal
 maven.repo.remote = http://www.bluesunrise.com/maven/, http://www.ibiblio.org/maven/, \
 http://dist.codehaus.org/, http://cvs.apache.org/repository]]>
 					</source>
@@ -755,41 +750,6 @@ mkdir customized]]>
 						<code>${basedir}/customized</code>
 						directory.
 					</p>
-					<p>
-						Next copy the ??? file into your
-						<code>$basedir}/customize</code>
-						folder
-					</p>
-					Modify the line specifying the title of the portal.
-				</subsection>
-				<subsection
-					name="3.10.3 Setup the customization Script">
-					<p>
-						Copy the following code into a file
-						<code>$basedir}/customize/????</code>
-						. This will replace the distributed files with
-						your modified files prior to generating
-					</p>
-					<source>
-						???? ????maven script to copy files from the
-						user's customize directory to the "right places"
-						??? I would like the script to include the code
-						for moving the logo and for moving the file that
-						holds the new title ????
-					</source>
-					<b>
-						??? does anything need to be done to get this
-						included in the maven goals?????
-					</b>
-					<p>
-						Run the customization script.
-						<source>
-							<![CDATA[
-cd ${org.apache.jetspeed.portal.home}
-maven j2:customize]]>
-						</source>
-					</p>
-
 				</subsection>
 			</subsection>
 

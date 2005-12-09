@@ -27,7 +27,8 @@
         	<item name="Getting Started" href="getting-started.html" />            
         </menu>
     	<menu name="Download">
-    		<item name="Binaries " href="download.html" />
+    		<item name="Installer" href="download.html" />
+    		<item name="Binaries " href="getting-started-binary.html" />
     		<item name="Source" href="getting-started-source.html" />
     	</menu>
     	<menu name="Documentation">

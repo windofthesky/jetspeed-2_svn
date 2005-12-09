@@ -164,11 +164,13 @@
 			</subsection>
 			<subsection
 				name="Jetty - A Quick Test Environment or a Production Servlet Container">
+			<p>
 				Jetty can be used for a production deployment but it is
 				most commonly used to quickly test customizations
 				without interfering with the production servlet
 				container. It does not require any special
 				configuration.
+			</p>
 			</subsection>
 		</section>
 		<section
@@ -181,16 +183,6 @@
 				you need to work with the sources. If you are only
 				interested in building your own custom enterprise
 				portal, you can start with a binary release of Jetspeed.
-			</p>
-			<p>
-				If you start with the binary distribution, you can
-				switch to the source distribution later. Using the
-				binary distribution route, you will not have access to
-				certain functions, including:
-				<ul>
-					<li>DST ???</li>
-					<li>DST ???</li>
-				</ul>
 				Most people should start with the binary distribution.
 			</p>
 		</section>
@@ -204,6 +196,10 @@
 				or
 				<a href="getting-started-binary.html">
 					building from a binary distribution
+				</a>
+				or
+				<a href="getting-started-installer.html">
+					installing with Jetspeed-2 installer
 				</a>
 				.
 			</p>
