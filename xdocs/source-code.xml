@@ -23,6 +23,20 @@ limitations under the License.
     </authors>
   </properties>
   <body>
+<section name="Downloading the 2.0 Source Code">
+The Jetspeed 2.0 Release source code is available for immediate download:
+<table>
+	<tr>
+		<th>2.0 Source Download</th>
+	</tr>
+	<tr>
+		<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.0-src.tar.gz">2.0 Source Code - GZIP</a></td>
+	</tr>
+	<tr>
+		<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.0-src.zip">2.0 Source Code - ZIP</a></td>	
+	</tr>
+</table>	
+</section>	  
 <section name="Jetspeed Source Code Repository">
 <p>
 Jetspeed houses its source code in a Subversion (SVN) source code repository.
