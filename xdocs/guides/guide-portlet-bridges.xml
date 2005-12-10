@@ -25,45 +25,55 @@ limitations under the License.
   <body>
 <section name="Struts Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlet bridge for Struts.  Please visit the <a href="portals.apache.org/bridges/multiproject/portals-bridges-struts/index.html">Apache Portals Struts Portlet Bridge</a>
+The Portals Bridges project provides a Portlet bridge for Struts which can be used with Jetspeed 2.
+Please visit the <a href="http://portals.apache.org/bridges/multiproject/portals-bridges-struts/index.html">Apache Portals Struts Portlet Bridge</a>
 sub project documentation.
 </p>
 <p>
-Jetspeed 2 also contains multiple Struts portlet demo applications:
+The Bridges project also provides a great Struts Portlet demo application:
 <ul>
-	<li>The <a href="multiproject/struts-demo/index.html">Struts Mailer Demo</a> application</li>
-	<li>The <a href="multiproject/jpetstore/index.html">iBATIS JPetstore Demo Portlet</a> application</li>
+	<li>The <a href="http://portals.apache.org/bridges/multiproject/jpetstore/index.html">iBATIS JPetstore Demo Portlet</a> application</li>
 </ul>
 </p>
 </section>
 <section name="JSF Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlets bridge for JSF.  Please visit the <a href="portals.apache.org/bridges/multiproject/portals-bridges-jsf/index.html">Apache Portals JSF Portlet Bridge</a>
+The Portals Bridges project provides a Portlet bridge for JSF which can be used with Jetspeed 2. 
+Please visit the <a href="http://portals.apache.org/bridges/multiproject/portals-bridges-jsf/index.html">Apache Portals JSF Portlet Bridge</a>
 sub project documentation.
 </p>
 <p>
-Jetspeed 2 also contains multiple JSF portlet demo applications based on MyFaces JSF implementation:
+Portals Bridges also provides a JSF portlet demo application based on MyFaces JSF implementation:
 <ul>
-	<li>The <a href="multiproject/jsf-demo/index.html">JSF Portlet Demo</a> application using Apache Portals JSF Portlet Bridge</li>
-    <li>The <a href="multiproject/jsf-demo-myfaces/index.html">JSF Portlet Demo</a> application using MyFaces built-in Portlet Bridge</li>
-	<li>The <a href="multiproject/security/index.html">Role Management (Work In Progress)</a> application</li>
+	<li>The <a href="http://portals.apache.org/bridges/multiproject/jsf-demo/index.html">JSF Portlet Demo</a> application using Apache Portals JSF Portlet Bridge</li>
 </ul>
 </p>
+</section>
+
+<section name="Velocity Portlet Bridge">
 <p>
-Please find the bridge documentation in the <a href="multiproject/security/index.html">JSF Portlet Bridge</a> subproject.
+The Portals Bridges project provides a Portlet bridge for Velocity which is used extensively within Jetspeed 2 itself. 
+Please visit the <a href="http://portals.apache.org/bridges/multiproject/portals-bridges-velocity/index.html">Apache Portals Velocity Portlet Bridge</a>
+sub project documentation.
+</p>
+<p>
+An example of the Velocity Bridge usage within Jetspeed 2 is:
+<ul>
+    <li>The Jetspeed 2 <a href="multiproject/j2-admin/index.html">Administration and Security</a> application</li>
+</ul>
 </p>
 </section>
 
 <section name="Perl Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlet bridge for Perl applications.  Please visit the <a href="portals.apache.org/bridges/multiproject/portals-bridges-perl/index.html">Apache Portals Perl Portlet Bridge</a>
+The Portals Bridges project provides a Portlet bridge for Perl applications.  Please visit the <a href="http://portals.apache.org/bridges/multiproject/portals-bridges-perl/index.html">Apache Portals Perl Portlet Bridge</a>
 sub project documentation.
 </p>
 </section>
 
 <section name="PHP Portlet Bridge">
 <p>
-Jetspeed 2 provides a Portlet bridge for PHP applications.  Please visit the <a href="portals.apache.org/bridges/multiproject/portals-bridges-php/index.html">Apache Portals PHP Portlet Bridge</a>
+The Portals Bridges project provides a Portlet bridge for PHP applications.  Please visit the <a href="http://portals.apache.org/bridges/multiproject/portals-bridges-php/index.html">Apache Portals PHP Portlet Bridge</a>
 sub project documentation.
 </p>
 </section>
