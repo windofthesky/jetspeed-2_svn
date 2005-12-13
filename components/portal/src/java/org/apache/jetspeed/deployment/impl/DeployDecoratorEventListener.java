@@ -305,8 +305,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
         {
             layoutType = "generic";
         }
-        String mediaType = configuration.getString("media.type", "html");
-        return deployToDir + File.separator + layoutType + File.separator + mediaType;
+         return deployToDir + File.separator + layoutType ;
     }
 
     /**
