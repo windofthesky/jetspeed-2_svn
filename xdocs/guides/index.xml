@@ -47,7 +47,7 @@
 			<li><a href="guide-security.html">Guide to configuring Jetspeed-2 security</a></li>
 			<li><a href="guide-sso.html">Guide to using Jetspeed-2 single sign-on</a></li>
 			<li><a href="guide-user-attributes.html">Guide to defining user attributes (PLT.17 user information configuration)</a></li>
-			<li><a href="guide-profilers.html">Guide to using profilers</a></li>
+			<li><a href="guide-profiler.html">Guide to using profilers</a></li>
 			
 		</ul>
 		</subsection>

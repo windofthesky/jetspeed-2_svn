@@ -57,6 +57,7 @@ be explicitly defined in any page or folder PSML elements of the site:
 As one would expect, these built in menu definitions can be overridden by declaring menus in the site PSML with the same name. 
 </p>
 <p>
+The remainder of this guide provides more information on specifying and using declarative menu definitions within Jetspeed2:
 <ul>
 	<li><a href="#Menu_Definition">Menu Definition</a></li>
     <ul>
@@ -87,7 +88,7 @@ There are many valid attributes for the menu element:
     </tr>
     <tr>
     <td>options</td>
-    <td>Specifies root document path for this menu if deep inclusion of documents and folders is specified by this menu. This attribute may also define document paths that specify page, folder, or link menu options. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page.</td>
+    <td>Specifies root document path for this menu if deep inclusion of documents and folders is specified by this menu. This attribute may also define document paths that specify page, folder, or link menu options. Paths specified in this attribute are <a href="#Portal_Site_Component">Page URLs</a>; these urls may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page.</td>
     </tr>
     <tr>
     <td>depth</td>
@@ -95,7 +96,7 @@ There are many valid attributes for the menu element:
     </tr>
     <tr>
     <td>paths</td>
-    <td>Boolean attribute to control the inclusion of ordered path options from root folder to the specified options. This setting is used to generate "history" or "bread crumb" menus.</td>
+    <td>Boolean attribute to enable the "path" expansion of options: specified options are expanded to include paths from the root to the specified options. For example, if options is specified to be "/folder/page.psml", setting this attribute would result in the menu containing options for "/", "/folder", and "/folder/page.psml". This setting is typically used to generate "history" or "bread crumb" menus.</td>
     </tr>
     <tr>
     <td>regexp</td>
@@ -155,19 +156,23 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
     <td>Specifies options and nested menus from another menu to be excluded from this menu definition. The name of the menu with elements to exclude is the text of this ordered menu element.</td>
     </tr>
 </table>
-<p>Examples:</p>  
+<p>Examples:</p>
 <source><![CDATA[
+<!-- simple menu composed of 2 pages -->
 <menu name="simple">
     <options>/some-top-page.psml,/custom/some-other-page.psml</options>
 </menu>
 ]]></source>
 <source><![CDATA[
+<!-- site menu for the top 2 levels: folders result in nested menus -->
 <menu name="top-2-levels" options="/" depth="2" skin="dhtml-pull-down"/>
 ]]></source>
 <source><![CDATA[
+<!-- menu containing top level elements profiled by roles -->
 <menu name="top-role-pages" regexp="true" options="/*" profile="roles"/>
 ]]></source>
 <source><![CDATA[
+<!-- contrived example demonstrating element syntax -->
 <menu name="top-custom">
     <title>Top Menu</title>
     <metadata name="title" xml:lang="fr">Haut</metadata>
@@ -190,12 +195,15 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
 ]]></source>
 <p>The definitions for the default global menu declarations supported internally by the Portal Site Component:</p>  
 <source><![CDATA[
+<!-- standard pages tabs menu -->
 <menu name="pages" regexp="true" options="*.psml"/>
 ]]></source>
 <source><![CDATA[
+<!-- standard history breadcrumbs menu -->
 <menu name="breadcrumbs" options="~" paths="true"/>
 ]]></source>
 <source><![CDATA[
+<!-- standard navigations panel menu -->
 <menu name="navigations">
   <separator>Folders</separator>
   <options regexp="true">./*/</options>
@@ -205,6 +213,7 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
 </menu>
 ]]></source>
 <source><![CDATA[
+<!-- standard parent folder link menu -->
 <menu name="back" options="../"/>
 ]]></source>
 <p>Note that the separator text of these definitions is localized internally.</p>  
@@ -212,7 +221,7 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
 
 <section name='Menu Options Definition'>
 <p>
-The &lt;options&gt; element defines a single or multiple options within a <a href="#Menu_Definition">menu</a>. The text of this simple element specifies document paths that yield page, folder, or link menu options. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page. This element shares many attributes in common with the menu element:
+The &lt;options&gt; element defines a single or multiple options within a <a href="#Menu_Definition">menu</a>. The text of this simple element specifies document paths that yield page, folder, or link menu options. Paths specified in this element are <a href="#Portal_Site_Component">Page URLs</a>; these urls may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page. This element shares many attributes in common with the menu element:
 </p>
 <table>
     <tr>
@@ -225,7 +234,7 @@ The &lt;options&gt; element defines a single or multiple options within a <a hre
     </tr>
     <tr>
     <td>paths</td>
-    <td>Boolean attribute to control the inclusion of ordered path options from root folder to the specified options. This setting is used to generate "history" or "bread crumb" menus.</td>
+    <td>Boolean attribute to enable the "path" expansion of options: specified options are expanded to include paths from the root to the specified options. For example, if options is specified to be "/folder/page.psml", setting this attribute would result in the menu containing options for "/", "/folder", and "/folder/page.psml". This setting is typically used to generate "history" or "bread crumb" menus.</td>
     </tr>
     <tr>
     <td>regexp</td>
@@ -421,19 +430,95 @@ documented here.
 
 <section name='Portal Site Component'>
 <p>
-The Jetspeed2 Portal Site Component has two closely related responsibilities:
+In conjunction with the <a href="guide-profiler.html">Jetspeed Profiler Component</a>, the Portal Site Component
+performs two closely related functions:
 <ol>
 	<li>Map portal request urls from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
     <li>construct site navigational menus and their options that reflect what is available to the user from the site.</li>
 </ol>
 At first glance, these functions seem relatively simple: searching within and traversing the <a href="guide-psml.html">PSML site definition</a>.
-However, once the complexities of the <a href="guide-profiler.html">Profiler</a> aggregation and <a href="guide-security-declarative-psml.html">Security Constraints</a> filtering are taken into account, the mapping is no longer trivial.
+However, once the complexities of Profiler composition and <a href="guide-security-declarative-psml.html">Security Constraints</a>
+filtering are taken into account, the mapping is often not trivial.
 </p>
 <p>
-It is important to note that menu options are matched against the Portal Site Component mapped view of the PSML site. The
-document paths specified in the menu elements are not the physical paths used to navigate the PSML folders and pages. Instead,
-paths that mirror portal requests are used to select PSML elements to include as menu options. In this manner, profiling and
-security are automatically factored into the menu option population... rather as if running the request url mapping in reverse.
+Menu definition options paths are specified as Portal URLs to leverage this mapping functionality. A Page URL is essentially
+the tail portion of a portal request url that is used to address a page or folder. Using Page URLs for options allows menu
+definitions to be shared by all users of the portal: the user specific profile and effective security constraints are applied
+to generate the menu options. This implies that the physical paths used internally within the Page Manager file system
+or database cannot be specified to directly address a specific PSML element.
+</p>
+<p>
+For example, suppose the following:
+<ul>
+    <li>the default "j2" profiling rules are in effect for the 'someone' user,</li>
+    <li>the following physical PSML site structure is available in the Page Manager,</li>
+    <ul>
+        <li>/page0.psml</li>
+        <li>/page1.psml</li>
+        <li>/page2.psml</li>
+        <li>/hidden-page0.psml</li>
+        <li>/_user/someone/page0.psml</li>
+    </ul>
+    <li>security constraints denied access to '/page2.psml' for the user, and</li>
+    <li>'/hidden-page.psml' is declared hidden in the page PSML.</li>
+</ul>
+The current <a href="guide-profiler.html">Profile Locator</a> for the user would specify that the Portal Site Component map the following request urls to the
+specific PSML elements:
+<table>
+    <tr>
+    <th>Request URL</th>
+    <th>PSML Element Selected</th>
+    </tr>
+    <tr>
+    <td>http://.../jetspeed/portal/page0.psml</td>
+    <td>/_user/someone/page0.psml</td>
+    </tr>
+    <tr>
+    <td>http://.../jetspeed/portal/page1.psml</td>
+    <td>/page0.psml</td>
+    </tr>
+    <tr>
+    <td>http://.../jetspeed/portal/page2.psml</td>
+    <td><b>Fails security test.</b></td>
+    </tr>
+    <tr>
+    <td>http://.../jetspeed/portal/hidden-page.psml</td>
+    <td>/hidden-page.psml</td>
+    </tr>
+</table>
+The same Profile Locator is used to evaluate menu options. Here are several valid menu options paths and how they are resolved:
+<table>
+    <tr>
+    <th>Menu Options</th>
+    <th>PSML Elements Included in Menu</th>
+    </tr>
+    <tr>
+    <td>/page0.psml</td>
+    <td>/_user/someone/page0.psml</td>
+    </tr>
+    <tr>
+    <td>/page0.psml,/page1.psml</td>
+    <td>/_user/someone/page0.psml,/page1.psml</td>
+    </tr>
+    <tr>
+    <td>/*.psml</td>
+    <td>/_user/someone/page0.psml,/page1.psml</td>
+    </tr>
+    <tr>
+    <td>/*</td>
+    <td>/_user/someone/page0.psml,/page1.psml</td>
+    </tr>
+    <tr>
+    <td>/_user/someone/page0.psml</td>
+    <td><b>Not a valid Page URL.</b></td>
+    </tr>
+</table>
+Notes:
+<ul>
+    <li>Menu options attempting to use invalid Page URLs are ignored. Invalid URLs include those containing reserved folders such as '_user', '_role', etc. or other physical paths specific to the the Page Manager implementation.</li>
+    <li>Security constrained pages or folders cannot be referenced by requests and will not appear in menus.</li>
+    <li>Hidden pages and/or folders can be requested, but are not visible in menus. There is one exception for pages: a hidden page is considered visible if it is the request page.</li>
+</ul>
 </p>
 </section>
 
