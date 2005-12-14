@@ -28,6 +28,7 @@ limitations under the License.
     <title>#PageTitle()</title>
 #includeJavaScriptForHead()
 #IncludeStylesheets()
+#includeHeaderResource()
 </head>
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->

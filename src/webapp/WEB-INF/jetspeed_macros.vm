@@ -64,6 +64,13 @@
  #end
 #end
 
+#* Adds additional style sheets and java script from portlet *#
+#macro (includeHeaderResource)
+ #set($resourceHeaderFactory = $jetspeed.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+ #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
+ $resourceHeader
+#end
+
 #*
 * Returns the base CSS class to use in top level tags
 *#

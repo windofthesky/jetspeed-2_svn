@@ -31,6 +31,7 @@ limitations under the License.
     <meta http-equiv="Content-style-type" content="text/css" />
 #includeJavaScriptForHead()
 #IncludeStylesheets()
+#includeHeaderResource()
     <title>#PageTitle()</title>
 
     <meta name="version" content="#SiteVersionTag()" />

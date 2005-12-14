@@ -19,6 +19,7 @@
 <head>
 <meta http-equiv="Content-Type" content="$response.contentType"/>
 #IncludeStylesheets()
+#includeHeaderResource()
 <title>#PageTitle()</title>
 </head>
 <body>

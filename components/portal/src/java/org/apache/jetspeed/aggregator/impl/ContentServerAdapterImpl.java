@@ -105,6 +105,7 @@ public class ContentServerAdapterImpl implements ContentServerAdapter
                            String decoratorType )
     {
         // TODO: is this factory necessary or can we assemble header resource with Spring
+/*
         HeaderResource headerResource = headerResourceFactory.getHeaderResouce(context);
         
         if (decoratorType.equals(ContentFragment.LAYOUT))
@@ -115,5 +116,6 @@ public class ContentServerAdapterImpl implements ContentServerAdapter
         {
             headerResource.addStyleSheet("content/" + decoratorName + "/css/styles.css");
         }
+*/
     }    
 }

@@ -96,6 +96,7 @@ public class PortletAggregatorImpl implements PortletAggregator
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
         log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
+/*
         HeaderResourceFactory headerResourceFactory=(HeaderResourceFactory)Jetspeed.getComponentManager().getComponent(HeaderResourceFactory.class);
         HeaderResource headerResource=headerResourceFactory.getHeaderResouce(context);
         
@@ -107,5 +108,6 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             headerResource.addStyleSheet("content/"+decoratorName+"/css/styles.css");
         }
+*/
     }
 }

@@ -64,8 +64,8 @@ DEALINGS IN THE SOFTWARE.
     <meta http-equiv="Content-style-type" content="text/css" />
 
 #includeJavaScriptForHead()
-## #includeHeaderResource()
 #IncludeStylesheets()
+#includeHeaderResource()
     <title>#PageTitle()</title>
 
     <meta name="version" content="/* $Id: decorator-top.vm 239262 2005-08-22 22:23:39Z shinsuke $" />

@@ -32,6 +32,8 @@ limitations under the License.
 
     #IncludeStylesheets()
 	
+    #includeHeaderResource()
+
     <title>#PageTitle()</title>
 
     <meta name="version" content="#SiteVersionTag()">
