@@ -159,7 +159,7 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
               <fileset dir="../target/portal-sql" >
                  <include name="**/*.sql" />
               </fileset>
-          </copy>          
+          </copy>   		      <copy file='database/populate-userinfo-for-default-psml.sql' 			    tofile="database/derby/populate-userinfo-for-default-psml.sql"/>
        </target>
 
 <!-- N.B.
