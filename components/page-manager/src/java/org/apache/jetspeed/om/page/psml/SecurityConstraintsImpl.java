@@ -24,7 +24,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.PageNotFoundException;
 
 import org.apache.commons.logging.Log;
@@ -153,11 +152,11 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @param userPrincipals
      * @param rolePrincipals
      * @param groupPrincipals
-     * @param handlerFactory
+     * @param pageSecurity page security definitions
      * @throws SecurityException
      */
     public void checkConstraints(List actions, List userPrincipals, List rolePrincipals,
-                                 List groupPrincipals, DocumentHandlerFactory handlerFactory) throws SecurityException
+                                 List groupPrincipals, PageSecurity pageSecurity) throws SecurityException
     {
         // if owner defined, override all constraints and allow all access
         if ((owner != null) && (userPrincipals != null) && userPrincipals.contains(owner))
@@ -166,7 +165,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // skip missing or empty constraints: permit all access
-        List checkConstraints = getAllSecurityConstraints(handlerFactory);
+        List checkConstraints = getAllSecurityConstraints(pageSecurity);
         if ((checkConstraints != null) && !checkConstraints.isEmpty())
         {
             // test each action, constraints check passes only
@@ -229,10 +228,10 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * getAllSecurityConstraints
      * </p>
      *
-     * @param handlerFactory
+     * @param pageSecurity
      * @return all security constraints
      */
-    private List getAllSecurityConstraints(DocumentHandlerFactory handlerFactory)
+    private List getAllSecurityConstraints(PageSecurity pageSecurity)
     {
         // return previously cached security constraints; note that
         // cache is assumed valid until owning document is evicted
@@ -253,7 +252,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // add any security constraints references
         if ((constraintsRefs != null) && !constraintsRefs.isEmpty())
         {
-            List referencedConstraints = dereferenceSecurityConstraintsRefs(constraintsRefs, handlerFactory);
+            List referencedConstraints = dereferenceSecurityConstraintsRefs(constraintsRefs, pageSecurity);
             if (referencedConstraints != null)
             {
                 allConstraints.addAll(referencedConstraints);
@@ -261,13 +260,12 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // add any global decurity constraints references
-        PageSecurity pageSecurity = getSecurity(handlerFactory);
         if (pageSecurity != null)
         {
             List globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
             if ((globalConstraintsRefs != null) && !globalConstraintsRefs.isEmpty())
             {
-                List referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, handlerFactory);
+                List referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, pageSecurity);
                 if (referencedConstraints != null)
                 {
                     allConstraints.addAll(referencedConstraints);
@@ -284,81 +282,41 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * </p>
      *
      * @param constraintsRefs
-     * @param handlerFactory
+     * @param pageSecurity
      * @return security constraints
      */
-    private List dereferenceSecurityConstraintsRefs(List constraintsRefs, DocumentHandlerFactory handlerFactory)
+    private List dereferenceSecurityConstraintsRefs(List constraintsRefs, PageSecurity pageSecurity)
     {
         // access security document to dereference security
         // constriants definitions
         List constraints = null;
-        if (handlerFactory != null)
-        {
-            // security document
-            PageSecurity pageSecurity = getSecurity(handlerFactory);
-            if (pageSecurity != null)
-            {   
-                // dereference each security constraints definition
-                Iterator constraintsRefsIter = constraintsRefs.iterator();
-                while (constraintsRefsIter.hasNext())
-                {
-                    String constraintsRef = (String)constraintsRefsIter.next();
-                    SecurityConstraintsDef securityConstraintsDef = pageSecurity.getSecurityConstraintsDef(constraintsRef);
-                    if ((securityConstraintsDef != null) && (securityConstraintsDef.getSecurityConstraints() != null))
-                    {
-                        if (constraints == null)
-                        {
-                            constraints = new ArrayList(constraintsRefs.size());
-                        }
-                        constraints.addAll(securityConstraintsDef.getSecurityConstraints());
-                    }
-                    else
-                    {
-                        log.error("dereferenceSecurityConstraintsRefs(): Unable to dereference \"" + constraintsRef + "\" security constraints definition.");
-                    }
-                }
-            }
-            else
+        if (pageSecurity != null)
+        {   
+            // dereference each security constraints definition
+            Iterator constraintsRefsIter = constraintsRefs.iterator();
+            while (constraintsRefsIter.hasNext())
             {
-                log.error("dereferenceSecurityConstraintsRefs(): Failed to load page security configuration while dereferencing security constraints definitions.");
+                String constraintsRef = (String)constraintsRefsIter.next();
+                SecurityConstraintsDef securityConstraintsDef = pageSecurity.getSecurityConstraintsDef(constraintsRef);
+                if ((securityConstraintsDef != null) && (securityConstraintsDef.getSecurityConstraints() != null))
+                {
+                    if (constraints == null)
+                    {
+                        constraints = new ArrayList(constraintsRefs.size());
+                    }
+                    constraints.addAll(securityConstraintsDef.getSecurityConstraints());
+                }
+                else
+                {
+                    log.error("dereferenceSecurityConstraintsRefs(): Unable to dereference \"" + constraintsRef + "\" security constraints definition.");
+                }
             }
         }
         else
         {
-            log.error("dereferenceSecurityConstraintsRefs(): Missing document handler, unable to dereference security constraints definitions.");
+            log.error("dereferenceSecurityConstraintsRefs(): Missing page security, unable to dereference security constraints definitions.");
         }
         
         return constraints;
-    }
-
-    /**
-     * <p>
-     * getSecurity
-     * </p>
-     *
-     * @param handlerFactory
-     * @return security document
-     */
-    private PageSecurity getSecurity(DocumentHandlerFactory handlerFactory)
-    {
-        // access security document using document handler
-        // at fixed location in root
-        if (handlerFactory != null)
-        {
-            String pageSecurityPath = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
-            try
-            {
-                return (PageSecurity)handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).getDocument(pageSecurityPath);                
-            }
-            catch (PageNotFoundException pnfe)
-            {
-                log.debug("getSecurity(): Failed to load page security configuration at " + pageSecurityPath + ".");
-            }
-            catch (Exception e)
-            {
-                log.error("getSecurity(): Failed to load page security configuration at " + pageSecurityPath + ".", e);
-            }
-        }
-        return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2005 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,23 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * TestSecurePermissionsDatabasePersistence
+ * TestSecurePermissionsCastorXmlPageManager
  * 
  * @author <a href="rwatler@apache.org">Randy Watler</a>
- * @version $Id: $
- *          
+ * @version $Id$
  */
-public class TestSecurePermissionsDatabasePageManager extends TestSecureDatabasePageManager
+public class TestSecurePermissionsCastorXmlPageManager extends TestSecureCastorXmlPageManager
 {
-    public static void main(String args[])
+    public TestSecurePermissionsCastorXmlPageManager( String name )
     {
-        junit.awtui.TestRunner.main(new String[]
-        { TestSecurePermissionsDatabasePageManager.class.getName() });
+        super(name);
     }
-    
+
+    public static void main( String args[] )
+    {
+        junit.awtui.TestRunner.main(new String[]{TestSecurePermissionsCastorXmlPageManager.class.getName()});
+    }
+
     protected void setUp() throws Exception
     {
         super.setUp();
@@ -47,12 +50,6 @@ public class TestSecurePermissionsDatabasePageManager extends TestSecureDatabase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestSecurePermissionsDatabasePageManager.class);
-    }
-    
-    protected String[] getConfigurations()
-    {
-        return new String[]
-        { "secure-permissions-database-page-manager.xml", "transaction.xml" };
+        return new TestSuite(TestSecurePermissionsCastorXmlPageManager.class);
     }
 }

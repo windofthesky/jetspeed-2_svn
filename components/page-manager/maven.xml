@@ -23,12 +23,14 @@
     
 
     <preGoal name="test:test">
+        <delete dir="target/testdata" quiet="on"/>
         <copy todir="target/testdata">
             <fileset dir="testdata"></fileset>
         </copy>
     </preGoal>
 
     <preGoal name="test:single">
+        <delete dir="target/testdata" quiet="on"/>
         <copy todir="target/testdata">
             <fileset dir="testdata"></fileset>
         </copy>

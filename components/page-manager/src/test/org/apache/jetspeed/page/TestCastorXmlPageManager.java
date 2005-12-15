@@ -16,8 +16,6 @@
 package org.apache.jetspeed.page;
 
 // Java imports
-import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,9 +27,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.cache.file.FileCache;
-import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -42,33 +37,23 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
-import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.psml.LinkImpl;
-import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.page.document.DocumentHandler;
-import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteFolderException;
 import org.apache.jetspeed.page.document.FolderHandler;
-import org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler;
-import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
-import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
-import org.apache.jetspeed.util.DirectoryHelper;
 
 /**
- * TestPageXmlPersistence
+ * TestCastorXmlPageManager
  * 
- * @author <a href="raphael@apache.org">Rapha\u00ebl Luta </a>
- * @version $Id: TestCastorXmlPageManager.java,v 1.9 2004/08/24 21:33:05 weaver
- *          Exp $
+ * @author <a href="raphael@apache.org">Rapha\u00ebl Luta</a>
+ * @author <a href="rwatler@apache.org">Randy Watler</a>
+ * @version $Id$
  */
 public class TestCastorXmlPageManager extends TestCase implements PageManagerTestShared 
 {
@@ -79,8 +64,8 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     private String testFolder3 = "/folder3";
     private String testLink002 = "/test002.link";
     private String testLink003 = "/test003.link";
+
     protected CastorXmlPageManager pageManager;
-    protected DirectoryHelper dirHelper;
 
     /*
      * (non-Javadoc)
@@ -90,36 +75,9 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     protected void setUp() throws Exception
     {
         super.setUp();
-        dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
-        FileFilter noCVSorSVNorBackups = new FileFilter() {
-
-            public boolean accept( File pathname )
-            {
-                return !pathname.getName().equals("CVS") && !pathname.getName().equals(".svn") && !pathname.getName().endsWith("~");
-            }
-            
-        };
-        dirHelper.copyFrom(new File("testdata/pages"), noCVSorSVNorBackups);
-        IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
-        FileCache cache = new FileCache(10, 12);
-        
-        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, "target/testdata/pages", cache);
-        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, "target/testdata/pages", cache);
-        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, "target/testdata/pages", cache);
-        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
-        
-        DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
-        handlerFactory.registerDocumentHandler(psmlHandler);
-        handlerFactory.registerDocumentHandler(linkHandler);
-        handlerFactory.registerDocumentHandler(folderMetaDataHandler);        
-        handlerFactory.registerDocumentHandler(pageSecurityHandler);        
-        
-        FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
-        
-        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, false, false);
-        
-        
+        pageManager = Shared.makeCastorXMLPageManager("pages", false, false);
     }
+
     /**
      * <p>
      * tearDown
@@ -803,30 +761,6 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     {
         Folder folder = pageManager.getFolder(this.testFolder2);
 
-        boolean exceptionFound = false;
-        try
-        {
-            pageManager.removeFolder(folder);
-        }
-        catch (FailedToDeleteFolderException ftdfe)
-        {
-            exceptionFound = true;
-        }
-        assertTrue(exceptionFound);
-
-        Page page = pageManager.getPage(this.testPage004);
-        try
-        {
-            pageManager.removePage(page);
-        }
-        catch (Exception e)
-        {
-            String errmsg = "Exception in page remove: " + e.toString();
-            e.printStackTrace();
-            System.err.println(errmsg);
-            assertNotNull(errmsg, null);
-        }
-
         try
         {
             pageManager.removeFolder(folder);
@@ -839,7 +773,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
             assertNotNull(errmsg, null);
         }
 
-        exceptionFound = false;
+        boolean exceptionFound = false;
         try
         {
             folder = pageManager.getFolder(this.testFolder2);

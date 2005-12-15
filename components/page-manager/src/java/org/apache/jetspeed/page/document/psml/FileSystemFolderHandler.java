@@ -18,7 +18,9 @@ package org.apache.jetspeed.page.document.psml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -315,38 +317,122 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             folder.setPath(path);
         }
 
-        // remove underlying folder if it exists and is empty,
-        // (other than metadata document)
+        System.out.println(">>>>>>>>>>> removing folder: "+folder.getPath());
+        // remove folder nodes
+        FolderImpl folderImpl = (FolderImpl)folder;
+        try
+        {
+            // copy all folder nodes to remove
+            List removeNodes = new ArrayList();
+            Iterator copyIter = folderImpl.getAllNodes().iterator();
+            while (copyIter.hasNext())
+            {
+                removeNodes.add((Node)copyIter.next());
+            }
+            
+            // remove folder nodes
+            Iterator removeIter = removeNodes.iterator();
+            while (removeIter.hasNext())
+            {
+                Node node = (Node)removeIter.next();
+                if (node instanceof Folder)
+                {
+                    System.out.println(">>>>>>>>>>> removing folder folder: "+node.getPath());
+                    // recursively remove folder
+                    removeFolder((Folder)node);
+                }
+                else if (node instanceof Document)
+                {
+                    System.out.println(">>>>>>>>>>> removing folder document: "+node.getPath());
+                    // remove folder document
+                    try
+                    {
+                        handlerFactory.getDocumentHandler(node.getType()).removeDocument((Document)node);
+                    }
+                    catch (Exception e)
+                    {
+                        File documentFile = new File(this.documentRootDir, node.getPath());
+                        throw new FailedToDeleteFolderException(documentFile.getAbsolutePath()+" document cannot be deleted.");
+                    }
+                }
+                ((NodeSetImpl)folderImpl.getAllNodes()).remove(node);
+            }
+        }
+        catch (FailedToDeleteFolderException fdfe)
+        {
+            throw fdfe;
+        }
+        catch (Exception e)
+        {
+            throw new FailedToDeleteFolderException(e.getMessage());
+        }
+
+        // remove underlying folder and unknown files
         File folderFile = new File(this.documentRootDir, path);
         File metadataFile = null;
-        FolderImpl folderImpl = (FolderImpl)folder;
         if ((folderImpl.getFolderMetaData() != null) && (folderImpl.getFolderMetaData().getPath() != null))
         {
             metadataFile = new File(this.documentRootDir, folderImpl.getFolderMetaData().getPath());
         }
         if (folderFile.exists() && folderFile.isDirectory())
         {
-            // test to make sure folder empty
-            File [] folderContents = folderFile.listFiles();
-            if ((folderContents.length > 0) &&
-                ((folderContents.length > 1) || (metadataFile == null) || !folderContents[0].getName().equals(metadataFile.getName())))
+            // attempt to clean folder for delete
+            String[] contents = folderFile.list();
+            for (int i = 0; (i < contents.length); i++)
             {
-                throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder not empty.");
+                File contentFile = new File(folderFile, contents[i]);
+                if ((metadataFile == null) || !contentFile.equals(metadataFile))
+                {
+                    if (!deleteFile(contentFile))
+                    {
+                        throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" unrecognized folder contents cannot be deleted.");
+                    }
+                }
             }
-
             // delete folder and metadata
             if ((metadataFile != null) && metadataFile.exists() && !metadataFile.delete())
             {
                 throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder metadata cannot be deleted.");
             }
-            if (!folderFile.delete())
+            // delete folder and all remaining folder contents
+            // unless folder is root folder which should be
+            // preserved as PSML "mount point"
+            if (!path.equals(Folder.PATH_SEPARATOR) && !folderFile.delete())
             {
                 throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" folder cannot be deleted.");
             }
         }
+        else
+        {
+            throw new FailedToDeleteFolderException(folderFile.getAbsolutePath()+" not found.");
+        }
 
         // remove from cache
         fileCache.remove(path);
+
+        // reset folder
+        if (folderImpl.getFolderMetaData() != null)
+        {
+            folderImpl.getFolderMetaData().setParent(null);
+        }
+        folderImpl.setParent(null);
+        folderImpl.reset();
+    }
+
+    private static final boolean deleteFile(File file)
+    {
+        if (file.isDirectory())
+        {
+            String[] children = file.list();
+            for (int i = 0; (i < children.length); i++)
+            {
+                if (!deleteFile(new File(file, children[i])))
+                {
+                    return false;
+                }
+            }
+        }
+        return file.delete();
     }
 
     /**

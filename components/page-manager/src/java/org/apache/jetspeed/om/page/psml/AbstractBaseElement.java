@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.Node;
@@ -324,7 +325,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         // check node constraints if available
         if ((constraints != null) && !constraints.isEmpty())
         {
-            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, handlerFactory);
+            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
         }
     }
 
@@ -532,6 +533,17 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     {
         // by default, access must be checked
         return false;
+    }
+
+    /**
+     * getEffectivePageSecurity
+     *
+     * @return effective page security object
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // no page security available by default
+        return null;
     }
 
     /**

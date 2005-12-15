@@ -38,6 +38,14 @@ import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.DocumentException;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
@@ -55,15 +63,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderAdapter;
-
-import org.apache.jetspeed.page.document.DocumentException;
-import org.apache.jetspeed.page.document.DocumentHandlerFactory;
-import org.apache.jetspeed.page.document.DocumentNotFoundException;
-import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
-import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
-import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.document.NodeNotFoundException;
 
 /**
  * <p>
@@ -561,10 +560,17 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             fileName = path + this.documentType;
         }
         File file = new File(this.documentRootDir, fileName);
-        file.delete();
+        if (!file.delete())
+        {
+            throw new FailedToDeleteDocumentException(file.getAbsolutePath()+" document cannot be deleted.");
+        }
 
         // remove from cache
         fileCache.remove(path);
+
+        // reset document
+        AbstractNode documentImpl = (AbstractNode)document;
+        documentImpl.setParent(null);
     }
 
     /**

@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
@@ -363,6 +364,21 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     }
 
     /**
+     * getEffectivePageSecurity
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getEffectivePageSecurity()
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // by default, delegate to parent node implementation
+        if (parent != null)
+        {
+            return ((AbstractNode)parent).getEffectivePageSecurity();
+        }
+        return null;
+    }
+
+    /**
      * <p>
      * checkConstraints
      * </p>
@@ -386,7 +402,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             SecurityConstraints constraints = getSecurityConstraints();
             if ((constraints != null) && !constraints.isEmpty())
             {
-                ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+                ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
             }
             else if (parent != null)
             {
@@ -402,7 +418,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
                 SecurityConstraints constraints = getSecurityConstraints();
                 if ((constraints != null) && !constraints.isEmpty())
                 {
-                    ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+                    ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
                 }
             }
 

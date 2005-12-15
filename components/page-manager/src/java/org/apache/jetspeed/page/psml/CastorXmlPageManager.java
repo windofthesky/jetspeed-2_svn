@@ -261,7 +261,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // update folder
         FolderImpl folder = getNodeFolder(page.getPath());
         ((NodeSetImpl)folder.getAllNodes()).remove(page);
-        page.setParent(null);
 
         // notify page manager listeners
         notifyRemovedNode(page);
@@ -367,7 +366,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // update folder
         FolderImpl folder = getNodeFolder(link.getPath());
         ((NodeSetImpl)folder.getAllNodes()).remove(link);
-        link.setParent(null);
 
         // notify page manager listeners
         notifyRemovedNode(link);
@@ -397,7 +395,63 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException
     {
-        throw new FailedToUpdateDocumentException("Document " + pageSecurity.getPath() + " not updated, update not implemented.");
+        // validate path... must exist in root folder and
+        // make sure path and related members are set
+        if (pageSecurity.getPath() != null)
+        {
+            if (!pageSecurity.getPath().equals(Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE))
+            {
+                log.error("PageSecurity path must be: " + Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE);
+                return;
+            }
+            if (!pageSecurity.getPath().equals(pageSecurity.getId()))
+            {
+                log.error("PageSecurity paths and ids must match!");
+                return;
+            }
+        }
+        else
+        {
+            log.error("PageSecurity paths and ids must be set!");
+            return;
+        }
+
+        // set parent
+        boolean newPageSecurity = false;
+        FolderImpl parentFolder = getNodeFolder(Folder.PATH_SEPARATOR);
+        if (pageSecurity.getParent() == null)
+        {
+            pageSecurity.setParent(parentFolder);
+            newPageSecurity = true;
+        }
+
+        // enable permissions/constraints
+        PageSecurityImpl pageSecurityImpl = (PageSecurityImpl)pageSecurity;
+        pageSecurityImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        pageSecurityImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+
+        // check for edit access
+        pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // update pageSecurity
+        handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).updateDocument(pageSecurity);
+
+        // update folder
+        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(pageSecurity))
+        {
+            parentFolder.getAllNodes().add(pageSecurity);
+            newPageSecurity = true;
+        }
+
+        // notify page manager listeners
+        if (newPageSecurity)
+        {
+            notifyNewNode(pageSecurity);
+        }
+        else
+        {
+            notifyUpdatedNode(pageSecurity);
+        }
     }
 
     /* (non-Javadoc)
@@ -405,7 +459,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException
     {
-        throw new FailedToDeleteDocumentException("Document " + pageSecurity.getPath() + " not removed, remove not implemented.");
+        // check for edit access
+        pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // remove page security
+        handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).removeDocument(pageSecurity);
+
+        // update folder
+        FolderImpl folder = getNodeFolder(Folder.PATH_SEPARATOR);
+        ((NodeSetImpl)folder.getAllNodes()).remove(pageSecurity);
+
+        // notify page manager listeners
+        notifyRemovedNode(pageSecurity);
     }
 
     /**
@@ -454,17 +519,27 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
         // set parent
         boolean newFolder = false;
-        FolderImpl parentFolder = getNodeFolder(folder.getPath());
-        if (folder.getParent() == null)
+        FolderImpl parentFolder = null;
+        if (!folder.getPath().equals(Folder.PATH_SEPARATOR))
         {
-            folder.setParent(parentFolder);
-            newFolder = true;
+            parentFolder = getNodeFolder(folder.getPath());
+            if (folder.getParent() == null)
+            {
+                folder.setParent(parentFolder);
+                newFolder = true;
+            }
+        }
+        else
+        {
+            folder.setParent(null);            
         }
 
-        // enable permissions/constraints
+        // enable permissions/constraints and configure
+        // folder handler before access is checked
         FolderImpl folderImpl = (FolderImpl)folder;
         folderImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
         folderImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        folderImpl.setFolderHandler(folderHandler);
 
         // check for edit access
         folder.checkAccess(SecuredResource.EDIT_ACTION);
@@ -506,9 +581,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         folderHandler.removeFolder(folder);
 
         // update parent folder
-        FolderImpl parentFolder = getNodeFolder(folder.getPath());
-        ((NodeSetImpl)parentFolder.getAllNodes()).remove(folder);
-        folder.setParent(null);
+        if (!folder.getPath().equals(Folder.PATH_SEPARATOR))
+        {
+            FolderImpl parentFolder = getNodeFolder(folder.getPath());
+            ((NodeSetImpl)parentFolder.getAllNodes()).remove(folder);
+        }
 
         // notify page manager listeners
         notifyRemovedNode(folder);

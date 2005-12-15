@@ -583,6 +583,37 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     {
         metadata.setSecurityConstraints(constraints);
     }
+
+    /**
+     * getEffectivePageSecurity
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getEffectivePageSecurity()
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // return single page security if available
+        PageSecurity pageSecurity = null;
+        try
+        {
+            pageSecurity = getPageSecurity(false);
+            if (pageSecurity != null)
+            {
+                return pageSecurity;
+            }
+        }
+        catch (NodeException ne)
+        {
+        }
+
+        // delegate to parent folder implementation
+        FolderImpl parentFolderImpl = (FolderImpl)getParent();
+        if (parentFolderImpl != null)
+        {
+            return parentFolderImpl.getEffectivePageSecurity();
+        }
+        return null;
+    }
+
     /**
      * <p>
      * checkPermissions

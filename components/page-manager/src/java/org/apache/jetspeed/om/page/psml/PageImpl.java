@@ -139,6 +139,7 @@ public class PageImpl extends DocumentImpl implements Page
     public void setRootFragment( Fragment root )
     {
         this.root = root;
+        ((FragmentImpl)root).setPage(this);
     }
 
     public Fragment getFragmentById( String id )

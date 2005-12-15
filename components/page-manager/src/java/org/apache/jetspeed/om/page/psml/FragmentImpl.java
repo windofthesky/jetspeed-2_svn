@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.security.FragmentPermission;
 
 /**
  * @version $Id$
@@ -48,6 +53,10 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private Map propertiesMap = new HashMap();
 
     private String name;
+
+    private FragmentList fragmentsList;
+
+    private PageImpl page;
 
     /**
      * <p>
@@ -103,9 +112,19 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return false;
     }
 
+    List accessFragments()
+    {
+        return fragments;
+    }
+
     public List getFragments()
     {
-        return this.fragments;
+        // return mutable fragments list if possible
+        if (fragmentsList == null)
+        {
+            fragmentsList = new FragmentList(this);
+        }
+        return filterFragmentsByAccess(fragmentsList);
     }
 
     public Vector getPropertiesList()
@@ -309,6 +328,99 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         this.preferences = preferences;  
     } 
     
+    PageImpl getPage()
+    {
+        return page;
+    }
+
+    void setPage(PageImpl page)
+    {
+        // set page implementation
+        this.page = page;
+        // propagate to children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                ((FragmentImpl)fragmentsIter.next()).setPage(page);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getEffectivePageSecurity()
+     */
+    public PageSecurity getEffectivePageSecurity()
+    {
+        // delegate to page implementation
+        if (page != null)
+        {
+            return page.getEffectivePageSecurity();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getLogicalPermissionPath()
+     */
+    public String getLogicalPermissionPath()
+    {
+        // use page implementation path as base and append name
+        if ((page != null) && (getName() != null))
+        {
+            return page.getLogicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElementImpl#getPhysicalPermissionPath()
+     */
+    public String getPhysicalPermissionPath()
+    {
+        // use page implementation path as base and append name
+        if ((page != null) && (getName() != null))
+        {
+            return page.getPhysicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // always check for granted fragment permissions
+        FragmentPermission permission = new FragmentPermission(path, actions);
+        AccessController.checkPermission(permission);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
+     */
+    public boolean getConstraintsEnabled()
+    {
+        if (page != null)
+        {
+            return page.getConstraintsEnabled();
+        }
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.SecuredResource#getPermissionsEnabled()
+     */
+    public boolean getPermissionsEnabled()
+    {
+        if (page != null)
+        {
+            return page.getPermissionsEnabled();
+        }
+        return false;
+    }
+
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
@@ -378,5 +490,77 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
         // notify super class implementation
         super.marshalling();
+    }
+
+    /**
+     * filterFragmentsByAccess
+     *
+     * Filter fragments list for view access.
+     *
+     * @param nodes list containing fragments to check
+     * @return original list if all elements viewable, a filtered
+     *         partial list, or null if all filtered for view access
+     */
+    static List filterFragmentsByAccess(List fragments)
+    {
+        if ((fragments != null) && !fragments.isEmpty())
+        {
+            // check permissions and constraints, filter fragments as required
+            List filteredFragments = null;
+            Iterator checkAccessIter = fragments.iterator();
+            while (checkAccessIter.hasNext())
+            {
+                Fragment fragment = (Fragment)checkAccessIter.next();
+                try
+                {
+                    // check access
+                    fragment.checkAccess(SecuredResource.VIEW_ACTION);
+
+                    // add to filteredFragments fragments if copying
+                    if (filteredFragments != null)
+                    {
+                        // permitted, add to filteredFragments fragments
+                        filteredFragments.add(fragment);
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    // create filteredFragments fragments if not already copying
+                    if (filteredFragments == null)
+                    {
+                        // not permitted, copy previously permitted fragments
+                        // to new filteredFragments node set with same comparator
+                        filteredFragments = new ArrayList(fragments.size());
+                        Iterator copyIter = fragments.iterator();
+                        while (copyIter.hasNext())
+                        {
+                            Fragment copyFragment = (Fragment)copyIter.next();
+                            if (copyFragment != fragment)
+                            {
+                                filteredFragments.add(copyFragment);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // return filteredFragments fragments if generated
+            if (filteredFragments != null)
+            {
+                if (!filteredFragments.isEmpty())
+                {
+                    return filteredFragments;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        return fragments;
     }
 }
