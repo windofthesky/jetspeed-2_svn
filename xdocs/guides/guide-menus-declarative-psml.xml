@@ -88,7 +88,7 @@ There are many valid attributes for the menu element:
     </tr>
     <tr>
     <td>options</td>
-    <td>Specifies root document path for this menu if deep inclusion of documents and folders is specified by this menu. This attribute may also define document paths that specify page, folder, or link menu options. Paths specified in this attribute are <a href="#Portal_Site_Component">Page URLs</a>; these urls may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page.</td>
+    <td>Specifies root document path for this menu if deep inclusion of documents and folders is specified by this menu. This attribute may also define document paths that specify page, folder, or link menu options. Paths specified in this attribute are <a href="#Portal_Site_Component">Page URIs</a>; these URIs may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page.</td>
     </tr>
     <tr>
     <td>depth</td>
@@ -221,7 +221,7 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
 
 <section name='Menu Options Definition'>
 <p>
-The &lt;options&gt; element defines a single or multiple options within a <a href="#Menu_Definition">menu</a>. The text of this simple element specifies document paths that yield page, folder, or link menu options. Paths specified in this element are <a href="#Portal_Site_Component">Page URLs</a>; these urls may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page. This element shares many attributes in common with the menu element:
+The &lt;options&gt; element defines a single or multiple options within a <a href="#Menu_Definition">menu</a>. The text of this simple element specifies document paths that yield page, folder, or link menu options. Paths specified in this element are <a href="#Portal_Site_Component">Page URIs</a>; these URIs may or may not directly reflect the folder and page hierarchy. The <a href="#Portal_Site_Component">Portal Site Component</a> maps these options paths to PSML folder and page elements. Multiple option paths can be specified as a comma separated list of paths and/or regular expression patterns. Relative paths are interpreted as relative to the current page. Special patterns, '~' or '@', can be used to reference the current page. This element shares many attributes in common with the menu element:
 </p>
 <table>
     <tr>
@@ -433,7 +433,7 @@ documented here.
 In conjunction with the <a href="guide-profiler.html">Jetspeed Profiler Component</a>, the Portal Site Component
 performs two closely related functions:
 <ol>
-	<li>Map portal request urls from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
+	<li>Map portal request URLs from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
     <li>construct site navigational menus and their options that reflect what is available to the user from the site.</li>
 </ol>
 At first glance, these functions seem relatively simple: searching within and traversing the <a href="guide-psml.html">PSML site definition</a>.
@@ -441,8 +441,8 @@ However, once the complexities of Profiler composition and <a href="guide-securi
 filtering are taken into account, the mapping is often not trivial.
 </p>
 <p>
-Menu definition options paths are specified as Portal URLs to leverage this mapping functionality. A Page URL is essentially
-the tail portion of a portal request url that is used to address a page or folder. Using Page URLs for options allows menu
+Menu definition options paths are specified as Page URIs to leverage this mapping functionality. A Page URI is essentially
+the tail portion of a portal request URL that is used to address a page or folder. Using Page URIs for options allows menu
 definitions to be shared by all users of the portal: the user specific profile and effective security constraints are applied
 to generate the menu options. This implies that the physical paths used internally within the Page Manager file system
 or database cannot be specified to directly address a specific PSML element.
@@ -453,29 +453,29 @@ For example, suppose the following:
     <li>the default "j2" profiling rules are in effect for the 'someone' user,</li>
     <li>the following physical PSML site structure is available in the Page Manager,</li>
     <ul>
-        <li>/page0.psml</li>
-        <li>/page1.psml</li>
-        <li>/page2.psml</li>
-        <li>/hidden-page0.psml</li>
-        <li>/_user/someone/page0.psml</li>
+        <li>.../page0.psml</li>
+        <li>.../page1.psml</li>
+        <li>.../page2.psml</li>
+        <li>.../hidden-page0.psml</li>
+        <li>.../_user/someone/page0.psml</li>
     </ul>
     <li>security constraints denied access to '/page2.psml' for the user, and</li>
     <li>'/hidden-page.psml' is declared hidden in the page PSML.</li>
 </ul>
-The current <a href="guide-profiler.html">Profile Locator</a> for the user would specify that the Portal Site Component map the following request urls to the
-specific PSML elements:
+The current <a href="guide-profiler.html">Profile Locator</a> for the user would specify that the Portal Site Component map the
+following portal request URLs to the specific PSML elements:
 <table>
     <tr>
-    <th>Request URL</th>
+    <th>Portal Request URL</th>
     <th>PSML Element Selected</th>
     </tr>
     <tr>
     <td>http://.../jetspeed/portal/page0.psml</td>
-    <td>/_user/someone/page0.psml</td>
+    <td>.../_user/someone/page0.psml</td>
     </tr>
     <tr>
     <td>http://.../jetspeed/portal/page1.psml</td>
-    <td>/page0.psml</td>
+    <td>.../page0.psml</td>
     </tr>
     <tr>
     <td>http://.../jetspeed/portal/page2.psml</td>
@@ -483,39 +483,39 @@ specific PSML elements:
     </tr>
     <tr>
     <td>http://.../jetspeed/portal/hidden-page.psml</td>
-    <td>/hidden-page.psml</td>
+    <td>.../hidden-page.psml</td>
     </tr>
 </table>
 The same Profile Locator is used to evaluate menu options. Here are several valid menu options paths and how they are resolved:
 <table>
     <tr>
-    <th>Menu Options</th>
+    <th>Menu Options Page URIs</th>
     <th>PSML Elements Included in Menu</th>
     </tr>
     <tr>
     <td>/page0.psml</td>
-    <td>/_user/someone/page0.psml</td>
+    <td>.../_user/someone/page0.psml</td>
     </tr>
     <tr>
     <td>/page0.psml,/page1.psml</td>
-    <td>/_user/someone/page0.psml,/page1.psml</td>
+    <td>.../_user/someone/page0.psml,.../page1.psml</td>
     </tr>
     <tr>
     <td>/*.psml</td>
-    <td>/_user/someone/page0.psml,/page1.psml</td>
+    <td>.../_user/someone/page0.psml,.../page1.psml</td>
     </tr>
     <tr>
     <td>/*</td>
-    <td>/_user/someone/page0.psml,/page1.psml</td>
+    <td>.../_user/someone/page0.psml,.../page1.psml</td>
     </tr>
     <tr>
     <td>/_user/someone/page0.psml</td>
-    <td><b>Not a valid Page URL.</b></td>
+    <td><b>Not a valid Page URI.</b></td>
     </tr>
 </table>
 Notes:
 <ul>
-    <li>Menu options attempting to use invalid Page URLs are ignored. Invalid URLs include those containing reserved folders such as '_user', '_role', etc. or other physical paths specific to the the Page Manager implementation.</li>
+    <li>Menu options attempting to use invalid Page URIs are ignored. Invalid URIs include those containing reserved folders such as '_user', '_role', etc. or other physical paths specific to the the Page Manager implementation.</li>
     <li>Security constrained pages or folders cannot be referenced by requests and will not appear in menus.</li>
     <li>Hidden pages and/or folders can be requested, but are not visible in menus. There is one exception for pages: a hidden page is considered visible if it is the request page.</li>
 </ul>
