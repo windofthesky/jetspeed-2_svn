@@ -1,0 +1,271 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2005 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Guide to PSML DTDs</title>
+    <subtitle>Guide to PSML DTDs</subtitle>
+    <authors>
+      <person name="Randy Watler" email="rwatler@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name="PSML DTDs">
+<p>
+The following PSML DTDs are included to further define the XML documents defined in these guides:
+<ul>
+    <li><a href="guide-psml.html">Guide to PSML</a></li>
+    <li><a href="guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
+    <li><a href="guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
+</ul>
+</p>
+<p>
+The DTDs included here are organized by PSML document:
+<ul>
+	<li><a href="#Page">Page, (*.psml)</a></li>
+	<li><a href="#Folder">Folder Metadata, (folder.metadata)</a></li>
+	<li><a href="#Link">Link, (*.link)</a></li>
+	<li><a href="#Page_Security">Page Security, (page.security)</a></li>
+</ul>
+</p>
+</section>
+
+<section name='Page'>
+<p><a href="guide-psml.html#Page">Page</a> documents, (*.psml), are described by the following DTD:</p>
+<source><![CDATA[
+<!-- top level page element -->
+
+<!ELEMENT page ( defaults | fragment | menu | metadata | security-constraints | short-title | title )* >
+<!ATTLIST page hidden NMTOKEN #REQUIRED >
+<!ATTLIST page version NMTOKEN #IMPLIED >
+
+<!-- page child elements -->
+
+<!ELEMENT defaults EMPTY >
+<!ATTLIST defaults layout-decorator NMTOKEN #REQUIRED >
+<!ATTLIST defaults portlet-decorator NMTOKEN #IMPLIED >
+<!ATTLIST defaults skin NMTOKEN #IMPLIED >
+
+<!ELEMENT exclude ( #PCDATA ) >
+
+<!ELEMENT fragment ( fragment | preference | property | security-constraints )* >
+<!ATTLIST fragment decorator NMTOKEN #IMPLIED >
+<!ATTLIST fragment id NMTOKEN #REQUIRED >
+<!ATTLIST fragment name NMTOKEN #REQUIRED >
+<!ATTLIST fragment skin NMTOKEN #IMPLIED >
+<!ATTLIST fragment state NMTOKEN #IMPLIED >
+<!ATTLIST fragment type ( layout | portlet ) #REQUIRED >
+
+<!ELEMENT groups ( #PCDATA ) >
+
+<!ELEMENT include ( #PCDATA ) >
+<!ATTLIST include nest ( true | false ) #IMPLIED >
+
+<!ELEMENT menu ( exclude | include | menu | metadata | options | separator | short-title | title )* >
+<!ATTLIST menu depth NMTOKEN #IMPLIED >
+<!ATTLIST menu name NMTOKEN #IMPLIED >
+<!ATTLIST menu options CDATA #IMPLIED >
+<!ATTLIST menu order CDATA #IMPLIED >
+<!ATTLIST menu paths ( true | false ) #IMPLIED >
+<!ATTLIST menu profile NMTOKEN #IMPLIED >
+<!ATTLIST menu regexp ( true | false ) #IMPLIED >
+<!ATTLIST menu skin NMTOKEN #IMPLIED >
+
+<!ELEMENT metadata ( #PCDATA ) >
+<!ATTLIST metadata name ( short-title | text | title ) #REQUIRED >
+<!ATTLIST metadata xml:lang NMTOKEN #REQUIRED >
+
+<!ELEMENT options ( #PCDATA ) >
+<!ATTLIST options depth NMTOKEN #IMPLIED >
+<!ATTLIST options order CDATA #IMPLIED >
+<!ATTLIST options paths ( true | false ) #IMPLIED >
+<!ATTLIST options profile CDATA #IMPLIED >
+<!ATTLIST options regexp ( true | false ) #IMPLIED >
+<!ATTLIST options skin NMTOKEN #IMPLIED >
+
+<!ELEMENT owner ( #PCDATA ) >
+
+<!ELEMENT permissions ( #PCDATA ) >
+
+<!ELEMENT preference ( value+ ) >
+<!ATTLIST preference name NMTOKEN #REQUIRED >
+<!ATTLIST preference readOnly ( true | false ) #IMPLIED >
+
+<!ELEMENT property EMPTY >
+<!ATTLIST property layout NMTOKEN #IMPLIED >
+<!ATTLIST property name ( column | row | sizes ) #REQUIRED >
+<!ATTLIST property value #REQUIRED >
+
+<!ELEMENT roles ( #PCDATA ) >
+
+<!ELEMENT security-constraint ( groups | permissions | roles | users )* >
+
+<!ELEMENT security-constraints ( owner | security-constraint | security-constraints-ref )* >
+
+<!ELEMENT security-constraints-ref ( #PCDATA ) >
+
+<!ELEMENT separator ( #PCDATA | metadata | text | title )* >
+<!ATTLIST separator skin NMTOKEN #IMPLIED >
+
+<!ELEMENT short-title ( #PCDATA ) >
+
+<!ELEMENT text ( #PCDATA ) >
+
+<!ELEMENT title ( #PCDATA ) >
+
+<!ELEMENT users ( #PCDATA ) >
+
+<!ELEMENT value ( #PCDATA ) >
+]]></source>
+</section>
+
+<section name='Folder'>
+<p><a href="guide-psml.html#Folder">Folder Metadata</a> documents, (folder.metadata), are described by the following DTD:</p>
+<source><![CDATA[
+<!-- top level folder element -->
+
+<!ELEMENT folder ( default-page | document-order | menu | metadata | security-constraints | short-title | title )* >
+<!ATTLIST folder hidden NMTOKEN #REQUIRED >
+<!ATTLIST folder version NMTOKEN #IMPLIED >
+
+<!-- folder child elements -->
+
+<!ELEMENT default-page ( #PCDATA ) >
+
+<!ELEMENT document-order ( #PCDATA ) >
+
+<!ELEMENT exclude ( #PCDATA ) >
+
+<!ELEMENT groups ( #PCDATA ) >
+
+<!ELEMENT include ( #PCDATA ) >
+<!ATTLIST include nest ( true | false ) #IMPLIED >
+
+<!ELEMENT menu ( exclude | include | menu | metadata | options | separator | short-title | title )* >
+<!ATTLIST menu depth NMTOKEN #IMPLIED >
+<!ATTLIST menu name NMTOKEN #IMPLIED >
+<!ATTLIST menu options CDATA #IMPLIED >
+<!ATTLIST menu order CDATA #IMPLIED >
+<!ATTLIST menu paths ( true | false ) #IMPLIED >
+<!ATTLIST menu profile NMTOKEN #IMPLIED >
+<!ATTLIST menu regexp ( true | false ) #IMPLIED >
+<!ATTLIST menu skin NMTOKEN #IMPLIED >
+
+<!ELEMENT metadata ( #PCDATA ) >
+<!ATTLIST metadata name ( short-title | text | title ) #REQUIRED >
+<!ATTLIST metadata xml:lang NMTOKEN #REQUIRED >
+
+<!ELEMENT options ( #PCDATA ) >
+<!ATTLIST options depth NMTOKEN #IMPLIED >
+<!ATTLIST options order CDATA #IMPLIED >
+<!ATTLIST options paths ( true | false ) #IMPLIED >
+<!ATTLIST options profile CDATA #IMPLIED >
+<!ATTLIST options regexp ( true | false ) #IMPLIED >
+<!ATTLIST options skin NMTOKEN #IMPLIED >
+
+<!ELEMENT owner ( #PCDATA ) >
+
+<!ELEMENT permissions ( #PCDATA ) >
+
+<!ELEMENT roles ( #PCDATA ) >
+
+<!ELEMENT security-constraint ( groups | permissions | roles | users )* >
+
+<!ELEMENT security-constraints ( owner | security-constraint | security-constraints-ref )* >
+
+<!ELEMENT security-constraints-ref ( #PCDATA ) >
+
+<!ELEMENT separator ( #PCDATA | metadata | text | title )* >
+<!ATTLIST separator skin NMTOKEN #IMPLIED >
+
+<!ELEMENT short-title ( #PCDATA ) >
+
+<!ELEMENT text ( #PCDATA ) >
+
+<!ELEMENT title ( #PCDATA ) >
+
+<!ELEMENT users ( #PCDATA ) >
+]]></source>
+</section>
+
+<section name='Link'>
+<p><a href="guide-psml.html#Link">Link</a> documents, (*.link), are described by the following DTD:</p>
+<source><![CDATA[
+<!-- top level link element -->
+
+<!ELEMENT link ( metadata | security-constraints | short-title | title | url )* >
+<!ATTLIST link target NMTOKEN #REQUIRED >
+<!ATTLIST link version NMTOKEN #IMPLIED >
+
+<!-- link child elements -->
+
+<!ELEMENT groups ( #PCDATA ) >
+
+<!ELEMENT metadata ( #PCDATA ) >
+<!ATTLIST metadata name ( short-title | title ) #REQUIRED >
+<!ATTLIST metadata xml:lang NMTOKEN #REQUIRED >
+
+<!ELEMENT owner ( #PCDATA ) >
+
+<!ELEMENT permissions ( #PCDATA ) >
+
+<!ELEMENT roles ( #PCDATA ) >
+
+<!ELEMENT security-constraint ( groups | permissions | roles | users )* >
+
+<!ELEMENT security-constraints ( owner | security-constraint | security-constraints-ref )* >
+
+<!ELEMENT security-constraints-ref ( #PCDATA ) >
+
+<!ELEMENT short-title ( #PCDATA ) >
+
+<!ELEMENT title ( #PCDATA ) >
+
+<!ELEMENT url ( #PCDATA ) >
+
+<!ELEMENT users ( #PCDATA ) >
+]]></source>
+</section>
+
+<section name='Page Security'>
+<p><a href="guide-psml.html#Global_Page_Security">Page Security</a> documents, (page.security), are described by the following DTD:</p>
+<source><![CDATA[
+<!-- top level page-security element -->
+
+<!ELEMENT page-security ( global-security-constraints-ref | security-constraints-def )* >
+<!ATTLIST page-security version NMTOKEN #IMPLIED >
+
+<!-- page-security child elements -->
+
+<!ELEMENT global-security-constraints-ref ( #PCDATA ) >
+
+<!ELEMENT groups ( #PCDATA ) >
+
+<!ELEMENT permissions ( #PCDATA ) >
+
+<!ELEMENT roles ( #PCDATA ) >
+
+<!ELEMENT security-constraint ( groups | permissions | roles | users )* >
+
+<!ELEMENT security-constraints-def ( security-constraint ) >
+<!ATTLIST security-constraints-def name NMTOKEN #REQUIRED >
+
+<!ELEMENT users ( #PCDATA ) >
+]]></source>
+</section>
+
+</body>
+</document>

@@ -68,6 +68,7 @@ The remainder of this guide provides more information on specifying and using de
     </ul>
 	<li><a href="#Page_Layout_Decorators">Page Layout Decorators</a></li>
 	<li><a href="#Portal_Site_Component">Portal Site Component</a></li>
+    <li><a href="guide-psml-dtd.html#PSML_DTDs">PSML Document DTDs</a></li>        
 </ul>
 </p>
 </section>

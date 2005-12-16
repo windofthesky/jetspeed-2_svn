@@ -40,6 +40,7 @@ limitations under the License.
     <li><a href="#PSML_Titles_and_Metadata">Titles and Metadata</a></li>
     <li><a href="#PSML_Security_Constraints">Security Constraints</a></li>        
     <li><a href="#PSML_Menus">Menus</a></li>        
+    <li><a href="guide-psml-dtd.html#PSML_DTDs">PSML Document DTDs</a></li>        
 </ul>
     
 <p>
@@ -477,9 +478,10 @@ The <a href="#Portlet_Fragments">fragment</a> &lt;property&gt; element is use to
 
 <section name='Preferences'>
 <p>
-The <a href="#Portlet_Fragments">portlet fragment</a> &lt;preference&gt; elements allows for the defining of portlet preferences.  
-This provides an eaiser avenue for the setting of default portlet prefences for a portlet
-instance on a page without having to duplicate a portlet definition within
+The <a href="#Portlet_Fragments">portlet fragment</a> &lt;preference&gt; elements allow for the defining of default
+portlet preference values.  
+This provides an easier avenue for the setting of default portlet prefences for a portlet
+instance on a page without having to duplicate portlet definitions within
 the portlet application's portlet.xml.
 </p>
 <p>
