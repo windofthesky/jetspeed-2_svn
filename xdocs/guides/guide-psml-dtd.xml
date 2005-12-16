@@ -16,16 +16,16 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>Guide to PSML DTDs</title>
-    <subtitle>Guide to PSML DTDs</subtitle>
+    <title>Guide to PSML DTDs and XML Schema</title>
+    <subtitle>Guide to PSML DTDs and XML Schema</subtitle>
     <authors>
       <person name="Randy Watler" email="rwatler@apache.org"/>
     </authors>
   </properties>
   <body>
-<section name="PSML DTDs">
+<section name="PSML DTDs and XML Schema">
 <p>
-The following PSML DTDs are included to further define the XML documents defined in these guides:
+The following PSML DTDs and XML Schema are included to further define the XML documents defined in these guides:
 <ul>
     <li><a href="guide-psml.html">Guide to PSML</a></li>
     <li><a href="guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
@@ -33,7 +33,7 @@ The following PSML DTDs are included to further define the XML documents defined
 </ul>
 </p>
 <p>
-The DTDs included here are organized by PSML document:
+The DTDs and XML Schema included here are organized by PSML document:
 <ul>
 	<li><a href="#Page">Page, (*.psml)</a></li>
 	<li><a href="#Folder">Folder Metadata, (folder.metadata)</a></li>
@@ -49,7 +49,7 @@ The DTDs included here are organized by PSML document:
 <!-- top level page element -->
 
 <!ELEMENT page ( defaults | fragment | menu | metadata | security-constraints | short-title | title )* >
-<!ATTLIST page hidden NMTOKEN #REQUIRED >
+<!ATTLIST page hidden ( false | true ) #IMPLIED >
 <!ATTLIST page version NMTOKEN #IMPLIED >
 
 <!-- page child elements -->
@@ -72,16 +72,16 @@ The DTDs included here are organized by PSML document:
 <!ELEMENT groups ( #PCDATA ) >
 
 <!ELEMENT include ( #PCDATA ) >
-<!ATTLIST include nest ( true | false ) #IMPLIED >
+<!ATTLIST include nest ( false | true ) #IMPLIED >
 
 <!ELEMENT menu ( exclude | include | menu | metadata | options | separator | short-title | title )* >
 <!ATTLIST menu depth NMTOKEN #IMPLIED >
 <!ATTLIST menu name NMTOKEN #IMPLIED >
 <!ATTLIST menu options CDATA #IMPLIED >
 <!ATTLIST menu order CDATA #IMPLIED >
-<!ATTLIST menu paths ( true | false ) #IMPLIED >
+<!ATTLIST menu paths ( false | true ) #IMPLIED >
 <!ATTLIST menu profile NMTOKEN #IMPLIED >
-<!ATTLIST menu regexp ( true | false ) #IMPLIED >
+<!ATTLIST menu regexp ( false | true ) #IMPLIED >
 <!ATTLIST menu skin NMTOKEN #IMPLIED >
 
 <!ELEMENT metadata ( #PCDATA ) >
@@ -91,9 +91,9 @@ The DTDs included here are organized by PSML document:
 <!ELEMENT options ( #PCDATA ) >
 <!ATTLIST options depth NMTOKEN #IMPLIED >
 <!ATTLIST options order CDATA #IMPLIED >
-<!ATTLIST options paths ( true | false ) #IMPLIED >
-<!ATTLIST options profile CDATA #IMPLIED >
-<!ATTLIST options regexp ( true | false ) #IMPLIED >
+<!ATTLIST options paths ( false | true ) #IMPLIED >
+<!ATTLIST options profile NMTOKEN #IMPLIED >
+<!ATTLIST options regexp ( false | true ) #IMPLIED >
 <!ATTLIST options skin NMTOKEN #IMPLIED >
 
 <!ELEMENT owner ( #PCDATA ) >
@@ -102,12 +102,12 @@ The DTDs included here are organized by PSML document:
 
 <!ELEMENT preference ( value+ ) >
 <!ATTLIST preference name NMTOKEN #REQUIRED >
-<!ATTLIST preference readOnly ( true | false ) #IMPLIED >
+<!ATTLIST preference readOnly ( false | true ) #IMPLIED >
 
 <!ELEMENT property EMPTY >
 <!ATTLIST property layout NMTOKEN #IMPLIED >
 <!ATTLIST property name ( column | row | sizes ) #REQUIRED >
-<!ATTLIST property value #REQUIRED >
+<!ATTLIST property value CDATA #REQUIRED >
 
 <!ELEMENT roles ( #PCDATA ) >
 
@@ -130,6 +130,271 @@ The DTDs included here are organized by PSML document:
 
 <!ELEMENT value ( #PCDATA ) >
 ]]></source>
+<p><a href="guide-psml.html#Page">Page</a> documents, (*.psml), are described by the following XML Schema:</p>
+<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- top level page element -->
+
+  <xs:element name="page">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="defaults" />
+        <xs:element ref="fragment" />
+        <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints" minOccurs="0" />
+        <xs:element ref="short-title" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="version" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="hidden" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- page child elements -->
+
+  <xs:element name="defaults">
+    <xs:complexType>
+      <xs:attribute name="portlet-decorator" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="layout-decorator" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="exclude">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="fragment">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="fragment" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="preference" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="decorator" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="layout" />
+            <xs:enumeration value="portlet" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="state" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="id" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="groups">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="include">
+    <xs:complexType mixed="true">
+      <xs:attribute name="nest" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="menu">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="exclude" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="include" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="options" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="separator" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="short-title" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="order" type="xs:string" use="optional" />
+      <xs:attribute name="options" type="xs:string" use="optional" />
+      <xs:attribute name="name" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="profile" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="regexp" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="paths" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="depth" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="metadata">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="short-title" />
+            <xs:enumeration value="text" />
+            <xs:enumeration value="title" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="options">
+    <xs:complexType mixed="true">
+      <xs:attribute name="order" type="xs:string" use="optional" />
+      <xs:attribute name="profile" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="regexp" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="paths" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="depth" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="owner">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="permissions">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="preference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="value" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="readOnly" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="property">
+    <xs:complexType>
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="column" />
+            <xs:enumeration value="row" />
+            <xs:enumeration value="sizes" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="layout" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="value" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="roles">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:choice maxOccurs="4">
+        <xs:element ref="groups" minOccurs="0" />
+        <xs:element ref="permissions" minOccurs="0" />
+        <xs:element ref="roles" minOccurs="0" />
+        <xs:element ref="users" minOccurs="0" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="owner" minOccurs="0" />
+        <xs:element ref="security-constraint" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints-ref" minOccurs="0" maxOccurs="unbounded" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints-ref">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="separator">
+    <xs:complexType mixed="true">
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="text" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="short-title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="text">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="users">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="value">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+</xs:schema>
+]]></source>
 </section>
 
 <section name='Folder'>
@@ -138,7 +403,7 @@ The DTDs included here are organized by PSML document:
 <!-- top level folder element -->
 
 <!ELEMENT folder ( default-page | document-order | menu | metadata | security-constraints | short-title | title )* >
-<!ATTLIST folder hidden NMTOKEN #REQUIRED >
+<!ATTLIST folder hidden ( false | true ) #IMPLIED >
 <!ATTLIST folder version NMTOKEN #IMPLIED >
 
 <!-- folder child elements -->
@@ -152,16 +417,16 @@ The DTDs included here are organized by PSML document:
 <!ELEMENT groups ( #PCDATA ) >
 
 <!ELEMENT include ( #PCDATA ) >
-<!ATTLIST include nest ( true | false ) #IMPLIED >
+<!ATTLIST include nest ( false | true ) #IMPLIED >
 
 <!ELEMENT menu ( exclude | include | menu | metadata | options | separator | short-title | title )* >
 <!ATTLIST menu depth NMTOKEN #IMPLIED >
 <!ATTLIST menu name NMTOKEN #IMPLIED >
 <!ATTLIST menu options CDATA #IMPLIED >
 <!ATTLIST menu order CDATA #IMPLIED >
-<!ATTLIST menu paths ( true | false ) #IMPLIED >
+<!ATTLIST menu paths ( false | true ) #IMPLIED >
 <!ATTLIST menu profile NMTOKEN #IMPLIED >
-<!ATTLIST menu regexp ( true | false ) #IMPLIED >
+<!ATTLIST menu regexp ( false | true ) #IMPLIED >
 <!ATTLIST menu skin NMTOKEN #IMPLIED >
 
 <!ELEMENT metadata ( #PCDATA ) >
@@ -171,9 +436,9 @@ The DTDs included here are organized by PSML document:
 <!ELEMENT options ( #PCDATA ) >
 <!ATTLIST options depth NMTOKEN #IMPLIED >
 <!ATTLIST options order CDATA #IMPLIED >
-<!ATTLIST options paths ( true | false ) #IMPLIED >
-<!ATTLIST options profile CDATA #IMPLIED >
-<!ATTLIST options regexp ( true | false ) #IMPLIED >
+<!ATTLIST options paths ( false | true ) #IMPLIED >
+<!ATTLIST options profile NMTOKEN #IMPLIED >
+<!ATTLIST options regexp ( false | true ) #IMPLIED >
 <!ATTLIST options skin NMTOKEN #IMPLIED >
 
 <!ELEMENT owner ( #PCDATA ) >
@@ -198,6 +463,210 @@ The DTDs included here are organized by PSML document:
 <!ELEMENT title ( #PCDATA ) >
 
 <!ELEMENT users ( #PCDATA ) >
+]]></source>
+<p><a href="guide-psml.html#Folder">Folder Metadata</a> documents, (folder.metadata), are described by the following XML Schema:</p>
+<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- top level folder element -->
+
+  <xs:element name="folder">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="default-page" minOccurs="0" />
+        <xs:element ref="document-order" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="metadata minOccurs="0" maxOccurs="unbounded"" />
+        <xs:element ref="security-constraints" minOccurs="0" />
+        <xs:element ref="short-title" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="version" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="hidden" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- folder child elements -->
+
+  <xs:element name="default-page">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="document-order">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="exclude">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="groups">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="include">
+    <xs:complexType mixed="true">
+      <xs:attribute name="nest" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="menu">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="exclude" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="include" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="options" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="separator" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="short-title" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="order" type="xs:string" use="optional" />
+      <xs:attribute name="options" type="xs:string" use="optional" />
+      <xs:attribute name="name" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="profile" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="regexp" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="paths" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="depth" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="metadata">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="short-title" />
+            <xs:enumeration value="text" />
+            <xs:enumeration value="title" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="options">
+    <xs:complexType mixed="true">
+      <xs:attribute name="order" type="xs:string" use="optional" />
+      <xs:attribute name="profile" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="regexp" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="paths" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="false" />
+            <xs:enumeration value="true" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="depth" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="owner">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="permissions">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="roles">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:choice maxOccurs="4">
+        <xs:element ref="groups" minOccurs="0" />
+        <xs:element ref="permissions" minOccurs="0" />
+        <xs:element ref="roles" minOccurs="0" />
+        <xs:element ref="users" minOccurs="0" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="owner" minOccurs="0" />
+        <xs:element ref="security-constraint" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints-ref" minOccurs="0" maxOccurs="unbounded" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints-ref">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="separator">
+    <xs:complexType mixed="true">
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="text" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+      </xs:choice>
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="short-title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="text">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="users">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+</xs:schema>
 ]]></source>
 </section>
 
@@ -238,6 +707,102 @@ The DTDs included here are organized by PSML document:
 
 <!ELEMENT users ( #PCDATA ) >
 ]]></source>
+<p><a href="guide-psml.html#Link">Link</a> documents, (*.link), are described by the following XML Schema:</p>
+<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- top level link element -->
+
+  <xs:element name="link">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints" minOccurs="0" />
+        <xs:element ref="short-title" minOccurs="0" />
+        <xs:element ref="title" minOccurs="0" />
+        <xs:element ref="url" />
+      </xs:choice>
+      <xs:attribute name="version" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="target" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- link child elements -->
+
+  <xs:element name="groups">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="metadata">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="short-title" />
+            <xs:enumeration value="title" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="owner">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="permissions">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="roles">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:choice maxOccurs="4">
+        <xs:element ref="groups" minOccurs="0" />
+        <xs:element ref="permissions" minOccurs="0" />
+        <xs:element ref="roles" minOccurs="0" />
+        <xs:element ref="users" minOccurs="0" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="owner" minOccurs="0" />
+        <xs:element ref="security-constraint" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints-ref" minOccurs="0" maxOccurs="unbounded" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints-ref">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="short-title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="title">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="url">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="users">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+</xs:schema>
+]]></source>
 </section>
 
 <section name='Page Security'>
@@ -264,6 +829,68 @@ The DTDs included here are organized by PSML document:
 <!ATTLIST security-constraints-def name NMTOKEN #REQUIRED >
 
 <!ELEMENT users ( #PCDATA ) >
+]]></source>
+<p><a href="guide-psml.html#Global_Page_Security">Page Security</a> documents, (page.security), are described by the following XML Schema:</p>
+<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- top level page-security element -->
+
+  <xs:element name="page-security">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="global-security-constraints-ref" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="security-constraints-def" minOccurs="0" maxOccurs="unbounded" />
+      </xs:choice>
+      <xs:attribute name="version" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- page-security child elements -->
+
+  <xs:element name="global-security-constraints-ref">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="groups">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="permissions">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="roles">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:choice maxOccurs="4">
+        <xs:element ref="groups" minOccurs="0" />
+        <xs:element ref="permissions" minOccurs="0" />
+        <xs:element ref="roles" minOccurs="0" />
+        <xs:element ref="users" minOccurs="0" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security-constraints-def">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="security-constraint" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="users">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+</xs:schema>
 ]]></source>
 </section>
 
