@@ -143,7 +143,7 @@ limitations under the License.
 /** Below are tab styles */
     .gray-gradient .tabContainer
     {
-      background-image: url($home/eds_images/grad1gray.png);     
+      background-image: url(../images/grad1gray.png);     
       width: 100%;
      
     }
@@ -185,7 +185,7 @@ limitations under the License.
     
     .gray-gradient A:HOVER.tabInactive
     {
-      background-image: url($home/eds_images/grad2gray.png);
+      background-image: url(../images/grad2gray.png);
       border-top: thin solid #990000;
     }
 

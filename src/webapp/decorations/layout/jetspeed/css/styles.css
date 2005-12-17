@@ -53,7 +53,7 @@ BODY.layout-Jetspeed
 
 .FolderLink
 {
-  background: url(../imagesfolder.sm.png) no-repeat;
+  background: url(../images/folder.sm.png) no-repeat;
   padding-top: 3px;
   font-size: 10pt; 
   font-weight: bold;
@@ -73,7 +73,7 @@ BODY.layout-Jetspeed
 
 .Link
 {
-  background: url(../imageslink.sm.png) no-repeat;
+  background: url(../images/link.sm.png) no-repeat;
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
@@ -87,7 +87,7 @@ BODY.layout-Jetspeed
 }
 .LinkFolder
 {
-  background: url(../imagesfolder.sm.png) no-repeat;
+  background: url(../images/folder.sm.png) no-repeat;
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
@@ -101,7 +101,7 @@ BODY.layout-Jetspeed
 }
 .LinkPage
 {
-  background: url(../imagespage.sm.png) no-repeat;
+  background: url(../images/page.sm.png) no-repeat;
   padding-top: 5px;
   width: 100%;
   /** Padding is just a wee bit larger than our icons with */     
