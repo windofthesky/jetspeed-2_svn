@@ -162,13 +162,7 @@ limitations under the License.
 /* --------------------------------- */
 /* PLT.C.3 Messages                  */
 /* --------------------------------- */
-.tigris .portlet-msg-status {
-    background: url(../images/icon_status_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
+.tigris .portlet-msg-status,
 .tigris .portlet-msg-info {
     background: url(../images/icon_info_sml.gif);
     background-repeat: no-repeat;

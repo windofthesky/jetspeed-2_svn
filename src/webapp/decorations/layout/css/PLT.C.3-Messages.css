@@ -28,13 +28,7 @@ limitations under the License.
 /* --------------------------------- */
 /* PLT.C.3 Messages                  */
 /* --------------------------------- */
-.portlet-msg-status {
-    background: url(../../images/icon_status_sml.gif);
-    background-repeat: no-repeat;
-    padding-left: 20px;
-    height: 15px;
-}
-
+.portlet-msg-status,
 .portlet-msg-info {
     background: url(../../images/icon_info_sml.gif);
     background-repeat: no-repeat;

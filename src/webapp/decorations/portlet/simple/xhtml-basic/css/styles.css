@@ -116,13 +116,7 @@ font-size: x-small;
 /* --------------------------------- */
 /* PLT.C.3 Messages                  */
 /* --------------------------------- */
-.portlet-simple .portlet-msg-status {
-background: url(../images/icon_status_sml.gif);
-background-repeat: no-repeat;
-padding-left: 20px;
-min-height: 15px;
-}
-
+.portlet-simple .portlet-msg-status,
 .portlet-simple .portlet-msg-info {
 background: url(../images/icon_info_sml.gif);
 background-repeat: no-repeat;
