@@ -19,8 +19,8 @@
 #set($decorator = $myFragment.getDecorator())
 #end
 #if ($decorator)
-#set($decoTop = "${decorator}/decorator-top.vm")
-#set($decoBottom = "${decorator}/decorator-bottom.vm")
+#set($decoTop = "${decorator}/header.vm")
+#set($decoBottom = "${decorator}/footer.vm")
 #end
 ## Decorator  $decorator  ${decoTop} - ${decoBottom}
 #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))

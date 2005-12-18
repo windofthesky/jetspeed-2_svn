@@ -75,7 +75,7 @@ $jetspeed.page
   </tr>
   <tr>
     <td>Examples</td>
-    <td>#parse($jetspeed.decorateAndInclude($fragment))<br/>returns<br/>/WEB-INF/decorations/layout/html/tigris/decorator-top.vm</td>
+    <td>#parse($jetspeed.decorateAndInclude($fragment))<br/>returns<br/>/WEB-INF/decorations/layout/html/tigris/header.vm</td>
   </tr>  
 </table>
 <hr/>

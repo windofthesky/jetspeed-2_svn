@@ -24,8 +24,8 @@
 #set($ldecorator = $myLayout.getDecorator())
 #end
 #if($ldecorator)
-#set($decoTop = "${ldecorator}/decorator-top.vm")
-#set($decoBottom = "${ldecorator}/decorator-bottom.vm")
+#set($decoTop = "${ldecorator}/header.vm")
+#set($decoBottom = "${ldecorator}/footer.vm")
 #end
 ## Decorator  $decorator  ${decoTop} - ${decoBottom}
 #if($decoTop)
