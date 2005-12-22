@@ -48,6 +48,8 @@ limitations under the License.
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
+#set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
 
 #if ($actions.size()>0)
 <table  width="100%" cellspacing="0" cellpadding="0" >
@@ -60,9 +62,12 @@ limitations under the License.
       <table border="0" cellpadding="0" cellspacing="0" >
       <tr>
       #foreach ($action in $actions)
+      #if ($action.Alt == "edit" || $action.Alt == "view")
       <td align="right" valign="middle" class="PContent" >
-      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      #set ($myImage = "images/${action.Alt}.gif")
+      <a href="${action.Action}" title="${action.Name}" ><img src="#GetPageResource($myImage)"  alt="${action.Alt}" border="0"></a>
       </td>
+      #end
       #end
 	  #if($editing == true)    		  	  
 	   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
@@ -83,6 +88,27 @@ limitations under the License.
 <input type='hidden' name='portlets'/>
 <input type='hidden' name='page' value='$myPage'/>
 </form>
+
+#set ($dcnt = 0)
+
+   #if($editing)
+   #set($themeUrl = $renderResponse.createActionURL())
+   $!themeUrl.setParameter("editingPage","$myPage.id")
+<form name="themeForm" action="$themeUrl" method='post'>
+     <label style='font-size:8pt;color:blue;padding-left: 9px;'>Theme:
+     <select id='theme' name='theme' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
+        #foreach($td in $decorationFactory.getPageDecorations($rc))
+          <option value='$td' #if($decorator == $td) SELECTED #end>$td
+        #end
+     </select>   
+     </label>
+<label style='font-size:8pt;color:blue;padding-left: 9px;'>Page:
+<input id='newpage' name='jsPageName' style='font-size:8pt;color:blue'/></label>
+<input id='layout' name='layout' type='hidden' value='$myFragment.Name'>
+<input type="submit" name="jsSubmitPage" value="Add Page" />
+</form>
+   #end
+
 
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >
@@ -116,21 +142,24 @@ limitations under the License.
                    <td></td>
                    <td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($row > 0)
-                         #set($upUrl = $renderResponse.createRenderURL())    
+                         #set($upUrl = $renderResponse.createActionURL())    
                          $!upUrl.setParameter("move","1")
-                         $!upUrl.setParameter("fragmentId","$f.id")
+                         $!upUrl.setParameter("fragmentToMove","$f.id")
+                         $!upUrl.setParameter("editingPage","$myPage.id")
                          <a href="$upUrl"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
+                   <td></td>
                    <td></td>
                    <td></td>
                  </tr>
                  <tr>
                    <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($lastColumn > 0 && $col > 0)            
-                         #set($leftUrl = $renderResponse.createRenderURL())    
+                         #set($leftUrl = $renderResponse.createActionURL())    
                          $!leftUrl.setParameter("move","3")
-                         $!leftUrl.setParameter("fragmentId","$f.id")    
+                         $!leftUrl.setParameter("fragmentToMove","$f.id")
+                         $!leftUrl.setParameter("editingPage","$myPage.id")
                          <a href="$leftUrl"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="Move Portlet Left"/></a>
                         #end
                    </td>
@@ -139,9 +168,10 @@ limitations under the License.
                    </td>
                    <td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
                         #if($lastColumn > 0 && $col < $lastColumn)
-                         #set($rightUrl = $renderResponse.createRenderURL())    
+                         #set($rightUrl = $renderResponse.createActionURL())    
                          $!rightUrl.setParameter("move","4")
-                         $!rightUrl.setParameter("fragmentId","$f.id")
+                         $!rightUrl.setParameter("fragmentToMove","$f.id")
+                         $!rightUrl.setParameter("editingPage","$myPage.id")
                          <a href="$rightUrl"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
@@ -151,20 +181,37 @@ limitations under the License.
                          $deleter.setParameter("page","$myPage")                         
                          &nbsp;<a href="$deleter"><img src="#GetPageResource('images/close.gif')" border="0" title="Remove Portlet"/></a>                    
                     </td>
+                    <td>
+   #set ($dcnt = $dcnt + 1)   
+   #set($decUrl = $renderResponse.createActionURL())    
+   $!decUrl.setParameter("fragmentToMove","$f.id")
+   $!decUrl.setParameter("editingPage","$myPage.id")     
+   #set ($temp = ".submit();")
+<form name="portletForm$dcnt" action="$decUrl" method='post'>
+<select id='decorator' name='decorator' style='font-size:8pt;color:blue;' onChange="portletForm$dcnt$temp">
+       <option value=''>
+       #foreach($pd in $decorationFactory.getPortletDecorations($rc))
+          <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+       #end
+</select>
+</form>                   
+
+                    </td>
                  </tr>
 				 <tr>
 					<td></td>
 					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">					  
 					  #if($row < $lastRow)						
-					    #set($downUrl = $renderResponse.createRenderURL())	
+					    #set($downUrl = $renderResponse.createActionURL())	
 			            $!downUrl.setParameter("move","2")
-			            $!downUrl.setParameter("fragmentId","$f.id")
-                        #set ($imgsrc="$layoutImageBase/movePortletDown.gif")
-					    <a href="$downUrl"><img src="#GetPageResource('images/movePortletDown.gi')" border="0" title="Move Portlet Down"/></a>
+			            $!downUrl.setParameter("fragmentToMove","$f.id")
+                        $!downUrl.setParameter("editingPage","$myPage.id")
+					    <a href="$downUrl"><img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
 					<td></td>
 					<td></td>
+                    <td></td>
 				 </tr>
 			  </table>
 			</div>
