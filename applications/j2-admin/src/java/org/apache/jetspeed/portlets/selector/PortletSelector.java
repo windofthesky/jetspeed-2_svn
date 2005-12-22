@@ -267,7 +267,12 @@ public class PortletSelector extends BrowserPortlet
                         new PortletPermission(portlet.getUniqueName(), 
                         SecuredResource.VIEW_ACTION, subject )))
                     {
-                        list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+                        String name = portlet.getDisplayNameText(locale);
+                        if (name == null)
+                        {
+                            name = portlet.getName();
+                        }
+                        list.add(new PortletInfo(uniqueName, name, portlet.getDescriptionText(locale)));
                     }
                 }
             }            
