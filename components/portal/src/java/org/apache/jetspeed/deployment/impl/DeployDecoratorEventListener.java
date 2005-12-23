@@ -195,9 +195,9 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
     public void invokeUndeploy(File deployPathFile) throws DeploymentException
     {
 
-        if (deployPathFile == null || !deployPathFile.exists() || !deployPathFile.isDirectory()
-            || deployPathFile.getParentFile() == null || deployPathFile.getParentFile().getParentFile() == null
-            || !deployToDir.equals(deployPathFile.getParentFile().getParentFile().getParent()))
+        if (deployPathFile == null || !deployPathFile.exists() ||
+            !deployPathFile.isDirectory() || deployPathFile.getParentFile() == null ||
+            !deployToDir.equals(deployPathFile.getParentFile().getParent()))
         {
             throw new DeploymentException("Cannot undeploy decorator at " + deployPathFile + ": invalid decorator path");
         }
@@ -305,7 +305,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
         {
             layoutType = "generic";
         }
-         return deployToDir + File.separator + layoutType ;
+        return deployToDir + File.separator + layoutType ;
     }
 
     /**
