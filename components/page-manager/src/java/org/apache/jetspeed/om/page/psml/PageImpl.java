@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -111,24 +112,43 @@ public class PageImpl extends DocumentImpl implements Page
         return hashCode;
     }
 
-    public String getDefaultSkin()
+    public String getSkin()
     {
-        return this.defaults.getSkin();
+        return defaults.getSkin();
     }
 
-    public void setDefaultSkin( String skinName )
+    public void setSkin( String skinName )
     {
-        this.defaults.setSkin(skinName);
+        defaults.setSkin(skinName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#getEffectiveDefaultDecorator(java.lang.String)
+     */
+    public String getEffectiveDefaultDecorator(String fragmentType)
+    {
+        // get locally defined decorator
+        String decorator = getDefaultDecorator(fragmentType);
+        if (decorator == null)
+        {
+            // delegate to parent folder
+            Folder parentFolder = (Folder)getParent();
+            if (parentFolder != null)
+            {
+                return parentFolder.getEffectiveDefaultDecorator(fragmentType);
+            }
+        }
+        return decorator;
     }
 
     public String getDefaultDecorator( String fragmentType )
     {
-        return this.defaults.getDecorator(fragmentType);
+        return defaults.getDecorator(fragmentType);
     }
 
     public void setDefaultDecorator( String decoratorName, String fragmentType )
     {
-        this.defaults.setDecorator(fragmentType, decoratorName);
+        defaults.setDecorator(fragmentType, decoratorName);
     }
 
     public Fragment getRootFragment()

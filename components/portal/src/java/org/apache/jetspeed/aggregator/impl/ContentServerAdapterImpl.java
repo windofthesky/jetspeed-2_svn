@@ -56,10 +56,10 @@ public class ContentServerAdapterImpl implements ContentServerAdapter
         String layoutDecorator = root.getDecorator();
         if (layoutDecorator == null)
         {
-            layoutDecorator = page.getDefaultDecorator(root.getType());
+            layoutDecorator = page.getEffectiveDefaultDecorator(root.getType());
         }
 
-        String defaultPortletDecorator = page.getDefaultDecorator(ContentFragment.PORTLET);
+        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
        
         List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
 

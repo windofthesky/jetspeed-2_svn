@@ -146,6 +146,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         Folder folder = pageManager.newFolder("/");
         assertEquals("Top", folder.getTitle());
         folder.setTitle("Root Folder");
+        folder.setDefaultDecorator("jetspeed", Fragment.LAYOUT);
+        folder.setDefaultDecorator("gray-gradient", Fragment.PORTLET);
+        folder.setSkin("skin-1");
         folder.setDefaultPage("default-page.psml");
         folder.setShortTitle("Root");
         GenericMetadata metadata = folder.getMetadata();
@@ -231,7 +234,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         page.setVersion("6.89");
         page.setDefaultDecorator("tigris", Fragment.LAYOUT);
         page.setDefaultDecorator("blue-gradient", Fragment.PORTLET);
-        page.setDefaultSkin("skin-1");
+        page.setSkin("skin-1");
         page.setShortTitle("Default");
         metadata = page.getMetadata();
         metadata.addField(Locale.FRENCH, "title", "[fr] Default Page");
@@ -565,9 +568,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("/default-page.psml", check.getUrl());
             assertEquals("Default Page", check.getTitle());
             assertEquals("6.89", check.getVersion());            
+            assertEquals("tigris", check.getEffectiveDefaultDecorator(Fragment.LAYOUT));
             assertEquals("tigris", check.getDefaultDecorator(Fragment.LAYOUT));
             assertEquals("blue-gradient", check.getDefaultDecorator(Fragment.PORTLET));
-            assertEquals("skin-1", check.getDefaultSkin());
+            assertEquals("skin-1", check.getSkin());
             assertEquals("Default", check.getShortTitle());
             assertNotNull(check.getMetadata());
             assertEquals("[fr] Default Page", check.getTitle(Locale.FRENCH));
@@ -661,6 +665,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("/", check.getName());
             assertEquals("/", check.getUrl());
             assertEquals("Root Folder", check.getTitle());
+            assertEquals("jetspeed", check.getEffectiveDefaultDecorator(Fragment.LAYOUT));
+            assertEquals("jetspeed", check.getDefaultDecorator(Fragment.LAYOUT));
+            assertEquals("gray-gradient", check.getDefaultDecorator(Fragment.PORTLET));
+            assertEquals("skin-1", check.getSkin());
             assertEquals("default-page.psml", check.getDefaultPage());
             assertEquals("Root", check.getShortTitle());
             assertNotNull(check.getMetadata());
@@ -749,7 +757,22 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         {
             assertTrue("Folder / NOT FOUND", false);
         }
-        
+        try
+        {
+            Page check = pageManager.getPage("/another-page.psml");
+            assertEquals("/another-page.psml", check.getPath());
+            assertEquals("another-page.psml", check.getName());
+            assertEquals("Another Page", check.getTitle());
+            assertEquals("jetspeed", check.getEffectiveDefaultDecorator(Fragment.LAYOUT));
+            assertEquals("gray-gradient", check.getEffectiveDefaultDecorator(Fragment.PORTLET));
+            assertNull(check.getDefaultDecorator(Fragment.LAYOUT));
+            assertNull(check.getDefaultDecorator(Fragment.PORTLET));
+        }
+        catch (PageNotFoundException e)
+        {
+            assertTrue("Page /default-page.psml NOT FOUND", false);
+        }
+
         try
         {
             Page check = pageManager.getPage(deepPagePath);

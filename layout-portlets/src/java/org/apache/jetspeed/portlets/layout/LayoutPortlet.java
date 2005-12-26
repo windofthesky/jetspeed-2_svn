@@ -443,7 +443,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         LocatorDescriptor decorationLocatorDescriptor = getDecoratorLocatorDescriptor(request);
         if (decorator == null)
         {
-            decorator = page.getDefaultDecorator(fragmentType);
+            decorator = page.getEffectiveDefaultDecorator(fragmentType);
         }
 
         // get fragment properties for fragmentType or generic

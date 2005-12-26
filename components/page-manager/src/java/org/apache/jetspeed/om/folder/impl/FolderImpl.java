@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
@@ -58,6 +59,9 @@ import org.apache.ojb.broker.core.proxy.ProxyHelper;
 public class FolderImpl extends NodeImpl implements Folder
 {
     private String defaultPage;
+    private String skin;
+    private String defaultLayoutDecorator;
+    private String defaultPortletDecorator;
     private List folders;
     private List pages;
     private List links;
@@ -416,6 +420,80 @@ public class FolderImpl extends NodeImpl implements Folder
             setTitle(title);
         }
         return title;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getSkin()
+     */
+    public String getSkin()
+    {
+        return skin;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#setSkin(java.lang.String)
+     */
+    public void setSkin(String skinName)
+    {
+        this.skin = skinName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getEffectiveDefaultDecorator(java.lang.String)
+     */
+    public String getEffectiveDefaultDecorator(String fragmentType)
+    {
+        // get locally defined decorator
+        String decorator = getDefaultDecorator(fragmentType);
+        if (decorator == null)
+        {
+            // delegate to parent folder
+            Folder parentFolder = (Folder)ProxyHelper.getRealObject(getParent());
+            if (parentFolder != null)
+            {
+                return parentFolder.getEffectiveDefaultDecorator(fragmentType);
+            }
+        }
+        return decorator;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultDecorator(java.lang.String)
+     */
+    public String getDefaultDecorator(String fragmentType)
+    {
+        // retrieve supported decorator types
+        if (fragmentType != null)
+        {
+            if (fragmentType.equals(Fragment.LAYOUT))
+            {
+                return defaultLayoutDecorator; 
+            }
+            if (fragmentType.equals(Fragment.PORTLET))
+            {
+                return defaultPortletDecorator; 
+            }
+        }
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultDecorator(java.lang.String,java.lang.String)
+     */
+    public void setDefaultDecorator(String decoratorName, String fragmentType)
+    {
+        // save supported decorator types
+        if (fragmentType != null)
+        {
+            if (fragmentType.equals(Fragment.LAYOUT))
+            {
+                defaultLayoutDecorator = decoratorName; 
+            }
+            if (fragmentType.equals(Fragment.PORTLET))
+            {
+                defaultPortletDecorator = decoratorName; 
+            }
+        }
     }
 
     /* (non-Javadoc)

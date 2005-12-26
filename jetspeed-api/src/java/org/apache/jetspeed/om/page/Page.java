@@ -35,23 +35,28 @@ public interface Page extends Document, java.io.Serializable
     
     /**
      * Returns the name of the default skin that applies to this
-     * page. This name should reference an entry in the Skin
-     * registry
+     * page.
      *
      * @return the page default skin name
      */
-    String getDefaultSkin();
+    String getSkin();
 
     /**
-     * Modifies the default skin for this page.
-     * This new skin must reference an entry in the Skin
-     * registry.
-     * Additionnally, replacing the default skin will not affect any
-     * children fragments with their own specific skins
+     * Modifies the skin for this page.
      *
      * @param skinName the name of the new skin for the page
      */
-    void setDefaultSkin(String skinName);
+    void setSkin(String skinName);
+
+    /**
+     * Returns the name of the default decorator as set here or
+     * in parent folders that applies in this page to fragments
+     * of the specified type.
+     *
+     * @param fragmentType the type of fragment considered
+     * @return the decorator name for the selected type
+     */
+    String getEffectiveDefaultDecorator(String fragmentType);
 
     /**
      * Returns the name of the default decorator that applies in this page

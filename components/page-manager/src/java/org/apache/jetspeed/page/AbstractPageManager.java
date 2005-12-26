@@ -764,6 +764,9 @@ public abstract class AbstractPageManager
         folder.setShortTitle(source.getShortTitle());
         folder.setTitle(source.getTitle());
         folder.setHidden(source.isHidden());
+        folder.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
+        folder.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
+        folder.setSkin(source.getSkin());
 
         // copy locale specific metadata
         folder.getMetadata().copyFields(source.getMetadata().getFields());
@@ -806,7 +809,7 @@ public abstract class AbstractPageManager
         page.setVersion(source.getVersion());
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
         page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
-        page.setDefaultSkin(source.getDefaultSkin());
+        page.setSkin(source.getSkin());
         page.setHidden(source.isHidden());
         
         // copy locale specific metadata
@@ -900,6 +903,7 @@ public abstract class AbstractPageManager
         Link link = newLink(path);
         link.setTitle(source.getTitle());
         link.setShortTitle(source.getShortTitle());
+        link.setSkin(source.getSkin());
         link.setVersion(source.getVersion());
         link.setTarget(source.getTarget());
         link.setUrl(source.getUrl());

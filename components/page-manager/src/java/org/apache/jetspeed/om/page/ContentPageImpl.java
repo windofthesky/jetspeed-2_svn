@@ -141,6 +141,14 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#getEffectiveDefaultDecorator(java.lang.String)
+     */
+    public String getEffectiveDefaultDecorator(String fragmentType)
+    {        
+        return page.getEffectiveDefaultDecorator(fragmentType);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getDefaultDecorator(java.lang.String)
      */
     public String getDefaultDecorator(String fragmentType)
@@ -149,12 +157,12 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#getDefaultSkin()
+     * @see org.apache.jetspeed.om.page.Page#getSkin()
      */
-    public String getDefaultSkin()
+    public String getSkin()
     {
         
-        return page.getDefaultSkin();
+        return page.getSkin();
     }
 
     /* (non-Javadoc)
@@ -167,12 +175,12 @@ public class ContentPageImpl implements ContentPage
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#setDefaultSkin(java.lang.String)
+     * @see org.apache.jetspeed.om.page.Page#setSkin(java.lang.String)
      */
-    public void setDefaultSkin(String skinName)
+    public void setSkin(String skinName)
     {
         
-        page.setDefaultSkin(skinName);
+        page.setSkin(skinName);
     }
 
     /* (non-Javadoc)

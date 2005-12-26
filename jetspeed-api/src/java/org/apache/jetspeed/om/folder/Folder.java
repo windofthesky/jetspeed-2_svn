@@ -68,6 +68,48 @@ public interface Folder extends Node
     int RESERVED_FOLDER_OTHER = 9999;
    
     /**
+     * Returns the name of the skin that applies to this
+     * folder.
+     *
+     * @return the page default skin name
+     */
+    String getSkin();
+
+    /**
+     * Modifies the skin for this folder.
+     *
+     * @param skinName the name of the new skin for the folder
+     */
+    void setSkin(String skinName);
+
+    /**
+     * Returns the name of the default decorator as set here or
+     * in parent folders that applies to page fragments
+     * in this folder or subfolders.
+     *
+     * @param fragmentType the type of fragment considered
+     * @return the decorator name for the selected type
+     */
+    String getEffectiveDefaultDecorator(String fragmentType);
+
+    /**
+     * Returns the name of the default decorator that applies to page
+     * fragments in this folder or subfolders.
+     *
+     * @param fragmentType the type of fragment considered
+     * @return the decorator name for the selected type
+     */
+    String getDefaultDecorator(String fragmentType);
+
+    /**
+     * Modifies the default decorator for the specified fragment type.
+     *
+     * @param decoratorName the name of the new decorator for the type
+     * @param fragmentType the type of fragment considered
+     */
+    void setDefaultDecorator(String decoratorName, String fragmentType);
+
+    /**
      * getDocumentOrder
      *
      * @return list of ordered document names in folder

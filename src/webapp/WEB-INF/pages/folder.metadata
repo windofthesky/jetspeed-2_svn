@@ -6,6 +6,11 @@
   <metadata name="title" xml:lang="es">Carpeta raiz</metadata>
   <metadata name="title" xml:lang="zh">根文件夹</metadata>
 
+  <defaults
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
+  />
+
   <document-order>Jetspeed2.link</document-order>
   <document-order>Jetspeed2Wiki.link</document-order>
   <document-order>apache_portals.link</document-order>

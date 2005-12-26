@@ -29,6 +29,7 @@ import org.apache.jetspeed.page.document.impl.DocumentImpl;
  */
 public class LinkImpl extends DocumentImpl implements Link
 {
+    private String skin;
     private String target;
     private String url;
 
@@ -73,6 +74,22 @@ public class LinkImpl extends DocumentImpl implements Link
     public void setUrl(String url)
     {
         this.url = url;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Link#getSkin()
+     */
+    public String getSkin()
+    {
+        return skin;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Link#setSkin(java.lang.String)
+     */
+    public void setSkin(String skin)
+    {
+        this.skin = skin;
     }
 
     /* (non-Javadoc)

@@ -33,6 +33,19 @@ public interface Link extends Document
     String DOCUMENT_TYPE = ".link";
     
     /**
+     * Returns the name of the skin associated to this link
+     */
+    String getSkin();
+
+    /**
+     * Defines the skin for this link. This skin should be
+     * known by the portal.
+     *
+     * @param skinName the name of the new skin applied to this link
+     */
+    void setSkin(String skinName);
+
+    /**
      * @param url The url to set.
      */
     void setUrl( String url );

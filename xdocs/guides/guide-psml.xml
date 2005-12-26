@@ -28,7 +28,6 @@ limitations under the License.
 <ul>
     <li><a href="#Page">Page</a></li>          
     <ul>
-        <li><a href="#Defaults">Defaults</a></li>     
         <li><a href="#Layout_Fragments">Layout Fragments</a></li>    
         <li><a href="#Portlet_Fragments">Portlet Fragments</a></li>    
         <li><a href="#Fragment_Properties">Fragment Properties</a></li>
@@ -38,6 +37,7 @@ limitations under the License.
     <li><a href="#Link">Link</a></li>          
     <li><a href="#Global_Page_Security">Global Page Security</a></li>          
     <li><a href="#PSML_Titles_and_Metadata">Titles and Metadata</a></li>
+    <li><a href="#PSML_Defaults">Defaults</a></li>     
     <li><a href="#PSML_Security_Constraints">Security Constraints</a></li>        
     <li><a href="#PSML_Menus">Menus</a></li>        
     <li><a href="guide-psml-dtd.html#PSML_DTDs">PSML Document DTDs</a></li>        
@@ -104,6 +104,9 @@ Here is an example PSML file that defines portal site <a href="#Folder">folder</
   <title>Root Folder</title>  
   <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
   <metadata name="title" xml:lang="es">Carpeta raiz</metadata>
+
+  <!-- default page decorations -->
+  <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
 
   <!-- order of documents in folder -->
   <document-order>Jetspeed2.link</document-order>
@@ -217,8 +220,8 @@ The &lt;page&gt; element contains a number of other PSML elements:
     <td>Optional simple element containing text of the default short title for the page. The short title, if available, is used as menu text in some decorators. If not specified, the title text is used.</td>
     </tr>
     <tr>
-    <td><a href="#Defaults">defaults</a></td>
-    <td>Specifies the decorations for the page and its fragments. Defaults are required for each page.</td>
+    <td><a href="#PSML_Defaults">defaults?</a></td>
+    <td>Specifies the decorations for the page and its fragments. Optional defaults can be inherited from parent folders, but layout decorations are required for each page either specified explicitly or in a parent folder.</td>
     </tr>
     <tr>
     <td><a href="#Layout_Fragments">fragment</a></td>
@@ -238,41 +241,6 @@ The &lt;page&gt; element contains a number of other PSML elements:
     </tr>
 </table>
 <p>Example: <a href="#PSML">see intoductory examples above.</a></p>  
-</section>
-
-<section name='Defaults'>
-<p>
-The <a href="#Page">page</a> &lt;defaults&gt; element defines the default layout decorator and default portlet decorator.
-The default layout decorator is applied to all layout fragments which do NOT have a decorator attribute.
-The default portlet decorator is applied to all portlet fragments which do NOT have a decorator attribute.
-There are three valid attributes on the defaults element:
-</p>
-<table>
-    <tr>
-    <th>Attribute</th>
-    <th>Description</th>
-    </tr>
-    <tr>
-    <td>layout-decorator</td>
-    <td>The name of the layout decorator used to render the page. This attribute is required.</td>    
-    </tr>
-    <tr>
-    <td>portlet-decorator</td>
-    <td>The name of the default portlet decorator used to render the page fragments. This attribute is optional, but is almost always set.</td>
-    </tr>
-    <tr>
-    <td>skin</td>
-    <td>A general purpose decorator attribute that can be referenced in the decorators to control page and fragment presentation. Not currently used by Jetspeed2.</td>    
-    </tr>
-</table>
-<p>Example:</p>  
-<source><![CDATA[
-<page>
-  ...
-  <defaults skin="orange" layout-decorator="tigris" portlet-decorator="tigris"/>
-  ...
-</page>
-]]></source>
 </section>
 
 <section name='Layout Fragments'>
@@ -562,10 +530,13 @@ The &lt;folder&gt; element contains a number of other PSML elements:
     <td>Optional simple element containing text of the default short title for the folder. The short title, if available, is used as menu text in some decorators. If not specified, the title text is used.</td>
     </tr>
     <tr>
+    <td><a href="#PSML_Defaults">defaults?</a></td>
+    <td>Optionally specifies the decorations for the folder or subfolder pages and their fragments. Layout decorations are required for each page either specified explicitly in the individual pages or in a parent folder.</td>
+    </tr>
+    <tr>
     <td>default-page?</td>
     <td>Optional simple element containing text with the default page or subfolder name for the folder. The default page is used when the folder is directly referenced in the portal. The name of any <a href="#Page">page</a> or folder in this folder, (including '..' for the parent folder), can be specified. If no default page is set, the page named 'default-page.psml' will be used; if 'default-page.psml' does not exist, the first page in the folder will become the default.</td>
     </tr>
-
     <tr>
     <td>document-order*</td>
     <td>An optional collection of simple elements containing text names used to define a sort order for <a href="#Page">page</a>, subfolder, and <a href="#Link">link</a> members. Members with matching names will be arranged in the order these elements are defined. Other members will be sorted by their names and will appear in menus and other lists after the matching members. Regular expressions for name matching are not supported.</td>
@@ -591,7 +562,7 @@ The &lt;folder&gt; element contains a number of other PSML elements:
 <p>
 The &lt;link&gt; element is a simple container to hold other PSML elements associated with a portal link used to reference content external to the portal site.
 This element is persisted as a file with a '.link' extension in the appropriate file system directory associated with the parent <a href="#Folder">folder</a>.
-There are two valid attributes for the link element:
+There are three valid attributes for the link element:
 </p>
 <table>
     <tr>
@@ -605,6 +576,10 @@ There are two valid attributes for the link element:
     <tr>
     <td>version</td>
     <td>A general purpose version tracking attribute. Not currently used by Jetspeed2.</td>
+    </tr>
+    <tr>
+    <td>skin</td>
+    <td>A general purpose decorator attribute that can be referenced in the portlet decorators to control link presentation. <a href="#Menus">Menu</a> option elements for the link will adopt this skin value if not otherwise specified. Not currently used by Jetspeed2.</td>    
     </tr>
 </table>
 <p>
@@ -702,6 +677,42 @@ The PSML xml documents are normally declared with the UTF-8 encoding to support 
   <metadata name="title" xml:lang="fr">Ma Premiere Page de PSML</metadata>
   <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
   <metadata name="title" xml:lang="hu">Köszönti a Jetspeed 2!</metadata>
+  ...
+</page>
+]]></source>
+</section>
+
+<section name='PSML_Defaults'>
+<p>
+The <a href="#Page">page</a> and <a href="#Folder">folder</a> &lt;defaults&gt; element defines the default layout
+decorator and default portlet decorator. The default layout decorator is applied to all top level layout fragments
+which do NOT have a decorator attribute. The default portlet decorator is applied to all portlet fragments which do NOT
+have a decorator attribute. Defaults may be inherited from parent folder default elements. There are three valid
+attributes on the defaults element:
+</p>
+<table>
+    <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td>layout-decorator</td>
+    <td>The name of the layout decorator used to render the page. This attribute is required, but may be inherited from a parent folder..</td>
+    </tr>
+    <tr>
+    <td>portlet-decorator</td>
+    <td>The name of the default portlet decorator used to render the page fragments. This attribute is optional, but is almost always set. This attribute too may be inherited from parent folders.</td>
+    </tr>
+    <tr>
+    <td>skin</td>
+    <td>A general purpose decorator attribute that can be referenced in the decorators to control page and folder presentation. <a href="#Menus">Menu</a> option elements for the page and folder will adopt this skin value if not otherwise specified. Not currently used by Jetspeed2.</td>    
+    </tr>
+</table>
+<p>Example:</p>  
+<source><![CDATA[
+<page>
+  ...
+  <defaults skin="orange" layout-decorator="tigris" portlet-decorator="tigris"/>
   ...
 </page>
 ]]></source>

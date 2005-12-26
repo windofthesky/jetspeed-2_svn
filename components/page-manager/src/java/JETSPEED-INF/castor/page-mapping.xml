@@ -135,6 +135,10 @@
       <bind-xml name="hidden" node="attribute"/>
     </field>
 
+    <field name="skin" type="java.lang.String">
+      <bind-xml name="skin" node="attribute"/>
+    </field>
+
     <field name="version" type="java.lang.String">
       <bind-xml name="version" node="attribute"/>
     </field>
@@ -187,6 +191,11 @@
       <bind-xml name="short-title"/>
     </field>
     
+    <field name="defaults"
+           type="org.apache.jetspeed.om.page.psml.DefaultsImpl">
+      <bind-xml name="defaults"/>
+    </field>
+
     <field name="defaultPage" type="java.lang.String">
       <bind-xml name="default-page"/>
     </field>

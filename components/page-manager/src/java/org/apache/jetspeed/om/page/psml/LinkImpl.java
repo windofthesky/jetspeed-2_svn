@@ -31,6 +31,8 @@ import org.apache.jetspeed.om.page.Link;
 public class LinkImpl extends DocumentImpl implements Link 
 {
     
+    private String skin;
+
     private String target;
     
     /**
@@ -44,6 +46,22 @@ public class LinkImpl extends DocumentImpl implements Link
     public String getType()
     {       
         return DOCUMENT_TYPE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Link#getSkin()
+     */
+    public String getSkin()
+    {
+        return skin;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Link#setSkin(java.lang.String)
+     */
+    public void setSkin( String skin )
+    {
+        this.skin = skin;
     }
 
     /**

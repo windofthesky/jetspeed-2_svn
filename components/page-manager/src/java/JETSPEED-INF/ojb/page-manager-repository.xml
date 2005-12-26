@@ -140,6 +140,24 @@ limitations under the License.
       />
 
       <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultLayoutDecorator"
+         column="DEFAULT_LAYOUT_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
          name="defaultPage"
          column="DEFAULT_PAGE_NAME"
          jdbc-type="VARCHAR"
@@ -1924,6 +1942,12 @@ limitations under the License.
          column="IS_HIDDEN"
          jdbc-type="INTEGER"
          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
       />
 
       <field-descriptor

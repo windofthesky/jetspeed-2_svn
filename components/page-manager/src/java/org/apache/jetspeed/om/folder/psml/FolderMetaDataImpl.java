@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.page.Document;
+import org.apache.jetspeed.om.page.psml.DefaultsImpl;
 import org.apache.jetspeed.om.page.psml.DocumentImpl;
 
 /**
@@ -38,6 +39,7 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
 {
     public static String DOCUMENT_TYPE = "folder.metadata";
 
+    private DefaultsImpl defaults = new DefaultsImpl();
     private List docOrder;
     private String defaultPage;
 
@@ -73,6 +75,60 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
     public String getUrl()
     {
         return getParent(false).getPath() + PATH_SEPARATOR + getType();
+    }
+
+    /**
+     * <p>
+     * getSkin
+     * </p>
+     *
+     * @return skin for folder
+     */
+    public String getSkin()
+    {
+        // delegate to defaults implementation
+        return defaults.getSkin();
+    }
+
+    /**
+     * <p>
+     * setSkin
+     * </p>
+     *
+     * @param skinName skin for folder
+     */
+    public void setSkin( String skinName )
+    {
+        // delegate to defaults implementation
+        defaults.setSkin(skinName);
+    }
+
+    /**
+     * <p>
+     * getDefaultDecorator
+     * </p>
+     *
+     * @param fragmentType portlet or layout fragment type
+     * @return decorator name
+     */
+    public String getDefaultDecorator( String fragmentType )
+    {
+        // delegate to defaults implementation
+        return defaults.getDecorator(fragmentType);
+    }
+
+    /**
+     * <p>
+     * setDefaultDecorator
+     * </p>
+     *
+     * @param decoratorName decorator name
+     * @param fragmentType portlet or layout fragment type
+     */
+    public void setDefaultDecorator( String decoratorName, String fragmentType )
+    {
+        // delegate to defaults implementation
+        defaults.setDecorator(fragmentType, decoratorName);
     }
 
     /**
@@ -133,6 +189,26 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
     public void setMenuDefinitions(List definitions)
     {
         menuDefinitions = definitions;
+    }
+
+    /**
+     * getDefaults - Castor access method for Defaults.
+     *
+     * @return defaults instance
+     */
+    public DefaultsImpl getDefaults()
+    {
+        return this.defaults;
+    }
+
+    /**
+     * setDefaults - Castor access method for Defaults.
+     *
+     * @param defaults defaults instance
+     */
+    public void setDefaults( DefaultsImpl defaults )
+    {
+        this.defaults = defaults;
     }
 
     /**

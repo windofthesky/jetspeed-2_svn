@@ -168,7 +168,8 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertNotNull(testpage);
         assertTrue(testpage.getId().equals("/test001.psml"));
         assertTrue(testpage.getTitle().equals("Test Page"));
-        assertTrue(testpage.getDefaultSkin().equals("test-skin"));
+        assertTrue(testpage.getSkin().equals("test-skin"));
+        assertTrue(testpage.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
         assertTrue(testpage.getVersion().equals("2.77"));
@@ -248,7 +249,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     {
         Page page = pageManager.newPage(this.testPage002);
         System.out.println("Retrieved test_id in create " + this.testPage002);
-        page.setDefaultSkin("myskin");
+        page.setSkin("myskin");
         page.setTitle("Created Page");
         GenericMetadata metadata = page.getMetadata();
         metadata.addField(Locale.FRENCH, "title", "Created Page de PSML");
@@ -310,6 +311,9 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         Folder folder = pageManager.newFolder(this.testFolder2);
         System.out.println("Retrieved test_id in create " + this.testFolder2);
         folder.setTitle("Created Folder");
+        folder.setSkin("test-skin");
+        folder.setDefaultDecorator("test-layout", Fragment.LAYOUT);
+        folder.setDefaultDecorator("test-portlet", Fragment.PORTLET);
 
         try
         {
@@ -327,6 +331,10 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertNotNull(folder);
         assertTrue(folder.getId().equals(this.testFolder2));
         assertTrue(folder.getTitle().equals("Created Folder"));
+        assertTrue(folder.getSkin().equals("test-skin"));
+        assertTrue(folder.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(folder.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(folder.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
     }
 
     public void testCreateLink() throws Exception
@@ -334,6 +342,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         Link link = pageManager.newLink(this.testLink002);
         System.out.println("Retrieved test_id in create " + this.testLink002);
         link.setTitle("Created Link");
+        link.setSkin("test-skin");
         link.setUrl("http://www.created.link.com/");
 
         try
@@ -352,6 +361,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertNotNull(link);
         assertTrue(link.getId().equals(this.testLink002));
         assertTrue(link.getTitle().equals("Created Link"));
+        assertTrue(link.getSkin().equals("test-skin"));
     }
 
     public void testUpdatePage() throws Exception
@@ -450,6 +460,10 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
 
         Folder folder1 = pageManager.getFolder("/folder1");
         assertNotNull(folder1);
+        assertTrue(folder1.getSkin().equals("test-skin"));
+        assertTrue(folder1.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(folder1.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(folder1.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
                 
         assertEquals(2, folder1.getFolders().size());
         Iterator childItr = folder1.getFolders().iterator();
@@ -460,9 +474,13 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         Folder folder3 = (Folder) childItr.next();
         assertEquals("/folder1/folder3", folder3.getPath());
         assertEquals("test001.psml", folder3.getDefaultPage());
-
         assertEquals(1, folder2.getPages().size());
         assertEquals(2, folder3.getPages().size());
+
+        // test folder decoration inheritance
+        Page page = (Page)folder3.getPages().get("test001.psml");
+        assertTrue(page.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
+        assertTrue(page.getEffectiveDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
         
         // Check link order
         Iterator linkItr = folder3.getAll().iterator();
@@ -548,6 +566,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertEquals("http://portals.apache.org", link.getUrl());
         assertEquals("Apache Portals Website", link.getTitle());
         assertEquals("Apache Software Foundation [french]", link.getTitle(Locale.FRENCH));
+        assertEquals("test-skin", link.getSkin());
 
         Folder folder = pageManager.getFolder("/");
         assertNotNull(folder);
@@ -823,7 +842,8 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertTrue(clone.getId().equals("/cloned.psml"));
         assertTrue(clone.getName().equals("cloned.psml"));
         assertTrue(clone.getTitle().equals("Test Page"));
-        assertTrue(clone.getDefaultSkin().equals("test-skin"));
+        assertTrue(clone.getSkin().equals("test-skin"));
+        assertTrue(clone.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(clone.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(clone.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
 

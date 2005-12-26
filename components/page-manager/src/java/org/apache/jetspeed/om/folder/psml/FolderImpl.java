@@ -105,6 +105,57 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getSkin()
+     */
+    public String getSkin()
+    {
+        return metadata.getSkin();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#setSkin(java.lang.String)
+     */
+    public void setSkin( String skinName )
+    {
+        metadata.setSkin(skinName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getEffectiveDefaultDecorator(java.lang.String)
+     */
+    public String getEffectiveDefaultDecorator(String fragmentType)
+    {
+        // get locally defined decorator
+        String decorator = getDefaultDecorator(fragmentType);
+        if (decorator == null)
+        {
+            // delegate to parent folder
+            Folder parentFolder = (Folder)getParent();
+            if (parentFolder != null)
+            {
+                return parentFolder.getEffectiveDefaultDecorator(fragmentType);
+            }
+        }
+        return decorator;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultDecorator(java.lang.String)
+     */
+    public String getDefaultDecorator( String fragmentType )
+    {
+        return metadata.getDefaultDecorator(fragmentType);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#setDefaultDecorator(java.lang.String, java.lang.String)
+     */
+    public void setDefaultDecorator( String decoratorName, String fragmentType )
+    {
+        metadata.setDefaultDecorator(decoratorName, fragmentType);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
      */
     public List getDocumentOrder()

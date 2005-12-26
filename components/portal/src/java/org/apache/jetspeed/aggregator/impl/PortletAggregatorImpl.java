@@ -83,7 +83,7 @@ public class PortletAggregatorImpl implements PortletAggregator
         // render and write portlet content to response
         if (decorator == null)
         {
-            // decorator = context.getPage().getDefaultDecorator(fragment.getType());
+            // decorator = context.getPage().getEffectiveDefaultDecorator(fragment.getType());
             log.debug("No sepecific decorator portlet so using page default: "+decorator);
         }
         ContentDispatcher dispatcher = renderer.getDispatcher(context, false);

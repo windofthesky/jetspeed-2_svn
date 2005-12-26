@@ -19,11 +19,6 @@ limitations under the License.
   <metadata name="description">Test001 description</metadata>
   <metadata name="description" xml:lang="en">En Descr</metadata>
   <metadata name="subject">Test Subject</metadata>
-  <defaults
-     skin="test-skin"
-     layout-decorator="test-layout"
-     portlet-decorator="test-portlet"
-  />
   <fragment id="f001" type="layout" name="TwoColumns">
     <fragment id="pe001" type="portlet" name="HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />

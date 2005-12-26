@@ -93,8 +93,25 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
      */
     public String getSkin()
     {
-        // get skin from definition or inherit from parent menu
+        // get skin from definition, from menu option
+        // node proxy, or inherit from parent menu
         String skin = definition.getSkin();
+        if (skin == null)
+        {
+            Node node = getNode();
+            if (node instanceof Page)
+            {
+                skin = ((Page)node).getSkin();
+            }
+            else if (node instanceof Link)
+            {
+                skin = ((Link)node).getSkin();
+            }
+            else if (node instanceof Folder)
+            {
+                skin = ((Folder)node).getSkin();
+            }
+        }
         if (skin == null)
         {
             skin = super.getSkin();

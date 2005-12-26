@@ -87,7 +87,7 @@ public class PageAggregatorImpl implements PageAggregator
         String layoutDecorator = root.getDecorator();
         if (layoutDecorator == null)
         {
-            layoutDecorator = page.getDefaultDecorator(root.getType());
+            layoutDecorator = page.getEffectiveDefaultDecorator(root.getType());
         }
 
         contentServer.prepareContentPaths(context, page);
@@ -132,7 +132,7 @@ public class PageAggregatorImpl implements PageAggregator
     protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment,
             PortletWindow window ) throws FailedToRenderFragmentException
     {
-        String defaultPortletDecorator = page.getDefaultDecorator(ContentFragment.PORTLET);
+        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
         ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
         if (maxedContentFragment != null)
         {
@@ -185,7 +185,7 @@ public class PageAggregatorImpl implements PageAggregator
         }
 
         // Start the actual rendering process
-        String defaultPortletDecorator = page.getDefaultDecorator(ContentFragment.PORTLET);
+        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
         if (log.isDebugEnabled())
         {
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");

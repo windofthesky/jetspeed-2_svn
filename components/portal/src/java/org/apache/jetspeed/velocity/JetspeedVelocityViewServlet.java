@@ -379,7 +379,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             {
                 //Page page = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
                 Page page = requestContext.getPage();
-                layoutDecoration = page.getDefaultDecorator(layoutType);
+                layoutDecoration = page.getEffectiveDefaultDecorator(layoutType);
             }
             
             // get layout capabilites and locale

@@ -15,11 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <page id="db-browser">
-    <defaults
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
-  />
-  
   <title>DB Browser Demo</title>
   <metadata name="title" xml:lang="ja">DBブラウザデモ</metadata>
   <metadata name="title" xml:lang="es">Navegador de Base de Datos</metadata>

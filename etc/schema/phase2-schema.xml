@@ -29,6 +29,9 @@ limitations under the License.
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
+        <column name="SKIN" size="80" type="VARCHAR"/>
+        <column name="DEFAULT_LAYOUT_DECORATOR" size="80" type="VARCHAR"/>
+        <column name="DEFAULT_PORTLET_DECORATOR" size="80" type="VARCHAR"/>
         <column name="DEFAULT_PAGE_NAME" size="80" type="VARCHAR"/>
         <column name="SUBSITE" size="40" type="VARCHAR"/>
         <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
@@ -428,6 +431,7 @@ limitations under the License.
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
+        <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="TARGET" size="80" type="VARCHAR"/>
         <column name="URL" size="255" type="VARCHAR"/>
         <column name="SUBSITE" size="40" type="VARCHAR"/>

@@ -251,7 +251,7 @@ The &lt;options&gt; element defines a single or multiple options within a <a hre
     </tr>
     <tr>
     <td>skin</td>
-    <td>Optional decorator defined layout hint for the menu options. This hint is not currently used by Jetspeed2 decorators.</td>
+    <td>Optional decorator defined layout hint for the menu options. Skin attribute values from each page, folder, or link will be used to populate menu options if this hint is not specified here. Otherwise, the skin hint from the containing menu will be used. This hint is not currently used by Jetspeed2 decorators.</td>
     </tr>
 </table>
 <p>Example:</p>

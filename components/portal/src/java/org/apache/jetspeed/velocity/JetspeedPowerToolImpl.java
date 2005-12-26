@@ -526,7 +526,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         String decorator = f.getDecorator();
         if (decorator == null)
         {
-            decorator = getPage().getDefaultDecorator(fragmentType);
+            decorator = getPage().getEffectiveDefaultDecorator(fragmentType);
         }
 
         // get fragment properties for fragmentType or generic

@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -29,6 +30,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
+import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
 /**
  * PageImpl
@@ -93,19 +95,38 @@ public class PageImpl extends DocumentImpl implements Page
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#getDefaultSkin()
+     * @see org.apache.jetspeed.om.page.Page#getSkin()
      */
-    public String getDefaultSkin()
+    public String getSkin()
     {
         return skin;
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Page#setDefaultSkin(java.lang.String)
+     * @see org.apache.jetspeed.om.page.Page#setSkin(java.lang.String)
      */
-    public void setDefaultSkin(String skinName)
+    public void setSkin(String skinName)
     {
         this.skin = skinName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Page#getEffectiveDefaultDecorator(java.lang.String)
+     */
+    public String getEffectiveDefaultDecorator(String fragmentType)
+    {
+        // get locally defined decorator
+        String decorator = getDefaultDecorator(fragmentType);
+        if (decorator == null)
+        {
+            // delegate to parent folder
+            Folder parentFolder = (Folder)ProxyHelper.getRealObject(getParent());
+            if (parentFolder != null)
+            {
+                return parentFolder.getEffectiveDefaultDecorator(fragmentType);
+            }
+        }
+        return decorator;
     }
 
     /* (non-Javadoc)

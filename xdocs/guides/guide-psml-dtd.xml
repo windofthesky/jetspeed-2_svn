@@ -141,7 +141,7 @@ The DTDs and XML Schema included here are organized by PSML document:
   <xs:element name="page">
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
-        <xs:element ref="defaults" />
+        <xs:element ref="defaults" minOccurs="0" />
         <xs:element ref="fragment" />
         <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
         <xs:element ref="metadata" minOccurs="0" maxOccurs="unbounded" />
@@ -167,7 +167,7 @@ The DTDs and XML Schema included here are organized by PSML document:
     <xs:complexType>
       <xs:attribute name="portlet-decorator" type="xs:NMTOKEN" use="optional" />
       <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
-      <xs:attribute name="layout-decorator" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="layout-decorator" type="xs:NMTOKEN" use="optional" />
     </xs:complexType>
   </xs:element>
 
@@ -402,13 +402,18 @@ The DTDs and XML Schema included here are organized by PSML document:
 <source><![CDATA[
 <!-- top level folder element -->
 
-<!ELEMENT folder ( default-page | document-order | menu | metadata | security-constraints | short-title | title )* >
+<!ELEMENT folder ( default-page | defaults | document-order | menu | metadata | security-constraints | short-title | title )* >
 <!ATTLIST folder hidden ( false | true ) #IMPLIED >
 <!ATTLIST folder version NMTOKEN #IMPLIED >
 
 <!-- folder child elements -->
 
 <!ELEMENT default-page ( #PCDATA ) >
+
+<!ELEMENT defaults EMPTY >
+<!ATTLIST defaults layout-decorator NMTOKEN #REQUIRED >
+<!ATTLIST defaults portlet-decorator NMTOKEN #IMPLIED >
+<!ATTLIST defaults skin NMTOKEN #IMPLIED >
 
 <!ELEMENT document-order ( #PCDATA ) >
 
@@ -476,6 +481,7 @@ The DTDs and XML Schema included here are organized by PSML document:
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <xs:element ref="default-page" minOccurs="0" />
+        <xs:element ref="defaults" minOccurs="0" />
         <xs:element ref="document-order" minOccurs="0" maxOccurs="unbounded" />
         <xs:element ref="menu" minOccurs="0" maxOccurs="unbounded" />
         <xs:element ref="metadata minOccurs="0" maxOccurs="unbounded"" />
@@ -499,6 +505,14 @@ The DTDs and XML Schema included here are organized by PSML document:
 
   <xs:element name="default-page">
     <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="defaults">
+    <xs:complexType>
+      <xs:attribute name="portlet-decorator" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
+      <xs:attribute name="layout-decorator" type="xs:NMTOKEN" use="optional" />
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="document-order">
@@ -678,6 +692,7 @@ The DTDs and XML Schema included here are organized by PSML document:
 <!ELEMENT link ( metadata | security-constraints | short-title | title | url )* >
 <!ATTLIST link target NMTOKEN #REQUIRED >
 <!ATTLIST link version NMTOKEN #IMPLIED >
+<!ATTLIST link skin NMTOKEN #IMPLIED >
 
 <!-- link child elements -->
 
@@ -726,6 +741,7 @@ The DTDs and XML Schema included here are organized by PSML document:
       </xs:choice>
       <xs:attribute name="version" type="xs:NMTOKEN" use="optional" />
       <xs:attribute name="target" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="skin" type="xs:NMTOKEN" use="optional" />
     </xs:complexType>
   </xs:element>
 

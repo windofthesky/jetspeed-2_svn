@@ -222,11 +222,11 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         {
             if (fragment.getType().equals(Fragment.PORTLET))
             {
-                decoration = page.getDefaultDecorator(Fragment.PORTLET);
+                decoration = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
             }
             else
             {
-                decoration = page.getDefaultDecorator(Fragment.LAYOUT);
+                decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
             }
         }
 

@@ -11,11 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <page id="public">
-  <defaults
-     skin="orange"
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
-  />
+
   <title>Public Share</title>
   <metadata name="title" xml:lang="ja">一般共有</metadata>
   <metadata name="title" xml:lang="es">Carpeta compartida</metadata>
