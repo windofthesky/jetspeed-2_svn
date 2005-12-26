@@ -590,14 +590,16 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // detect stale session, modification of user
             // principal, or changed profile locators for
             // this session context
+            boolean userUpdate = false;
+            boolean locatorsUpdate = false;
             boolean updated = false;
             synchronized (this)
             {
-                if (stale ||
-                    ((userPrincipal == null) && (currentUserPrincipal != null)) ||
-                    ((userPrincipal != null) && !userPrincipal.equals(currentUserPrincipal)) ||
-                    (profileLocators == null) ||
-                    !locatorsEquals(profileLocators, requestProfileLocators))
+                userUpdate = (((userPrincipal == null) && (currentUserPrincipal != null)) ||
+                              ((userPrincipal != null) && !userPrincipal.equals(currentUserPrincipal)));
+                locatorsUpdate = ((profileLocators == null) ||
+                                  !locatorsEquals(profileLocators, requestProfileLocators));
+                if (stale || userUpdate || locatorsUpdate)
                 {
                     // reset cached session profile locators, view,
                     // folder page history, menu definition locators,
@@ -613,7 +615,31 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             if (updated && log.isDebugEnabled())
             {
                 StringBuffer debug = new StringBuffer();
-                debug.append("Updated context: user=" + userPrincipal + ", profileLocators=(");
+                if (userUpdate)
+                {
+                    debug.append("Updated user");
+                    if (locatorsUpdate)
+                    {
+                        debug.append("/locators");
+                    }
+                    if (stale)
+                    {
+                        debug.append("/stale");
+                    }
+                }
+                else if (locatorsUpdate)
+                {
+                    debug.append("Updated locators");
+                    if (stale)
+                    {
+                        debug.append("/stale");
+                    }
+                }
+                else
+                {
+                    debug.append("Updated stale");
+                }
+                debug.append(" context: user=" + userPrincipal + ", profileLocators=(");
                 if (profileLocators != null)
                 {
                     boolean firstEntry = true;
@@ -855,12 +881,17 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // compare ordered locator properties
                 for (int i = 0, limit = properties0.length; (i < limit); i++)
                 {
-                    // compare property names, control flags, navigation flags, and values
+                    // compare property names, control flags, navigation flags,
+                    // and values. note: properties values are compared only for
+                    // control or navigation properties; otherwise they are
+                    // assumed to contain variable request paths that should
+                    // be treated as equivalent
                     if (!properties0[i].getName().equals(properties1[i].getName()) ||
                         (properties0[i].isControl() && !properties1[i].isControl()) ||
                         (properties0[i].isNavigation() && !properties1[i].isNavigation()) ||
-                        ((properties0[i].getValue() == null) && (properties1[i].getValue() != null)) ||
-                        ((properties0[i].getValue() != null) && !properties0[i].getValue().equals(properties1[i].getValue())))
+                        ((properties0[i].isControl() || properties0[i].isNavigation()) && 
+                         (((properties0[i].getValue() == null) && (properties1[i].getValue() != null)) ||
+                          ((properties0[i].getValue() != null) && !properties0[i].getValue().equals(properties1[i].getValue())))))
                     {
                         return false;
                     }
