@@ -360,7 +360,7 @@ There are many valid attributes for this element:
     </tr>
     <tr>
     <td>decorator</td>
-    <td>The name of the default portlet decorator used to render the fragments. This attribute is optional, but if it is not specified, the <a href="#Defaults">defaults</a> for the page must specify a default portlet decorator.</td>
+    <td>The name of the default portlet decorator used to render the fragments. This attribute is optional, but if it is not specified, the <a href="#PSML_Defaults">defaults</a> for the page must specify a default portlet decorator.</td>
     </tr>
     <tr>
     <td>state</td>
@@ -448,7 +448,7 @@ The <a href="#Portlet_Fragments">fragment</a> &lt;property&gt; element is use to
 <p>
 The <a href="#Portlet_Fragments">portlet fragment</a> &lt;preference&gt; elements allow for the defining of default
 portlet preference values.  
-This provides an easier avenue for the setting of default portlet prefences for a portlet
+This provides an easier avenue for the setting of default portlet preferences for a portlet
 instance on a page without having to duplicate portlet definitions within
 the portlet application's portlet.xml.
 </p>
@@ -682,7 +682,7 @@ The PSML xml documents are normally declared with the UTF-8 encoding to support 
 ]]></source>
 </section>
 
-<section name='PSML_Defaults'>
+<section name='PSML Defaults'>
 <p>
 The <a href="#Page">page</a> and <a href="#Folder">folder</a> &lt;defaults&gt; element defines the default layout
 decorator and default portlet decorator. The default layout decorator is applied to all top level layout fragments
