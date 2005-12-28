@@ -19,7 +19,7 @@
 		<title>
 			Getting Started with Jetspeed 2 using a Source Release
 		</title>
-		<subtitle>Gettin gready to modify Jetspeed</subtitle>
+		<subtitle>Getting ready to modify Jetspeed</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="Ate Douma" email="ate@apache.org" />
@@ -29,7 +29,7 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Naming Conventions and Basic Assumptions">
+		<section name="1. Naming Conventions and Basic Assumptions">
 			<subsection name="Source Basic Assumptions">
 				<ul>
 					<li>
