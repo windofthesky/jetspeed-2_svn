@@ -749,6 +749,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // create and save proxies for concrete children
                 NodeSet children = folder.getAll();
                 Iterator childrenIter = children.iterator();
+                if (childrenIter == null)
+                    continue;                
                 while (childrenIter.hasNext())
                 {
                     Node child = (Node)childrenIter.next();
