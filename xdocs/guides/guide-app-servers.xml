@@ -16,8 +16,8 @@
 -->
 <document>
 	<properties>
-		<title>Jetspeed 2 Database Configuration</title>
-		<subtitle>Welcome to Jetspeed 2</subtitle>
+		<title>Application Servers Configuration</title>
+		<subtitle>Application Servers Configuration for Jetspeed 2</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="David Le Strat" email="dlestrat@apache.org" />
