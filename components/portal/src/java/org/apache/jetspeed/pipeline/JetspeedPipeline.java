@@ -15,19 +15,15 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 
+import java.util.List;
+
 /**
- * Flexible implementation of a {@link org.apache.jetspeed.pipeline.Pipeline}.
- *
- * <br/><br/>
- * Suggested order of valves:
+ * Flexible implementation of a {@link Pipeline}. <p/> <br/><br/> Suggested
+ * order of valves:
  * <ul>
  * <li>ContainerValve</li>
  * <li>CapabilityValve</li>
@@ -39,168 +35,137 @@ import org.apache.jetspeed.request.RequestContext;
  * <li>AggregateValve</li>
  * <li>CleanupValve</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:jason@zenplex.com">Jason van Zyl</a>
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPipeline
-implements Pipeline, ValveContext
+public class JetspeedPipeline implements Pipeline
 {
-    /** Logger */
-    private Log log = LogFactory.getLog(JetspeedPipeline.class);
-    
-    /** Name of this pipeline. */
+
+    /**
+     * Name of this pipeline.
+     */
     protected String name;
-    
-    /** The set of Valves associated with this Pipeline. */
-    protected Valve[] valves = new Valve[0];
-    
+
     /**
-     * The per-thread execution state for processing through this
-     * pipeline.  The actual value is a java.lang.Integer object
-     * containing the subscript into the <code>values</code> array, or
-     * a subscript equal to <code>values.length</code> if the basic
-     * Valve is currently being processed.
-     *
+     * The set of Valves associated with this Pipeline.
      */
-    protected ThreadLocal state = new ThreadLocal();
-    
+    protected Valve[] valves;
+
     /**
-     * Constructor that provides the descriptor for building
-     * the pipeline
+     * Constructor that provides the descriptor for building the pipeline
      */
-    public JetspeedPipeline(String name, List valveList)
-    throws Exception
+    public JetspeedPipeline(String name, List valveList) throws Exception
     {
         valves = (Valve[]) valveList.toArray(new Valve[valveList.size()]);
         setName(name);
     }
-    
-    /**
-     * @see org.apache.plexus.summit.Pipeline#init()
-     */
-    public void initialize()
-    throws PipelineException
+
+    public void initialize() throws PipelineException
     {
-        
-       
+
     }
-    
+
     /**
      * Set the name of this pipeline.
-     *
-     * @param name Name of this pipeline.
+     * 
+     * @param name
+     *            Name of this pipeline.
      */
     public void setName(String name)
     {
         this.name = name;
     }
-    
+
     /**
      * Get the name of this pipeline.
-     *
+     * 
      * @return String Name of this pipeline.
      */
     public String getName()
     {
         return name;
     }
-    
-    /**
-     * @see org.apache.plexus.summit.Pipeline#addValve(Valve)
-     */
-    public void addValve(Valve valve)
+
+    public synchronized void addValve(Valve valve)
     {
         // Add this Valve to the set associated with this Pipeline
-        synchronized (valves)
-        {
-            Valve[] results = new Valve[valves.length + 1];
-            System.arraycopy(valves, 0, results, 0, valves.length);
-            results[valves.length] = valve;
-            valves = results;
-        }
+        Valve[] results = new Valve[valves.length + 1];
+        System.arraycopy(valves, 0, results, 0, valves.length);
+        results[valves.length] = valve;
+        valves = results;
     }
-    
-    /**
-     * @see org.apache.plexus.summit.Pipeline#getValves()
-     */
-    public Valve[] getValves()
+
+    public synchronized Valve[] getValves()
     {
-        synchronized (valves)
-        {
-            Valve[] results = new Valve[valves.length];
-            System.arraycopy(valves, 0, results, 0, valves.length);
-            return results;
-        }
+        Valve[] results = new Valve[valves.length];
+        System.arraycopy(valves, 0, results, 0, valves.length);
+        return results;
     }
-    
-    /**
-     * @see org.apache.plexus.summit.Pipeline#removeValve(Valve)
-     */
-    public void removeValve(Valve valve)
+
+    public synchronized void removeValve(Valve valve)
     {
-        synchronized (valves)
+        // Locate this Valve in our list
+        int index = -1;
+        for (int i = 0; i < valves.length; i++)
         {
-            // Locate this Valve in our list
-            int index = -1;
-            for (int i = 0; i < valves.length; i++)
+            if (valve == valves[i])
             {
-                if (valve == valves[i])
-                {
-                    index = i;
-                    break;
-                }
+                index = i;
+                break;
             }
-            if (index < 0)
-            {
-                return;
-            }
-            
-            // Remove this valve from our list
-            Valve[] results = new Valve[valves.length - 1];
-            int n = 0;
-            for (int i = 0; i < valves.length; i++)
-            {
-                if (i == index)
-                {
-                    continue;
-                }
-                results[n++] = valves[i];
-            }
-            valves = results;
         }
+        if (index < 0) { return; }
+
+        // Remove this valve from our list
+        Valve[] results = new Valve[valves.length - 1];
+        int n = 0;
+        for (int i = 0; i < valves.length; i++)
+        {
+            if (i == index)
+            {
+                continue;
+            }
+            results[n++] = valves[i];
+        }
+        valves = results;
     }
-    
-    /**
-     * @see org.apache.plexus.summit.Pipeline#invoke(RequestContext)
-     */
-    public void invoke(RequestContext request)
-    throws PipelineException
+
+    public void invoke(RequestContext request) throws PipelineException
     {
-        // Initialize the per-thread state for this thread
-        state.set(new Integer(0));
-        
+
+        Invocation invocation;
+        // TODO use java 5 locks or compare and swap if possible
+        synchronized (this)
+        {
+            invocation = new Invocation(valves);
+        }
         // Invoke the first Valve in this pipeline for this request
-        invokeNext(request);
+        invocation.invokeNext(request);
     }
-    
-    /**
-     * @see org.apache.plexus.summit.ValveContext#invokeNext(RequestContext)
-     */
-    public void invokeNext(RequestContext request)
-    throws PipelineException
+
+    private static final class Invocation implements ValveContext
     {
-        // Identify the current subscript for the current request thread
-        Integer current = (Integer) state.get();
-        int subscript = current.intValue();
-        
-        if (subscript < valves.length)
+
+        private final Valve[] valves;
+
+        private int at = 0;
+
+        public Invocation(Valve[] valves)
         {
-            // Invoke the requested Valve for the current request
-            // thread and increment its thread-local state.
-            state.set(new Integer(subscript + 1));
-            valves[subscript].invoke(request, this);
+            this.valves = valves;
+        }
+
+        public void invokeNext(RequestContext request) throws PipelineException
+        {
+            if (at < valves.length)
+            {
+                Valve next = valves[at];
+                at++;
+                next.invoke(request, this);
+            }
         }
     }
+
 }
