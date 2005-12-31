@@ -260,6 +260,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public List getPermissions()
     {
+    	if (permissionsList != null && !permissionsList.isEmpty()) {
+    		this.permissions = this.getPermissionsAsString();
+    	}
         return permissionsList;
     }
     
@@ -293,7 +296,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public boolean principalsMatch(List userPrincipals, List rolePrincipals, List groupPrincipals, boolean allowDefault)
     {
-        return ((allowDefault && (users == null) && (roles == null) && (groups == null)) ||
+    	return ((allowDefault && (getUsersAsString() == null) && (getRolesAsString() == null) && (getGroupsAsString() == null)) ||
                 ((users != null) && (userPrincipals != null) &&
                  (users.equals(WILD_CHAR) || containsAny(usersList, userPrincipals))) ||
                 ((roles != null) && (rolePrincipals != null) &&
