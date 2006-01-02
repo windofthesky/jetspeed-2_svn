@@ -1,0 +1,107 @@
+<import-data>
+	<!-- import information -->
+	<version>1.0</version>
+	<name>Import Test</name>
+	<date>2005-12-18 15:16:04.0 PST</date>
+	<locale>en_US</locale>
+	
+	<!-- roles -->	
+	<roles>
+		<role>ra</role>
+		<role>rb</role>
+		<role>rc</role>
+		<role>rd</role>
+	</roles>
+	
+	<!-- groups -->
+	<groups>
+		<group>ga</group>
+		<group>gb</group>
+		<group>gc</group>
+		<group>gd</group>
+	</groups>
+
+	<!-- permissions -->
+	<permissions>
+		<permission>
+			<type>folder</type>
+			<resource>/</resource>
+			<actions>view, edit</actions>
+			<roles>admin, user</roles>
+			<groups>dev</groups>
+			<users>joe</users>
+		</permission>
+		<permission>
+			<type>page</type>
+			<resource>/default-page.psml</resource>
+			<actions>view</actions>
+			<roles>admin, user</roles>
+			<groups>dev</groups>
+			<users>joe</users>
+		</permission>		
+	</permissions>	
+		
+	<!-- profiling rules -->
+	<profilingRules>
+		<profilingRule>
+			<name>j2</name>
+			<className>org.apache.jetspeed.profile.RuleImpl</className>
+			<description>whatever</description>
+			<criteria>
+				<criterion>
+					<order>0</order>
+					<type>user</type>
+					<name>user</name>
+					<value>*</value>
+					<fallback>continue</fallback>
+				</criterion> 
+				<criterion>
+					<order>1</order>
+					<type>path.session</type>
+					<name>path</name>
+					<value>default-page.psml</value>
+					<fallback>continue</fallback>
+				</criterion> 								
+			</criteria>
+		</profilingRule>		
+	</profilingRules>
+	
+	<!-- users -->
+	<users>
+     <user>
+	   <name>joe</name>
+	   <password>xxx</password>
+       <template>/_user/template/</template>
+		 
+       <roles>admin, user</roles>
+       <groups>dev,groupa, groupb</groups>
+       <userInfo>
+           <info>
+               <name>user.first.name</name>
+               <value>John</value>
+           </info>
+           <info>
+               <name>user.last.name</name>
+               <value>Smith</value>
+           </info>
+       </userInfo>
+       
+<!--       <preferences/> -->
+       
+       <profileRules>
+           <rule>
+			   <name>page</name>
+			   <value>userrolefallback</value>
+		   </rule>
+           <rule>
+			   <name>menu</name>
+			   <value>j2</value>
+		   </rule>
+       </profileRules>
+    </user>
+	</users>	
+	
+	<!-- Capability -->
+		
+	
+</import-data>
