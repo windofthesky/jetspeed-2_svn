@@ -1,15 +1,15 @@
 #macro (traverseAllFolders $f)
-<div dojoType="TreeNode" title="$f.Name">
-	#foreach($subf in $f.Folders.iterator())
+<div dojoType="TreeNode" title="$f.Name" id="$f.Path">
+    #foreach($subf in $f.Folders.iterator())
     #traverseAllFolders($subf)
-	#end
+    #end
 </div>
 #end
 #macro (traverseFolders $f)
-<div dojoType="TreeNode" title="$f.Name">
-	#foreach($subf in $f.Folders.iterator())
+<div dojoType="TreeNode" title="$f.Name" id="$f.Path">
+    #foreach($subf in $f.Folders.iterator())
     #traverseFolders($subf)
-	#end
+    #end
 </div>
 #end
 
@@ -17,151 +17,208 @@
 <head>
 <script type="text/javascript">
 
-	var djConfig = {isDebug: true, baseRelativePath: "./", baseScriptUri: "http://localhost:8080/j2-admin/dojo/"};
-	//djConfig.debugAtAllCosts = true;
+    var djConfig = {isDebug: true, baseRelativePath: "./", baseScriptUri: "http://localhost:8080/j2-admin/dojo/"};
+    //djConfig.debugAtAllCosts = true;
 
 </script>
 <script type="text/javascript" src="http://localhost:8080/j2-admin/dojo/dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-	dojo.require("dojo.lang.*");
-	dojo.require("dojo.dnd.*");
-	dojo.require("dojo.event.*");	
-	dojo.require("dojo.widget.HtmlLayoutPane");
-	dojo.require("dojo.widget.HtmlSplitPane");
-	dojo.require("dojo.widget.HtmlColorPalette");
-	dojo.require("dojo.widget.HtmlTabSet");
-	dojo.require("dojo.widget.Tree");	
-	dojo.require("dojo.jetspeed.JetspeedAjax");	
-	dojo.hostenv.writeIncludes();	
+    dojo.require("dojo.lang.*");
+    dojo.require("dojo.dnd.*");
+    dojo.require("dojo.event.*");    
+    dojo.require("dojo.io");
+    dojo.require("dojo.widget.HtmlLayoutPane");
+    dojo.require("dojo.widget.HtmlSplitPane");
+    dojo.require("dojo.widget.HtmlColorPalette");
+    dojo.require("dojo.widget.HtmlTabSet");
+    dojo.require("dojo.widget.Tree");    
+    dojo.require("dojo.jetspeed.JetspeedAjax");    
+    dojo.require("dojo.widget.Button");
+    dojo.require("dojo.widget.html.Button");
+    dojo.hostenv.writeIncludes();    
 </script>
 <script type="text/javascript">
 
-	function byId(id)
-	{
-		return document.getElementById(id);
-	}
+    function byId(id)
+    {
+        return document.getElementById(id);
+    }
 
-	function initTest()
-	{
-		portlets = byId("portlets");
-		alert("portlets = " + portlets);
-		dojo.jetspeed.getFragments(portlets);
-	}	
-	
-	function Subscriber(displayNode)
-	{
-		this.displayNode = displayNode;
+    function initTest()
+    {
+        portlets = byId("portlets");
+        dojo.jetspeed.getFragments(portlets);
+    }    
 
-		this.update = function(message) 
-		{
-			this.displayNode.innerHTML = message;
-		};
-	}
-	
-	function init()
-	{
-		var dl = byId("portlets");
-		new dojo.dnd.HtmlDropTarget(dl, ["li"]);
-		var lis = dl.getElementsByTagName("li");
-		for(var x=0; x<lis.length; x++)
-		{
-			new dojo.dnd.HtmlDragSource(lis[x], null, lis[x].firstChild);
-		}
-	}
+    function displayPage(xml)
+    {
+        var pageArea = byId("pageArea");        
+        pageArea.innerHTML = xml;
+    }
+    
+    function displayPages(xml)
+    {
+        // alert("xml data = " + xml);
+        var pages = byId("pages");
+        var container = byId("pagesContainer");
+        if (container != null)
+        {
+            pages.removeChild(container);
+        }        
+        container = document.createElement("div");
+        container.setAttribute("id", "pagesContainer");
 
-	dojo.event.connect(dojo, "loaded", "initDnD");
-	
-	dojo.addOnLoad(function()
-	{	
-		var eventSub = new Subscriber(document.getElementById("pages"));
-		var selectionTopic = dojo.event.topic.getTopic("treeSelected");
-		selectionTopic.subscribe(eventSub, "update");	
-	}
-	
+        pages.appendChild(container);
+        var lis = xml.getElementsByTagName("page");
+        for(var x=0; x<lis.length; x++)
+        {
+            var buttonArgs = {
+              label: lis[x].getAttribute("title"),
+              path: lis[x].getAttribute("path"),
+              onClick: function()
+              {
+                dojo.io.bind({
+                    url: "http://localhost:8080/jetspeed/ajaxapi" + this.path + "?action=getpage",
+                    load: function(type, data, evt){ displayPage(data); },
+                    mimetype: "text/plain"
+                });                            
+              }
+            };
+            var button = dojo.widget.fromScript("Button", buttonArgs);            
+            container.appendChild(button.domNode);
+        }
+
+    }
+
+    function FolderSubscriber(displayNode)
+    {
+        this.displayNode = displayNode;
+
+        this.update = function(folder) 
+        {
+            this.displayNode.innerHTML = "retrieving contents for folder " + folder;
+
+            dojo.io.bind({
+                url: "http://localhost:8080/jetspeed/ajaxapi/?action=getpages&folder=" + folder,
+                load: function(type, data, evt){ displayPages(data); },
+                mimetype: "text/xml"
+            });            
+
+            this.displayNode.innerHTML = folder;
+        };
+    }
+    
+    function logMe(){
+        alert("logging");
+        dj_debug("click1");
+    }
+
+    function init()
+    {
+        var dl = byId("portlets");
+        new dojo.dnd.HtmlDropTarget(dl, ["li"]);
+        var lis = dl.getElementsByTagName("li");
+        for(var x=0; x<lis.length; x++)
+        {
+            new dojo.dnd.HtmlDragSource(lis[x], null, lis[x].firstChild);
+        }
+
+        //var clickNode = byId("folderTree");
+        //alert("clickNode " + clickNode);
+        //dojo.event.connect(clickNode, "onclick", dj_global, "logMe");
+    
+        var eventSub = new FolderSubscriber(document.getElementById("FolderSelectionEvents"));
+        var selectionTopic = dojo.event.topic.getTopic("treeSelected");
+        selectionTopic.subscribe(eventSub, "update");
+
+
+    }
+    dojo.event.connect(dojo, "loaded", "init");
+    
+    
 </script>
   <style>
-    html, body{	
-		width: 100%;	/* make the body expand to fill the visible window */
-		height: 100%;
-		overflow: hidden;	/* erase window level scrollbars */
-		/*border: dotted blue;	/* for debugging */
-		padding: 0 0 0 0;
-		margin: 0 0 0 0;
+    html, body{    
+        width: 100%;    /* make the body expand to fill the visible window */
+        height: 100%;
+        overflow: hidden;    /* erase window level scrollbars */
+        /*border: dotted blue;    /* for debugging */
+        padding: 0 0 0 0;
+        margin: 0 0 0 0;
     }
    </style>
 </head>
 <body>
 <div dojoType="LayoutPane"
-	layoutChildPriority='top-bottom'
-	style="border: 2px solid black; width: 100%; height: 100%;">
-	<div dojoType="LayoutPane" layoutAlign="top" style="background-color: #274383; color: white;">
-		<b>Jetspeed Site Customizer</b>
-	</div>
-	<div dojoType="LayoutPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
-		Status:
-	</div>
-	<div dojoType="LayoutPane" layoutAlign="client">
-		<div dojoType="SplitPane"
-			orientation="horizontal"
-			sizerWidth="5"
-			activeSizing="0"
-			style="width: 100%; height: 100%;"
-		>
-		
-<!-- Folders -------------------------------------------------------------------- -->		
-			<div dojoType="SplitPanePanel" sizeMin="20" sizeShare="20">
-			    <b>Site</b>
-				<div id="leftTabSet" dojoType="TabSet" style="width: 100%; height: 20em;" selectedTab="tab2" >
-					<div id='foldersTab' dojoType="Tab" label="Folders">
-						<h1>Folders</h1>
-						<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="folderTree">												
-#traverseAllFolders($rootFolder)			  
-						</div>
-					</div>
-					<div id='usersTab' dojoType="Tab" label="Users">
-						<h1>Users</h1>
-						<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="userTree">		
+    layoutChildPriority='top-bottom'
+    style="border: 2px solid black; width: 100%; height: 100%;">
+    <div dojoType="LayoutPane" layoutAlign="top" style="background-color: #274383; color: white;">
+        <b>Jetspeed Site Customizer</b>
+    </div>
+    <div dojoType="LayoutPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
+        Status:
+    </div>
+    <div dojoType="LayoutPane" layoutAlign="client">
+        <div dojoType="SplitPane"
+            orientation="horizontal"
+            sizerWidth="5"
+            activeSizing="0"
+            style="width: 100%; height: 100%;"
+        >
+        
+<!-- Folders -------------------------------------------------------------------- -->        
+            <div dojoType="SplitPanePanel" sizeMin="20" sizeShare="20">
+                <b>Site</b>
+                <div id="leftTabSet" dojoType="TabSet" style="width: 100%; height: 20em;" selectedTab="tab2" >
+                    <div id='foldersTab' dojoType="Tab" label="Folders">
+                        <h1>Folders</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="folderTree" id="folderTree">                                                
+#traverseAllFolders($rootFolder)              
+                        </div>
+                    </div>
+                    <div id='usersTab' dojoType="Tab" label="Users">
+                        <h1>Users</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="userTree">        
 #traverseFolders($rootFolder.getFolder("_user"))
-						</div>
-					</div>
-					<div id='rolesTab' dojoType="Tab" label="Roles">
-						<h1>Roles</h1>
-						<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="roleTree">												
+                        </div>
+                    </div>
+                    <div id='rolesTab' dojoType="Tab" label="Roles">
+                        <h1>Roles</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="roleTree">                                                
 #traverseFolders($rootFolder.getFolder("_role"))
-						</div>
-					</div>					
-			    </div>    				
-			</div>
-			
-<!-- Portlets -------------------------------------------------------------------- -->					
-			<div dojoType="SplitPanePanel" sizeMin="20" sizeShare="20">
-			    <b>Portlets</b>
-				<ul id="portlets">
-				#foreach ($portlet in $portlets)
-				  <li id='$portlet.Name'>$portlet.DisplayName</li>
-                #end				  
-				</ul>
-			</div>			
-			<div dojoType="SplitPanePanel" sizeMin="50" sizeShare="50">
-				<div dojoType="SplitPane"
-					orientation="vertical"
-					sizerWidth="5"
-					activeSizing="0"
-					style="width: 100%; height: 100%;"
-				>
-					<div dojoType="SplitPanePanel" sizeMin="20" sizeShare="70">
-						Page Customization
-					</div>
-					<div id="pages" dojoType="SplitPanePanel" sizeMin="20" sizeShare="30">
-						Pages
-<!--						<div dojoType="ColorPalette"></div> -->
-						<div id="SelectionEvents" style="background:#dcdcdc; color:#191970;">Selection events should show up here</div>
-
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </div>                    
+                </div>                    
+            </div>
+            
+<!-- Portlets -------------------------------------------------------------------- -->                    
+            <div dojoType="SplitPanePanel" sizeMin="20" sizeShare="20">
+                <b>Portlets</b>
+                <ul id="portlets">
+                #foreach ($portlet in $portlets)
+                  <li id='$portlet.Name'>$portlet.DisplayName</li>
+                #end                  
+                </ul>
+            </div>            
+            <div dojoType="SplitPanePanel" sizeMin="50" sizeShare="50">
+                <div dojoType="SplitPane"
+                    orientation="vertical"
+                    sizerWidth="5"
+                    activeSizing="0"
+                    style="width: 100%; height: 100%;"
+                >
+                    <div dojoType="SplitPanePanel" sizeMin="20" sizeShare="70">
+                        Page Customization
+                        <div id='pageArea'></div>
+                    </div>
+                    <div id="pages" dojoType="SplitPanePanel" sizeMin="20" sizeShare="30">
+                        Pages
+<!--                        <div dojoType="ColorPalette"></div> -->
+                        <div id="FolderSelectionEvents" style="background:#dcdcdc; color:#191970;">Selection events should show up here</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
-
