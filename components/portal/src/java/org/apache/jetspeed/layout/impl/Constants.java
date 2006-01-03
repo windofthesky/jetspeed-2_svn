@@ -36,7 +36,9 @@ public interface Constants
 	public static final String ROW = "row";
     public static final String FILTER = "filter";
     public static final String PORTLETS = "portlets";
+    public static final String PAGES = "pages";
     public static final String PAGE = "page";
+    public static final String FOLDER = "folder";
 
 	// Move types
 	public static final int ABS = 1;

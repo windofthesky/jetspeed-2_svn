@@ -1,0 +1,12 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    
+    <pages>
+#foreach ($page in $pages)    
+        <page name="$page.Name" title="$page.Title" path="$page.Path">
+        </page>
+#end        
+    </pages>
+    
+</js>
