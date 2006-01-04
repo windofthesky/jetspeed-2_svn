@@ -52,6 +52,7 @@
 ## TODO: Edit layout
 ## get the decorated Portlet content
 #if($f.type == "portlet")
+	$jetspeed.setCurrentFragment($f)	   
 #parse($f.decoration.template)
 #else		
 $jetspeed.setCurrentFragment($f)
