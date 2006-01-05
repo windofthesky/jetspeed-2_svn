@@ -180,9 +180,9 @@ limitations under the License.
       <ref bean="passwordCredentialValve"/>
       <ref bean="loginValidationValve"/>
       <ref bean="profilerValve"/>
-      <ref bean="DecorationValve" />
-      <ref bean="containerValve"/>      
+      <ref bean="containerValve"/>
       <ref bean="actionValve"/>
+      <ref bean="DecorationValve" />
       <ref bean="aggregatorValve"/>
       <ref bean="cleanUpValve"/>
     </list>
