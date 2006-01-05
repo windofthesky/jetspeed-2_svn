@@ -93,7 +93,7 @@ limitations under the License.
 
    #if($editing)
    #set($themeUrl = $renderResponse.createActionURL())
-   $!themeUrl.setParameter("editingPage","$myPage.id")
+   $!themeUrl.setParameter("editingPage","$myPage.path")
 <form name="themeForm" action="$themeUrl" method='post'>
      <label style='font-size:8pt;color:blue;padding-left: 9px;'>Theme:
      <select id='theme' name='theme' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
@@ -110,7 +110,7 @@ limitations under the License.
    #end
 
 
-<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
+<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.path)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
      #set ($sizeIndex = 0)
@@ -145,7 +145,7 @@ limitations under the License.
                          #set($upUrl = $renderResponse.createActionURL())    
                          $!upUrl.setParameter("move","1")
                          $!upUrl.setParameter("fragmentToMove","$f.id")
-                         $!upUrl.setParameter("editingPage","$myPage.id")
+                         $!upUrl.setParameter("editingPage","$myPage.path")
                          <a href="$upUrl"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="Move Portlet Up"/></a>
                        #end
                    </td>
@@ -159,7 +159,7 @@ limitations under the License.
                          #set($leftUrl = $renderResponse.createActionURL())    
                          $!leftUrl.setParameter("move","3")
                          $!leftUrl.setParameter("fragmentToMove","$f.id")
-                         $!leftUrl.setParameter("editingPage","$myPage.id")
+                         $!leftUrl.setParameter("editingPage","$myPage.path")
                          <a href="$leftUrl"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="Move Portlet Left"/></a>
                         #end
                    </td>
@@ -171,7 +171,7 @@ limitations under the License.
                          #set($rightUrl = $renderResponse.createActionURL())    
                          $!rightUrl.setParameter("move","4")
                          $!rightUrl.setParameter("fragmentToMove","$f.id")
-                         $!rightUrl.setParameter("editingPage","$myPage.id")
+                         $!rightUrl.setParameter("editingPage","$myPage.path")
                          <a href="$rightUrl"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="Move Portlet Right"/></a>
                         #end
                     </td>
@@ -185,7 +185,7 @@ limitations under the License.
    #set ($dcnt = $dcnt + 1)   
    #set($decUrl = $renderResponse.createActionURL())    
    $!decUrl.setParameter("fragmentToMove","$f.id")
-   $!decUrl.setParameter("editingPage","$myPage.id")     
+   $!decUrl.setParameter("editingPage","$myPage.path")     
    #set ($temp = ".submit();")
 <form name="portletForm$dcnt" action="$decUrl" method='post'>
 <select id='decorator' name='decorator' style='font-size:8pt;color:blue;' onChange="portletForm$dcnt$temp">
@@ -205,7 +205,7 @@ limitations under the License.
 					    #set($downUrl = $renderResponse.createActionURL())	
 			            $!downUrl.setParameter("move","2")
 			            $!downUrl.setParameter("fragmentToMove","$f.id")
-                        $!downUrl.setParameter("editingPage","$myPage.id")
+                        $!downUrl.setParameter("editingPage","$myPage.path")
 					    <a href="$downUrl"><img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="Move Portlet Down"/></a>
 					  #end
 					</td>
