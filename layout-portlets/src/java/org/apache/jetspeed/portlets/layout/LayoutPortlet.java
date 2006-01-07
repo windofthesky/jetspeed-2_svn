@@ -98,6 +98,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             throw new PortletException("Failed to find the JPT Factory on portlet initialization");
         }        
         
+        entityAccess = (PortletEntityAccessComponent) getPortletContext().getAttribute(CommonPortletServices.CPS_ENTITY_ACCESS_COMPONENT);
+        if (null == entityAccess)
+        {
+            throw new PortletException("Failed to find the Entity Access on portlet initialization");
+        }        
+        
         templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
         decorationLocator = (TemplateLocator) getPortletContext().getAttribute("DecorationLocator");
         

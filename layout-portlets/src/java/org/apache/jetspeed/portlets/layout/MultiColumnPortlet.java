@@ -34,9 +34,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -291,10 +294,10 @@ public class MultiColumnPortlet extends LayoutPortlet
                 && fragmentChange != null                
                 && editingPage != null)
         {
-            Page page;
+            ContentPage page;
             try
             {
-                page = pageManager.getPage(editingPage);
+                page = pageManager.getContentPage(editingPage);
             }
             catch (Exception e)
             {
@@ -322,10 +325,10 @@ public class MultiColumnPortlet extends LayoutPortlet
                  layoutChange != null &&
                  editingPage != null)                
         {
-            Page page;
+            ContentPage page;
             try
             {
-                page = pageManager.getPage(editingPage);
+                page = pageManager.getContentPage(editingPage);
             }
             catch (Exception e)
             {
@@ -333,11 +336,21 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             
             page.setDefaultDecorator(themeChange, Fragment.LAYOUT);
-            page.getRootFragment().setName(layoutChange);
             
             try
             {
-                pageManager.updatePage(page);
+                PortletEntity oldEntity = this.entityAccess.getPortletEntity(page.getRootFragment().getId());
+                if (oldEntity != null)
+                {
+                    PortletEntity newEntity = 
+                        this.entityAccess.generateEntityFromFragment((ContentFragment)page.getRootFragment(), null);
+                    this.entityAccess.removePortletEntity(oldEntity);
+                    Fragment newFragment = pageManager.copyFragment(page.getRootFragment(), layoutChange);
+                    page.setRootFragment(newFragment);
+                    
+                    this.entityAccess.storePortletEntity(newEntity);
+                    pageManager.updatePage(page);
+                }
             }
             catch (Exception e)
             {
