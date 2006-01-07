@@ -219,7 +219,13 @@ implements JetspeedEngineConstants, HttpSessionListener
             String wasFiltered = (String) req.getAttribute("org.apache.jetspeed.content.filtered");
             if (wasFiltered == null || !wasFiltered.equals("true"))
             {
+                // ensure that no proxy or brower caching is performed
+                // on dynamic responses resulting from pipeline execution
+                res.setHeader("Cache-Control", "no-cache,no-store,private"); // HTTP/1.1 modern browser/proxy
+                res.setHeader("Pragma", "no-cache");                         // HTTP/1.0 non-standard proxy 
+                res.setHeader("Expires", "0");                               // HTTP/1.0 browser/proxy
 
+                // send request through pipeline
                 RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
                         .getComponent(RequestContextComponent.class);
                 RequestContext context = contextComponent.create(req, res, getServletConfig());
