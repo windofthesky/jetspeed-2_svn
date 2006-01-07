@@ -917,7 +917,9 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertTrue(constraint.getUsers() != null);
         assertTrue(constraint.getUsers().size() == 2);
         assertTrue(Shared.makeCSVFromList(constraint.getUsers()).equals("user10,user11"));
-        assertTrue(constraint.getRoles() == null);
+        assertTrue(constraint.getRoles() != null);
+        assertTrue(constraint.getRoles().size() == 1);
+        assertTrue(Shared.makeCSVFromList(constraint.getRoles()).equals("*"));
         assertTrue(constraint.getPermissions() != null);
         assertTrue(constraint.getPermissions().size() == 2);
         assertTrue(Shared.makeCSVFromList(constraint.getPermissions()).equals("edit,view"));

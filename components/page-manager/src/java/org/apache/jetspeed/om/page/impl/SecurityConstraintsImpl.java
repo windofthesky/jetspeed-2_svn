@@ -375,6 +375,9 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public boolean isEmpty()
     {
-    	return ((owner == null) && getSecurityConstraints().isEmpty() && getSecurityConstraintsRefs().isEmpty());
+        // test only persistent members for any specified constraints
+        return ((owner == null) &&
+                ((constraints == null) || constraints.isEmpty()) &&
+                ((constraintsRefs == null) || constraintsRefs.isEmpty()));
     }
 }

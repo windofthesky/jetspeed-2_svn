@@ -130,11 +130,11 @@ public class NodeSetImpl implements NodeSet
      */
     public Iterator iterator()
     {
-        if (nodes != null)
+        if (nodes == null)
         {
-            return nodes.values().iterator();
+            nodes = new TreeMap(comparator);
         }
-        return null;
+        return nodes.values().iterator();
     }
     
     /* (non-Javadoc)
@@ -142,17 +142,13 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet subset(String type)
     {
-        NodeSetImpl subset = null;
-        Iterator nodeItr = nodes.values().iterator();
+        NodeSetImpl subset = new NodeSetImpl(comparator);
+        Iterator nodeItr = iterator();
         while (nodeItr.hasNext())
         {
             Node node = (Node) nodeItr.next();
             if (node.getType().equals(type))
             {
-                if (subset == null)
-                {
-                    subset = new NodeSetImpl(comparator);
-                }
                 subset.add(node);
             }
         }
@@ -165,17 +161,13 @@ public class NodeSetImpl implements NodeSet
     public NodeSet inclusiveSubset(String regex)
     {
         Pattern pattern = getCachedPattern(regex);
-        NodeSetImpl subset = null;
-        Iterator nodeItr = nodes.values().iterator();
+        NodeSetImpl subset = new NodeSetImpl(comparator);
+        Iterator nodeItr = iterator();
         while (nodeItr.hasNext())
         {
             Node node = (Node) nodeItr.next();
             if (pattern.matcher(node.getName()).matches())
             {
-                if (subset == null)
-                {
-                    subset = new NodeSetImpl(comparator);
-                }
                 subset.add(node);
             }
         }
@@ -188,17 +180,13 @@ public class NodeSetImpl implements NodeSet
     public NodeSet exclusiveSubset(String regex)
     {
         Pattern pattern = getCachedPattern(regex);
-        NodeSetImpl subset = null;
-        Iterator nodeItr = nodes.values().iterator();
+        NodeSetImpl subset = new NodeSetImpl(comparator);
+        Iterator nodeItr = iterator();
         while (nodeItr.hasNext())
         {
             Node node = (Node) nodeItr.next();
             if (!pattern.matcher(node.getName()).matches())
             {
-                if (subset == null)
-                {
-                    subset = new NodeSetImpl(comparator);
-                }
                 subset.add(node);
             }
         }

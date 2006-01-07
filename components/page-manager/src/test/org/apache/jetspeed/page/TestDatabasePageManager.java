@@ -496,7 +496,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(3, folder.getAll().subset(Page.DOCUMENT_TYPE).size());
         assertNotNull(folder.getAll().inclusiveSubset(".*other.*"));
         assertEquals(2, folder.getAll().inclusiveSubset(".*other.*").size());
-        assertNull(folder.getAll().inclusiveSubset("nomatch"));
+        assertNotNull(folder.getAll().inclusiveSubset("nomatch"));
+        assertEquals(0, folder.getAll().inclusiveSubset("nomatch").size());
         assertNotNull(folder.getAll().exclusiveSubset(".*-page.psml"));
         assertEquals(3, folder.getAll().exclusiveSubset(".*-page.psml").size());
     }
@@ -522,6 +523,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("public-view", ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getName());
             assertNotNull(((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints());
             assertEquals(1, ((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().size());
+            assertEquals("*", Shared.makeCSVFromList(((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().get(0)).getUsers()));
             assertEquals("view", Shared.makeCSVFromList(((SecurityConstraint)((SecurityConstraintsDef)check.getSecurityConstraintsDefs().get(1)).getSecurityConstraints().get(0)).getPermissions()));
             assertNotNull(check.getGlobalSecurityConstraintsRefs());
             assertEquals(2, check.getGlobalSecurityConstraintsRefs().size());
@@ -682,7 +684,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals(2, check.getSecurityConstraints().getSecurityConstraints().size());
             assertEquals("user,admin", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getUsers()));
             assertEquals("manager", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getRoles()));
-            assertNull(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getGroups());
+            assertEquals("*", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(0)).getGroups()));
             assertEquals("edit", Shared.makeCSVFromList(((SecurityConstraint)check.getSecurityConstraints().getSecurityConstraints().get(1)).getPermissions()));
             assertNotNull(check.getDocumentOrder());
             assertEquals(2, check.getDocumentOrder().size());

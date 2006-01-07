@@ -76,6 +76,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public String getUsersAsString()
     {
+        // get from users list if not immediately available
         if ((users == null) && (usersList != null) && !usersList.isEmpty())
         {
             users = formatCSVList(usersList);
@@ -90,6 +91,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setUsersAsString(String users)
     {
+        // set and propagate to users list setting
         this.users = users;
         usersList = parseCSVList(users);
     }
@@ -101,6 +103,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public String getRolesAsString()
     {
+        // get from roles list if not immediately available
         if ((roles == null) && (rolesList != null) && !rolesList.isEmpty())
         {
             roles = formatCSVList(rolesList);
@@ -115,6 +118,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setRolesAsString(String roles)
     {
+        // set and propagate to roles list setting
         this.roles = roles;
         rolesList = parseCSVList(roles);
     }
@@ -126,6 +130,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public String getGroupsAsString()
     {
+        // get from groups list if not immediately available
         if ((groups == null) && (groupsList != null) && !groupsList.isEmpty())
         {
             groups = formatCSVList(groupsList);
@@ -140,6 +145,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setGroupsAsString(String groups)
     {
+        // set and propagate to groups list setting
         this.groups = groups;
         groupsList = parseCSVList(groups);
     }
@@ -147,10 +153,11 @@ public class SecurityConstraintImpl implements SecurityConstraint
     /**
      * getPermissionsAsString
      *
-     * @return permmissions CSV list
+     * @return permissions CSV list
      */
     public String getPermissionsAsString()
     {
+        // get from permissions list if not immediately available
         if ((permissions == null) && (permissionsList != null) && !permissionsList.isEmpty())
         {
             permissions = formatCSVList(permissionsList);
@@ -161,10 +168,11 @@ public class SecurityConstraintImpl implements SecurityConstraint
     /**
      * setPermissionsAsString
      *
-     * @param permissions permmissions CSV list
+     * @param permissions permissions CSV list
      */
     public void setPermissionsAsString(String permissions)
     {
+        // set and propagate to permissions list setting
         this.permissions = permissions;
         permissionsList = parseCSVList(permissions);
     }
@@ -192,8 +200,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setUsers(List users)
     {
-        this.users = formatCSVList(users);
+        // set and clear potentially stale string representation
         usersList = users;
+        this.users = null;
     }
 
     /**
@@ -219,8 +228,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setRoles(List roles)
     {
-        this.roles = formatCSVList(roles);
+        // set and clear potentially stale string representation
         rolesList = roles;
+        this.roles = null;
     }
 
     /**
@@ -246,8 +256,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setGroups(List groups)
     {
-        this.groups = formatCSVList(groups);
+        // set and clear potentially stale string representation
         groupsList = groups;
+        this.groups = null;
     }
 
     /**
@@ -260,9 +271,6 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public List getPermissions()
     {
-    	if (permissionsList != null && !permissionsList.isEmpty()) {
-    		this.permissions = this.getPermissionsAsString();
-    	}
         return permissionsList;
     }
     
@@ -276,8 +284,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public void setPermissions(List permissions)
     {
-        this.permissions = formatCSVList(permissions);
+        // set and clear potentially stale string representation
         permissionsList = permissions;
+        this.permissions = null;
     }
 
     /**
@@ -296,13 +305,15 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public boolean principalsMatch(List userPrincipals, List rolePrincipals, List groupPrincipals, boolean allowDefault)
     {
-    	return ((allowDefault && (getUsersAsString() == null) && (getRolesAsString() == null) && (getGroupsAsString() == null)) ||
-                ((users != null) && (userPrincipals != null) &&
-                 (users.equals(WILD_CHAR) || containsAny(usersList, userPrincipals))) ||
-                ((roles != null) && (rolePrincipals != null) &&
-                 (roles.equals(WILD_CHAR) || containsAny(rolesList, rolePrincipals))) ||
-                ((groups != null) && (groupPrincipals != null) &&
-                 (groups.equals(WILD_CHAR) || containsAny(groupsList, groupPrincipals))));
+        // test match using users, roles, and groups list members
+        // since these are the master representation in this impl
+        return ((allowDefault && (usersList == null) && (rolesList == null) && (groupsList == null)) ||
+                ((usersList != null) && (userPrincipals != null) &&
+                 (containsAny(usersList, userPrincipals) || usersList.contains(WILD_CHAR))) ||
+                ((rolesList != null) && (rolePrincipals != null) &&
+                 (containsAny(rolesList, rolePrincipals) || rolesList.contains(WILD_CHAR))) ||
+                ((groupsList != null) && (groupPrincipals != null) &&
+                 (containsAny(groupsList, groupPrincipals) || groupsList.contains(WILD_CHAR))));
     }
 
     /**
@@ -318,8 +329,10 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public boolean actionMatch(String action)
     {
-        return ((permissions != null) &&
-                (permissions.equals(WILD_CHAR) || permissionsList.contains(action)));
+        // test match using permissions list member since
+        // this is the master representation in this impl
+        return ((permissionsList != null) &&
+                (permissionsList.contains(action) || permissionsList.contains(WILD_CHAR)));
     }
 
     /**
@@ -335,7 +348,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      */
     public static List parseCSVList(String csv)
     {
-        if ((csv != null) && !csv.equals(WILD_CHAR))
+        if (csv != null)
         {
             List csvList = new ArrayList(4);
             if (csv.indexOf(',') != -1)

@@ -132,7 +132,7 @@ interface PageManagerTestShared
          */
         static List makeListFromCSV(String csv)
         {
-            if (!csv.equals("*"))
+            if (csv != null)
             {
                 List csvList = new ArrayList();
                 if (csv.indexOf(',') != -1)
