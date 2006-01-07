@@ -317,7 +317,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             folder.setPath(path);
         }
 
-        System.out.println(">>>>>>>>>>> removing folder: "+folder.getPath());
         // remove folder nodes
         FolderImpl folderImpl = (FolderImpl)folder;
         try
@@ -337,13 +336,11 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
                 Node node = (Node)removeIter.next();
                 if (node instanceof Folder)
                 {
-                    System.out.println(">>>>>>>>>>> removing folder folder: "+node.getPath());
                     // recursively remove folder
                     removeFolder((Folder)node);
                 }
                 else if (node instanceof Document)
                 {
-                    System.out.println(">>>>>>>>>>> removing folder document: "+node.getPath());
                     // remove folder document
                     try
                     {
