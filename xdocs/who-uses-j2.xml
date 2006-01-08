@@ -56,8 +56,8 @@
           </tr>
           <tr>
             <td><a href="http://www.openxava.org"><img src="images/users/openxava.gif" border="0" /></a></td>
-            <td>OpenXava distribution is bundled with a Jetspeed-2.  The site of OpenXava is powered by Jetspeed-2. OpenXava generates JSR-168 portlets deployables in Jetspeed-2.
-			It also generate all .psml, .ds, page.metadata to deploy an OpenXava application automatically in Jetspeed-2.</td>
+            <td>OpenXava generates JSR-168 portlets deployables in Jetspeed-2. It also generates all .psml, .ds, page.metadata to deploy an OpenXava application automatically in Jetspeed-2.
+            OpenXava distribution is bundled with Jetspeed-2 installation and its web site is powered by Jetspeed-2. </td>
           </tr>
           <tr>
             <td><a href="http://www.rosa.com"><img src="images/users/rosa.jpg" border="0" /></a></td>
