@@ -55,6 +55,11 @@
             100% Java based, the full Jahia source code is available under a collaborative and community source license (contribute or pay paradigm).</td>
           </tr>
           <tr>
+            <td><a href="http://www.openxava.org"><img src="images/users/openxava.gif" border="0" /></a></td>
+            <td>OpenXava distribution is bundled with a Jetspeed-2.  The site of OpenXava is powered by Jetspeed-2. OpenXava generates JSR-168 portlets deployables in Jetspeed-2.
+			It also generate all .psml, .ds, page.metadata to deploy an OpenXava application automatically in Jetspeed-2.</td>
+          </tr>
+          <tr>
             <td><a href="http://www.rosa.com"><img src="images/users/rosa.jpg" border="0" /></a></td>
             <td><a href="http://www.rosa.com">R.O.S.A. Creation. Technology. Intelligence. AG</a> deploys collaborative portals using 
 			Jetspeed-2 and provides services in portal development.</td>
