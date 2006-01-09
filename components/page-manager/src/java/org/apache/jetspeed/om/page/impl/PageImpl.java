@@ -47,6 +47,7 @@ public class PageImpl extends DocumentImpl implements Page
     private List menus;
 
     private PageMenuDefinitionList menuDefinitions;
+    private FragmentImpl removedFragment;
 
     public PageImpl()
     {
@@ -187,24 +188,58 @@ public class PageImpl extends DocumentImpl implements Page
      */
     public void setRootFragment(Fragment fragment)
     {
-        // delete existing fragments if required
-        if ((this.fragment != null) && !this.fragment.isEmpty())
-        {
-            this.fragment.clear();
-        }
-
-        // add new singleton fragment
+        // add new or reuse singleton fragment
         if (fragment instanceof FragmentImpl)
         {
-            // add fragment to singleton collection
+            // create singleton collection or remove existing
+            // root fragment and save for reuse
             if (this.fragment == null)
             {
                 this.fragment = new ArrayList(1);
+            }
+            else if (!this.fragment.isEmpty())
+            {
+                removedFragment = (FragmentImpl)this.fragment.iterator().next();
+                this.fragment.clear();
+            }
+
+            // add new fragment or copy configuration
+            // from previously removed fragment
+            if (removedFragment != null)
+            {
+                // reuse previously removed fragment
+                FragmentImpl addFragment = (FragmentImpl)fragment;
+                fragment = removedFragment;
+                removedFragment = null;
+                // TODO: move this logic to copy methods on implementations
+                fragment.setName(addFragment.getName());
+                fragment.setTitle(addFragment.getTitle());
+                fragment.setShortTitle(addFragment.getShortTitle());
+                fragment.setType(addFragment.getType());
+                fragment.setSkin(addFragment.getSkin());
+                fragment.setDecorator(addFragment.getDecorator());
+                fragment.setState(addFragment.getState());
+                fragment.setSecurityConstraints(addFragment.getSecurityConstraints());
+                fragment.getProperties().clear();
+                fragment.getProperties().putAll(addFragment.getProperties());
+                fragment.setPreferences(addFragment.getPreferences());
+                fragment.getFragments().clear();
+                fragment.getFragments().addAll(addFragment.getFragments());
             }
             this.fragment.add(fragment);
 
             // set page implementation in root and children fragments
             ((FragmentImpl)fragment).setPage(this);
+        }
+        else if (fragment == null)
+        {
+            // delete existing fragment if required, saving
+            // removed fragment for later reuse
+            if ((this.fragment != null) && !this.fragment.isEmpty())
+            {
+                removedFragment = (FragmentImpl)this.fragment.iterator().next();
+                this.fragment.clear();
+            }
         }
     }
 
