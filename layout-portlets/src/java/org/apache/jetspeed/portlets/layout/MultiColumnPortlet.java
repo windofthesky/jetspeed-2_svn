@@ -218,7 +218,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
             }                        
         }
         else if (request.getParameter("move") != null 
@@ -232,7 +232,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
             }
           
             Fragment rootFragment = page.getRootFragment();
@@ -301,7 +301,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
             }
           
             Fragment fragment = page.getFragmentById(fragmentChange);
@@ -318,45 +318,58 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage());
+                throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
             }
         }
         else if (themeChange != null &&
                  layoutChange != null &&
                  editingPage != null)                
         {
+            // get page to be edited
             ContentPage page;
             try
             {
+                // access content page to be edited
                 page = pageManager.getContentPage(editingPage);
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage());
+                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
             }
-            
-            page.setDefaultDecorator(themeChange, Fragment.LAYOUT);
-            
+
+            // edit and update page
+            boolean layoutPortletChanged = !layoutChange.equals(page.getRootFragment().getName());
             try
             {
-                PortletEntity oldEntity = this.entityAccess.getPortletEntity(page.getRootFragment().getId());
-                if (oldEntity != null)
-                {
-                    PortletEntity newEntity = 
-                        this.entityAccess.generateEntityFromFragment((ContentFragment)page.getRootFragment(), null);
-                    this.entityAccess.removePortletEntity(oldEntity);
-                    Fragment newFragment = pageManager.copyFragment(page.getRootFragment(), layoutChange);
-                    page.setRootFragment(newFragment);
-                    
-                    this.entityAccess.storePortletEntity(newEntity);
-                    pageManager.updatePage(page);
-                }
+                // update page theme and/or root fragment
+                // layout portlet change
+                page.setDefaultDecorator(themeChange, Fragment.LAYOUT);
+                page.getRootFragment().setName(layoutChange);
+                pageManager.updatePage(page);
             }
             catch (Exception e)
             {
-                throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage());
+                throw new PortletException("Unable to update page: "+e.getMessage(), e);
             }
             
+            // update portlet entity and portlet window if layout portlet modified
+            if (layoutPortletChanged)
+            {
+                try
+                {
+                    // update matching portlet entity
+                    PortletEntity portletEntity = this.entityAccess.getPortletEntity(page.getRootFragment().getId());
+                    this.entityAccess.updatePortletEntity(portletEntity, (ContentFragment)page.getRootFragment());
+                    this.entityAccess.storePortletEntity(portletEntity);
+
+                    // update matching portlet window
+                    this.windowAccess.createPortletWindow(portletEntity, page.getRootFragment().getId());
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException("Unable to update portlet entity or window: "+e.getMessage(), e);
+                }
+            }
         }
         else
         {        

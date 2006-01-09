@@ -146,6 +146,20 @@ public interface PortletEntityAccessComponent
 	void removeFromCache(PortletEntity entity);
 
     /**
+     * <p>
+     * updatePortletEntity
+     * </p>
+     *
+     * Updates portlet definition associated with the portlet
+     * entity to match the fragment configuration 
+     *
+     * @param portletEntity
+	 * @param fragment
+	 * @throws PortletEntityNotStoredException 
+     */
+    void updatePortletEntity(PortletEntity portletEntity, ContentFragment fragment) throws PortletEntityNotStoredException;
+
+    /**
      * 
      * <p>
      * storePortletEntity

@@ -37,6 +37,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -76,6 +77,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected JetspeedPowerToolFactory jptFactory;
     protected TemplateLocator templateLocator;
     protected PortletEntityAccessComponent entityAccess;
+    protected PortletWindowAccessor windowAccess;
     protected TemplateLocator decorationLocator;
     
     public void init( PortletConfig config ) throws PortletException
@@ -102,6 +104,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         if (null == entityAccess)
         {
             throw new PortletException("Failed to find the Entity Access on portlet initialization");
+        }        
+        
+        windowAccess = (PortletWindowAccessor) getPortletContext().getAttribute(CommonPortletServices.CPS_WINDOW_ACCESS_COMPONENT);
+        if (null == windowAccess)
+        {
+            throw new PortletException("Failed to find the Window Access on portlet initialization");
         }        
         
         templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");

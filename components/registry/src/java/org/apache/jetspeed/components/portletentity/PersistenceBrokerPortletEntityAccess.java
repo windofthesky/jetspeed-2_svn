@@ -315,6 +315,38 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         }
     }
 
+    /**
+     * <p>
+     * updatePortletEntity
+     * </p>
+     *
+     * Updates portlet definition associated with the portlet
+     * entity to match the fragment configuration 
+     *
+     * @param portletEntity
+	 * @param fragment
+	 * @throws PortletEntityNotStoredException 
+     */
+    public void updatePortletEntity(PortletEntity portletEntity, ContentFragment fragment) throws PortletEntityNotStoredException
+    {
+        // validate portlet entity id
+        if (!fragment.getId().equals(portletEntity.getId().toString()))
+        {
+            throw new PortletEntityNotStoredException("Fragment and PortletEntity ids do not match, update skipped: " + fragment.getId() + " != " + portletEntity.getId() );
+        }
+
+        // update portlet definition from fragment
+        PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
+        if (pd != null)
+        {
+            ((PortletEntityImpl)portletEntity).setPortletDefinition(pd);
+        }
+        else
+        {
+            throw new PortletEntityNotStoredException("Fragment PortletDefinition not found: " + fragment.getName() );
+        }
+    }
+
     public void storePortletEntity( PortletEntity portletEntity ) throws PortletEntityNotStoredException
     {
         try

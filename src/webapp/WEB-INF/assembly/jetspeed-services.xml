@@ -52,6 +52,9 @@ limitations under the License.
   	   	  <entry key="EntityAccessor">
   	   	  	 <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent'/>
   	   	  </entry>
+  	   	  <entry key="WindowAccessor">
+  	   	  	 <ref bean='org.apache.jetspeed.container.window.PortletWindowAccessor'/>
+  	   	  </entry>
           <!-- ApplicationServerManager currently only supported for Tomcat. Comment out for others like JBoss -->
           <entry key="ApplicationServerManager">
             <ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager"/>
