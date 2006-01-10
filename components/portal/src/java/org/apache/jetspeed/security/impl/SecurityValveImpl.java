@@ -134,7 +134,7 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
      * @param request
      * @return
      */
-    protected final Principal getUserPrincipal(RequestContext request)
+    protected Principal getUserPrincipal(RequestContext request) throws Exception
     {
         Principal userPrincipal = request.getRequest().getUserPrincipal();
         if (userPrincipal == null)
