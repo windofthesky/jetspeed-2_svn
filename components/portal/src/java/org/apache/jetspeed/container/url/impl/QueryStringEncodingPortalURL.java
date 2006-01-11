@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.BasePortalURL;
 
 /**
  * QueryStringEncodingPortalURL encodes the NavigationalState as query parameter
@@ -28,6 +29,11 @@ import org.apache.jetspeed.container.state.NavigationalState;
  */
 public class QueryStringEncodingPortalURL extends AbstractPortalURL
 {
+    public QueryStringEncodingPortalURL(NavigationalState navState, PortalContext portalContext, BasePortalURL base)
+    {
+        super(navState, portalContext, base);
+    }
+
     public QueryStringEncodingPortalURL(NavigationalState navState, PortalContext portalContext)
     {
         super(navState, portalContext);

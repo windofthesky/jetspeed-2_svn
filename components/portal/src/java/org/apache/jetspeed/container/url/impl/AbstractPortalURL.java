@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.window.PortletWindow;
@@ -44,18 +45,22 @@ public abstract class AbstractPortalURL implements PortalURL
     private static String navStateParameter;
     
     private NavigationalState navState;
-    private String serverName;    
-    private String serverScheme;
+    private BasePortalURL base = null;
+    
     private String contextPath;
     private String basePath;
     private String path;
     private String encodedNavState;
     private String secureBaseURL;
     private String nonSecureBaseURL;
-    private int serverPort;    
-    private boolean secure;
     private String characterEncoding = "UTF-8";
     
+
+    public AbstractPortalURL(NavigationalState navState, PortalContext portalContext, BasePortalURL base)
+    {
+        this(navState, portalContext);        
+        this.base = base;
+    }
     
     public AbstractPortalURL(NavigationalState navState, PortalContext portalContext)
     {
@@ -89,22 +94,30 @@ public abstract class AbstractPortalURL implements PortalURL
     
     protected void decodeBaseURL(HttpServletRequest request)
     {
-        this.serverName = request.getServerName();
-        this.serverPort = request.getServerPort();
-        this.serverScheme = request.getScheme();
-        this.secure = request.isSecure();
+        if (base == null)
+        {
+            base = new BasePortalURLImpl();
+            base.setServerScheme(request.getScheme());
+            base.setServerName(request.getServerName());
+            base.setServerPort(request.getServerPort());
+            base.setSecure(request.isSecure());            
+        }        
         StringBuffer buffer;
 	
         buffer = new StringBuffer(HTTPS);
-	buffer.append("://").append(this.serverName);
-	if(this.serverPort != 443 && this.serverPort != 80)
-	    buffer.append(":").append(this.serverPort);
-	this.secureBaseURL = buffer.toString();
+        buffer.append("://").append(base.getServerName());
+        if (base.getServerPort() != 443 && base.getServerPort() != 80)
+	    {
+            buffer.append(":").append(base.getServerPort());
+        }
+        this.secureBaseURL = buffer.toString();
 	    
         buffer = new StringBuffer(HTTP);
-        buffer.append("://").append(this.serverName);
-        if(this.serverPort != 443 && this.serverPort != 80)
-             buffer.append(":").append(this.serverPort);
+        buffer.append("://").append(base.getServerName());
+        if (base.getServerPort() != 443 && base.getServerPort() != 80)
+        {
+             buffer.append(":").append(base.getServerPort());
+        }
         this.nonSecureBaseURL = buffer.toString();
     }
     
@@ -149,7 +162,7 @@ public abstract class AbstractPortalURL implements PortalURL
 
     public String getBaseURL()
     {
-        return getBaseURL(secure);
+        return getBaseURL(base.isSecure());
     }
     
     public String getBaseURL(boolean secure)
@@ -188,7 +201,7 @@ public abstract class AbstractPortalURL implements PortalURL
     
     public boolean isSecure()
     {
-        return secure;
+        return base.isSecure();
     }
         
     public NavigationalState getNavigationalState()

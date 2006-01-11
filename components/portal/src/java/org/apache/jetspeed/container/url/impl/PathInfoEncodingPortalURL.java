@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.BasePortalURL;
 
 /**
  * PathInfoEncodingPortalURL encodes the NavigationalState as PathInfo element
@@ -31,6 +32,10 @@ import org.apache.jetspeed.container.state.NavigationalState;
  */
 public class PathInfoEncodingPortalURL extends AbstractPortalURL
 {
+    public PathInfoEncodingPortalURL(NavigationalState navState, PortalContext portalContext, BasePortalURL base)
+    {
+        super(navState, portalContext, base);
+    }
 
     public PathInfoEncodingPortalURL(NavigationalState navState, PortalContext portalContext)
     {

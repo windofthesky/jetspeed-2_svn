@@ -47,6 +47,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
@@ -136,6 +137,8 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     protected Context velocityContext;
 
     private DynamicTitleService titleService;
+    
+    private BasePortalURL baseUrlAccess;
 
     public JetspeedPowerToolImpl(RequestContext requestContext, DynamicTitleService titleService) throws Exception
     {
@@ -144,9 +147,11 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         this.titleService = titleService;
         windowAccess = (PortletWindowAccessor) getComponent(PortletWindowAccessor.class.getName());
         entityAccess = (PortletEntityAccessComponent) getComponent(PortletEntityAccessComponent.class.getName());
+        baseUrlAccess = (BasePortalURL) getComponent("BasePortalURL");
         renderRequest = (RenderRequest) request.getAttribute(RENDER_REQUEST_ATTR);
         renderResponse = (RenderResponse) request.getAttribute(RENDER_RESPONSE_ATTR);
         portletConfig = (PortletConfig) request.getAttribute(PORTLET_CONFIG_ATTR);
+
 
         templateLocator = (TemplateLocator) getComponent("TemplateLocator");
         decorationLocator = (TemplateLocator) getComponent("DecorationLocator");
@@ -925,9 +930,18 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         {
             HttpServletRequest request = getRequestContext().getRequest();
             StringBuffer path = new StringBuffer();
-            return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(
-                    request.getServerName()).append(":").append(request.getServerPort()).append(
-                    request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());
+            if (this.baseUrlAccess == null)
+            {
+                return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(
+                request.getServerName()).append(":").append(request.getServerPort()).append(
+                request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                
+            }
+            else
+            {
+                return renderResponse.encodeURL(path.append(baseUrlAccess.getServerScheme()).append("://").append(
+                        baseUrlAccess.getServerName()).append(":").append(baseUrlAccess.getServerPort()).append(
+                        request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                                
+            }
         }
         else
         {
