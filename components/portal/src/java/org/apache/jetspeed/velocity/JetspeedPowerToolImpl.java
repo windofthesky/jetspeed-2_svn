@@ -147,7 +147,15 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         this.titleService = titleService;
         windowAccess = (PortletWindowAccessor) getComponent(PortletWindowAccessor.class.getName());
         entityAccess = (PortletEntityAccessComponent) getComponent(PortletEntityAccessComponent.class.getName());
-        baseUrlAccess = (BasePortalURL) getComponent("BasePortalURL");
+        try
+        {
+            baseUrlAccess = (BasePortalURL) getComponent("BasePortalURL");
+        }
+        catch (Exception e)
+        {            
+            // BasePortalURL is optional: ignore (org.springframework.beans.factory.NoSuchBeanDefinitionException)
+        }
+        
         renderRequest = (RenderRequest) request.getAttribute(RENDER_REQUEST_ATTR);
         renderResponse = (RenderResponse) request.getAttribute(RENDER_RESPONSE_ATTR);
         portletConfig = (PortletConfig) request.getAttribute(PORTLET_CONFIG_ATTR);
