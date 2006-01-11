@@ -39,7 +39,18 @@ limitations under the License.
   >  	 
        <constructor-arg><ref bean="NavigationalState"/></constructor-arg>
 	   <constructor-arg><ref bean="PortalContext"/></constructor-arg>
+	   <!-- Uncomment this to HARD CODE your portal URL -->
+	   <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
   </bean>
+
+  <!-- Uncomment this to HARD CODE your portal URL -->
+   <!--
+  <bean id="BasePortalURL"
+	    class="org.apache.jetspeed.container.url.impl.BasePortalURLImpl">
+       <constructor-arg><ref bean="ProductionConfiguration"/></constructor-arg>	  
+  </bean>	
+  -->
+		
 	
   <!--  Navigational State component -->
   <bean id="NavigationalStateComponent" 
