@@ -77,6 +77,7 @@
 				Jetspeed security should work with any JDBC 2.0
 				compliant driver. The following databases are tested:
 				<ul>
+ 				    <li>Derby</li>
 					<li>HSQLDB - Hypersonic SQL</li>
 					<li>MySQL</li>
 					<li>Oracle</li>
@@ -86,15 +87,14 @@
 					<li>SQL Server</li>
 				</ul>
 
-				Jetspeed is distributed with the Hypersonic-SQL database
+				Jetspeed is distributed with the Derby database
 				configured as the default.
 			</p>
 			<p>
 				The database configuration will be setup during the
 				installation process. If you are not going to use the
-				HSQLDB, you need to install your chosen database package
-				and configure a database user who will own the Jetspeed
-				tables.
+				default Derby database, you need to select another database
+				during installation.
 			</p>
 		</section>
 		<section name="3 Servlet Engines">
