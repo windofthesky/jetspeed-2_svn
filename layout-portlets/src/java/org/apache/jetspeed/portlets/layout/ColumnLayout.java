@@ -296,7 +296,7 @@ public class ColumnLayout implements Serializable
      */
     public String getColumnFloat(int columnNumber)
     {
-        if (numberOfColumns > 1)
+        if ((numberOfColumns > 1) && (columnNumber < numberOfColumns))
         {
             if (columnNumber == (numberOfColumns - 1))
             {
