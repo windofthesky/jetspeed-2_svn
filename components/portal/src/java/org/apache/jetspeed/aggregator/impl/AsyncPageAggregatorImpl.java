@@ -184,6 +184,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
             }
         }
 
+
         // sync
         // TODO: synchronize on completion of all jobs
         // not sure where that code went, used to be in here, very odd

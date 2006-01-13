@@ -86,6 +86,8 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(atLeastOnce(), fragmentMock, "getId", "001");
       
         expectAndReturn(atLeastOnce(), childFragmentMock, "getId", "002");   
+
+        expectAndReturn(childFragmentMock, "getFragments", null);
     }
 
     protected void setUp1() throws Exception
@@ -240,6 +242,9 @@ public class TestDecorations extends MockObjectTestCase
         //expectAndReturn(sessionMock, "getAttribute", PortalReservedParameters.RESOVLER_CACHE_ATTR);
 
         expectAndReturn(childFragmentMock, "getDecorator", "myPortletDecoration");
+
+        expectAndReturn(pageMock, "getRootFragment", fragment);
+
         Theme theme = testFactory.getTheme(page, requestContext);
         
         Decoration result1 = theme.getDecoration(fragment);

@@ -259,18 +259,4 @@ BODY.layout-Jetspeed
    text-align: right;   
 }
 
-.portal-layout-column
-{
-  display:inline; 
-  float: left;
-}
-.portal-layout-cell
-{
-  padding: 2px;
-}
-
-.portal-layout-maxed
-{
-  padding: 15px;
-}
         

@@ -51,39 +51,6 @@ limitations under the License.
 #set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
 #set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
 
-#if ($actions.size()>0)
-<table  width="100%" cellspacing="0" cellpadding="0" >
-  <tr>
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-
-    <td align="left" valign="middle" class="PContent" >
-    </td>
-    <td align="right" valign="middle" class="PContent" >
-      <table border="0" cellpadding="0" cellspacing="0" >
-      <tr>
-      #foreach ($action in $actions)
-      #if ($action.Alt == "edit" || $action.Alt == "view")
-      <td align="right" valign="middle" class="PContent" >
-      #set ($myImage = "images/${action.Alt}.gif")
-      <a href="${action.Action}" title="${action.Name}" ><img src="#GetPageResource($myImage)"  alt="${action.Alt}" border="0"></a>
-      </td>
-      #end
-      #end
-	  #if($editing == true)    		  	  
-	   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
-	      <td align="right" valign="middle" class="PContent" >
-	      	<a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Select"/></a>
-	      </td>	  
-	  #end      
-      </tr>
-      </table>
-    </td>
-
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-  </tr>
-</table>
-#end
-
 <form name='portletform' action="$renderResponse.createActionURL()" method="post">
 <input type='hidden' name='portlets'/>
 <input type='hidden' name='page' value='$myPage'/>
@@ -110,7 +77,11 @@ limitations under the License.
    #end
 
 
-<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.path)" class="portal-layout">
+#set($layoutClass = "portal-layout")
+#if($myFragment != $myPage.getRootFragment())
+  #set($layoutClass = "portal-nested-layout")
+#end
+<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.path)" class="${layoutClass} ${layoutClass}-${layoutType}">
 <table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
      #set ($sizeIndex = 0)
@@ -126,7 +97,7 @@ limitations under the License.
        <td  valign="top">
        #end
        #set ($sizeIndex = $sizeIndex + 1)     
-       <table width="100%" class="portal-layout-column">
+       <table width="100%" class="portal-layout-column portal-layout-column-${layoutType}-${sizeIndex}">
        #foreach($f in $column)       
         <tr>
          <td width="100%">			

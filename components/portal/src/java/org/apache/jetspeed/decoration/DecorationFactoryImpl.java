@@ -96,13 +96,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         String decorationName = getDefaultDecorationName(fragment, page);
         Decoration decoration;
 
-        if (fragment.getType().equals(Fragment.PORTLET))
+        // use layout decoration for top level layout root
+        // fragments; portlet layouts for all others
+        if (fragment.getType().equals(Fragment.LAYOUT) && fragment.equals(page.getRootFragment()))
         {
-            decoration = getPortletDecoration(decorationName, requestContext);
+            decoration = getLayoutDecoration(decorationName, requestContext);
         }
         else
         {
-            decoration = getLayoutDecoration(decorationName, requestContext);
+            decoration = getPortletDecoration(decorationName, requestContext);
         }
 
         return decoration;
@@ -217,16 +219,27 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      */
     protected String getDefaultDecorationName(Fragment fragment, Page page)
     {
+        // get specified decorator
         String decoration = fragment.getDecorator();
         if (decoration == null)
         {
-            if (fragment.getType().equals(Fragment.PORTLET))
+            if (fragment.getType().equals(Fragment.LAYOUT))
             {
-                decoration = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
+                if (fragment.equals(page.getRootFragment()))
+                {
+                    // use page specified layout decorator name
+                    decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+                }
+                else
+                {
+                    // use default nested layout portlet decorator name
+                    decoration = DEFAULT_NESTED_LAYOUT_PORTLET_DECORATOR;
+                }
             }
             else
             {
-                decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+                // use page specified default portlet decorator name
+                decoration = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
             }
         }
 

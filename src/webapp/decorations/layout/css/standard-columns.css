@@ -15,35 +15,70 @@ limitations under the License.
 */
 
 /**
- * This page contains standardized settings for spacing one, two and three
- * column layouts.  You can use this within your custom decorations style by
- * adding this line to the top of your css/styles.css:
+ * This page contains standardized settings for spacing column layouts.
+ * You can use this within your custom decorations style by adding this
+ * line to the top of your css/styles.css:
  *
  * @import url("../../css/standard-columns.css");
  */
 
-/** TwoColumn Sepcific widths */
-.portal-layout-TwoColumns .portal-layout-column
-{  
-  padding-left:1%;
-  width: 48%;
-  float: left;  
+DIV.PContent
+{
+  /*
+    overflow honored on portlet content
+    on all browsers except IE; IE requires
+    width to be specified, see
+    portal-layout-column below
+  */
+  overflow:hidden;
 }
 
-/** OneColumn Sepcific widths */
-.portal-layout-OneColumn .portal-layout-column
-{  
-  padding-left:1%;
-  padding-right:1%;
-  width: 97%;
-  float: left;  
+DIV.portlet
+{
+  /*
+    all layout padding done here to prevent
+    box model problems with specified widths
+    on portal-layout-column and to yield
+    even spacing between portlets with nested
+    layouts
+  */
+  margin-top:5px;
+  margin-bottom:5px;
+  margin-left:5px;
+  margin-right:5px;
 }
 
+DIV.portal-layout
+{
+}
 
-/** ThreeColumn Sepcific widths */
-.portal-layout-ThreeColumns .portal-layout-column
-{  
-  padding-left:1%;
-  width: 31%;
-  float: left;  
+DIV.portal-nested-layout
+{
+}
+
+DIV.portal-layout-cell
+{
+}
+
+DIV.portal-layout-column
+{
+  /*
+    float and width stypes computed dynamically
+    in layout templates for these elements
+  */
+  display:inline; 
+}
+
+* html DIV.portal-layout-column
+{
+  /*
+    overflow required by IE to be defined
+    on elements with width specified; using
+    "starhtml" hack here to restrict to IE
+  */
+  overflow:hidden; 
+}
+
+DIV.portal-layout-maxed
+{
 }

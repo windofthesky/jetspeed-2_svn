@@ -18,6 +18,7 @@ package org.apache.jetspeed.decoration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,22 +49,38 @@ public class PageTheme implements Theme
         this.requestContext = requestContext;
         this.styleSheets = new LinkedHashSet();
         this.fragmentDecorations = new HashMap();
-        
-        Fragment rootFragment = page.getRootFragment();
-        layoutDecoration = (LayoutDecoration) decorationFactory.getDecoration(page, rootFragment, requestContext);
-        styleSheets.add(layoutDecoration.getStyleSheet());
-        fragmentDecorations.put(rootFragment.getId(), layoutDecoration);
-        
-        Iterator fragments = rootFragment.getFragments().iterator();
-        
-        while(fragments.hasNext())
+        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations(page.getRootFragment());
+    }
+
+    /**
+     * setupFragmentDecorations
+     *
+     * Setup styleSheets and fragmentDecorations from all fragments
+     * in page, including nested fragments.
+     *
+     * @param fragment page fragment
+     * @return fragment decoration
+     */
+    private Decoration setupFragmentDecorations(Fragment fragment)
+    {
+        // setup fragment decorations
+        Decoration decoration = decorationFactory.getDecoration(page, fragment, requestContext);
+        styleSheets.add(decoration.getStyleSheet());
+        fragmentDecorations.put(fragment.getId(), decoration);
+
+        // setup nested fragment decorations
+        List fragments = fragment.getFragments();
+        if ((fragments != null) && !fragments.isEmpty())
         {
-            Fragment fragment = (Fragment) fragments.next();
-            Decoration decoration = decorationFactory.getDecoration(page, fragment, requestContext);
-            styleSheets.add(decoration.getStyleSheet());
-            fragmentDecorations.put(fragment.getId(), decoration);
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                setupFragmentDecorations((Fragment)fragmentsIter.next());
+            }
         }
-        
+
+        // return decoration; used to save page layout decoration
+        return decoration;
     }
 
     public Set getStyleSheets()

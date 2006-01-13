@@ -33,9 +33,3 @@ a:link, a:visited {
 a:hover {
     color: #f30 !important;
 }
-
-.layout-simple .portal-layout
-{
-  padding-top: 25px;
-}
-       

@@ -234,6 +234,24 @@ public abstract class BaseElementImpl implements BaseElement
     }
     
     /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object o)
+    {
+        // compare element by id
+        return ((o != null) && getClass().equals(o.getClass()) && (id != 0) && (id == ((BaseElementImpl)o).id));
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        // use id to generate hashCode
+        return id;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#getSecurityConstraints()
      */
     public SecurityConstraints getSecurityConstraints()

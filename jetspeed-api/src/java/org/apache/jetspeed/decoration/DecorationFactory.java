@@ -36,6 +36,9 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface DecorationFactory
 {
+    /** Default nested layout portlet decorator */
+    String DEFAULT_NESTED_LAYOUT_PORTLET_DECORATOR = "clear";
+    
     /**
      * Returns a theme containing all of the Decorations for all of 
      * the layouts on the current page.

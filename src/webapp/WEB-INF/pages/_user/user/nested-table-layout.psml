@@ -1,30 +1,30 @@
-<!-- nested-layout.psml -->
+<!-- nested-table-layout.psml -->
 <page>
   <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
-  <title>Nested Layout Test</title>
+  <title>Nested Table Layout Test</title>
   <metadata name="title" xml:lang="ja">入れ子レイアウトテスト</metadata>
   <metadata name="title" xml:lang="es">Prueba: puesta en página anidada</metadata>
   <metadata name="title" xml:lang="hu">Beágyazott elrendezés teszt</metadata>
   <metadata name="title" xml:lang="zh">内嵌布局测试</metadata>
 
-  <short-title>Nested Layout</short-title>
+  <short-title>Nested Table Layout</short-title>
   <metadata name="short-title" xml:lang="ja">入れ子レイアウト</metadata>
   <metadata name="short-title" xml:lang="es">Anidación</metadata>
   <metadata name="short-title" xml:lang="hu">Beágyazott elrendezés</metadata>
   <metadata name="short-title" xml:lang="zh">内嵌布局</metadata>
 
-  <fragment id="100393" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="100939" type="portlet" name="j2-admin::LocaleSelector">
+  <fragment id="100393T" type="layout" name="jetspeed-layouts::VelocityOneColumnTable">
+    <fragment id="100939T" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="OneColumn" name="row" value="0"/>
     </fragment>                                
-    <fragment id="100345" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="100345T" type="layout" name="jetspeed-layouts::VelocityTwoColumnsTable">
       <property layout="OneColumn" name="row" value="1"/>
       <property layout="TwoColumns" name="sizes" value="40%,60%"/>
-      <fragment id="100121" type="portlet" name="j2-admin::LoginPortlet">
+      <fragment id="100121T" type="portlet" name="j2-admin::LoginPortlet">
         <property layout="TwoColumns" name="row" value="0"/>
         <property layout="TwoColumns" name="column" value="0"/>
       </fragment>                                
-      <fragment id="100171" type="portlet" name="demo::UserInfoTest">
+      <fragment id="100171T" type="portlet" name="demo::UserInfoTest">
         <property layout="TwoColumns" name="row" value="0"/>
         <property layout="TwoColumns" name="column" value="1"/>
       </fragment>    

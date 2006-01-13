@@ -296,21 +296,3 @@ body.layout-tigris
    display: inline;
 }
 
-
-.layout-tigris .portal-layout
-{
-	padding-top:6px;
-}
-
-
-.portal-layout-cell
-{
-  padding-bottom: 4px;
-}
-
-.portal-layout-maxed
-{
-  padding-top: 4px;
-  padding-right: 2px;
-}
-        

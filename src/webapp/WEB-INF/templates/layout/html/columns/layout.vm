@@ -66,21 +66,17 @@ limitations under the License.
 <input type="submit" name="jsSubmitPage" value="Add Page" />
 </form>
    #end
-
- <div id="$renderResponse.namespace" class="portal-layout portal-layout-$layoutType">
-	#set ($sizeIndex = 0)
+ #set($layoutClass = "portal-layout")
+ #if($myFragment != $myPage.getRootFragment())
+   #set($layoutClass = "portal-nested-layout")
+ #end
+ <div id="$renderResponse.namespace" class="${layoutClass} ${layoutClass}-${layoutType}">
+	#set ($columnIndex = 0)
 	#foreach($column in $columnLayout.columns)
-	  #set($columnWidth = "auto")
 	  
-	  #*
-	  #if ($columnLayout.getColumnWidth($sizeIndex) > 0)
-	    #set($columnWidth = $columnLayout.getColumnWidth($sizeIndex))
-	  #end
-	  *#
-
-	  #set ($sizeIndex = $sizeIndex + 1)  
-	  <div id="column-$sizeIndex" class="portal-layout-column" >
-		<!--  <div class="portal-layout-column-gutter"> --> 
+      #set($columnFloat = $columnLayout.getColumnFloat($columnIndex))
+	  #set($columnWidth = $columnLayout.getColumnWidth($columnIndex))
+	  <div id="column_${myFragment.getId()}_${columnIndex}" class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}" style="float:${columnFloat}; width:${columnWidth};">
 	     #foreach($f in $column)
   	     
            ## Set up coordinates for this fragment
@@ -90,7 +86,7 @@ limitations under the License.
            #set($row = $coords.y)
 			
            ## get the decorated Portlet content
-		   <div class="portal-layout-cell" >
+		   <div class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}"" >
 		   ## editing block
 		   #if($editing)
 		   <div class="portlet-edit-bar">
@@ -160,10 +156,10 @@ limitations under the License.
 		   #end
 		   </div>
 		 #end
-		<!-- </div> -->
 	  </div>
-	 #end
-   </div>  
+	  #set ($columnIndex = $columnIndex + 1)  
+	#end
+  </div>  
 
   #if ($myFragment == $myPage.getRootFragment())
     #parse($myFragment.decoration.footer)

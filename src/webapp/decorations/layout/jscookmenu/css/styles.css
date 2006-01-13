@@ -103,13 +103,3 @@ body.layout-jscookmenu
    position: relative;
    top: -12px;
 }
-
-.portal-layout-column
-{
-  display:inline; 
-  float: left;
-}
-.portal-layout-cell
-{
-  padding: 2px;
-}

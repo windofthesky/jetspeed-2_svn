@@ -24,7 +24,7 @@ import org.jmock.MockObjectTestCase;
 
 public class TestColumnLayout extends MockObjectTestCase
 {
-    private static final String[] widthes=new String[]{"25%", "50%", "25%"};
+    private static final String[] widths=new String[]{"25%", "50%", "25%"};
     
     private ColumnLayout layout;
 
@@ -87,17 +87,16 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(2, layout.getLastRowNumber(0));
         assertEquals(2, layout.getLastRowNumber(1));       
         
-        // test widthes
-        assertEquals(25, layout.getColumnWidth(0));
-        assertEquals(50, layout.getColumnWidth(1));
-        assertEquals(25, layout.getColumnWidth(2));
-        
-        assertEquals(23, layout.getSafeColumnWidth(0, 2));
-        assertEquals(48, layout.getSafeColumnWidth(1, 2));
-        assertEquals(23, layout.getSafeColumnWidth(2, 2));
-        
-        assertEquals(0, layout.getColumnWidth(3));        
-        assertEquals(0, layout.getSafeColumnWidth(3, 2));
+        // test widths
+        assertEquals("25%", layout.getColumnWidth(0));
+        assertEquals("50%", layout.getColumnWidth(1));
+        assertEquals("24.99%", layout.getColumnWidth(2));        
+        assertEquals("0", layout.getColumnWidth(3));        
+
+        assertEquals("left", layout.getColumnFloat(0));
+        assertEquals("left", layout.getColumnFloat(1));
+        assertEquals("right", layout.getColumnFloat(2));
+        assertEquals("none", layout.getColumnFloat(3));
     }
 
     public void testSameRowSameColumn() throws Exception
@@ -114,7 +113,7 @@ public class TestColumnLayout extends MockObjectTestCase
         f2.setLayoutRow(0);
         f2.setLayoutColumn(0);
 
-        ColumnLayout layout = new ColumnLayout(3, "test", widthes);
+        ColumnLayout layout = new ColumnLayout(3, "test", null);
         layout.addFragment(f1);
         layout.addFragment(f2);
 
@@ -147,7 +146,7 @@ public class TestColumnLayout extends MockObjectTestCase
         f2.setName("test");
         f2.setLayoutRow(0);
 
-        ColumnLayout layout = new ColumnLayout(3, "test", widthes);
+        ColumnLayout layout = new ColumnLayout(3, "test", null);
         layout.addFragment(f1);
         layout.addFragment(f2);
 
@@ -176,7 +175,7 @@ public class TestColumnLayout extends MockObjectTestCase
         f2.setName("test");
         f2.setLayoutColumn(0);
 
-        ColumnLayout layout = new ColumnLayout(3, "test", widthes);
+        ColumnLayout layout = new ColumnLayout(3, "test", null);
         layout.addFragment(f1);
         layout.addFragment(f2);
 
@@ -196,7 +195,7 @@ public class TestColumnLayout extends MockObjectTestCase
         f1.setLayoutRow(0);
         f1.setLayoutColumn(5);
 
-        ColumnLayout layout = new ColumnLayout(3, "test", widthes);
+        ColumnLayout layout = new ColumnLayout(3, "test", null);
         layout.addFragment(f1);
 
         // Exceeded columns just get dumped into the last column
@@ -462,7 +461,7 @@ public class TestColumnLayout extends MockObjectTestCase
         f8.setLayoutRow(1);
         f8.setLayoutColumn(2);
 
-        layout = new ColumnLayout(3, "test", widthes );
+        layout = new ColumnLayout(3, "test", widths);
         layout.addFragment(f1);
         layout.addFragment(f2);
         layout.addFragment(f3);
