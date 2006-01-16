@@ -86,7 +86,7 @@ limitations under the License.
            #set($row = $coords.y)
 			
            ## get the decorated Portlet content
-		   <div class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}"" >
+		   <div class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
 		   ## editing block
 		   #if($editing)
 		   <div class="portlet-edit-bar">
