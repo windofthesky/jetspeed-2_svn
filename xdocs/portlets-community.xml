@@ -42,6 +42,12 @@
 			<li>Horoscope Portlet</li>
             </ul></td>
           </tr>
+          <tr>
+            <td><a href="http://sourceforge.jp/projects/pal/"><img src="http://pal.sourceforge.jp/images/pal-logo.png" border="0" /></a></td>
+            <td>
+              <a href="http://sourceforge.jp/projects/pal/">PAL</a> provides a useful JSR-168 portlets, such as File Manager, Blog, Yahoo! Japan Search portlets.
+            </td>
+          </tr>
         </table>
 		</section>
 	</body>
