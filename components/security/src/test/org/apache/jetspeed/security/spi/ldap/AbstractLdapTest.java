@@ -14,25 +14,28 @@
  */
 package org.apache.jetspeed.security.spi.ldap;
 
+import java.util.Random;
+
 import junit.framework.TestCase;
 
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapCredentialHandler;
 import org.apache.jetspeed.security.spi.impl.LdapGroupSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.LdapRoleSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapRoleDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
-
-import java.util.Random;
 
 /**
  * <p>
@@ -53,6 +56,9 @@ public abstract class AbstractLdapTest extends TestCase
     /** The {@link GroupSecurityHandler}. */
     GroupSecurityHandler grHandler;
     
+    /** The {@link RoleSecurityHandler}. */
+    RoleSecurityHandler roleHandler;    
+    
     /** The {@link SecurityMappingHandler}. */
     SecurityMappingHandler secHandler;
     
@@ -64,6 +70,9 @@ public abstract class AbstractLdapTest extends TestCase
     
     /** The {@link LdapGroupDao}. */
     LdapPrincipalDao ldapGroupDao;
+    
+    /** The {@link LdapGroupDao}. */
+    LdapPrincipalDao ldapRoleDao;    
 
     /** Random seed. */
     Random rand = new Random(System.currentTimeMillis());
@@ -73,6 +82,12 @@ public abstract class AbstractLdapTest extends TestCase
 
     /** Group uid. */
     protected String gpUid2;
+    
+    /** Role uid. */
+    protected String roleUid1;
+
+    /** Role uid. */
+    protected String roleUid2;    
 
     /** User uid. */
     protected String uid1;
@@ -101,12 +116,18 @@ public abstract class AbstractLdapTest extends TestCase
         uid2 = Integer.toString(rand.nextInt());
         
         ldapGroupDao = new LdapGroupDaoImpl(ldapConfig);
+        ldapRoleDao = new LdapRoleDaoImpl(ldapConfig);
         grHandler = new LdapGroupSecurityHandler(ldapGroupDao);
+        roleHandler = new LdapRoleSecurityHandler(ldapRoleDao);
         LdapDataHelper.setGroupSecurityHandler(grHandler);
+        LdapDataHelper.setRoleSecurityHandler(roleHandler);
         gpUid1 = Integer.toString(rand.nextInt());
         gpUid2 = Integer.toString(rand.nextInt());
         
-        secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao);
+        roleUid1 = Integer.toString(rand.nextInt());
+        roleUid2 = Integer.toString(rand.nextInt());        
+        
+        secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao, ldapRoleDao);
     }
 
     /**

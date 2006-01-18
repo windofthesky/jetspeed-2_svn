@@ -15,11 +15,14 @@
 package org.apache.jetspeed.security.spi.ldap;
 
 import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
@@ -40,6 +43,9 @@ public class LdapDataHelper
     /** The {@link GroupSecurityHandler}. */
     private static GroupSecurityHandler grHandler;
     
+    /** The {@link RoleSecurityHandler}. */
+    private static RoleSecurityHandler roleHandler;    
+    
     public static void seedUserData(String uid, String password) throws Exception
     {
         UserPrincipal up = new UserPrincipalImpl(uid);
@@ -53,6 +59,12 @@ public class LdapDataHelper
         grHandler.setGroupPrincipal(gp);
     }
     
+    public static void seedRoleData(String roleUid) throws Exception
+    {
+        RolePrincipal rp = new RolePrincipalImpl(roleUid);
+        roleHandler.setRolePrincipal(rp);
+    }
+    
     public static void removeUserData(String uid) throws Exception
     {
         UserPrincipal up = new UserPrincipalImpl(uid);
@@ -64,6 +76,12 @@ public class LdapDataHelper
         GroupPrincipal gp = new GroupPrincipalImpl(gpUid);
         grHandler.removeGroupPrincipal(gp);
     }
+    
+    public static void removeRoleData(String roleUid) throws Exception
+    {
+        RolePrincipal rp = new RolePrincipalImpl(roleUid);
+        roleHandler.removeRolePrincipal(rp);
+    }    
     
     public static void setUserSecurityHandler(UserSecurityHandler userHandlerVar)
     {
@@ -79,4 +97,9 @@ public class LdapDataHelper
     {
         grHandler = grHandlerVar;
     }
+    
+    public static void setRoleSecurityHandler(RoleSecurityHandler roleHandlerVar)
+    {
+        roleHandler = roleHandlerVar;
+    }    
 }
