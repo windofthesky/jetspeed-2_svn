@@ -68,7 +68,7 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#getGroupPrincipal(java.lang.String)
      */
-    public Principal getGroupPrincipal(String groupPrincipalUid)
+    public GroupPrincipal getGroupPrincipal(String groupPrincipalUid)
     {
         String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(groupPrincipalUid);
         verifyGroupId(groupUidWithoutSlashes);

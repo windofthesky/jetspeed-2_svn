@@ -146,10 +146,10 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipal(java.lang.String,
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setUserPrincipalInRole(java.lang.String,
      *      java.lang.String)
      */
-    public void setRolePrincipal(String username, String roleFullPathName) throws SecurityException
+    public void setUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException
     {
         InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
         boolean isMappingOnly = false;
@@ -174,10 +174,10 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeRolePrincipal(java.lang.String,
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeUserPrincipalInRole(java.lang.String,
      *      java.lang.String)
      */
-    public void removeRolePrincipal(String username, String roleFullPathName) throws SecurityException
+    public void removeUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException
     {
         boolean isMappingOnly = false;
         // Check is the record is used for mapping only.

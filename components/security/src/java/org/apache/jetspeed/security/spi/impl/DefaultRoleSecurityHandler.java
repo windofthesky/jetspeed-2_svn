@@ -51,7 +51,7 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#getRolePrincipal(java.lang.String)
      */
-    public Principal getRolePrincipal(String roleFullPathName)
+    public RolePrincipal getRolePrincipal(String roleFullPathName)
     {
         RolePrincipal rolePrincipal = null;
         InternalRolePrincipal internalRole = commonQueries

@@ -51,7 +51,7 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#getGroupPrincipal(java.lang.String)
      */
-    public Principal getGroupPrincipal(String groupFullPathName)
+    public GroupPrincipal getGroupPrincipal(String groupFullPathName)
     {
         GroupPrincipal groupPrincipal = null;
         InternalGroupPrincipal internalGroup = commonQueries
