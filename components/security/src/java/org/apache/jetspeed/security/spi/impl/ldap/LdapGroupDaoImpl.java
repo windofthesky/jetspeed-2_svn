@@ -17,9 +17,11 @@ package org.apache.jetspeed.security.spi.impl.ldap;
 
 import java.security.Principal;
 
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.DirContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
@@ -36,7 +38,7 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
 {
 
-    /**
+	 /**
      * <p>
      * Default constructor.
      * </p>
@@ -79,6 +81,7 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         classes.add("jetspeed-2-group");
         attrs.put(classes);
         attrs.put("uid", principalUid);
+        attrs.put("cn", principalUid);
         attrs.put("ou", getGroupsOu());
         return attrs;
     }
@@ -124,4 +127,10 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
     {
         return "jetspeed-2-group";
     }
+
+	protected String getEntryPrefix() {
+		return "cn";
+	}
+	
+ 	
 }

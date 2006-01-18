@@ -51,6 +51,29 @@ public interface LdapUserPrincipalDao extends LdapPrincipalDao
 
     /**
      * <p>
+     * Add a user to a group.
+     * </p>
+     * 
+     * @param userPrincipalUid The user principal.
+     * @param rolePrincipalUid The role principal.
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    void addRole(String userPrincipalUid, String rolePrincipalUid) throws SecurityException;
+
+    /**
+     * <p>
+     * Remove a user from a group.
+     * </p>
+     * 
+     * @param userPrincipalUid The user principal.
+     * @param rolePrincipalUid The role principal.
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    void removeRole(String userPrincipalUid, String rolePrincipalUid) throws SecurityException;
+    
+    
+    /**
+     * <p>
      * Return an array of the group principal UIDS that belong to a specific user.
      * </p>
      * 
@@ -59,6 +82,17 @@ public interface LdapUserPrincipalDao extends LdapPrincipalDao
      * @throws SecurityException A {@link SecurityException}.
      */
     String[] getGroupUidsForUser(String userPrincipalUid) throws SecurityException;
+    
+    /**
+     * <p>
+     * Return an array of the role principal UIDS that belong to a specific user.
+     * </p>
+     * 
+     * @param userPrincipalUid The user principal uid.
+     * @return The array of group uids asociated with this user
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    String[] getRoleUidsForUser(String userPrincipalUid) throws SecurityException;    
 
     /**
      * <p>
@@ -70,4 +104,50 @@ public interface LdapUserPrincipalDao extends LdapPrincipalDao
      * @throws SecurityException A {@link SecurityException}.
      */
     String[] getUserUidsForGroup(String groupPrincipalUid) throws SecurityException;
+
+    /**
+     * <p>
+     * Return an array of the user principal uids that belong to a role.
+     * </p>
+     * 
+     * @param rolePrincipalUid The role uid.
+     * @return The array of user uids asociated with this group
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    String[] getUserUidsForRole(String rolePrincipalUid) throws SecurityException;
+
+    /**
+     * <p>
+     * Return an array of the role principal UIDS that belong to a specific group.
+     * </p>
+     * 
+     * @param groupPrincipalUid The group principal uid.
+     * @return The array of role uids asociated with this user
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    String[] getRolesForGroup(String groupPrincipalUid) throws SecurityException;   
+    
+    /**
+     * <p>
+     * Add a role to a group.
+     * </p>
+     * 
+     * @param groupPrincipalUid The group principal.
+     * @param rolePrincipalUid The role principal.
+     * @throws SecurityException A {@link SecurityException}.
+     */        
+    void addRoleToGroup(String groupPrincipalUid, String rolePrincipalUid) throws SecurityException;
+    
+    /**
+     * <p>
+     * Remove a role from a group.
+     * </p>
+     * 
+     * @param groupPrincipalUid The group principal.
+     * @param rolePrincipalUid The role principal.
+     * @throws SecurityException A {@link SecurityException}.
+     */        
+    void removeRoleFromGroup(String groupPrincipalUid, String rolePrincipalUid) throws SecurityException;
+    
+    
 }

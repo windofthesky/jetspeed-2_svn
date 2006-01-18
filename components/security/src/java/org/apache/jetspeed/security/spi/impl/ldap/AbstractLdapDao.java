@@ -197,6 +197,54 @@ public abstract class AbstractLdapDao
             throw new SecurityException(e);
         }
     }
+    
+    /**
+     * <p>
+     * Searches the LDAP server for the group with the specified uid attribute.
+     * </p>
+     * 
+     * @return the user's DN
+     */
+    public String lookupGroupByUid(final String uid) throws SecurityException
+    {
+        validateUid(uid);
+
+        try
+        {
+            SearchControls cons = setSearchControls();
+            NamingEnumeration searchResults = searchGroupByWildcardedUid(uid, cons);
+
+            return getFirstDnForUid(searchResults);
+        }
+        catch (NamingException e)
+        {
+            throw new SecurityException(e);
+        }
+    }    
+    
+    /**
+     * <p>
+     * Searches the LDAP server for the role with the specified uid attribute.
+     * </p>
+     * 
+     * @return the user's DN
+     */
+    public String lookupRoleByUid(final String uid) throws SecurityException
+    {
+        validateUid(uid);
+
+        try
+        {
+            SearchControls cons = setSearchControls();
+            NamingEnumeration searchResults = searchRoleByWildcardedUid(uid, cons);
+
+            return getFirstDnForUid(searchResults);
+        }
+        catch (NamingException e)
+        {
+            throw new SecurityException(e);
+        }
+    }        
 
     /**
      * <p>
@@ -257,6 +305,44 @@ public abstract class AbstractLdapDao
 
         return searchResults;
     }
+    
+    /**
+     * <p>
+     * Search uid by wild card.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @param cons The {@link SearchControls}
+     * @return The {@link NamingEnumeration}
+     * @throws NamingException Throws a {@link NamingEnumeration}.
+     */
+    protected NamingEnumeration searchGroupByWildcardedUid(final String filter, SearchControls cons) throws NamingException
+    {
+        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
+                + "jetspeed-2-group" + "))";
+        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
+
+        return searchResults;
+    }   
+    
+    /**
+     * <p>
+     * Search uid by wild card.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @param cons The {@link SearchControls}
+     * @return The {@link NamingEnumeration}
+     * @throws NamingException Throws a {@link NamingEnumeration}.
+     */
+    protected NamingEnumeration searchRoleByWildcardedUid(final String filter, SearchControls cons) throws NamingException
+    {
+        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
+                + "jetspeed-2-role" + "))";
+        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
+
+        return searchResults;
+    }      
 
     /**
      * <p>
@@ -281,6 +367,18 @@ public abstract class AbstractLdapDao
     {
         return this.ldapBindingConfig.getGroupsOu();
     }
+    
+    /**
+     * <p>
+     * Returns the roles .
+     * </p>
+     * 
+     * @return The rolesOu.
+     */
+    protected String getRolesOu()
+    {
+        return this.ldapBindingConfig.getRolesOu();
+    }    
 
     /**
      * <p>
@@ -314,4 +412,17 @@ public abstract class AbstractLdapDao
      * @return a String containing the LDAP object class name.
      */
     protected abstract String getObjectClass();
+    
+    
+    /**
+     * <p>
+     * A template method that returns the LDAP entry prefix of the concrete DAO.
+     * </p>
+     * 
+     * TODO : this should be in spring config
+     * 
+     * @return a String containing the LDAP entry prefix name.
+     */    
+    protected abstract String getEntryPrefix();
+    
 }

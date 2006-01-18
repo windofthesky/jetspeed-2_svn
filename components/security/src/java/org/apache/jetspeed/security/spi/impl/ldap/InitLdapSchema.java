@@ -68,6 +68,7 @@ public class InitLdapSchema extends AbstractLdapDao
     {
         initOu(getUsersOu());
         initOu(getGroupsOu());
+        initOu(getRolesOu());
     }
 
     /**
@@ -115,5 +116,10 @@ public class InitLdapSchema extends AbstractLdapDao
 
         return attrs;
     }
+
+	protected String getEntryPrefix()
+	{
+		return null;
+	}
 
 }

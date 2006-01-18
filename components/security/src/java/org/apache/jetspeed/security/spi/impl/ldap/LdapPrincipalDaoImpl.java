@@ -33,6 +33,7 @@ import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
@@ -46,7 +47,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     private static final Log logger = LogFactory.getLog(LdapPrincipalDaoImpl.class);
 
     /** The uid attribute name. */
-    protected static final String UID_ATTR_NAME = "uid";
+    protected String UID_ATTR_NAME = "uid";
 
     /**
      * <p>
@@ -101,7 +102,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         Attributes attrs = defineLdapAttributes(principalUid);
         try
         {
-            String userDn = "uid=" + principalUid + getDnSuffix();
+            String userDn = getEntryPrefix() + "=" + principalUid + getDnSuffix();
             ctx.createSubcontext(userDn, attrs);
             if (logger.isDebugEnabled())
             {
@@ -169,6 +170,10 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         {
             ldapAcceptableName = convertUidWithoutSlashes(GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPath));
         }
+        else if (fullPath.indexOf(GroupPrincipal.PREFS_ROLE_ROOT) >= 0)
+        {
+            ldapAcceptableName = convertUidWithoutSlashes(RolePrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+        }        
         if (logger.isErrorEnabled())
         {
             logger.debug("Ldap acceptable name:" + ldapAcceptableName);
@@ -260,6 +265,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
             Principal principal = makePrincipal(uid);
 
             principals.add(principal);
+            
         }
     }
 

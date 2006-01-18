@@ -58,6 +58,9 @@ public class LdapBindingConfig
 
     /** The groups ou. */
     private String groupsOu;
+    
+    /** The roles ou. */
+    private String rolesOu;    
 
     /** The ldap properties. */
     private PropertiesConfiguration props = null;
@@ -74,7 +77,7 @@ public class LdapBindingConfig
      * @param gou The groups organization unit.
      */
     public LdapBindingConfig(String factory, String name, String port, String suffix, String context, String dn,
-            String password, String uou, String gou)
+            String password, String uou, String goups,String roles)
     {
         try
         {
@@ -86,7 +89,8 @@ public class LdapBindingConfig
             rootDn = dn;
             rootPassword = password;
             usersOu = uou;
-            groupsOu = gou;
+            groupsOu = goups;
+            rolesOu = roles;
             new InitLdapSchema(this);
         }
         catch (SecurityException se)
@@ -119,6 +123,7 @@ public class LdapBindingConfig
             rootPassword = props.getString("org.apache.jetspeed.ldap.rootPassword");
             usersOu = props.getString("org.apache.jetspeed.ldap.ou.users");
             groupsOu = props.getString("org.apache.jetspeed.ldap.ou.groups");
+            rolesOu = props.getString("org.apache.jetspeed.ldap.ou.roles");
             new InitLdapSchema(this);
         }
         catch (ConfigurationException ce)
@@ -278,4 +283,12 @@ public class LdapBindingConfig
     {
         this.usersOu = usersOu;
     }
+
+	public String getRolesOu() {
+		return rolesOu;
+	}
+
+	public void setRolesOu(String rolesOu) {
+		this.rolesOu = rolesOu;
+	}
 }

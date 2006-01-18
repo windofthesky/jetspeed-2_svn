@@ -15,6 +15,11 @@
  */
 package org.apache.jetspeed.security.spi.impl.ldap;
 
+import java.util.Hashtable;
+
+import javax.naming.AuthenticationException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -39,7 +44,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
     /** The password attribute. */ 
     private static final String PASSWORD_ATTR_NAME = "userPassword";
-
+    
     /**
      * <p>
      * Default constructor.
@@ -64,7 +69,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
     public LdapUserCredentialDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
     {
         super(ldapConfig);
-    }
+    }    
     
     /**
      * <p>
@@ -97,13 +102,32 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * @param uid The uid.
      * @param password The password.
      * @throws SecurityException Throws a {@link SecurityException}.
-     */
+     */	
     public boolean authenticate(final String uid, final String password) throws SecurityException
     {
         validateUid(uid);
         validatePassword(password);
-        String savedPassword = String.valueOf(getPassword(uid));
-        return (savedPassword.equals(password));
+        try
+        {
+			Hashtable env = this.ctx.getEnvironment();
+			String savedPassword = String.valueOf(getPassword(uid));
+			String oldCredential = (String)env.get(Context.SECURITY_CREDENTIALS);
+			String oldUsername = (String)env.get(Context.SECURITY_PRINCIPAL);
+			env.put(Context.SECURITY_PRINCIPAL,"uid=" + uid + ",ou=" + getUsersOu() + "," +  getRootContext());
+			env.put(Context.SECURITY_CREDENTIALS,password);
+			InitialContext ctx = new InitialContext(env);
+			env.put(Context.SECURITY_PRINCIPAL,oldUsername);
+			env.put(Context.SECURITY_CREDENTIALS,oldCredential);
+			return true;
+		}
+		catch (AuthenticationException e)
+		{
+			return false;
+		}
+		catch (NamingException e)
+		{
+			throw new SecurityException(e);
+		}
     }
 
     /**
@@ -162,7 +186,8 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
         Attributes userAttributes = getFirstUser(results);
 
-        return convertRawPassword(getAttribute(PASSWORD_ATTR_NAME, userAttributes));
+        char[] rawPassword = convertRawPassword(getAttribute(PASSWORD_ATTR_NAME, userAttributes));
+        return rawPassword;
     }
 
     /**
@@ -250,4 +275,8 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
     {
         return "jetspeed-2-user";
     }
+
+	protected String getEntryPrefix() {
+		return "uid";
+	}
 }
