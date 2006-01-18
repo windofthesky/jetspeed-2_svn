@@ -46,7 +46,7 @@ public interface GroupSecurityHandler
      * @param groupFullPathName The group full path name.
      * @return The <code>Principal</p>
      */
-    Principal getGroupPrincipal(String groupFullPathName);
+    GroupPrincipal getGroupPrincipal(String groupFullPathName);
     
     /**
      * <p>

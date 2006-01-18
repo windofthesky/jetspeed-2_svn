@@ -47,7 +47,7 @@ public interface RoleSecurityHandler
      * @param roleFullPathName The role full path name.
      * @return The <code>Principal</p>
      */
-    Principal getRolePrincipal(String roleFullPathName);
+    RolePrincipal getRolePrincipal(String roleFullPathName);
     
     /**
      * <p>

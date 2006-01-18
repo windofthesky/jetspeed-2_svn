@@ -298,8 +298,7 @@ public class GroupManagerImpl implements GroupManager
                 "addUserToGroup(java.lang.String, java.lang.String)");
 
         // Get the group principal to add to user.
-        Principal groupPrincipal = groupSecurityHandler
-                .getGroupPrincipal(groupFullPathName);
+        GroupPrincipal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
         if (null == groupPrincipal) { 
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName)); 
         }
@@ -309,13 +308,11 @@ public class GroupManagerImpl implements GroupManager
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
         // Get the user groups.
-        Set groupPrincipals = securityMappingHandler
-                .getGroupPrincipals(username);
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
         // Add group to user.
         if (!groupPrincipals.contains(groupPrincipal))
         {
-            securityMappingHandler.setUserPrincipalInGroup(username,
-                    groupFullPathName);
+            securityMappingHandler.setUserPrincipalInGroup(username,groupFullPathName);
         }
     }
 

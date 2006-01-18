@@ -38,6 +38,9 @@ limitations under the License.
       <constructor-arg index="7"><value>users</value></constructor-arg>
       <!-- The groups org unit. -->
       <constructor-arg index="8"><value>groups</value></constructor-arg>
+      <!-- The roles org unit. -->
+      <constructor-arg index="9"><value>roles</value></constructor-arg>
+      
   </bean>
 
 </beans>

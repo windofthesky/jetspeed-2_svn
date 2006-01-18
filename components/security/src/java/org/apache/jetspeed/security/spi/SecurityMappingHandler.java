@@ -93,7 +93,7 @@ public interface SecurityMappingHandler
      * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
      * 							 thrown if the user does not exist.
      */
-    void setRolePrincipal(String username, String roleFullPathName) throws SecurityException;
+    void setUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException;
     
     /**
      * <p>
@@ -109,7 +109,7 @@ public interface SecurityMappingHandler
      * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
      * 							 thrown if the user does not exist.
      */
-    void removeRolePrincipal(String username, String roleFullPathName) throws SecurityException;
+    void removeUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException;
 
     /**
      * <p>

@@ -287,7 +287,7 @@ public class RoleManagerImpl implements RoleManager
         // Add role to user.
         if (!rolePrincipals.contains(rolePrincipal))
         {
-            securityMappingHandler.setRolePrincipal(username, roleFullPathName);
+            securityMappingHandler.setUserPrincipalInRole(username, roleFullPathName);
         }
     }
 
@@ -310,7 +310,7 @@ public class RoleManagerImpl implements RoleManager
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null != rolePrincipal)
         {
-            securityMappingHandler.removeRolePrincipal(username, roleFullPathName);
+            securityMappingHandler.removeUserPrincipalInRole(username, roleFullPathName);
         }
     }
 
