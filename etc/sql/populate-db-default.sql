@@ -402,7 +402,7 @@ insert into PROFILING_RULE values ('user-role-fallback',
 insert into RULE_CRITERION values ('30', 'user-role-fallback', 0, 'user', 'user', null, 2);
 insert into RULE_CRITERION values ('31', 'user-role-fallback', 1, 'navigation', 'navigation', '/', 2);
 insert into RULE_CRITERION values ('32', 'user-role-fallback', 2, 'role', 'role', null, 2);
-insert into RULE_CRITERION values ('33', 'user-role-fallback', 3, 'path.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values ('33', 'user-role-fallback', 3, 'path.session', 'page', 'default-page', 1);
 
 insert into PROFILING_RULE values ('subsite-role-fallback-home',
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
