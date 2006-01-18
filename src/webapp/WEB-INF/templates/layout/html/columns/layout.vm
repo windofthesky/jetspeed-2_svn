@@ -160,6 +160,7 @@ limitations under the License.
 	  #set ($columnIndex = $columnIndex + 1)  
 	#end
   </div>  
+  <br style="clear:both;"/>
 
   #if ($myFragment == $myPage.getRootFragment())
     #parse($myFragment.decoration.footer)
