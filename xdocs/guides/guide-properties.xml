@@ -16,7 +16,7 @@
 -->
 <document>
   <properties>
-    <title>Getting Started with Jetspeed 2 using a Binary Release</title>
+    <title>Guide to configuration properties</title>
     <subtitle>Getting ready to build your own portal</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org" />
