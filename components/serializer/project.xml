@@ -19,21 +19,21 @@ limitations under the License.
 <project>
 <extend>${basedir}/../../core-build.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jetspeed-importer</id>
-  <name>Jetspeed-2 Importer</name>
+  <id>jetspeed-serializer</id>
+  <name>Jetspeed-2 Serializer</name>
   
   <package>org.apache.jetspeed</package>
-    <description>Jetspeed Importer</description>
-  <shortDescription>Importer</shortDescription>
+    <description>Jetspeed Serializer</description>
+  <shortDescription>Serializer</shortDescription>
 
   <repository>                 
         <connection>
-            scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/importer
+            scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/serializer
         </connection>
         <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/importer
+            scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/serializer
         </developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/importer/</url>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/serializer/</url>
   </repository>
 
   <dependencies>
