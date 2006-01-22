@@ -11,6 +11,13 @@
     index 3 = Page Manager
     index 4 = Registry (getPortlets)
     -->
+<bean id="PortletActionSecurityBehavior"
+	  class="org.apache.jetspeed.layout.impl.PortletActionSecurityPathBehavior">
+    <constructor-arg index='0'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    	
+</bean>	
+	
 <bean id="AjaxMovePortletAbsolute"
     class="org.apache.jetspeed.layout.impl.MovePortletAction">
     <constructor-arg index="0">
@@ -25,6 +32,9 @@
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	
 </bean>
 
 <bean id="AjaxMovePortletLeft"
@@ -41,6 +51,9 @@
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		
 </bean>
 
 <bean id="AjaxMovePortletRight"
@@ -56,7 +69,10 @@
     </constructor-arg>
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>      
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		  
 </bean>
 
 <bean id="AjaxMovePortletUp"
@@ -72,7 +88,10 @@
     </constructor-arg>
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>      
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		  
 </bean>
 
 <bean id="AjaxMovePortletDown"
@@ -88,7 +107,10 @@
     </constructor-arg>
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>      
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		  
 </bean>
 
 <bean id="AjaxAddPortlet"
@@ -101,7 +123,10 @@
     </constructor-arg>
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>      
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		  
 </bean>
 
 <bean id="AjaxRemovePortlet"
@@ -115,6 +140,9 @@
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		
 </bean>
 
 <bean id="AjaxGetPortlets"
@@ -136,7 +164,10 @@
     </constructor-arg>              
     <constructor-arg index='5'>
         <ref bean="org.apache.jetspeed.security.PermissionManager"/>        
-    </constructor-arg>              
+    </constructor-arg>       
+    <constructor-arg index='6'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		       
 </bean>
 
 <bean id="AjaxGetPage"
@@ -149,7 +180,10 @@
     </constructor-arg>
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
 </bean>
 
 <bean id="AjaxGetPages"
@@ -162,7 +196,10 @@
     </constructor-arg>
     <constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
 </bean>
 	
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
