@@ -71,6 +71,7 @@ import org.apache.jetspeed.page.LinkNotRemovedException;
 import org.apache.jetspeed.page.LinkNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
+import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
@@ -1163,55 +1164,93 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         return this.delegator.copyPageSecurity(source);
     }
-
-    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
-    throws JetspeedException, PageNotUpdatedException
-    {
-        this.delegator.deepCopyFolder(srcFolder, destinationPath, owner);
-    }
     
     public Page getUserPage(String userName, String pageName)
     throws PageNotFoundException, NodeException
     {
-        return this.delegator.getUserPage(userName, pageName);
+        return this.getPage(Folder.USER_FOLDER + userName + Folder.PATH_SEPARATOR + pageName);
     }
     
     public Folder getUserFolder(String userName) 
         throws FolderNotFoundException, InvalidFolderException, NodeException
     {
-        return this.delegator.getUserFolder(userName);        
+        return this.getFolder(Folder.USER_FOLDER + userName);        
     }
 
     public boolean folderExists(String folderName)
     {
-        return this.delegator.folderExists(folderName);
+        try
+        {
+            getFolder(folderName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
     }
-    
     public boolean pageExists(String pageName)
     {
-        return this.delegator.pageExists(pageName);
+        try
+        {
+            getPage(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
     }
     
     public boolean linkExists(String linkName)
     {
-        return this.delegator.linkExists(linkName);
+        try
+        {
+            getLink(linkName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
     }
 
     public boolean userFolderExists(String userName)
     {
-        return this.delegator.userFolderExists(userName);
+        try
+        {
+            getFolder(Folder.USER_FOLDER + userName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
     }
     
-    public boolean userPageExists(String userName, String pageName)    
+    public boolean userPageExists(String userName, String pageName)
     {
-        return this.delegator.userPageExists(userName, pageName);
+        try
+        {
+            getPage(Folder.USER_FOLDER + userName + Folder.PATH_SEPARATOR + pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
     }
-
+    
     public void createUserHomePagesFromRoles(Subject subject)
     throws JetspeedException
     {
-        this.delegator.createUserHomePagesFromRoles(subject);
+        PageManagerUtils.createUserHomePagesFromRoles(this, subject);
     }
     
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
+    throws JetspeedException, PageNotUpdatedException
+    {
+        PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
+    }
     
 }
