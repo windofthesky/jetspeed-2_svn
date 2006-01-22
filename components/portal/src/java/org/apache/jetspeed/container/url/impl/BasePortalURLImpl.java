@@ -16,6 +16,8 @@
 package org.apache.jetspeed.container.url.impl;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.container.url.BasePortalURL;
 
 /**
@@ -40,6 +42,38 @@ public class BasePortalURLImpl implements BasePortalURL
     public BasePortalURLImpl()
     {        
     }
+    
+    /**
+     * This constructor takes a string that represents the name of an
+     * environment variable.  The environment variable will be the full
+     * path of a properties file to be loaded.  Information from the
+     * properties file will populate this object
+     */
+    public BasePortalURLImpl(String environmentPath) throws ConfigurationException 
+    {
+        String propertyFilePath = null;
+        if (environmentPath != null) 
+        {
+            propertyFilePath = System.getProperty(environmentPath);
+        }
+        
+        PropertiesConfiguration config = null;
+        
+        // Load the file if the path is provided
+        if (propertyFilePath != null) 
+        {
+            config = new PropertiesConfiguration(propertyFilePath);
+        }
+
+        if (config != null) 
+        {
+            this.serverName = config.getString("portal.url.name");
+            this.serverScheme = config.getString("portal.url.scheme");
+            this.serverPort = config.getInt("portal.url.port");
+            this.secure = config.getBoolean("portal.url.secure");            
+        }
+    }
+    
     
     public BasePortalURLImpl(Configuration config)
     {
