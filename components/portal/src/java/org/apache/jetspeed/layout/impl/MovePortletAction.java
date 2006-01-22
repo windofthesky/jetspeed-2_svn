@@ -23,6 +23,7 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
@@ -50,31 +51,26 @@ public class MovePortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    /** Logger */
     protected Log log = LogFactory.getLog(MovePortletAction.class);
-
     private int iMoveType = -1;
-
     private String sMoveType = null;
-    
-    private PageManager pageManager = null;
 
     public MovePortletAction(String template, 
             String errorTemplate, 
             String sMoveType)
     throws AJAXException    
     {
-        this(template, errorTemplate, sMoveType, null);
+        this(template, errorTemplate, sMoveType, null, null);
     }
     
     public MovePortletAction(String template, 
                              String errorTemplate, 
                              String sMoveType,
-                             PageManager pageManager)
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior)
     throws AJAXException
     {
-        super(template, errorTemplate);
-        this.pageManager = pageManager;
+        super(template, errorTemplate, pageManager, securityBehavior);
         setMoveType(sMoveType);
     }
 
@@ -107,32 +103,49 @@ public class MovePortletAction
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
-
+        String status = "success";
         try
         {
             resultMap.put(ACTION, sMoveType);
-
             // Get the necessary parameters off of the request
-            String portletId = requestContext
-                    .getRequestParameter(PORTLETID);
+            String portletId = requestContext.getRequestParameter(PORTLETID);
             if (portletId == null) 
             { 
                 throw new Exception("portlet id not provided"); 
-            }
-            
-            resultMap.put(PORTLETID, portletId);
-
+            }            
+            resultMap.put(PORTLETID, portletId);            
             if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
             {
-                success = false;
-                resultMap.put(REASON, "Insufficient access to edit page");
-                return success;
-            }
-            
+                Page page = requestContext.getPage();
+                Fragment fragment = page.getFragmentById(portletId);
+                if (fragment == null)
+                {
+                    success = false;
+                    resultMap.put(REASON, "Fragment not found");
+                    return success;                    
+                }
+                int column = fragment.getLayoutColumn();
+                int row = fragment.getLayoutRow();                
+                if (!createNewPageOnEdit(requestContext))
+                {
+                    success = false;
+                    resultMap.put(REASON, "Insufficient access to edit page");
+                    return success;
+                }
+                status = "refresh";
+                // translate old portlet id to new portlet id
+                Fragment newFragment = getFragmentIdFromLocation(row, column, requestContext.getPage());
+                if (newFragment == null)
+                {
+                    success = false;
+                    resultMap.put(REASON, "Failed to find new fragment");
+                    return success;                    
+                }                
+                portletId = newFragment.getId();
+            }            
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
             Fragment fragment = placement.getFragmentById(portletId);
             Coordinate returnCoordinate = null;
-
             // Only required for moveabs
             if (iMoveType == ABS)
             {
@@ -170,27 +183,23 @@ public class MovePortletAction
             if (pageManager != null)
                 pageManager.updatePage(page);
             
-            // Use dummy values for now
-            resultMap.put(STATUS, "success");
-
+            resultMap.put(STATUS, status);
+            resultMap.put(PORTLETID, portletId);
             // Need to determine what the old col and row were
             resultMap.put(OLDCOL, String.valueOf(returnCoordinate
                     .getOldCol()));
             resultMap.put(OLDROW, String.valueOf(returnCoordinate
                     .getOldRow()));
-
             // Need to determine what the new col and row were
             resultMap.put(NEWCOL, String.valueOf(returnCoordinate
                     .getNewCol()));
             resultMap.put(NEWROW, String.valueOf(returnCoordinate
-                    .getNewRow()));
-                                   
-
+                    .getNewRow()));                                   
         } 
         catch (Exception e)
         {
             // Log the exception
-            log.error("exception while adding a portlet", e);
+            log.error("exception while moving a portlet", e);
             resultMap.put(REASON, e.toString());
             // Return a failure indicator
             success = false;

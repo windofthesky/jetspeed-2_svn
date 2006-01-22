@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -55,10 +56,7 @@ public class GetPortletsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants, Comparator
 {
-    /** Logger */
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
-
-    private PageManager pageManager = null;
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
     private PermissionManager permissionManager = null;
@@ -68,10 +66,10 @@ public class GetPortletsAction
                              PageManager pageManager,
                              PortletRegistry registry,
                              SearchEngine searchEngine,
-                             PermissionManager permissionManager)
+                             PermissionManager permissionManager,
+                             PortletActionSecurityBehavior securityBehavior)
     {
-        super(template, errorTemplate);
-        this.pageManager = pageManager;
+        super(template, errorTemplate, pageManager, securityBehavior);
         this.registry = registry;
         this.searchEngine = searchEngine;
         this.permissionManager = permissionManager;
@@ -80,26 +78,24 @@ public class GetPortletsAction
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
-
+        String status = "success";
         try
         {
             resultMap.put(ACTION, "getportlets");
-
-            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
             {
-                success = false;
-                resultMap.put(REASON, "Insufficient access to edit page");
-                return success;
-            }
-            
-            String filter = requestContext.getRequestParameter(FILTER);            
-                        
-            List portlets = retrievePortlets(requestContext, filter);
-            
-            resultMap.put(STATUS, "success");
-
+//                if (!createNewPageOnEdit(requestContext))
+//                {
+                    success = false;
+                    resultMap.put(REASON, "Insufficient access to edit page");
+                    return success;
+//                }
+//                status = "refresh";
+            }            
+            String filter = requestContext.getRequestParameter(FILTER);                                    
+            List portlets = retrievePortlets(requestContext, filter);            
+            resultMap.put(STATUS, status);
             resultMap.put(PORTLETS, portlets);
-
         } 
         catch (Exception e)
         {

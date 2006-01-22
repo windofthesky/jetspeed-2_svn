@@ -15,12 +15,17 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -33,14 +38,21 @@ import org.apache.jetspeed.request.RequestContext;
 public abstract class BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
+    protected Log log = LogFactory.getLog(BasePortletAction.class);    
 	protected String template = null;
-
+    protected PageManager pageManager = null;
     protected String errorTemplate = null;
-
-    public BasePortletAction(String template, String errorTemplate)
+    protected PortletActionSecurityBehavior securityBehavior;
+    
+    public BasePortletAction(String template, 
+                             String errorTemplate, 
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior)
     {
         this.template = template;
         this.errorTemplate = errorTemplate;
+        this.pageManager = pageManager;
+        this.securityBehavior = securityBehavior;
     }
 
     public boolean buildContext(RequestContext requestContext, Map responseContext)
@@ -79,17 +91,28 @@ public abstract class BasePortletAction
 
     public boolean checkAccess(RequestContext context, String action)
     {
-        Page page = context.getPage();
-        try
-        {
-            page.checkAccess(action);
-            
-        }
-        catch (SecurityException e)
-        {
-            return false;
-        }     
-        return true;
+        return securityBehavior.checkAccess(context, action);
     }
-    
+
+    public boolean createNewPageOnEdit(RequestContext context)
+    {
+        return securityBehavior.createNewPageOnEdit(context);        
+    }
+        
+    // TODO: support nested fragments
+    public Fragment getFragmentIdFromLocation(int row, int column, Page page)
+    {
+        Fragment root = page.getRootFragment();
+        Iterator fragments = root.getFragments().iterator();
+        while (fragments.hasNext())
+        {
+            Fragment fragment = (Fragment)fragments.next();
+            if (fragment.getLayoutColumn() == column &&
+                fragment.getLayoutRow() == row)
+            {
+                return fragment;
+            }
+        }
+        return null;
+    }
 }

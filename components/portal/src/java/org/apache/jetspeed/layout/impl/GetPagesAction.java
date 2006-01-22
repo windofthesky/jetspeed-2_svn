@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
@@ -45,40 +46,36 @@ public class GetPagesAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants, Comparator
 {
-    /** Logger */
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
-
-    private PageManager pageManager = null;
     
     public GetPagesAction(String template, 
                              String errorTemplate,
-                             PageManager pageManager)
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior)
     {
-        super(template, errorTemplate);
-        this.pageManager = pageManager;
+        super(template, errorTemplate, pageManager, securityBehavior);
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
-
+        String status = "success";
         try
         {
             resultMap.put(ACTION, "getpages");
-
-            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
             {
-                success = false;
-                resultMap.put(REASON, "Insufficient access to edit page");
-                return success;
-            }
-                                    
-            List pages = retrievePages(requestContext);
-            
-            resultMap.put(STATUS, "success");
-
+//                if (!createNewPageOnEdit(requestContext))                
+//                {
+                    success = false;
+                    resultMap.put(REASON, "Insufficient access to get portlets");
+                    return success;
+//                }
+//                status = "refresh";
+            }                                    
+            List pages = retrievePages(requestContext);            
+            resultMap.put(STATUS, status);
             resultMap.put(PAGES, pages);
-
         } 
         catch (Exception e)
         {

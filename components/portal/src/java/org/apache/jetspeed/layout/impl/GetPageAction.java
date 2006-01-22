@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -39,42 +40,33 @@ public class GetPageAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    /** Logger */
     protected Log log = LogFactory.getLog(GetPageAction.class);
-
-    private PageManager pageManager = null;
     
     public GetPageAction(String template, 
             String errorTemplate, 
-            PageManager pageManager)
+            PageManager pageManager,
+            PortletActionSecurityBehavior securityBehavior)
     {
-        super(template, errorTemplate);
-        this.pageManager = pageManager;
+        super(template, errorTemplate, pageManager, securityBehavior);
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
-
+        String status = "success";
         try
         {
             resultMap.put(ACTION, "getpage");
-
             if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
             {
-                success = false;
                 resultMap.put(REASON, "Insufficient access to view page");
+                success = false;
                 return success;
-            }
-            
-            String filter = requestContext.getRequestParameter(FILTER);            
-                        
-            Page page = requestContext.getPage();
-            
-            resultMap.put(STATUS, "success");
-
+            }            
+            //String filter = requestContext.getRequestParameter(FILTER);                                   
+            Page page = requestContext.getPage();            
+            resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
-
         } 
         catch (Exception e)
         {

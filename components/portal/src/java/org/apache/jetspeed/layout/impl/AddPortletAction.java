@@ -23,6 +23,7 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
@@ -48,90 +49,80 @@ public class AddPortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    private PageManager pageManager = null;
-    
-    /** Logger */
     protected Log log = LogFactory.getLog(AddPortletAction.class);
 
     public AddPortletAction(String template, String errorTemplate)
     {
-        this(template, errorTemplate, null);
+        this(template, errorTemplate, null, null);
     }
 
     public AddPortletAction(String template, 
                             String errorTemplate, 
-                            PageManager pageManager)
+                            PageManager pageManager,
+                            PortletActionSecurityBehavior securityBehavior)
     {
-        super(template, errorTemplate);
-        this.pageManager = pageManager;
+        super(template, errorTemplate, pageManager, securityBehavior);        
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
     {
         boolean success = true;
-
+        String status = "success";
         try
         {
             resultMap.put(ACTION, "add");
             // Get the necessary parameters off of the request
             String portletId = requestContext.getRequestParameter(PORTLETID);
-
             if (portletId == null) 
             { 
                 throw new RuntimeException("portlet id not provided"); 
             }
             resultMap.put(PORTLETID, portletId);
-
             if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
             {
-                success = false;
-                resultMap.put(REASON, "Insufficient access to edit page");                
-                return success;
-            }
-            
+                if (!createNewPageOnEdit(requestContext))
+                {
+                    success = false;
+                    resultMap.put(REASON, "Insufficient access to edit page");                
+                    return success;
+                }
+                status = "refresh";
+            }           
             // These are optional parameters
             String col = requestContext.getRequestParameter(COL);
             String row = requestContext.getRequestParameter(ROW);
-
             // Convert the col and row into integers
             int iCol = 0;
             int iRow = 0;
-
             if (col != null)
             {
                 iCol = Integer.parseInt(col);
                 resultMap.put(NEWCOL, new Integer(iCol));
             }
-
             if (row != null)
             {
                 iRow = Integer.parseInt(row);
                 resultMap.put(NEWROW, new Integer(iRow));
             }
-
             // Use the Portlet Placement Manager to accomplish the removal
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
             Fragment fragment = pageManager.newFragment();
             fragment.setType(Fragment.PORTLET);
             fragment.setName(portletId);
             fragment.setLayoutColumn(iCol);
-            fragment.setLayoutRow(iRow);
-            
+            fragment.setLayoutRow(iRow);            
             Coordinate coordinate = placement.add(fragment, new CoordinateImpl(iCol, iRow, iCol, iRow));
-            Page page = placement.syncPageFragments();                                                
-            
+            Page page = placement.syncPageFragments();                                                            
             // TODO: this does not handle nested layouts            
             Fragment root = requestContext.getPage().getRootFragment();
             root.getFragments().add(fragment);            
             pageManager.updatePage(page);
-
-            resultMap.put(STATUS, "success");
+            resultMap.put(STATUS, status);
             resultMap.put(NEWCOL, String.valueOf(coordinate
                     .getNewCol()));
             resultMap.put(NEWROW, String.valueOf(coordinate
-                    .getNewRow()));
-            
+                    .getNewRow()));            
         } 
         catch (Exception e)
         {
