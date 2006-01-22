@@ -18,6 +18,8 @@ package org.apache.jetspeed.page.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecuredResource;
@@ -1167,5 +1169,49 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         this.delegator.deepCopyFolder(srcFolder, destinationPath, owner);
     }
+    
+    public Page getUserPage(String userName, String pageName)
+    throws PageNotFoundException, NodeException
+    {
+        return this.delegator.getUserPage(userName, pageName);
+    }
+    
+    public Folder getUserFolder(String userName) 
+        throws FolderNotFoundException, InvalidFolderException, NodeException
+    {
+        return this.delegator.getUserFolder(userName);        
+    }
+
+    public boolean folderExists(String folderName)
+    {
+        return this.delegator.folderExists(folderName);
+    }
+    
+    public boolean pageExists(String pageName)
+    {
+        return this.delegator.pageExists(pageName);
+    }
+    
+    public boolean linkExists(String linkName)
+    {
+        return this.delegator.linkExists(linkName);
+    }
+
+    public boolean userFolderExists(String userName)
+    {
+        return this.delegator.userFolderExists(userName);
+    }
+    
+    public boolean userPageExists(String userName, String pageName)    
+    {
+        return this.delegator.userPageExists(userName, pageName);
+    }
+
+    public void createUserHomePagesFromRoles(Subject subject)
+    throws JetspeedException
+    {
+        this.delegator.createUserHomePagesFromRoles(subject);
+    }
+    
     
 }

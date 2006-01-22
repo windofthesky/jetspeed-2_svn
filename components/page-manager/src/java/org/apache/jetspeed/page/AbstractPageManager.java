@@ -15,11 +15,14 @@
  */
 package org.apache.jetspeed.page;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +31,7 @@ import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -41,6 +45,10 @@ import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * AbstractPageManagerService
@@ -1267,4 +1275,201 @@ public abstract class AbstractPageManager
         return base.concat(path);
     }
     
+    public Page getUserPage(String userName, String pageName)
+    throws PageNotFoundException, NodeException
+    {
+        return this.getPage(Folder.USER_FOLDER + userName + Folder.PATH_SEPARATOR + pageName);
+    }
+    
+    public Folder getUserFolder(String userName) 
+        throws FolderNotFoundException, InvalidFolderException, NodeException
+    {
+        return this.getFolder(Folder.USER_FOLDER + userName);        
+    }
+
+    public boolean folderExists(String folderName)
+    {
+        try
+        {
+            getFolder(folderName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    public boolean pageExists(String pageName)
+    {
+        try
+        {
+            getPage(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean linkExists(String linkName)
+    {
+        try
+        {
+            getLink(linkName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean userFolderExists(String userName)
+    {
+        try
+        {
+            getFolder(Folder.USER_FOLDER + userName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean userPageExists(String userName, String pageName)
+    {
+        try
+        {
+            getPage(Folder.USER_FOLDER + userName + Folder.PATH_SEPARATOR + pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Creates a user's home page from the roles of the current user.
+     * The use case: when a portal is setup to use shared pages, but then
+     * the user attempts to customize. At this point, we create the new page(s) for the user.
+     * 
+     * @param subject
+     */
+    public void createUserHomePagesFromRoles(Subject subject)
+    throws JetspeedException
+    {
+        Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class); 
+        if (principal == null)
+        {
+            String errorMessage = "Could not create user home for null principal";
+            log.error(errorMessage);
+            throw new JetspeedException(errorMessage);
+        }
+        try
+        {
+            String userName = principal.getName();            
+            // get user home
+            Folder newUserFolder;
+            if (this.userFolderExists(userName))
+            {
+                newUserFolder = this.getUserFolder(userName);
+            }
+            else
+            {
+                newUserFolder = this.newFolder(Folder.USER_FOLDER + userName);
+                SecurityConstraints constraints = this.newSecurityConstraints();
+                newUserFolder.setSecurityConstraints(constraints);
+                newUserFolder.getSecurityConstraints().setOwner(userName);
+                this.updateFolder(newUserFolder);                
+            }            
+            // for each role for a user, deep copy the folder contents for that role 
+            // into the user's home
+            // TODO: this algorithm could actually merge pages on dups
+            Iterator roles = SecurityHelper.getPrincipals(subject, RolePrincipal.class).iterator();
+            while (roles.hasNext())
+            {                            
+                RolePrincipal role = (RolePrincipal)roles.next();
+                if (this.folderExists(Folder.ROLE_FOLDER + role.getName()))
+                {
+                    Folder roleFolder = this.getFolder(Folder.ROLE_FOLDER + role.getName());                    
+                    deepMergeFolder(roleFolder, Folder.USER_FOLDER + newUserFolder.getName(), userName, role.getName());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            String errorMessage = "createUserHomePagesFromRoles failed: " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new JetspeedException(errorMessage, e);
+        }
+    }
+
+    /**
+     * Deep merges from a source folder into a destination path for the given owner.
+     * The unique name is used in conflict resolution for name collisions.
+     * Example: deep merge a given role folder 'X' into /_user/david
+     *          uniqueName = 'X'
+     *          owner = 'david'
+     *          destinationPath = '_user/david'
+     *          
+     * @param srcFolder
+     * @param destinationPath
+     * @param owner
+     * @param uniqueName
+     * @throws JetspeedException
+     */
+    protected void deepMergeFolder(Folder srcFolder, String destinationPath, String owner, String uniqueName)
+    throws JetspeedException
+    {        
+        Iterator pages = srcFolder.getPages().iterator();
+        while (pages.hasNext())
+        {
+            Page srcPage = (Page)pages.next();
+            String path = this.concatenatePaths(destinationPath, srcPage.getName());
+            if (!this.pageExists(path))
+            {
+                Page dstPage = this.copyPage(srcPage, path);
+                this.updatePage(dstPage);
+            }
+            else
+            {
+                path = this.concatenatePaths(destinationPath, uniqueName + "-" +srcPage.getName());               
+                Page dstPage = this.copyPage(srcPage, path);                
+                this.updatePage(dstPage);                
+            }
+        }
+     
+        Iterator links = srcFolder.getLinks().iterator();
+        while (links.hasNext())
+        {
+            Link srcLink = (Link)links.next();
+            String path = this.concatenatePaths(destinationPath, srcLink.getName());
+            if (!this.linkExists(path))
+            {
+                Link dstLink = this.copyLink(srcLink, path);
+                this.updateLink(dstLink);
+            }
+            else
+            {
+                path = this.concatenatePaths(destinationPath, uniqueName + "-" +srcLink.getName());               
+                Link dstLink = this.copyLink(srcLink, path);                
+                this.updateLink(dstLink);                                
+            }
+        }     
+        Iterator folders = srcFolder.getFolders().iterator();
+        while (folders.hasNext())
+        {
+            Folder folder = (Folder)folders.next();
+            String newPath = concatenatePaths(destinationPath, folder.getName());
+            if (!this.folderExists(newPath))
+            {
+                Folder dstFolder = this.copyFolder(folder, newPath);
+                this.updateFolder(dstFolder);
+            }
+            deepMergeFolder(folder, newPath, null, uniqueName);
+        }                
+    }
 }
