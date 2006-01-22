@@ -26,41 +26,33 @@ import org.apache.jetspeed.i18n.KeyedMessage;
  */
 public class RegistrationException extends JetspeedException
 {
-
     public RegistrationException()
     {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public RegistrationException(KeyedMessage keyedMessage, Throwable nested)
     {
         super(keyedMessage, nested);
-        // TODO Auto-generated constructor stub
     }
 
     public RegistrationException(KeyedMessage typedMessage)
     {
         super(typedMessage);
-        // TODO Auto-generated constructor stub
     }
 
     public RegistrationException(String msg, Throwable nested)
     {
         super(msg, nested);
-        // TODO Auto-generated constructor stub
     }
 
     public RegistrationException(String message)
     {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     public RegistrationException(Throwable nested)
     {
         super(nested);
-        // TODO Auto-generated constructor stub
     }
-
 }

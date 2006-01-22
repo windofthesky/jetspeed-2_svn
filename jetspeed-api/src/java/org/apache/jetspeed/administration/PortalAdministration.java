@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.administration;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.security.auth.Subject;
 
 import org.apache.jetspeed.security.User;
 
@@ -139,6 +141,6 @@ public interface PortalAdministration
      * @param guid    the ID which will be removed from the storage when the info is no longer valid
      */
     public void removeNewLoginInfo(String guid);
-    
+        
 }
 

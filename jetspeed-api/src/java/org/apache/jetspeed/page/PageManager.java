@@ -16,6 +16,8 @@
 
 package org.apache.jetspeed.page;
 
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -446,5 +448,79 @@ public interface PageManager
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
     throws JetspeedException, PageNotUpdatedException;
+
+    /**
+     * Retrieve a page for the given user name and page name
+     * 
+     * @param userName
+     * @param pageName
+     * @return
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public Page getUserPage(String userName, String pageName) 
+        throws PageNotFoundException, NodeException;
     
+    /**
+     * Retrieve a user's folder
+     * 
+     * @param userName
+     * @return
+     * @throws FolderNotFoundException
+     * @throws InvalidFolderException
+     * @throws NodeException
+     */
+    public Folder getUserFolder(String userName) 
+        throws FolderNotFoundException, InvalidFolderException, NodeException;
+    
+    /**
+     * Check if a folder exists for the given folder name
+     * 
+     * @param folderName
+     * @return
+     */
+    public boolean folderExists(String folderName);
+    
+    /**
+     * Check if a page exists for the given page name
+     * 
+     * @param pageName
+     * @return
+     */
+    public boolean pageExists(String pageName);
+    
+    /**
+     * Check if a link exists for the given link name
+     * 
+     * @param linkName
+     * @return
+     */
+    public boolean linkExists(String linkName);
+    
+    /**
+     * Check if the root folder exists for a given user
+     * 
+     * @param userName
+     * @return
+     */
+    public boolean userFolderExists(String userName);
+    
+    /**
+     * Check if a page exists for the given user
+     * 
+     * @param userName
+     * @param pageName
+     * @return
+     */
+    public boolean userPageExists(String userName, String pageName);
+
+    /**
+     * Creates a user's home page from the roles of the current user.
+     * The use case: when a portal is setup to use shared pages, but then
+     * the user attempts to customize. At this point, we create the new page(s) for the user.
+     * 
+     * @param subject The full user Java Security subject.
+     */
+    public void createUserHomePagesFromRoles(Subject subject)
+    throws JetspeedException;    
 }

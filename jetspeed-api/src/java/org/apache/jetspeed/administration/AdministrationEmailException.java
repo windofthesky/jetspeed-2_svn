@@ -26,41 +26,33 @@ import org.apache.jetspeed.i18n.KeyedMessage;
  */
 public class AdministrationEmailException extends JetspeedException
 {
-
     public AdministrationEmailException()
     {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public AdministrationEmailException(KeyedMessage keyedMessage, Throwable nested)
     {
         super(keyedMessage, nested);
-        // TODO Auto-generated constructor stub
     }
 
     public AdministrationEmailException(KeyedMessage typedMessage)
     {
         super(typedMessage);
-        // TODO Auto-generated constructor stub
     }
 
     public AdministrationEmailException(String msg, Throwable nested)
     {
         super(msg, nested);
-        // TODO Auto-generated constructor stub
     }
 
     public AdministrationEmailException(String message)
     {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     public AdministrationEmailException(Throwable nested)
     {
         super(nested);
-        // TODO Auto-generated constructor stub
     }
-
 }
