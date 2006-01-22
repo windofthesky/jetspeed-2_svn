@@ -1,0 +1,7 @@
+<link target="top" skin="test-skin">
+ <title>Apache Portals Website</title>
+ <url>http://portals.apache.org</url>
+  <metadata name="title" xml:lang="fr">
+		Apache Software Foundation [french]
+ </metadata>
+</link>
