@@ -78,7 +78,7 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
                 page = this.pageManager.getPage(Folder.USER_FOLDER 
                                                 + context.getRequest().getUserPrincipal().getName()
                                                 + Folder.PATH_SEPARATOR 
-                                                + "default-page.psml"); // FIXME: dont hard code                
+                                                + Folder.FALLBACK_DEFAULT_PAGE);                 
                 context.setPage(new ContentPageImpl(page));
             }            
         }
