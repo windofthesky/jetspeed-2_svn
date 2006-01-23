@@ -294,7 +294,17 @@
     <goal name='pages'>
 	<copy todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/pages/">
         <fileset dir="./src/webapp/WEB-INF/pages/"/>        
-  	</copy>        
-        
+  	</copy>                
     </goal>
+	
+	<!-- when running tests that use the database, and when you change the db-schema
+		 or test data for that test, you need to regenerate the schema and reload 
+		 the test data. I often forget the 3 holy steps. Here they are
+	 -->
+	<goal name='mht'>
+		<attainGoal name='j2:portal.conf.sql'/>
+		<attainGoal name='j2:db.create.test'/>
+		<echo>and the holy ghost...run your test... dont forget -Dmaven.test.skip=false</echo>
+	</goal>
+	
 </project>
