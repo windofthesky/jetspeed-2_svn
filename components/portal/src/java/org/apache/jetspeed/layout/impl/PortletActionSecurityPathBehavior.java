@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import javax.security.auth.Subject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -56,6 +58,11 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
         return true;
     }
 
+    public Subject getSubject(RequestContext context)
+    {
+        return context.getSubject();
+    }
+    
     public boolean createNewPageOnEdit(RequestContext context)
     {
         Page page = context.getPage();        
@@ -67,14 +74,12 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
             // make sure we are not copying from user area
             if (path.indexOf(Folder.USER_FOLDER) == -1)
             {
-                System.out.println("Changing ROLE Folder");
-                this.pageManager.createUserHomePagesFromRoles(context.getSubject());
+                this.pageManager.createUserHomePagesFromRoles(getSubject(context));
                 page = this.pageManager.getPage(Folder.USER_FOLDER 
                                                 + context.getRequest().getUserPrincipal().getName()
                                                 + Folder.PATH_SEPARATOR 
                                                 + "default-page.psml"); // FIXME: dont hard code                
                 context.setPage(new ContentPageImpl(page));
-                System.out.println("new page set: Changing ROLE Folder " + page.getPath());
             }            
         }
         catch (Exception e)
