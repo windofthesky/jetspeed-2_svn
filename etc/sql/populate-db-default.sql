@@ -404,6 +404,14 @@ insert into RULE_CRITERION values ('31', 'user-role-fallback', 1, 'navigation', 
 insert into RULE_CRITERION values ('32', 'user-role-fallback', 2, 'role', 'role', null, 2);
 insert into RULE_CRITERION values ('33', 'user-role-fallback', 3, 'path.session', 'page', 'default-page', 1);
 
+insert into PROFILING_RULE values ('user-rolecombo-fallback', 
+     'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
+     'A role based fallback algorithm based on Jetspeed-1 role-based fallback');
+insert into RULE_CRITERION values ('40', 'user-rolecombo-fallback', 0, 'user', 'user', null, 2);
+insert into RULE_CRITERION values ('41', 'user-rolecombo-fallback', 1, 'navigation', 'navigation', '/', 2);
+insert into RULE_CRITERION values ('42', 'user-rolecombo-fallback', 2, 'rolecombo', 'role', null, 2);
+insert into RULE_CRITERION values ('43', 'user-rolecombo-fallback', 3, 'path.session', 'page', 'default-page', 1);
+
 insert into PROFILING_RULE values ('subsite-role-fallback-home',
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A rule based on role fallback algorithm with specified subsite and home page');

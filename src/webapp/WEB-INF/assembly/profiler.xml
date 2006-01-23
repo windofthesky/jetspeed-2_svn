@@ -71,6 +71,9 @@
           <entry key="role">
             <ref bean="RoleCriterionResolver" />
           </entry>
+          <entry key="rolecombo">
+            <ref bean="RoleComboCriterionResolver" />
+          </entry>			
           <entry key="group">
             <ref bean="GroupCriterionResolver" />
           </entry>
@@ -106,6 +109,7 @@
     <bean id='HardCodedResolver' class='org.apache.jetspeed.profiler.rules.impl.HardCodedResolver'></bean>
     <bean id='UserCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.UserCriterionResolver'></bean>
     <bean id='RoleCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.RoleCriterionResolver'></bean>
+    <bean id='RoleComboCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.RoleComboCriterionResolver'></bean>	
     <bean id='GroupCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.GroupCriterionResolver'></bean>
     <bean id='MediatypeCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.MediatypeCriterionResolver'></bean>
     <bean id='LanguageCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.LanguageCriterionResolver'></bean>
