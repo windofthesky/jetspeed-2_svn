@@ -207,7 +207,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         allConstraints = new ArrayList(8);
 
         // add any defined security constraints
-        if ((securityConstraints != null) && !securityConstraints.isEmpty())
+        if ((getSecurityConstraints() != null) && !getSecurityConstraints().isEmpty())
         {
             allConstraints.addAll(securityConstraints);
         }
