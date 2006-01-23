@@ -121,6 +121,14 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         "path.session"
     };
 
+    private static final String URCF_CRITERIA [] =
+    {
+        "user",
+        "navigation",
+        "rolecombo",
+        "path.session"
+    };
+    
     public void testUserRoleFallback() 
     throws Exception
     {
@@ -151,6 +159,37 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         
         System.out.println("COMPLETED: running test user role fallback.");
     }
+
+    public void testUserRoleComboFallback() 
+    throws Exception
+    {
+        assertNotNull("profiler service is null", profiler);
+        System.out.println("START: running test user rolecombo fallback...");
+        
+        // make sure rule is set correctly
+        ProfilingRule rule = profiler.getRule("user-rolecombo-fallback");
+        assertNotNull("rule is null ", rule);
+        Iterator c = rule.getRuleCriteria().iterator();
+        int ix = 0;
+        while (c.hasNext())
+        {
+            RuleCriterion rc = (RuleCriterion)c.next();
+            assertTrue("criterion type check " + rc.getType(), rc.getType().equals(URCF_CRITERIA[ix]));
+            System.out.println(rc.getType());
+            ix++;
+        }
+        
+        // test applying it
+        RequestContext context = new MockRequestContext();
+        Subject subject = createSubject2();
+        context.setPath("/homepage.psml");        
+        context.setSubject(subject);
+        ProfileLocator locator = rule.apply(context, profiler);
+        System.out.println("locator = " + locator);
+        assertTrue("locator string " + locator.toString(), locator.toString().equals("/homepage.psml:user:david:navigation:/:role:ATP-NB:page:/homepage.psml"));
+        
+        System.out.println("COMPLETED: running test user role fallback.");
+    }
     
     protected Subject createSubject()
     {
@@ -162,6 +201,19 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         principals.add(new RolePrincipalImpl("ATP"));
         principals.add(new RolePrincipalImpl("NB"));        
         principals.add(new RolePrincipalImpl("ATP-NB"));        
+        Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
+        return subject;
+    }
+
+    protected Subject createSubject2()
+    {
+        Set principals = new PrincipalsSet();
+        Set publicCredentials = new HashSet();
+        Set privateCredentials = new HashSet();
+        
+        principals.add(new UserPrincipalImpl("david"));
+        principals.add(new RolePrincipalImpl("ATP"));
+        principals.add(new RolePrincipalImpl("NB"));        
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
     }

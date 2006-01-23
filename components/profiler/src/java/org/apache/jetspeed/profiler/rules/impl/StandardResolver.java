@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.SecurityHelper;
 public class StandardResolver implements RuleCriterionResolver
 {
     public static final String VALUE_DELIMITER = ",";
+    public static final String COMBO_DELIMITER = "-";
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
@@ -89,7 +90,29 @@ public class StandardResolver implements RuleCriterionResolver
         {
             return null;
         }
-        return result.toString();
-        
+        return result.toString();        
     }
+
+    protected String combinePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
+    {
+        StringBuffer result = new StringBuffer();
+        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
+        int count = 0;
+        while (principals.hasNext())
+        {
+            Principal principal = (Principal)principals.next();
+            if (count > 0)
+            {
+                result.append(COMBO_DELIMITER);
+            }
+            result.append(principal.getName());
+            count++;
+        }
+        if (count == 0)
+        {
+            return null;
+        }
+        return result.toString();        
+    }
+    
 }
