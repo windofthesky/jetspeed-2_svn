@@ -25,7 +25,7 @@ limitations under the License.
   <body>
 <section name="Single Sign On (SSO)">
 <p>
-Jetspeed 2 provides a Single-Sign-On component for storing credentails for a protected site which can be an URL or application.  Please visit the <a href="../multiproject/jetspeed-sso/index.html">Jetspeed-2 Single Sign On</a>
+Jetspeed 2 provides a Single-Sign-On component for storing credentials for a protected site which can be an URL or application.  Please visit the <a href="../multiproject/jetspeed-sso/index.html">Jetspeed-2 Single Sign On</a>
 sub project documentation.
 </p>
 <p>
