@@ -178,7 +178,13 @@ public class PageImpl extends DocumentImpl implements Page
         // be made for root fragment
         if ((fragment != null) && !fragment.isEmpty())
         {
-            return (Fragment)fragment.iterator().next();
+            FragmentImpl rootFragment = (FragmentImpl)fragment.iterator().next();
+            if (rootFragment.getPage() == null)
+            {
+                // set page implementation in root and children fragments
+                rootFragment.setPage(this);
+            }
+            return rootFragment;
         }
         return null;
     }

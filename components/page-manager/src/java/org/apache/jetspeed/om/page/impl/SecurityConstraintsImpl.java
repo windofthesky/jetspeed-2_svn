@@ -131,14 +131,14 @@ public class SecurityConstraintsImpl implements SecurityConstraints
             while (actionsIter.hasNext())
             {
                 // check each action:
-                // - if any actions explicity permitted, assume no permissions
-                //   are permitted by default
+                // - if any actions explicity permitted, (including owner),
+                //   assume no permissions are permitted by default
                 // - if all constraints do not specify a permission, assume
                 //   access is permitted by default
                 String action = (String)actionsIter.next();
                 boolean actionPermitted = false;
                 boolean actionNotPermitted = false;
-                boolean anyActionsPermitted = false;
+                boolean anyActionsPermitted = (getOwner() != null);
                 
                 // check against constraints
                 Iterator checkConstraintsIter = checkConstraints.iterator();
@@ -176,6 +176,16 @@ public class SecurityConstraintsImpl implements SecurityConstraints
                 {
                     throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted.");
                 }
+            }
+        }
+        else
+        {
+            // fail for any action if owner specified
+            // since no other constraints were found
+            if ((getOwner() != null) && !actions.isEmpty())
+            {
+                String action = (String)actions.get(0);
+                throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted, (not owner).");
             }
         }
     }

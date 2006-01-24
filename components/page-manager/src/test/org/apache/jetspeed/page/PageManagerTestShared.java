@@ -330,6 +330,9 @@ interface PageManagerTestShared
                 throw setup;
             }
 
+            // reset page manager cache
+            pageManager.reset();
+
             // access test as admin user
             Exception adminAccess = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
                 {
@@ -573,6 +576,9 @@ interface PageManagerTestShared
             {
                 throw guestAccess;
             }
+
+            // reset page manager cache
+            pageManager.reset();
 
             // cleanup test as admin user
             Exception cleanup = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
