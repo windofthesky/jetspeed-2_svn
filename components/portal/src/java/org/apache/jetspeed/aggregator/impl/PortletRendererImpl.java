@@ -57,10 +57,10 @@ public class PortletRendererImpl implements PortletRenderer
 {
     protected final static Log log = LogFactory.getLog(PortletRendererImpl.class);
 
-    private WorkerMonitor workMonitor;
-    private PortletContainer container;
-    private PortletWindowAccessor windowAccessor;
-    private PortalStatistics statistics;
+    protected WorkerMonitor workMonitor;
+    protected PortletContainer container;
+    protected PortletWindowAccessor windowAccessor;
+    protected PortalStatistics statistics;
 
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,

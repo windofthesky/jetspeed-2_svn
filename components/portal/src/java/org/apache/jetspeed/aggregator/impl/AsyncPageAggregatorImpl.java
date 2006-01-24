@@ -45,12 +45,12 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class AsyncPageAggregatorImpl implements PageAggregator
 {
-    private final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
+    protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
 
-    private PortletRenderer renderer;
-    private ContentServerAdapter contentServer;
+    protected PortletRenderer renderer;
+    protected ContentServerAdapter contentServer;
 
-    private List fallBackContentPathes;
+    protected List fallBackContentPathes;
 
     public AsyncPageAggregatorImpl(PortletRenderer renderer, 
                                    ContentServerAdapter contentServer)

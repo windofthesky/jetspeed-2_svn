@@ -45,16 +45,16 @@ public class RenderingJobImpl implements RenderingJob
     protected final static Log log = LogFactory.getLog(RenderingJobImpl.class);
 
     /** WorkerMonitor used to flush the queue */
-    private PortletWindow window = null;
-    private HttpServletRequest request = null;
-    private HttpServletResponse response = null;
+    protected PortletWindow window = null;
+    protected HttpServletRequest request = null;
+    protected HttpServletResponse response = null;
     
-    private PortletContainer container = null;
-    private ContentFragment fragment = null;
-    private RequestContext requestContext = null;
+    protected PortletContainer container = null;
+    protected ContentFragment fragment = null;
+    protected RequestContext requestContext = null;
 
-    private PortletContent portletContent;
-    private PortalStatistics statistics;
+    protected PortletContent portletContent;
+    protected PortalStatistics statistics;
     
     public RenderingJobImpl(PortletContainer container, 
                             PortletContent portletContent, 

@@ -55,31 +55,31 @@ public class WorkerMonitorImpl implements WorkerMonitor
     protected final static Log log = LogFactory.getLog(WorkerMonitorImpl.class);
 
     /** Static counters for identifying workers */
-    private static long sCount = 0;
+    protected static long sCount = 0;
 
     /** Count of running jobs **/
-    private int runningJobs = 0;
+    protected int runningJobs = 0;
     
     /** Minimum number of wokers to create */
-    private int minWorkers = 5;
+    protected int minWorkers = 5;
 
     /** Maximum number of workers */
-    private int maxWorkers = 50;
+    protected int maxWorkers = 50;
 
     /** Minimum amount of spare workers */
-    private int spareWorkers = 3;
+    protected int spareWorkers = 3;
 
     /** Maximum of job processed by a worker before being released */
-    private int maxJobsPerWorker = 10;
+    protected int maxJobsPerWorker = 10;
 
     /** Stack containing currently idle workers */
-    private Stack workers = new Stack();
+    protected Stack workers = new Stack();
 
     /** The thread group used to group all worker threads */
-    private ThreadGroup tg = new ThreadGroup("Workers");
+    protected ThreadGroup tg = new ThreadGroup("Workers");
 
     /** Job queue */
-    private Queue queue;
+    protected Queue queue;
 
     public void start()
     {
