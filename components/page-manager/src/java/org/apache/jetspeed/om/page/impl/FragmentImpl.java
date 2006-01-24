@@ -556,16 +556,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     public List getFragments()
     {
-        // mutable fragments collection must be defined... note
-        // that this collection is only mutable if user has full
-        // access rights to all fragments; otherwise, a copy of
-        // the list will be returned and any modifications to the
-        // set of fragments in the collection will not be preserved
+        // create and return mutable fragments collection
+        // filtered by view access
         if (fragmentsList == null)
         {
             fragmentsList = new FragmentList(this);
         }
-        return filterFragmentsByAccess(fragmentsList);
+        return filterFragmentsByAccess(fragmentsList, true);
     }
     
     /* (non-Javadoc)
@@ -726,10 +723,11 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      * Filter fragments list for view access.
      *
      * @param nodes list containing fragments to check
+     * @param mutable make returned list mutable
      * @return original list if all elements viewable, a filtered
      *         partial list, or null if all filtered for view access
      */
-    static List filterFragmentsByAccess(List fragments)
+    List filterFragmentsByAccess(List fragments, boolean mutable)
     {
         if ((fragments != null) && !fragments.isEmpty())
         {
@@ -781,7 +779,14 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             {
                 if (!filteredFragments.isEmpty())
                 {
-                    return filteredFragments;
+                    if (mutable)
+                    {
+                        return new FilteredFragmentList(this, filteredFragments);
+                    }
+                    else
+                    {
+                        return filteredFragments;
+                    }
                 }
                 else
                 {

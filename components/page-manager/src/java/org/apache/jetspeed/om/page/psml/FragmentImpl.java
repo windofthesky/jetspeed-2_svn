@@ -119,7 +119,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     public List getFragments()
     {
-        // return mutable fragments list if possible
+        // create and return mutable fragments collection
+        // filtered by view access
         if (fragmentsList == null)
         {
             fragmentsList = new FragmentList(this);
@@ -501,7 +502,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      * @return original list if all elements viewable, a filtered
      *         partial list, or null if all filtered for view access
      */
-    static List filterFragmentsByAccess(List fragments)
+    List filterFragmentsByAccess(List fragments)
     {
         if ((fragments != null) && !fragments.isEmpty())
         {
@@ -553,7 +554,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             {
                 if (!filteredFragments.isEmpty())
                 {
-                    return filteredFragments;
+                    return new FilteredFragmentList(this, filteredFragments);
                 }
                 else
                 {

@@ -306,7 +306,8 @@ public class PageImpl extends DocumentImpl implements Page
         FragmentImpl rootFragment = (FragmentImpl)getRootFragment();
         if (rootFragment != null)
         {
-            return FragmentImpl.filterFragmentsByAccess(rootFragment.getFragmentsByName(name));
+            // return immutable filtered fragment list
+            return rootFragment.filterFragmentsByAccess(rootFragment.getFragmentsByName(name), false);
         }
         return null;
     }
