@@ -84,17 +84,25 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     private PageManager pageManager;
    
     /**
+     * requestFallback - flag indicating whether request should fallback to root folder
+     *                   if locators do not select a page or access is forbidden
+     */
+    private boolean requestFallback;
+
+    /**
      * ProfilerValveImpl - constructor
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
      * @param pageManager page manager component reference
+     * @param requestFallback flag to enable root folder fallback
      */
-    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager )
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager, boolean requestFallback )
     {
         this.profiler = profiler;
         this.portalSite = portalSite;
         this.pageManager = pageManager;
+        this.requestFallback = requestFallback;
     }
      
     /*
@@ -152,7 +160,13 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             // and portal site components
             if (locators != null)
             {
-                // get or create portalsite session context
+                // get or create portalsite session context; the session
+                // context maintains the user view of the site and is
+                // searched against to locate the requested page and
+                // used to build site menus from its extent; this is
+                // cached in the session because locators seldom change
+                // during the session so the session view of the site can
+                // be cached unless locators do change;
                 PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
                 if (sessionContext == null)
                 {
@@ -161,8 +175,15 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 }
 
                 // construct and save a new portalsite request context
-                // using session context and locators map
-                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+                // using session context, locators map, and fallback; the
+                // request context uses the locators to initialize or resets
+                // the session context if locators have changed for this
+                // request; the request context also acts as a short term
+                // request cache for the selected page and built menus;
+                // however, creating the request context here does not
+                // select the page or build menus: that is done when the
+                // request context is accessed subsequently
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback);
                 request.setAttribute(PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY, requestContext);
 
                 // additionally save request context under legacy key
@@ -170,7 +191,14 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 request.setAttribute(PROFILED_PAGE_CONTEXT_ATTR_KEY, requestContext);
 
                 // get profiled page from portalsite request context
-                // and save profile locators map
+                // and save profile locators map; accessing the request
+                // context here and in subsequent valves/decorators
+                // latently selects the page and builds menus from the
+                // user site view using the request context locators;
+                // the managed page accesed here is the raw selected page
+                // as returned by the PageManager component; accessing
+                // the managed page here selects the current page for the
+                // request
                 request.setPage(new ContentPageImpl(requestContext.getManagedPage()));
                 request.setProfileLocators(requestContext.getLocators());
             }
@@ -180,6 +208,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         catch (SecurityException se)
         {
+            // fallback to portal root folder/default page if
+            // no user is available and request path is not
+            // already attempting to access the root folder;
+            // this is rarely the case since the anonymous
+            // user is normally defined unless the default
+            // security system has been replaced/overridden
             if (request.getRequest().getUserPrincipal() == null &&
                 request.getPath() != null &&
                 !request.getPath().equals("/"))
@@ -191,6 +225,8 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 catch (IOException ioe){}
                 return;
             }
+
+            // return standard HTTP 403 - FORBIDDEN status
             log.error(se.getMessage(), se);
             try
             {                
@@ -203,6 +239,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         catch (NodeNotFoundException nnfe)
         {
+            // return standard HTTP 404 - NOT FOUND status
             log.error(nnfe.getMessage(), nnfe);
             try
             {

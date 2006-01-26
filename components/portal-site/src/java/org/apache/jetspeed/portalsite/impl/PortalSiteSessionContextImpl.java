@@ -118,26 +118,41 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * newRequestContext - create a new request context instance
+     * newRequestContext - create a new request context instance with fallback
      *
      * @param requestProfileLocators request profile locators
      * @return new request context instance
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators)
     {
+        return newRequestContext(requestProfileLocators, true);
+    }
+
+    /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback)
+    {
         // TODO - potentially cache N request contexts and reuse
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback);
     }
 
     /**
      * selectRequestPage - select page proxy for request given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
      * @return selected page proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Page selectRequestPage(Map requestProfileLocators) throws NodeNotFoundException
+    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators))
@@ -170,14 +185,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             }
             catch (NodeNotFoundException nnfe)
             {
-                if (requestPath.equals(Folder.PATH_SEPARATOR))
+                if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
                 {
                     throw nnfe;
                 }
             }
             catch (SecurityException se)
             {
-                if (requestPath.equals(Folder.PATH_SEPARATOR))
+                if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
                 {
                     throw se;
                 }

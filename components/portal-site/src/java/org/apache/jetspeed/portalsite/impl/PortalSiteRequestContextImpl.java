@@ -56,6 +56,12 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private Map requestProfileLocators;
 
     /**
+     * requestFallback - flag indicating whether request should fallback to root folder
+     *                   if locators do not select a page or access is forbidden
+     */
+    private boolean requestFallback;
+
+    /**
      * page - cached request profiled page proxy
      */
     private Page requestPage;
@@ -112,10 +118,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
+        this.requestFallback = requestFallback;
     }
 
     /**
@@ -165,7 +172,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // cached in this context
         if (requestPage == null)
         {
-            requestPage = sessionContext.selectRequestPage(requestProfileLocators);            
+            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback);            
         }
         return requestPage;
     }

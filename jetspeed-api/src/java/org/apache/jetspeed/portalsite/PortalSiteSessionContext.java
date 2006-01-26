@@ -28,12 +28,22 @@ import org.apache.jetspeed.page.PageManager;
 public interface PortalSiteSessionContext
 {
     /**
-     * newRequestContext - create a new request context instance
+     * newRequestContext - create a new request context instance with fallback
      *
      * @param requestProfileLocators request profile locators
      * @return new request context instance
      */
     PortalSiteRequestContext newRequestContext(Map requestProfileLocators);
+
+    /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback);
 
     /**
      * getPageManager - return PageManager component instance

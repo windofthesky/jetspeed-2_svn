@@ -73,15 +73,21 @@ limitations under the License.
         class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl"
         init-method="initialize"
   >
-   <constructor-arg>
+   <constructor-arg index="0">
        <ref bean="org.apache.jetspeed.profiler.Profiler" />
    </constructor-arg>
-   <constructor-arg>
+   <constructor-arg index="1">
        <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
    </constructor-arg>
-   <constructor-arg>
+   <constructor-arg index="2">
        <ref bean="org.apache.jetspeed.page.PageManager" />
    </constructor-arg>
+   <!--
+       request fallback to root folder/page enabled by default;
+       if set to false, requests generate HTTP 403/404 errors
+       for access errors or missing pages
+   -->
+   <constructor-arg index="3"><value>true</value></constructor-arg>    
   </bean> 
   
   <bean id="containerValve"
