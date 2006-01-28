@@ -31,8 +31,6 @@ package org.apache.jetspeed.om.common;
  */
 public interface SecuredResource
 {   
-    String VIEW_ACTION = "view";
-    String EDIT_ACTION = "edit";
 
     /**
      * <p>
@@ -103,10 +101,10 @@ public interface SecuredResource
      * checkPermissions
      * </p>
      *
-     * @param actions list to be checked against in CSV string form
+     * @param mask Mask of actions to be checked
      * @throws SecurityException
      */
-    void checkPermissions(String actions) throws SecurityException;
+    void checkPermissions(int mask) throws SecurityException;
 
     /**
      * <p>

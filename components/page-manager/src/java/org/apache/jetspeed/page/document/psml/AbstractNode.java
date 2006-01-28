@@ -19,9 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -122,7 +121,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * 
      * @see org.apache.jetspeed.page.document.Node#getTitle(java.util.Locale)
      * @param locale
-     * @return
+     * @return title in specified locale
      */
     public String getTitle(Locale locale)
     {
@@ -142,7 +141,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * 
      * @see org.apache.jetspeed.page.document.Node#getShortTitle(java.util.Locale)
      * @param locale
-     * @return
+     * @return short title in specified locale
      */
     public String getShortTitle( Locale locale )
     {
@@ -179,7 +178,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
         // check access
         if ((parent != null) && checkAccess)
         {
-            parent.checkAccess(SecuredResource.VIEW_ACTION);
+            parent.checkAccess(JetspeedActions.VIEW);
         }
         return parent;
     }
@@ -190,7 +189,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * </p>
      * 
      * @see org.apache.jetspeed.page.document.Node#getParent()
-     * @return
+     * @return parent node
      */
     public Node getParent()
     {
@@ -205,7 +204,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * setParent
      * </p>
      * 
-     * @see org.apache.jetspeed.page.document.Node#setParent(org.apache.jetspeed.om.folder.Folder)
+     * @see org.apache.jetspeed.page.document.Node#setParent(Node)
      * @param parent
      */
     public void setParent( Node parent )
@@ -219,7 +218,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * </p>
      *
      * @see org.apache.jetspeed.page.document.Node#getName()
-     * @return
+     * @return Name
      */
     public String getName()
     {
@@ -305,7 +304,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * Same as invoking <code>Node.getPath()</code> unless url explicitly set.
      *
      * @see org.apache.jetspeed.page.document.Node#getUrl()
-     * @return
+     * @return url as string
      */
     public String getUrl()
     {
@@ -334,7 +333,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * </p>
      *
      * @see org.apache.jetspeed.page.document.Node#isHidden()
-     * @return
+     * @return hidden
      */
     public boolean isHidden()
     {
@@ -356,7 +355,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
         return profiledPath;
     }
     /**
-     * @param path The profiled path to set.
+     * @param profiledPath The profiled path to set.
      */
     public void setProfiledPath( String profiledPath )
     {
@@ -366,7 +365,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     /**
      * getEffectivePageSecurity
      *
-     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getEffectivePageSecurity()
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getEffectivePageSecurity()
      */
     public PageSecurity getEffectivePageSecurity()
     {
@@ -436,25 +435,25 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * </p>
      *
      * @param path
-     * @param actions
+     * @param mask Mask of actions requested
      * @param checkNodeOnly
      * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted node permissions unless the check is
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            super.checkPermissions(path, actions, true, false);
+            super.checkPermissions(path, mask, true, false);
         }
         
         // if not checking node only, recursively check
         // all parent permissions in hierarchy
         if (!checkNodeOnly && (parent != null))
         {
-            ((AbstractNode)parent).checkPermissions(actions, false, false);
+            ((AbstractNode)parent).checkPermissions(mask, false, false);
         }
     }
 

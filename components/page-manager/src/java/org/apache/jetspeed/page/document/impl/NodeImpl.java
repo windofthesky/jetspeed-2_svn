@@ -277,15 +277,15 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, int, boolean, boolean)
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted node permissions unless the check is
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            super.checkPermissions(path, actions, true, false);
+            super.checkPermissions(path, mask, true, false);
         }
         
         // if not checking node only, recursively check
@@ -295,7 +295,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
             NodeImpl parentNodeImpl = (NodeImpl)ProxyHelper.getRealObject(parent);
             if (parentNodeImpl != null)
             {
-                parentNodeImpl.checkPermissions(actions, false, false);
+                parentNodeImpl.checkPermissions(mask, false, false);
             }
         }
     }

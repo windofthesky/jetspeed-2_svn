@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
@@ -214,7 +215,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         pageImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
 
         // check for edit access
-        page.checkAccess(SecuredResource.EDIT_ACTION);
+        page.checkAccess(JetspeedActions.EDIT);
 
         // update page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
@@ -253,7 +254,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
 
         // check for edit access
-        page.checkAccess(SecuredResource.EDIT_ACTION);
+        page.checkAccess(JetspeedActions.EDIT);
 
         // remove page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).removeDocument(page);
@@ -325,7 +326,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         linkImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
 
         // check for edit access
-        link.checkAccess(SecuredResource.EDIT_ACTION);
+        link.checkAccess(JetspeedActions.EDIT);
 
         // update link
         handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).updateDocument(link);
@@ -358,7 +359,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void removeLink(Link link) throws JetspeedException
     {
         // check for edit access
-        link.checkAccess(SecuredResource.EDIT_ACTION);
+        link.checkAccess(JetspeedActions.EDIT);
 
         // remove link
         handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).removeDocument(link);
@@ -431,7 +432,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         pageSecurityImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
 
         // check for edit access
-        pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+        pageSecurity.checkAccess(JetspeedActions.EDIT);
 
         // update pageSecurity
         handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).updateDocument(pageSecurity);
@@ -460,7 +461,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException
     {
         // check for edit access
-        pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+        pageSecurity.checkAccess(JetspeedActions.EDIT);
 
         // remove page security
         handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).removeDocument(pageSecurity);
@@ -489,7 +490,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     {
         // get folder and check access before returning
         Folder folder = folderHandler.getFolder(folderPath);
-        folder.checkAccess(SecuredResource.VIEW_ACTION);
+        folder.checkAccess(JetspeedActions.VIEW);
         return folder;
     }
 
@@ -542,7 +543,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         folderImpl.setFolderHandler(folderHandler);
 
         // check for edit access
-        folder.checkAccess(SecuredResource.EDIT_ACTION);
+        folder.checkAccess(JetspeedActions.EDIT);
 
         // update folder
         folderHandler.updateFolder(folder);
@@ -575,7 +576,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void removeFolder(Folder folder) throws JetspeedException
     {
         // check for edit access
-        folder.checkAccess(SecuredResource.EDIT_ACTION);
+        folder.checkAccess(JetspeedActions.EDIT);
 
         // remove folder
         folderHandler.removeFolder(folder);

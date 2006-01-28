@@ -35,6 +35,8 @@ import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.PortalResourcePermission;
+import org.apache.jetspeed.JetspeedActions;
 
 /**
  * BaseElementImpl
@@ -138,7 +140,7 @@ public abstract class BaseElementImpl implements BaseElement
         // check node constraints if available
         if ((constraints != null) && !constraints.isEmpty())
         {
-            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
+            constraints.checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getEffectivePageSecurity());
         }
     }
 
@@ -167,12 +169,12 @@ public abstract class BaseElementImpl implements BaseElement
     /**
      * checkPermissions
      *
-     * @param actions actions to check
+     * @param mask mask of actions to check
      * @param checkNodeOnly check node scope only
      * @param checkParentsOnly check parent folder scope only
      * @throws SecurityException
      */
-    public void checkPermissions(String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check page and folder permissions
         String physicalPermissionPath = getPhysicalPermissionPath();
@@ -181,7 +183,7 @@ public abstract class BaseElementImpl implements BaseElement
             // check permissions using physical path
             try
             {
-                checkPermissions(physicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
+                checkPermissions(physicalPermissionPath, mask, checkNodeOnly, checkParentsOnly);
             }
             catch (SecurityException physicalSE)
             {
@@ -189,7 +191,7 @@ public abstract class BaseElementImpl implements BaseElement
                 String logicalPermissionPath = getLogicalPermissionPath();
                 if ((logicalPermissionPath != null) && !logicalPermissionPath.equals(physicalPermissionPath))
                 {
-                    checkPermissions(logicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
+                    checkPermissions(logicalPermissionPath, mask, checkNodeOnly, checkParentsOnly);
                 }
                 else
                 {
@@ -203,24 +205,24 @@ public abstract class BaseElementImpl implements BaseElement
      * checkPermissions
      *
      * @param path permissions path to check
-     * @param actions actions to check
+     * @param mask mask of actions to check
      * @param checkNodeOnly check node scope only
      * @param checkParentsOnly check parent folder scope only
      * @throws SecurityException
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check actions permissions
         try
         {
             // check for granted page permissions
-            PagePermission permission = new PagePermission(path, actions);
+            PagePermission permission = new PagePermission(path, mask);
             AccessController.checkPermission(permission);
         }
         catch (SecurityException se)
         {
             // fallback check for granted folder permissions
-            FolderPermission permission = new FolderPermission(path, actions);
+            FolderPermission permission = new FolderPermission(path, mask);
             AccessController.checkPermission(permission);
         }
     }
@@ -332,7 +334,7 @@ public abstract class BaseElementImpl implements BaseElement
         List otherActionsList = null;
         if (viewActionList.size() == 1)
         {
-            if (!viewActionList.contains(SecuredResource.VIEW_ACTION))
+            if (!viewActionList.contains(JetspeedActions.VIEW))
             {
                 otherActionsList = viewActionList;
                 viewActionList = null;
@@ -342,10 +344,10 @@ public abstract class BaseElementImpl implements BaseElement
         {
             otherActionsList = viewActionList;
             viewActionList = null;
-            if (otherActionsList.remove(SecuredResource.VIEW_ACTION))
+            if (otherActionsList.remove(JetspeedActions.VIEW))
             {
                 viewActionList = new ArrayList(1);
-                viewActionList.add(SecuredResource.VIEW_ACTION);
+                viewActionList.add(JetspeedActions.VIEW);
             }
         }
 
@@ -424,7 +426,7 @@ public abstract class BaseElementImpl implements BaseElement
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecuredResource#checkPermissions(java.lang.String)
      */
-    public void checkPermissions(String actions) throws SecurityException
+    public void checkPermissions(int mask) throws SecurityException
     {
         // skip checks if not enabled
         if (!getPermissionsEnabled())
@@ -433,42 +435,17 @@ public abstract class BaseElementImpl implements BaseElement
         }
 
         // separate view and other actions to mimic file system permissions logic
-        boolean viewAction = false;
-        String otherActions = actions.trim();
-        int viewActionIndex = otherActions.indexOf(SecuredResource.VIEW_ACTION);
-        if (viewActionIndex != -1)
-        {
-            viewAction = true;
-            if (viewActionIndex == 0)
-            {
-                if (otherActions.length() > SecuredResource.VIEW_ACTION.length())
-                {
-                    // remove view action from other actions
-                    int nextDelimIndex = otherActions.indexOf(',', viewActionIndex + SecuredResource.VIEW_ACTION.length());
-                    otherActions = otherActions.substring(nextDelimIndex + 1);
-                }
-                else
-                {
-                    // no other actions
-                    otherActions = null;
-                }
-            }
-            else
-            {
-                // remove view action from other actions
-                int prevDelimIndex = otherActions.lastIndexOf(',', viewActionIndex);
-                otherActions = otherActions.substring(0, prevDelimIndex) + otherActions.substring(viewActionIndex + SecuredResource.VIEW_ACTION.length());
-            }
-        }
+        boolean viewAction = (mask & JetspeedActions.MASK_VIEW) == JetspeedActions.MASK_VIEW;
+        int otherMask = mask & ~JetspeedActions.MASK_VIEW;
 
         // check permissions using parsed actions
         if (viewAction)
         {
-            checkPermissions(SecuredResource.VIEW_ACTION, false, grantViewActionAccess());
+            checkPermissions(JetspeedActions.MASK_VIEW, false, grantViewActionAccess());
         }
-        if (otherActions != null)
+        if (otherMask != 0)
         {
-            checkPermissions(otherActions, true, false);
+            checkPermissions(otherMask, true, false);
         }
     }
 
@@ -480,7 +457,8 @@ public abstract class BaseElementImpl implements BaseElement
         // check access permissions and constraints as enabled
         if (getPermissionsEnabled())
         {
-            checkPermissions(actions);
+            int mask = PortalResourcePermission.parseActions(actions);
+            checkPermissions(mask);
         }
         if (getConstraintsEnabled())
         {

@@ -15,52 +15,34 @@
  */
 package org.apache.jetspeed.portlets.customizer;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.security.AccessControlException;
+import java.security.AccessController;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.search.ParsedObject;
-import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
-import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.portals.bridges.frameworks.model.ModelBean;
 import org.apache.portals.bridges.velocity.AbstractVelocityMessagingPortlet;
 import org.apache.portals.gems.util.StatusMessage;
-import org.apache.portals.gems.util.ValidationHelper;
 import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
@@ -73,7 +55,6 @@ import org.apache.velocity.context.Context;
 public class CustomizerPortlet extends AbstractVelocityMessagingPortlet
 {
     protected PortletRegistry registry;
-    protected PermissionManager permissionManager;
     protected PageManager pageManager;
 
     public void init(PortletConfig config)
@@ -86,11 +67,6 @@ public class CustomizerPortlet extends AbstractVelocityMessagingPortlet
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
         }        
-        permissionManager = (PermissionManager)context.getAttribute(CommonPortletServices.CPS_PERMISSION_MANAGER);
-        if (null == permissionManager)
-        {
-            throw new PortletException("Failed to find the Permission Manager on portlet initialization");
-        }
         pageManager = (PageManager)context.getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
         if (null == pageManager)
         {
@@ -154,14 +130,14 @@ public class CustomizerPortlet extends AbstractVelocityMessagingPortlet
             
             // SECURITY filtering
             String uniqueName = appName + "::" + portlet.getName();
-            if (subject != null)
+            try
             {
-                if (permissionManager.checkPermission(subject, 
-                    new PortletPermission(portlet.getUniqueName(), 
-                    SecuredResource.VIEW_ACTION, subject )))
-                {
-                    list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
-                }
+                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
+                list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+            }
+            catch (AccessControlException ace)
+            {
+                //continue
             }
         }
         this.publishRenderMessage(request, PORTLET_LIST, list);

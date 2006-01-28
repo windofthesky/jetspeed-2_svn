@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
@@ -454,12 +455,12 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, int, boolean, boolean)
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // always check for granted fragment permissions
-        FragmentPermission permission = new FragmentPermission(path, actions);
+        FragmentPermission permission = new FragmentPermission(path, mask);
         AccessController.checkPermission(permission);
     }
 
@@ -740,7 +741,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
                 try
                 {
                     // check access
-                    fragment.checkAccess(SecuredResource.VIEW_ACTION);
+                    fragment.checkAccess(JetspeedActions.VIEW);
 
                     // add to filteredFragments fragments if copying
                     if (filteredFragments != null)

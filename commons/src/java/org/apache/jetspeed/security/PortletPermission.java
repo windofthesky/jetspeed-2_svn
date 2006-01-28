@@ -14,20 +14,16 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.AccessController;
-import java.security.AccessControlContext;
 import java.security.Permission;
-import java.security.PermissionCollection;
-
-import javax.security.auth.Subject;
 
 /**
  * <p>Portlet permission.</p>
  * <p>This code was partially inspired from articles from:</p>
  * <ul>
- *    <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
- *    Extend JAAS for class instance-level authorization.</a></li>
+ * <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
+ * Extend JAAS for class instance-level authorization.</a></li>
  * </ul>
+ *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PortletPermission extends PortalResourcePermission
@@ -35,24 +31,25 @@ public class PortletPermission extends PortalResourcePermission
 
     /**
      * <p>Constructor for PortletPermission.</p>
-     * @param name The portlet name.
+     *
+     * @param name    The portlet name.
      * @param actions The actions on the portlet.
      */
     public PortletPermission(String name, String actions)
     {
-        this(name, actions, null);
+        super(name, actions);
     }
 
     /**
      * <p>Constructor for PortletPermission.</p>
+     *
      * @param name The portlet name.
-     * @param actions The actions on the portlet.
+     * @param mask The mask of actions on the portlet.
      */
-    public PortletPermission(String name, String actions, Subject subject)
+    public PortletPermission(String name, int mask)
     {
-        super(name, actions, subject);
+        super(name, mask);
     }
-
 
     public boolean implies(Permission permission)
     {
@@ -63,58 +60,42 @@ public class PortletPermission extends PortalResourcePermission
             return false;
         }
 
-        String name = getName(); 
-        if (name != null)            
+        String name = getName();
+        if (name != null)
         {
-            int index = name.indexOf('*');            
+            int index = name.indexOf('*');
             if (index > -1)
             {
-                if (!(permission.getName().startsWith(name.substring (0, index)))) 
+                if (!(permission.getName().startsWith(name.substring(0, index))))
                 {
                     return false;
                 }
-            } 
+            }
             else if (!(permission.getName().equals(name)))
             {
                 // The portlet name must be the same.
                 return false;
-            }            
+            }
         }
-        
-        PortletPermission portletPerm = (PortletPermission) permission;
 
-        // Get the subject.
-        // It was either provide in the constructor.
-        Subject user = portletPerm.getSubject();
-        // Or we get it from the AccessControlContext.
-        if (null == user)
-        {
-            AccessControlContext context = AccessController.getContext();
-            user = Subject.getSubject(context);
-        }
-        // No user was passed.  The permission must be denied.
-        if (null == user)
-        {
-            return false;
-        }
+        PortletPermission portletPerm = (PortletPermission) permission;
 
         // The action bits in portletPerm (permission) 
         // must be set in the current mask permission.
-        if ((mask & portletPerm.mask) != portletPerm.mask)
-        {
-            return false;
-        }
+        return (mask & portletPerm.mask) == portletPerm.mask;
 
-        return true;
     }
 
     /**
-     * <p>Overrides <code>Permission.newPermissionCollection()</code>.</p>
-     * @see java.security.Permission#newPermissionCollection()
+     * @see java.security.Permission#equals(Object)
      */
-    public PermissionCollection newPermissionCollection()
+    public boolean equals(Object object)
     {
-        return new PortalResourcePermissionCollection();
+        if (!(object instanceof PortletPermission))
+            return false;
+
+        PortletPermission p = (PortletPermission) object;
+        return ((p.mask == mask) && (p.getName().equals(getName())));
     }
 
 }

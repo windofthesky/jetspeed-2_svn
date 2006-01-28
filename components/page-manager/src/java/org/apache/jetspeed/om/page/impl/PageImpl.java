@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -263,7 +263,7 @@ public class PageImpl extends DocumentImpl implements Page
             {
                 try
                 {
-                    fragment.checkAccess(SecuredResource.VIEW_ACTION);
+                    fragment.checkAccess(JetspeedActions.VIEW);
                 }
                 catch (SecurityException se)
                 {

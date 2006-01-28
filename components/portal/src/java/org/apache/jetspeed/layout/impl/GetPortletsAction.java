@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.security.AccessControlException;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,11 +30,11 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
@@ -82,7 +84,7 @@ public class GetPortletsAction
         try
         {
             resultMap.put(ACTION, "getportlets");
-            if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
+            if (false == checkAccess(requestContext, JetspeedActions.VIEW))
             {
 //                if (!createNewPageOnEdit(requestContext))
 //                {
@@ -141,14 +143,14 @@ public class GetPortletsAction
             
             // SECURITY filtering
             String uniqueName = appName + "::" + portlet.getName();
-            if (subject != null)
+            try
             {
-                if (permissionManager.checkPermission(subject, 
-                    new PortletPermission(portlet.getUniqueName(), 
-                    SecuredResource.VIEW_ACTION, subject )))
-                {
-                    list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
-                }
+                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.VIEW));
+                list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+            }
+            catch (AccessControlException ace)
+            {
+                //continue
             }
         }            
         Collections.sort(list, this);

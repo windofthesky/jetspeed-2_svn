@@ -14,42 +14,53 @@
 */
 package org.apache.jetspeed.security;
 
-import java.security.Permission;
-import java.util.StringTokenizer;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.JetspeedActions;
+
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.util.StringTokenizer;
 
 
 /**
  * <p>Generalized Portlet Resoure permission.</p>
  * <p>This code was partially inspired from articles from:</p>
  * <ul>
- *    <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
- *    Extend JAAS for class instance-level authorization.</a></li>
+ * <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
+ * Extend JAAS for class instance-level authorization.</a></li>
  * </ul>
+ *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
 public abstract class PortalResourcePermission extends Permission
 {
-    /** <p>Mask used for determining what action to perform.</p> */
-    protected int mask;
+    /**
+     * <p>Mask used for determining what actions are allowed or requested.</p>
+     */
+    protected final int mask;
 
-    /** <p>The subject the permission is being performed against.</p> */
-    protected Subject subject;
-    
     /**
      * <p>Constructor for PortletPermission.</p>
-     * @param name The portlet name.
+     *
+     * @param name    The portlet name.
      * @param actions The actions on the portlet.
      */
-    public PortalResourcePermission(String name, String actions, Subject subject)
+    public PortalResourcePermission(String name, String actions)
     {
         super(name);
-        parseActions(actions);
-        this.subject = subject;
+        mask = parseActions(actions);
+    }
+
+    /**
+     * <p>Constructor for PortletPermission.</p>
+     *
+     * @param name The portlet name.
+     * @param mask The mask representing actions on the portlet.
+     */
+    public PortalResourcePermission(String name, int mask)
+    {
+        super(name);
+        this.mask = mask;
     }
 
     /**
@@ -61,19 +72,6 @@ public abstract class PortalResourcePermission extends Permission
         return value.toString().hashCode() ^ mask;
     }
 
-    /**
-     * @see java.security.Permission#equals(Object)
-     */
-    public boolean equals(Object object)
-    {
-        if (!(object instanceof PortletPermission))
-            return false;
-
-        PortletPermission p = (PortletPermission) object;
-        boolean isEqual = ((p.getName().equals(getName())) && (p.mask == mask));
-        return isEqual;
-    }
-    
     /**
      * @see java.security.Permission#getActions()
      */
@@ -130,18 +128,18 @@ public abstract class PortalResourcePermission extends Permission
      */
     public boolean implies(Permission permission)
     {
-        // TODO Auto-generated method stub
-        return false;
+        throw new IllegalStateException("Permission class did not implement implies");
     }
 
     /**
      * <p>Parses the actions string.</p>
      * <p>Actions are separated by commas or white space.</p>
+     *
      * @param actions The actions
      */
-    private void parseActions(String actions)
+    public static int parseActions(String actions)
     {
-        mask = 0;
+        int mask = 0;
         if (actions != null)
         {
             StringTokenizer tokenizer = new StringTokenizer(actions, ",\t ");
@@ -150,7 +148,7 @@ public abstract class PortalResourcePermission extends Permission
                 String token = tokenizer.nextToken();
                 if (token.equals(JetspeedActions.VIEW))
                     mask |= JetspeedActions.MASK_VIEW;
-                else if (token.equals(JetspeedActions.VIEW) || token.equals(JetspeedActions.RESTORE))
+                else if (token.equals(JetspeedActions.RESTORE))
                     mask |= JetspeedActions.MASK_VIEW;
                 else if (token.equals(JetspeedActions.EDIT))
                     mask |= JetspeedActions.MASK_EDIT;
@@ -161,20 +159,21 @@ public abstract class PortalResourcePermission extends Permission
                 else if (token.equals(JetspeedActions.HELP))
                     mask |= JetspeedActions.MASK_HELP;
                 else if (token.equals(JetspeedActions.SECURE))
-                    mask |= JetspeedActions.MASK_SECURE;                
+                    mask |= JetspeedActions.MASK_SECURE;
                 else
                     throw new IllegalArgumentException("Unknown action: " + token);
             }
         }
+        return mask;
     }
-    
+
     /**
-     * <p>Gets the subject.</p>
-     * @return Returns a Subject
+     * <p>Overrides <code>Permission.newPermissionCollection()</code>.</p>
+     *
+     * @see java.security.Permission#newPermissionCollection()
      */
-    public Subject getSubject()
+    public PermissionCollection newPermissionCollection()
     {
-        return subject;
+        return new PortalResourcePermissionCollection();
     }
-    
 }

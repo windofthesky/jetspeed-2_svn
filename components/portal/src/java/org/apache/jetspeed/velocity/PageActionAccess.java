@@ -152,7 +152,7 @@ public class PageActionAccess implements Serializable
         boolean allowed = false;
         try
         {
-            page.checkAccess(Page.EDIT_ACTION);
+            page.checkAccess(JetspeedActions.EDIT);
             allowed = true;
         }       
         catch (SecurityException se) {}

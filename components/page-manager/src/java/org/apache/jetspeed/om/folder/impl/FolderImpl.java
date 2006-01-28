@@ -21,9 +21,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
@@ -383,15 +382,15 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, java.lang.String, boolean, boolean)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, int, boolean, boolean)
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted folder permissions unless the check is
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            FolderPermission permission = new FolderPermission(path, actions);
+            FolderPermission permission = new FolderPermission(path, mask);
             AccessController.checkPermission(permission);
         }
 
@@ -402,7 +401,7 @@ public class FolderImpl extends NodeImpl implements Folder
             FolderImpl parentFolderImpl = (FolderImpl)ProxyHelper.getRealObject(getParent());
             if (parentFolderImpl != null)
             {
-                parentFolderImpl.checkPermissions(actions, false, false);
+                parentFolderImpl.checkPermissions(mask, false, false);
             }
         }
     }
@@ -569,7 +568,7 @@ public class FolderImpl extends NodeImpl implements Folder
         }
 
         // check for view access on folder
-        folder.checkAccess(SecuredResource.VIEW_ACTION);
+        folder.checkAccess(JetspeedActions.VIEW);
 
         return folder;
     }
@@ -596,7 +595,7 @@ public class FolderImpl extends NodeImpl implements Folder
         }
 
         // check for view access on page
-        page.checkAccess(SecuredResource.VIEW_ACTION);
+        page.checkAccess(JetspeedActions.VIEW);
 
         return page;
     }
@@ -623,7 +622,7 @@ public class FolderImpl extends NodeImpl implements Folder
         }
 
         // check for view access on link
-        link.checkAccess(SecuredResource.VIEW_ACTION);
+        link.checkAccess(JetspeedActions.VIEW);
 
         return link;
     }
@@ -641,7 +640,7 @@ public class FolderImpl extends NodeImpl implements Folder
         }
 
         // check for view access on document
-        pageSecurity.checkAccess(SecuredResource.VIEW_ACTION);
+        pageSecurity.checkAccess(JetspeedActions.VIEW);
 
         return pageSecurity;
     }
@@ -902,7 +901,7 @@ public class FolderImpl extends NodeImpl implements Folder
                 try
                 {
                     // check access
-                    node.checkAccess(SecuredResource.VIEW_ACTION);
+                    node.checkAccess(JetspeedActions.VIEW);
 
                     // add to filteredNodes nodes if copying
                     if (filteredNodes != null)

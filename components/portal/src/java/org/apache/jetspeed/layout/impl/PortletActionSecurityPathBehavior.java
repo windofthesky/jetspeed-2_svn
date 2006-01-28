@@ -15,12 +15,10 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import javax.security.auth.Subject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Page;
@@ -51,18 +49,13 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
             return false;
         if (path.indexOf(Folder.ROLE_FOLDER) > -1 || path.indexOf(Folder.GROUP_FOLDER) > -1)
         {
-            if (action.equals(SecuredResource.VIEW_ACTION))
+            if (action.equals(JetspeedActions.VIEW))
                 return true;
             return false;
         }
         return true;
     }
 
-    public Subject getSubject(RequestContext context)
-    {
-        return context.getSubject();
-    }
-    
     public boolean createNewPageOnEdit(RequestContext context)
     {
         Page page = context.getPage();        
@@ -74,7 +67,7 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
             // make sure we are not copying from user area
             if (path.indexOf(Folder.USER_FOLDER) == -1)
             {
-                this.pageManager.createUserHomePagesFromRoles(getSubject(context));
+                this.pageManager.createUserHomePagesFromRoles(context.getSubject());
                 page = this.pageManager.getPage(Folder.USER_FOLDER 
                                                 + context.getRequest().getUserPrincipal().getName()
                                                 + Folder.PATH_SEPARATOR 

@@ -98,9 +98,9 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#checkPermissions(java.lang.String)
+     * @see org.apache.jetspeed.om.common.SecuredResource#checkPermissions(int)
      */
-    public void checkPermissions(String actions) throws SecurityException
+    public void checkPermissions(int mask) throws SecurityException
     {
     }
     

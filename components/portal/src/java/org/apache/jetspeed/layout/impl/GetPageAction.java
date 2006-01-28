@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
@@ -57,7 +57,7 @@ public class GetPageAction
         try
         {
             resultMap.put(ACTION, "getpage");
-            if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
+            if (false == checkAccess(requestContext, JetspeedActions.VIEW))
             {
                 resultMap.put(REASON, "Insufficient access to view page");
                 success = false;

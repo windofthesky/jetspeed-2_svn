@@ -23,8 +23,8 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -37,7 +37,6 @@ import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -207,7 +206,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // filter node set by access
         if (checkAccess)
         {
-            folders = checkAccess(folders, SecuredResource.VIEW_ACTION);
+            folders = checkAccess(folders, JetspeedActions.VIEW);
         }
         return folders;
     }
@@ -246,7 +245,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // check access
         if (checkAccess)
         {
-            folder.checkAccess(SecuredResource.VIEW_ACTION);
+            folder.checkAccess(JetspeedActions.VIEW);
         }
         return folder;
     }
@@ -279,7 +278,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // filter node set by access
         if (checkAccess)
         {
-            pages = checkAccess(pages, SecuredResource.VIEW_ACTION);
+            pages = checkAccess(pages, JetspeedActions.VIEW);
         }
         return pages;
     }
@@ -318,7 +317,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // check access
         if (checkAccess)
         {
-            page.checkAccess(SecuredResource.VIEW_ACTION);
+            page.checkAccess(JetspeedActions.VIEW);
         }
         return page;
     }
@@ -351,7 +350,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // filter node set by access
         if (checkAccess)
         {
-            links = checkAccess(links, SecuredResource.VIEW_ACTION);
+            links = checkAccess(links, JetspeedActions.VIEW);
         }
         return links;
     }
@@ -390,7 +389,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // check access
         if (checkAccess)
         {
-            link.checkAccess(SecuredResource.VIEW_ACTION);
+            link.checkAccess(JetspeedActions.VIEW);
         }
         return link;
     }
@@ -422,7 +421,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // of access to page security document
         if (checkAccess)
         {
-            checkAccess(SecuredResource.VIEW_ACTION);
+            checkAccess(JetspeedActions.VIEW);
         }
 
         // get pageSecurity
@@ -462,7 +461,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             Node node = (Node)checkAccessIter.next();
             try
             {
-                ((AbstractNode) node).checkAccess(SecuredResource.VIEW_ACTION);
+                ((AbstractNode) node).checkAccess(JetspeedActions.VIEW);
                 if (filteredNodes != null)
                 {
                     filteredNodes.add(node);
@@ -603,7 +602,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @see org.apache.jetspeed.page.document.AbstractNode#getMetadata()
-     * @return
+     * @return metadata
      */
     public GenericMetadata getMetadata()
     {        
@@ -671,18 +670,18 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @param path
-     * @param actions
+     * @param mask
      * @param checkNodeOnly
      * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted folder permissions unless the check is
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            FolderPermission permission = new FolderPermission(path, actions);
+            FolderPermission permission = new FolderPermission(path, mask);
             AccessController.checkPermission(permission);
         }
 
@@ -690,7 +689,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // all parent permissions in hierarchy
         if (!checkNodeOnly && (getParent() != null))
         {
-            ((AbstractNode)getParent()).checkPermissions(actions, false, false);
+            ((AbstractNode)getParent()).checkPermissions(mask, false, false);
         }
     }
 
@@ -701,7 +700,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      *
      * @see org.apache.jetspeed.page.document.Node#getTitle(java.util.Locale)
      * @param locale
-     * @return
+     * @return title in specified locale
      */
     public String getTitle( Locale locale )
     {
@@ -713,7 +712,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @see org.apache.jetspeed.om.page.BaseElement#getTitle()
-     * @return
+     * @return title
      */
     public String getTitle()
     {
@@ -738,7 +737,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      *
      * @see org.apache.jetspeed.page.document.Node#getShortTitle(java.util.Locale)
      * @param locale
-     * @return
+     * @return short title in supplied locate
      */
     public String getShortTitle( Locale locale )
     {
@@ -750,7 +749,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @see org.apache.jetspeed.om.page.BaseElement#getShortTitle()
-     * @return
+     * @return short title
      */
     public String getShortTitle()
     {
@@ -774,7 +773,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @see org.apache.jetspeed.page.document.Node#getType()
-     * @return
+     * @return type string
      */
     public String getType()
     {
@@ -786,7 +785,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * </p>
      *
      * @see org.apache.jetspeed.page.document.Node#isHidden()
-     * @return
+     * @return whether folder is hidden
      */
     public boolean isHidden()
     {

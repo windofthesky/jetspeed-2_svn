@@ -15,6 +15,8 @@
 package org.apache.jetspeed.portlets.selector;
 
 import java.io.IOException;
+import java.security.AccessControlException;
+import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,9 +37,9 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlets.PortletInfo;
@@ -45,7 +47,6 @@ import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
@@ -67,7 +68,6 @@ public class PortletSelector extends BrowserPortlet
 
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
-    protected PermissionManager permissionManager;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -83,11 +83,6 @@ public class PortletSelector extends BrowserPortlet
         if (null == searchEngine)
         {
             throw new PortletException("Failed to find the Search Engine on portlet initialization");
-        }
-        permissionManager = (PermissionManager)context.getAttribute(CommonPortletServices.CPS_PERMISSION_MANAGER);
-        if (null == permissionManager)
-        {
-            throw new PortletException("Failed to find the Permission Manager on portlet initialization");
         }        
         
     }
@@ -261,19 +256,19 @@ public class PortletSelector extends BrowserPortlet
                 
                 // SECURITY filtering
                 String uniqueName = appName + "::" + portlet.getName();
-                if (subject != null)
+                try
                 {
-                    if (permissionManager.checkPermission(subject, 
-                        new PortletPermission(portlet.getUniqueName(), 
-                        SecuredResource.VIEW_ACTION, subject )))
+                    AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
+                    String name = portlet.getDisplayNameText(locale);
+                    if (name == null)
                     {
-                        String name = portlet.getDisplayNameText(locale);
-                        if (name == null)
-                        {
-                            name = portlet.getName();
-                        }
-                        list.add(new PortletInfo(uniqueName, name, portlet.getDescriptionText(locale)));
+                        name = portlet.getName();
                     }
+                    list.add(new PortletInfo(uniqueName, name, portlet.getDescriptionText(locale)));
+                }
+                catch (AccessControlException ace)
+                {
+                    //continue
                 }
             }            
             BrowserIterator iterator = new PortletIterator(

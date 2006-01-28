@@ -91,7 +91,12 @@ public abstract class BasePortletAction
 
     public boolean checkAccess(RequestContext context, String action)
     {
-        return securityBehavior.checkAccess(context, action);
+        boolean access = true;
+        if (null != securityBehavior)
+        {
+            access = securityBehavior.checkAccess(context, action);
+        }
+        return access;
     }
 
     public boolean createNewPageOnEdit(RequestContext context)

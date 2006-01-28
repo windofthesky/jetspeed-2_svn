@@ -14,42 +14,40 @@
 */
 package org.apache.jetspeed.security;
 
-import java.security.AccessControlContext;
-import java.security.AccessController;
 import java.security.Permission;
-import java.security.PermissionCollection;
-
-import javax.security.auth.Subject;
 
 /**
  * <p>Folder permission.</p>
  * <p>This code was partially inspired from articles from:</p>
  * <ul>
- *    <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
- *    Extend JAAS for class instance-level authorization.</a></li>
+ * <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
+ * Extend JAAS for class instance-level authorization.</a></li>
  * </ul>
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
 public class PagePermission extends PortalResourcePermission
-{    
+{
     /**
      * <p>Constructor for PagePermission.</p>
-     * @param name The portlet name.
+     *
+     * @param name    The portlet name.
      * @param actions The actions on the portlet.
      */
     public PagePermission(String name, String actions)
     {
-        this(name, actions, null);
+        super(name, actions);
     }
 
     /**
      * <p>Constructor for PagePermission.</p>
+     *
      * @param name The portlet name.
-     * @param actions The actions on the portlet.
+     * @param mask The mask for actions on the portlet.
      */
-    public PagePermission(String name, String actions, Subject subject)
+    public PagePermission(String name, int mask)
     {
-        super(name, actions, subject);
+        super(name, mask);
     }
 
     public boolean implies(Permission permission)
@@ -61,7 +59,7 @@ public class PagePermission extends PortalResourcePermission
             return false;
         }
 
-        // The portlet name must be the same.
+        // The page name must be the same.
         if (!(permission.getName().equals(getName())))
         {
             return false;
@@ -69,38 +67,22 @@ public class PagePermission extends PortalResourcePermission
 
         PagePermission pagePerm = (PagePermission) permission;
 
-        // Get the subject.
-        // It was either provide in the constructor.
-        Subject user = pagePerm.getSubject();
-        // Or we get it from the AccessControlContext.
-        if (null == user)
-        {
-            AccessControlContext context = AccessController.getContext();
-            user = Subject.getSubject(context);
-        }
-        // No user was passed.  The permission must be denied.
-        if (null == user)
-        {
-            return false;
-        }
-
-        // The action bits in PagePerm (permission) 
+        // The action bits in PagePerm (permission)
         // must be set in the current mask permission.
-        if ((mask & pagePerm.mask) != pagePerm.mask)
-        {
-            return false;
-        }
+        return (mask & pagePerm.mask) == pagePerm.mask;
 
-        return true;
     }
 
     /**
-     * <p>Overrides <code>Permission.newPermissionCollection()</code>.</p>
-     * @see java.security.Permission#newPermissionCollection()
+     * @see java.security.Permission#equals(Object)
      */
-    public PermissionCollection newPermissionCollection()
+    public boolean equals(Object object)
     {
-        return new PortalResourcePermissionCollection();
+        if (!(object instanceof PagePermission))
+            return false;
+
+        PagePermission p = (PagePermission) object;
+        return ((p.mask == mask) && (p.getName().equals(getName())));
     }
 
 }

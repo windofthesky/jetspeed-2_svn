@@ -19,13 +19,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementContext;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -114,7 +114,7 @@ public class MovePortletAction
                 throw new Exception("portlet id not provided"); 
             }            
             resultMap.put(PORTLETID, portletId);            
-            if (false == checkAccess(requestContext, SecuredResource.EDIT_ACTION))
+            if (false == checkAccess(requestContext, JetspeedActions.EDIT))
             {
                 Page page = requestContext.getPage();
                 Fragment fragment = page.getFragmentById(portletId);

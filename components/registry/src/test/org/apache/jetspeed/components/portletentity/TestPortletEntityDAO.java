@@ -95,12 +95,12 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @param actions
+         * @param mask
          * @throws SecurityException
          */
-        public void checkPermissions(String actions) throws SecurityException
+        public void checkPermissions(int mask) throws SecurityException
         {
-            f.checkPermissions(actions);
+            f.checkPermissions(mask);
         }
         
         public SecurityConstraint newSecurityConstraint()
@@ -122,7 +122,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return contraints enabled
          */
         public boolean getConstraintsEnabled()
         {
@@ -130,7 +130,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return decorator name
          */
         public String getDecorator()
         {
@@ -138,7 +138,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return list of fragments
          */
         public List getFragments()
         {
@@ -146,7 +146,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return id
          */
         public String getId()
         {
@@ -154,7 +154,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return name
          */
         public String getName()
         {
@@ -162,7 +162,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return permissions enabled
          */
         public boolean getPermissionsEnabled()
         {
@@ -171,7 +171,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
 
         /**
-         * @return
+         * @return security constraints
          */
         public SecurityConstraints getSecurityConstraints()
         {
@@ -179,7 +179,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return  short title
          */
         public String getShortTitle()
         {
@@ -187,7 +187,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return skin name
          */
         public String getSkin()
         {
@@ -195,7 +195,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return state string
          */
         public String getState()
         {
@@ -203,7 +203,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return title
          */
         public String getTitle()
         {
@@ -211,7 +211,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return type string
          */
         public String getType()
         {
@@ -227,7 +227,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @return
+         * @return if its a reference
          */
         public boolean isReference()
         {
@@ -398,7 +398,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
 
         /**
-         * @see org.apache.jetspeed.om.page.Fragment#setPreferences()
+         * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
          */
         public void setPreferences(List preferences)
         {

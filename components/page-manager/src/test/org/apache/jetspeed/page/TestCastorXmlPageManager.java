@@ -27,6 +27,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -271,7 +272,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         SecurityConstraint constraint = page.newSecurityConstraint();
         constraint.setUsers(Shared.makeListFromCSV("user10,user11"));
         constraint.setRoles(Shared.makeListFromCSV("*"));
-        constraint.setPermissions(Shared.makeListFromCSV(page.EDIT_ACTION + "," + page.VIEW_ACTION));
+        constraint.setPermissions(Shared.makeListFromCSV(JetspeedActions.EDIT + "," + JetspeedActions.VIEW));
         constraintsList.add(constraint);
         constraints.setSecurityConstraints(constraintsList);
         List constraintsRefsList = new ArrayList(1);

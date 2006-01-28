@@ -67,6 +67,8 @@ public class ContentFragmentImpl implements ContentFragment
         
         if (portletContent != null)
         {
+            //TODO are you sure? Intellij warns, synchronization on a non-final field is
+            //unlikely to have useful semantics.
             synchronized (portletContent)
             {
                 if (portletContent.isComplete())
@@ -348,12 +350,12 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#checkPermissions(java.lang.String)
+     * @see org.apache.jetspeed.om.common.SecuredResource#checkPermissions(int)
      */
-    public void checkPermissions(String actions) throws SecurityException
+    public void checkPermissions(int mask) throws SecurityException
     {
         
-        fragment.checkPermissions(actions);
+        fragment.checkPermissions(mask);
     }
 
     /* (non-Javadoc)

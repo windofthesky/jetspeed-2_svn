@@ -24,10 +24,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -63,7 +63,7 @@ public class GetPagesAction
         try
         {
             resultMap.put(ACTION, "getpages");
-            if (false == checkAccess(requestContext, SecuredResource.VIEW_ACTION))
+            if (false == checkAccess(requestContext, JetspeedActions.VIEW))
             {
 //                if (!createNewPageOnEdit(requestContext))                
 //                {

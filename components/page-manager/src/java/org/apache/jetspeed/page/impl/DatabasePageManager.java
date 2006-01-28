@@ -20,9 +20,9 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -424,7 +424,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (cachedNode instanceof Page)
         {
             // check for view access on page
-            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+            cachedNode.checkAccess(JetspeedActions.VIEW);
 
             return (Page)cachedNode;
         }
@@ -444,7 +444,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // check for view access on page
-            page.checkAccess(SecuredResource.VIEW_ACTION);
+            page.checkAccess(JetspeedActions.VIEW);
 
             return page;
         }
@@ -484,7 +484,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (cachedNode instanceof Link)
         {
             // check for view access on link
-            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+            cachedNode.checkAccess(JetspeedActions.VIEW);
 
             return (Link)cachedNode;
         }
@@ -504,7 +504,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // check for view access on link
-            link.checkAccess(SecuredResource.VIEW_ACTION);
+            link.checkAccess(JetspeedActions.VIEW);
 
             return link;
         }
@@ -535,7 +535,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (cachedNode instanceof PageSecurity)
         {
             // check for view access on document
-            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+            cachedNode.checkAccess(JetspeedActions.VIEW);
 
             return (PageSecurity)cachedNode;
         }
@@ -555,7 +555,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // check for view access on document
-            document.checkAccess(SecuredResource.VIEW_ACTION);
+            document.checkAccess(JetspeedActions.VIEW);
 
             return document;
         }
@@ -586,7 +586,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (cachedNode instanceof Folder)
         {
             // check for view access on folder
-            cachedNode.checkAccess(SecuredResource.VIEW_ACTION);
+            cachedNode.checkAccess(JetspeedActions.VIEW);
 
             return (Folder)cachedNode;
         }
@@ -606,7 +606,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // check for view access on folder
-            folder.checkAccess(SecuredResource.VIEW_ACTION);
+            folder.checkAccess(JetspeedActions.VIEW);
 
             return folder;
         }
@@ -660,7 +660,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 
                 // check for edit access on parent folder; page
                 // access not checked on create
-                parent.checkAccess(SecuredResource.EDIT_ACTION);
+                parent.checkAccess(JetspeedActions.EDIT);
 
                 try
                 {
@@ -682,7 +682,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             else
             {
                 // check for edit access on page and parent folder
-                page.checkAccess(SecuredResource.EDIT_ACTION);
+                page.checkAccess(JetspeedActions.EDIT);
 
                 // update page
                 getPersistenceBrokerTemplate().store(page);
@@ -720,7 +720,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             page = (Page)ProxyHelper.getRealObject(page);
 
             // check for edit access on page and parent folder
-            page.checkAccess(SecuredResource.EDIT_ACTION);
+            page.checkAccess(JetspeedActions.EDIT);
 
             // look up and update parent folder if necessary
             if (page.getParent() != null)
@@ -781,7 +781,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 
                 // check for edit access on parent folder; folder
                 // access not checked on create
-                parent.checkAccess(SecuredResource.EDIT_ACTION);
+                parent.checkAccess(JetspeedActions.EDIT);
 
                 try
                 {
@@ -810,7 +810,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // checked on create
                 if (!newFolder || !folder.getPath().equals(Folder.PATH_SEPARATOR))
                 {
-                    folder.checkAccess(SecuredResource.EDIT_ACTION);
+                    folder.checkAccess(JetspeedActions.EDIT);
                 }
 
                 // create root folder or update folder
@@ -852,7 +852,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folder = (Folder)ProxyHelper.getRealObject(folder);
 
             // check for edit access on folder and parent folder
-            folder.checkAccess(SecuredResource.EDIT_ACTION);
+            folder.checkAccess(JetspeedActions.EDIT);
 
             // look up and update parent folder if necessary
             if (folder.getParent() != null)
@@ -913,7 +913,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 
                 // check for edit access on parent folder; link
                 // access not checked on create
-                parent.checkAccess(SecuredResource.EDIT_ACTION);
+                parent.checkAccess(JetspeedActions.EDIT);
 
                 try
                 {
@@ -935,7 +935,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             else
             {
                 // check for edit access on link and parent folder
-                link.checkAccess(SecuredResource.EDIT_ACTION);
+                link.checkAccess(JetspeedActions.EDIT);
 
                 // update link
                 getPersistenceBrokerTemplate().store(link);
@@ -969,7 +969,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             link = (Link)ProxyHelper.getRealObject(link);
 
             // check for edit access on link and parent folder
-            link.checkAccess(SecuredResource.EDIT_ACTION);
+            link.checkAccess(JetspeedActions.EDIT);
 
             // look up and update parent folder if necessary
             if (link.getParent() != null)
@@ -1039,7 +1039,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     // check for edit access on parent folder; document
                     // access not checked on create
-                    parent.checkAccess(SecuredResource.EDIT_ACTION);
+                    parent.checkAccess(JetspeedActions.EDIT);
                     
                     try
                     {
@@ -1066,7 +1066,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             else
             {
                 // check for edit access on document and parent folder
-                pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+                pageSecurity.checkAccess(JetspeedActions.EDIT);
 
                 // update document
                 getPersistenceBrokerTemplate().store(pageSecurity);
@@ -1103,7 +1103,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
             // check for edit access on document and parent folder
-            pageSecurity.checkAccess(SecuredResource.EDIT_ACTION);
+            pageSecurity.checkAccess(JetspeedActions.EDIT);
 
             // look up and update parent folder if necessary
             if (pageSecurity.getParent() != null)
