@@ -104,7 +104,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         this.pageManager = pageManager;
         this.requestFallback = requestFallback;
     }
-     
+
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager)
+    {
+        this(profiler, portalSite, pageManager, true);
+    }
+    
     /*
      * (non-Javadoc)
      * 
