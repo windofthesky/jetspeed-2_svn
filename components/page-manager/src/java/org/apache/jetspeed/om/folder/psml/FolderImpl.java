@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.folder.psml;
 
 import java.security.AccessController;
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -61,10 +60,8 @@ import org.apache.jetspeed.security.FolderPermission;
  */
 public class FolderImpl extends AbstractNode implements Folder, Reset
 {
-    private final static String FOLDER_PERMISSION_WILD_CHAR = new String(new char[]{FolderPermission.WILD_CHAR});
     
     private NodeSet allNodes;
-    private File directory;
     private FolderMetaDataImpl metadata;
     private FolderHandler folderHandler;
     private int reservedType = RESERVED_FOLDER_NONE;

@@ -34,17 +34,14 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PortletPermission;
@@ -232,12 +229,6 @@ public class PortletSelector extends BrowserPortlet
             Locale locale = request.getLocale();
             List list = new ArrayList();
             
-            // get subject
-            RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);            
-            Subject subject = null;
-            if (requestContext != null)
-                subject = requestContext.getSubject();
-            
             while (portlets.hasNext())
             {
                 PortletDefinitionComposite portlet = null;
@@ -288,10 +279,6 @@ public class PortletSelector extends BrowserPortlet
     public int find(BrowserIterator iterator, String searchString, String searchColumn)
     {
         int index = 0;
-        int column = 1; 
-        
-        if (searchColumn != null)
-            column = Integer.parseInt(searchColumn);
         
         Iterator it = iterator.getResultSet().iterator();
         while (it.hasNext())

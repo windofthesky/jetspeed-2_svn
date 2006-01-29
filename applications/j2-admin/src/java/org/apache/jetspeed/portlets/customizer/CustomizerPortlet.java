@@ -28,18 +28,15 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.portals.bridges.velocity.AbstractVelocityMessagingPortlet;
 import org.apache.portals.gems.util.StatusMessage;
@@ -106,14 +103,9 @@ public class CustomizerPortlet extends AbstractVelocityMessagingPortlet
         if (list != null)
             return list;
         
-        Iterator portlets = portlets = registry.getAllPortletDefinitions().iterator();
+        Iterator portlets = registry.getAllPortletDefinitions().iterator();
         list = new LinkedList();
-        // get subject
-        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         Locale locale = request.getLocale();
-        Subject subject = null;
-        if (requestContext != null)
-            subject = requestContext.getSubject();
         
         while (portlets.hasNext())
         {

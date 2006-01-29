@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.security.auth.Subject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
@@ -61,7 +59,6 @@ public class GetPortletsAction
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
-    private PermissionManager permissionManager = null;
     
     public GetPortletsAction(String template, 
                              String errorTemplate,
@@ -74,7 +71,6 @@ public class GetPortletsAction
         super(template, errorTemplate, pageManager, securityBehavior);
         this.registry = registry;
         this.searchEngine = searchEngine;
-        this.permissionManager = permissionManager;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -122,8 +118,6 @@ public class GetPortletsAction
         else
             portlets = searchEngine.search(filter).getResults().iterator();
         
-        Subject subject = requestContext.getSubject();
-        
         while (portlets.hasNext())
         {
             PortletDefinitionComposite portlet = null;
@@ -145,7 +139,7 @@ public class GetPortletsAction
             String uniqueName = appName + "::" + portlet.getName();
             try
             {
-                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.VIEW));
+                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
                 list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
             }
             catch (AccessControlException ace)
