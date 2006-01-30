@@ -15,13 +15,10 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Policy;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthorizationProvider;
-import org.apache.jetspeed.security.PolicyWrapper;
-import org.apache.jetspeed.security.SecurityPolicies;
 
 /**
  * @see org.apache.jetspeed.security.AuthorizationProvider
@@ -29,8 +26,6 @@ import org.apache.jetspeed.security.SecurityPolicies;
  */
 public class AuthorizationProviderImpl implements AuthorizationProvider
 {
-
-    private static final Log log = LogFactory.getLog(AuthorizationProviderImpl.class);
 
     /**
      * <p>
@@ -43,35 +38,8 @@ public class AuthorizationProviderImpl implements AuthorizationProvider
      */
     public AuthorizationProviderImpl(Policy policy, boolean useDefaultPolicy)
     {
-        List securityPolicies = SecurityPolicies.getInstance().getPolicies();
-        // Add the default policy to the list of SecurityPolicies.
         Policy defaultPolicy = Policy.getPolicy();
-        if (!securityPolicies.contains(defaultPolicy))
-        {
-            if (log.isDebugEnabled())
-            {
-                log.debug("Adding default policy to security policies: " + defaultPolicy.getClass().getName());
-            }
-            PolicyWrapper defaultPolicyWrap = new PolicyWrapper(defaultPolicy, useDefaultPolicy, true);
-            SecurityPolicies.getInstance().addPolicy(defaultPolicyWrap);
-        }
-
-        if (!securityPolicies.contains(policy))
-        {
-            if (log.isDebugEnabled())
-            {
-                log.debug("Adding custom policy to security policies: " + policy.getClass().getName());
-            }
-            PolicyWrapper policyWrap = new PolicyWrapper(policy, true, false);
-            SecurityPolicies.getInstance().addPolicy(policyWrap);
-        }
-
-        // Use the primary policy.
-        if (log.isDebugEnabled())
-        {
-            log.debug("Setting current policy: " + policy.getClass().getName());
-        }
-        Policy.setPolicy(policy);
+        Policy.setPolicy(new JaasPolicyCoordinator(defaultPolicy, policy));
         Policy.getPolicy().refresh();
     }
 
@@ -80,7 +48,7 @@ public class AuthorizationProviderImpl implements AuthorizationProvider
      */
     public List getPolicies()
     {
-        return SecurityPolicies.getInstance().getPolicies();
+        return Collections.EMPTY_LIST;
     }
 
     /**
@@ -88,18 +56,6 @@ public class AuthorizationProviderImpl implements AuthorizationProvider
      */
     public void useDefaultPolicy(boolean whetherToUseDefaultPolicy)
     {
-        List wrappedPolicies = SecurityPolicies.getInstance().getWrappedPolicies();
-        if (whetherToUseDefaultPolicy)
-        {
-            for (int i = 0; i < wrappedPolicies.size(); i++)
-            {
-                PolicyWrapper currWrappedPolicy = (PolicyWrapper) wrappedPolicies.get(i);
-                if (currWrappedPolicy.isDefaultPolicy())
-                {
-                    currWrappedPolicy.setUseAsPolicy(true);
-                }
-            }
-        }
     }
 
 }
