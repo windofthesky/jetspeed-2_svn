@@ -95,7 +95,8 @@ javac -cp ~/.maven/repository/org.apache.portals.jetspeed-2/jars/portlet-api-1.0
 			Create the file simplest.psml in the src/webapp/WEB-INF/pages directory of your Jetspeed Portal.
 			The portlet-app id and the portlet-name are combined to identify the portlet fragment. Rebuild your portal.
 			<source><![CDATA[
-page>
+<?xml version="1.0" encoding="UTF-8"?> 
+ <page> 
   <defaults
      skin="orange"
      layout-decorator="tigris"
