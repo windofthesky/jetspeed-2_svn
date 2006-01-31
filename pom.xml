@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id:$
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.2</maven>
+    </prerequisites>
+
+    <!-- Properties -->
+
+    <properties>
+
+        <!-- Custom Deployment Properties -->
+        <org.apache.jetspeed.server.home>/usr/share/tomcat5</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.catalina.version.major>5</org.apache.jetspeed.catalina.version.major>
+        <org.apache.jetspeed.server.shared>${org.apache.jetspeed.server.home}/shared/lib</org.apache.jetspeed.server.shared>
+        <org.apache.jetspeed.deploy.war.dir>${org.apache.jetspeed.server.home}/webapps</org.apache.jetspeed.deploy.war.dir>
+        <org.apache.jetspeed.services.autodeployment.server>localhost</org.apache.jetspeed.services.autodeployment.server>
+        <org.apache.jetspeed.services.autodeployment.port>8080</org.apache.jetspeed.services.autodeployment.port>
+        <org.apache.jetspeed.services.autodeployment.user>j2deployer</org.apache.jetspeed.services.autodeployment.user>
+        <org.apache.jetspeed.services.autodeployment.password>j2deployer</org.apache.jetspeed.services.autodeployment.password>
+
+        <!-- Custom Test Database Properties -->
+        <org.apache.jetspeed.test.jdbc.drivers.path>${org.apache.jetspeed.server.shared}/mysql-connector-java.jar</org.apache.jetspeed.test.jdbc.drivers.path>
+        <org.apache.jetspeed.test.database.default.name>mysql</org.apache.jetspeed.test.database.default.name>
+        <org.apache.jetspeed.test.database.url>jdbc:mysql://localhost/j2test</org.apache.jetspeed.test.database.url>
+        <org.apache.jetspeed.test.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.test.database.driver>
+        <org.apache.jetspeed.test.database.user>tomcat4</org.apache.jetspeed.test.database.user>
+        <org.apache.jetspeed.test.database.password></org.apache.jetspeed.test.database.password>
+
+        <!-- Custom Production Database Properties -->
+        <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.shared}/mysql-connector-java.jar</org.apache.jetspeed.production.jdbc.drivers.path>
+        <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>
+        <org.apache.jetspeed.production.database.url>jdbc:mysql://localhost/j2</org.apache.jetspeed.production.database.url>
+        <org.apache.jetspeed.production.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.production.database.driver>
+        <org.apache.jetspeed.production.database.user>tomcat4</org.apache.jetspeed.production.database.user>
+        <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+
+        <!-- Dependency Version Properties -->
+        <activation.version>1.0.2</activation.version>
+        <ant.version>1.6.5</ant.version>
+        <aopalliance.version>1.0</aopalliance.version>
+        <castor.version>0.9.4.3</castor.version>
+        <cglib.version>2.0.2</cglib.version>
+        <commons-beanutils.version>1.6.1</commons-beanutils.version>
+        <commons-codec.version>1.3</commons-codec.version>
+        <commons-collections.version>3.0</commons-collections.version>
+        <commons-configuration.version>1.0</commons-configuration.version>
+        <commons-dbcp.version>1.2.1</commons-dbcp.version>
+        <commons-digester.version>1.5</commons-digester.version>
+        <commons-fileupload.version>1.0</commons-fileupload.version>
+        <commons-httpclient.version>2.0</commons-httpclient.version>
+        <commons-io.version>0.1</commons-io.version>
+        <commons-lang.version>2.0</commons-lang.version>
+        <commons-logging.version>1.0.3</commons-logging.version>
+        <commons-pool.version>1.2</commons-pool.version>
+        <directory.version>0.9.3</directory.version>      
+        <javamail.version>1.3.3</javamail.version>
+        <jaxen.version>1.0-FCS-full</jaxen.version>
+        <jdbc.version>2.0</jdbc.version>
+        <jdom.version>1.0</jdom.version>
+        <jmock.version>1.0.1</jmock.version>
+        <jstl.version>1.0.6</jstl.version>
+        <jta.version>1.0.1</jta.version>
+        <junit.version>3.8.1</junit.version>
+        <log4j.version>1.2.8</log4j.version>
+        <lucene.version>1.4.1</lucene.version>
+        <mockrunner.version>0.2.7</mockrunner.version>
+        <nekohtml.version>0.9.3</nekohtml.version>
+        <ojb.version>1.0.3</ojb.version>
+        <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
+        <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
+        <org.apache.portals.bridges.version>1.0</org.apache.portals.bridges.version>
+        <oro.version>2.0.7</oro.version>
+        <portlet-api.version>1.0</portlet-api.version>
+        <regexp.version>1.2</regexp.version>
+        <saxpath.version>1.0-FCS</saxpath.version>
+        <servletapi.version>2.3</servletapi.version>
+        <springframework.version>1.1.5</springframework.version>
+        <taglibs-random.version>1.0.2</taglibs-random.version>
+        <taglibs-request.version>1.0.1</taglibs-request.version>
+        <taglibs-standard.version>1.0.6</taglibs-standard.version>
+        <torque.version>3.2-rc3</torque.version>
+        <tyrex.version>1.0.1</tyrex.version>
+        <velocity-tools.version>1.1</velocity-tools.version>
+        <velocity.version>1.4</velocity.version>
+        <xalan.version>2.4.1</xalan.version>
+        <xerces.version>2.3.0</xerces.version>
+        <xstream.version>1.1.2</xstream.version>
+        <xml-apis.version>2.0.2</xml-apis.version>
+
+    </properties>
+
+    <!-- POM Identification -->
+
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.1-dev</version>
+    <packaging>pom</packaging>
+    <name>Jetspeed 2 Enterprise Portal</name>
+    <description>
+        Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
+    </description>
+
+    <!-- POM Modules -->
+
+    <modules>
+
+        <!-- Base Modules -->
+        <module>commons</module>
+        <module>jetspeed-api</module>
+        <module>content-server</module>
+
+        <!-- J2 Database -->
+        <module>etc</module>
+
+        <!-- J2 Components -->
+        <module>components/capability</module>
+        <module>components/cm</module>
+        <module>components/registry</module>
+        <module>components/rdbms</module>
+        <module>components/portlet-factory</module>
+        <module>components/prefs</module>
+        <module>components/deploy-tool</module>
+        <module>components/file-cache</module>
+        <module>components/header-resource</module>
+        <module>components/id-generator</module>
+        <module>components/jetspeed</module>
+        <module>components/locator</module>
+        <module>components/page-manager</module>
+        <module>components/profiler</module>
+        <module>components/security</module>
+        <module>components/portal-site</module>
+        <module>components/rewriter</module>
+        <module>components/search</module>
+        <module>components/serializer</module>
+        <module>components/sso</module>
+        <module>components/statistics</module>
+        <module>components/web-content</module>
+        <module>components/portal</module>
+        <!--
+            Issue: no Maven2 maven-directory-plugin or equivalent
+            ant task available to generate schema classes.
+
+        <module>components/security-schema</module>
+        -->
+
+        <!-- J2 Portal -->
+        <!--
+        <module>layout-portlets</module>
+        -->
+
+    </modules>
+
+    <!-- Repositories -->
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>com.bluesunrise</id>
+            <name>Maven1 BlueSunrise</name>
+            <url>http://www.bluesunrise.com/maven</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>org.codehaus</id>
+            <name>Maven1 Codehaus</name>
+            <url>http://dist.codehaus.org</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>org.apache</id>
+            <name>Maven1 Apache</name>
+            <url>http://cvs.apache.org/repository</url>
+            <layout>legacy</layout>
+        </repository>
+    </repositories>
+
+    <!-- Dependency Configuration -->
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- J2 Components -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-cm</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>content-server</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-components</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-deploy-tools</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-rdbms</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-prefs</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-search</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-security</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-registry</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-id-generator</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-file-cache</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-api</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-commons</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-locator</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-capability</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-profiler</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-page-manager</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-portal-site</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-portlet-factory</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-sso</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-statistics</artifactId>
+                <version>${pom.version}</version>
+            </dependency>        
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-header-resource</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-portal</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-rewriter</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>content-server</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+    
+            <!-- Standard APIs -->
+            <dependency>
+                <groupId>portlet-api</groupId>
+                <artifactId>portlet-api</artifactId>
+                <version>${portlet-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>servletapi</groupId>
+                <artifactId>servletapi</artifactId>
+                <version>${servletapi.version}</version>
+            </dependency>
+
+            <!-- Pluto Container -->
+            <dependency>
+                <groupId>org.apache.pluto</groupId>
+                <artifactId>pluto</artifactId>
+                <version>${org.apache.pluto.version}</version>
+            </dependency>
+
+            <!-- OJB -->
+            <dependency>
+                <groupId>ojb</groupId>
+                <artifactId>db-ojb</artifactId>
+                <version>${ojb.version}</version>
+            </dependency>
+
+            <!-- Spring Framework -->
+            <dependency>
+                <groupId>springframework</groupId>
+                <artifactId>spring</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-full</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>${aopalliance.version}</version>
+            </dependency>
+
+            <!-- Jakarta -->
+            <dependency>
+                <groupId>lucene</groupId>
+                <artifactId>lucene</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>oro</groupId>
+                <artifactId>oro</artifactId>
+                <version>${oro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>regexp</groupId>
+                <artifactId>regexp</artifactId>
+                <version>${regexp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons-configuration.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>resources</groupId>
+                        <artifactId>resources</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${commons-httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>   
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-pool</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>${commons-pool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-digester</groupId>
+                <artifactId>commons-digester</artifactId>
+                <version>${commons-digester.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <!-- Test -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>etc</artifactId>
+                <type>pom</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit-addons</groupId>
+                        <artifactId>junit-addons-runner</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>      
+            <dependency>
+                <groupId>jmock</groupId>
+                <artifactId>jmock</artifactId>
+                <version>${jmock.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mockrunner</groupId>
+                <artifactId>mockrunner</artifactId>
+                <version>${mockrunner.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tyrex</groupId>
+                <artifactId>tyrex</artifactId>
+                <version>${tyrex.version}</version>
+            </dependency>
+            
+            <!-- XML -->
+            <dependency>
+                <groupId>castor</groupId>
+                <artifactId>castor</artifactId>
+                <version>${castor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>${xml-apis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xerces</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>xalan</artifactId>
+                <version>${xalan.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+                <version>${jdom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>saxpath</groupId>
+                <artifactId>saxpath</artifactId>
+                <version>${saxpath.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>nekohtml</groupId>
+                <artifactId>nekohtml</artifactId>
+                <version>${nekohtml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>${xstream.version}</version>
+            </dependency>
+
+            <!-- Database -->
+            <dependency>
+                <groupId>jta</groupId>
+                <artifactId>jta</artifactId>
+                <version>${jta.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jdbc</groupId>
+                <artifactId>jdbc-stdext</artifactId>
+                <version>${jdbc-stdext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${org.apache.derby.version}</version>
+            </dependency>
+
+            <!-- Database Connection -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
+                <version>${pom.version}</version>
+                <scope>system</scope>
+                <systemPath>${org.apache.jetspeed.test.jdbc.drivers.path}</systemPath>
+            </dependency>
+
+            <!-- LDAP -->
+            <dependency>
+                <groupId>directory</groupId>
+                <artifactId>apacheds-main</artifactId>
+                <version>${directory.version}</version>      
+                <exclusions>
+                    <exclusion>
+                        <groupId>directory-shared</groupId>
+                        <artifactId>protocol-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>asn1-ber</groupId>
+                        <artifactId>asn1-codec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-shared</groupId>
+                        <artifactId>ldap-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-shared</groupId>
+                        <artifactId>kerberos-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-protocols</groupId>
+                        <artifactId>ntp-protocol</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-protocols</groupId>
+                        <artifactId>changepw-protocol</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-protocols</groupId>
+                        <artifactId>kerberos-protocol</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>directory-protocols</groupId>
+                        <artifactId>ldap-protocol</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Email -->
+            <dependency>
+                <groupId>javamail</groupId>
+                <artifactId>javamail</artifactId>
+                <version>${javamail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${activation.version}</version>
+            </dependency>
+
+            <!-- Taglibs -->
+            <dependency>
+                <groupId>jstl</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${jstl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>taglibs</groupId>
+                <artifactId>standard</artifactId>
+                <version>${taglibs-standard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>taglibs</groupId>
+                <artifactId>request</artifactId>
+                <version>${taglibs-request.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>taglibs</groupId>
+                <artifactId>random</artifactId>
+                <version>${taglibs-random.version}</version>
+            </dependency>
+            
+            <!-- Velocity -->
+            <dependency>
+                <groupId>velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>velocity-tools</groupId>
+                <artifactId>velocity-tools</artifactId>
+                <version>${velocity-tools.version}</version>
+            </dependency>
+             
+            <!-- Portals Bridges -->
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-common</artifactId>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-velocity</artifactId>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>    
+
+    <!-- Global Build Configuration -->
+
+    <build>
+
+        <!-- Standard Directories -->
+        <sourceDirectory>src/java</sourceDirectory>
+        <scriptSourceDirectory>src/scripts</scriptSourceDirectory>
+        <testSourceDirectory>src/test</testSourceDirectory>
+        <outputDirectory>target/classes</outputDirectory>
+        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <directory>target</directory>
+        <defaultGoal>install</defaultGoal>
+
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <directory>src/java</directory>
+            </resource>
+        </resources>
+
+        <!-- Test Resources -->
+        <testResources>
+            <testResource>
+                <directory>src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                    <exclude>**/JETSPEED-INF/**</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test</directory>
+            </testResource>
+            <testResource>
+                <directory>../../etc/log4j</directory>
+            </testResource>
+            <testResource>
+                <directory>../../etc/db-ojb</directory>
+            </testResource>
+            <testResource>
+                <directory>../../src/webapp/WEB-INF/assembly</directory>
+            </testResource>
+        </testResources>
+
+        <!-- Plugin Configuration -->
+        <pluginManagement>    
+            <plugins>
+
+                <!-- Tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <includes>
+                            <include>**/Test*.java</include>
+                        </includes>
+                        <systemProperties>
+
+                            <!-- Runtime Database Properties -->
+                            <property>
+                                <name>org.apache.jetspeed.database.url</name>
+                                <value>${org.apache.jetspeed.test.database.url}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.driver</name>
+                                <value>${org.apache.jetspeed.test.database.driver}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.user</name>
+                                <value>${org.apache.jetspeed.test.database.user}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
+
+                            <!-- Test Database Properties -->
+                            <property>
+                                <name>org.apache.jetspeed.test.database.url</name>
+                                <value>${org.apache.jetspeed.test.database.url}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.driver</name>
+                                <value>${org.apache.jetspeed.test.database.driver}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.user</name>
+                                <value>${org.apache.jetspeed.test.database.user}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
+
+                        </systemProperties>
+                        <!--
+                            Note: using forking to prevent module test case connection
+                            pools and spring crosstalk via surefire isolation class
+                            loaders when multipe modules are built, (e.g. components/registry). 
+                        -->
+                        <forkMode>once</forkMode>
+                    </configuration>
+                </plugin>
+
+                <!-- Compiler -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.4</source>
+                        <target>1.4</target>
+                        <debug>true</debug>
+                        <showDeprecation>true</showDeprecation>
+                        <showWarnings>true</showWarnings>
+                        <optimize>false</optimize>
+                    </configuration>
+                </plugin>
+
+                <!-- LDAP -->
+                <plugin>
+                    <groupId>directory</groupId>
+                    <artifactId>maven-directory-plugin</artifactId>
+                    <version>${directory.version}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>    
+
+    </build>
+
+    <!-- Global Dependencies -->
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!-- Project Information -->
+
+    <url>http://portals.apache.org/jetspeed-2</url>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/</url>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Jetspeed 2 User List</name>
+            <subscribe>jetspeed-user-subscribe@portals.apache.org</subscribe>
+            <unsubscribe>jetspeed-user-unsubscribe@portals.apache.org</unsubscribe>
+            <post>jetspeed-user@portals.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/portals-jetspeed-user/</archive>
+        </mailingList>
+        <mailingList>
+            <name>Jetspeed 2 Developer List</name>
+            <subscribe>jetspeed-dev-subscribe@portals.apache.org</subscribe>
+            <unsubscribe>jetspeed-dev-unsubscribe@portals.apache.org</unsubscribe>
+            <post>jetspeed-dev@portals.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/portals-jetspeed-dev/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://portals.apache.org/</url>
+    </organization>
+
+    <inceptionYear>1999</inceptionYear>
+
+    <developers>
+        <developer>
+            <name>David Sean Taylor</name>
+            <id>taylor</id>
+            <email>taylor@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Raphael Luta</name>
+            <id>raphael</id>
+            <email>raphael@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Mark Orciuch</name>
+            <id>mark</id>
+            <email>mark_oriuch@nqsltd.com</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Paul Spencer</name>
+            <id>paulsp</id>
+            <email>paulsp@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Scott Weaver</name>
+            <id>weaver</id>
+            <email>Sweaver@rippe.com</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Roger Ruttimann</name>
+            <id>roger</id>
+            <email>rogerrut@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>David Le Strat</name>
+            <id>dls</id>
+            <email>dlestrat@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Jeremy Ford</name>
+            <id>jford</id>
+            <email>jford@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Ate Douma</name>
+            <id>ate</id>
+            <email>ate@apache.org</email>
+            <timezone>+2</timezone>
+            <organization>iWise B.V.</organization>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Shinsuke Sugaya</name>
+            <id>shinsuke</id>
+            <email>shinsuke@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Randy Watler</name>
+            <id>rwatler</id>
+            <email>rwatler@apache.org</email>
+            <timezone>-6</timezone>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+</project>

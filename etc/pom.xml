@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id:$
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- POM Identification -->
+
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <version>2.1-dev</version>
+    <artifactId>etc</artifactId>
+    <parent>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <version>2.1-dev</version>
+        <artifactId>pom</artifactId>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <packaging>pom</packaging>
+    <name>Jetspeed-2 Portal Database</name>
+    <description>
+        Project used to create DDL and DML database scripts and
+        execute them to popuate test and production instances.
+    </description>
+
+    <!-- Build Configuration -->
+
+    <build>
+
+        <!-- Plugin Executions -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+
+                    <!-- generate database schema -->
+                    <execution>
+                        <id>etc-schema</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.database.default.name"
+                                              value="${org.apache.jetspeed.test.database.default.name}"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- populate test database instance -->
+                    <execution>
+                        <id>etc-populate</id>
+                        <phase>generate-test-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.database.default.name"
+                                              value="${org.apache.jetspeed.test.database.default.name}"/>
+                                    <property name="org.apache.jetspeed.database.url"
+                                              value="${org.apache.jetspeed.test.database.url}"/>
+                                    <property name="org.apache.jetspeed.database.jdbc.drivers.path"
+                                              value="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+                                    <property name="org.apache.jetspeed.database.driver"
+                                              value="${org.apache.jetspeed.test.database.driver}"/>
+                                    <property name="org.apache.jetspeed.database.user"
+                                              value="${org.apache.jetspeed.test.database.user}"/>
+                                    <property name="org.apache.jetspeed.database.password"
+                                              value="${org.apache.jetspeed.test.database.password}"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+
+                <!--
+                    Bug:  Dependencies should be in parent POM, but they are not propagated
+                    from the pluginManagement sections. Extensions also cannot be used since
+                    ant tag executions do not succeed in general: suspect class loading
+                    issues that result in NPE mysterious on <replaceregexp>.
+
+                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque</artifactId>
+                        <version>${torque.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>jndi</groupId>
+                                <artifactId>jndi</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>javax.sql</groupId>
+                                <artifactId>jdbc-stdext</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen-templates</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Project Information -->
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/etc</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/etc</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/etc/</url>
+    </scm>
+
+</project>

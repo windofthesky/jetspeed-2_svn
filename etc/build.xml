@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id:$
+-->
+<project name="etc" default="help">
+
+    <!-- Properties -->
+
+    <property name="org.apache.jetspeed.database.default.name" value=""/>
+    <property name="org.apache.jetspeed.database.url" value=""/>
+    <property name="org.apache.jetspeed.database.jdbc.drivers.path" value=""/>
+    <property name="org.apache.jetspeed.database.driver" value=""/>
+    <property name="org.apache.jetspeed.database.user" value=""/>
+    <property name="org.apache.jetspeed.database.password" value=""/>
+
+    <property name="org.apache.jetspeed.source.sql" value="${basedir}/sql"/>
+    <property name="org.apache.jetspeed.database.source.sql" value="${org.apache.jetspeed.source.sql}/${org.apache.jetspeed.database.default.name}"/>
+    <property name="org.apache.jetspeed.target.sql" value="${basedir}/target/sql"/>
+    <property name="org.apache.jetspeed.database.target.sql" value="${org.apache.jetspeed.target.sql}/${org.apache.jetspeed.database.default.name}"/>
+
+    <property name="torque.contextProperties" value=""/>
+    <property name="torque.runOnlyOnSchemaChange" value="true"/>
+    <property name="torque.idTableXMLFile" value=""/>
+    <property name="torque.project" value="phase1"/>
+    <property name="torque.schema.dir" value="${basedir}/schema"/>
+    <property name="torque.schema.sql.excludes" value=""/>
+    <property name="torque.schema.sql.includes" value="*-schema.xml"/>
+    <property name="torque.template.sql" value="sql/base/Control.vm"/>
+    <property name="torque.templatePath" value=""/>
+    <property name="torque.useClasspath" value="true"/>
+    <property name="torque.sql.dir" value="${org.apache.jetspeed.database.target.sql}/schema"/>
+
+    <!-- Usage -->
+
+    <target name="help">
+        <echo message="Buildfile for the etc maven POM."/>
+        <echo message="Usage: ant [ schema | populate ]"/>
+        <echo message="Where:"/>
+        <echo message="    schema - build schema for database."/>
+        <echo message="    populate - build and populate database instance."/>
+        <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}"/>
+        <echo message="    org.apache.jetspeed.database.url=${org.apache.jetspeed.database.url}"/>
+        <echo message="    org.apache.jetspeed.database.jdbc.drivers.path=${org.apache.jetspeed.database.jdbc.drivers.path}"/>
+        <echo message="    org.apache.jetspeed.database.driver=${org.apache.jetspeed.database.driver}"/>
+        <echo message="    org.apache.jetspeed.database.user=${org.apache.jetspeed.database.user}"/>
+        <echo message="    org.apache.jetspeed.database.password=${org.apache.jetspeed.database.password}"/>
+    </target>
+
+    <!-- Schema Generation -->
+
+    <target name="schema" depends="test-database-default-name, test-database-filter-drops">
+
+        <!-- make target directory -->
+        <mkdir dir="${org.apache.jetspeed.database.target.sql}"/>
+
+        <!-- copy general sql -->
+        <copy todir="${org.apache.jetspeed.target.sql}" overwrite="true" flatten="true" verbose="true" failonerror="false">
+            <fileset dir="${org.apache.jetspeed.source.sql}">
+                <include name="*.sql"/>
+            </fileset>
+        </copy>
+
+        <!-- conditionally generate sql using torque schema -->
+        <antcall target="schema-mssql"/>
+        <antcall target="schema-mysql"/>
+        <antcall target="schema-oracle"/>
+        <antcall target="schema-hsql"/>
+        <antcall target="schema-postgres"/>
+        <antcall target="schema-sapdb"/>
+        <antcall target="schema-derby"/>
+
+        <!-- conditionally filter generated schema -->
+        <antcall target="schema-filter-drops"/>
+
+        <!-- copy custom/override generated sql -->
+        <copy todir="${org.apache.jetspeed.database.target.sql}" overwrite="true" verbose="true" failonerror="false">
+            <fileset dir="${org.apache.jetspeed.database.source.sql}">
+                <include name="**/*.sql"/>
+            </fileset>
+        </copy>
+
+    </target>
+
+    <target name="test-database-default-name">
+        <condition property="org.apache.jetspeed.database.is.mssql">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="mssql"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.mysql">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="mysql"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.oracle">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="oracle"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.hsql">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="hsql"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.postgres">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="postgres"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.sapdb">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="sapdb"/>
+        </condition>
+        <condition property="org.apache.jetspeed.database.is.derby">
+            <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="derby"/>
+        </condition>
+    </target>
+
+    <target name="test-database-filter-drops">
+        <condition property="org.apache.jetspeed.database.filter.drops">
+            <or>
+                <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="oracle"/>
+                <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="postgres"/>
+                <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="sapdb"/>
+                <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="derby"/>
+            </or>
+        </condition>
+    </target>
+
+    <target name="schema-mssql" if="org.apache.jetspeed.database.is.mssql">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="mssql"/>
+        </antcall>
+    </target>
+
+    <target name="schema-mysql" if="org.apache.jetspeed.database.is.mysql">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="mysql"/>
+        </antcall>
+    </target>
+
+    <target name="schema-oracle" if="org.apache.jetspeed.database.is.oracle">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="oracle"/>
+        </antcall>
+    </target>
+
+    <target name="schema-hsql" if="org.apache.jetspeed.database.is.hsql">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="hypersonic"/>
+        </antcall>
+    </target>
+
+    <target name="schema-postgres" if="org.apache.jetspeed.database.is.postgres">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="postgresql"/>
+        </antcall>
+    </target>
+
+    <target name="schema-sapdb" if="org.apache.jetspeed.database.is.sapdb">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="sapdb"/>
+        </antcall>
+    </target>
+
+    <target name="schema-derby" if="org.apache.jetspeed.database.is.derby">
+        <antcall target="torque-gen">
+            <param name="torque.database" value="derby"/>
+        </antcall>
+    </target>
+
+    <target name="schema-filter-drops" if="org.apache.jetspeed.database.filter.drops">
+
+        <!-- comment out drops in schema scripts -->
+        <replaceregexp match="^\s*(drop)" flags="i" byline="on" replace="-- \1">
+            <fileset dir="${org.apache.jetspeed.database.target.sql}/schema">
+                <include name="*.sql"/>
+            </fileset>
+        </replaceregexp>
+
+    </target>
+
+    <!-- Torque tasks taken from build-torque.xml in the Torque Generator distribution -->
+
+    <taskdef name="torque-sql" classname="org.apache.torque.task.TorqueSQLTask"/>
+
+    <target name="check-use-classpath">
+        <condition property="torque.internal.useClasspath">
+            <equals arg1="${torque.useClasspath}" arg2="true"/>
+        </condition>
+    </target>
+
+    <target name="check-run-only-on-schema-change">
+        <condition property="torque.internal.runOnlyOnSchemaChange">
+            <equals arg1="${torque.runOnlyOnSchemaChange}" arg2="true"/>
+        </condition>
+    </target>
+
+    <target name="sql-check" depends="check-run-only-on-schema-change" if="torque.internal.runOnlyOnSchemaChange">
+        <uptodate property="torque.internal.sql.uptodate" targetfile="${torque.sql.dir}/${torque.project}-schema.sql">
+            <srcfiles dir="${torque.schema.dir}" includes="**/*-schema.xml" />
+        </uptodate>
+    </target>
+
+    <target name="torque-gen" depends="check-use-classpath, sql-check" unless="torque.internal.sql.uptodate">
+        <antcall target="sql-classpath"/>
+        <antcall target="sql-template"/>
+    </target>
+
+    <target name="sql-classpath" if="torque.internal.useClasspath">
+        <torque-sql contextProperties="${torque.contextProperties}"
+                    controlTemplate="${torque.template.sql}"
+                    idTableXMLFile="${torque.idTableXMLFile}"
+                    outputDirectory="${torque.sql.dir}"
+                    outputFile="report.${torque.project}.sql.generation"
+                    sqldbmap="${torque.sql.dir}/sqldb.map"
+                    targetDatabase="${torque.database}"
+                    useClasspath="${torque.useClasspath}">
+            <fileset dir="${torque.schema.dir}"
+                     includes="${torque.schema.sql.includes}"
+                     excludes="${torque.schema.sql.excludes}"/>
+        </torque-sql>
+    </target>
+
+    <target name="sql-template" unless="torque.internal.useClasspath">
+        <torque-sql contextProperties="${torque.contextProperties}"
+                    controlTemplate="${torque.template.sql}"
+                    idTableXMLFile="${torque.idTableXMLFile}"
+                    outputDirectory="${torque.sql.dir}"
+                    outputFile="report.${torque.project}.sql.generation"
+                    sqldbmap="${torque.sql.dir}/sqldb.map"
+                    targetDatabase="${torque.database}"
+                    templatePath="${torque.templatePath}">
+            <fileset dir="${torque.schema.dir}"
+                     includes="${torque.schema.sql.includes}"
+                     excludes="${torque.schema.sql.excludes}"/>
+        </torque-sql>
+    </target>
+
+    <!-- Populate Database -->
+
+    <target name="populate">
+
+        <!-- execute drop scripts -->
+        <antcall target="sql-execute">
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts" value="drop.sql"/>
+            <param name="database.arg.onerror" value="continue"/>
+        </antcall>
+
+        <!-- execute schema scripts -->
+        <antcall target="sql-execute">
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}/schema"/>
+            <param name="database.arg.scripts" value="*.sql"/>
+            <param name="database.arg.onerror" value="abort"/>
+        </antcall>
+
+        <!-- execute default population scripts -->
+        <antcall target="sql-execute">
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts" value="populate-db-default.sql"/>
+            <param name="database.arg.onerror" value="abort"/>
+        </antcall>
+
+    </target>
+
+    <target name="sql-execute">
+        <sql url="${org.apache.jetspeed.database.url}"
+             classpath="${org.apache.jetspeed.database.jdbc.drivers.path}" driver="${org.apache.jetspeed.database.driver}" 
+             userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
+             onerror="${database.arg.onerror}">
+            <fileset dir="${database.arg.scripts.dir}"> 
+                <include name="${database.arg.scripts}"/>
+            </fileset> 
+        </sql>
+    </target>
+
+</project>

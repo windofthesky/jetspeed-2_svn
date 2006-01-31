@@ -88,6 +88,7 @@
         <unitTest>
             <excludes>
                 <exclude>**/Abstract*</exclude>
+                <exclude>**/ContentFragmentTestImpl.java</exclude>
                 <!--
                     The following tests have been aggregated into
                     TestRegistryDirectAll because the individual
