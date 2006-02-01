@@ -934,7 +934,7 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     public String getAbsoluteUrl(String relativePath)
     {
         // only rewrite a non-absolute url
-        if (relativePath != null && relativePath.indexOf("://") == -1)
+        if (relativePath != null && relativePath.indexOf("://") == -1 && relativePath.indexOf("mailto:") == -1)            
         {
             HttpServletRequest request = getRequestContext().getRequest();
             StringBuffer path = new StringBuffer();
