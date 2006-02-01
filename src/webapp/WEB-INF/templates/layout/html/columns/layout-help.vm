@@ -14,78 +14,53 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
-#set($myPage = $jetspeed.page)
+#set($theme = $request.getAttribute("org.apache.jetspeed.theme"))
+#set ($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
 
-#set($myFragment = $jetspeed.currentFragment)
+<!-- Header: $theme.pageLayoutDecoration.header) Footer: $theme.pageLayoutDecoration.footer -->
 
-#set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
+#parse($theme.pageLayoutDecoration.header)
 
-#set($actions = $jetspeed.PageDecoratorActions)
-
-
- #if($myFragment.getDecorator())
-        #set($decorator = $myFragment.getDecorator())
-  #end
-
-  #if ($decorator)
-        #set($decoTop = "${decorator}/header.vm")
-        #set($decoBottom = "${decorator}/footer.vm")
-  #end
-
-<!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
-
-
-  #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))
-      #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
-  #end
-
-#set($layoutType =$portletConfig.getInitParameter("layoutType"))
-#if($jetspeed.portletMode.toString() == "edit")
-  #set($editing = true)
-  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
-#end
-
-<!-- Begin portlet/html/jetspeed/decorator.vm  -->
+<!-- Begin templates/layout/html/columns/layout-help.vm -->
 
 <div id="portlet-help" class="portlet-Jetspeed" >
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
-##
-## Portlet Title Bar
-##
-#set ($cspan = 2)
-
   <tr>
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-
-    <td align="left" valign="middle" class="PContent" >
+    <td class="PContent">
+    <h2>$messages.getString("portal.help.title")</h2>
+    <h3>$messages.getString("portal.page.help.title")</h3>
+    <p><img src="decorations/images/view.gif" alt="view" border="0" /> $messages.getString("portal.page.help.view")</p>
+    <p><img src="decorations/images/help.gif" alt="help" border="0" /> $messages.getString("portal.page.help.help")</p>
+    <p><img src="decorations/images/edit.gif" alt="edit" border="0" /> $messages.getString("portal.page.help.edit")</p>
+    <p><img src="decorations/layout/images/select.gif" alt="select" border="0" />
+       $messages.getString("portal.portlet.help.title")</p>
+    <h3>$messages.getString("portal.help.title")</h3>
+    <p><img src="decorations/images/minimized.gif" alt="minimize" border="0" />
+       $messages.getString("portal.portlet.help.minimize")</p>
+    <p><img src="decorations/images/maximized.gif" alt="maximize" border="0" />
+       $messages.getString("portal.portlet.help.maximize")</p>
+    <p><img src="decorations/images/restore.gif" alt="restore" border="0" />
+       $messages.getString("portal.portlet.help.restore")</p>
+    <p><img src="decorations/images/edit.gif" alt="edit" border="0" />
+       $messages.getString("portal.portlet.help.edit")</p>
+    <p><img src="decorations/images/print.gif" alt="print" border="0" />
+       $messages.getString("portal.portlet.help.print")</p>
+    <h4>$messages.getString("portal.portlet.help.edit.title")</h4>
+    <p><img src="decorations/images/close.gif" alt="close" border="0" />
+       $messages.getString("portal.portlet.help.close")</p>
+    <p><img src="decorations/layout/images/movePortletUp.gif" alt="move up" border="0" />
+       $messages.getString("portal.portlet.help.movePortletUp")</p>
+    <p><img src="decorations/layout/images/movePortletDown.gif" alt="move down" border="0" />
+       $messages.getString("portal.portlet.help.movePortletDown")</p>
+    <p><img src="decorations/layout/images/movePortletLeft.gif" alt="move left" border="0" />
+       $messages.getString("portal.portlet.help.movePortletLeft")</p>
+    <p><img src="decorations/layout/images/movePortletRight.gif" alt="move right" border="0" />
+       $messages.getString("portal.portlet.help.movePortletRight")</p>
     </td>
-    <td align="right" valign="middle" class="PContent" >
-      <table border="0" cellpadding="0" cellspacing="0" >
-      <tr>
-      #foreach ($action in $actions)
-      <td align="right" valign="middle" class="PContent" >
-      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      <td/>
-      #end
-      </tr>
-      </table>
-    </td>
-
-    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
-  <tr>
-  <tr>
-    <td class="PContent" colspan="4">
-    <br/>
-    <h2>Help for Jetspeed Multicolumn Page Portlet</h2>
-    <p>TODO: Make all strings here resources</p>
-
-    </td>
-  </tr>
-
 </table>
 </div>
 
-#if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
-   #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
-#end
+<!-- End templates/layout/html/columns/layout-help.vm -->
+
+#parse($theme.pageLayoutDecoration.footer)
