@@ -26,6 +26,8 @@ limitations under the License.
 
 #set($actions = $myFragment.decoration.actions)
 
+#set ($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
+
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
   #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)  
@@ -48,22 +50,22 @@ limitations under the License.
    #set($themeUrl = $renderResponse.createActionURL())
    $!themeUrl.setParameter("editingPage","$myPage.path")
 <form name="themeForm" action="$themeUrl" method='post'>
-     <label style='font-size:8pt;color:blue;padding-left: 9px;'>Theme:
+     <label style='font-size:8pt;color:blue;padding-left: 9px;'>$messages.getString("portal.page.editing.theme")
      <select id='theme' name='theme' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
         #foreach($td in $decorationFactory.getPageDecorations($rc))
           <option value='$td' #if($decorator == $td) SELECTED #end>$td
         #end
      </select>   
-     </label>
-<label style='font-size:8pt;color:blue;padding-left: 9px;'>Layout:
+     </label><br/>
+<label style='font-size:8pt;color:blue;padding-left: 9px;'>$messages.getString("portal.page.editing.layout")
      <select id='layout' name='layout' style='font-size:8pt;color:blue' onChange="themeForm.submit();">
         #foreach($ld in $decorationFactory.getLayouts($rc))     
           <option value='$ld.Name' #if($myFragment.Name == $ld.Name) SELECTED #end>$ld.DisplayName
          #end
-</select></label>
-<label style='font-size:8pt;color:blue;padding-left: 9px;'>Page:
+</select></label><br/>
+<label style='font-size:8pt;color:blue;padding-left: 9px;'>$messages.getString("portal.page.editing.page")
 <input id='newpage' name='jsPageName' style='font-size:8pt;color:blue'/></label>
-<input type="submit" name="jsSubmitPage" value="Add Page" />
+<input type="submit" name="jsSubmitPage" value="$messages.getString("portal.page.editing.addpage")" />
 </form>
    #end
  #set($layoutClass = "portal-layout")
@@ -108,7 +110,7 @@ limitations under the License.
                $!leftUrl.setParameter("move","3")
                $!leftUrl.setParameter("fragmentToMove","$f.id")
 			   $!leftUrl.setParameter("editingPage","$myPage.path")                
-               <a href="$leftUrl" class="move-portlet-left"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="Move Portlet Left"/></a>
+               <a href="$leftUrl" class="move-portlet-left"><img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="$messages.getString("portal.page.editing.movePortletLeft")"/></a>
 			 #end
 			 
 			 ## Move portlet up	
@@ -117,14 +119,14 @@ limitations under the License.
                  $!upUrl.setParameter("move","1")
                  $!upUrl.setParameter("fragmentToMove","$f.id")
 				 $!upUrl.setParameter("editingPage","$myPage.path") 
-                 <a href="$upUrl" class="move-portlet-up"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="Move Portlet Up"/></a>
+                 <a href="$upUrl" class="move-portlet-up"><img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="$messages.getString("portal.page.editing.movePortletUp")"/></a>
 			 #end
 			 
 			 ## Remove portlet from page
              #set($deleter = $renderResponse.createActionURL())    
              $deleter.setParameter("deleteId","$f.id")
              $deleter.setParameter("page","$myPage")                         
-             <a href="$deleter" class="remove-portlet-from-apge"><img src="#GetPageResource('images/close.gif')" border="0" title="Remove Portlet"/></a>
+             <a href="$deleter" class="remove-portlet-from-apge"><img src="#GetPageResource('images/close.gif')" border="0" title="$messages.getString("portal.page.editing.removePortlet")"/></a>
 			 
 			 ## Move portlet down
              #if($row < $lastRow)						
@@ -132,7 +134,7 @@ limitations under the License.
                $!downUrl.setParameter("move","2")
                $!downUrl.setParameter("fragmentToMove","$f.id")
 			   $!downUrl.setParameter("editingPage","$myPage.path") 
-               <a href="$downUrl" class="move-portlet-down"><img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="Move Portlet Down"/></a>
+               <a href="$downUrl" class="move-portlet-down"><img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="$messages.getString("portal.page.editing.movePortletDown")"/></a>
 			 #end
 			 
 			 ## Move portlet right
@@ -141,7 +143,7 @@ limitations under the License.
                $!rightUrl.setParameter("move","4")
                $!rightUrl.setParameter("fragmentToMove","$f.id")
 			   $!rightUrl.setParameter("editingPage","$myPage.path") 
-               <a href="$rightUrl" class="move-portlet-right"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="Move Portlet Right"/></a>
+               <a href="$rightUrl" class="move-portlet-right"><img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="$messages.getString("portal.page.editing.movePortletRight")"/></a>
 			 #end
 </form>			 
 		   </div>
