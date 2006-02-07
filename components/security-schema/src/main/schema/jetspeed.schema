@@ -57,20 +57,23 @@ attributetype ( 1.3.6.1.4.1.8100.1.2.3.7 NAME 'modified-date'
 
 objectclass ( 1.3.6.1.4.1.8100.1.2.4.1 NAME 'jetspeed-2-group'
 	DESC 'Jetspeed-2 group'
-	MUST ( j2-classname $ uid)
-	MAY ( j2-role $ creation-date $ modified-date) )
+	SUP (groupOfUniqueNames)
+	MUST ( uid)
+	MAY ( j2-role $ creation-date $ modified-date $ cn $ ou) )
 
 objectclass ( 1.3.6.1.4.1.8100.1.2.4.2 NAME 'jetspeed-2-permission'
 	DESC 'Jetspeed-2 permission'
-	MUST ( j2-classname $ uid)
+	MUST ( uid)
 	MAY ( j2-action $ creation-date $ modified-date) )
 
 objectclass ( 1.3.6.1.4.1.8100.1.2.4.3 NAME 'jetspeed-2-role'
 	DESC 'Jetspeed-2 role'
-	MUST ( j2-classname $ uid)
-	MAY ( creation-date $ modified-date) )
+	SUP (groupOfUniqueNames)
+	MUST ( uid)
+	MAY ( creation-date $ modified-date $ cn $ ou) )
 
 objectclass ( 1.3.6.1.4.1.8100.1.2.4.4 NAME 'jetspeed-2-user'
-	DESC 'Jetspeed-2 user' SUP inetOrgPerson
+	DESC 'Jetspeed-2 user'
+	SUP (inetOrgPerson)
 	MUST ( cn $ uid)
 	MAY ( j2-role $ j2-group $ j2-permission $ creation-date $ modified-date))
