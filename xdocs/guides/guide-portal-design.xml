@@ -31,11 +31,11 @@ It is the standard specification for developing Java portlets. However the Java 
 does not define standards for laying out and aggregating portlets and markup on a page.
 The documentation here under "Portal Design" covers:
 <ul>
-  <li><a href='psml.html'>Page Aggregation - see the section on PSML</a></li>    
-  <li><a href='decorators.html'>Page and Portlet Decorators</a></li>    
-  <li><a href='layouts.html'>Page Layouts</a></li>    
-  <li><a href='jpt.html'>The Jetspeed Power Tool</a></li>    
-  <li><a href='site.html'>The Site Content Model</a></li>        
+  <li><a href='guide-psml.html'>Page Aggregation - see the section on PSML</a></li>    
+  <li><a href='guide-decorators.html'>Page and Portlet Decorators</a></li>    
+  <li><a href='guide-layouts.html'>Page Layouts</a></li>    
+  <li><a href='guide-jpt.html'>The Jetspeed Power Tool</a></li>    
+  <li><a href='guide-site.html'>The Site Content Model</a></li>        
   <li><a href='#Template Locators'>Template Locators</a></li>          
   <li><a href='#Terminology'>Terminology</a></li>          
 </ul>
