@@ -20,6 +20,7 @@ limitations under the License.
 
     <!-- Properties -->
 
+    <property name="org.apache.jetspeed.database.skip" value="false"/>
     <property name="org.apache.jetspeed.database.default.name" value=""/>
     <property name="org.apache.jetspeed.database.url" value=""/>
     <property name="org.apache.jetspeed.database.jdbc.drivers.path" value=""/>
@@ -53,6 +54,7 @@ limitations under the License.
         <echo message="    schema - build schema for database."/>
         <echo message="    populate - build and populate database instance."/>
         <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.database.skip=${org.apache.jetspeed.database.skip}"/>
         <echo message="    org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}"/>
         <echo message="    org.apache.jetspeed.database.url=${org.apache.jetspeed.database.url}"/>
         <echo message="    org.apache.jetspeed.database.jdbc.drivers.path=${org.apache.jetspeed.database.jdbc.drivers.path}"/>
@@ -243,7 +245,7 @@ limitations under the License.
 
     <!-- Populate Database -->
 
-    <target name="populate">
+    <target name="populate" depends="populate-skip" unless="org.apache.jetspeed.skip">
 
         <!-- execute drop scripts -->
         <antcall target="sql-execute">
@@ -266,6 +268,12 @@ limitations under the License.
             <param name="database.arg.onerror" value="abort"/>
         </antcall>
 
+    </target>
+
+    <target name="populate-skip">
+        <condition property="org.apache.jetspeed.skip">
+            <equals arg1="${org.apache.jetspeed.database.skip}" arg2="true"/>
+        </condition>
     </target>
 
     <target name="sql-execute">

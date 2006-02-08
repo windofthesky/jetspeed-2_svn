@@ -75,6 +75,8 @@ limitations under the License.
                         <configuration>
                             <tasks>
                                 <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.database.skip"
+                                              value="${maven.test.skip}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.test.database.default.name}"/>
                                     <property name="org.apache.jetspeed.database.url"

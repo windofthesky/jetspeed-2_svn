@@ -60,6 +60,12 @@ limitations under the License.
         <!-- Test Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
+            <artifactId>etc</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-registry</artifactId>
             <scope>test</scope>
         </dependency>

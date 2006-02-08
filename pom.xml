@@ -29,6 +29,9 @@ limitations under the License.
 
     <properties>
 
+        <!-- Build Properties -->
+        <maven.test.skip>true</maven.test.skip>
+
         <!-- Custom Deployment Properties -->
         <org.apache.jetspeed.server.home>/usr/share/tomcat5</org.apache.jetspeed.server.home>
         <org.apache.jetspeed.catalina.version.major>5</org.apache.jetspeed.catalina.version.major>
@@ -68,7 +71,7 @@ limitations under the License.
         <commons-dbcp.version>1.2.1</commons-dbcp.version>
         <commons-digester.version>1.5</commons-digester.version>
         <commons-fileupload.version>1.0</commons-fileupload.version>
-        <commons-httpclient.version>2.0</commons-httpclient.version>
+        <commons-httpclient.version>2.0.2</commons-httpclient.version>
         <commons-io.version>0.1</commons-io.version>
         <commons-lang.version>2.0</commons-lang.version>
         <commons-logging.version>1.0.3</commons-logging.version>
