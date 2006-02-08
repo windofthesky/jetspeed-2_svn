@@ -30,30 +30,14 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Header Resource Management</name>
     <description>
         Jetspeed Header Resource Management
     </description>
-
-    <!-- Dependencies -->
-
-    <dependencies>
-
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-        </dependency>
-
-    </dependencies>
 
     <!-- Project Information -->
 

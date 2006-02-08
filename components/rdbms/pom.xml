@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 RDBMS Components</name>
@@ -52,9 +52,22 @@ limitations under the License.
             <groupId>ojb</groupId>
             <artifactId>db-ojb</artifactId>
         </dependency>
+        <!--
+            Note: tyrex and junit are normally required only for test, but 
+            in this case, abstract test cases are included in the component
+            build... this should probably be fixed... for now, assume that
+            tyrex and/or junit will be provided if these test classes are
+            used.
+        -->
         <dependency>
             <groupId>tyrex</groupId>
             <artifactId>tyrex</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Security Components</name>
@@ -46,15 +46,7 @@ limitations under the License.
         <!-- Build Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-cm</artifactId>
+            <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
@@ -72,9 +64,17 @@ limitations under the License.
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+        <!--
+            Note: junit is normally required only for test, but 
+            in this case, abstract test cases are included in the
+            component build... this should probably be fixed...
+            for now, assume that junit will be provided if these
+            test classes are used.
+        -->
         <dependency>
-            <groupId>ojb</groupId>
-            <artifactId>db-ojb</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

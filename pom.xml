@@ -134,39 +134,16 @@ limitations under the License.
         <module>etc</module>
 
         <!-- J2 Components -->
-        <module>components/capability</module>
-        <module>components/cm</module>
-        <module>components/registry</module>
-        <module>components/rdbms</module>
-        <module>components/portlet-factory</module>
-        <module>components/prefs</module>
-        <module>components/deploy-tool</module>
-        <module>components/file-cache</module>
-        <module>components/header-resource</module>
-        <module>components/id-generator</module>
-        <module>components/jetspeed</module>
-        <module>components/locator</module>
-        <module>components/page-manager</module>
-        <module>components/profiler</module>
-        <module>components/security</module>
-        <module>components/portal-site</module>
-        <module>components/rewriter</module>
-        <module>components/search</module>
-        <module>components/serializer</module>
-        <module>components/sso</module>
-        <module>components/statistics</module>
-        <module>components/web-content</module>
-        <module>components/portal</module>
-        <!--
-            Issue: no Maven2 maven-directory-plugin or equivalent
-            ant task available to generate schema classes.
+        <module>components</module>
 
-        <module>components/security-schema</module>
-        -->
-
-        <!-- J2 Portal -->
+        <!-- J2 Portal Applications -->
         <!--
         <module>layout-portlets</module>
+        -->
+
+        <!-- J2 Applications -->
+        <!--
+        <module>applications</module>
         -->
 
     </modules>
@@ -212,6 +189,14 @@ limitations under the License.
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- J2 Subprojects -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>etc</artifactId>
+                <type>pom</type>
+                <version>${pom.version}</version>
+            </dependency>
 
             <!-- J2 Components -->
             <dependency>
@@ -473,15 +458,10 @@ limitations under the License.
 
             <!-- Test -->
             <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>etc</artifactId>
-                <type>pom</type>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>junit-addons</groupId>
@@ -493,16 +473,19 @@ limitations under the License.
                 <groupId>jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>${jmock.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>mockrunner</groupId>
                 <artifactId>mockrunner</artifactId>
                 <version>${mockrunner.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>tyrex</groupId>
                 <artifactId>tyrex</artifactId>
                 <version>${tyrex.version}</version>
+                <scope>test</scope>
             </dependency>
             
             <!-- XML -->
@@ -812,14 +795,36 @@ limitations under the License.
     <!-- Global Dependencies -->
 
     <dependencies>
+
+        <!-- Provided Dependencies -->
+        <dependency>
+            <groupId>portlet-api</groupId>
+            <artifactId>portlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>servletapi</groupId>
+            <artifactId>servletapi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pluto</groupId>
+            <artifactId>pluto</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
-        </dependency>
+
     </dependencies>
 
     <!-- Project Information -->

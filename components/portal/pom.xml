@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Portal Components</name>
@@ -46,15 +46,7 @@ limitations under the License.
         <!-- Build Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-cm</artifactId>
+            <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
@@ -62,35 +54,7 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-id-generator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-locator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-profiler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-registry</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-statistics</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rdbms</artifactId>
+            <artifactId>content-server</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
@@ -98,15 +62,7 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-search</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-capability</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-portal-site</artifactId>
+            <artifactId>jetspeed-registry</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
@@ -114,19 +70,7 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-portlet-factory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-sso</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-header-resource</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>content-server</artifactId>
+            <artifactId>jetspeed-security</artifactId>
         </dependency>
         <dependency>
             <groupId>velocity</groupId>
@@ -135,6 +79,10 @@ limitations under the License.
         <dependency>
             <groupId>velocity-tools</groupId>
             <artifactId>velocity-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-velocity</artifactId>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -149,11 +97,71 @@ limitations under the License.
             <artifactId>commons-fileupload</artifactId>
         </dependency>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javamail</groupId>
             <artifactId>javamail</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-statistics</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-header-resource</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-search</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-sso</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-profiler</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-id-generator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-capability</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-site</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>jmock</groupId>
             <artifactId>jmock</artifactId>
@@ -164,7 +172,6 @@ limitations under the License.
             <artifactId>mockrunner</artifactId>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 

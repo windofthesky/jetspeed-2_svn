@@ -48,10 +48,6 @@ limitations under the License.
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-common</artifactId>
-        </dependency>
 
     </dependencies>
 

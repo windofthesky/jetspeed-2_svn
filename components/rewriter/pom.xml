@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Rewriter Component</name>
@@ -49,10 +49,6 @@ limitations under the License.
             <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>castor</groupId>
             <artifactId>castor</artifactId>
         </dependency>
@@ -68,9 +64,12 @@ limitations under the License.
             <groupId>nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
         </dependency>
+
+        <!-- Test Dependencies -->
         <dependency>
-            <groupId>portlet-api</groupId>
-            <artifactId>portlet-api</artifactId>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

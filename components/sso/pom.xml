@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Single Sign On SSO Components</name>
@@ -46,27 +46,11 @@ limitations under the License.
         <!-- Build Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-cm</artifactId>
+            <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-velocity</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>

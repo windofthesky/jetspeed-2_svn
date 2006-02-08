@@ -30,8 +30,8 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>pom</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>components</artifactId>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <name>Jetspeed-2 Profiler</name>
@@ -46,31 +46,15 @@ limitations under the License.
         <!-- Build Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
+            <artifactId>jetspeed-locator</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-cm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-registry</artifactId>
+            <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-locator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ojb</groupId>
-            <artifactId>db-ojb</artifactId>
         </dependency>
 
     </dependencies>

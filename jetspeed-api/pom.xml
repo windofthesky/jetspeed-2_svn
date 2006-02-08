@@ -39,26 +39,6 @@ limitations under the License.
         Core API for implementing Jetspeed.
     </description>
 
-    <!-- Dependencies -->
-
-    <dependencies>
-
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>org.apache.pluto</groupId>
-            <artifactId>pluto</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>portlet-api</groupId>
-            <artifactId>portlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>servletapi</groupId>
-            <artifactId>servletapi</artifactId>
-        </dependency>
-
-    </dependencies>
-
     <!-- Project Information -->
 
     <scm>
