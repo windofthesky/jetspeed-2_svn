@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.portlets.registration;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -40,8 +40,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.AdministrationEmailException;
 import org.apache.jetspeed.administration.PortalAdministration;
+import org.apache.jetspeed.locator.JetspeedTemplateLocator;
+import org.apache.jetspeed.locator.LocatorDescriptor;
+import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.locator.TemplateLocatorException;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -60,7 +66,6 @@ import org.apache.velocity.context.Context;
  */
 public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
 {
-
     private PortalAdministration admin;
 
     private UserManager userManager;
@@ -90,13 +95,21 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
 
     private static final String IP_RETURN_URL = "returnURL";
 
-    private static final String IP_TEMPLATE = "emailTemplate";
+    private static final String IP_TEMPLATE_LOCATION = "emailTemplateLocation";
+
+    private static final String IP_TEMPLATE_NAME = "emailTemplateName";
 
     // Resource Bundle
     private static final String RB_EMAIL_SUBJECT = "email.subject.forgotten.password";
 
+    private static final String PATH_SEPARATOR = "/";
+
     /** email template to use for merging */
-    private String template;
+    private String templateLocation;
+
+    private String templateName;
+
+    private JetspeedTemplateLocator templateLocator;
 
     /** servlet path of the return url to be printed and href'd in email template */
     private String returnUrlPath;
@@ -121,12 +134,31 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
 
         this.returnUrlPath = config.getInitParameter(IP_RETURN_URL);
         this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);
-        this.template = config.getInitParameter(IP_TEMPLATE);
+        this.templateLocation = config.getInitParameter(IP_TEMPLATE_LOCATION);
+        if (templateLocation == null)
+        {
+            templateLocation = "/WEB-INF/view/userreg/";
+        }
+        templateLocation = getPortletContext().getRealPath(templateLocation);
+        this.templateName = config.getInitParameter(IP_TEMPLATE_NAME);
+        if (templateName == null)
+        {
+            templateName = "forgottenPasswdEmail.vm";
+        }
         
-        List l = new ArrayList();
-        l.add(config.getInitParameter(IP_TEMPLATE));
-        String appRoot = "root";
-        
+        ArrayList roots = new ArrayList(1);
+        roots.add(templateLocation);
+
+        try
+        {
+            templateLocator = new JetspeedTemplateLocator(roots, "email", getPortletContext().getRealPath("/"));
+            templateLocator.start();
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new PortletException("Could not start the template locator.", e);
+        }
+
         
     }
 
@@ -267,44 +299,7 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
             userAttributes.put(CTX_NEW_PASSWORD, newPassword);
             userAttributes.put(CTX_USER_NAME, userName);
 
-
-/*          this code is my first attempt to get things working with a template locator... it's not going to work given the way things are partitioned in the jetspeed
-
-            
-            TemplateLocator templateLocator;
-            
-            templateLocator = (TemplateLocator) Jetspeed.getComponentManager().getComponent("TemplateLocator");
-            
-            List l = new ArrayList();
-            String appRoot = "/WEB-INF/view/userreg/";
-            templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
-            
-            LocatorDescriptor ld = templateLocator.createLocatorDescriptor(null);
-            RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-    
-            CapabilityMap capabilityMap = requestContext.getCapabilityMap();
-            ld.setMediaType(capabilityMap.getPreferredMediaType().getName());
-            
-            //Locale locale = requestContext.getLocale();
-            ld.setCountry(locale.getCountry());
-            ld.setLanguage(locale.getLanguage());
-            
-            TemplateDescriptor td = templateLocator.locateTemplate( ld);
-            
-            this.template = td.getAbsolutePath();
-*/            
-            
-            String language = locale.getLanguage();
-            String templ = this.template;
-            int period = templ.lastIndexOf(".");
-            if (period > 0)
-            {
-                String fixedTempl = templ.substring(0, period) + "_" + language + "." + templ.substring(period + 1);
-                if (new File(getPortletContext().getRealPath(fixedTempl)).exists())
-                {
-                    templ = fixedTempl;
-                }
-            }
+            String templ = getTemplatePath(request, response);
             
             if (templ == null) 
             { 
@@ -415,6 +410,34 @@ public class ForgottenPasswordPortlet extends AbstractVelocityMessagingPortlet
         List errors = new LinkedList();
         errors.add(msg);
         return errors;
+    }
+    
+    protected String getTemplatePath(ActionRequest request, ActionResponse response)
+    {
+        if (templateLocator == null)
+        {
+            return templateLocation + PATH_SEPARATOR + templateName;
+        }
+
+        RequestContext requestContext = (RequestContext) request
+                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        Locale locale = request.getLocale();
+
+        try
+        {
+            LocatorDescriptor locator = templateLocator.createLocatorDescriptor("email");
+            locator.setName(templateName);
+            locator.setMediaType(requestContext.getMediaType());
+            locator.setLanguage(locale.getLanguage());
+            locator.setCountry(locale.getCountry());
+            TemplateDescriptor template = templateLocator.locateTemplate(locator);
+
+            return template.getAppRelativePath();
+        }
+        catch (TemplateLocatorException e)
+        {
+            return templateLocation + PATH_SEPARATOR + templateName;
+        }
     }
 
 }

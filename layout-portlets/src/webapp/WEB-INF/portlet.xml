@@ -20,6 +20,8 @@ limitations under the License.
     <portlet-name>VelocityOneColumn</portlet-name>
     <display-name>One Column Layout Using Velocity</display-name>
     <display-name xml:lang="ja">Velocityを利用した 1 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity的单列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity的單列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -59,6 +61,8 @@ limitations under the License.
     <portlet-name>VelocityOneColumnTable</portlet-name>
     <display-name>One Column Layout Using Velocity And Tables</display-name>
     <display-name xml:lang="ja">Velocity とテーブルを利用した 1 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity表格的单列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity表格的單列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>tcolumns</value>
@@ -98,6 +102,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumns</portlet-name>
     <display-name>Two Columns Layout Using Velocity</display-name>
     <display-name xml:lang="ja">Velocity を利用した 2 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity的双列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -137,6 +143,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumnsSmallLeft</portlet-name>
     <display-name>Two Columns with a small Left column for navigation controls using Velocity</display-name>
     <display-name xml:lang="ja">Velocity を利用した左側にナビゲーションコントロール用の小さな列を持つ 2 列</display-name>
+    <display-name xml:lang="zh">使用Velocity，导航栏较窄的双列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity，導航欄較窄的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -177,6 +185,8 @@ limitations under the License.
     <portlet-name>VelocityThreeColumns</portlet-name>
     <display-name>Three Columns Layout Using Velocity</display-name>
     <display-name xml:lang="ja">Velocity を利用した 3 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity的3列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity的3列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -216,6 +226,8 @@ limitations under the License.
     <portlet-name>VelocityThreeColumnsTable</portlet-name>
     <display-name>Three Columns Layout Using Velocity And Tables</display-name>
     <display-name xml:lang="ja">Velocity とテーブルを利用した 3 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity表格的3列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity表格的3列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>tcolumns</value>
@@ -255,6 +267,8 @@ limitations under the License.
     <portlet-name>VelocityOneColumnNoActions</portlet-name>
     <display-name>One Column Layout Using Velocity with No Page Actions allowed</display-name>
     <display-name xml:lang="ja">ページアクションのない Velocity を利用した 1 列レイアウト</display-name>
+    <display-name xml:lang="zh">没有页面状态、使用Velocity的单列布局</display-name>
+    <display-name xml:lang="zh_TW">沒有頁面狀態、使用Velocity的單列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -292,6 +306,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumnsNoActions</portlet-name>
     <display-name>Two Columns Layout Using Velocity with No Page Actions allowed</display-name>
     <display-name xml:lang="ja">ページアクションのない Velocity を利用した 2 列レイアウト</display-name>
+    <display-name xml:lang="zh">没有页面状态、使用Velocity的双列布局</display-name>
+    <display-name xml:lang="zh_TW">沒有頁面狀態、使用Velocity的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -329,6 +345,8 @@ limitations under the License.
     <portlet-name>VelocityThreeColumnsNoActions</portlet-name>
     <display-name>Three Columns Layout Using Velocity with No Actions allowed</display-name>
     <display-name xml:lang="ja">ページアクションのない Velocity を利用した 3 列レイアウト</display-name>
+    <display-name xml:lang="zh">没有页面状态、使用Velocity的3列布局</display-name>
+    <display-name xml:lang="zh_TW">沒有頁面狀態、使用Velocity的3列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -365,6 +383,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumns2575NoActions</portlet-name>
     <display-name>Two Columns Layout Using Velocity with No Page Actions allowed</display-name>
     <display-name xml:lang="ja">ページアクションのない Velocity を利用した 2 列レイアウト</display-name>
+    <display-name xml:lang="zh">没有页面状态、使用Velocity的双列布局</display-name>
+    <display-name xml:lang="zh_TW">沒有頁面狀態、使用Velocity的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -402,6 +422,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumns2575</portlet-name>
     <display-name>25/75 Two Columns Layout Using Velocity</display-name>
     <display-name xml:lang="ja">Velocity を利用した 25/75 の 2 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity的双列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -441,6 +463,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumnsSmallLeftNoActions</portlet-name>
     <display-name>Two Columns with a small Left column for navigation controls using Velocity and No Actions</display-name>
     <display-name xml:lang="ja">アクションのない Velocity を利用した左側にナビゲーションコントロール用の小さな列を持つ 2 列</display-name>
+    <display-name xml:lang="zh">没有页面状态、使用Velocity，导航栏较窄的单列布局</display-name>
+    <display-name xml:lang="zh_TW">沒有頁面狀態、使用Velocity，導航欄較窄的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
@@ -478,6 +502,8 @@ limitations under the License.
     <portlet-name>FrameLayoutPortlet</portlet-name>
     <display-name>Frame Layout Portlet</display-name>
     <display-name xml:lang="ja">フレームレイアウトポートレット</display-name>
+    <display-name xml:lang="zh">框架布局Portlet</display-name>
+    <display-name xml:lang="zh_TW">框架佈局Portlet</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>frames</value>
@@ -515,6 +541,8 @@ limitations under the License.
     <portlet-name>VelocityTwoColumnsTable</portlet-name>
     <display-name>Two Columns Layout Using Velocity And Tables</display-name>
     <display-name xml:lang="ja">Velocity とテーブルを利用した 2 列レイアウト</display-name>
+    <display-name xml:lang="zh">使用Velocity表格的双列布局</display-name>
+    <display-name xml:lang="zh_TW">使用Velocity表格的雙列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>tcolumns</value>

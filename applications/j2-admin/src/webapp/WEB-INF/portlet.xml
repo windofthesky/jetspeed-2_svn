@@ -879,8 +879,13 @@ limitations under the License.
      </init-param>
      <init-param>
         <description>This parameter sets the template used to send the Email for Forgotten password</description>
-        <name>emailTemplate</name>
-            <value>/WEB-INF/view/userreg/forgottenPasswdEmail.vm</value>
+        <name>emailTemplateLocation</name>
+            <value>/WEB-INF/view/userreg/</value>
+     </init-param>   
+     <init-param>
+        <description>This parameter sets the template used to send the Email for Forgotten password</description>
+        <name>emailTemplateName</name>
+            <value>forgottenPasswdEmail.vm</value>
      </init-param>   
      <init-param>
         <description>This parameter sets the url to which folks will return after they receive an email</description>
@@ -977,10 +982,15 @@ limitations under the License.
 
       <init-param>
         <description>This is the template in which you setup an email to be sent after user exists</description>
-        <name>emailTemplate</name>
-            <value>/WEB-INF/view/userreg/userRegistrationEmail.vm</value>
+        <name>emailTemplateLocation</name>
+            <value>/WEB-INF/view/userreg/</value>
       </init-param> 
       
+      <init-param>
+        <description>This is the template in which you setup an email to be sent after user exists</description>
+        <name>emailTemplateName</name>
+            <value>userRegistrationEmail.vm</value>
+      </init-param> 
         
        
     <portlet-name>UserRegistrationPortlet</portlet-name>

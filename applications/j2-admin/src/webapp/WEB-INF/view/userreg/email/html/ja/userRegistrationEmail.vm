@@ -1,0 +1,16 @@
+こんにちは、$!{map.get("user.name.family")} $!{map.get("user.name.given")} さん
+
+Jetspeed へようこそ!
+登録していただきありがとうございます。Jetspeed は JSR 168 に合格した
+強力なコンポーネントベースのポータルコンテナシステムです。
+
+ユーザー名: $!{map.get("user.name")}
+パスワード: $!{map.get("password")}
+
+パスワードは、ログインして変更できます。
+以下のリンクでログインしてください。
+$!{map.get("returnURL")}
+
+以上をよろしくお願いいたします。
+
+Jetspeed チーム

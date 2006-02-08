@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.registration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +39,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.AdministrationEmailException;
 import org.apache.jetspeed.administration.PortalAdministration;
+import org.apache.jetspeed.locator.JetspeedTemplateLocator;
+import org.apache.jetspeed.locator.LocatorDescriptor;
+import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.locator.TemplateLocatorException;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -77,7 +84,9 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
 
     private static final String IP_GROUPS = "groups"; // comma separated
 
-    private static final String IP_EMAIL_TEMPLATE = "emailTemplate";
+    private static final String IP_TEMPLATE_LOCATION = "emailTemplateLocation";
+
+    private static final String IP_TEMPLATE_NAME = "emailTemplateName";
 
     private static final String IP_RULES_NAMES = "rulesNames";
 
@@ -112,10 +121,16 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
 
     // Resource Bundle
     private static final String RB_EMAIL_SUBJECT = "email.subject.registration";
+    
+    private static final String PATH_SEPARATOR = "/";
 
     /** email template to use for merging */
-    private String emailTemplate;
+    private String templateLocation;
 
+    private String templateName;
+
+    private JetspeedTemplateLocator templateLocator;
+    
     /** localized emailSubject */
     private String emailSubject = null;
 
@@ -174,8 +189,31 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             rules.put(names.get(ix), values.get(ix));
         }
 
-        this.emailTemplate = config.getInitParameter(IP_EMAIL_TEMPLATE);
+        this.templateLocation = config.getInitParameter(IP_TEMPLATE_LOCATION);
+        if (templateLocation == null)
+        {
+            templateLocation = "/WEB-INF/view/userreg/";
+        }
+        templateLocation = getPortletContext().getRealPath(templateLocation);
+        this.templateName = config.getInitParameter(IP_TEMPLATE_NAME);
+        if (templateName == null)
+        {
+            templateName = "userRegistrationEmail.vm";
+        }
+        
+        ArrayList roots = new ArrayList(1);
+        roots.add(templateLocation);
 
+        try
+        {
+            templateLocator = new JetspeedTemplateLocator(roots, "email", getPortletContext().getRealPath("/"));
+            templateLocator.start();
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new PortletException("Could not start the template locator.", e);
+        }
+        
         // user attributes ?
 
         this.optionForceEmailsToBeSystemUnique = Boolean.valueOf(
@@ -627,21 +665,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                 userInfo.put(CTX_RETURN_URL, generateReturnURL(actionRequest,
                         actionResponse, urlGUID));
 
-                Locale locale = actionRequest.getLocale();
-
-                String language = locale.getLanguage();
-                String templ = this.emailTemplate;
-                int period = templ.lastIndexOf(".");
-                if (period > 0)
-                {
-                    String fixedTempl = templ.substring(0, period) + "_"
-                            + language + "." + templ.substring(period + 1);
-                    if (new File(getPortletContext().getRealPath(fixedTempl))
-                            .exists())
-                    {
-                        this.emailTemplate = fixedTempl;
-                    }
-                }
+                String templ = getTemplatePath(actionRequest, actionResponse);
 
                 if (templ == null) { throw new Exception(
                         "email template not available"); }
@@ -730,5 +754,33 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     {
         return admin.getPortalURL(request, response, this.redirectPath);
     }
+ 
     
+    protected String getTemplatePath(ActionRequest request, ActionResponse response)
+    {
+        if (templateLocator == null)
+        {
+            return templateLocation + PATH_SEPARATOR + templateName;
+        }
+
+        RequestContext requestContext = (RequestContext) request
+                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        Locale locale = request.getLocale();
+
+        try
+        {
+            LocatorDescriptor locator = templateLocator.createLocatorDescriptor("email");
+            locator.setName(templateName);
+            locator.setMediaType(requestContext.getMediaType());
+            locator.setLanguage(locale.getLanguage());
+            locator.setCountry(locale.getCountry());
+            TemplateDescriptor template = templateLocator.locateTemplate(locator);
+
+            return template.getAppRelativePath();
+        }
+        catch (TemplateLocatorException e)
+        {
+            return templateLocation + PATH_SEPARATOR + templateName;
+        }
+    }
 }
