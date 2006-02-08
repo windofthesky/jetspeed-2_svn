@@ -73,6 +73,95 @@ limitations under the License.
         <module>web-content</module>
     </modules>
 
+    <!-- Global Build Configuration -->
+
+    <build>
+
+        <!-- Test Resources -->
+        <testResources>
+            <testResource>
+                <directory>src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                    <exclude>**/JETSPEED-INF/**</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test</directory>
+            </testResource>
+            <testResource>
+                <directory>../../etc/log4j</directory>
+            </testResource>
+            <testResource>
+                <directory>../../etc/db-ojb</directory>
+            </testResource>
+            <testResource>
+                <directory>../../src/webapp/WEB-INF/assembly</directory>
+            </testResource>
+        </testResources>
+
+        <!-- Plugin Configuration -->
+        <pluginManagement>    
+            <plugins>
+
+                <!-- Tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <systemProperties>
+
+                            <!-- Runtime Database Properties -->
+                            <property>
+                                <name>org.apache.jetspeed.database.url</name>
+                                <value>${org.apache.jetspeed.test.database.url}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.driver</name>
+                                <value>${org.apache.jetspeed.test.database.driver}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.user</name>
+                                <value>${org.apache.jetspeed.test.database.user}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
+
+                            <!-- Test Database Properties -->
+                            <property>
+                                <name>org.apache.jetspeed.test.database.url</name>
+                                <value>${org.apache.jetspeed.test.database.url}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.driver</name>
+                                <value>${org.apache.jetspeed.test.database.driver}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.user</name>
+                                <value>${org.apache.jetspeed.test.database.user}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
+
+                        </systemProperties>
+                        <!--
+                            Note: using forking to prevent module test case connection
+                            pools and spring crosstalk via surefire isolation class
+                            loaders when multipe modules are built, (e.g. components/registry). 
+                        -->
+                        <forkMode>once</forkMode>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>    
+
+    </build>
+
     <!-- Component Dependencies -->
 
     <dependencies>

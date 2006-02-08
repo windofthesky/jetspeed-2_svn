@@ -405,11 +405,17 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
         {
             srcReader.close();
             paWar.close();
-            targetReader.close();
+            if (targetReader != null)
+            {
+                targetReader.close();
+            }
             File warFile2 = new File("./target/webapp");
-            DirectoryHelper dirHelper = new DirectoryHelper(warFile2);
-            dirHelper.remove();
-            dirHelper.close();
+            if (warFile2.exists())
+            {
+                DirectoryHelper dirHelper = new DirectoryHelper(warFile2);
+                dirHelper.remove();
+                dirHelper.close();
+            }
         }
 
     }

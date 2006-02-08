@@ -398,6 +398,46 @@ limitations under the License.
                 <version>${commons-configuration.version}</version>
                 <exclusions>
                     <exclusion>
+                        <groupId>junit-addons</groupId>
+                        <artifactId>junit-addons</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dbunit</groupId>
+                        <artifactId>dbunit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>spice</groupId>
+                        <artifactId>spice-jndikit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dom4j</groupId>
+                        <artifactId>dom4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-pool</groupId>
+                        <artifactId>commons-pool</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-dbcp</groupId>
+                        <artifactId>commons-dbcp</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xerces</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                    <exclusion>
                         <groupId>resources</groupId>
                         <artifactId>resources</artifactId>
                     </exclusion>
@@ -670,7 +710,7 @@ limitations under the License.
 
     <build>
 
-        <!-- Standard Directories -->
+        <!-- J2 Standard Directories -->
         <sourceDirectory>src/java</sourceDirectory>
         <scriptSourceDirectory>src/scripts</scriptSourceDirectory>
         <testSourceDirectory>src/test</testSourceDirectory>
@@ -695,79 +735,11 @@ limitations under the License.
                     <exclude>**/JETSPEED-INF/**</exclude>
                 </excludes>
             </testResource>
-            <testResource>
-                <directory>src/test</directory>
-            </testResource>
-            <testResource>
-                <directory>../../etc/log4j</directory>
-            </testResource>
-            <testResource>
-                <directory>../../etc/db-ojb</directory>
-            </testResource>
-            <testResource>
-                <directory>../../src/webapp/WEB-INF/assembly</directory>
-            </testResource>
         </testResources>
 
         <!-- Plugin Configuration -->
         <pluginManagement>    
             <plugins>
-
-                <!-- Tests -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <includes>
-                            <include>**/Test*.java</include>
-                        </includes>
-                        <systemProperties>
-
-                            <!-- Runtime Database Properties -->
-                            <property>
-                                <name>org.apache.jetspeed.database.url</name>
-                                <value>${org.apache.jetspeed.test.database.url}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.database.driver</name>
-                                <value>${org.apache.jetspeed.test.database.driver}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.database.user</name>
-                                <value>${org.apache.jetspeed.test.database.user}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.database.password</name>
-                                <value>${org.apache.jetspeed.test.database.password}</value>
-                            </property>
-
-                            <!-- Test Database Properties -->
-                            <property>
-                                <name>org.apache.jetspeed.test.database.url</name>
-                                <value>${org.apache.jetspeed.test.database.url}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.test.database.driver</name>
-                                <value>${org.apache.jetspeed.test.database.driver}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.test.database.user</name>
-                                <value>${org.apache.jetspeed.test.database.user}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.test.database.password</name>
-                                <value>${org.apache.jetspeed.test.database.password}</value>
-                            </property>
-
-                        </systemProperties>
-                        <!--
-                            Note: using forking to prevent module test case connection
-                            pools and spring crosstalk via surefire isolation class
-                            loaders when multipe modules are built, (e.g. components/registry). 
-                        -->
-                        <forkMode>once</forkMode>
-                    </configuration>
-                </plugin>
 
                 <!-- Compiler -->
                 <plugin>
@@ -783,12 +755,25 @@ limitations under the License.
                     </configuration>
                 </plugin>
 
-                <!-- LDAP -->
+                <!-- Tests -->
                 <plugin>
-                    <groupId>directory</groupId>
-                    <artifactId>maven-directory-plugin</artifactId>
-                    <version>${directory.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <includes>
+                            <include>**/Test*.java</include>
+                        </includes>
+                    </configuration>
                 </plugin>
+
+                <!-- WAR plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <warSourceDirectory>src/webapp</warSourceDirectory>
+                    </configuration>
+                </plugin> 
 
             </plugins>
         </pluginManagement>    
