@@ -33,8 +33,6 @@ import org.apache.jetspeed.statistics.AggregateStatistics;
 import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
-import org.apache.jetspeed.statistics.impl.AggregateStatisticsImpl;
-import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.velocity.context.Context;
 
