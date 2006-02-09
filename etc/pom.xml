@@ -70,13 +70,13 @@ limitations under the License.
 
                     <!-- populate test database instance -->
                     <execution>
-                        <id>etc-populate</id>
+                        <id>etc-populate-test</id>
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <tasks>
                                 <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.skip"
-                                              value="${maven.test.skip}"/>
+                                              value="${org.apache.jetspeed.env.skip.test}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.test.database.default.name}"/>
                                     <property name="org.apache.jetspeed.database.url"
@@ -97,13 +97,42 @@ limitations under the License.
                         </goals>
                     </execution>
 
+                    <!-- populate production database instance -->
+                    <execution>
+                        <id>etc-populate-production</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.database.skip"
+                                              value="${org.apache.jetspeed.env.skip.production}"/>
+                                    <property name="org.apache.jetspeed.database.default.name"
+                                              value="${org.apache.jetspeed.production.database.default.name}"/>
+                                    <property name="org.apache.jetspeed.database.url"
+                                              value="${org.apache.jetspeed.production.database.url}"/>
+                                    <property name="org.apache.jetspeed.database.jdbc.drivers.path"
+                                              value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+                                    <property name="org.apache.jetspeed.database.driver"
+                                              value="${org.apache.jetspeed.production.database.driver}"/>
+                                    <property name="org.apache.jetspeed.database.user"
+                                              value="${org.apache.jetspeed.production.database.user}"/>
+                                    <property name="org.apache.jetspeed.database.password"
+                                              value="${org.apache.jetspeed.production.database.password}"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
                 </executions>
 
                 <!--
                     Bug:  Dependencies should be in parent POM, but they are not propagated
                     from the pluginManagement sections. Extensions also cannot be used since
                     ant tag executions do not succeed in general: suspect class loading
-                    issues that result in NPE mysterious on <replaceregexp>.
+                    issues that result in mysterious NPE on <replaceregexp>.
 
                     Note: All three ant dependencies are listed to keep nodeps in sync.
                 -->

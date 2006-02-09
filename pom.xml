@@ -25,38 +25,51 @@ limitations under the License.
         <maven>2.0.2</maven>
     </prerequisites>
 
+    <!-- Profiles -->
+
+    <profiles>
+
+        <!-- Test Profile -->
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
+            </activation>
+            <properties>
+                <maven.test.skip>false</maven.test.skip>
+                <org.apache.jetspeed.env.skip.test>false</org.apache.jetspeed.env.skip.test>
+            </properties>
+        </profile>
+
+        <!-- Tomcat Production Profile -->
+        <profile>
+            <id>tomcat</id>
+            <activation>
+                <property>
+                    <name>deploy</name>
+                    <value>tomcat</value>
+                </property>
+            </activation>
+            <properties>
+                <org.apache.jetspeed.env.skip.production>false</org.apache.jetspeed.env.skip.production>
+                <org.apache.jetspeed.env.deploy.target>tomcat</org.apache.jetspeed.env.deploy.target>
+            </properties>
+        </profile>
+
+    </profiles>
+
     <!-- Properties -->
 
     <properties>
 
-        <!-- Build Properties -->
+        <!-- Default Build Properties -->
         <maven.test.skip>true</maven.test.skip>
-
-        <!-- Custom Deployment Properties -->
-        <org.apache.jetspeed.server.home>/usr/share/tomcat5</org.apache.jetspeed.server.home>
-        <org.apache.jetspeed.catalina.version.major>5</org.apache.jetspeed.catalina.version.major>
-        <org.apache.jetspeed.server.shared>${org.apache.jetspeed.server.home}/shared/lib</org.apache.jetspeed.server.shared>
-        <org.apache.jetspeed.deploy.war.dir>${org.apache.jetspeed.server.home}/webapps</org.apache.jetspeed.deploy.war.dir>
-        <org.apache.jetspeed.services.autodeployment.server>localhost</org.apache.jetspeed.services.autodeployment.server>
-        <org.apache.jetspeed.services.autodeployment.port>8080</org.apache.jetspeed.services.autodeployment.port>
-        <org.apache.jetspeed.services.autodeployment.user>j2deployer</org.apache.jetspeed.services.autodeployment.user>
-        <org.apache.jetspeed.services.autodeployment.password>j2deployer</org.apache.jetspeed.services.autodeployment.password>
-
-        <!-- Custom Test Database Properties -->
-        <org.apache.jetspeed.test.jdbc.drivers.path>${org.apache.jetspeed.server.shared}/mysql-connector-java.jar</org.apache.jetspeed.test.jdbc.drivers.path>
-        <org.apache.jetspeed.test.database.default.name>mysql</org.apache.jetspeed.test.database.default.name>
-        <org.apache.jetspeed.test.database.url>jdbc:mysql://localhost/j2test</org.apache.jetspeed.test.database.url>
-        <org.apache.jetspeed.test.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.test.database.driver>
-        <org.apache.jetspeed.test.database.user>tomcat4</org.apache.jetspeed.test.database.user>
-        <org.apache.jetspeed.test.database.password></org.apache.jetspeed.test.database.password>
-
-        <!-- Custom Production Database Properties -->
-        <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.shared}/mysql-connector-java.jar</org.apache.jetspeed.production.jdbc.drivers.path>
-        <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>
-        <org.apache.jetspeed.production.database.url>jdbc:mysql://localhost/j2</org.apache.jetspeed.production.database.url>
-        <org.apache.jetspeed.production.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.production.database.driver>
-        <org.apache.jetspeed.production.database.user>tomcat4</org.apache.jetspeed.production.database.user>
-        <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+        <org.apache.jetspeed.env.skip.test>true</org.apache.jetspeed.env.skip.test>
+        <org.apache.jetspeed.env.skip.production>true</org.apache.jetspeed.env.skip.production>
+        <org.apache.jetspeed.env.deploy.target>tomcat</org.apache.jetspeed.env.deploy.target>
 
         <!-- Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
@@ -126,7 +139,7 @@ limitations under the License.
         Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
     </description>
 
-    <!-- POM Modules -->
+    <!-- Default Modules -->
 
     <modules>
 
@@ -149,6 +162,9 @@ limitations under the License.
 
         <!-- J2 Applications -->
         <module>applications</module>
+
+        <!-- J2 Application Server Deployment -->
+        <module>app-servers</module>
 
     </modules>
 
@@ -216,16 +232,16 @@ limitations under the License.
                 <artifactId>content-server</artifactId>
                 <version>${pom.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed2-taglib-treecontrol</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
  
             <!-- J2 Components -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>jetspeed-cm</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>content-server</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
@@ -334,15 +350,41 @@ limitations under the License.
                 <version>${pom.version}</version>
             </dependency>
     
-            <!-- Portals Applications -->
+            <!-- Portals Applications JARs -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>rss-jar</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>portals-gems</artifactId>
                 <version>${pom.version}</version>
             </dependency>
+
+            <!-- Portals Applications -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>rss-jar</artifactId>
+                <artifactId>demo</artifactId>
+                <type>war</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>j2-admin</artifactId>
+                <type>war</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>rss</artifactId>
+                <type>war</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed</artifactId>
+                <type>war</type>
                 <version>${pom.version}</version>
             </dependency>
 
@@ -695,11 +737,6 @@ limitations under the License.
                 <groupId>taglibs</groupId>
                 <artifactId>random</artifactId>
                 <version>${taglibs-random.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed2-taglib-treecontrol</artifactId>
-                <version>${pom.version}</version>
             </dependency>
             
             <!-- Velocity -->

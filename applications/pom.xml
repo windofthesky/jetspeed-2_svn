@@ -42,6 +42,7 @@ limitations under the License.
     <!-- Application Modules -->
 
     <modules>
+        <module>jetspeed</module>
         <module>demo</module>
         <module>gems</module>
         <module>j2-admin</module>

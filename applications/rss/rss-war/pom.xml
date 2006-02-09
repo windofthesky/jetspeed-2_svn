@@ -66,10 +66,12 @@ limitations under the License.
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>rss-jar</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

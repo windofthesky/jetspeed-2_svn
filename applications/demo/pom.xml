@@ -53,34 +53,42 @@ limitations under the License.
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>portals-gems</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-web-content</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>request</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
