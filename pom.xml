@@ -59,7 +59,6 @@ limitations under the License.
         <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
 
         <!-- Dependency Version Properties -->
-        <activation.version>1.0.2</activation.version>
         <ant.version>1.6.5</ant.version>
         <aopalliance.version>1.0</aopalliance.version>
         <castor.version>0.9.4.3</castor.version>
@@ -77,28 +76,31 @@ limitations under the License.
         <commons-logging.version>1.0.3</commons-logging.version>
         <commons-pool.version>1.2</commons-pool.version>
         <directory.version>0.9.3</directory.version>      
-        <javamail.version>1.3.3</javamail.version>
+        <javax.activation.version>1.0.2</javax.activation.version>
+        <javax.mail.version>1.3.3</javax.mail.version>
+        <javax.servlet.jstl.version>1.0.6</javax.servlet.jstl.version>
+        <javax.servlet.version>2.3</javax.servlet.version>
+        <javax.transaction.version>1.0.1B</javax.transaction.version>
         <jaxen.version>1.0-FCS-full</jaxen.version>
         <jdbc.version>2.0</jdbc.version>
         <jdom.version>1.0</jdom.version>
         <jmock.version>1.0.1</jmock.version>
-        <jstl.version>1.0.6</jstl.version>
-        <jta.version>1.0.1</jta.version>
         <junit.version>3.8.1</junit.version>
         <log4j.version>1.2.8</log4j.version>
         <lucene.version>1.4.1</lucene.version>
         <mockrunner.version>0.2.7</mockrunner.version>
+        <myfaces.version>1.1.0</myfaces.version>
         <nekohtml.version>0.9.3</nekohtml.version>
         <ojb.version>1.0.3</ojb.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
         <org.apache.portals.bridges.version>1.0</org.apache.portals.bridges.version>
+        <org.springframework.version>1.1.5</org.springframework.version>
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
+        <rome.version>0.4</rome.version>
         <saxpath.version>1.0-FCS</saxpath.version>
-        <servletapi.version>2.3</servletapi.version>
-        <springframework.version>1.1.5</springframework.version>
         <taglibs-random.version>1.0.2</taglibs-random.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.0.6</taglibs-standard.version>
@@ -108,8 +110,8 @@ limitations under the License.
         <velocity.version>1.4</velocity.version>
         <xalan.version>2.4.1</xalan.version>
         <xerces.version>2.3.0</xerces.version>
+        <xml-apis.version>1.0.b2</xml-apis.version>
         <xstream.version>1.1.2</xstream.version>
-        <xml-apis.version>2.0.2</xml-apis.version>
 
     </properties>
 
@@ -139,15 +141,14 @@ limitations under the License.
         <!-- J2 Components -->
         <module>components</module>
 
+        <!-- J2 Taglibs -->
+        <module>taglibs</module>
+
         <!-- J2 Portal Applications -->
-        <!--
         <module>layout-portlets</module>
-        -->
 
         <!-- J2 Applications -->
-        <!--
         <module>applications</module>
-        -->
 
     </modules>
 
@@ -200,7 +201,22 @@ limitations under the License.
                 <type>pom</type>
                 <version>${pom.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-api</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-commons</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>content-server</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+ 
             <!-- J2 Components -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
@@ -255,16 +271,6 @@ limitations under the License.
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>jetspeed-file-cache</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-api</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-commons</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
@@ -324,10 +330,22 @@ limitations under the License.
             </dependency>
             <dependency>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>content-server</artifactId>
+                <artifactId>jetspeed-web-content</artifactId>
                 <version>${pom.version}</version>
             </dependency>
     
+            <!-- Portals Applications -->
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>portals-gems</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>rss-jar</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
             <!-- Standard APIs -->
             <dependency>
                 <groupId>portlet-api</groupId>
@@ -335,9 +353,9 @@ limitations under the License.
                 <version>${portlet-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>servletapi</groupId>
-                <artifactId>servletapi</artifactId>
-                <version>${servletapi.version}</version>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
             </dependency>
 
             <!-- Pluto Container -->
@@ -356,9 +374,9 @@ limitations under the License.
 
             <!-- Spring Framework -->
             <dependency>
-                <groupId>springframework</groupId>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring</artifactId>
-                <version>${springframework.version}</version>
+                <version>${org.springframework.version}</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -580,9 +598,9 @@ limitations under the License.
 
             <!-- Database -->
             <dependency>
-                <groupId>jta</groupId>
+                <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
-                <version>${jta.version}</version>
+                <version>${javax.transaction.version}</version>
             </dependency>
             <dependency>
                 <groupId>jdbc</groupId>
@@ -647,21 +665,21 @@ limitations under the License.
 
             <!-- Email -->
             <dependency>
-                <groupId>javamail</groupId>
-                <artifactId>javamail</artifactId>
-                <version>${javamail.version}</version>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail.version}</version>
             </dependency>
             <dependency>
-                <groupId>activation</groupId>
+                <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
-                <version>${activation.version}</version>
+                <version>${javax.activation.version}</version>
             </dependency>
 
             <!-- Taglibs -->
             <dependency>
-                <groupId>jstl</groupId>
+                <groupId>javax.servlet</groupId>
                 <artifactId>jstl</artifactId>
-                <version>${jstl.version}</version>
+                <version>${javax.servlet.jstl.version}</version>
             </dependency>
             <dependency>
                 <groupId>taglibs</groupId>
@@ -677,6 +695,11 @@ limitations under the License.
                 <groupId>taglibs</groupId>
                 <artifactId>random</artifactId>
                 <version>${taglibs-random.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed2-taglib-treecontrol</artifactId>
+                <version>${pom.version}</version>
             </dependency>
             
             <!-- Velocity -->
@@ -701,6 +724,40 @@ limitations under the License.
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-velocity</artifactId>
                 <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-frameworks</artifactId>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-jsf</artifactId>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+
+            <!-- MyFaces -->
+            <dependency>
+                <groupId>myfaces</groupId>
+                <artifactId>myfaces-api</artifactId>
+                <version>${myfaces.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>myfaces</groupId>
+                <artifactId>myfaces-impl</artifactId>
+                <version>${myfaces.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>myfaces</groupId>
+                <artifactId>tomahawk</artifactId>
+                <version>${myfaces.version}</version>
+            </dependency>
+
+            <!-- Rome -->
+            <dependency>
+                <groupId>rome</groupId>
+                <artifactId>rome</artifactId>
+                <version>${rome.version}</version>
             </dependency>
 
         </dependencies>
@@ -791,8 +848,8 @@ limitations under the License.
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>servletapi</groupId>
-            <artifactId>servletapi</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

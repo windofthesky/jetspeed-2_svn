@@ -26,49 +26,52 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-web-content</artifactId>
+    <artifactId>rss</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>components</artifactId>
+        <artifactId>rss-application</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>jar</packaging>
-    <name>Jetspeed-2 Web Content</name>
-    <description>
-        Web content service and portlet implementations.
-    </description>
+    <packaging>war</packaging>
+    <name>Jetspeed-2 RSS Application WAR</name>
+
+    <!-- Build Configuration -->
+
+    <build>
+
+        <!-- Plugin Configuration -->
+        <pluginManagement>    
+            <plugins>
+
+                <!-- WAR plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <warSourceDirectory>../src/webapp</warSourceDirectory>
+                    </configuration>
+                </plugin> 
+
+            </plugins>
+        </pluginManagement>    
+
+    </build>
 
     <!-- Dependencies -->
 
     <dependencies>
 
-        <!-- Build Dependencies -->
+        <!-- Runtime Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
+            <artifactId>rss-jar</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-velocity</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
 
     </dependencies>
-
-    <!-- Project Information -->
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/web-content/</url>
-    </scm>
 
 </project>

@@ -26,17 +26,17 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-web-content</artifactId>
+    <artifactId>demo</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>components</artifactId>
+        <artifactId>applications</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>jar</packaging>
-    <name>Jetspeed-2 Web Content</name>
+    <packaging>war</packaging>
+    <name>Jetspeed-2 Demo Portlet Application</name>
     <description>
-        Web content service and portlet implementations.
+        Demo Portlets Container
     </description>
 
     <!-- Dependencies -->
@@ -45,20 +45,42 @@ limitations under the License.
 
         <!-- Build Dependencies -->
         <dependency>
+            <groupId>velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
+
+        <!-- Runtime Dependencies -->
+        <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
+            <artifactId>portals-gems</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-web-content</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>request</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.portals.bridges</groupId>
             <artifactId>portals-bridges-velocity</artifactId>
         </dependency>
         <dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
 
     </dependencies>
@@ -66,9 +88,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/web-content/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/demo</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/demo</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/demo/</url>
     </scm>
 
 </project>

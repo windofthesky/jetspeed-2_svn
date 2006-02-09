@@ -26,49 +26,31 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-web-content</artifactId>
+    <artifactId>jetspeed2-taglibs</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>components</artifactId>
+        <artifactId>pom</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>jar</packaging>
-    <name>Jetspeed-2 Web Content</name>
+    <packaging>pom</packaging>
+    <name>Jetspeed-2 Taglibs</name>
     <description>
-        Web content service and portlet implementations.
+        Jetspeed-2 Taglibs
     </description>
 
-    <!-- Dependencies -->
+    <!-- Taglib Modules -->
 
-    <dependencies>
-
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-velocity</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-
-    </dependencies>
+    <modules>
+        <module>treecontrol</module>
+    </modules>
 
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/web-content/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/taglibs</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/taglibs</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/taglibs/</url>
     </scm>
 
 </project>

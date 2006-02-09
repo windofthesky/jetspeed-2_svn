@@ -26,17 +26,17 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-web-content</artifactId>
+    <artifactId>portals-gems</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>components</artifactId>
+        <artifactId>applications</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
-    <name>Jetspeed-2 Web Content</name>
+    <name>Apache Portals Gems</name>
     <description>
-        Web content service and portlet implementations.
+        Reusable Portlets (Gems) for your Portlet Applications.
     </description>
 
     <!-- Dependencies -->
@@ -45,20 +45,24 @@ limitations under the License.
 
         <!-- Build Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rewriter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>portals-bridges-velocity</artifactId>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
         </dependency>
         <dependency>
             <groupId>velocity</groupId>
             <artifactId>velocity</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-velocity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
         </dependency>
 
     </dependencies>
@@ -66,9 +70,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/web-content</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/web-content/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/gems</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/gems</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/gems/</url>
     </scm>
 
 </project>

@@ -117,8 +117,8 @@ limitations under the License.
             <artifactId>commons-collections</artifactId>
         </dependency>
         <dependency>
-            <groupId>javamail</groupId>
-            <artifactId>javamail</artifactId>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->
@@ -177,6 +177,13 @@ limitations under the License.
             <groupId>mockrunner</groupId>
             <artifactId>mockrunner</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Runtime Dependencies -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

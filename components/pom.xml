@@ -39,7 +39,7 @@ limitations under the License.
         Jetspeed-2 Components
     </description>
 
-    <!-- Components Modules -->
+    <!-- Component Modules -->
 
     <modules>
         <module>capability</module>
@@ -196,7 +196,7 @@ limitations under the License.
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/components/</url>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/</url>
     </scm>
 
 </project>
