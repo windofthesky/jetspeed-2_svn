@@ -1,3 +1,18 @@
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.jetspeed.util.interceptors;
 
 import java.sql.SQLException;
@@ -11,6 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * content of the underlying exception from the resource.
  * 
  * @author a336317
+ * @author a202225
  */
 public class TransactionalMethodReplayDecisionMaker implements
         MethodReplayDecisionMaker
@@ -20,42 +36,39 @@ public class TransactionalMethodReplayDecisionMaker implements
 
     public boolean shouldReplay(MethodInvocation invocation, Exception exception)
     {
-        // TODO This needs to be a lot more elegant than it currently is - see
-        // Spring code
-        // for exception translators to see what we can do here.
-
-        // exception must be of type SQLException and have an error code value,
-        // else we keep
-        // walking down the root cause tree to a maximum depth of 3
-        if (exception.getCause() instanceof SQLException)
+        SQLException sqlException = findSQLException(exception);
+        if (sqlException != null)
         {
-            SQLException sqlExp = (SQLException) exception.getCause();
-
-            int errorCode = sqlExp.getErrorCode();
-
-            if (errorCode != 0) { return isErrorCodeListed(errorCode); }
-        }
-
-        if (exception.getCause().getCause() instanceof SQLException)
-        {
-
-            SQLException sqlExp = (SQLException) exception.getCause()
-                    .getCause();
-            int errorCode = sqlExp.getErrorCode();
-
-            if (errorCode != 0) { return isErrorCodeListed(errorCode); }
-        }
-
-        if (exception.getCause().getCause().getCause() instanceof SQLException)
-        {
-            SQLException sqlExp = (SQLException) exception.getCause()
-                    .getCause().getCause();
-            int errorCode = sqlExp.getErrorCode();
+            int errorCode = sqlException.getErrorCode();
 
             if (errorCode != 0) { return isErrorCodeListed(errorCode); }
         }
 
         return false;
+    }
+
+    // Recursively search the exception tree looking for the first SQLException
+    protected SQLException findSQLException(Exception exception)
+    {
+        SQLException foundException = null;
+        if (exception != null)
+        {
+            if (exception instanceof SQLException)
+            {
+                foundException = (SQLException) exception;
+            } 
+            else
+            {
+                // Look at the cause
+                Throwable throwable = exception.getCause();
+                if (throwable != null && throwable instanceof Exception)
+                {
+                    foundException = findSQLException((Exception) throwable);
+                }
+            }
+        }
+
+        return foundException;
     }
 
     public void setSqlErrorCodes(String sqlErrorCodesString)
@@ -67,8 +80,8 @@ public class TransactionalMethodReplayDecisionMaker implements
 
         for (int i = 0; tokenizer.hasMoreTokens(); i++)
         {
-            String token = tokenizer.nextToken();
-            this.sqlErrorCodes[i] = new Integer(token.trim()).intValue();
+            this.sqlErrorCodes[i] = new Integer(tokenizer.nextToken())
+                    .intValue();
         }
     }
 
@@ -76,11 +89,9 @@ public class TransactionalMethodReplayDecisionMaker implements
     {
         for (int i = 0; i < this.sqlErrorCodes.length; i++)
         {
-
             if (this.sqlErrorCodes[i] == errorCode) return true;
-
         }
+
         return false;
     }
-
 }
