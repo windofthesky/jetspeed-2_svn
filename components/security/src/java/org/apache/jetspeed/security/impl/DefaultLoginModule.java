@@ -78,24 +78,30 @@ public class DefaultLoginModule implements LoginModule
     /** <p>The user name.</p> */
     private String username;
 
+    
     /**
      * <p>The default login module constructor.</p>
      */
     public DefaultLoginModule()
     {
         LoginModuleProxy loginModuleProxy = LoginModuleProxyImpl.loginModuleProxy;
-        this.ums = loginModuleProxy.getUserManager();
+        if (loginModuleProxy != null)
+        {
+            this.ums = loginModuleProxy.getUserManager();
+        }
         debug = false;
         success = false;
         commitSuccess = false;
         username = null;
     }
 
+    
     /**
      * Create a new login module that uses the given user manager.
      * @param userManager the user manager to use
      */
-    protected DefaultLoginModule (UserManager userManager) {
+    protected DefaultLoginModule (UserManager userManager) 
+    {
         ums = userManager;
         debug = false;
         success = false;
@@ -120,6 +126,18 @@ public class DefaultLoginModule implements LoginModule
         return true;
     }
 
+    protected void refreshProxy()
+    {
+        if (this.ums == null)
+        {
+            LoginModuleProxy loginModuleProxy = LoginModuleProxyImpl.loginModuleProxy;
+            if (loginModuleProxy != null)
+            {
+                this.ums = loginModuleProxy.getUserManager();
+            }
+        }        
+    }
+    
     /**
      * @see javax.security.auth.spi.LoginModule#commit()
      */
@@ -135,6 +153,7 @@ public class DefaultLoginModule implements LoginModule
             {
                 // TODO We should get the user profile here and had it in cache so that we do not have to retrieve it again.
                 // TODO Ideally the User should be available from the session.  Need discussion around this.
+                refreshProxy();
                 commitPrincipals(subject, ums.getUser(username));
 
                 username = null;
@@ -177,6 +196,7 @@ public class DefaultLoginModule implements LoginModule
 
             ((PasswordCallback) callbacks[1]).clearPassword();
 
+            refreshProxy();            
             success = ums.authenticate(this.username, password);
 
             callbacks[0] = null;
