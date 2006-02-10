@@ -30,7 +30,7 @@ limitations under the License.
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>rss-application</artifactId>
+        <artifactId>rss-applications</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>war</packaging>

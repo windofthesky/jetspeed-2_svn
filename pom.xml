@@ -178,27 +178,23 @@ limitations under the License.
             <url>http://repo1.maven.org/maven2</url>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>com.bluesunrise</id>
+            <id>com.bluesunrise.m2</id>
+            <name>Maven2 BlueSunrise</name>
+            <url>http://www.bluesunrise.com/maven2</url>
+        </repository>
+        <repository>
+            <id>com.bluesunrise.m1</id>
             <name>Maven1 BlueSunrise</name>
             <url>http://www.bluesunrise.com/maven</url>
             <layout>legacy</layout>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
             <id>org.codehaus</id>
             <name>Maven1 Codehaus</name>
             <url>http://dist.codehaus.org</url>
             <layout>legacy</layout>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
             <id>org.apache</id>
             <name>Maven1 Apache</name>
             <url>http://cvs.apache.org/repository</url>
