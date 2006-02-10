@@ -179,4 +179,10 @@ public class DelegatingPageManager extends AbstractPageManager
         // TODO Auto-generated method stub
 
     }
+    
+    public int addPages(Page[] pages)
+    throws JetspeedException
+    {
+        throw new JetspeedException("not impl");
+    }
 }

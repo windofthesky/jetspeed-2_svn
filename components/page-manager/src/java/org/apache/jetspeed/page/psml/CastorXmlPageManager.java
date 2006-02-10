@@ -701,4 +701,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     {
         return null;
     }
+    
+    public int addPages(Page[] pages)
+    throws JetspeedException
+    {
+        this.updatePage(pages[0]);
+        this.updatePage(pages[1]);
+        throw new JetspeedException("Its gonna blow captain!");
+    }
+    
 }

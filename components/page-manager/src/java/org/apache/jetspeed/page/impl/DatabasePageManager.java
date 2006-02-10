@@ -1253,4 +1253,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
     }
     
+    public int addPages(Page[] pages)
+    throws JetspeedException
+    {
+        System.out.println("Adding first page");
+        this.updatePage(pages[0]);
+        System.out.println("Adding second page");
+        this.updatePage(pages[1]);
+        System.out.println("About to throw ex");
+        throw new JetspeedException("Its gonna blow captain!");
+    }
+    
 }
