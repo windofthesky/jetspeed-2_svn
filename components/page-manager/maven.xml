@@ -20,7 +20,8 @@
 <!--    <property name='testcase' value='org.apache.jetspeed.page.TestSecureDatabasePageManager' />  -->
 <!--    <property name='testcase' value='org.apache.jetspeed.page.TestDatabasePageManager' />  -->
 <!--    <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager' /> -->
-    <property name='testcase' value='org.apache.jetspeed.page.TestCreateUserHomePagesFromRoles' />
+<!--    <property name='testcase' value='org.apache.jetspeed.page.TestCreateUserHomePagesFromRoles' /> -->
+    <property name='testcase' value='org.apache.jetspeed.page.TestTransactions' />
     
 
     <preGoal name="test:test">

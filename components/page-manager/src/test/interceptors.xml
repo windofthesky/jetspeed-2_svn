@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+   <bean id="replayDecisionMakerBean"
+        class="org.apache.jetspeed.util.interceptors.TransactionalMethodReplayDecisionMaker">
+        <property name="sqlErrorCodes">
+<!--            <value>400, -80</value> -->
+             <value>9999</value>
+        </property>
+    </bean>
+
+    <bean id="methodReplayInterceptor" class="org.apache.jetspeed.util.interceptors.MethodReplayInterceptor">
+        <property name="retryCount">
+            <value>3</value>
+        </property>
+        <property name="retryInterval">
+            <value>500</value></property> <!-- retry every 500 milliseconds -->
+        <property name="replayDecisionMaker">
+            <ref bean="replayDecisionMakerBean"/>
+        </property>
+    </bean>
+
+    <bean id="baseTransactionProxy2" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+                        abstract="true">
+        <property name="transactionManager"><ref bean="transactionManager"/></property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+        <property name="preInterceptors"> 
+            <list>
+                <ref local="methodReplayInterceptor" />
+            </list>
+        </property>
+    </bean>
+    
+</beans>
