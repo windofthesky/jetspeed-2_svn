@@ -367,7 +367,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 }
                 
             }
-            column.add(fragment);
+            column.add(row, fragment);
             Coordinate newCoord = new CoordinateImpl(col, row, col, row);
             this.fragmentCoordinateMap.put(fragment, newCoord);
             return newCoord;
