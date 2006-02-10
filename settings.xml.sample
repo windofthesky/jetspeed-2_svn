@@ -55,8 +55,6 @@ limitations under the License.
                 <!-- J2 Deployment Properties -->
                 <org.apache.jetspeed.server.home>/usr/share/tomcat5</org.apache.jetspeed.server.home>
                 <org.apache.jetspeed.catalina.version.major>5</org.apache.jetspeed.catalina.version.major>
-                <org.apache.jetspeed.server.shared>${org.apache.jetspeed.server.home}/shared/lib</org.apache.jetspeed.server.shared>
-                <org.apache.jetspeed.deploy.war.dir>${org.apache.jetspeed.server.home}/webapps</org.apache.jetspeed.deploy.war.dir>
                 <org.apache.jetspeed.services.autodeployment.server>localhost</org.apache.jetspeed.services.autodeployment.server>
                 <org.apache.jetspeed.services.autodeployment.port>8080</org.apache.jetspeed.services.autodeployment.port>
                 <org.apache.jetspeed.services.autodeployment.user>j2deployer</org.apache.jetspeed.services.autodeployment.user>

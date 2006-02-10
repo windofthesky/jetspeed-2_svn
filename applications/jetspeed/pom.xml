@@ -49,12 +49,48 @@ limitations under the License.
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <configuration>
-                        <warSourceDirectory>../../src/webapp</warSourceDirectory>
+                        <warSourceDirectory>target/webapp</warSourceDirectory>
                     </configuration>
                 </plugin> 
 
             </plugins>
         </pluginManagement>    
+
+        <!-- Plugin Executions -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+
+                    <!-- deploy to application server -->
+                    <execution>
+                        <id>jetspeed-resources</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <ant target="configure" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.catalina.version.major"
+                                              value="${org.apache.jetspeed.catalina.version.major}"/>
+                                    <property name="org.apache.jetspeed.services.autodeployment.server"
+                                              value="${org.apache.jetspeed.services.autodeployment.server}"/>
+                                    <property name="org.apache.jetspeed.services.autodeployment.port"
+                                              value="${org.apache.jetspeed.services.autodeployment.port}"/>
+                                    <property name="org.apache.jetspeed.services.autodeployment.user"
+                                              value="${org.apache.jetspeed.services.autodeployment.user}"/>
+                                    <property name="org.apache.jetspeed.services.autodeployment.password"
+                                              value="${org.apache.jetspeed.services.autodeployment.password}"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
 
     </build>
 

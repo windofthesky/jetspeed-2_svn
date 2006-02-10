@@ -106,6 +106,7 @@ limitations under the License.
         <nekohtml.version>0.9.3</nekohtml.version>
         <ojb.version>1.0.3</ojb.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
+        <org.apache.maven.artifact.ant.version>2.0.1</org.apache.maven.artifact.ant.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
         <org.apache.portals.bridges.version>1.0</org.apache.portals.bridges.version>
         <org.springframework.version>1.1.5</org.springframework.version>
@@ -365,6 +366,18 @@ limitations under the License.
             <!-- Portals Applications -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-layouts</artifactId>
+                <type>war</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed</artifactId>
+                <type>war</type>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
                 <artifactId>demo</artifactId>
                 <type>war</type>
                 <version>${pom.version}</version>
@@ -378,12 +391,6 @@ limitations under the License.
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>rss</artifactId>
-                <type>war</type>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed</artifactId>
                 <type>war</type>
                 <version>${pom.version}</version>
             </dependency>
@@ -773,6 +780,32 @@ limitations under the License.
                 <version>${org.apache.portals.bridges.version}</version>
             </dependency>
 
+            <!-- Portals Bridges Applications -->
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>jpetstore</artifactId>
+                <type>war</type>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>jsf-demo</artifactId>
+                <type>war</type>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>perl</artifactId>
+                <type>war</type>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>php</artifactId>
+                <type>war</type>
+                <version>${org.apache.portals.bridges.version}</version>
+            </dependency>
+
             <!-- MyFaces -->
             <dependency>
                 <groupId>myfaces</groupId>
@@ -871,6 +904,74 @@ limitations under the License.
 
             </plugins>
         </pluginManagement>    
+
+        <!-- Plugin Dependencies -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <!--
+                    Bug: Plugin dependencies must be in parent POM since they can only be
+                    defined once.
+                    Bug: Plugin dependencies are not propagated from pluginManagement.
+                    Bug: Versions must be specified here and not in dependencyManagement.
+
+                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact-ant</artifactId>
+                        <version>${org.apache.maven.artifact.ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque</artifactId>
+                        <version>${torque.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>jndi</groupId>
+                                <artifactId>jndi</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>javax.sql</groupId>
+                                <artifactId>jdbc-stdext</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen-templates</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
 
     </build>
 

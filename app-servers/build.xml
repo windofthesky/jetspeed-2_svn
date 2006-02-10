@@ -16,19 +16,26 @@ limitations under the License.
 
   $Id:$
 -->
-<project name="etc" default="help">
+<project name="app-sources" default="help">
 
     <!-- Properties -->
 
     <property name="org.apache.jetspeed.deploy.skip" value="false"/>
     <property name="org.apache.jetspeed.server.home" value=""/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
-    <property name="org.apache.jetspeed.server.shared" value=""/>
-    <property name="org.apache.jetspeed.deploy.war.dir" value=""/>
-    <property name="org.apache.jetspeed.services.autodeployment.server" value=""/>
-    <property name="org.apache.jetspeed.services.autodeployment.port" value=""/>
-    <property name="org.apache.jetspeed.services.autodeployment.user" value=""/>
-    <property name="org.apache.jetspeed.services.autodeployment.password" value=""/>
+    <property name="org.apache.jetspeed.production.database.url" value=""/>
+    <property name="org.apache.jetspeed.production.database.driver" value=""/>
+    <property name="org.apache.jetspeed.production.database.user" value=""/>
+    <property name="org.apache.jetspeed.production.database.password" value=""/>
+    <property name="org.apache.jetspeed.groupid" value=""/>
+    <property name="org.apache.jetspeed.version" value=""/>
+    <property name="org.apache.portals.bridges.groupid" value=""/>
+    <property name="org.apache.portals.bridges.version" value=""/>
+    <property name="org.apache.pluto.groupid" value=""/>
+    <property name="org.apache.pluto.version" value=""/>
+    <property name="portlet-api.groupid" value=""/>
+    <property name="portlet-api.version" value=""/>
+    <property name="local.repository.location" value=""/>
 
     <!-- Usage -->
 
@@ -41,26 +48,174 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.deploy.skip=${org.apache.jetspeed.deploy.skip}"/>
         <echo message="    org.apache.jetspeed.server.home=${org.apache.jetspeed.server.home}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
-        <echo message="    org.apache.jetspeed.server.shared=${org.apache.jetspeed.server.shared}"/>
-        <echo message="    org.apache.jetspeed.deploy.war.dir=${org.apache.jetspeed.deploy.war.dir}"/>
-        <echo message="    org.apache.jetspeed.services.autodeployment.server=${org.apache.jetspeed.services.autodeployment.server}"/>
-        <echo message="    org.apache.jetspeed.services.autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
-        <echo message="    org.apache.jetspeed.services.autodeployment.user=${org.apache.jetspeed.services.autodeployment.user}"/>
-        <echo message="    org.apache.jetspeed.services.autodeployment.password=${org.apache.jetspeed.services.autodeployment.password}"/>
+        <echo message="    org.apache.jetspeed.production.database.url=${org.apache.jetspeed.production.database.url}"/>
+        <echo message="    org.apache.jetspeed.production.database.driver=${org.apache.jetspeed.production.database.driver}"/>
+        <echo message="    org.apache.jetspeed.production.database.user=${org.apache.jetspeed.production.database.user}"/>
+        <echo message="    org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}"/>
+        <echo message="    org.apache.jetspeed.groupid=${org.apache.jetspeed.groupid}"/>
+        <echo message="    org.apache.jetspeed.version=${org.apache.jetspeed.version}"/>
+        <echo message="    org.apache.portals.bridges.groupid=${org.apache.portals.bridges.groupid}"/>
+        <echo message="    org.apache.portals.bridges.version=${org.apache.portals.bridges.version}"/>
+        <echo message="    org.apache.pluto.groupid=${org.apache.pluto.groupid}"/>
+        <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
+        <echo message="    portlet-api.groupid=${portlet-api.groupid}"/>
+        <echo message="    portlet-api.version=${portlet-api.version}"/>
+        <echo message="    local.repository.location=${local.repository.location}"/>
     </target>
 
     <!-- Tomcat Deployment -->
 
-    <target name="tomcat" depends="help, deploy-skip" unless="org.apache.jetspeed.skip">
+    <taskdef resource="org/apache/maven/artifact/ant/antlib.xml"/>
 
-        <echo message="Tomcat deployment target NYI"/>
+    <target name="tomcat" depends="deploy-skip, tomcat-5-5" unless="org.apache.jetspeed.skip">
+
+        <!-- Deploy provided libraries in shared/lib -->
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
+                <include name="pluto-*.jar"/>
+                <include name="portals-bridges-common-*.jar"/>
+                <include name="jetspeed-commons-*.jar"/>
+                <include name="jetspeed-api-*.jar"/>
+                <include name="portlet-api-*.jar"/>
+            </fileset>
+        </delete>
+        <dependencies filesetId="shared.lib.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.pluto.groupid}"
+                        artifactId="pluto"
+                        version="${org.apache.pluto.version}"/>
+            <dependency groupId="${org.apache.portals.bridges.groupid}"
+                        artifactId="portals-bridges-common"
+                        version="${org.apache.portals.bridges.version}"/>
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="jetspeed-commons"
+                        version="${org.apache.jetspeed.version}"/>
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="jetspeed-api"
+                        version="${org.apache.jetspeed.version}"/>
+            <dependency groupId="${portlet-api.groupid}"
+                        artifactId="portlet-api"
+                        version="${portlet-api.version}"/>
+            <localRepository location="${local.repository.location}"/>
+        </dependencies>
+        <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="true">
+            <fileset refid="shared.lib.dependencies.id"/>
+        </copy>
+
+        <!-- Deploy jetspeed applications -->
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/jetspeed"/>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/webapps">
+                <include name="jetspeed.war"/>
+            </fileset>
+        </delete>
+        <dependencies filesetId="jetspeed.dependency.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="jetspeed"
+                        version="${org.apache.jetspeed.version}"
+                        type="war"/>
+            <localRepository location="${local.repository.location}"/>
+        </dependencies>
+        <copy todir="${org.apache.jetspeed.server.home}/webapps">
+            <fileset refid="jetspeed.dependency.id"/>
+            <mapper type="regexp" from=".*/([^/]*)-${org.apache.jetspeed.version}.war" to="\1.war"/>
+        </copy>
+        <unjar src="${org.apache.jetspeed.server.home}/webapps/jetspeed.war" dest="${org.apache.jetspeed.server.home}/webapps/jetspeed"/>
+
+        <!-- Deploy portlet and layout applications -->
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/demo"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/jpetstore"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/jsf-demo"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/perl"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/php"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/rss"/>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/webapps">
+                <include name="demo.war"/>
+                <include name="j2-admin.war"/>
+                <include name="jpetstore.war"/>
+                <include name="jsf-demo.war"/>
+                <include name="perl.war"/>
+                <include name="php.war"/>
+                <include name="rss.war"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
+                <include name="j2-admin.xml"/>
+                <include name="jpetstore.xml"/>
+            </fileset>
+        </delete>
+        <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="demo"
+                        version="${org.apache.jetspeed.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="j2-admin"
+                        version="${org.apache.jetspeed.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="jetspeed-layouts"
+                        version="${org.apache.jetspeed.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.portals.bridges.groupid}"
+                        artifactId="jpetstore"
+                        version="${org.apache.portals.bridges.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.portals.bridges.groupid}"
+                        artifactId="jsf-demo"
+                        version="${org.apache.portals.bridges.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.portals.bridges.groupid}"
+                        artifactId="perl"
+                        version="${org.apache.portals.bridges.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.portals.bridges.groupid}"
+                        artifactId="php"
+                        version="${org.apache.portals.bridges.version}"
+                        type="war"/>
+            <dependency groupId="${org.apache.jetspeed.groupid}"
+                        artifactId="rss"
+                        version="${org.apache.jetspeed.version}"
+                        type="war"/>
+            <localRepository location="${local.repository.location}"/>
+        </dependencies>
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy">
+            <fileset refid="portletapp.dependencies.id"/>
+            <mapper type="regexp" from=".*/([^/]*)-(?:(?:${org.apache.jetspeed.version})|(?:${org.apache.portals.bridges.version})).war" to="\1.war"/>
+        </copy>
+
+        <!-- Generate and deploy application context file -->
+        <delete file="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml"/>
+        <copy todir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
+            <fileset dir="../etc/conf/tomcat">
+                <include name="jetspeed-tomcat-5.xml" unless="org.apache.jetspeed.tomcat.5.5"/> 
+                <include name="jetspeed-tomcat-5.5.xml" if="org.apache.jetspeed.tomcat.5.5"/> 
+            </fileset>
+            <filterset begintoken="@" endtoken="@">
+                <filter token="CONTEXT" value="jetspeed"/>
+                <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+                <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+                <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+                <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+            </filterset>
+            <mapper type="merge" to="jetspeed.xml"/>
+        </copy>
 
     </target>
 
     <!-- Utility Targets -->
+
     <target name="deploy-skip">
         <condition property="org.apache.jetspeed.skip">
             <equals arg1="${org.apache.jetspeed.deploy.skip}" arg2="true"/>
+        </condition>
+    </target>
+
+    <target name="tomcat-5-5">
+        <condition property="org.apache.jetspeed.tomcat.5.5">
+            <equals arg1="${org.apache.jetspeed.catalina.version.major}" arg2="5.5"/>
         </condition>
     </target>
 

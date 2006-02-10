@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id:$
+-->
+<project name="jetspeed" default="help">
+
+    <!-- Properties -->
+
+    <property name="org.apache.jetspeed.catalina.version.major" value=""/>
+    <property name="org.apache.jetspeed.services.autodeployment.server" value=""/>
+    <property name="org.apache.jetspeed.services.autodeployment.port" value=""/>
+    <property name="org.apache.jetspeed.services.autodeployment.user" value=""/>
+    <property name="org.apache.jetspeed.services.autodeployment.password" value=""/>
+
+    <!-- Usage -->
+
+    <target name="help">
+        <echo message="Buildfile for the jetspeed maven POM."/>
+        <echo message="Usage: ant [ configure ]"/>
+        <echo message="Where:"/>
+        <echo message="    configure - setup runtime configuration for jetspeed."/>
+        <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+        <echo message="    org.apache.jetspeed.services.autodeployment.server=${org.apache.jetspeed.services.autodeployment.server}"/>
+        <echo message="    org.apache.jetspeed.services.autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+        <echo message="    org.apache.jetspeed.services.autodeployment.user=${org.apache.jetspeed.services.autodeployment.user}"/>
+        <echo message="    org.apache.jetspeed.services.autodeployment.password=${org.apache.jetspeed.services.autodeployment.password}"/>
+    </target>
+
+    <!-- Jetspeed Configuration -->
+
+    <target name="configure">
+
+        <!-- Build webapp resources -->        
+        <delete dir="target/webapp"/>
+        <mkdir dir="target/webapp"/>
+        <copy todir="target/webapp">
+            <fileset dir="../../src/webapp"/>
+        </copy>
+
+        <!-- Configure runtime configuration propertiee resource -->
+        <replace file="target/webapp/WEB-INF/conf/jetspeed.properties">
+            <replacefilter token="@AUTODEPLOYMENT_SERVER@"
+                           value="${org.apache.jetspeed.services.autodeployment.server}"/>
+            <replacefilter token="@AUTODEPLOYMENT_USER@"
+                           value="${org.apache.jetspeed.services.autodeployment.user}"/>
+            <replacefilter token="@AUTODEPLOYMENT_PASSWORD@"
+                           value="${org.apache.jetspeed.services.autodeployment.password}"/>
+            <replacefilter token="autodeployment.catalina.version.major=5"
+                           value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+            <replacefilter token="autodeployment.port=8080"
+                           value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+        </replace>
+
+        <!-- Build OJB resources -->        
+        <mkdir dir="target/webapp/WEB-INF/classes"/>
+        <copy todir="target/webapp/WEB-INF/classes">
+            <fileset dir="../../etc/db-ojb"/>
+        </copy>
+
+    </target>
+
+</project>

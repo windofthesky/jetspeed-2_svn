@@ -127,62 +127,6 @@ limitations under the License.
                     </execution>
 
                 </executions>
-
-                <!--
-                    Bug:  Dependencies should be in parent POM, but they are not propagated
-                    from the pluginManagement sections. Extensions also cannot be used since
-                    ant tag executions do not succeed in general: suspect class loading
-                    issues that result in mysterious NPE on <replaceregexp>.
-
-                    Note: All three ant dependencies are listed to keep nodeps in sync.
-                -->
-                <dependencies>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque</artifactId>
-                        <version>${torque.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>jndi</groupId>
-                                <artifactId>jndi</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>javax.sql</groupId>
-                                <artifactId>jdbc-stdext</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen-templates</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

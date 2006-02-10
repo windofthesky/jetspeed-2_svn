@@ -63,18 +63,32 @@ limitations under the License.
                                               value="${org.apache.jetspeed.server.home}"/>
                                     <property name="org.apache.jetspeed.catalina.version.major"
                                               value="${org.apache.jetspeed.catalina.version.major}"/>
-                                    <property name="org.apache.jetspeed.server.shared"
-                                              value="${org.apache.jetspeed.server.shared}"/>
-                                    <property name="org.apache.jetspeed.deploy.war.dir"
-                                              value="${org.apache.jetspeed.deploy.war.dir}"/>
-                                    <property name="org.apache.jetspeed.services.autodeployment.server"
-                                              value="${org.apache.jetspeed.services.autodeployment.server}"/>
-                                    <property name="org.apache.jetspeed.services.autodeployment.port"
-                                              value="${org.apache.jetspeed.services.autodeployment.port}"/>
-                                    <property name="org.apache.jetspeed.services.autodeployment.user"
-                                              value="${org.apache.jetspeed.services.autodeployment.user}"/>
-                                    <property name="org.apache.jetspeed.services.autodeployment.password"
-                                              value="${org.apache.jetspeed.services.autodeployment.password}"/>
+                                    <property name="org.apache.jetspeed.production.database.url"
+                                              value="${org.apache.jetspeed.production.database.url}"/>
+                                    <property name="org.apache.jetspeed.production.database.driver"
+                                              value="${org.apache.jetspeed.production.database.driver}"/>
+                                    <property name="org.apache.jetspeed.production.database.user"
+                                              value="${org.apache.jetspeed.production.database.user}"/>
+                                    <property name="org.apache.jetspeed.production.database.password"
+                                              value="${org.apache.jetspeed.production.database.password}"/>
+                                    <property name="org.apache.jetspeed.groupid"
+                                              value="${pom.groupId}"/>
+                                    <property name="org.apache.jetspeed.version"
+                                              value="${pom.version}"/>
+                                    <property name="org.apache.portals.bridges.groupid"
+                                              value="org.apache.portals.bridges"/>
+                                    <property name="org.apache.portals.bridges.version"
+                                              value="${org.apache.portals.bridges.version}"/>
+                                    <property name="org.apache.pluto.groupid"
+                                              value="org.apache.pluto"/>
+                                    <property name="org.apache.pluto.version"
+                                              value="${org.apache.pluto.version}"/>
+                                    <property name="portlet-api.groupid"
+                                              value="portlet-api"/>
+                                    <property name="portlet-api.version"
+                                              value="${portlet-api.version}"/>
+                                    <property name="local.repository.location"
+                                              value="${settings.localRepository}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -84,34 +98,9 @@ limitations under the License.
                     </execution>
 
                 </executions>
-
-                <!--
-                    Bug:  Dependencies should be in parent POM, but they are not propagated
-                    from the pluginManagement sections. Extensions also cannot be used since
-                    ant tag executions do not succeed in general: suspect class loading
-                    issues that result in mysterious NPE on <replaceregexp>.
-
-                    Note: All three ant dependencies are listed to keep nodeps in sync.
-                -->
-                <dependencies>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
+
     </build>
 
     <!-- Dependencies -->
@@ -123,6 +112,26 @@ limitations under the License.
             <groupId>${pom.groupId}</groupId>
             <artifactId>etc</artifactId>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>portlet-api</groupId>
+            <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pluto</groupId>
+            <artifactId>pluto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-common</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
@@ -141,7 +150,32 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-layouts</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>jpetstore</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>jsf-demo</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>perl</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>php</artifactId>
             <type>war</type>
         </dependency>
 
