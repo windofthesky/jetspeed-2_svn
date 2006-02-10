@@ -522,5 +522,15 @@ public interface PageManager
      * @param subject The full user Java Security subject.
      */
     public void createUserHomePagesFromRoles(Subject subject)
-    throws JetspeedException;    
+    throws JetspeedException;
+    
+    /**
+     * 
+     * @param pages
+     * @return
+     * @throws JetspeedException
+     * @deprecated THIS IS ONLY FOR TESTING TX. WILL SOON BE DELETED.
+     */
+    public int addPages(Page[] pages)
+    throws JetspeedException;
 }
