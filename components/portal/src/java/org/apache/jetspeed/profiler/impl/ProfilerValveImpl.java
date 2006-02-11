@@ -21,12 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -68,6 +70,11 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      */
     public static final String PROFILED_PAGE_CONTEXT_ATTR_KEY = "org.apache.jetspeed.profiledPageContext";
 
+    /**
+     * session key for storing map of PageActionAccess instances
+     */
+    private static final String PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY = "org.apache.jetspeed.profiler.pageActionAccessMap";
+    
     /**
      * profiler - profiler component
      */
@@ -206,6 +213,8 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // request
                 request.setPage(new ContentPageImpl(requestContext.getManagedPage()));
                 request.setProfileLocators(requestContext.getLocators());
+                
+                request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));                
             }
 
             // continue
@@ -260,6 +269,50 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             log.error("Exception in request pipeline: " + e.getMessage(), e);
             throw new PipelineException(e.toString(), e);
         }
+    }
+
+    /**
+     * Returns the <code>PageActionAccess</code> for the current user request.
+     * @see PageActionAccess
+     * @param requestContext RequestContext of the current portal request.
+     * @return PageActionAccess for the current user request.
+     */
+    protected PageActionAccess getPageActionAccess(RequestContext requestContext)
+    { 
+        Page page = requestContext.getPage();
+        String key = page.getId();
+        boolean loggedOn = requestContext.getRequest().getUserPrincipal() != null;
+        boolean anonymous = !loggedOn;
+        PageActionAccess pageActionAccess = null;
+
+        Map sessionActions = null;
+        synchronized (this)
+        {
+            sessionActions = (Map) requestContext.getSessionAttribute(PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY);
+            if (sessionActions == null)
+            {
+                sessionActions = new HashMap();
+                requestContext.setSessionAttribute(PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY, sessionActions);
+            }
+            else
+            {
+                pageActionAccess = (PageActionAccess) sessionActions.get(key);
+            }
+        }
+        synchronized (sessionActions)
+        {
+            if (pageActionAccess == null)
+            {
+                pageActionAccess = new PageActionAccess(anonymous, page);
+                sessionActions.put(key, pageActionAccess);
+            }
+            else
+            {
+                pageActionAccess.checkReset(anonymous, page);
+            }        
+        }
+        
+        return pageActionAccess;
     }
 
     public String toString()
