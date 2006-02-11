@@ -220,7 +220,7 @@ public class TestDecorations extends MockObjectTestCase
 
         expectAndReturn(childFragmentMock, "getType", Fragment.PORTLET);
         
-        expectAndReturn(pageMock, "getRootFragment", fragment);
+//        expectAndReturn(pageMock, "getRootFragment", fragment);
         
         expectAndReturn(atLeastOnce(), requestContextMock, "getMediaType", "html");
         
