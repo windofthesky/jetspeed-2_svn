@@ -15,7 +15,7 @@
 #set($myPage = $jetspeed.page)
 #set($myFragment = $jetspeed.currentFragment)
 #set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
-#set($actions = $jetspeed.PageDecoratorActions)
+#set($actions = $myFragment.decoration.actions)
 #set($editing = false)
 #if($jetspeed.portletMode.toString() == "edit")
 #set($editing = true)

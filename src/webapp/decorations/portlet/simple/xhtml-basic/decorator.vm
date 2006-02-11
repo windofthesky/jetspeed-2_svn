@@ -14,7 +14,7 @@
 #set($myPage = $jetspeed.page)
 #set($myF = $jetspeed.currentFragment)
 #set($myPE = $jetspeed.currentPortletEntity)
-#set($actions = $jetspeed.DecoratorActions)
+#set($actions = $myF.decoration.actions)
 ## Begin portlet/html/simple/decorator.vm
 <div id="${myF.id}" class="portlet-simple">
 ##
