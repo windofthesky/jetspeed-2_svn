@@ -17,30 +17,30 @@ package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.decoration.PageEditAccess;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -102,8 +102,21 @@ public class MultiColumnPortlet extends LayoutPortlet
 
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
-        // get context and test for maximized window rendering
         RequestContext context = getRequestContext(request);
+
+        ContentPage requestPage = context.getPage();       
+        PageEditAccess pageEditAccess = (PageEditAccess)context.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
+        if ( requestPage == null || pageEditAccess == null )
+        {
+            // Targetting this portlet REQUIRES that the ProfilerValve has been invoked!
+            throw new PortletException("Current request page or PageEditAccess not available.");
+        }
+        
+        Boolean editing = ( pageEditAccess.isEditing() && 
+                            PortletMode.VIEW.equals(request.getPortletMode()) && 
+                            request.isPortletModeAllowed(PortletMode.EDIT))
+                          ? Boolean.TRUE : Boolean.FALSE;
+                                         
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         if (window != null)
         {
@@ -142,34 +155,109 @@ public class MultiColumnPortlet extends LayoutPortlet
         request.setAttribute("columnLayout", layout);
         request.setAttribute("numberOfColumns", new Integer(numColumns));
         request.setAttribute("decorationFactory", this.decorators);
-        request.setAttribute("columnSizes", fragmentColumnSizesList);        
+        request.setAttribute("columnSizes", fragmentColumnSizesList);
+        request.setAttribute("editing",editing);
+        request.setAttribute("fragmentNestingLevel",new Integer(getFragmentNestingLevel(requestPage,f.getId())));
         super.doView(request, response);
         request.removeAttribute("decorationFactory");
         request.removeAttribute("columnLayout");
         request.removeAttribute("numberOfColumns");
         request.removeAttribute("columnSizes");
+        request.removeAttribute("editing");
+        request.removeAttribute(("fragmentNestingLevel"));
     }
 
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-        String decoratorChange = request.getParameter("decorator");
-        String themeChange = request.getParameter("theme");
-        String layoutChange = request.getParameter("layout");
-        String editingPage = request.getParameter("editingPage");
-        String fragmentChange = request.getParameter("fragmentToMove");
-        String jsSubmitPage = request.getParameter("jsSubmitPage");
-        String jsPageName = request.getParameter("jsPageName");
-
-        if (jsSubmitPage != null && jsPageName != null && editingPage != null)
+        RequestContext requestContext = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        
+        ContentPage requestPage = requestContext.getPage();       
+        PageEditAccess pageEditAccess = (PageEditAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
+        if ( requestPage == null || pageEditAccess == null )
         {
-            try
-            {                
-                if (jsPageName.indexOf(Folder.PATH_SEPARATOR) == -1 && jsPageName.length() > 0)
+            // Targetting this portlet with an ActionRequest REQUIRES that the ProfilerValve has been invoked!
+            throw new PortletException("Current request page or PageEditAccess not available.");
+        }
+        
+        String pageMode = request.getParameter("pageMode");
+        if ( pageMode != null )
+        {
+            if ( "view".equals(pageMode) )
+            {
+                pageEditAccess.setEditing(false);
+            }
+            else if ( "edit".equals(pageMode) && pageEditAccess.isEditAllowed() )
+            {
+                pageEditAccess.setEditing(true);
+            }
+            return;
+        }
+        
+        if ( pageEditAccess.isEditAllowed() && request.isPortletModeAllowed(PortletMode.EDIT) )
+        {
+            String layout = null;
+            
+            boolean addLayout = request.getParameter("jsAddLayout") != null;
+            if ( addLayout || request.getParameter("jsChangeLayout") != null )
+            {
+                layout = request.getParameter("layout");
+                if ( layout != null && layout.length() > 0 )
                 {
-                    Page currentPage = pageManager.getPage(editingPage);
-                    if (currentPage != null)
+                    PortletWindow window = requestContext.getActionWindow();
+                    ContentFragment targetFragment = requestPage.getContentFragmentById(window.getId().toString());
+                    
+                    if ( targetFragment == null )
                     {
-                        Folder parent = (Folder)currentPage.getParent();
+                        // ignore no longer consistent page definition
+                        return;
+                    }
+                    
+                    if ( addLayout )
+                    {
+                        try
+                        {
+                            Fragment fragment = pageManager.newFragment();
+                            fragment.setType(Fragment.LAYOUT);
+                            fragment.setName(layout);
+                            
+                            targetFragment.getFragments().add(fragment);
+                            pageManager.updatePage(requestPage);            
+                        }
+                        catch (Exception e)
+                        {
+                            throw new PortletException("failed to add portlet " + layout + " to page: " + requestPage+": "+e.getMessage(), e);
+                        }
+                    }
+                    else if ( !layout.equals(targetFragment.getName()) )
+                    {
+                        try
+                        {
+                            // layout portlet change
+                            targetFragment.setName(layout);
+                            pageManager.updatePage(requestPage);
+                            entityAccess.updatePortletEntity(window.getPortletEntity(), targetFragment);
+                            entityAccess.storePortletEntity(window.getPortletEntity());
+
+                            windowAccess.createPortletWindow(window.getPortletEntity(), targetFragment.getId());
+                            return;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new PortletException("Unable to update page: "+e.getMessage(), e);
+                        }
+                    }
+                }
+                return;
+            }
+
+            if ( request.getParameter("jsSubmitPage" ) != null )
+            {
+                String jsPageName = request.getParameter("jsPageName");
+                if ( jsPageName != null && jsPageName.length() > 0 && jsPageName.indexOf(Folder.PATH_SEPARATOR) == -1 )
+                {
+                    try
+                    {                
+                        Folder parent = (Folder)requestPage.getParent();
                         if (parent != null)
                         {
                             String path = parent.getPath();
@@ -182,174 +270,226 @@ public class MultiColumnPortlet extends LayoutPortlet
                                 path = path + Folder.PATH_SEPARATOR + jsPageName;
                             }
                             Page page = pageManager.newPage(path);
-                            // TODO: Get System Wide defaults for decorators
-                            page.getRootFragment().setName("jetspeed-layouts::VelocityTwoColumns");
-                            page.setDefaultDecorator("tigris", Fragment.LAYOUT);
-                            page.setDefaultDecorator("tigris", Fragment.PORTLET);
+                            if ( layout == null || layout.length() == 0 )
+                            {
+                                layout = requestPage.getRootFragment().getName();
+                            }
+                            page.getRootFragment().setName(layout);
+                            page.setDefaultDecorator(requestPage.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
+                            page.setDefaultDecorator(requestPage.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
                             page.setTitle(jsPageName);
                             pageManager.updatePage(page);
                         }
-                    }                
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
+                    }                        
                 }
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
-            }                        
-        }
-        else if (request.getParameter("move") != null 
-                &&  fragmentChange != null
-                && editingPage != null)
-        {        
-            Page page;
-            try
-            {
-                page = pageManager.getPage(editingPage);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
-            }
-          
-            Fragment rootFragment = page.getRootFragment();
-            Fragment fragmentToMove = page.getFragmentById(fragmentChange);           
-            int moveCode = Integer.parseInt(request.getParameter("move"));
-            
-            ColumnLayout layout;
-            try
-            {
-                layout = new ColumnLayout(numColumns, layoutType, rootFragment.getFragments(), null);
-                layout.addLayoutEventListener(new PageManagerLayoutEventListener(pageManager, page, layoutType));
-            }
-            catch (LayoutEventException e1)
-            {
-                throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
-            }
-
-            try
-            {                
-                switch (moveCode)
-                {
-                case LayoutEvent.MOVED_UP:
-                    layout.moveUp(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_DOWN:
-                    layout.moveDown(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_RIGHT:
-                    layout.moveRight(fragmentToMove);
-                    break;
-                case LayoutEvent.MOVED_LEFT:
-                    layout.moveLeft(fragmentToMove);
-                    break;
-                default:
-                    throw new PortletException("Invalid movement code " + moveCode);
-                }
-               
-            }
-            catch (SecurityException se)
-            {
-                // ignore page security constraint violations, only
-                // permitted users can edit managed pages; page
-                // update will remain transient
-                log.info("Unable to update page " + page.getId() + " layout due to security permission/constraint.", se);
-            }
-            catch (Exception e)
-            {
-                if (e instanceof PortletException)
-                {
-                    throw (PortletException)e;
-                }
-                else
-                {
-                    throw new PortletException("Unable to process layout for page " + page.getId() + " layout: " + e.toString(), e);
-                }
-            }
-        }
-        else if (decoratorChange != null
-                && fragmentChange != null                
-                && editingPage != null)
-        {
-            ContentPage page;
-            try
-            {
-                page = pageManager.getContentPage(editingPage);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
-            }
-          
-            Fragment fragment = page.getFragmentById(fragmentChange);
-            if (fragment != null)
-            {
-                if (decoratorChange.trim().length() == 0)
-                    fragment.setDecorator(null);
-                else
-                    fragment.setDecorator(decoratorChange);
-            }
-            try
-            {
-                pageManager.updatePage(page);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
-            }
-        }
-        else if (themeChange != null &&
-                 layoutChange != null &&
-                 editingPage != null)                
-        {
-            // get page to be edited
-            ContentPage page;
-            try
-            {
-                // access content page to be edited
-                page = pageManager.getContentPage(editingPage);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
-            }
-
-            // edit and update page
-            boolean layoutPortletChanged = !layoutChange.equals(page.getRootFragment().getName());
-            try
-            {
-                // update page theme and/or root fragment
-                // layout portlet change
-                page.setDefaultDecorator(themeChange, Fragment.LAYOUT);
-                page.getRootFragment().setName(layoutChange);
-                pageManager.updatePage(page);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Unable to update page: "+e.getMessage(), e);
+                return;
             }
             
-            // update portlet entity and portlet window if layout portlet modified
-            if (layoutPortletChanged)
+            String theme = request.getParameter("theme");
+            if ( theme != null && theme.length() > 0 && !theme.equals(requestPage.getDefaultDecorator(Fragment.LAYOUT)) )
             {
+                requestPage.setDefaultDecorator(theme, Fragment.LAYOUT);
                 try
                 {
-                    // update matching portlet entity
-                    PortletEntity portletEntity = this.entityAccess.getPortletEntity(page.getRootFragment().getId());
-                    this.entityAccess.updatePortletEntity(portletEntity, (ContentFragment)page.getRootFragment());
-                    this.entityAccess.storePortletEntity(portletEntity);
-
-                    // update matching portlet window
-                    this.windowAccess.createPortletWindow(portletEntity, page.getRootFragment().getId());
+                    pageManager.updatePage(requestPage);
                 }
                 catch (Exception e)
                 {
-                    throw new PortletException("Unable to update portlet entity or window: "+e.getMessage(), e);
+                    throw new PortletException("Unable to update page: "+e.getMessage(), e);
+                }
+                return;
+            }
+            
+            String fragmentId = request.getParameter("fragment");
+            if ( fragmentId != null && fragmentId.length() > 0 )
+            {
+                String move = request.getParameter("move");
+                if ( move != null && move.length() > 0 )
+                {
+                    int moveCode = Integer.parseInt(move);                    
+                    PortletWindow window = requestContext.getActionWindow();
+                    Fragment currentFragment = requestPage.getFragmentById(window.getId().toString());
+                    Fragment fragmentToMove = requestPage.getFragmentById(fragmentId);
+                    
+                    if ( currentFragment == null || fragmentToMove == null )
+                    {
+                        // ignore no longer consistent page definition
+                        return;
+                    }
+                    
+                    ColumnLayout columnLayout;
+                    try
+                    {
+                        columnLayout = new ColumnLayout(numColumns, layoutType, currentFragment.getFragments(), null);
+                        columnLayout.addLayoutEventListener(new PageManagerLayoutEventListener(pageManager, requestPage, layoutType));
+                    }
+                    catch (LayoutEventException e1)
+                    {
+                        throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
+                    }
+
+                    try
+                    {                
+                        switch (moveCode)
+                        {
+                        case LayoutEvent.MOVED_UP:
+                            columnLayout.moveUp(fragmentToMove);
+                            break;
+                        case LayoutEvent.MOVED_DOWN:
+                            columnLayout.moveDown(fragmentToMove);
+                            break;
+                        case LayoutEvent.MOVED_RIGHT:
+                            columnLayout.moveRight(fragmentToMove);
+                            break;
+                        case LayoutEvent.MOVED_LEFT:
+                            columnLayout.moveLeft(fragmentToMove);
+                            break;
+                        default:
+                            throw new PortletException("Invalid movement code " + moveCode);
+                        }
+                       
+                    }
+                    catch (SecurityException se)
+                    {
+                        // ignore page security constraint violations, only
+                        // permitted users can edit managed pages; page
+                        // update will remain transient
+                        log.info("Unable to update page " + requestPage.getId() + " layout due to security permission/constraint.", se);
+                    }
+                    catch (Exception e)
+                    {
+                        if (e instanceof PortletException)
+                        {
+                            throw (PortletException)e;
+                        }
+                        else
+                        {
+                            throw new PortletException("Unable to process layout for page " + requestPage.getId() + " layout: " + e.toString(), e);
+                        }
+                    }
+                    return;
+                }
+                
+                String remove = request.getParameter("remove");
+                if ( remove != null && remove.length() > 0 )
+                {
+                    Page page = null;
+                    try
+                    {
+                        // TODO: for now retrieve the real Page instead of ContentPage
+                        //       because removing fragments isn't working through the ContentFragment wrapping
+                        page = pageManager.getPage(requestPage.getId());
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException("Unable to retrieve page "+requestPage.getId(),e);
+                    }
+
+                    PortletWindow window = requestContext.getActionWindow();
+                    Fragment currentFragment = page.getFragmentById(window.getId().toString());
+
+                    if ( currentFragment == null )
+                    {
+                        // ignore no longer consistent page definition
+                        return;
+                    }
+                    
+                    removeFragment(page, currentFragment, fragmentId);
+                    return;
+                }
+                
+                String decorator = request.getParameter("decorator");
+                if ( decorator != null )
+                {
+                    Fragment fragment = requestPage.getFragmentById(fragmentId);
+
+                    if ( fragment == null )
+                    {
+                        // ignore no longer consistent page definition
+                        return;
+                    }
+                    
+                    if (decorator.trim().length() == 0)
+                        fragment.setDecorator(null);
+                    else
+                        fragment.setDecorator(decorator);
+                    try
+                    {
+                        pageManager.updatePage(requestPage);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
+                    }
+                    return;
+                }
+            }
+            
+            String portlets = request.getParameter("portlets");
+            if ( portlets != null && portlets.length() > 0 )
+            {
+                PortletWindow window = requestContext.getActionWindow();
+                Fragment targetFragment = requestPage.getFragmentById(window.getId().toString());
+
+                if ( targetFragment == null )
+                {
+                    // ignore no longer consistent page definition
+                    return;
+                }
+                
+                StringTokenizer tokenizer = new StringTokenizer(portlets, ",");            
+                while (tokenizer.hasMoreTokens())
+                {
+                    String portlet = tokenizer.nextToken();
+                    if (portlet.startsWith("box_"))
+                    {
+                        portlet = portlet.substring("box_".length());                        
+                        addPortletToPage(requestPage, targetFragment, portlet);
+                    }
+                }
+                return;
+            }
+        }
+    }
+        
+    protected int getFragmentNestingLevel(Page page, String fragmentId)
+    {
+        Fragment root = page.getRootFragment();
+        if ( root.getId().equals(fragmentId) )
+        {
+            return 0;
+        }
+        else
+        {
+            return getFragmentNestingLevel(root, 1, fragmentId);
+        }
+    }
+    
+    protected int getFragmentNestingLevel(Fragment parent, int level, String fragmentId)
+    {
+        Iterator iter = parent.getFragments().iterator();
+        Fragment child;
+        int childLevel;
+        while ( iter.hasNext() )
+        {
+            child = (Fragment)iter.next();
+            if (child.getId().equals(fragmentId))
+            {
+                return level;
+            }
+            else
+            {
+                childLevel = getFragmentNestingLevel(child, level+1, fragmentId);
+                if ( childLevel != -1 )
+                {
+                    return childLevel;
                 }
             }
         }
-        else
-        {        
-            super.processAction(request, response);
-        }
+        return -1;
     }
 }
