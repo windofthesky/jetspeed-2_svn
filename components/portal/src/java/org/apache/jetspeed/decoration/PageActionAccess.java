@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.velocity;
+package org.apache.jetspeed.decoration;
 
 import java.io.Serializable;
 import java.security.AccessControlException;
@@ -35,7 +35,7 @@ import org.apache.jetspeed.security.PortletPermission;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PageActionAccess implements Serializable
+public class PageActionAccess implements PageEditAccess, Serializable
 {
     protected static final Log log = LogFactory.getLog(PageActionAccess.class);
 
@@ -47,6 +47,7 @@ public class PageActionAccess implements Serializable
     
     private boolean anonymous;
     private boolean editAllowed;
+    private boolean editing;
     private HashMap fragmentActionAccess;
     
     public PageActionAccess(boolean anonymous, Page page)
@@ -63,6 +64,7 @@ public class PageActionAccess implements Serializable
             this.anonymous = anonymous;
             this.editAllowed = checkEditPage(page);
             this.fragmentActionAccess.clear();
+            this.editing = false;
         }
     }
     
@@ -74,6 +76,20 @@ public class PageActionAccess implements Serializable
     public boolean isEditAllowed()
     {
         return editAllowed;
+    }
+    
+    public boolean isEditing()
+    {
+        return editing;
+    }
+    
+    public void setEditing(boolean editing)
+    {
+        if ( editing && ! editAllowed )
+        {
+            throw new SecurityException();
+        }
+        this.editing = editing;
     }
     
     public boolean checkPortletMode(String fragmentId, String portletName, PortletMode mode)
