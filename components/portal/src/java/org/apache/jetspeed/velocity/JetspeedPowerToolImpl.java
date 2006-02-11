@@ -18,13 +18,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletConfig;
@@ -40,7 +36,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
@@ -48,14 +43,12 @@ import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedExc
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
@@ -63,8 +56,6 @@ import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.Path;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.ContentTypeSet;
-import org.apache.pluto.om.window.PortletWindow;
 import org.apache.velocity.context.Context;
 
 /**
@@ -111,8 +102,6 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     protected PortletConfig portletConfig;
 
     protected Writer templateWriter;
-
-    public static final String POWER_TOOL_SESSION_ACTIONS = "org.apache.jetspeed.powertool.actions";
 
     protected static final Log log = LogFactory.getLog(JetspeedPowerToolImpl.class);
 
@@ -487,7 +476,6 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         // include decorated layout or portlet fragment
         try
         {
-            String fragmentType = f.getType();
             return decorateAndIncludePortlet(f);
         }
         catch (Exception e)
@@ -656,10 +644,11 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      * @return A list of actions available to the current window, filtered by
      *         securty access and current state.
      * @throws Exception
+     * @deprecated
      */
     public List getDecoratorActions()
     {
-        return getDecoratorActions(false);
+        return getCurrentFragment().getDecoration().getActions();
     }
 
     /**
@@ -669,200 +658,11 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      * @return A list of actions available to the current window, filtered by
      *         securty access and current state.
      * @throws Exception
+     * @deprecated
      */
     public List getPageDecoratorActions() throws Exception
     {
-        return getDecoratorActions(true);
-    }
-
-    protected List getDecoratorActions(boolean layout)
-    {
-        try
-        {
-            String key = getPage().getId();
-            boolean anonymous = !getLoggedOn();
-            PageActionAccess pageActionAccess = null;
-
-            synchronized (getRequestContext().getRequest().getSession())
-            {
-                Map sessionActions = (Map) getRequestContext().getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
-                if (sessionActions == null)
-                {
-                    sessionActions = new HashMap();
-                    getRequestContext().setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
-                }
-                else
-                {
-                    pageActionAccess = (PageActionAccess) sessionActions.get(key);
-                }
-                if (pageActionAccess == null)
-                {
-                    pageActionAccess = new PageActionAccess(anonymous, getPage());
-                    sessionActions.put(key, pageActionAccess);
-                }
-                else
-                {
-                    pageActionAccess.checkReset(getLoggedOn(), getPage());
-                }
-            }
-
-            PortletDefinitionComposite portlet = (PortletDefinitionComposite) getCurrentPortletEntity()
-                    .getPortletDefinition();
-            if (null == portlet)
-            {
-                return Collections.EMPTY_LIST; // allow nothing
-            }
-
-            List actions = new ArrayList();
-
-            PortletMode mode = getPortletMode();
-            WindowState state = getWindowState();
-
-            ContentTypeSet content = portlet.getContentTypeSet();
-            ContentFragment fragment = getCurrentFragment();
-            String fragmentId = fragment.getId();
-            String portletName = portlet.getUniqueName();
-            PortletWindow window = windowAccess.getPortletWindow(fragment);
-            String resourceBase = getPageBasePath();
-
-            if (!layout || pageActionAccess.isEditAllowed())
-            {
-                if (mode.equals(PortletMode.VIEW))
-                {
-                    if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed()
-                            && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT,
-                                resourceBase));
-                    }
-                    if (content.supportsPortletMode(PortletMode.HELP)
-                            && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP,
-                                resourceBase));
-                    }
-                }
-                else if (mode.equals(PortletMode.EDIT))
-                {
-                    if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW,
-                                resourceBase));
-                    }
-                    if (content.supportsPortletMode(PortletMode.HELP)
-                            && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP,
-                                resourceBase));
-                    }
-                }
-                else
-                // help
-                {
-                    if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW,
-                                resourceBase));
-                    }
-                    if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed()
-                            && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
-                    {
-                        actions.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT,
-                                resourceBase));
-                    }
-                }
-            }
-
-            if (!layout)
-            {
-                if (state.equals(WindowState.NORMAL))
-                {
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED,
-                                resourceBase));
-                    }
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED,
-                                resourceBase));
-                    }
-                }
-                else if (state.equals(WindowState.MAXIMIZED))
-                {
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED,
-                                resourceBase));
-                    }
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL,
-                                resourceBase));
-                    }
-                }
-                else
-                // minimized
-                {
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED,
-                                resourceBase));
-                    }
-                    if (pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-                    {
-                        actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL,
-                                resourceBase));
-                    }
-                }
-            }
-
-            return actions;
-        }
-        catch (Exception e)
-        {
-            log.warn("Unable to generate decortator actions: " + e.toString());
-            return Collections.EMPTY_LIST;
-        }
-    }
-
-    protected DecoratorAction createDecoratorAction(String resourceBase, String actionName)
-    {
-        String imageExt = (String) renderRequest.getAttribute(ACTION_IMAGE_EXTENSION_ATTR);
-        if (imageExt == null)
-        {
-            imageExt = ".gif";
-        }
-        String link = renderResponse.encodeURL(resourceBase + "/content/images/" + actionName + ".gif");
-        return new DecoratorAction(actionName, actionName, link);
-    }
-
-    /**
-     * Creates a Decorator PortletMode Action to be added to the list of actions
-     * decorating a portlet.
-     */
-    protected DecoratorAction createPortletModeAction(PortletWindow window, String actionName, PortletMode mode,
-            String resourceBase)
-    {
-        DecoratorAction action = createDecoratorAction(resourceBase, actionName);
-        PortalURL portalURL = getRequestContext().getPortalURL();
-        action.setAction(renderResponse.encodeURL(portalURL.createPortletURL(window, mode, null, portalURL.isSecure())
-                .toString()));
-        return action;
-    }
-
-    /**
-     * Creates a Decorator WindowState Action to be added to the list of actions
-     * decorating a portlet.
-     */
-    protected DecoratorAction createWindowStateAction(PortletWindow window, String actionName, WindowState state,
-            String resourceBase)
-    {
-        DecoratorAction action = createDecoratorAction(resourceBase, actionName);
-        PortalURL portalURL = getRequestContext().getPortalURL();
-        action.setAction(renderResponse.encodeURL(portalURL.createPortletURL(window, null, state, portalURL.isSecure())
-                .toString()));
-        return action;
+        return getCurrentFragment().getDecoration().getActions();
     }
 
     /**

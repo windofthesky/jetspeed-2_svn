@@ -15,12 +15,10 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -37,15 +35,12 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.velocity.DecoratorAction;
-import org.apache.jetspeed.velocity.JetspeedPowerToolImpl;
-import org.apache.jetspeed.velocity.PageActionAccess;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.window.PortletWindow;
@@ -89,9 +84,10 @@ public class DecorationValve extends AbstractValve implements Valve
         }
         ContentPage page = requestContext.getPage();
         Theme theme = decorationFactory.getTheme(page, requestContext);
+
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
         
-        PageActionAccess pageActionAccess = getPageActionAccess(requestContext, page);
+        PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
         
         ContentFragment rootFragment = page.getRootContentFragment();
         
@@ -105,59 +101,6 @@ public class DecorationValve extends AbstractValve implements Valve
         return "DecorationValve";
     }
     
-    /**
-     * Returns a <code>PageActionAccess</code> for the current user request.
-     * 
-     * @see PageActionAccess
-     * @param requestContext RequestContext of the current portal request.
-     * @param page
-     * @return PageActionAccess for the current user request.
-     */
-    protected PageActionAccess getPageActionAccess(RequestContext requestContext, Page page)
-    { 
-        String key = page.getId();
-        boolean loggedOn = isLoggedOn(requestContext);
-        boolean anonymous = !loggedOn;
-        PageActionAccess pageActionAccess = null;
-
-   
-        Map sessionActions = (Map) requestContext.getSessionAttribute(JetspeedPowerToolImpl.POWER_TOOL_SESSION_ACTIONS);
-        if (sessionActions == null)
-        {
-            sessionActions = new HashMap();
-            requestContext.setSessionAttribute(JetspeedPowerToolImpl.POWER_TOOL_SESSION_ACTIONS, sessionActions);
-        }
-        else
-        {
-            pageActionAccess = (PageActionAccess) sessionActions.get(key);
-        }
-        if (pageActionAccess == null)
-        {
-            pageActionAccess = new PageActionAccess(anonymous, page);
-            sessionActions.put(key, pageActionAccess);
-        }
-        else
-        {
-            pageActionAccess.checkReset(loggedOn, page);
-        }
-        
-        
-        return pageActionAccess;
-    }
-
-    /**
-     * Indicates if the user of the current request has been authenticated.
-     * 
-     * @param requestContext RequestContext of the current portal request.
-     * @return <code>true</code> if the user is currently authenticated, otherwise returns
-     * <code>false</code>.
-     */
-    protected boolean isLoggedOn(RequestContext requestContext)
-    {
-        Principal principal = requestContext.getRequest().getUserPrincipal();
-        return (principal != null);
-    }
-
     /**
      * Returns the current <code>PortletMode</code> for the target 
      * <code>Fragment</code> in the current portal request.
@@ -205,7 +148,7 @@ public class DecorationValve extends AbstractValve implements Valve
     {
         PortletEntity portletEntity = windowAccessor.getPortletWindow(fragment).getPortletEntity();
         PortletDefinitionComposite portlet = (PortletDefinitionComposite) portletEntity.getPortletDefinition();
-        Page page = requestContext.getPage();
+        ContentPage page = requestContext.getPage();
         
         if (null == portlet)
         {
@@ -219,24 +162,24 @@ public class DecorationValve extends AbstractValve implements Valve
 
         ContentTypeSet content = portlet.getContentTypeSet();
 
-        String fragmentId = fragment.getId();
         String portletName = portlet.getUniqueName();
         PortletWindow window = windowAccessor.getPortletWindow(fragment);        
         
         boolean isRootLayout = fragment.equals(page.getRootFragment());
 
-        if (!isRootLayout || pageActionAccess.isEditAllowed())
+        if ( isRootLayout )
+        {
+            List pageModeActions = getPageModes(requestContext, pageActionAccess, page);
+            actions.addAll(pageModeActions);
+        }
+        else if ( !Fragment.LAYOUT.equals(fragment.getType()) )
         {
             List portletModeActions = getPortletModes(requestContext, pageActionAccess, mode, content, portletName, window, fragment);
             actions.addAll(portletModeActions);
-        }
-        
-        if(!isRootLayout)
-        {
             List stateActions = getWindowStates(requestContext, pageActionAccess, state, portletName, window, fragment);
             actions.addAll(stateActions);
         }
-
+        
         decoration.setActions(actions);
     }
     
@@ -301,6 +244,86 @@ public class DecorationValve extends AbstractValve implements Valve
         return portletModes;
     }
     
+    
+    /**
+     * Builds a list of portlet modes that can be executed on the current
+     * <code>fragment</code> excluding the portlet's current mode.
+     * 
+     * @param requestContext RequestContext of the current portal request.
+     * @param pageActionAccess
+     * @param mode
+     * @param content
+     * @param portletName
+     * @param window
+     * @param fragment
+     * @return <code>java.util.List</code> of modes excluding the current one.
+     * @throws PortletEntityNotStoredException 
+     */
+    protected List getPageModes(RequestContext requestContext, PageActionAccess pageActionAccess, ContentPage page)
+    {
+        List pageModes = new ArrayList();
+        
+        ContentFragment fragment = page.getRootContentFragment();
+        Decoration decoration = fragment.getDecoration();
+        
+        try
+        {
+            PortletWindow window = windowAccessor.getPortletWindow(fragment);        
+            PortletEntity portletEntity = window.getPortletEntity();
+            PortletDefinitionComposite portlet = (PortletDefinitionComposite) portletEntity.getPortletDefinition();        
+            ContentTypeSet content = portlet.getContentTypeSet();
+
+            NavigationalState nav = requestContext.getPortalURL().getNavigationalState();
+            PortletMode mode = nav.getMode(window);
+            WindowState state = nav.getState(window);
+            
+            if (mode.equals(PortletMode.HELP) || !state.equals(WindowState.NORMAL))
+            {
+                // switch back to VIEW mode and NORMAL state.
+                DecoratorAction action = createDecoratorAction(PortletMode.VIEW.toString(), decoration);                        
+                PortalURL portalURL = requestContext.getPortalURL();
+                action.setAction(portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString());
+                pageModes.add(action);
+            }
+            else if ( pageActionAccess.isEditAllowed() )
+            {
+                String targetMode = pageActionAccess.isEditing() ? PortletMode.VIEW.toString() : PortletMode.EDIT.toString();
+                DecoratorAction action = createDecoratorAction(targetMode, decoration);
+                PortalURL portalURL = requestContext.getPortalURL();
+                HashMap parameters = new HashMap();
+                String[] paramValues = new String[]{targetMode};
+                parameters.put("pageMode",paramValues);
+
+                // Use an ActionURL to set the oposite pageMode and always set VIEW mode and state NORMAL 
+                action.setAction(portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString());
+                pageModes.add(action);
+                
+                if (content.supportsPortletMode(PortletMode.HELP))
+                {
+                    action = createDecoratorAction(PortletMode.HELP.toString(), decoration);
+                    if ( pageActionAccess.isEditing() )
+                    {
+                        // force it back to VIEW mode first with an ActionURL, as well as setting HELP mode and MAXIMIZED state
+                        paramValues[0] = PortletMode.VIEW.toString();
+                        action.setAction(portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString());
+                    }
+                    else
+                    {
+                        // switch to mode HELP and state MAXIMIZED
+                        action.setAction(portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString());
+                    }
+                    pageModes.add(action);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            log.warn("Unable to initalize PageLayout actions for fragment "+fragment.getId(), e);
+            pageModes = null;
+        }
+        
+        return pageModes;
+    }  
     
     /**
      * Builds a list of window states that can be executed on the current
