@@ -103,3 +103,43 @@ body.layout-jscookmenu
    position: relative;
    top: -12px;
 }
+
+.layout-jscookmenu .layout-edit-bar
+{
+  width: 100%;
+  padding-top: 5px;
+  overflow:hidden;
+  clip:auto;
+}
+
+.layout-jscookmenu .layout-edit-bar label, 
+.layout-jscookmenu .layout-edit-bar input, 
+.layout-jscookmenu .layout-edit-bar select 
+{
+  font-size: 8pt;
+  color: blue;
+}
+
+.layout-jscookmenu .layout-edit-bar label
+{
+  padding-left: 9px;
+}
+
+.layout-jscookmenu .layout-edit-bar-left
+{
+  display:inline;
+  float:left;
+}
+
+.layout-jscookmenu .layout-edit-bar-right
+{
+  display:inline;
+  float:right;
+  padding-right: 5px;
+}
+
+.layout-jscookmenu .portlet-edit-bar select
+{
+  font-size: 8pt;
+  color: blue;
+}

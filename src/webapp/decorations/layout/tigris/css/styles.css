@@ -296,3 +296,30 @@ body.layout-tigris
    display: inline;
 }
 
+.layout-tigris .layout-edit-bar
+{
+  width: 100%;
+  padding-top: 5px;
+  font-size: 8pt;
+  color: blue;
+  overflow:hidden;
+  clip:auto;
+}
+
+.layout-tigris .layout-edit-bar input
+{
+  font-size: 8pt;
+}
+
+.layout-tigris .layout-edit-bar-left
+{
+  display:inline;
+  float:left;
+}
+
+.layout-tigris .layout-edit-bar-right
+{
+  display:inline;
+  float:right;
+  padding-right: 5px;
+}
