@@ -35,6 +35,7 @@ public interface PortalReservedParameters
     
     // Session and Request attribute keys
     public static final String PAGE_ATTRIBUTE = "org.apache.jetspeed.Page";
+    public static final String PAGE_EDIT_ACCESS_ATTRIBUTE = "org.apache.jetspeed.decoration.PageEditAccess";
     public static final String SESSION_KEY_SUBJECT = "org.apache.jetspeed.security.subject";
     public static final String REQUEST_CONTEXT_ATTRIBUTE = "org.apache.jetspeed.request.RequestContext";
     public static final String FRAGMENT_ATTRIBUTE = "org.apache.jetspeed.Fragment";
