@@ -93,7 +93,7 @@ public interface Decoration
      * Returns the list of <code>DecoratorAction</code>s to be displayed
      * within the portlet window.
      * 
-     * @see org.apache.jetspeed.velocity.DecoratorAction
+     * @see org.apache.jetspeed.decoration.DecoratorAction
      * 
      * @return the list of <code>DecoratorAction</code>s to be displayed
      * within the portlet window.
@@ -103,7 +103,7 @@ public interface Decoration
     /**
      * Set the list of <code>DecoratorAction</code>s to be displayed
      * within the portlet window.
-     * @see org.apache.jetspeed.velocity.DecoratorAction
+     * @see org.apache.jetspeed.decoration.DecoratorAction
      * 
      * @param actions actions to displayed within this portlet window. 
      */
