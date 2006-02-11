@@ -103,11 +103,6 @@
    
    <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="${_action.Link}" alt="${_action.Alt}" border="0" /></a>
   #end
-  #if($editing == true)
-   #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
-
-   <a href="javascript:openWindow('$response.encodeURL($chooser)')"><img src="#GetPageResource('images/select.gif')" border="0" title="Add a Portlet"/></a>
-  #end       
  </div>
  #end
 #end
@@ -178,4 +173,33 @@
         <span class="separator"></span>
     #end    
    </div>
+#end
+
+#macro (int $_variable)
+  #set($_aint=0)
+  #set($_variable=$_aint.valueOf("$_variable"))
+#end
+
+#macro (bool $_variable)
+  #set($_abool=true)
+  #set($_variable=$_abool.valueOf("$_variable"))
+#end
+
+#macro (getProperty $_property $_properties $_name $_default)
+  #set($_value = "")
+  #set($_value = $_properties.getProperty($_name))
+  #set($_property = $_default)
+  #if($_value != "")
+    #set($_property=$_value)
+  #end
+#end
+
+#macro (getIntProperty $_property $_properties $_name $_default)
+  #getProperty($_property $_properties $_name $_default)
+  #int($_property)
+#end
+
+#macro (getBoolProperty $_property $_properties $_name $_default)
+  #getProperty($_property $_properties $_name $_default)
+  #bool($_property)
 #end
