@@ -98,7 +98,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
         // use layout decoration for top level layout root
         // fragments; portlet layouts for all others
-        if (fragment.getType().equals(Fragment.LAYOUT) && fragment.equals(page.getRootFragment()))
+        if (fragment.getType().equals(Fragment.LAYOUT))
         {
             decoration = getLayoutDecoration(decorationName, requestContext);
         }
