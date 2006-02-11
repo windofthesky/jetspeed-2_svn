@@ -263,22 +263,53 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 
     protected void removeFragment(String pageId, String fragmentId)
     {
+        Page page = null;
         try
         {
-            Page page = pageManager.getPage(pageId);
+            page = pageManager.getPage(pageId);
+            
+        }
+        catch (Exception e)
+        {
+            log.error("failed to remove portlet " + fragmentId + " from page: " + pageId, e);
+        }
+        removeFragment(page,page.getRootFragment(), fragmentId);            
+    }
+    
+    protected void removeFragment(Page page, Fragment root, String fragmentId)
+    {
+        try
+        {
             Fragment f = page.getFragmentById(fragmentId);
-            Fragment root = page.getRootFragment();
+            if ( f == null )
+            {
+                // ignore no longer existing fragment error
+                return;
+            }
             root.getFragments().remove(f);
             pageManager.updatePage(page);
         }
         catch (Exception e)
         {
-            log.error("failed to remove portlet " + fragmentId + " from page: " + pageId);
+            log.error("failed to remove portlet " + fragmentId + " from page: " + page, e);
         }
-            
     }
     
     protected void addPortletToPage(String pageId, String portletId)
+    {
+        Page page = null;
+        try
+        {
+            page = pageManager.getContentPage(pageId);
+        }
+        catch (Exception e)
+        {
+            log.error("failed to add portlet " + portletId + " to page: " + pageId, e);
+        }
+        addPortletToPage(page, page.getRootFragment(), portletId);
+    }
+    
+    protected void addPortletToPage(Page page, Fragment root, String portletId)
     {
         try
         {
@@ -286,18 +317,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             fragment.setType(Fragment.PORTLET);
             fragment.setName(portletId);
             
-            Page page = pageManager.getContentPage(pageId);
-            // WARNING: under construction
-            // this is prototype and very dependent on a single depth fragment structure            
-            Fragment root = page.getRootFragment();
             root.getFragments().add(fragment);
             pageManager.updatePage(page);            
         }
         catch (Exception e)
         {
-            log.error("failed to add portlet " + portletId + " to page: " + pageId);
+            log.error("failed to add portlet " + portletId + " to page: " + page, e);
         }
-        
     }
     
     /**
