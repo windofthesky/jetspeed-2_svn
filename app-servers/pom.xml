@@ -98,6 +98,37 @@ limitations under the License.
                     </execution>
 
                 </executions>
+                <!--
+                    Bug: All plugin dependencies must be copied to the first instance
+                    of the maven-antrun-plugin run, (e.g. to the root pom), since the
+                    first set of deps sticks for the entire maven2 execution cycle.
+                    Bug: Plugin dependencies are not propagated from pluginManagement.
+                    Bug: Versions must be specified here and not in dependencyManagement.
+
+                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact-ant</artifactId>
+                        <version>${org.apache.maven.artifact.ant.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
 

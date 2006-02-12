@@ -63,7 +63,7 @@ limitations under the License.
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
 
-                    <!-- deploy to application server -->
+                    <!-- configure resources -->
                     <execution>
                         <id>jetspeed-resources</id>
                         <phase>process-resources</phase>
@@ -102,94 +102,132 @@ limitations under the License.
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>content-server</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-cm</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-components</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-deploy-tools</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-rdbms</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-prefs</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-search</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-security</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-registry</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-id-generator</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-file-cache</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-locator</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-capability</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-profiler</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-page-manager</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-portal-site</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-portlet-factory</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-sso</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-statistics</artifactId>
+            <scope>runtime</scope>
         </dependency>        
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-header-resource</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-portal</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>request</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

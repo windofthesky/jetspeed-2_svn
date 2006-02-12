@@ -74,7 +74,7 @@ limitations under the License.
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="populate-db" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.skip"
                                               value="${org.apache.jetspeed.env.skip.test}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
@@ -103,7 +103,7 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="populate-db-userinfo" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.skip"
                                               value="${org.apache.jetspeed.env.skip.production}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
@@ -127,6 +127,57 @@ limitations under the License.
                     </execution>
 
                 </executions>
+                <!--
+                    Bug: All plugin dependencies must be copied to the first instance
+                    of the maven-antrun-plugin run, (e.g. to the root pom), since the
+                    first set of deps sticks for the entire maven2 execution cycle.
+                    Bug: Plugin dependencies are not propagated from pluginManagement.
+                    Bug: Versions must be specified here and not in dependencyManagement.
+
+                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque</artifactId>
+                        <version>${torque.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>jndi</groupId>
+                                <artifactId>jndi</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>javax.sql</groupId>
+                                <artifactId>jdbc-stdext</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>torque</groupId>
+                        <artifactId>torque-gen-templates</artifactId>
+                        <version>${torque.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

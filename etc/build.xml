@@ -49,10 +49,11 @@ limitations under the License.
 
     <target name="help">
         <echo message="Buildfile for the etc maven POM."/>
-        <echo message="Usage: ant [ schema | populate ]"/>
+        <echo message="Usage: ant [ schema | populate-db | populate-db-userinfo ]"/>
         <echo message="Where:"/>
         <echo message="    schema - build schema for database."/>
-        <echo message="    populate - build and populate database instance."/>
+        <echo message="    populate-db - build and minimally populate database instance."/>
+        <echo message="    populate-db-userinfo - build and populate database instance with default users."/>
         <echo message="Configuration:"/>
         <echo message="    org.apache.jetspeed.database.skip=${org.apache.jetspeed.database.skip}"/>
         <echo message="    org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}"/>
@@ -245,7 +246,7 @@ limitations under the License.
 
     <!-- Populate Database -->
 
-    <target name="populate" depends="populate-skip" unless="org.apache.jetspeed.skip">
+    <target name="populate-db" depends="populate-skip" unless="org.apache.jetspeed.skip">
 
         <!-- execute drop scripts -->
         <antcall target="sql-execute">
@@ -265,6 +266,17 @@ limitations under the License.
         <antcall target="sql-execute">
             <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
             <param name="database.arg.scripts" value="populate-db-default.sql"/>
+            <param name="database.arg.onerror" value="abort"/>
+        </antcall>
+
+    </target>
+
+    <target name="populate-db-userinfo" depends="populate-db" unless="org.apache.jetspeed.skip">
+
+        <!-- execute default userinfo population scripts -->
+        <antcall target="sql-execute">
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts" value="populate-userinfo-for-default-psml.sql"/>
             <param name="database.arg.onerror" value="abort"/>
         </antcall>
 

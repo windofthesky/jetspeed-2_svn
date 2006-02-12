@@ -16,26 +16,24 @@ limitations under the License.
 
   $Id:$
 -->
-<project name="page-manager" default="help">
+<project name="deploy-tool" default="help">
 
     <!-- Usage -->
 
     <target name="help">
-        <echo message="Buildfile for the page-manager maven POM."/>
-        <echo message="Usage: ant [ testdata ]"/>
+        <echo message="Buildfile for the deploy-tool maven POM."/>
+        <echo message="Usage: ant [ resources ]"/>
         <echo message="Where:"/>
-        <echo message="    testdata - setup test data."/>
+        <echo message="    resources - setup infusion resources."/>
     </target>
 
-    <!-- Test Data Setup -->
+    <!-- Resources -->
 
-    <target name="testdata">
+    <target name="resources">
 
-        <delete dir="${basedir}/target/testdata"/>
-        <mkdir dir="${basedir}/target"/>
-        <copy todir="${basedir}/target/testdata">
-            <fileset dir="${basedir}/testdata"/>
-        </copy>
+        <mkdir dir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy"/>
+        <copy file="${basedir}/../../src/webapp/WEB-INF/tld/portlet.tld"
+              todir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy"/>
 
     </target>
 

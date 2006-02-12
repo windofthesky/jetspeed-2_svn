@@ -189,7 +189,7 @@ limitations under the License.
         <!-- Generate and deploy application context file -->
         <delete file="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml"/>
         <copy todir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
-            <fileset dir="../etc/conf/tomcat">
+            <fileset dir="${basedir}/../etc/conf/tomcat">
                 <include name="jetspeed-tomcat-5.xml" unless="org.apache.jetspeed.tomcat.5.5"/> 
                 <include name="jetspeed-tomcat-5.5.xml" if="org.apache.jetspeed.tomcat.5.5"/> 
             </fileset>

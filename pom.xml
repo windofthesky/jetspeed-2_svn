@@ -901,20 +901,23 @@ limitations under the License.
             </plugins>
         </pluginManagement>    
 
-        <!-- Plugin Dependencies -->
+        <!--
+            Bug: All plugin dependencies must be copied to the first instance
+            of the maven-antrun-plugin run, (e.g. here in root pom), since the
+            first set of deps sticks for the entire maven2 execution cycle.
+            Bug: Plugin dependencies are not propagated from pluginManagement.
+            Bug: Versions must be specified here and not in dependencyManagement.
+
+            Note: All three ant dependencies are listed to keep nodeps in sync.
+        -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <!--
-                    Bug: Plugin dependencies must be in parent POM since they can only be
-                    defined once.
-                    Bug: Plugin dependencies are not propagated from pluginManagement.
-                    Bug: Versions must be specified here and not in dependencyManagement.
-
-                    Note: All three ant dependencies are listed to keep nodeps in sync.
-                -->
+                <inherited>false</inherited>
                 <dependencies>
+
+                    <!-- Ant -->
                     <dependency>
                         <groupId>ant</groupId>
                         <artifactId>ant</artifactId>
@@ -930,11 +933,15 @@ limitations under the License.
                         <artifactId>ant-nodeps</artifactId>
                         <version>${ant.version}</version>
                     </dependency>
+
+                    <!-- Maven AntLib -->
                     <dependency>
                         <groupId>org.apache.maven</groupId>
                         <artifactId>maven-artifact-ant</artifactId>
                         <version>${org.apache.maven.artifact.ant.version}</version>
                     </dependency>
+
+                    <!-- Torque -->
                     <dependency>
                         <groupId>torque</groupId>
                         <artifactId>torque</artifactId>
@@ -957,14 +964,10 @@ limitations under the License.
                     </dependency>
                     <dependency>
                         <groupId>torque</groupId>
-                        <artifactId>torque-gen</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
                         <artifactId>torque-gen-templates</artifactId>
                         <version>${torque.version}</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
         </plugins>

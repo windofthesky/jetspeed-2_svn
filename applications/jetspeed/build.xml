@@ -46,14 +46,14 @@ limitations under the License.
     <target name="configure">
 
         <!-- Build webapp resources -->        
-        <delete dir="target/webapp"/>
-        <mkdir dir="target/webapp"/>
-        <copy todir="target/webapp">
-            <fileset dir="../../src/webapp"/>
+        <delete dir="${basedir}/target/webapp"/>
+        <mkdir dir="${basedir}/target/webapp"/>
+        <copy todir="${basedir}/target/webapp">
+            <fileset dir="${basedir}/../../src/webapp"/>
         </copy>
 
         <!-- Configure runtime configuration propertiee resource -->
-        <replace file="target/webapp/WEB-INF/conf/jetspeed.properties">
+        <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
             <replacefilter token="@AUTODEPLOYMENT_SERVER@"
                            value="${org.apache.jetspeed.services.autodeployment.server}"/>
             <replacefilter token="@AUTODEPLOYMENT_USER@"
@@ -67,9 +67,9 @@ limitations under the License.
         </replace>
 
         <!-- Build OJB resources -->        
-        <mkdir dir="target/webapp/WEB-INF/classes"/>
-        <copy todir="target/webapp/WEB-INF/classes">
-            <fileset dir="../../etc/db-ojb"/>
+        <mkdir dir="${basedir}/target/webapp/WEB-INF/classes"/>
+        <copy todir="${basedir}/target/webapp/WEB-INF/classes">
+            <fileset dir="${basedir}/../../etc/db-ojb"/>
         </copy>
 
     </target>
