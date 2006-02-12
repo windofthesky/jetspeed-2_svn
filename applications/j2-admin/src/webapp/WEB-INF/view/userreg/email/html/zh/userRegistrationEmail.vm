@@ -1,0 +1,13 @@
+您好 $!{map.get("user.name.given")} $!{map.get("user.name.family")}:
+
+欢迎使用Jetspeed! 
+感谢您的注册。Jetspeed 是一个功能强大、基于组件的、支持JSR-168的门户系统。
+
+您的用户名: $!{map.get("user.name")}
+您的 密 码: $!{map.get("password")}
+
+您可以在下面的地址在线更改您的密码:
+$!{map.get("returnURL")}
+
+谢谢
+

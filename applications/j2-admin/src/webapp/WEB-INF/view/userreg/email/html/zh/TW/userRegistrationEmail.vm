@@ -1,0 +1,12 @@
+您好 $!{map.get("user.name.given")} $!{map.get("user.name.family")}:
+
+歡迎使用Jetspeed! 
+感謝您的註冊。Jetspeed 是一個功能強大、基於元件的、支援JSR-168的門戶系統。
+
+您的用戶名: $!{map.get("user.name")}
+您的 密 碼: $!{map.get("password")}
+
+您可以在下面的位址線上更改您的密碼:
+$!{map.get("returnURL")}
+
+謝謝
