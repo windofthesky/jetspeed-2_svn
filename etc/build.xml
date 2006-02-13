@@ -30,8 +30,7 @@ limitations under the License.
 
     <property name="org.apache.jetspeed.source.sql" value="${basedir}/sql"/>
     <property name="org.apache.jetspeed.database.source.sql" value="${org.apache.jetspeed.source.sql}/${org.apache.jetspeed.database.default.name}"/>
-    <property name="org.apache.jetspeed.target.sql" value="${basedir}/target/sql"/>
-    <property name="org.apache.jetspeed.database.target.sql" value="${org.apache.jetspeed.target.sql}/${org.apache.jetspeed.database.default.name}"/>
+    <property name="org.apache.jetspeed.database.target.sql" value="${basedir}/target/sql/${org.apache.jetspeed.database.default.name}"/>
 
     <property name="torque.contextProperties" value=""/>
     <property name="torque.runOnlyOnSchemaChange" value="true"/>
@@ -72,7 +71,7 @@ limitations under the License.
         <mkdir dir="${org.apache.jetspeed.database.target.sql}"/>
 
         <!-- copy general sql -->
-        <copy todir="${org.apache.jetspeed.target.sql}" overwrite="true" flatten="true" verbose="true" failonerror="false">
+        <copy todir="${org.apache.jetspeed.database.target.sql}" overwrite="true" verbose="true" failonerror="false">
             <fileset dir="${org.apache.jetspeed.source.sql}">
                 <include name="*.sql"/>
             </fileset>
@@ -250,7 +249,7 @@ limitations under the License.
 
         <!-- execute drop scripts -->
         <antcall target="sql-execute">
-            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
             <param name="database.arg.scripts" value="drop.sql"/>
             <param name="database.arg.onerror" value="continue"/>
         </antcall>
@@ -264,7 +263,7 @@ limitations under the License.
 
         <!-- execute default population scripts -->
         <antcall target="sql-execute">
-            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
             <param name="database.arg.scripts" value="populate-db-default.sql"/>
             <param name="database.arg.onerror" value="abort"/>
         </antcall>
@@ -275,7 +274,7 @@ limitations under the License.
 
         <!-- execute default userinfo population scripts -->
         <antcall target="sql-execute">
-            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.target.sql}"/>
+            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
             <param name="database.arg.scripts" value="populate-userinfo-for-default-psml.sql"/>
             <param name="database.arg.onerror" value="abort"/>
         </antcall>

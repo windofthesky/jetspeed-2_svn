@@ -184,6 +184,12 @@ limitations under the License.
             <artifactId>tyrex</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--
+            TODO: this dependency is causing POM validation errors when
+            the applications and components are pulled out of the maven2
+            repository... a better solution needs to be found to include
+            the jdbc drivers into the test builds.
+        -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
