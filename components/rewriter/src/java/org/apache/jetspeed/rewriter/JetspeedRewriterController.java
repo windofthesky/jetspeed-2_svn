@@ -53,23 +53,23 @@ public class JetspeedRewriterController implements RewriterController
     final static String CONFIG_ADAPTOR_XML = "adaptor.xml";
 
     // configuration parameters
-    private String mappingFile = null;
+    protected String mappingFile = null;
 
     /** the Castor mapping file name */
-    private Mapping mapper = null;
+    protected Mapping mapper = null;
 
     /** Collection of rulesets in the system */
-    private Map rulesets = new HashMap();
+    protected Map rulesets = new HashMap();
 
     /** configured basic rewriter class */
-    private Class basicRewriterClass = BasicRewriter.class;
+    protected Class basicRewriterClass = BasicRewriter.class;
 
     /** configured ruleset rewriter class */
-    private Class rulesetRewriterClass = RulesetRewriterImpl.class;
+    protected Class rulesetRewriterClass = RulesetRewriterImpl.class;
 
     /** Adaptors */
-    private Class adaptorHtmlClass = SwingParserAdaptor.class;
-    private Class adaptorXmlClass = SaxParserAdaptor.class;
+    protected Class adaptorHtmlClass = SwingParserAdaptor.class;
+    protected Class adaptorXmlClass = SaxParserAdaptor.class;
 
     public JetspeedRewriterController( String mappingFile ) throws RewriterException
     {
@@ -163,7 +163,7 @@ public class JetspeedRewriterController implements RewriterController
      * Load the mapping file for ruleset configuration
      *  
      */
-    private void loadMapping() throws RewriterException
+    protected void loadMapping() throws RewriterException
     {
         File map = new File(this.mappingFile);
         if (map.exists() && map.isFile() && map.canRead())
