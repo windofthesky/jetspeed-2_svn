@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.util.descriptor;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -27,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -85,6 +87,8 @@ public class PortletApplicationWar
     protected static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
     protected static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
+
+    protected static final int MAX_BUFFER_SIZE = 1024;
 
     public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
@@ -285,7 +289,42 @@ public class PortletApplicationWar
      */
     protected Reader getReader( String path ) throws IOException
     {
-        return new InputStreamReader(getInputStream(path));
+        BufferedInputStream is = new BufferedInputStream(getInputStream(path));
+
+        String enc = "UTF-8";
+        try
+        {
+            is.mark(MAX_BUFFER_SIZE);
+            byte[] buf = new byte[MAX_BUFFER_SIZE];
+            int size = is.read(buf, 0, MAX_BUFFER_SIZE);
+            if (size > 0)
+            {
+                String key = "encoding=\"";
+                String data = new String(buf, 0, size, "US-ASCII");
+                int lb = data.indexOf("\n");
+                if (lb > 0)
+                {
+                    data = data.substring(0, lb);
+                }
+                int off = data.indexOf(key);
+                if (off > 0)
+                {
+                    enc = data.substring(off + key.length(), data.indexOf('"', off + key.length()));
+                }
+            }
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            log.warn("Unsupported encoding.", e);
+        }
+        catch (IOException e)
+        {
+            log.warn("Unsupported encoding.", e);
+        }
+
+        //Reset the bytes read
+        is.reset();
+        return new InputStreamReader(is, enc);
     }
 
     /**
