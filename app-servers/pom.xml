@@ -87,8 +87,6 @@ limitations under the License.
                                               value="portlet-api"/>
                                     <property name="portlet-api.version"
                                               value="${portlet-api.version}"/>
-                                    <property name="local.repository.location"
-                                              value="${settings.localRepository}"/>
                                 </ant>
                             </tasks>
                         </configuration>

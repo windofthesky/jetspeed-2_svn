@@ -39,6 +39,39 @@ limitations under the License.
         Jetspeed-2 Components
     </description>
 
+    <!-- Profiles -->
+
+    <profiles>
+
+        <!-- Test Profile -->
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
+            </activation>
+            <!--
+                Bug: This system scoped dependency is brought in via a profile
+                since system paths based on a property cannot appear as a main
+                build dependency since it will generate an invalid POM when the
+                pom is referenced as a dependency.
+            -->
+            <dependencies>
+                <!-- Database Driver -->
+                <dependency>
+                    <groupId>${pom.groupId}</groupId>
+                    <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
+                    <version>${pom.version}</version>
+                    <scope>system</scope>
+                    <systemPath>${org.apache.jetspeed.test.jdbc.drivers.path}</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+
+    </profiles>
+
     <!-- Component Modules -->
 
     <modules>
@@ -183,16 +216,6 @@ limitations under the License.
             <groupId>tyrex</groupId>
             <artifactId>tyrex</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!--
-            TODO: this dependency is causing POM validation errors when
-            the applications and components are pulled out of the maven2
-            repository... a better solution needs to be found to include
-            the jdbc drivers into the test builds.
-        -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
         </dependency>
 
     </dependencies>

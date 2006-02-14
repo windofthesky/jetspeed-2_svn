@@ -25,6 +25,17 @@ limitations under the License.
         <maven>2.0.2</maven>
     </prerequisites>
 
+    <!-- POM Identification -->
+
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.1-dev</version>
+    <packaging>pom</packaging>
+    <name>Jetspeed 2 Enterprise Portal</name>
+    <description>
+        Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
+    </description>
+
     <!-- Profiles -->
 
     <profiles>
@@ -128,17 +139,6 @@ limitations under the License.
         <xstream.version>1.1.2</xstream.version>
 
     </properties>
-
-    <!-- POM Identification -->
-
-    <groupId>org.apache.portals.jetspeed-2</groupId>
-    <artifactId>pom</artifactId>
-    <version>2.1-dev</version>
-    <packaging>pom</packaging>
-    <name>Jetspeed 2 Enterprise Portal</name>
-    <description>
-        Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
-    </description>
 
     <!-- Default Modules -->
 
@@ -656,23 +656,6 @@ limitations under the License.
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${org.apache.derby.version}</version>
-            </dependency>
-
-            <!-- Database Connection -->
-            <!--
-                TODO: this dependency is causing POM validation errors when
-                the applications and components are pulled out of the maven2
-                repository... a better solution needs to be found to include
-                the jdbc drivers into the test builds. The problem is the
-                use of the property in the system path, (dont know why it is
-                such a problem for the POM loader since it is defined).
-            -->
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
-                <version>${pom.version}</version>
-                <scope>system</scope>
-                <systemPath>${org.apache.jetspeed.test.jdbc.drivers.path}</systemPath>
             </dependency>
 
             <!-- LDAP -->

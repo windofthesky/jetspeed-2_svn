@@ -35,7 +35,6 @@ limitations under the License.
     <property name="org.apache.pluto.version" value=""/>
     <property name="portlet-api.groupid" value=""/>
     <property name="portlet-api.version" value=""/>
-    <property name="local.repository.location" value=""/>
 
     <!-- Usage -->
 
@@ -60,7 +59,6 @@ limitations under the License.
         <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    portlet-api.groupid=${portlet-api.groupid}"/>
         <echo message="    portlet-api.version=${portlet-api.version}"/>
-        <echo message="    local.repository.location=${local.repository.location}"/>
     </target>
 
     <!-- Tomcat Deployment -->
@@ -95,7 +93,6 @@ limitations under the License.
             <dependency groupId="${portlet-api.groupid}"
                         artifactId="portlet-api"
                         version="${portlet-api.version}"/>
-            <localRepository location="${local.repository.location}"/>
         </dependencies>
         <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="true">
             <fileset refid="shared.lib.dependencies.id"/>
@@ -113,11 +110,10 @@ limitations under the License.
                         artifactId="jetspeed"
                         version="${org.apache.jetspeed.version}"
                         type="war"/>
-            <localRepository location="${local.repository.location}"/>
         </dependencies>
         <copy todir="${org.apache.jetspeed.server.home}/webapps">
             <fileset refid="jetspeed.dependency.id"/>
-            <mapper type="regexp" from=".*/([^/]*)-${org.apache.jetspeed.version}.war" to="\1.war"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*)-${org.apache.jetspeed.version}.war" to="\1.war"/>
         </copy>
         <unjar src="${org.apache.jetspeed.server.home}/webapps/jetspeed.war" dest="${org.apache.jetspeed.server.home}/webapps/jetspeed"/>
 
@@ -179,11 +175,10 @@ limitations under the License.
                         artifactId="rss"
                         version="${org.apache.jetspeed.version}"
                         type="war"/>
-            <localRepository location="${local.repository.location}"/>
         </dependencies>
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy">
             <fileset refid="portletapp.dependencies.id"/>
-            <mapper type="regexp" from=".*/([^/]*)-(?:(?:${org.apache.jetspeed.version})|(?:${org.apache.portals.bridges.version})).war" to="\1.war"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*)-(?:(?:${org.apache.jetspeed.version})|(?:${org.apache.portals.bridges.version})).war" to="\1.war"/>
         </copy>
 
         <!-- Generate and deploy application context file -->
