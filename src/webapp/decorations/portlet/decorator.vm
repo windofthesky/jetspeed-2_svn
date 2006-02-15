@@ -29,7 +29,7 @@ the root of your decortaion.  This will be used instead of the default.
 <div id="${f.id}" class="portlet ${decoration.baseCSSClass}">
   <div class="PTitle" >
     <div class="PTitleContent">	
-      $!jetspeed.getTitle($jetspeed.getPortletEntity($f), $f)
+      $!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)
     </div>
     
     #PortletActionBar($decoration)
