@@ -319,7 +319,8 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
      */
     public PortletEntity getPortletEntity(ContentFragment f) throws Exception
     {
-        PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
+        PortletEntity portletEntity = windowAccess.getPortletWindow(f).getPortletEntity();
+        // This API hits the DB: PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
         if (portletEntity == null)
         {
             try
