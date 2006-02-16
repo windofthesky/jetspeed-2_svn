@@ -109,11 +109,6 @@ public interface MutablePortletApplication extends PortletApplication, Serializa
     void setDescription(String string);
 
     /**
-     * @param objectID
-     */
-    void setId(String objectID);
-
-    /**
      *
      * @param version
      */

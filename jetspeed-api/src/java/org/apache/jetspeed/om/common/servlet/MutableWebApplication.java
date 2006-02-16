@@ -38,8 +38,6 @@ public interface MutableWebApplication extends WebApplicationDefinition, Seriali
 {
     void setContextRoot(String contextRoot);
     
-    void setId(String id);
-
     void setDescriptionSet(DescriptionSet descriptions);
 
     void setDisplayNameSet(DisplayNameSet names);

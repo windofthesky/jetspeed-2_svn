@@ -39,11 +39,6 @@ public interface LocalizedField
     public void setValue(String value);
     
     /**
-     * @param objectID
-     */
-    void setId(String objectID);
-
-    /**
      * 
      */
     public ObjectID getId();
