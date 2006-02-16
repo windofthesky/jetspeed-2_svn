@@ -33,6 +33,11 @@ public class JetspeedLongObjectID implements PortalObjectID
     public JetspeedLongObjectID(Long oid)
     {
         this.oid = oid;
+        if ( oid == null )
+        {
+            // really cannot have a null here
+            throw new NullPointerException();
+        }
     }
 
     public long getOID()
