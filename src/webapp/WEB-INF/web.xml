@@ -20,17 +20,27 @@ limitations under the License.
 
 <web-app>
   <display-name>Jetspeed-2 Enterprise Portal</display-name>	
-  
   <filter>
     <filter-name>AJAXFilter</filter-name>
     <filter-class>org.apache.jetspeed.ajax.AJAXFilter</filter-class>   
   </filter>
-  
+  <!--
+  <filter>
+    <filter-name>PortalFilter</filter-name>
+    <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
+  </filter>
+  -->
   <filter-mapping>
     <filter-name>AJAXFilter</filter-name>
     <url-pattern>*.ajax</url-pattern>    
   </filter-mapping>  
-
+<!--      
+    
+  <filter-mapping>
+    <filter-name>PortalFilter</filter-name>
+    <url-pattern>/*</url-pattern>    
+  </filter-mapping>  
+-->    
   
   <listener>
     <listener-class>org.apache.jetspeed.engine.JetspeedServlet</listener-class>
