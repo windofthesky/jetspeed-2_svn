@@ -28,6 +28,7 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
       <field-descriptor
          name="parentId"
@@ -66,6 +67,7 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
       <field-descriptor
          name="parentId"
@@ -117,7 +119,6 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
-
       />
 
       <field-descriptor
@@ -126,8 +127,6 @@ limitations under the License.
          jdbc-type="VARCHAR"
 
       />
-      <!--conversion="org.apache.jetspeed.util.ojb.LongtoStringFieldConversion"-->
-      <!--conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
 
       <field-descriptor
          name="name"
@@ -242,7 +241,6 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
-
       />
 
 
@@ -305,7 +303,6 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
-
       />
 
       <field-descriptor
@@ -1112,14 +1109,6 @@ limitations under the License.
          column="PORTLET_NAME"
          jdbc-type="VARCHAR"
       />
-      <!--
-      <field-descriptor
-         name="portletId"
-         column="PORTLET_DEFINITION_ID"
-         jdbc-type="BIGINT"
-
-      />
-      -->
 
       <field-descriptor
          name="id"
@@ -1128,19 +1117,6 @@ limitations under the License.
          autoincrement="true"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
       />
-<!--         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion" -->
-     <!--
-     <reference-descriptor
-        name="portletDefinition"
-        class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
-         auto-delete="false"
-         auto-update = "true"
-         auto-retrieve = "true"
-     >
-         <foreignkey field-ref="portletId"/>
-      </reference-descriptor>
-       -->
-
 
   </class-descriptor>
 

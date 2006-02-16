@@ -47,7 +47,6 @@ import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.util.StringUtils;
@@ -63,8 +62,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 {
 
     private long oid;
-
-    private long portletId;
 
     private JetspeedObjectID id;
 
@@ -85,8 +82,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     private PortletApplicationEntity applicationEntity = null;
 
     private PortletWindowList portletWindows = new PortletWindowListImpl();
-
-    private PortletEntity modifiedObject = null;
 
     private PortletDefinitionComposite portletDefinition = null;
     

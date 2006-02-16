@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.util.ojb;
 
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
@@ -24,7 +24,7 @@ import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
  * ObjectRelationalBridge field conversion.
  * </p>
  * 
- * Converts between <code>long</code> and <code>ObjectID</code>
+ * Converts between <code>long</code> and <code>JetspeedLongObjectID</code>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
@@ -36,17 +36,11 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
      */
     public Object javaToSql(Object arg0) throws ConversionException
     {
-        if (arg0 instanceof JetspeedObjectID)
+        if (arg0 instanceof JetspeedLongObjectID)
         {
-            JetspeedObjectID oid = (JetspeedObjectID) arg0;
-
-            return new Long(oid.longValue());
+            return ((JetspeedLongObjectID)arg0).getLong();
         }
-        else
-        {
-            return arg0;
-        }
-
+        return arg0;
     }
 
     /**
@@ -56,14 +50,8 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
     {
         if (arg0 instanceof Number)
         {
-            
-            return new JetspeedObjectID(((Number)arg0).longValue());
+            return new JetspeedLongObjectID(((Number)arg0).longValue());
         }
-        else
-        {
-            return arg0;
-        }
-
+        return arg0;
     }
-
 }

@@ -29,7 +29,7 @@ import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -48,9 +48,10 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      * Unique id of the application.  This serves as the primary key in database
      * and in any caching of this object.
      */
-    // private ObjectID id;
-    private long id;
-
+    private Long id;
+    
+    private JetspeedLongObjectID oid;
+    
     /** Holds value of property name. */
     private String name;
 
@@ -98,15 +99,15 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * Getter for the applicationId
-     *
-     * @return applicationId
-     * @see #applicationId
+     * @see org.apache.pluto.om.portlet.PortletApplicationDefinition#getId()
      */
     public ObjectID getId()
     {
-        
-        return new JetspeedObjectID(id);
+        if ( oid == null && id != null )
+        {
+            oid = new JetspeedLongObjectID(id);
+        }
+        return oid;
     }
 
     /**
@@ -171,14 +172,6 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public void setDescription(String string)
     {
         description = string;
-    }
-
-    /**
-     * @param objectID
-     */
-    public void setId(String objectID)
-    {
-        id = JetspeedObjectID.createFromString(objectID).longValue();
     }
 
     /**

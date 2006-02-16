@@ -273,9 +273,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="METADATA_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
 
       <field-descriptor
@@ -782,9 +783,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="METADATA_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
 
       <field-descriptor
@@ -1024,9 +1026,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="METADATA_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
 
       <field-descriptor
@@ -1501,9 +1504,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="METADATA_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
 
       <field-descriptor
@@ -2049,9 +2053,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="METADATA_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
       />
 
       <field-descriptor

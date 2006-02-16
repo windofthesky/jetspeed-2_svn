@@ -33,7 +33,7 @@ import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
 import org.apache.jetspeed.om.impl.WebAppDescriptionImpl;
 import org.apache.jetspeed.om.impl.WebAppDisplayNameImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -54,8 +54,8 @@ import org.apache.pluto.om.common.SecurityRoleSet;
  */
 public class WebApplicationDefinitionImpl implements MutableWebApplication, Serializable
 {
-
-    private long id;
+    private Long id;
+    private JetspeedLongObjectID oid;
     private Collection displayNames = new ArrayList();
     private DisplayNameSetImpl DNCollWrapper = new DisplayNameSetImpl();
 
@@ -74,7 +74,11 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public ObjectID getId()
     {
-        return new JetspeedObjectID((int)id);
+        if ( oid == null && id != null )
+        {
+            oid = new JetspeedLongObjectID(id);
+        }
+        return oid;
     }
 
     /**
@@ -138,14 +142,6 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
     public String getContextRoot()
     {
         return contextRoot;
-    }
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinitionCtrl#setId(java.lang.String)
-     */
-    public void setId(String oid)
-    {
-        id = JetspeedObjectID.createFromString(oid).longValue();
     }
 
     /**

@@ -58,7 +58,7 @@ import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -99,7 +99,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     protected static PortletRegistry registry;
     protected static PortletFactory  portletFactory;
     
-    private long id;
+    private Long id;
+    private JetspeedLongObjectID oid;
     private String className;
     private String name;
     private String portletIdentifier;
@@ -159,12 +160,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public ObjectID getId()
     {
-        return new JetspeedObjectID(id);
-    }
-
-    public long getOID()
-    {
-        return id;
+        if ( oid == null && id != null )
+        {
+            oid = new JetspeedLongObjectID(id);
+        }
+        return oid;
     }
 
     /**
@@ -304,7 +304,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void setId( String oid )
     {
-        id = JetspeedObjectID.createFromString(oid).longValue();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -534,7 +534,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         if (obj != null && obj.getClass().equals(getClass()))
         {
             PortletDefinitionImpl pd = (PortletDefinitionImpl) obj;
-            boolean sameId = (id != 0 && id == pd.id);
+            boolean sameId = (id != null && pd.id != null && id.equals(pd.id));
             if (sameId)
             {
                 return true;

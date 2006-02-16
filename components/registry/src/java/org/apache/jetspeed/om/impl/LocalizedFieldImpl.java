@@ -17,7 +17,7 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.util.HashCodeBuilder;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.common.ObjectID;
 
 /**
@@ -36,9 +36,8 @@ public class LocalizedFieldImpl implements LocalizedField
     protected Locale locale;
     
     protected long parentId;
-    protected long id;
+    protected JetspeedLongObjectID id;
     
-
     public LocalizedFieldImpl()
     {
         
@@ -87,17 +86,9 @@ public class LocalizedFieldImpl implements LocalizedField
      */
     public ObjectID getId()
     {
-        return new JetspeedObjectID(id);
+        return id;
     }
 
-    /**
-     * 
-     */
-    public void setId(String oid)
-    {
-        id = JetspeedObjectID.createFromString(oid).longValue();
-    }
-    
     public void setLanguage(String language)
     {
 		if (language != null)
