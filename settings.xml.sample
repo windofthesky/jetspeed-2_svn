@@ -23,6 +23,13 @@ limitations under the License.
     This file is placed in ~/.m2 by convention. User defined
     profiles must be defined or extended with these settings
     to perform a complete J2 build and deployment.
+
+    If you have redefined the location of the Maven repository,
+    (via configuration in $MAVEN_HOME/conf for example), one
+    must still have a copy of the settings.xml file in either
+    ~/.m2 or ~/.ant that defines the location of the actual
+    repository and this file for the Maven Ant tasks used by
+    this build.
 -->
 <settings xmlns="http://maven.apache.org/POM/4.0.0">
 
