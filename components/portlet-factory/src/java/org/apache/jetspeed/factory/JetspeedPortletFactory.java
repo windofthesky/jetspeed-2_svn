@@ -68,7 +68,7 @@ public class JetspeedPortletFactory implements PortletFactory
             synchronized (classLoaderMap)
             {
         unregisterPortletApplication(pa);
-        classLoaderMap.put(pa.getId().toString(), cl);
+        classLoaderMap.put(pa.getId(), cl);
         }
     }
     
@@ -78,7 +78,7 @@ public class JetspeedPortletFactory implements PortletFactory
         {
             synchronized (portletCache)
             {
-                ClassLoader cl = (ClassLoader) classLoaderMap.remove(pa.getId().toString());
+                ClassLoader cl = (ClassLoader) classLoaderMap.remove(pa.getId());
                 if (cl != null)
                 {
                     ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -124,7 +124,7 @@ public class JetspeedPortletFactory implements PortletFactory
                     if ( className != null )
                     {
                         PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
-                        ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId().toString());
+                        ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId());
                         if ( paCl == null )
                         {
                             throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
@@ -184,7 +184,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 return portlet;
             }
             
-            ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId().toString());
+            ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId());
             if ( paCl == null )
             {
                 throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
@@ -256,7 +256,7 @@ public class JetspeedPortletFactory implements PortletFactory
         {
           if ( pa != null )
         {
-              return (ClassLoader)classLoaderMap.get(pa.getId().toString());
+              return (ClassLoader)classLoaderMap.get(pa.getId());
         }
           return null;
         }
