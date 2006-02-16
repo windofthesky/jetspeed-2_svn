@@ -414,14 +414,15 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             if ( currentState == null )
             {
                 PortletWindow window = accessor.getPortletWindow(windowId);
-                if ( window != null )
+                if ( window == null )
                 {
-                    currentState = new PortletWindowRequestNavigationalState(windowId);
-                    states.addPortletWindowNavigationalState(windowId, currentState);
-                    if ( parameterType == ACTION_WINDOW_ID_KEY )
-                    {
-                        states.setActionWindow(window);
-                    }
+                    window = accessor.createPortletWindow(windowId);
+                }
+                currentState = new PortletWindowRequestNavigationalState(windowId);
+                states.addPortletWindowNavigationalState(windowId, currentState);
+                if ( parameterType == ACTION_WINDOW_ID_KEY )
+                {
+                    states.setActionWindow(window);
                 }
             }
         }
@@ -448,7 +449,12 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                         currentState.setWindowState(windowState);
                         if (windowState.equals(WindowState.MAXIMIZED))
                         {
-                            states.setMaximizedWindow(accessor.getPortletWindow(currentState.getWindowId()));
+                            PortletWindow window = accessor.getPortletWindow(currentState.getWindowId());
+                            if ( window == null )
+                            {
+                                window = accessor.createPortletWindow(currentState.getWindowId());
+                            }                                    
+                            states.setMaximizedWindow(window);
                         }
                     }
                     break;
