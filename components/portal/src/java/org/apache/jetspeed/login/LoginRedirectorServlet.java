@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.PortalReservedParameters;
+
 /**
  * LoginRedirectorServlet
  * 
@@ -46,6 +48,7 @@ public class LoginRedirectorServlet extends HttpServlet
         session.removeAttribute(LoginConstants.USERNAME);
         session.removeAttribute(LoginConstants.PASSWORD);
         session.removeAttribute(LoginConstants.RETRYCOUNT);
+        session.removeAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
         response.sendRedirect(response.encodeURL(destination));
     }
 
