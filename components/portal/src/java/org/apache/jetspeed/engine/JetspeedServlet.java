@@ -336,6 +336,8 @@ implements JetspeedEngineConstants, HttpSessionListener
     public void sessionDestroyed(HttpSessionEvent se)
     {
         Subject subject = (Subject)se.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
+        if (subject == null)
+            return;        
         Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
