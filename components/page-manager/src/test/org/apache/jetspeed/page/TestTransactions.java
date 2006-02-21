@@ -15,41 +15,23 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-                                                                                                     
-import javax.security.auth.Subject;
-
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.om.common.SecurityConstraint;
-import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Page;
+
 /**
- * TestSecureDatabasePageManager
+ * Test Transactions
  * 
  * @author <a href="rwatler@apache.org">Randy Watler</a>
+ * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id: $
  *          
  */
-public class TestTransactions extends DatasourceEnabledSpringTestCase implements PageManagerTestShared
+public class TestTransactions extends  /*AbstractSpringTestCase*/ DatasourceEnabledSpringTestCase implements PageManagerTestShared
 {
     protected PageManager pageManager;
 
@@ -81,6 +63,10 @@ public class TestTransactions extends DatasourceEnabledSpringTestCase implements
 
     public void testTx() throws Exception
     {
+        if (pageManager.folderExists("/"))
+        {
+            pageManager.removeFolder(pageManager.getFolder("/"));
+        }
         Folder root = pageManager.newFolder("/");
         pageManager.updateFolder(root);
         Page[] pages = new Page[3];
