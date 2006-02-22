@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
  * <p>
@@ -46,6 +47,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
     private static final Log log = LogFactory.getLog(DBCPDatasourceComponent.class);
 
     protected PoolingDataSource dataSource;
+    //protected DataSource dataSource;
     
     private String user;
     
@@ -146,6 +148,10 @@ public class DBCPDatasourceComponent implements DatasourceComponent
         try
         {
             log.info("Attempting to start DBCPCDatasourceComponent.");
+//            System.out.println("****************** setting data source");
+//            dataSource = new DriverManagerDataSource(driverName, connectURI, user, password);            
+//            System.out.println("****************** set data source");
+            
             Class.forName(driverName);
             
             // Validate the connection before we go any further
@@ -166,7 +172,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             
             dsConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
             
-            dataSource = new PoolingDataSource(connectionPool);
+            dataSource = new PoolingDataSource(connectionPool);            
             
             log.info("DBCPCDatasourceComponent successfuly started!");
         }
@@ -189,6 +195,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
      */
     public void stop()
     {
+/*        
         try
         {
             dsConnectionFactory.getPool().close();
@@ -199,7 +206,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
                 new IllegalStateException("Unable to sfaely shutdown the DBCPConnection pool: " + e.toString());
             ise.initCause(e);
         }
-
+*/
     }
 
 }

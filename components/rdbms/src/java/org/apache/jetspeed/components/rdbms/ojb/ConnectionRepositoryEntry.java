@@ -26,6 +26,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ojb.broker.PBKey;
@@ -40,6 +41,7 @@ import org.apache.ojb.broker.metadata.MetadataManager;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
  * A JavaBean that configures an entry in OJB's ConnectionRepository
@@ -78,7 +80,8 @@ import org.springframework.beans.factory.InitializingBean;
  * @author Michael Lipp
  * @version $Id$
  */
-public class ConnectionRepositoryEntry 
+public class ConnectionRepositoryEntry
+    extends BasicDataSource
     implements BeanNameAware, InitializingBean
 {
     private static final Log log = LogFactory.getLog(ConnectionRepositoryEntry.class);
@@ -96,10 +99,16 @@ public class ConnectionRepositoryEntry
     private String password = null;
     private boolean jetspeedEngineScoped = true;
 
+    public ConnectionRepositoryEntry()
+    {
+        super();
+    }
+    
     /**
      * @see org.springframework.beans.factory.BeanNameAware#setBeanName(java.lang.String)
      */
-    public void setBeanName(String beanName) {
+    public void setBeanName(String beanName) 
+    {
         // Use the bean's name as fallback if a JCD alias is not set
         // explicitly
         if (jcdAlias == null) {
@@ -110,91 +119,108 @@ public class ConnectionRepositoryEntry
     /**
      * @return Returns the jcdAlias.
      */
-    public String getJcdAlias() {
+    public String getJcdAlias() 
+    {
         return jcdAlias;
     }
     
     /**
      * @param jcdAlias The jcdAlias to set.
      */
-    public void setJcdAlias(String jcdAlias) {
+    public void setJcdAlias(String jcdAlias)
+    {
         this.jcdAlias = jcdAlias;
     }
 
     /**
      * @return Returns the jndiName.
      */
-    public String getJndiName() {
+    public String getJndiName() 
+    {
         return jndiName;
     }
 
     /**
      * @param jndiName The jndiName to set.
      */
-    public void setJndiName(String jndiName) {
+    public void setJndiName(String jndiName) 
+    {
         this.jndiName = jndiName;
     }
 
     /**
      * @return Returns the driverClassName.
      */
-    public String getDriverClassName() {
-        return driverClassName;
+    public String getDriverClassName() 
+    {
+        return driverClassName;        
     }
 
     /**
      * @param driverClassName The driverClassName to set.
      */
-    public void setDriverClassName(String driverClassName) {
+    public void setDriverClassName(String driverClassName) 
+    {
+        super.setDriverClassName(driverClassName);
         this.driverClassName = driverClassName;
     }
 
     /**
      * @return Returns the password.
      */
-    public String getPassword() {
+    public String getPassword() 
+    {
         return password;
     }
 
     /**
      * @param password The password to set.
      */
-    public void setPassword(String password) {
+    public void setPassword(String password) 
+    {
+        super.setPassword(password);
         this.password = password;
     }
 
     /**
      * @return Returns the url.
      */
-    public String getUrl() {
+    public String getUrl() 
+    {
         return url;
     }
 
     /**
      * @param url The url to set.
      */
-    public void setUrl(String url) {
+    public void setUrl(String url) 
+    {
+        super.setUrl(url);
         this.url = url;
     }
 
     /**
      * @return Returns the username.
      */
-    public String getUsername() {
+    public String getUsername() 
+    {
         return username;
     }
 
     /**
      * @param username The username to set.
      */
-    public void setUsername(String username) {
+    public void setUsername(String username) 
+    {
+        super.setUsername(username);
         this.username = username;
     }
     
     /**
      * @return Returns the platform.
      */
-    public String getPlatform() {
+    public String getPlatform() 
+    {
         return platform;
     }
 
@@ -203,7 +229,8 @@ public class ConnectionRepositoryEntry
      * the value derived from the data source or database driver. 
      * @param platform The platform to set.
      */
-    public void setPlatform(String platform) {
+    public void setPlatform(String platform) 
+    {        
         this.platform = platform;
     }
 
@@ -211,7 +238,8 @@ public class ConnectionRepositoryEntry
      * @see setJetspeedEngineScoped
      * @return Returns if Jetspeed engine's ENC is used for JNDI lookups.
      */
-    public boolean isJetspeedEngineScoped() {
+    public boolean isJetspeedEngineScoped() 
+    {
         return jetspeedEngineScoped;
     }
 
@@ -223,7 +251,8 @@ public class ConnectionRepositoryEntry
      * engine.
      * @param jetspeedEngineScoped whether to use Jetspeed engine's ENC.
      */
-    public void setJetspeedEngineScoped(boolean jetspeedEngineScoped) {
+    public void setJetspeedEngineScoped(boolean jetspeedEngineScoped) 
+    {
         this.jetspeedEngineScoped = jetspeedEngineScoped;
     }
 
@@ -238,22 +267,28 @@ public class ConnectionRepositoryEntry
             jcd.setJcdAlias(jcdAlias);
             cr.addDescriptor(jcd);
         }
-        if (platform != null && platform.length() == 0) {
+        if (platform != null && platform.length() == 0)
+        {
             platform = null;
         }
         DataSource ds = null;
         JdbcMetadataUtils jdbcMetadataUtils = new JdbcMetadataUtils ();
-        if (jndiName != null) {
+        if (jndiName != null)
+        {
             // using "preconfigured" data source
-            if (connectionFactoryClass == null) {
+            if (connectionFactoryClass == null) 
+            {
                 connectionFactoryClass = ConnectionFactoryManagedImpl.class.getName ();
             }
             Context initialContext = new InitialContext();
             ds = (DataSource) initialContext.lookup(jndiName);
             jcd.setDatasourceName(jndiName);
-        } else {
+        } 
+        else 
+        {
             // have to get data source ourselves
-            if (connectionFactoryClass == null) {
+            if (connectionFactoryClass == null) 
+            {
                 connectionFactoryClass = ConnectionFactoryDBCPImpl.class.getName ();
             }
             jcd.setDriver(driverClassName);
@@ -269,7 +304,8 @@ public class ConnectionRepositoryEntry
             // But although JdbcMetadataUtils exposes the methods used in 
             // fillJCDFromDataSource as public (and these do not require a DataSource)
             // the method itself does more than is made available by the exposed methods.
-            ds = new MinimalDataSource (jcd);
+            // ds = new MinimalDataSource (jcd);
+            ds = this;             
         }
         ConnectionPoolDescriptor cpd = jcd.getConnectionPoolDescriptor();
         if (cpd == null)
@@ -310,7 +346,8 @@ public class ConnectionRepositoryEntry
      * throws SQLException
      */
     private void updateOraclePlatform(JdbcConnectionDescriptor jcd, DataSource ds)
-    	throws LookupException, IllegalAccessException, InstantiationException, SQLException {
+    	throws LookupException, IllegalAccessException, InstantiationException, SQLException 
+    {
         Connection con = null;
         try 
         {
@@ -367,8 +404,8 @@ public class ConnectionRepositoryEntry
      * a minimal DataSource implementation that satisfies the requirements
      * of JdbcMetadataUtil.
      */
-    private class MinimalDataSource implements DataSource {
-
+    private class MinimalDataSource implements DataSource 
+    {
         private JdbcConnectionDescriptor jcd = null;
         
         /**
@@ -416,7 +453,8 @@ public class ConnectionRepositoryEntry
         /**
          * @see javax.sql.DataSource#getLoginTimeout()
          */
-        public int getLoginTimeout() throws SQLException {
+        public int getLoginTimeout() throws SQLException 
+        {
             return 0;
         }
 
