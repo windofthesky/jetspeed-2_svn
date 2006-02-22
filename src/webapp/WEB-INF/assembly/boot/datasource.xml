@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>		
-  <!-- 
+<beans>
+   <!-- 
+       Simply use the JNDI data source provided via Spring
+     -->           
+     <bean id="JetspeedDS" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef"><value>false</value></property> 
+        <property name="jndiName">
+            <value>java:comp/env/jdbc/jetspeed</value>
+        </property>
+    </bean>
+    		
+    <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/> 
+    
+  <!--       
       Creates a JNDI-based datasource bean name "JetspeedDS". The information
       provided here is merged with the basic configuration for the 
       jdbc-connection-descriptor with the matching jcd-alias property
@@ -21,11 +33,13 @@
       However, if you need to locate/modify these files in a running instance of jetspeed,
       they will be located under /WEB-INF/classes.
      -->
+    <!--
   <bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry">
     <property name="jndiName">
       <value>java:comp/env/jdbc/jetspeed</value>
     </property>
   </bean>     
+       -->
   
   <!-- If would like use a commons DBCP Pooled datasource as opposed to the default 
        JNDI one above you can uncomment the configuration below and fill in 
@@ -36,22 +50,16 @@
        or to have
        ConnectionManagerClass=org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerImpl
        This property is located in /etc/db-ojb/OJB.properties in the source tree.
+    -->    
+    
+<!--        
+    <bean id="JetspeedDS" class="org.apache.commons.dbcp.BasicDataSource" 
+        destroy-method="close"
+        >
+                <property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+                <property name="url"><value>jdbc:mysql://localhost/j2test</value></property>
+                <property name="username"><value>j2</value></property>
+                <property name="password"><value>XXX</value></property>
+        </bean>    
     -->
-	<!--
-    <bean id="JetspeedDS" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry">
-    <property name="driverClassName">
-      <value>{my.drivers.class.name}</value>
-    </property>
-    <property name="url">
-      <value>{URL to my DB}</value>
-     </property>
-     <property name="username">
-       <value>{username}</value>
-     </property>
-     <property name="password">
-       <value>{password}</value>
-     </property>
-   </bean>      
-   -->
-  
 </beans>

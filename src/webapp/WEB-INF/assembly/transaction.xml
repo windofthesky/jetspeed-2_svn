@@ -14,8 +14,6 @@
 	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/>
 	-->
 
-
-
 	<!--
 		- A parent bean definition which is a base definition for transaction proxies.
 		- It is markes as abstract, since it is never supposed to be instantiated itself.
