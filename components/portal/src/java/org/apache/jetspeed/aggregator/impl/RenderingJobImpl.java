@@ -132,7 +132,8 @@ public class RenderingJobImpl implements RenderingJob
             if (fragment.getType().equals(ContentFragment.PORTLET))
             {
                 long end = System.currentTimeMillis();            
-                statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
+                if (statistics != null)
+                    statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
             }
         }
 
