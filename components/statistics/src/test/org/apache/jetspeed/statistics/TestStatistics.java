@@ -320,7 +320,13 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "statistics.xml"};
+        { "statistics.xml", "transaction.xml", "boot/datasource.xml"};
     }
 
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "boot/datasource.xml"};
+    }
+    
 }

@@ -88,6 +88,15 @@
             </properties>
         </dependency>
         
+		<!-- Apache OJB persistence framework -->
+	    <dependency>
+		   <id>ojb:db-ojb</id>
+	       <version>1.0.3</version>
+	       <properties>
+	    	 <war.bundle>true</war.bundle>
+	       </properties>
+	    </dependency>
+        
     </dependencies>
 
     <build>

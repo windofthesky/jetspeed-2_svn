@@ -33,16 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
@@ -107,8 +103,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     protected long maxTimeMsToFlush_Page = 10 * 1000;
 
-    protected ConnectionRepositoryEntry jetspeedDSEntry;
-
+    //protected ConnectionRepositoryEntry jetspeedDSEntry;
+    
     /* after this is NOT for injection */
 
     protected DataSource ds;
@@ -125,15 +121,13 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
      * Default constructor.
      * </p>
      */
-    public PortalStatisticsImpl()
-    {
-    }
     
     public PortalStatisticsImpl(boolean logToCLF, boolean logToDatabase,
             int maxRecordToFlush_Portal, int maxRecordToFlush_User,
             int maxRecordToFlush_Page, long maxTimeMsToFlush_Portal,
             long maxTimeMsToFlush_User, long maxTimeMsToFlush_Page,
-            ConnectionRepositoryEntry jetspeedDSEntry)
+            DataSource dataSource)
+            //ConnectionRepositoryEntry jetspeedDSEntry)
     {
 
         this.logToCLF = logToCLF;
@@ -144,7 +138,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         this.maxTimeMsToFlush_Portlet = maxTimeMsToFlush_Portal;
         this.maxTimeMsToFlush_User = maxTimeMsToFlush_User;
         this.maxTimeMsToFlush_Page = maxTimeMsToFlush_Page;
-        this.jetspeedDSEntry = jetspeedDSEntry;
+        //this.jetspeedDSEntry = jetspeedDSEntry;
+        this.ds = dataSource;
         currentUsers = new TreeMap();
     }
 
@@ -152,30 +147,31 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     {
         formatter = new SimpleDateFormat("dd/MM/yyyy:hh:mm:ss z");
 
-        if (jetspeedDSEntry != null)
-        {
-            if (jetspeedDSEntry.getJndiName() != null)
-            {
-                try
-                {
-                    Context initialContext = new InitialContext();
-                    ds = (DataSource) initialContext.lookup(jetspeedDSEntry
-                            .getJndiName());
-                } catch (NamingException e)
-                {
-                    e.printStackTrace();
-                    throw e;
-                }
-            } else
-            {
-                BasicDataSource bds = new BasicDataSource();
-                bds.setDriverClassName(jetspeedDSEntry.getDriverClassName());
-                bds.setUrl(jetspeedDSEntry.getUrl());
-                bds.setUsername(jetspeedDSEntry.getUsername());
-                bds.setPassword(jetspeedDSEntry.getPassword());
-                ds = (DataSource) bds;
-            }
-        }
+        //if (jetspeedDSEntry != null)
+//        if (dataSource != null)
+//        {
+//            if (jndiLocator.getJndiName() != null)
+//            {
+//                try
+//                {
+//                    Context initialContext = new InitialContext();
+//                    ds = (DataSource) initialContext.lookup(jndiLocator
+//                            .getJndiName());
+//                } catch (NamingException e)
+//                {
+//                    e.printStackTrace();
+//                    throw e;
+//                }
+//            } else
+//            {
+//                BasicDataSource bds = new BasicDataSource();
+//                bds.setDriverClassName(jetspeedDSEntry.getDriverClassName());
+//                bds.setUrl(jetspeedDSEntry.getUrl());
+//                bds.setUsername(jetspeedDSEntry.getUsername());
+//                bds.setPassword(jetspeedDSEntry.getPassword());
+//                ds = (DataSource) bds;
+//            }
+//        }
         currentUserCount = 0;
     }
 
