@@ -529,7 +529,6 @@ public interface PageManager
      * @param pages
      * @return
      * @throws JetspeedException
-     * @deprecated THIS IS ONLY FOR TESTING TX. WILL SOON BE DELETED.
      */
     public int addPages(Page[] pages)
     throws JetspeedException;
