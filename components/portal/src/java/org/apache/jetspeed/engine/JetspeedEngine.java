@@ -139,7 +139,15 @@ public class JetspeedEngine implements Engine
             //Start the ComponentManager
             componentManager.start();               
             pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
-            statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");
+            try
+            {
+                statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");
+            }
+            catch (Exception e)
+            {
+                // silenty ignore, its not configured
+                // TODO: statistics as an AOP advice
+            }
             
         }
         catch (Throwable e)
@@ -231,7 +239,8 @@ public class JetspeedEngine implements Engine
         pipeline.invoke(context);
    
         long end = System.currentTimeMillis();
-        statistics.logPageAccess(context, PortalStatistics.HTTP_OK, end - start);
+        if (statistics != null)
+            statistics.logPageAccess(context, PortalStatistics.HTTP_OK, end - start);
     }
 
     /**

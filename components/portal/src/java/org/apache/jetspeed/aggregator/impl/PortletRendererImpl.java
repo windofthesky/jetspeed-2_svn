@@ -73,6 +73,16 @@ public class PortletRendererImpl implements PortletRenderer
         this.statistics = statistics;
     }
 
+    public PortletRendererImpl(PortletContainer container, 
+            PortletWindowAccessor windowAccessor,
+            WorkerMonitor workMonitor)
+    {
+        this.container = container;
+        this.windowAccessor = windowAccessor;
+        this.workMonitor = workMonitor;
+        this.statistics = null;
+    }
+    
     public void start()
     {
         // workMonitor.start();

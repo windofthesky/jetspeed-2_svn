@@ -56,6 +56,13 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         this.statistics = statistics;
     }
 
+    public SecurityValveImpl(Profiler profiler, UserManager userMgr)
+    {
+        this.profiler = profiler;
+        this.userMgr = userMgr;
+        this.statistics = null;
+    }
+    
     public String toString()
     {
         return "SecurityValve";
@@ -116,7 +123,10 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
             } 
             
             // create a new statistics *user* session
-            statistics.logUserLogin(request, 0);
+            if (statistics != null)
+            {
+                statistics.logUserLogin(request, 0);
+            }
             // put IP address in session for logout
             request.setSessionAttribute(IP_ADDRESS, request.getRequest().getRemoteAddr());
         }
