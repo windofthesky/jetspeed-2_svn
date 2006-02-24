@@ -36,7 +36,7 @@ limitations under the License.
   </bean>
 
   <!-- Transaction Proxying -->
-  <bean id="org.apache.jetspeed.page.PageManager" name="pageManager" parent="baseTransactionProxy">
+  <bean id="org.apache.jetspeed.page.PageManager" name="pageManager" parent="PageManagerTransactionProxy">
       <property name="proxyInterfaces">
           <value>org.apache.jetspeed.page.PageManager</value>
       </property>
