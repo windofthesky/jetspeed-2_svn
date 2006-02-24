@@ -219,7 +219,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         // setup TLS for Context propagation
         handlingRequestContext.set(ctx);
 
-        // handle request normally
+        // handle request normally        
         return super.handleRequest(request, response, ctx);
     }
 
@@ -674,4 +674,25 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         }
         return defaultValue;
     }
+    
+    protected void error(HttpServletRequest request, 
+            HttpServletResponse response, 
+            Exception e)
+    throws ServletException
+    {
+        try
+        {
+            StringBuffer html = new StringBuffer();
+            html.append("<b>\n");
+            html.append("Content is not available");
+            html.append("<b>\n");
+            getResponseWriter(response).write(html.toString());
+            log.error("Error processing vm template ", e);
+        }
+        catch (Exception e2)
+        {
+            log.error("Error writing error message to vm template ", e2);            
+        }        
+    }
+    
 }
