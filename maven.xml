@@ -280,6 +280,8 @@
               file="./etc/import/assembly/import-page-manager.xml"/>
         <copy todir="${maven.build.dir}/classes"
               file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>        
         <java classname="org.apache.jetspeed.page.PageImporter" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
