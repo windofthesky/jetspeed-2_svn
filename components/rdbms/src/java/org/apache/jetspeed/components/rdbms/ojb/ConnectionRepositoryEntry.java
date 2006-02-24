@@ -111,7 +111,8 @@ public class ConnectionRepositoryEntry
     {
         // Use the bean's name as fallback if a JCD alias is not set
         // explicitly
-        if (jcdAlias == null) {
+        if (jcdAlias == null) 
+        {
             jcdAlias = beanName;
         }
     }
