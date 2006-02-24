@@ -239,9 +239,29 @@ public class SiteBrowserPortlet extends AbstractPSMLTreePortlet
         return myindex;
     }
     
+    public void txTest()
+    {
+        Page[] pages = new Page[3];
+        pages[0] = pageManager.newPage("/tx__test1.psml");
+        pages[1] = pageManager.newPage("/tx__test2.psml");
+        pages[2] = pageManager.newPage("/tx__test3.psml");
+        try
+        {
+            pageManager.addPages(pages);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Exception adding pages" + e);
+            e.printStackTrace();
+            
+        }        
+    }
+    
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException,
             IOException
     {
+        // DST: FOR TX ROLLBACK TESTING: txTest();
+        
         TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute(SITE_TREE_ATTRIBUTE);
         //assert control != null
         if (control != null)
