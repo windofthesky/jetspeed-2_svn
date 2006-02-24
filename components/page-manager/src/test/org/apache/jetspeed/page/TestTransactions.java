@@ -18,10 +18,10 @@ package org.apache.jetspeed.page;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.impl.DatabasePageManagerCache;
 
 /**
  * Test Transactions
@@ -51,10 +51,10 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
 
     public static Test suite()
     {
-        System.setProperty("org.apache.jetspeed.database.url", "jdbc:mysql://j2-server/j2"); 
-        System.setProperty("org.apache.jetspeed.database.driver", "com.mysql.jdbc.Driver");
-        System.setProperty("org.apache.jetspeed.database.user", "j2");
-        System.setProperty("org.apache.jetspeed.database.password", "digital");
+//        System.setProperty("org.apache.jetspeed.database.url", "jdbc:mysql://j2-server/j2"); 
+//        System.setProperty("org.apache.jetspeed.database.driver", "com.mysql.jdbc.Driver");
+//        System.setProperty("org.apache.jetspeed.database.user", "j2");
+//        System.setProperty("org.apache.jetspeed.database.password", "xxxxx");
         
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestTransactions.class);
@@ -63,7 +63,7 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
     protected String[] getConfigurations()
     {
         return new String[]
-        { "tx-page-manager.xml", "transaction.xml" }; // "interceptors.xml" }; 
+        { "tx-page-manager.xml", "transaction.xml", "interceptors.xml" }; 
     }
 
     protected String[] getBootConfigurations()
@@ -80,10 +80,18 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
         }
         Folder root = pageManager.newFolder("/");
         pageManager.updateFolder(root);
+        
+        System.out.println("--- before new Page");
+        DatabasePageManagerCache.dump();
+        
         Page[] pages = new Page[3];
-        pages[0] = pageManager.newPage("/test1.psml");
-        pages[1] = pageManager.newPage("/test2.psml");
-        pages[2] = pageManager.newPage("/test3.psml");
+        pages[0] = pageManager.newPage("/tx__test1.psml");
+        pages[1] = pageManager.newPage("/tx__test2.psml");
+        pages[2] = pageManager.newPage("/tx__test3.psml");
+        
+        System.out.println("--- after new Page");
+        DatabasePageManagerCache.dump();
+        
         try
         {
             pageManager.addPages(pages);
@@ -91,11 +99,13 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
         catch (Exception e)
         {
             System.out.println("Exception adding pages" + e);
-            e.printStackTrace();
+           // e.printStackTrace();
             
         }
-//        assertFalse("page 1 found", pageManager.pageExists("/test1.psml"));
-//        assertFalse("page 2 found", pageManager.pageExists("/test2.psml"));
-//        assertFalse("page 3 found", pageManager.pageExists("/test3.psml"));
+        System.out.println("--- after rollback");
+        DatabasePageManagerCache.dump();
+        assertFalse("page 1 found", pageManager.pageExists("/tx__test1.psml"));
+        assertFalse("page 2 found", pageManager.pageExists("/tx__test2.psml"));
+        assertFalse("page 3 found", pageManager.pageExists("/tx__test3.psml"));
     }
 }
