@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Map;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
@@ -152,6 +152,12 @@ public class DatabasePageManagerCache implements ObjectCache
             }
         }
     }
+    public synchronized static void cacheRemove(String path)
+    {
+        Identity id = (Identity)cacheByPath.get(path);
+        cacheRemove(id);
+    }
+    
 
     /**
      * resetCachedSecurityConstraints
@@ -257,5 +263,60 @@ public class DatabasePageManagerCache implements ObjectCache
     public void remove(Identity oid)
     {
         cacheRemove(oid);
+    }
+
+    public static void dump()
+    {
+        System.out.println("--------------------------1");        
+        synchronized (cacheByPath)
+        {
+            Object[] entries = new Object[100];
+            int count = 0;
+            Iterator paths = cacheByPath.orderedMapIterator();
+            while (paths.hasNext())
+            {
+                entries[count] = paths.next();
+                count++;
+            }
+            for (int ix = 0; ix < count; ix++)
+            {
+                System.out.println("entry = " + entries[ix] + ", " + cacheByPath.get(entries[ix]));
+            }
+        }
+        System.out.println("--------------------------2");
+    }
+    
+    protected static ThreadLocal transactionedOperations = new ThreadLocal();
+    
+    public static List getTransactions()
+    {
+        List operations = (List)transactionedOperations.get();
+        if (operations == null)
+        {
+            operations = new LinkedList();
+            transactionedOperations.set(operations);
+        }
+        
+        return operations;
+    }
+
+    /**
+     * @param principal
+     *            The principal to set.
+     */
+    public static void addTransaction(TransactionedOperation operation)
+    {
+        List transactions = getTransactions();        
+        transactions.add(operation);
+    }
+    
+    public static void rollbackTransactions()
+    {
+        Iterator transactions = getTransactions().iterator();
+        while (transactions.hasNext())
+        {
+            TransactionedOperation operation = (TransactionedOperation)transactions.next();
+            cacheRemove(operation.getPath());
+        }
     }
 }

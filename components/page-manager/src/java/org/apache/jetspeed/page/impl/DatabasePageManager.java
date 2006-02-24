@@ -651,7 +651,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 FolderImpl parent = null;
                 try
                 {
-                    parent = (FolderImpl)getFolder(parentPath);
+                    parent = (FolderImpl)getFolder(parentPath);                    
                 }
                 catch (FolderNotFoundException fnfe)
                 {
@@ -664,10 +664,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 try
                 {
+                    
                     // update parent folder with added page
                     parent.addPage((PageImpl)page);
                     page.setParent(parent);
+                                        
                     getPersistenceBrokerTemplate().store(parent);
+                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(pagePath, TransactionedOperation.ADD_OPERATION));
+                    
                 }
                 catch (Exception e)
                 {
@@ -675,7 +679,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     parent.removePage((PageImpl)page);
                     throw e;
                 }
-
+                                
                 // notify page manager listeners
                 delegator.notifyNewNode(page);
             }
@@ -685,8 +689,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 page.checkAccess(JetspeedActions.EDIT);
 
                 // update page
-                getPersistenceBrokerTemplate().store(page);
-
+                getPersistenceBrokerTemplate().store(page);                
+                DatabasePageManagerCache.addTransaction(new TransactionedOperation(page.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                
                 // notify page manager listeners
                 delegator.notifyUpdatedNode(page);
             }
@@ -702,8 +707,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         catch (Exception e)
         {
             throw new PageNotUpdatedException("Page " + page.getPath() + " not updated.", e);
-        }
+        }        
     }
+    
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removePage(org.apache.jetspeed.om.page.Page)
@@ -1255,13 +1261,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     public int addPages(Page[] pages)
     throws JetspeedException
-    {
-        System.out.println("Adding first page");
-        this.updatePage(pages[0]);
-        System.out.println("Adding second page");
-        this.updatePage(pages[1]);
-        System.out.println("About to throw ex");
-        throw new JetspeedException("Its gonna blow captain!");
+    {   
+        if (pages.length > 0 && pages[0].getPath().equals("/tx__test1.psml"))
+        {
+            // for tx testing
+            System.out.println("Adding first page");
+            this.updatePage(pages[0]);
+            System.out.println("Adding second page");
+            this.updatePage(pages[1]);
+            System.out.println("About to throw ex");
+            throw new JetspeedException("Its gonna blow captain!");
+        }
+        for (int ix = 0; ix < pages.length; ix++)
+        {
+            this.updatePage(pages[ix]);
+        }
+        return pages.length;
     }
     
 }
