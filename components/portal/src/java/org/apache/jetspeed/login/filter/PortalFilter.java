@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -51,7 +52,6 @@ public class PortalFilter implements Filter
         if (sRequest instanceof HttpServletRequest)
         {
             HttpServletRequest request = (HttpServletRequest)sRequest;
-            System.out.println("...path..." + request.getPathInfo());
             String username = request.getParameter(LoginConstants.USERNAME);
             String password = request.getParameter(LoginConstants.PASSWORD);            
             if (username != null)
@@ -66,6 +66,9 @@ public class PortalFilter implements Filter
                     principals.add(userPrincipal);
                     sRequest = wrapperRequest((HttpServletRequest)request, userPrincipal);
                     request.getSession().removeAttribute(LoginConstants.ERRORCODE);
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+                    //System.out.println("*** login session = " + session);
                 }
                 else
                 {
@@ -74,11 +77,19 @@ public class PortalFilter implements Filter
             }
             else
             {
+                HttpSession session = request.getSession();
+                //System.out.println("*** session = " + session);
                 Subject subject = (Subject)request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
                 if (subject != null)
                 {
                     Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-                    sRequest = wrapperRequest((HttpServletRequest)request, principal);
+                    if (principal != null && principal.getName().equals("guest"))
+                    {                        
+                    }
+                    else
+                    {
+                        sRequest = wrapperRequest((HttpServletRequest)request, principal);
+                    }
                 }                
             }              
         }
