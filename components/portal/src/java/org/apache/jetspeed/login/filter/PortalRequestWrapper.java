@@ -40,4 +40,21 @@ public class PortalRequestWrapper extends HttpServletRequestWrapper
     {
         return userPrincipal;
     }
+
+    /**
+     * Return the name of the remote user that has been authenticated
+     * for this Request.
+     */
+    public String getRemoteUser()
+    {
+        if (userPrincipal != null)
+        {
+            return userPrincipal.getName();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
 }
