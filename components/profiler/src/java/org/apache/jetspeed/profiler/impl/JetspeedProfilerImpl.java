@@ -251,6 +251,11 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
                 // if not found, fallback to the system wide rule
                 rule = getDefaultRule();
             }
+            pr = new PrincipalRuleImpl();
+            pr.setLocatorName(locatorName);
+            pr.setPrincipalName(principal.getName());
+            pr.setProfilingRule(rule);
+            principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);            
         }
         else
         {
