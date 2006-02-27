@@ -44,11 +44,12 @@ limitations under the License.
         <property name="transactionAttributes">
             <props>
                 <prop key="*">PROPAGATION_SUPPORTS</prop>
-                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-                <prop key="create*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.PageNotUpdatedException</prop>                                								
-				<prop key="deepCopyFolder*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.PageNotUpdatedException</prop>				
+                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
+                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
+                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
+                <prop key="create*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>                                								
+                <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>                              
+				<prop key="deepCopyFolder*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>				
             </props>
         </property>
     </bean>
