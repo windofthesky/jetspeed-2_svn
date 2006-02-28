@@ -283,20 +283,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         firstInit = true;
 
         log.info("Done shutting down!");
-    }
-
-    private void debugHeaders( HttpServletRequest req )
-    {
-        java.util.Enumeration e = req.getHeaderNames();
-        while (e.hasMoreElements())
-        {
-            String name = (String) e.nextElement();
-            String value = req.getHeader(name);
-            System.out.println("name = " + name);
-            System.out.println("value = " + value);
-        }
-    }
-    
+    }    
     
     /**
      * If you prefer to use a component manager other than Spring, you

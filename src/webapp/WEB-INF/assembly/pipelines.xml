@@ -312,5 +312,9 @@ limitations under the License.
         </map>        
     </constructor-arg>        
   </bean>
-  
+
+  <bean id="debugValve"
+        class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl"
+  /> 
+      
 </beans>
