@@ -94,7 +94,7 @@ limitations under the License.
                         artifactId="portlet-api"
                         version="${portlet-api.version}"/>
         </dependencies>
-        <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="true">
+        <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="on">
             <fileset refid="shared.lib.dependencies.id"/>
         </copy>
 
