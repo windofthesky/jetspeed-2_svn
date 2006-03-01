@@ -75,6 +75,9 @@ public class DefaultLoginModule implements LoginModule
     /** <p>InternalUserPrincipal manager service.</p> */
     private UserManager ums;
 
+    /** The portal user role. */
+    private String portalUserRole;
+
     /** <p>The user name.</p> */
     private String username;
 
@@ -88,6 +91,7 @@ public class DefaultLoginModule implements LoginModule
         if (loginModuleProxy != null)
         {
             this.ums = loginModuleProxy.getUserManager();
+            this.portalUserRole = loginModuleProxy.getPortalUserRole();
         }
         debug = false;
         success = false;
@@ -99,14 +103,20 @@ public class DefaultLoginModule implements LoginModule
     /**
      * Create a new login module that uses the given user manager.
      * @param userManager the user manager to use
+     * @param portalUserRole the portal user role to use
      */
-    protected DefaultLoginModule (UserManager userManager) 
+    protected DefaultLoginModule (UserManager userManager, String portalUserRole) 
     {
-        ums = userManager;
+        this.ums = userManager;
+        this.portalUserRole = portalUserRole;
         debug = false;
         success = false;
         commitSuccess = false;
         username = null;
+    }
+    protected DefaultLoginModule (UserManager userManager) 
+    {
+        this(userManager, LoginModuleProxy.DEFAULT_PORTAL_USER_ROLE_NAME);
     }
     
     /**
@@ -269,7 +279,12 @@ public class DefaultLoginModule implements LoginModule
      */
     protected void commitPrincipals(Subject subject, User user)
     {
+        // add user specific portal user name and roles
         subject.getPrincipals().add(getUserPrincipal(user));
         subject.getPrincipals().addAll(getUserRoles(user));
+
+        // add portal user role: used in web.xml authorization to
+        // detect authenticated portal users
+        subject.getPrincipals().add(new RolePrincipalImpl(portalUserRole));        
     }
 }

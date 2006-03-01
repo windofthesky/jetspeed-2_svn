@@ -21,8 +21,11 @@ limitations under the License.
   <!-- Security: Login Module Proxy -->
   <bean id="org.apache.jetspeed.security.LoginModuleProxy" 
   	   class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  >
+       <!-- User Manager to construct JAAS subject/principals returned to container -->
+  	   <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+       <!-- Portal user role name used to identify authenticated users in web.xml security constraints -->
+  	   <constructor-arg index="1"><value>portal-user</value></constructor-arg>  	   
   </bean>
 
 </beans>

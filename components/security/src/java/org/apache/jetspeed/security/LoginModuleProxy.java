@@ -22,8 +22,22 @@ package org.apache.jetspeed.security;
 public interface LoginModuleProxy
 {
     /**
+     * <p>Default .portal user role name</p>
+     */
+    String DEFAULT_PORTAL_USER_ROLE_NAME = "portal-user";
+
+    /**
      * <p>Getter for the {@link UserManager}.</p>
      * @return The UserManager.
      */
     UserManager getUserManager();
+
+    /**
+     * <p>Getter for the required portal user role name.</p>
+     *
+     * <p>Used in web.xml authorization to detect authenticated portal users.</p>
+     *
+     * @return The portal user role name.
+     */
+    String getPortalUserRole();
 }

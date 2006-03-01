@@ -210,7 +210,9 @@ limitations under the License.
       <url-pattern>/login/redirector</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>*</role-name>
+      <!-- the required portal user role name defined in: -->
+      <!-- /WEB-INF/assembly/security-atn.xml             -->
+      <role-name>portal-user</role-name>
     </auth-constraint>
   </security-constraint>
 
