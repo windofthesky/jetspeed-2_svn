@@ -177,30 +177,87 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             }
             
             // attempt to select request page or folder using
-            // profile locators and site view
-            Page requestPage = null;
-            try
+            // profile locators and site view; if fallback
+            // enabled, fallback on missing node or access
+            // exceptions to the parent folders until the root
+            // folder access has been attempted
+            do
             {
-                return selectRequestPage(requestPath);
-            }
-            catch (NodeNotFoundException nnfe)
-            {
-                if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
+                // attempt to access requested path
+                try
                 {
-                    throw nnfe;
+                    return selectRequestPage(requestPath);
+                }
+                catch (NodeNotFoundException nnfe)
+                {
+                    if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
+                    {
+                        throw nnfe;
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
+                    {
+                        throw se;
+                    }
+                }
+
+                // compute fallback request path
+                if (requestFallback && !requestPath.equals(Folder.PATH_SEPARATOR))
+                {
+                    // compute parent folder fallback request path
+                    String fallbackRequestPath = requestPath;
+                    while (fallbackRequestPath.endsWith(Folder.PATH_SEPARATOR))
+                    {
+                        fallbackRequestPath = fallbackRequestPath.substring(0, fallbackRequestPath.length()-1);
+                    }
+                    int folderIndex = fallbackRequestPath.lastIndexOf(Folder.PATH_SEPARATOR);
+                    if (folderIndex >= 2)
+                    {
+                        // fallback to parent folder
+                        fallbackRequestPath = fallbackRequestPath.substring(0, folderIndex);
+                    }
+                    else
+                    {
+                        // fallback to root folder
+                        fallbackRequestPath = Folder.PATH_SEPARATOR;
+                    }
+
+                    // check fallback path and log fallback operation
+                    if (!fallbackRequestPath.equals(requestPath))
+                    {
+                        // log fallback
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug("Missing/forbidden page selection fallback: request path=" + requestPath + ", attempting fallback request path=" + fallbackRequestPath);
+                        }
+                        
+                        // clear all history entries for fallback
+                        // request path in advance to make fallback
+                        // page selection more predictable
+                        Iterator folderIter = folderPageHistory.keySet().iterator();
+                        while (folderIter.hasNext())
+                        {
+                            Folder folder = (Folder)folderIter.next();
+                            if (folder.getUrl().equals(fallbackRequestPath))
+                            {
+                                folderIter.remove();
+                                break;
+                            }
+                        }
+
+                        // retry requested page access
+                        requestPath = fallbackRequestPath;
+                    }
+                }
+                else
+                {
+                    // fallback attempts complete: no page found for user
+                    break;
                 }
             }
-            catch (SecurityException se)
-            {
-                if (!requestFallback || requestPath.equals(Folder.PATH_SEPARATOR))
-                {
-                    throw se;
-                }
-            }
-            
-            // if no matched page or folder, fallback to request of
-            // default page in root folder in page locator
-            return selectRequestPage(Folder.PATH_SEPARATOR);
+            while (true);
         }
 
         // no request page available
