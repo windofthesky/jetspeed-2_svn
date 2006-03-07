@@ -119,7 +119,8 @@ public class TestDecorations extends MockObjectTestCase
         BaseDecoration decoration = new BaseDecoration(config, rv, testPathHtmlEn, prc);
         
         String result = decoration.getResource("/images/myimage.gif");
-        
+
+        assertNotNull(result);
         assertEquals(expectedResult, result);
         
         verify();
@@ -145,6 +146,7 @@ public class TestDecorations extends MockObjectTestCase
         
         String result = decoration.getResource("/images/myimage.gif");
         
+        assertNotNull(result);
         assertEquals(success, result);
         
         verify();

@@ -65,7 +65,11 @@ public class PageTheme implements Theme
     {
         // setup fragment decorations
         Decoration decoration = decorationFactory.getDecoration(page, fragment, requestContext);
-        styleSheets.add(decoration.getStyleSheet());
+        String styleSheet = decoration.getStyleSheet();
+        if (styleSheet != null)
+        {
+            styleSheets.add(styleSheet);
+        }
         fragmentDecorations.put(fragment.getId(), decoration);
 
         // setup nested fragment decorations

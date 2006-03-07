@@ -86,15 +86,11 @@ public class BaseDecoration implements Decoration
                 {
                     locatedPath = locatedPath.substring(1);
                 }
-                           
                 cache.addPath(workingPath.toString(), locatedPath);
+                return locatedPath;
             }
-            
-           
-            
-            return locatedPath;
         }
-        
+	return null;
     }
     
     /**
