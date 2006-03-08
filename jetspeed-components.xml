@@ -230,6 +230,16 @@ limitations under the License.
 	           <war.bundle>true</war.bundle>
 	        </properties>
 		</dependency>
+        <dependency>
+            <id>jetspeed-webapp-logging</id>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <version>
+                ${jetspeed.version}
+            </version>
+            <properties>
+               <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
 
         <!-- taglib stuff -->
 		<dependency>

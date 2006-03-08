@@ -20,6 +20,17 @@ limitations under the License.
 
 <web-app>
   <display-name>Jetspeed-2 Enterprise Portal</display-name>	
+  
+  <!-- Log4JConfigurator context-listener parameters -->    
+  <context-param>
+    <param-name>log4j.config.file</param-name>
+    <param-value>/WEB-INF/conf/Log4j.properties</param-value>
+  </context-param>
+  <context-param>
+    <param-name>log4j.config.webApplicationRoot.key</param-name>
+    <param-value>applicationRoot</param-value>
+  </context-param>
+  
   <filter>
     <filter-name>AJAXFilter</filter-name>
     <filter-class>org.apache.jetspeed.ajax.AJAXFilter</filter-class>   
@@ -41,6 +52,10 @@ limitations under the License.
     <url-pattern>/*</url-pattern>    
   </filter-mapping>  
 -->    
+  
+  <listener>
+    <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
+  </listener>
   
   <listener>
     <listener-class>org.apache.jetspeed.engine.JetspeedServlet</listener-class>
