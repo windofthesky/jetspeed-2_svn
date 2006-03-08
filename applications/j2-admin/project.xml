@@ -69,6 +69,14 @@ limitations under the License.
         </properties>
     </dependency>    
     <dependency>
+        <id>org.apache.portals.jetspeed-2:jetspeed-webapp-logging</id>  
+        <version>${jetspeed.version}</version>
+        <type>jar</type>
+        <properties>
+            <war.bundle>true</war.bundle>
+        </properties>
+    </dependency>
+    <dependency>
         <id>org.apache.portals.jetspeed-2:jetspeed-statistics</id> 
         <version>${jetspeed.version}</version>
         <type>jar</type>

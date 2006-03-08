@@ -139,5 +139,21 @@ limitations under the License.
 				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
+        <dependency>
+          <id>log4j</id>
+          <version>${log4j.version}</version>
+          <type>jar</type>
+          <properties>
+            <war.bundle>${log4j.include}</war.bundle>
+          </properties>
+        </dependency>
+        <dependency>
+          <id>org.apache.portals.jetspeed-2:jetspeed-webapp-logging</id>  
+          <version>${jetspeed.version}</version>
+          <type>jar</type>
+          <properties>
+            <war.bundle>true</war.bundle>
+          </properties>
+        </dependency>
 	</dependencies>
 </project>

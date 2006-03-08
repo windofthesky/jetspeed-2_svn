@@ -73,6 +73,10 @@ limitations under the License.
         </description>
     </context-param>
   
+    <listener>
+      <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
+    </listener>
+    
   	<!-- Listener, that does all the startup work (configuration, init). -->
   	<listener>
     	<listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>

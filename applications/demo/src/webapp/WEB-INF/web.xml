@@ -20,6 +20,10 @@ limitations under the License.
   <display-name>HelloWorld-DN</display-name>
   <description>Hello World Description</description>
 
+  <listener>
+    <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
+  </listener>
+  
   <servlet>
     <servlet-name>JetspeedContainer</servlet-name>
     <display-name>Jetspeed Container</display-name>

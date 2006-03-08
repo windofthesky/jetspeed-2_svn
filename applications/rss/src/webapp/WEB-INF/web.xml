@@ -20,6 +20,10 @@ limitations under the License.
   <display-name>RSS Portlet Application</display-name>
   <description>Apache Portals Applications: RSS PA</description>
 
+  <listener>
+    <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
+  </listener>
+  
   	<!-- Define Velocity Servlet -->
 	<servlet>
 		<servlet-name>velocity</servlet-name>
