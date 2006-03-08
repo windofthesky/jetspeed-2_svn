@@ -201,6 +201,11 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-webapp-logging</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-portal</artifactId>
             <scope>runtime</scope>
         </dependency>

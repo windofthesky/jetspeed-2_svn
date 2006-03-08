@@ -46,6 +46,25 @@ limitations under the License.
         <module>rss-war</module>
     </modules>
 
+    <!-- Dependencies -->
+
+    <dependencies>
+
+        <!-- Runtime Dependencies -->
+        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-webapp-logging</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+    </dependencies>
+    
     <!-- Project Information -->
 
     <scm>

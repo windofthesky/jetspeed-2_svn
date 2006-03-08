@@ -346,6 +346,11 @@ limitations under the License.
                 <artifactId>jetspeed-web-content</artifactId>
                 <version>${pom.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-webapp-logging</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
     
             <!-- Portals Applications JARs -->
             <dependency>
