@@ -104,6 +104,7 @@ limitations under the License.
         <module>sso</module>
         <module>statistics</module>
         <module>web-content</module>
+        <module>webapp-logging</module>
     </modules>
 
     <!-- Global Build Configuration -->
