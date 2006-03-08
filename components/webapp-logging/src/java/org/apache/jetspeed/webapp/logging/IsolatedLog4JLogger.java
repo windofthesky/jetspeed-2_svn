@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.util;
+package org.apache.jetspeed.webapp.logging;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -15,11 +15,9 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.io.FileInputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 
@@ -35,11 +33,6 @@ import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.jetspeed.util.IsolatedLog4JLogger;
-import org.apache.log4j.Hierarchy;
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.spi.RootCategory;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -66,19 +59,14 @@ public class JetspeedEngine implements Engine
     private final PortalContext context;
     private final ServletConfig config;
     private final ComponentManager componentManager;
-    private final Configuration configuration;
-    private final String applicationRoot;
     private Map pipelineMapper ;
     private PortalStatistics statistics;
     
     protected static final Log log = LogFactory.getLog(JetspeedEngine.class);
-    private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);        
     protected String defaultPipelineName;    
 
     public JetspeedEngine(Configuration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
     {
-        this.configuration = configuration;
-        this.applicationRoot = applicationRoot;
         this.componentManager = componentManager;
         this.context = new JetspeedPortalContext(this, configuration, applicationRoot);
         this.config = config;
@@ -115,20 +103,6 @@ public class JetspeedEngine implements Engine
         Date startTime = new Date();        
         try
         {  
-            //
-            // Configure Log4J
-            //
-            String log4jFile = configuration.getString(LOG4J_CONFIG_FILE,
-                    LOG4J_CONFIG_FILE_DEFAULT);
-            log4jFile = getRealPath(log4jFile);
-            Properties p = new Properties();
-            p.load(new FileInputStream(log4jFile));
-            p.setProperty(APPLICATION_ROOT_KEY, context.getApplicationRoot());
-            Hierarchy h = new Hierarchy(new RootCategory(Level.INFO));
-            new PropertyConfigurator().doConfigure(p,h);
-            IsolatedLog4JLogger.setHierarchy(h);
-            
-            log.info("Configured log4j from " + log4jFile);
             log.info("Starting Jetspeed Engine ("+getClass().getName()+") at "+format.format(startTime));
     
             // patch up OJB
