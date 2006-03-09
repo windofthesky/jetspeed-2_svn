@@ -266,7 +266,7 @@ There are 3 required attributes for this element:
     </tr>
     <tr>
     <td>name</td>
-    <td>The required name of the portlet used to implement the fragment layout. The portlet name generally takes the form of 'portlet-app-id:portlet-id' as specified in the portlet.xml files. Here are the supported Jetspeed2 layout portlet names:
+    <td>The required name of the portlet used to implement the fragment layout. The portlet name generally takes the form of 'portlet-app-name:portlet-name' where portlet-app-name is the web context name, as specified in the portlet.xml files. Here are the supported Jetspeed2 layout portlet names:
         <ul>
             <li>jetspeed-layouts::FrameLayoutPortlet</li>
             <li>jetspeed-layouts::VelocityOneColumn</li>
