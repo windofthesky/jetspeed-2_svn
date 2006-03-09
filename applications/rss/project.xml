@@ -18,7 +18,7 @@ limitations under the License.
 -->
 <project>
 	<extend>${basedir}/../../project-info.xml</extend>
-	<artifactId>rss</artifactId>
+	<artifactId>jetspeed-rss</artifactId>
     <groupId>org.apache.portals.jetspeed-2</groupId>
 	<name>Jetspeed-2 Language Selector Portlet</name>
 	<description>Jetspeed-2 Language Selector Portlet</description>
