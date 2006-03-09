@@ -87,6 +87,7 @@
       <filter token="{servlet.api.version" value="${servlet.api.version}"/>
       <filter token="{myfaces.version" value="${myfaces.version}"/>
       <filter token="{spring.version" value="${spring.version}"/>
+      <filter token="{derby.version" value="${derby.version}"/>
       <filter token="{portals.bridges.common.version" value="${portals.bridges.common.version}"/>
       <filter token="{portals.bridges.frameworks.version" value="${portals.bridges.frameworks.version}"/>
       <filter token="{portals.bridges.jsf.version" value="${portals.bridges.jsf.version}"/>
