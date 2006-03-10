@@ -47,6 +47,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
     
     private int maxNumberOfAuthenticationFailures;
     private List sessionAttributes; 
+    
     /**
      * Creates a LoginValidationValveImpl instance which doesn't evaluate the maxNumberOfAuthenticationFailures 
      * for LoginConstant.ERROR_FINAL_LOGIN_ATTEMPT error reporting.
@@ -69,6 +70,21 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
     {
         this.maxNumberOfAuthenticationFailures = maxNumberOfAuthenticationFailures;
         this.sessionAttributes = new LinkedList();
+    }
+
+    /**
+     * <p>
+     * Creates a LoginValidationValveImpl instance which can evaluate {@link PasswordCredential#getAuthenticationFailures()}
+     * to determine if a user only has one login attempt available before the maxNumberOfAuthenticationFailures parameter
+     * value is reached and the credential will be disabled.</p>
+     * <p>
+     * The provided maxNumberOfAuthenticationFailures value should be equal to the value configured for the
+     * MaxPasswordAuthenticationFailuresInterceptor (and > 2 to be useful).</p>
+     */
+    public LoginValidationValveImpl(int maxNumberOfAuthenticationFailures, List sessionAttributes)
+    {
+        this.maxNumberOfAuthenticationFailures = maxNumberOfAuthenticationFailures;
+        this.sessionAttributes = sessionAttributes;
     }
 
     /**
