@@ -355,7 +355,7 @@ limitations under the License.
             <!-- Portals Applications JARs -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>rss-jar</artifactId>
+                <artifactId>jetspeed-rss</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>

@@ -65,7 +65,7 @@ limitations under the License.
         <!-- Runtime Dependencies -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>rss-jar</artifactId>
+            <artifactId>jetspeed-rss</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
