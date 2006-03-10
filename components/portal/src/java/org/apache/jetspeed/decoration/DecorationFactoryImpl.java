@@ -18,11 +18,13 @@ package org.apache.jetspeed.decoration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -62,6 +64,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     
     private Set layoutDecorationsList = Collections.EMPTY_SET;
     private Set portletDecorationsList = Collections.EMPTY_SET;
+    
+    private Map portletDecoratorProperties = new HashMap();
+    private Map layoutDecoratorProperties = new HashMap();
 
     public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
     {
@@ -146,25 +151,63 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      */
     protected Properties getConfiguration(String name, String type)
     {
-        Properties props = new Properties();
-        InputStream is = servletContext.getResourceAsStream(decorationsPath + "/"+ type +"/"+ name + "/" + Decoration.CONFIG_FILE_NAME);
-        if (is != null)
+        Properties props = null;
+        if (type.equals(Fragment.PORTLET))
         {
-            try
-            {
-                props.load(is);
-            }
-            catch (IOException e)
-            {
-                log.warn("Failed to load decoration configuration.", e);
-                props.setProperty("id", name);
-            }
+            props = (Properties)this.portletDecoratorProperties.get(name);
+            
         }
         else
         {
-            log.warn("Could not locate the decorator.properties configuration file for decoration \""+name+
-                 "\".  This decoration may not exist.");
+            props = (Properties)this.layoutDecoratorProperties.get(name);
+        }        
+        if (props != null)
+        {
+            return props;
+        }
+        
+        props = new Properties();
+        InputStream is = null;
+        try
+        {
+            is = servletContext.getResourceAsStream(decorationsPath + "/"+ type +"/"+ name + "/" + Decoration.CONFIG_FILE_NAME);
+            if (is != null)
+            {                
+                props.load(is);
+            }
+            else
+            {
+                log.warn("Could not locate the decorator.properties configuration file for decoration \""+name+
+                     "\".  This decoration may not exist.");
+                props.setProperty("id", name);
+            }                
+        }
+        catch (Exception e)
+        {
+            log.warn("Failed to load decoration configuration.", e);
             props.setProperty("id", name);
+        }
+        finally
+        {
+            if (is != null)
+            {
+                try
+                {
+                    is.close();
+                }
+                catch (IOException e)
+                {
+                    log.warn("Failed to close decoration configuration.", e);
+                }
+            }
+        }
+        if (type.equals(Fragment.PORTLET))
+        {
+            this.portletDecoratorProperties.put(name, props);
+        }
+        else
+        {
+            this.layoutDecoratorProperties.put(name, props);
         }
         return props;
     }
