@@ -34,7 +34,7 @@ limitations under the License.
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
-    <name>Jetspeed 2 TreeControl TagLib</name>
+    <name>Jetspeed-2 TreeControl TagLib</name>
     <description>
         TreeControl TagLib
     </description>

@@ -28,10 +28,10 @@ limitations under the License.
     <!-- POM Identification -->
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
-    <artifactId>pom</artifactId>
+    <artifactId>jetspeed-2</artifactId>
     <version>2.1-dev</version>
     <packaging>pom</packaging>
-    <name>Jetspeed 2 Enterprise Portal</name>
+    <name>Jetspeed-2 Enterprise Portal</name>
     <description>
         Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
     </description>
