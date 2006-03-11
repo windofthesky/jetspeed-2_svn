@@ -26,67 +26,25 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-layouts</artifactId>
+    <artifactId>layout-portlets</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
         <artifactId>jetspeed-2</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
     <name>Jetspeed-2 Layout Portlets</name>
     <description>
         Layout Portlets
     </description>
 
-    <!-- Dependencies -->
+    <!-- Application Modules -->
 
-    <dependencies>
-
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!--
-            Note: layouts are deployed in the portal context, so
-            the entire portal component is provided.
-        -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-portal</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>jmock</groupId>
-            <artifactId>jmock</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Runtime Dependencies -->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-    </dependencies>
+    <modules>
+        <module>layout-portlets-jar</module>
+        <module>layout-portlets-war</module>
+    </modules>
 
     <!-- Project Information -->
 

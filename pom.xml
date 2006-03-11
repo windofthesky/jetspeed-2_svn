@@ -363,6 +363,11 @@ limitations under the License.
                 <artifactId>portals-gems</artifactId>
                 <version>${pom.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-layout-portlets</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
 
             <!-- Portals Applications -->
             <dependency>
@@ -853,6 +858,9 @@ limitations under the License.
                     <exclude>**/*.java</exclude>
                     <exclude>**/JETSPEED-INF/**</exclude>
                 </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test</directory>
             </testResource>
         </testResources>
 
