@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="java:jar"
+         xmlns:j="jelly:core"
+         xmlns:artifact="artifact"
+         xmlns:maven="jelly:maven"
+         xmlns:define="jelly:define">
+
+  <goal name="war:install" prereqs="war:war" description="Overrule default war:install to allow install under different name">
+     
+     <!--  load the custom jetspeed-layouts-war pom -->
+     <maven:pom var="warPom" projectDescriptor="${basedir}/jetspeed-layouts-war.xml"/>
+     <!--  install the war using the custom pom -->
+     <artifact:install
+        artifact="${maven.war.build.dir}/${maven.war.final.name}"
+        type="war"
+        project="${warPom}"/> 
+  </goal>
+  
+</project>

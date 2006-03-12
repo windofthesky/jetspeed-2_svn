@@ -18,7 +18,7 @@
 -->
 <project>
     <extend>${basedir}/../project-info.xml</extend>
-    <id>jetspeed-layouts</id>
+    <id>jetspeed-layout-portlets</id>
     <name>Jetspeed-2 Layout Portlets</name>
     <description>Layout Portlets</description>
     <shortDescription>Layouts.</shortDescription>
