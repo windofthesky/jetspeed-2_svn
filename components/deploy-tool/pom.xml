@@ -76,7 +76,7 @@ limitations under the License.
                         <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="resources" antfile="build.xml" dir="${basedir}" inheritall="off"/>
+                                <ant target="resources" antfile="build.xml" dir="${basedir}" inheritAll="off"/>
                             </tasks>
                         </configuration>
                         <goals>

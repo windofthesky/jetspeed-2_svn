@@ -23,13 +23,6 @@ limitations under the License.
     This file is placed in ~/.m2 by convention. User defined
     profiles must be defined or extended with these settings
     to perform a complete J2 build and deployment.
-
-    If you have redefined the location of the Maven repository,
-    (via configuration in $MAVEN_HOME/conf for example), one
-    must still have a copy of the settings.xml file in either
-    ~/.m2 or ~/.ant that defines the location of the actual
-    repository and this file for the Maven Ant tasks used by
-    this build.
 -->
 <settings xmlns="http://maven.apache.org/POM/4.0.0">
 
@@ -43,24 +36,58 @@ limitations under the License.
             </activation>
             <properties>
     
-                <!-- J2 Test DB Properties -->
-                <org.apache.jetspeed.test.jdbc.drivers.path>/usr/share/tomcat5/shared/lib/mysql-connector-java.jar</org.apache.jetspeed.test.jdbc.drivers.path>
-                <org.apache.jetspeed.test.database.default.name>mysql</org.apache.jetspeed.test.database.default.name>
-                <org.apache.jetspeed.test.database.url>jdbc:mysql://localhost/j2test</org.apache.jetspeed.test.database.url>
-                <org.apache.jetspeed.test.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.test.database.driver>
-                <org.apache.jetspeed.test.database.user>tomcat4</org.apache.jetspeed.test.database.user>
+                <!-- MSSQL database properties -->
+
+                <org.apache.jetspeed.test.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/jtds-1.2.jar</org.apache.jetspeed.test.jdbc.drivers.path>
+                <org.apache.jetspeed.test.database.default.name>mssql</org.apache.jetspeed.test.database.default.name>
+                <org.apache.jetspeed.test.database.url>jdbc:jtds:sqlserver://localhost:1433/j2test</org.apache.jetspeed.test.database.url>
+                <org.apache.jetspeed.test.database.driver>net.sourceforge.jtds.jdbc.Driver</org.apache.jetspeed.test.database.driver>
+                <org.apache.jetspeed.test.database.user>sa</org.apache.jetspeed.test.database.user>
+                <org.apache.jetspeed.test.database.password>sa</org.apache.jetspeed.test.database.password>
+                <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/jtds-1.2.jar</org.apache.jetspeed.production.jdbc.drivers.path>
+                <org.apache.jetspeed.production.database.default.name>mssql</org.apache.jetspeed.production.database.default.name>
+                <org.apache.jetspeed.production.database.url>jdbc:jtds:sqlserver://localhost:1433/j2</org.apache.jetspeed.production.database.url>
+                <org.apache.jetspeed.production.database.driver>net.sourceforge.jtds.jdbc.Driver</org.apache.jetspeed.production.database.driver>
+                <org.apache.jetspeed.production.database.user>sa</org.apache.jetspeed.production.database.user>
+                <org.apache.jetspeed.production.database.password>sa</org.apache.jetspeed.production.database.password>
+
+                <!-- Derby embedded database properties -->
+
+                <!--
+                <org.apache.jetspeed.test.jdbc.drivers.path></org.apache.jetspeed.test.jdbc.drivers.path>
+                <org.apache.jetspeed.test.database.default.name>derby</org.apache.jetspeed.test.database.default.name>
+                <org.apache.jetspeed.test.database.url>jdbc:derby:/tmp/j2test</org.apache.jetspeed.test.database.url>
+                <org.apache.jetspeed.test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.test.database.driver>
+                <org.apache.jetspeed.test.database.user></org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password></org.apache.jetspeed.test.database.password>
-    
-                <!-- J2 Production DB Properties -->
-                <org.apache.jetspeed.production.jdbc.drivers.path>/usr/share/tomcat5/shared/lib/mysql-connector-java.jar</org.apache.jetspeed.production.jdbc.drivers.path>
-                <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>
-                <org.apache.jetspeed.production.database.url>jdbc:mysql://localhost/j2</org.apache.jetspeed.production.database.url>
-                <org.apache.jetspeed.production.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.production.database.driver>
-                <org.apache.jetspeed.production.database.user>tomcat4</org.apache.jetspeed.production.database.user>
+                <org.apache.jetspeed.production.jdbc.drivers.path></org.apache.jetspeed.production.jdbc.drivers.path>
+                <org.apache.jetspeed.production.database.default.name>derby</org.apache.jetspeed.production.database.default.name>
+                <org.apache.jetspeed.production.database.url>jdbc:derby:/tmp/j2</org.apache.jetspeed.production.database.url>
+                <org.apache.jetspeed.production.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.production.database.driver>
+                <org.apache.jetspeed.production.database.user></org.apache.jetspeed.production.database.user>
                 <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+                -->
+
+                <!-- HSQLDB embedded database properties -->
+
+                <!--
+                <org.apache.jetspeed.test.jdbc.drivers.path></org.apache.jetspeed.test.jdbc.drivers.path>
+                <org.apache.jetspeed.test.database.default.name>hsql</org.apache.jetspeed.test.database.default.name>
+                <org.apache.jetspeed.test.database.url>jdbc:hsqldb:file:/tmp/j2test;shutdown=true</org.apache.jetspeed.test.database.url>
+                <org.apache.jetspeed.test.database.driver>org.hsqldb.jdbcDriver</org.apache.jetspeed.test.database.driver>
+                <org.apache.jetspeed.test.database.user>sa</org.apache.jetspeed.test.database.user>
+                <org.apache.jetspeed.test.database.password></org.apache.jetspeed.test.database.password>
+                <org.apache.jetspeed.production.jdbc.drivers.path></org.apache.jetspeed.production.jdbc.drivers.path>
+                <org.apache.jetspeed.production.database.default.name>hsql</org.apache.jetspeed.production.database.default.name>
+                <org.apache.jetspeed.production.database.url>jdbc:hsqldb:file:/tmp/j2;shutdown=true</org.apache.jetspeed.production.database.url>
+                <org.apache.jetspeed.production.database.driver>org.hsqldb.jdbcDriver</org.apache.jetspeed.production.database.driver>
+                <org.apache.jetspeed.production.database.user>sa</org.apache.jetspeed.production.database.user>
+                <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+                -->
     
-                <!-- J2 Deployment Properties -->
-                <org.apache.jetspeed.server.home>/usr/share/tomcat5</org.apache.jetspeed.server.home>
+                <!-- Jetspeed-2 deployment properties -->
+
+                <org.apache.jetspeed.server.home>c:/Program Files/Apache Software Foundation/Tomcat 5.5</org.apache.jetspeed.server.home>
                 <org.apache.jetspeed.catalina.version.major>5.5</org.apache.jetspeed.catalina.version.major>
                 <org.apache.jetspeed.services.autodeployment.server>localhost</org.apache.jetspeed.services.autodeployment.server>
                 <org.apache.jetspeed.services.autodeployment.port>8080</org.apache.jetspeed.services.autodeployment.port>
@@ -71,5 +98,25 @@ limitations under the License.
         </profile>
 
     </profiles>
+
+    <activeProfiles>
+
+        <!-- Drivers path configured database profile -->
+
+        <activeProfile>jetspeed-db-drivers-path</activeProfile>
+
+        <!-- Derby embedded database properties -->
+
+        <!--
+        <activeProfile>jetspeed-db-embedded-derby</activeProfile>
+        -->
+
+        <!-- HSQLDB embedded database profile -->
+
+        <!--
+        <activeProfile>jetspeed-db-embedded-hsql</activeProfile>
+        -->
+
+    </activeProfiles>
 
 </settings>

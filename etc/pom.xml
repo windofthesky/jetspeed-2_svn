@@ -40,6 +40,34 @@ limitations under the License.
         execute them to popuate test and production instances.
     </description>
 
+    <!-- Profiles -->
+
+    <profiles>
+
+        <!-- derby database profile -->
+        <profile>
+            <id>jetspeed-db-embedded-derby</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derby</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- hsql database profile -->
+        <profile>
+            <id>jetspeed-db-embedded-hsql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+    </profiles>
+
     <!-- Build Configuration -->
 
     <build>
@@ -57,7 +85,7 @@ limitations under the License.
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritAll="off">
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.test.database.default.name}"/>
                                 </ant>
@@ -74,7 +102,7 @@ limitations under the License.
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate-db" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="populate-db" antfile="build.xml" dir="${basedir}" inheritRefs="on">
                                     <property name="org.apache.jetspeed.database.skip"
                                               value="${org.apache.jetspeed.env.skip.test}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
@@ -89,6 +117,12 @@ limitations under the License.
                                               value="${org.apache.jetspeed.test.database.user}"/>
                                     <property name="org.apache.jetspeed.database.password"
                                               value="${org.apache.jetspeed.test.database.password}"/>
+                                    <property name="org.apache.derby.version"
+                                              value="${org.apache.derby.version}"/>
+                                    <property name="ant.version"
+                                              value="${ant.version}"/>
+                                    <property name="hsqldb.version"
+                                              value="${hsqldb.version}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -103,7 +137,7 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate-db-userinfo" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="populate-db-userinfo" antfile="build.xml" dir="${basedir}" inheritRefs="on">
                                     <property name="org.apache.jetspeed.database.skip"
                                               value="${org.apache.jetspeed.env.skip.production}"/>
                                     <property name="org.apache.jetspeed.database.default.name"
@@ -118,6 +152,12 @@ limitations under the License.
                                               value="${org.apache.jetspeed.production.database.user}"/>
                                     <property name="org.apache.jetspeed.database.password"
                                               value="${org.apache.jetspeed.production.database.password}"/>
+                                    <property name="org.apache.derby.version"
+                                              value="${org.apache.derby.version}"/>
+                                    <property name="ant.version"
+                                              value="${ant.version}"/>
+                                    <property name="hsqldb.version"
+                                              value="${hsqldb.version}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -176,6 +216,11 @@ limitations under the License.
                         <groupId>torque</groupId>
                         <artifactId>torque-gen-templates</artifactId>
                         <version>${torque.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact-ant</artifactId>
+                        <version>${org.apache.maven.artifact.ant.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -43,29 +43,40 @@ limitations under the License.
 
     <profiles>
 
-        <!-- Test Profile -->
+        <!-- drivers path test database profile -->
         <profile>
-            <id>test</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                    <value>test</value>
-                </property>
-            </activation>
-            <!--
-                Bug: This system scoped dependency is brought in via a profile
-                since system paths based on a property cannot appear as a main
-                build dependency since it will generate an invalid POM when the
-                pom is referenced as a dependency.
-            -->
+            <id>jetspeed-db-drivers-path</id>
             <dependencies>
-                <!-- Database Driver -->
                 <dependency>
                     <groupId>${pom.groupId}</groupId>
                     <artifactId>org.apache.jetspeed.test.jdbc.drivers.path</artifactId>
                     <version>${pom.version}</version>
                     <scope>system</scope>
                     <systemPath>${org.apache.jetspeed.test.jdbc.drivers.path}</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- derby test database profile -->
+        <profile>
+            <id>jetspeed-db-embedded-derby</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derby</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- hsql test database profile -->
+        <profile>
+            <id>jetspeed-db-embedded-hsql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -185,7 +196,11 @@ limitations under the License.
                         <!--
                             Note: using forking to prevent module test case connection
                             pools and spring crosstalk via surefire isolation class
-                            loaders when multipe modules are built, (e.g. components/registry). 
+                            loaders when multipe modules are built, (e.g. components/registry).
+                            Specifying a fork option also sets appropriate working
+                            directory for test via default basedir configuration.
+                            This setting also has ramifactions for embedded databases
+                            that lock access to a single JVM instance, (e.g. derby).
                         -->
                         <forkMode>once</forkMode>
                     </configuration>

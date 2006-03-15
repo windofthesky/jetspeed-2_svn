@@ -56,15 +56,19 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="${org.apache.jetspeed.env.deploy.target}" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="${org.apache.jetspeed.env.deploy.target}" antfile="build.xml" dir="${basedir}" inheritAll="off">
                                     <property name="org.apache.jetspeed.deploy.skip"
                                               value="${org.apache.jetspeed.env.skip.production}"/>
                                     <property name="org.apache.jetspeed.server.home"
                                               value="${org.apache.jetspeed.server.home}"/>
                                     <property name="org.apache.jetspeed.catalina.version.major"
                                               value="${org.apache.jetspeed.catalina.version.major}"/>
+                                    <property name="org.apache.jetspeed.production.database.default.name"
+                                              value="${org.apache.jetspeed.production.database.default.name}"/>
                                     <property name="org.apache.jetspeed.production.database.url"
                                               value="${org.apache.jetspeed.production.database.url}"/>
+                                    <property name="org.apache.jetspeed.production.database.jdbc.drivers.path"
+                                              value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
                                     <property name="org.apache.jetspeed.production.database.driver"
                                               value="${org.apache.jetspeed.production.database.driver}"/>
                                     <property name="org.apache.jetspeed.production.database.user"
@@ -75,18 +79,16 @@ limitations under the License.
                                               value="${pom.groupId}"/>
                                     <property name="org.apache.jetspeed.version"
                                               value="${pom.version}"/>
-                                    <property name="org.apache.portals.bridges.groupid"
-                                              value="org.apache.portals.bridges"/>
                                     <property name="org.apache.portals.bridges.version"
                                               value="${org.apache.portals.bridges.version}"/>
-                                    <property name="org.apache.pluto.groupid"
-                                              value="org.apache.pluto"/>
                                     <property name="org.apache.pluto.version"
                                               value="${org.apache.pluto.version}"/>
-                                    <property name="portlet-api.groupid"
-                                              value="portlet-api"/>
                                     <property name="portlet-api.version"
                                               value="${portlet-api.version}"/>
+                                    <property name="org.apache.derby.version"
+                                              value="${org.apache.derby.version}"/>
+                                    <property name="hsqldb.version"
+                                              value="${hsqldb.version}"/>
                                 </ant>
                             </tasks>
                         </configuration>

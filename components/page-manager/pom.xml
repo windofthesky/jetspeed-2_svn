@@ -112,7 +112,7 @@ limitations under the License.
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="testdata" antfile="build.xml" dir="${basedir}" inheritall="off"/>
+                                <ant target="testdata" antfile="build.xml" dir="${basedir}" inheritAll="off"/>
                             </tasks>
                         </configuration>
                         <goals>

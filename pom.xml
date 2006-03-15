@@ -40,13 +40,13 @@ limitations under the License.
 
     <profiles>
 
-        <!-- Test Profile -->
+        <!-- Test Profiles -->
         <profile>
             <id>test</id>
             <activation>
                 <property>
-                    <name>env</name>
-                    <value>test</value>
+                    <name>maven.test.skip</name>
+                    <value>false</value>
                 </property>
             </activation>
             <properties>
@@ -58,12 +58,6 @@ limitations under the License.
         <!-- Tomcat Production Profile -->
         <profile>
             <id>tomcat</id>
-            <activation>
-                <property>
-                    <name>deploy</name>
-                    <value>tomcat</value>
-                </property>
-            </activation>
             <properties>
                 <org.apache.jetspeed.env.skip.production>false</org.apache.jetspeed.env.skip.production>
                 <org.apache.jetspeed.env.deploy.target>tomcat</org.apache.jetspeed.env.deploy.target>
@@ -87,10 +81,10 @@ limitations under the License.
         <aopalliance.version>1.0</aopalliance.version>
         <castor.version>0.9.4.3</castor.version>
         <cglib.version>2.0.2</cglib.version>
-        <commons-beanutils.version>1.6.1</commons-beanutils.version>
+        <commons-beanutils.version>1.7.0</commons-beanutils.version>
         <commons-codec.version>1.3</commons-codec.version>
         <commons-collections.version>3.0</commons-collections.version>
-        <commons-configuration.version>1.0</commons-configuration.version>
+        <commons-configuration.version>1.1</commons-configuration.version>
         <commons-dbcp.version>1.2.1</commons-dbcp.version>
         <commons-digester.version>1.5</commons-digester.version>
         <commons-fileupload.version>1.0</commons-fileupload.version>
@@ -100,6 +94,7 @@ limitations under the License.
         <commons-logging.version>1.0.3</commons-logging.version>
         <commons-pool.version>1.2</commons-pool.version>
         <directory.version>0.9.3</directory.version>      
+        <hsqldb.version>1.8.0.2</hsqldb.version>
         <javax.activation.version>1.0.2</javax.activation.version>
         <javax.mail.version>1.3.3</javax.mail.version>
         <javax.servlet.jstl.version>1.0.6</javax.servlet.jstl.version>
@@ -469,52 +464,6 @@ limitations under the License.
                 <groupId>commons-configuration</groupId>
                 <artifactId>commons-configuration</artifactId>
                 <version>${commons-configuration.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>junit-addons</groupId>
-                        <artifactId>junit-addons</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>dbunit</groupId>
-                        <artifactId>dbunit</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>hsqldb</groupId>
-                        <artifactId>hsqldb</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>spice</groupId>
-                        <artifactId>spice-jndikit</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>dom4j</groupId>
-                        <artifactId>dom4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-pool</groupId>
-                        <artifactId>commons-pool</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-dbcp</groupId>
-                        <artifactId>commons-dbcp</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xerces</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>resources</groupId>
-                        <artifactId>resources</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
@@ -666,6 +615,11 @@ limitations under the License.
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${org.apache.derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>${hsqldb.version}</version>
             </dependency>
 
             <!-- LDAP -->

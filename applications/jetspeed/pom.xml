@@ -69,7 +69,7 @@ limitations under the License.
                         <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="configure" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="configure" antfile="build.xml" dir="${basedir}" inheritAll="off">
                                     <property name="org.apache.jetspeed.catalina.version.major"
                                               value="${org.apache.jetspeed.catalina.version.major}"/>
                                     <property name="org.apache.jetspeed.services.autodeployment.server"
