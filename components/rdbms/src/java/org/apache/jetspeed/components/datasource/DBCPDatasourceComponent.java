@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
  * <p>
@@ -147,11 +146,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
 
         try
         {
-            log.info("Attempting to start DBCPCDatasourceComponent.");
-//            System.out.println("****************** setting data source");
-//            dataSource = new DriverManagerDataSource(driverName, connectURI, user, password);            
-//            System.out.println("****************** set data source");
-            
+            log.info("Attempting to start DBCPCDatasourceComponent.");            
             Class.forName(driverName);
             
             // Validate the connection before we go any further
@@ -195,7 +190,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
      */
     public void stop()
     {
-/*        
         try
         {
             dsConnectionFactory.getPool().close();
@@ -206,7 +200,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
                 new IllegalStateException("Unable to sfaely shutdown the DBCPConnection pool: " + e.toString());
             ise.initCause(e);
         }
-*/
     }
 
 }
