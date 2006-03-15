@@ -15,7 +15,8 @@
  */
 package org.apache.jetspeed.scheduler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -88,15 +89,15 @@ public class MemoryBasedScheduler
             scheduleQueue = new JobQueue();
             mainLoop = new MainLoop();
 
-            Vector jobProps = getConfiguration().getVector("jobs");            
-            Vector jobs = new Vector();
+            List jobProps = getConfiguration().getList("jobs");            
+            List jobs = new ArrayList();
             // If there are scheduler.jobs defined then set up a job vector
             // for the scheduleQueue
             if (!jobProps.isEmpty())
             {
                 for (int i=0;i<jobProps.size();i++)
                 {
-                    String jobName = (String)jobProps.elementAt(i);
+                    String jobName = (String)jobProps.get(i);
                     String jobPrefix = "job." + jobName ;
 
                     if ( (getConfiguration().getString(jobPrefix + ".ID", null)) == null)
@@ -120,7 +121,7 @@ public class MemoryBasedScheduler
                         dayOfMonth,
                         jobName);
 
-                    jobs.addElement(je);
+                    jobs.add(je);
 
                 }
             }
