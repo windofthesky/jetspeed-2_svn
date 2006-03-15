@@ -60,6 +60,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     private String deepPagePath = deepFolderPath + "/default-page.psml";
 
     private static ClassPathXmlApplicationContext context;
+    private static boolean lastTestRun;
 
     private static PageManager pageManager;
 
@@ -83,6 +84,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             // new context
             super.setUp();
             context = ctx;
+            lastTestRun = false;
 
             // lookup page manager in context
             pageManager = (PageManager)context.getBean("pageManager");
@@ -98,6 +100,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
     protected void tearDown() throws Exception
     {
+        // save context for reuse
+        if (!lastTestRun)
+        {
+            ctx = null;
+        }
         super.tearDown();
     }
     
@@ -933,5 +940,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(22, newNodeCount);
         assertEquals(4, updatedNodeCount);
         assertEquals(1, removedNodeCount);
+
+        // last test has been run
+        lastTestRun = true;
     }
 }
