@@ -53,6 +53,7 @@ public class TestPreferencesProvider extends DatasourceEnabledSpringTestCase
      */
     public void tearDown() throws Exception
     {
+        super.tearDown();
     }
 
     /**

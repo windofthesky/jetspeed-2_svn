@@ -61,6 +61,18 @@ public abstract class AbstractSpringTestCase extends TestCase
     }
 
     /**
+     * close Spring context as part of test teardown
+     */
+    protected void tearDown() throws Exception
+    {        
+        super.tearDown();
+        if (ctx != null)
+        {
+            ctx.close();
+        }
+    }
+
+    /**
      * required specification of spring configurations
      */
     protected abstract String[] getConfigurations();

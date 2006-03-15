@@ -39,6 +39,7 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
      */
     public void tearDown() throws Exception
     {
+        super.tearDown();
     }
 
     protected void clearChildren(Preferences node) throws Exception

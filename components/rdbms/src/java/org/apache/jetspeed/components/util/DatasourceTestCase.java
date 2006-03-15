@@ -73,6 +73,7 @@ public class DatasourceTestCase extends TestCase
      */
     protected void tearDown() throws Exception
     {
+        datasourceComponent.stop();
         jndi.unbindFromCurrentThread();
         super.tearDown();
     }
