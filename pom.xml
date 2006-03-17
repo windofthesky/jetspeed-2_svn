@@ -64,6 +64,39 @@ limitations under the License.
             </properties>
         </profile>
 
+        <!-- Full Deployment Profile -->
+        <profile>
+            <id>full</id>
+            <properties>
+                <org.apache.jetspeed.env.deploy.type>full</org.apache.jetspeed.env.deploy.type>
+            </properties>
+        </profile>
+
+        <!-- Min Deployment Profile -->
+        <profile>
+            <id>min</id>
+            <properties>
+                <org.apache.jetspeed.env.deploy.type>min</org.apache.jetspeed.env.deploy.type>
+            </properties>
+        </profile>
+
+        <!-- NoDB Deployment Profile -->
+        <profile>
+            <id>nodb</id>
+            <properties>
+                <org.apache.jetspeed.env.deploy.db>false</org.apache.jetspeed.env.deploy.db>
+            </properties>
+        </profile>
+
+        <!-- Hot Deployment Profile -->
+        <profile>
+            <id>hot</id>
+            <properties>
+                <org.apache.jetspeed.env.deploy.db>false</org.apache.jetspeed.env.deploy.db>
+                <org.apache.jetspeed.env.hotdeploy>true</org.apache.jetspeed.env.hotdeploy>
+            </properties>
+        </profile>
+
     </profiles>
 
     <!-- Properties -->
@@ -74,7 +107,10 @@ limitations under the License.
         <maven.test.skip>true</maven.test.skip>
         <org.apache.jetspeed.env.skip.test>true</org.apache.jetspeed.env.skip.test>
         <org.apache.jetspeed.env.skip.production>true</org.apache.jetspeed.env.skip.production>
-        <org.apache.jetspeed.env.deploy.target>tomcat</org.apache.jetspeed.env.deploy.target>
+        <org.apache.jetspeed.env.deploy.target>none</org.apache.jetspeed.env.deploy.target>
+        <org.apache.jetspeed.env.deploy.type>full</org.apache.jetspeed.env.deploy.type>
+        <org.apache.jetspeed.env.deploy.db>true</org.apache.jetspeed.env.deploy.db>
+        <org.apache.jetspeed.env.hotdeploy>false</org.apache.jetspeed.env.hotdeploy>
 
         <!-- Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
@@ -504,11 +540,23 @@ limitations under the License.
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
                 <version>${commons-dbcp.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-digester</groupId>

@@ -20,6 +20,7 @@ limitations under the License.
 
     <!-- Properties -->
 
+    <property name="org.apache.jetspeed.database.enable" value="true"/>
     <property name="org.apache.jetspeed.database.skip" value="false"/>
     <property name="org.apache.jetspeed.database.default.name" value=""/>
     <property name="org.apache.jetspeed.database.url" value=""/>
@@ -57,6 +58,7 @@ limitations under the License.
         <echo message="    populate-db - build and minimally populate database instance."/>
         <echo message="    populate-db-userinfo - build and populate database instance with default users."/>
         <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.database.enable=${org.apache.jetspeed.database.enable}"/>
         <echo message="    org.apache.jetspeed.database.skip=${org.apache.jetspeed.database.skip}"/>
         <echo message="    org.apache.jetspeed.database.default.name=${org.apache.jetspeed.database.default.name}"/>
         <echo message="    org.apache.jetspeed.database.url=${org.apache.jetspeed.database.url}"/>
@@ -292,7 +294,12 @@ limitations under the License.
 
     <target name="populate-skip">
         <condition property="org.apache.jetspeed.skip">
-            <equals arg1="${org.apache.jetspeed.database.skip}" arg2="true"/>
+            <or>
+                <equals arg1="${org.apache.jetspeed.database.skip}" arg2="true"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.enable}" arg2="true"/>
+                </not>
+            </or>
         </condition>
     </target>
 

@@ -70,6 +70,8 @@ limitations under the License.
                         <configuration>
                             <tasks>
                                 <ant target="configure" antfile="build.xml" dir="${basedir}" inheritAll="off">
+                                    <property name="org.apache.jetspeed.deploy.type"
+                                              value="${org.apache.jetspeed.env.deploy.type}"/>
                                     <property name="org.apache.jetspeed.catalina.version.major"
                                               value="${org.apache.jetspeed.catalina.version.major}"/>
                                     <property name="org.apache.jetspeed.services.autodeployment.server"

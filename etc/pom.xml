@@ -138,6 +138,8 @@ limitations under the License.
                         <configuration>
                             <tasks>
                                 <ant target="populate-db-userinfo" antfile="build.xml" dir="${basedir}" inheritRefs="on">
+                                    <property name="org.apache.jetspeed.database.enable"
+                                              value="${org.apache.jetspeed.env.deploy.db}"/>
                                     <property name="org.apache.jetspeed.database.skip"
                                               value="${org.apache.jetspeed.env.skip.production}"/>
                                     <property name="org.apache.jetspeed.database.default.name"

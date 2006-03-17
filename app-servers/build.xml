@@ -20,7 +20,10 @@ limitations under the License.
 
     <!-- Properties -->
 
+    <property name="org.apache.jetspeed.deploy.enable" value="true"/>
     <property name="org.apache.jetspeed.deploy.skip" value="false"/>
+    <property name="org.apache.jetspeed.deploy.target" value="none"/>
+    <property name="org.apache.jetspeed.deploy.type" value="full"/>
     <property name="org.apache.jetspeed.server.home" value=""/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
     <property name="org.apache.jetspeed.production.database.default.name" value=""/>
@@ -36,16 +39,25 @@ limitations under the License.
     <property name="portlet-api.version" value=""/>
     <property name="org.apache.derby.version" value=""/>
     <property name="hsqldb.version" value=""/>
+    <property name="org.apache.jetspeed.deploy.groupid" value=""/>
+    <property name="org.apache.jetspeed.deploy.artifactid" value=""/>
+    <property name="org.apache.jetspeed.deploy.version" value=""/>
 
     <!-- Usage -->
 
     <target name="help">
         <echo message="Buildfile for the app-servers maven POM."/>
-        <echo message="Usage: ant [ tomcat ]"/>
+        <echo message="Usage: ant [ deploy ]"/>
         <echo message="Where:"/>
-        <echo message="    tomcat - deploy to the tomcat app server."/>
+        <echo message="    deploy - deploy to the target app server."/>
+        <echo message="    hot-deploy - hot deploy content and applications to the target app server."/>
+        <echo message="    hot-deploy-jar - hot deploy component jar to the target app server."/>
+        <echo message="    hot-deploy-war - hot deploy application war to the target app server."/>
         <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.deploy.enable=${org.apache.jetspeed.deploy.enable}"/>
         <echo message="    org.apache.jetspeed.deploy.skip=${org.apache.jetspeed.deploy.skip}"/>
+        <echo message="    org.apache.jetspeed.deploy.target=${org.apache.jetspeed.deploy.target}"/>
+        <echo message="    org.apache.jetspeed.deploy.type=${org.apache.jetspeed.deploy.type}"/>
         <echo message="    org.apache.jetspeed.server.home=${org.apache.jetspeed.server.home}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         <echo message="    org.apache.jetspeed.production.database.default.name=${org.apache.jetspeed.production.database.default.name}"/>
@@ -61,6 +73,84 @@ limitations under the License.
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
         <echo message="    hsqldb.version=${hsqldb.version}"/>
+        <echo message="    org.apache.jetspeed.deploy.groupid=${org.apache.jetspeed.deploy.groupid}"/>
+        <echo message="    org.apache.jetspeed.deploy.artifactid=${org.apache.jetspeed.deploy.artifactid}"/>
+        <echo message="    org.apache.jetspeed.deploy.version=${org.apache.jetspeed.deploy.version}"/>
+    </target>
+
+    <!-- Deployment Classification -->
+
+    <target name="deploy" depends="test-deploy-target, test-deploy-type, test-deploy-skip" unless="org.apache.jetspeed.skip">
+
+        <!-- invoke deployment targets -->
+        <antcall target="unsupported-deploy"/>
+        <antcall target="tomcat-deploy"/>
+ 
+    </target>
+
+    <target name="hot-deploy" depends="test-deploy-target, test-deploy-type, test-deploy-skip" unless="org.apache.jetspeed.skip">
+
+        <!-- invoke deployment targets -->
+        <antcall target="unsupported-deploy"/>
+        <antcall target="tomcat-hot-deploy"/>
+ 
+    </target>
+
+    <target name="hot-deploy-jar" depends="test-deploy-target, test-deploy-type, test-deploy-skip" unless="org.apache.jetspeed.skip">
+
+        <!-- invoke deployment targets -->
+        <antcall target="unsupported-deploy"/>
+        <antcall target="tomcat-hot-deploy-jar"/>
+ 
+    </target>
+
+    <target name="hot-deploy-war" depends="test-deploy-target, test-deploy-type, test-deploy-skip" unless="org.apache.jetspeed.skip">
+
+        <!-- invoke deployment targets -->
+        <antcall target="unsupported-deploy"/>
+        <antcall target="tomcat-hot-deploy-war"/>
+ 
+    </target>
+
+    <target name="test-deploy-target">
+        <condition property="org.apache.jetspeed.tomcat">
+            <equals arg1="${org.apache.jetspeed.deploy.target}" arg2="tomcat"/>
+        </condition>
+        <condition property="org.apache.jetspeed.unsupported">
+            <not>
+                <or>
+                    <equals arg1="${org.apache.jetspeed.deploy.target}" arg2="none"/>
+                    <equals arg1="${org.apache.jetspeed.deploy.target}" arg2="tomcat"/>
+                </or>
+            </not>
+        </condition>
+    </target>
+
+    <target name="test-deploy-type">
+        <condition property="org.apache.jetspeed.deploy.full">
+            <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+        </condition>
+        <condition property="org.apache.jetspeed.deploy.min">
+            <or>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+            </or>
+        </condition>
+    </target>
+
+    <target name="test-deploy-skip">
+        <condition property="org.apache.jetspeed.skip">
+            <or>
+                <equals arg1="${org.apache.jetspeed.deploy.skip}" arg2="true"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.deploy.enable}" arg2="true"/>
+                </not>
+            </or>
+        </condition>
+    </target>
+
+    <target name="unsupported-deploy" if="org.apache.jetspeed.unsupported">
+        <fail message="Unsupported deployment target: ${org.apache.jetspeed.deploy.target}."/>
     </target>
 
     <!-- Additional Task Definitions -->
@@ -69,9 +159,9 @@ limitations under the License.
 
     <!-- Tomcat Deployment -->
 
-    <target name="tomcat" depends="deploy-skip, tomcat-5-5" unless="org.apache.jetspeed.skip">
+    <target name="tomcat-deploy" depends="tomcat-5-5" if="org.apache.jetspeed.tomcat">
 
-        <!-- Deploy provided libraries in shared/lib -->
+        <!-- deploy provided libraries in shared/lib -->
         <delete>
             <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
                 <include name="pluto-*.jar"/>
@@ -102,10 +192,10 @@ limitations under the License.
             <fileset refid="shared.lib.dependencies.id"/>
         </copy>
 
-        <!-- Deploy embedded database in shared/lib -->
+        <!-- deploy embedded database in shared/lib -->
         <antcall target="tomcat-embedded-database"/>
 
-        <!-- Deploy jetspeed applications -->
+        <!-- deploy jetspeed application -->
         <delete dir="${org.apache.jetspeed.server.home}/webapps/jetspeed"/>
         <delete>
             <fileset dir="${org.apache.jetspeed.server.home}/webapps">
@@ -124,71 +214,7 @@ limitations under the License.
         </copy>
         <unjar src="${org.apache.jetspeed.server.home}/webapps/jetspeed.war" dest="${org.apache.jetspeed.server.home}/webapps/jetspeed"/>
 
-        <!-- Deploy portlet and layout applications -->
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/demo"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/jpetstore"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/jsf-demo"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/perl"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/php"/>
-        <delete dir="${org.apache.jetspeed.server.home}/webapps/rss"/>
-        <delete>
-            <fileset dir="${org.apache.jetspeed.server.home}/webapps">
-                <include name="demo.war"/>
-                <include name="j2-admin.war"/>
-                <include name="jpetstore.war"/>
-                <include name="jsf-demo.war"/>
-                <include name="perl.war"/>
-                <include name="php.war"/>
-                <include name="rss.war"/>
-            </fileset>
-        </delete>
-        <delete>
-            <fileset dir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
-                <include name="j2-admin.xml"/>
-                <include name="jpetstore.xml"/>
-            </fileset>
-        </delete>
-        <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="demo"
-                        version="${org.apache.jetspeed.version}"
-                        type="war"/>
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="j2-admin"
-                        version="${org.apache.jetspeed.version}"
-                        type="war"/>
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="jetspeed-layouts"
-                        version="${org.apache.jetspeed.version}"
-                        type="war"/>
-            <dependency groupId="org.apache.portals.bridges"
-                        artifactId="jpetstore"
-                        version="${org.apache.portals.bridges.version}"
-                        type="war"/>
-            <dependency groupId="org.apache.portals.bridges"
-                        artifactId="jsf-demo"
-                        version="${org.apache.portals.bridges.version}"
-                        type="war"/>
-            <dependency groupId="org.apache.portals.bridges"
-                        artifactId="perl"
-                        version="${org.apache.portals.bridges.version}"
-                        type="war"/>
-            <dependency groupId="org.apache.portals.bridges"
-                        artifactId="php"
-                        version="${org.apache.portals.bridges.version}"
-                        type="war"/>
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="rss"
-                        version="${org.apache.jetspeed.version}"
-                        type="war"/>
-        </dependencies>
-        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy">
-            <fileset refid="portletapp.dependencies.id"/>
-            <mapper type="regexp" from=".*[/\\]([^/\\]*)-(?:(?:${org.apache.jetspeed.version})|(?:${org.apache.portals.bridges.version})).war" to="\1.war"/>
-        </copy>
-
-        <!-- Generate and deploy application context file -->
+        <!-- generate and deploy jetspeed application context file -->
         <delete file="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml"/>
         <copy todir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
             <fileset dir="${basedir}/../etc/conf/tomcat">
@@ -205,24 +231,19 @@ limitations under the License.
             <mapper type="merge" to="jetspeed.xml"/>
         </copy>
 
+        <!-- deploy portlet and layout applications -->
+        <antcall target="tomcat-deploy-min-apps"/>
+        <antcall target="tomcat-deploy-full-apps"/>
+
+    </target>
+
+    <target name="tomcat-5-5">
+        <condition property="org.apache.jetspeed.tomcat.5.5">
+            <equals arg1="${org.apache.jetspeed.catalina.version.major}" arg2="5.5"/>
+        </condition>
     </target>
 
     <target name="tomcat-embedded-database" depends="test-embedded-database, tomcat-embedded-database-derby, tomcat-embedded-database-hsql"/>
-
-    <target name="test-embedded-database">
-        <condition property="org.apache.jetspeed.production.database.is.derby.embedded">
-            <and>
-                <equals arg1="${org.apache.jetspeed.production.database.default.name}" arg2="derby"/>
-                <equals arg1="${org.apache.jetspeed.production.database.jdbc.drivers.path}" arg2=""/>
-            </and>
-        </condition>
-        <condition property="org.apache.jetspeed.production.database.is.hsql.embedded">
-            <and>
-                <equals arg1="${org.apache.jetspeed.production.database.default.name}" arg2="hsql"/>
-                <equals arg1="${org.apache.jetspeed.production.database.jdbc.drivers.path}" arg2=""/>
-            </and>
-        </condition>
-    </target>
 
     <target name="tomcat-embedded-database-derby" if="org.apache.jetspeed.production.database.is.derby.embedded">
         <!-- Deploy embedded derby database in shared/lib -->
@@ -258,17 +279,183 @@ limitations under the License.
         </copy>
     </target>
 
-    <!-- Utility Targets -->
-
-    <target name="deploy-skip">
-        <condition property="org.apache.jetspeed.skip">
-            <equals arg1="${org.apache.jetspeed.deploy.skip}" arg2="true"/>
-        </condition>
+    <target name="tomcat-deploy-min-apps" if="org.apache.jetspeed.deploy.min">
+        <!-- deploy minimal set of portlet and layout applications -->
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/webapps">
+                <include name="j2-admin.war"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
+                <include name="j2-admin.xml"/>
+            </fileset>
+        </delete>
+        <antcall target="tomcat-hot-deploy-min-apps"/>
     </target>
 
-    <target name="tomcat-5-5">
-        <condition property="org.apache.jetspeed.tomcat.5.5">
-            <equals arg1="${org.apache.jetspeed.catalina.version.major}" arg2="5.5"/>
+    <target name="tomcat-deploy-full-apps" if="org.apache.jetspeed.deploy.full">
+        <!-- deploy additional set of portlet applications -->
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/demo"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/jpetstore"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/jsf-demo"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/perl"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/php"/>
+        <delete dir="${org.apache.jetspeed.server.home}/webapps/rss"/>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/webapps">
+                <include name="demo.war"/>
+                <include name="jpetstore.war"/>
+                <include name="jsf-demo.war"/>
+                <include name="perl.war"/>
+                <include name="php.war"/>
+                <include name="rss.war"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/conf/Catalina/localhost">
+                <include name="jpetstore.xml"/>
+            </fileset>
+        </delete>
+        <antcall target="tomcat-hot-deploy-full-apps"/>
+    </target>
+
+    <target name="tomcat-hot-deploy" if="org.apache.jetspeed.tomcat">
+
+        <!-- hot deploy templates content -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/templates">
+            <fileset dir="${basedir}/../src/webapp/WEB-INF/templates"/>
+        </copy>
+
+        <!-- hot deploy portlet and layout applications -->
+        <antcall target="tomcat-hot-deploy-min-apps"/>
+        <antcall target="tomcat-hot-deploy-full-apps"/>
+
+        <!-- hot deploy pages content -->
+        <antcall target="tomcat-hot-deploy-min-pages"/>
+        <antcall target="tomcat-hot-deploy-full-pages"/>
+
+        <!-- hot deploy decorations content -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/decorations">
+            <fileset dir="${basedir}/../src/webapp/decorations"/>
+        </copy>
+
+    </target>
+
+    <target name="tomcat-hot-deploy-min-pages" if="org.apache.jetspeed.deploy.min">
+        <!-- hot deploy minimum pages content -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
+            <fileset dir="${basedir}/../src/webapp/WEB-INF/pages">
+                <include name="Administrative/**"/>
+                <include name="page.security"/>
+                <include name="my-account.psml"/>
+            </fileset>
+        </copy>
+        <copy file="${basedir}/../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+              tofile="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages/default-page.psml"/>
+        <replace file="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages/default-page.psml"
+                 token=" hidden=&quot;true&quot;"/>
+    </target>
+
+    <target name="tomcat-hot-deploy-full-pages" if="org.apache.jetspeed.deploy.full">
+        <!-- hot deploy full pages content -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
+            <fileset dir="${basedir}/../src/webapp/WEB-INF/pages"/>
+        </copy>
+    </target>
+
+    <target name="tomcat-hot-deploy-full-apps" if="org.apache.jetspeed.deploy.full">
+        <!-- hot deploy additional set of portlet applications -->
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="demo"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="jpetstore"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="jsf-demo"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="perl"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="php"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="rss"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+    </target>
+
+    <target name="tomcat-hot-deploy-min-apps" if="org.apache.jetspeed.deploy.min">
+        <!-- hot deploy minimal set of portlet and layout applications -->
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="jetspeed-layouts"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+        <antcall target="tomcat-hot-deploy-war">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="j2-admin"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+    </target>
+
+    <target name="tomcat-hot-deploy-jar">
+        <!-- hot deploy component -->
+        <dependencies filesetId="component.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="${org.apache.jetspeed.deploy.artifactid}"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+        </dependencies>
+        <!-- copy only the artifact and ignore dependencies using mapper -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/lib">
+            <fileset refid="component.dependencies.id"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.jar" to="\1.jar"/>
+        </copy>
+    </target>
+
+    <target name="tomcat-hot-deploy-war">
+        <!-- hot deploy portlet or layout application -->
+        <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="${org.apache.jetspeed.deploy.artifactid}"
+                        version="${org.apache.jetspeed.deploy.version}"
+                        type="war"/>
+        </dependencies>
+        <!-- copy only the artifact and ignore dependencies using mapper -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy">
+            <fileset refid="portletapp.dependencies.id"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
+        </copy>
+    </target>
+
+    <!-- Utility Targets -->
+
+    <target name="test-embedded-database">
+        <condition property="org.apache.jetspeed.production.database.is.derby.embedded">
+            <and>
+                <equals arg1="${org.apache.jetspeed.production.database.default.name}" arg2="derby"/>
+                <equals arg1="${org.apache.jetspeed.production.database.jdbc.drivers.path}" arg2=""/>
+            </and>
+        </condition>
+        <condition property="org.apache.jetspeed.production.database.is.hsql.embedded">
+            <and>
+                <equals arg1="${org.apache.jetspeed.production.database.default.name}" arg2="hsql"/>
+                <equals arg1="${org.apache.jetspeed.production.database.jdbc.drivers.path}" arg2=""/>
+            </and>
         </condition>
     </target>
 

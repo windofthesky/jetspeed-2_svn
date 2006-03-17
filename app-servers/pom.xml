@@ -56,9 +56,15 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="${org.apache.jetspeed.env.deploy.target}" antfile="build.xml" dir="${basedir}" inheritAll="off">
+
+                                <!-- normal deployment to app server -->
+                                <ant target="deploy" antfile="build.xml" dir="${basedir}" inheritAll="off">
                                     <property name="org.apache.jetspeed.deploy.skip"
-                                              value="${org.apache.jetspeed.env.skip.production}"/>
+                                              value="${org.apache.jetspeed.env.hotdeploy}"/>
+                                    <property name="org.apache.jetspeed.deploy.target"
+                                              value="${org.apache.jetspeed.env.deploy.target}"/>
+                                    <property name="org.apache.jetspeed.deploy.type"
+                                              value="${org.apache.jetspeed.env.deploy.type}"/>
                                     <property name="org.apache.jetspeed.server.home"
                                               value="${org.apache.jetspeed.server.home}"/>
                                     <property name="org.apache.jetspeed.catalina.version.major"
@@ -90,6 +96,25 @@ limitations under the License.
                                     <property name="hsqldb.version"
                                               value="${hsqldb.version}"/>
                                 </ant>
+
+                                <!-- hot deployment to app server -->
+                                <ant target="hot-deploy" antfile="build.xml" dir="${basedir}" inheritAll="off">
+                                    <property name="org.apache.jetspeed.deploy.enable"
+                                              value="${org.apache.jetspeed.env.hotdeploy}"/>
+                                    <property name="org.apache.jetspeed.deploy.target"
+                                              value="${org.apache.jetspeed.env.deploy.target}"/>
+                                    <property name="org.apache.jetspeed.deploy.type"
+                                              value="${org.apache.jetspeed.env.deploy.type}"/>
+                                    <property name="org.apache.jetspeed.server.home"
+                                              value="${org.apache.jetspeed.server.home}"/>
+                                    <property name="org.apache.jetspeed.groupid"
+                                              value="${pom.groupId}"/>
+                                    <property name="org.apache.jetspeed.version"
+                                              value="${pom.version}"/>
+                                    <property name="org.apache.portals.bridges.version"
+                                              value="${org.apache.portals.bridges.version}"/>
+                                </ant>
+
                             </tasks>
                         </configuration>
                         <goals>

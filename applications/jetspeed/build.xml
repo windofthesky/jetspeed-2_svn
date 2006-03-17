@@ -20,6 +20,7 @@ limitations under the License.
 
     <!-- Properties -->
 
+    <property name="org.apache.jetspeed.deploy.type" value="full"/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.server" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.port" value=""/>
@@ -34,6 +35,7 @@ limitations under the License.
         <echo message="Where:"/>
         <echo message="    configure - setup runtime configuration for jetspeed."/>
         <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.deploy.type=${org.apache.jetspeed.deploy.type}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         <echo message="    org.apache.jetspeed.services.autodeployment.server=${org.apache.jetspeed.services.autodeployment.server}"/>
         <echo message="    org.apache.jetspeed.services.autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
@@ -43,16 +45,54 @@ limitations under the License.
 
     <!-- Jetspeed Configuration -->
 
-    <target name="configure">
+    <target name="configure" depends="test-deploy-type">
 
         <!-- Build webapp resources -->        
         <delete dir="${basedir}/target/webapp"/>
         <mkdir dir="${basedir}/target/webapp"/>
         <copy todir="${basedir}/target/webapp">
-            <fileset dir="${basedir}/../../src/webapp"/>
+            <fileset dir="${basedir}/../../src/webapp">
+                <exclude name="WEB-INF/conf/jetspeed.properties"/>
+                <exclude name="WEB-INF/pages/**"/>
+            </fileset>
+        </copy>
+        <antcall target="configure-min-resources"/>
+        <antcall target="configure-full-resources"/>
+
+        <!-- Build OJB resources -->        
+        <mkdir dir="${basedir}/target/webapp/WEB-INF/classes"/>
+        <copy todir="${basedir}/target/webapp/WEB-INF/classes">
+            <fileset dir="${basedir}/../../etc/db-ojb"/>
         </copy>
 
-        <!-- Configure runtime configuration propertiee resource -->
+    </target>
+
+    <target name="configure-min-resources" if="org.apache.jetspeed.deploy.min">
+        <!-- configure minimal resources -->
+        <mkdir dir="${basedir}/target/webapp/WEB-INF/pages"/>
+        <copy todir="${basedir}/target/webapp/WEB-INF/pages">
+            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages">
+                <include name="Administrative/**"/>
+                <include name="page.security"/>
+                <include name="my-account.psml"/>
+            </fileset>
+        </copy>
+        <copy file="${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+              tofile="${basedir}/target/webapp/WEB-INF/pages/default-page.psml"/>
+        <replace file="${basedir}/target/webapp/WEB-INF/pages/default-page.psml"
+                 token=" hidden=&quot;true&quot;"/>
+    </target>
+
+    <target name="configure-full-resources" if="org.apache.jetspeed.deploy.full">
+        <!-- configure full resources -->
+        <mkdir dir="${basedir}/target/webapp/WEB-INF/pages"/>
+        <copy todir="${basedir}/target/webapp/WEB-INF/pages">
+            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages"/>
+        </copy>
+        <copy file="${basedir}/../../src/webapp/WEB-INF/conf/jetspeed.properties"
+              todir="${basedir}/target/webapp/WEB-INF/conf"/>
+
+        <!-- configure runtime configuration properties resource -->
         <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
             <replacefilter token="@AUTODEPLOYMENT_SERVER@"
                            value="${org.apache.jetspeed.services.autodeployment.server}"/>
@@ -65,13 +105,15 @@ limitations under the License.
             <replacefilter token="autodeployment.port=8080"
                            value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
         </replace>
+    </target>
 
-        <!-- Build OJB resources -->        
-        <mkdir dir="${basedir}/target/webapp/WEB-INF/classes"/>
-        <copy todir="${basedir}/target/webapp/WEB-INF/classes">
-            <fileset dir="${basedir}/../../etc/db-ojb"/>
-        </copy>
-
+    <target name="test-deploy-type">
+        <condition property="org.apache.jetspeed.deploy.full">
+            <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+        </condition>
+        <condition property="org.apache.jetspeed.deploy.min">
+            <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
+        </condition>
     </target>
 
 </project>
