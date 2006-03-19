@@ -47,15 +47,30 @@ limitations under the License.
 
     <target name="configure" depends="test-deploy-type">
 
-        <!-- Build webapp resources -->        
+        <!-- Build required webapp resources -->        
         <delete dir="${basedir}/target/webapp"/>
         <mkdir dir="${basedir}/target/webapp"/>
         <copy todir="${basedir}/target/webapp">
             <fileset dir="${basedir}/../../src/webapp">
-                <exclude name="WEB-INF/conf/jetspeed.properties"/>
                 <exclude name="WEB-INF/pages/**"/>
             </fileset>
         </copy>
+
+        <!-- Configure runtime jetspeed properties resource -->
+        <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
+            <replacefilter token="@AUTODEPLOYMENT_SERVER@"
+                           value="${org.apache.jetspeed.services.autodeployment.server}"/>
+            <replacefilter token="@AUTODEPLOYMENT_USER@"
+                           value="${org.apache.jetspeed.services.autodeployment.user}"/>
+            <replacefilter token="@AUTODEPLOYMENT_PASSWORD@"
+                           value="${org.apache.jetspeed.services.autodeployment.password}"/>
+            <replacefilter token="autodeployment.catalina.version.major=5"
+                           value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+            <replacefilter token="autodeployment.port=8080"
+                           value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+        </replace>
+
+        <!-- Build variable webapp resources -->        
         <antcall target="configure-min-resources"/>
         <antcall target="configure-full-resources"/>
 
@@ -89,22 +104,6 @@ limitations under the License.
         <copy todir="${basedir}/target/webapp/WEB-INF/pages">
             <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages"/>
         </copy>
-        <copy file="${basedir}/../../src/webapp/WEB-INF/conf/jetspeed.properties"
-              todir="${basedir}/target/webapp/WEB-INF/conf"/>
-
-        <!-- configure runtime configuration properties resource -->
-        <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
-            <replacefilter token="@AUTODEPLOYMENT_SERVER@"
-                           value="${org.apache.jetspeed.services.autodeployment.server}"/>
-            <replacefilter token="@AUTODEPLOYMENT_USER@"
-                           value="${org.apache.jetspeed.services.autodeployment.user}"/>
-            <replacefilter token="@AUTODEPLOYMENT_PASSWORD@"
-                           value="${org.apache.jetspeed.services.autodeployment.password}"/>
-            <replacefilter token="autodeployment.catalina.version.major=5"
-                           value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
-            <replacefilter token="autodeployment.port=8080"
-                           value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
-        </replace>
     </target>
 
     <target name="test-deploy-type">
