@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Carpeta de Usuario</metadata>
   <metadata name="title" xml:lang="hu">Felhasználó HOME-ja</metadata>
   <metadata name="title" xml:lang="zh">用户主页</metadata>
+  <metadata name="title" xml:lang="zh-TW">用戶主頁</metadata>
 
   <fragment id="uhtemp-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="uhtemp-1001" type="portlet" name="rss::RSS">

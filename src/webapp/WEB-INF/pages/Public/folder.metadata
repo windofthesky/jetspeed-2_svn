@@ -4,6 +4,7 @@
   <metadata name="title" xml:lang="ja">公開フォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpetas públicas</metadata>
   <metadata name="title" xml:lang="zh">公开文件夹</metadata>
+  <metadata name="title" xml:lang="zh-TW">公開文件夾</metadata>
 
   <document-order>public.psml</document-order>
   <document-order>db-browser.psml</document-order>

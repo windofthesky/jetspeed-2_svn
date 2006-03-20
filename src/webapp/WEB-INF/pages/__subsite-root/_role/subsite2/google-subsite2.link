@@ -5,6 +5,7 @@
   <metadata name="title" xml:lang="ja">サブサイト２グーグルウェブ検索</metadata>
   <metadata name="title" xml:lang="es">Búsqueda en Google (Subportal 2)</metadata>
   <metadata name="title" xml:lang="zh">子站点2Google网络检索</metadata>
+  <metadata name="title" xml:lang="zh-TW">子站點2Google網路檢索</metadata>
 
  <url>http://www.google.com/search?hl=en&amp;q=subsite2</url>
 

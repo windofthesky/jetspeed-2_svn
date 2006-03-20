@@ -19,6 +19,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">ポートレットセレクタ</metadata>
   <metadata name="title" xml:lang="es">Selector de portlets</metadata>
   <metadata name="title" xml:lang="zh">Portlet选择器</metadata>
+  <metadata name="title" xml:lang="zh-TW">Portlet選擇器</metadata>
 
   <fragment id="portlet-selector" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="portlet-selector-1" type="portlet" name="j2-admin::PortletSelector" >

@@ -19,6 +19,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">ロール選択</metadata>
   <metadata name="title" xml:lang="es">Selector de roles</metadata>
   <metadata name="title" xml:lang="zh">角色选择器</metadata>
+  <metadata name="title" xml:lang="zh-TW">角色選擇器</metadata>
 
   <fragment id="chooser-roles" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="chooser-roles-1" type="portlet" name="j2-admin::RoleChooser" >

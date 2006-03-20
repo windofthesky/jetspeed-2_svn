@@ -7,6 +7,7 @@
   <metadata name="title" xml:lang="ja">サブサイト２ホーム</metadata>
   <metadata name="title" xml:lang="es">Inicio de Subportal 2</metadata>
   <metadata name="title" xml:lang="zh">子站点2主页</metadata>
+  <metadata name="title" xml:lang="zh-TW">子站點2主頁</metadata>
 
 
   <fragment id="sub2-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">

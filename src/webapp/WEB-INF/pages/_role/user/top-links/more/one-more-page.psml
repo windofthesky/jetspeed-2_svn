@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Otra página [USUARIO]</metadata>
   <metadata name="title" xml:lang="hu">[Felhasználó] Egy vagy több oldal</metadata>
   <metadata name="title" xml:lang="zh">[用户] 追加页</metadata>
+  <metadata name="title" xml:lang="zh-TW">[用戶] 追加頁</metadata>
 
   <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="utp-4" type="portlet" name="demo::BookmarkPortlet">

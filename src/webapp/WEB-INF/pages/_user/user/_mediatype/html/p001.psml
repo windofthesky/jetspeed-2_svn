@@ -24,6 +24,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">[ユーザー 001] PSML ページ</metadata>
   <metadata name="title" xml:lang="es">Página PSML [USUARIO 001]</metadata>
   <metadata name="title" xml:lang="zh">[用户 001] PSML页</metadata>
+  <metadata name="title" xml:lang="zh-TW">[用戶 001] PSML頁</metadata>
 
   <fragment id="u1-xx1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="u1-xx3" type="portlet" name="demo::BookmarkPortlet">

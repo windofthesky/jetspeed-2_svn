@@ -33,6 +33,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Otra página</metadata>
   <metadata name="title" xml:lang="hu">A második PSML oldalam</metadata>
   <metadata name="title" xml:lang="zh">第二个PSML页面</metadata>
+  <metadata name="title" xml:lang="zh-TW">第二個PSML頁面</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

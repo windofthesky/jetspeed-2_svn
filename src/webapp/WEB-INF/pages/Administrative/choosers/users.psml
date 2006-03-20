@@ -19,6 +19,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">ユーザー選択</metadata>
   <metadata name="title" xml:lang="es">Selector de usuarios</metadata>
   <metadata name="title" xml:lang="zh">用户选择</metadata>
+  <metadata name="title" xml:lang="zh-TW">用戶選擇</metadata>
 
   <fragment id="chooser-users" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
     <fragment id="chooser-users-1" type="portlet" name="j2-admin::UserChooser" >

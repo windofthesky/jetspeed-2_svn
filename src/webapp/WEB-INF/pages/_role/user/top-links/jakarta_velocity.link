@@ -4,6 +4,7 @@
   <metadata name="title" xml:lang="ja">[ユーザー] Jakarta Velocity</metadata>
   <metadata name="title" xml:lang="es">Jakarta Velocity [USUARIO]</metadata>
   <metadata name="title" xml:lang="zh">[用户] Jakarta Velocity</metadata>
+  <metadata name="title" xml:lang="zh-TW">[用戶] Jakarta Velocity</metadata>
 
  <url>http://jakarta.apache.org/velocity</url>
 </link>

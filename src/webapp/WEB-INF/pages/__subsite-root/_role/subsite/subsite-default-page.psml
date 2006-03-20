@@ -8,6 +8,7 @@
   <metadata name="title" xml:lang="es">Página inicial de subportal</metadata>
   <metadata name="title" xml:lang="hu">Portál Home</metadata>
   <metadata name="title" xml:lang="zh">子站点主页</metadata>
+  <metadata name="title" xml:lang="zh-TW">子站點主頁</metadata>
 
 
   <fragment id="sub-0" type="layout" name="jetspeed-layouts::VelocityOneColumn">

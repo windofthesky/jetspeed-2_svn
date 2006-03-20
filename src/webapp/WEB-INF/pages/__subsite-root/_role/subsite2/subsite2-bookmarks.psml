@@ -7,6 +7,7 @@
   <metadata name="title" xml:lang="ja">サブサイト２ブックマーク</metadata>
   <metadata name="title" xml:lang="es">Favoritos (Subportal 2)</metadata>
   <metadata name="title" xml:lang="zh">子站点2书签</metadata>
+  <metadata name="title" xml:lang="zh-TW">子站點2書簽</metadata>
 
 
   <fragment id="sub2-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">

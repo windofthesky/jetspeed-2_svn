@@ -21,6 +21,7 @@
       <metadata name="text" xml:lang="ja">ユーザー管理ページ</metadata>
       <metadata name="text" xml:lang="es">Administración de usuarios</metadata>
       <metadata name="text" xml:lang="zh">用户管理页</metadata>
+      <metadata name="text" xml:lang="zh-TW">用戶管理頁</metadata>
     </separator>
     <options>/Administrative/user-mgt.psml</options>
     <options>/Administrative/users-jsf.psml</options>
@@ -29,6 +30,7 @@
       <metadata name="text" xml:lang="ja">プロファイルページ</metadata>
       <metadata name="text" xml:lang="es">Su perfil...</metadata>
       <metadata name="text" xml:lang="zh">Profiled页</metadata>
+      <metadata name="text" xml:lang="zh-TW">Profiled頁</metadata>
     </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
     <separator>
@@ -36,6 +38,7 @@
       <metadata name="text" xml:lang="ja">Non-Javaページ</metadata>
       <metadata name="text" xml:lang="es">Páginas sin java</metadata>
       <metadata name="text" xml:lang="zh">非Java Portlets页</metadata>
+      <metadata name="text" xml:lang="zh-TW">非Java Portlets頁</metadata>
     </separator>
     <options>/non-java</options>
   </menu>

@@ -24,7 +24,11 @@ limitations under the License.
      </init-param>
     <portlet-name>PortletApplicationLifecycleManager</portlet-name>
     <display-name>Portlet Application Lifecycle Manager</display-name>
+    <display-name xml:lang="zh">Portlet 应用程序管理</display-name>
+    <display-name xml:lang="zh-TW">Portlet 應用程式管理</display-name>
     <description>The PALM (Portlet Application Lifecycle Manager) manages the lifecyle of portlet applications. From here you can start, stop, undeploy and delete portlet applications</description>
+    <description xml:lang="zh">PALM（Portlet 应用程序管理）管理Portlet应用的生命周期。你可以启动、停止、卸载（undeploy）和删除portlet应用。</description>
+    <description xml:lang="zh-TW">PALM（Portlet 應用程式管理）管理Portlet應用的生命週期。你可以啟動、停止、卸載（undeploy）和刪除portlet應用。</description>
     <portlet-class>org.apache.jetspeed.portlets.palm.PortletApplicationLifecycleManager</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -46,6 +50,8 @@ limitations under the License.
         </init-param>
         <portlet-name>LoginPortlet</portlet-name>
         <display-name>Login</display-name>
+        <display-name xml:lang="zh">登陆</display-name>
+        <display-name xml:lang="zh-TW">登陸</display-name>
         <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -67,6 +73,8 @@ limitations under the License.
         </init-param>
         <portlet-name>LoginPortletForXHTMLBasic</portlet-name>
         <display-name>Login for XHTML Basic</display-name>
+        <display-name xml:lang="zh">基于XHTML的登陆Portlet</display-name>
+        <display-name xml:lang="zh-TW">基於XHTML的登陸Portlet</display-name>
         <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -92,7 +100,11 @@ limitations under the License.
         </init-param>
         <portlet-name>ChangePasswordPortlet</portlet-name>
         <display-name>Change Password</display-name>
+        <display-name xml:lang="zh">更改密码</display-name>
+        <display-name xml:lang="zh-TW">更改密碼</display-name>
         <description>Change current logged on user its password.</description>
+        <description xml:lang="zh">更改当前登陆用户的密码。</description>
+        <description xml:lang="zh-TW">更改當前登陸用戶的密碼。</description>
         <portlet-class>org.apache.jetspeed.portlets.security.ChangePasswordPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -117,7 +129,11 @@ limitations under the License.
         </init-param>
         <portlet-name>UserBrowserPortlet</portlet-name>
         <display-name>User Browser</display-name>
+        <display-name xml:lang="zh">浏览用户</display-name>
+        <display-name xml:lang="zh-TW">流覽用戶</display-name>
         <description>The User Browser displays a list of users managed in this portal. From here you can add, edit, and users.</description>
+        <description xml:lang="zh">显示门户的用户列表。可以添加、修改用户资料。</description>
+        <description xml:lang="zh-TW">顯示門戶的用戶列表。可以添加、修改用戶資料。</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.UserBrowser</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -156,7 +172,11 @@ limitations under the License.
         </init-param>
         <portlet-name>UserDetailsPortlet</portlet-name>
         <display-name>User Information</display-name>
+        <display-name xml:lang="zh">用户信息</display-name>
+        <display-name xml:lang="zh-TW">用戶資訊</display-name>
         <description>The User Details portlet displays a users details in a tabbed view. From here you can add, edit, and user information.</description>
+        <description xml:lang="zh">显示用户的资料。可以添加修改用户信息。</description>
+        <description xml:lang="zh-TW">顯示用戶的資料。可以添加修改用戶資訊。</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.UserDetailsPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -246,7 +266,11 @@ limitations under the License.
         </init-param>
         <portlet-name>GroupDetailsPortlet</portlet-name>
         <display-name>Group Information</display-name>
+        <display-name xml:lang="zh">组信息</display-name>
+        <display-name xml:lang="zh-TW">組資訊</display-name>
         <description>The Group Details portlet displays a groups details in a tabbed view. From here you can add, edit, and group information.</description>
+        <description xml:lang="zh">显示组的详细信息。可以添加修改组的信息。</description>
+        <description xml:lang="zh-TW">顯示組的詳細資訊。可以添加修改組的資訊。</description>
         <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupDetails</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -274,7 +298,11 @@ limitations under the License.
         </init-param>
         <portlet-name>RoleDetailsPortlet</portlet-name>
         <display-name>Role Information</display-name>
+        <display-name xml:lang="zh">角色信息</display-name>
+        <display-name xml:lang="zh-TW">角色信息</display-name>
         <description>The Role Details portlet displays a roles details in a tabbed view. From here you can add, edit, and role information.</description>
+        <description xml:lang="zh">显示角色的详细信息。可以添加修改角色信息。</description>
+        <description xml:lang="zh-TW">顯示角色的詳細資訊。可以添加修改角色資訊。</description>
         <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleDetails</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -302,7 +330,11 @@ limitations under the License.
         </init-param>
         <portlet-name>SSOBrowserPortlet</portlet-name>
         <display-name>SSO Sites Browser</display-name>
+        <display-name xml:lang="zh">浏览SSO站点</display-name>
+        <display-name xml:lang="zh-TW">流覽SSO站點</display-name>
         <description>SSO Sites Browser Portlet</description>
+        <description xml:lang="zh">SSO 站点浏览 Portlet</description>
+        <description xml:lang="zh-TW">SSO 站點流覽 Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.sso.SSOBrowser</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -330,7 +362,11 @@ limitations under the License.
         </init-param>
         <portlet-name>SSODetailsPortlet</portlet-name>
         <display-name>SSO Details</display-name>
+        <display-name xml:lang="zh">SSO 详情</display-name>
+        <display-name xml:lang="zh-TW ">SSO 詳情</display-name>
         <description>SSO Site Details Portlet</description>
+        <description xml:lang="zh">SSO 详情 Portlet</description>
+        <description xml:lang="zh-TW">SSO 詳情 Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.sso.SSODetails</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -358,7 +394,11 @@ limitations under the License.
         </init-param>
         <portlet-name>UserChooser</portlet-name>
         <display-name>Users</display-name>
+        <display-name xml:lang="zh">用户</display-name>
+        <display-name xml:lang="zh-TW">用戶</display-name>
         <description>User Chooser Portlet</description>
+        <description xml:lang="zh">选择用户的Portlet</description>
+        <description xml:lang="zh-TW">選擇用戶的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -390,7 +430,11 @@ limitations under the License.
         </init-param>
         <portlet-name>UserMultiChooser</portlet-name>
         <display-name>Choose Multiple Users</display-name>
+        <display-name xml:lang="zh">选择多个用户</display-name>
+        <display-name xml:lang="zh-TW">選擇多個用戶</display-name>
         <description>Multiple User Chooser Portlet</description>
+        <description xml:lang="zh">选择多用户的Portlet</description>
+        <description xml:lang="zh-TW">選擇多用戶的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -422,7 +466,11 @@ limitations under the License.
         </init-param>
         <portlet-name>RoleChooser</portlet-name>
         <display-name>Roles</display-name>
+        <display-name xml:lang="zh">角色</display-name>
+        <display-name xml:lang="zh-TW">角色</display-name>
         <description>Role Chooser Portlet</description>
+        <description xml:lang="zh">选择角色的Portlet</description>
+        <description xml:lang="zh-TW">選擇角色的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.RoleChooserPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -454,7 +502,11 @@ limitations under the License.
       </init-param>
       <portlet-name>RoleMultiChooser</portlet-name>
       <display-name>Choose Multiple Roles</display-name>
+      <display-name xml:lang="zh">选择多个角色</display-name>
+      <display-name xml:lang="zh-TW">選擇多個角色</display-name>
       <description>Multiple Role Chooser Portlet</description>
+      <description xml:lang="zh">选择多个角色的Portlet</description>
+      <description xml:lang="zh-TW">選擇多個角色的Portlet</description>
       <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleChooserPortlet</portlet-class>
       <expiration-cache>-1</expiration-cache>
       <supports>
@@ -486,7 +538,11 @@ limitations under the License.
         </init-param>
         <portlet-name>GroupChooser</portlet-name>
         <display-name>Groups</display-name>
+        <display-name xml:lang="zh">组</display-name>
+        <display-name xml:lang="zh-TW">組</display-name>
         <description>Group Chooser Portlet</description>
+        <description xml:lang="zh">选择组的Portlet</description>
+        <description xml:lang="zh-TW">選擇組的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.users.GroupChooserPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -518,7 +574,11 @@ limitations under the License.
         </init-param>
         <portlet-name>GroupBrowserPortlet</portlet-name>
         <display-name>Group Admin</display-name>
+        <display-name xml:lang="zh">组管理</display-name>
+        <display-name xml:lang="zh-TW">組管理</display-name>
         <description>Group Browser Portlet</description>
+        <description xml:lang="zh">浏览组的Portlet</description>
+        <description xml:lang="zh-TW">流覽組的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupBrowser</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -548,7 +608,11 @@ limitations under the License.
         </init-param>
         <portlet-name>RoleBrowserPortlet</portlet-name>
         <display-name>Role Admin</display-name>
+        <display-name xml:lang="zh">角色管理</display-name>
+        <display-name xml:lang="zh-TW">角色管理</display-name>
         <description>Role Browser Portlet</description>
+        <description xml:lang="zh">浏览角色的Portlet</description>
+        <description xml:lang="zh-TW">流覽角色的Portlet</description>
         <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleBrowser</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -573,7 +637,11 @@ limitations under the License.
 <portlet id="LocaleSelector">
     <portlet-name>LocaleSelector</portlet-name>
     <display-name>Locale Selector</display-name>
+    <display-name xml:lang="zh">语言选择</display-name>
+    <display-name xml:lang="zh-TW">語言選擇</display-name>
     <description>Locale Selector is a portlet to select your preferred locale</description>
+    <description xml:lang="zh">选择你使用的语言</description>
+    <description xml:lang="zh-TW">選擇你使用的語言</description>
     <portlet-class>org.apache.jetspeed.portlets.localeselector.LocaleSelectorPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -598,7 +666,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>PortletApplicationBrowser</portlet-name>
     <display-name>Portlet Application Browser</display-name>
+    <display-name xml:lang="zh">Portlet应用列表</display-name>
+    <display-name xml:lang="zh-TW">Portlet應用列表</display-name>
     <description>The PAM (Portlet Application Manager) Portlet Application Browser displays a list of portlet applications deployed to this portal. From here you can add, edit, and delete portlet applications.</description>
+    <description xml:lang="zh">PAM（Portlet 应用管理）显示部署到门户的Portlet应用程序列表。你可以添加、修改、删除Portlet应用。</description>
+    <description xml:lang="zh-TW">PAM（Portlet 應用管理）顯示部署到門戶的Portlet應用程式列表。你可以添加、修改、刪除Portlet應用。</description>
     <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationBrowser</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -623,7 +695,11 @@ limitations under the License.
     </init-param>   
     <portlet-name>PortletApplicationDetail</portlet-name>
     <display-name>Portlet Application Detail</display-name>
+    <display-name xml:lang="zh">Portlet应用详情</display-name>
+    <display-name xml:lang="zh-TW">Portlet应用详情</display-name>
     <description>The PAM (Portlet Application Manager) Portlet Application Detail displays a specific portlet application deployed to this portal. From here you can add, edit, and delete this portlet application.</description>
+    <description xml:lang="zh">PAM（Portlet 应用管理）显示部署在门户的，指定的Portlet列表。你可以添加、修改、删除Portlet。</description>
+    <description xml:lang="zh-TW">PAM（Portlet 應用管理）顯示部署在門戶的，指定的Portlet列表。你可以添加、修改、刪除Portlet。</description>
     <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationDetail</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -672,7 +748,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>PortalSiteBrowser</portlet-name>
     <display-name>Portal Site Browser</display-name>
+    <display-name xml:lang="zh">门户站点浏览器</display-name>
+    <display-name xml:lang="zh-TW">門戶站點流覽器</display-name>
     <description>The Portal Site Browser displays a hierarchical view of the portal site. From here you can add, edit, and delete folders and pages.</description>
+    <description xml:lang="zh">树状显示门户站点地图。你可以添加、修改、删除目录或者页面。</description>
+    <description xml:lang="zh-TW">樹狀顯示門戶站點地圖。你可以添加、修改、刪除目錄或者頁面。</description>
     <portlet-class>org.apache.jetspeed.portlets.site.SiteBrowserPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -704,7 +784,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>PortalSiteDetail</portlet-name>
     <display-name>Portal Site Detail</display-name>
+    <display-name xml:lang="zh">门户站点详情</display-name>
+    <display-name xml:lang="zh-TW">門戶站點詳情</display-name>
     <description>The Portal Site Detail portlet displays the details of a selected folder/page.  From here you can add, edit, and delete folders and pages.</description>
+    <description xml:lang="zh">显示选中的目录或者页面的详情。可以添加、修改和删除页面或者目录。</description>
+    <description xml:lang="zh-TW">顯示選中的目錄或者頁面的詳情。可以添加、修改和刪除頁面或者目錄。</description>
     <portlet-class>org.apache.jetspeed.portlets.site.SiteDetailsPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -733,7 +817,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>ProfilerAdmin</portlet-name>
     <display-name>Profiler Admin</display-name>
+    <display-name xml:lang="zh">Profiler管理</display-name>
+    <display-name xml:lang="zh-TW">Profiler管理</display-name>
     <description>The Profiler Admin is used to adminstrate profiling rules.</description>
+    <description xml:lang="zh">管理Profiler的规则。</description>
+    <description xml:lang="zh-TW">管理Profiler的規則。</description>
     <portlet-class>org.apache.jetspeed.portlets.profiler.ProfilerAdminPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -756,7 +844,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>JetspeedUserAdmin</portlet-name>
     <display-name>User Administration</display-name>
+    <display-name xml:lang="zh">用户管理</display-name>
+    <display-name xml:lang="zh-TW">用戶管理</display-name>
     <description>User Administration of portal users in the system.</description>
+    <description xml:lang="zh">门户系统的用户管理。</description>
+    <description xml:lang="zh-TW">門戶系統的用戶管理。</description>
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserManagerPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -780,7 +872,11 @@ limitations under the License.
      </init-param>   
     <portlet-name>PortletSelector</portlet-name>
     <display-name>Portlet Selector</display-name>
+    <display-name xml:lang="zh">Portlet选择</display-name>
+    <display-name xml:lang="zh-TW">Portlet選擇</display-name>
     <description>Select one or more portlets from the customizer</description>
+    <description xml:lang="zh">选择一个或多个Portlet。</description>
+    <description xml:lang="zh-TW">選擇一個或多個Portlet。</description>
     <portlet-class>org.apache.jetspeed.portlets.selector.PortletSelector</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -811,7 +907,11 @@ limitations under the License.
      </init-param>
     <portlet-name>PortletEntityBrowserPortlet</portlet-name>
     <display-name>Portlet Entity Browser</display-name>
+    <display-name xml:lang="zh">Portlet实例浏览器</display-name>
+    <display-name xml:lang="zh-TW">Portlet實例流覽器</display-name>
     <description>Provides for browsing portlet enitites</description>
+    <description xml:lang="zh">浏览Portlet实例</description>
+    <description xml:lang="zh-TW">流覽Portlet實例</description>
     <portlet-class>org.apache.jetspeed.portlets.entityeditor.PortletEntityBrowserPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -833,7 +933,11 @@ limitations under the License.
      </init-param>
     <portlet-name>PortletEntityEditorPortlet</portlet-name>
     <display-name>Portlet Entity Browser</display-name>
+    <display-name xml:lang="zh">编辑Portlet实例</display-name>
+    <display-name xml:alang="zh-TW">編輯Portlet實例</display-name>
     <description>Provides for editing of portlet enitites</description>
+    <description xml:lang="zh">编辑Portlet实例。</description>
+    <description xml:lang="zh-TW">編輯Portlet實例。</description>
     <portlet-class>org.apache.jetspeed.portlets.entityeditor.PortletEntityEditorPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -856,7 +960,11 @@ limitations under the License.
      </init-param>
     <portlet-name>StatisticsPortlet</portlet-name>
     <display-name>Portal Statistics</display-name>
+    <display-name xml:lang="zh">门户状态信息</display-name>
+    <display-name xml:lang="zh-TW">門戶狀態資訊</display-name>
     <description>Provides statistics about portal access by page, portlet, user</description>
+    <description xml:lang="zh">提供关于门户页面、Portlet、用户的状态信息。</description>
+    <description xml:lang="zh-TW">提供關於門戶頁面、Portlet、用戶的狀態資訊。</description>
     <portlet-class>org.apache.jetspeed.portlets.statistics.StatisticsPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -902,7 +1010,11 @@ limitations under the License.
 
     <portlet-name>ForgottenPasswordPortlet</portlet-name>
     <display-name>Forgotten Password Portlet</display-name>
+    <display-name xml:lang="zh">忘记密码</display-name>
+    <display-name xml:lang="zh-TW">忘記密碼</display-name>
     <description>Provides users with the ability to request a new password to be sent to their email address</description>
+    <description xml:lang="zh">忘记密码，使用邮件发送新的密码给用户。</description>
+    <description xml:lang="zh-TW">忘記密碼，使用郵件發送新的密碼給用戶。</description>
     <portlet-class>org.apache.jetspeed.portlets.registration.ForgottenPasswordPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.registration.resources.ForgottenPasswordResources</resource-bundle>
     <expiration-cache>-1</expiration-cache>
@@ -927,7 +1039,11 @@ limitations under the License.
      </init-param>
     <portlet-name>ForgottenPasswordReturnPortlet</portlet-name>
     <display-name>Forgotten Password Return Portlet</display-name>
+    <display-name xml:lang="zh">忘记密码</display-name>
+    <display-name xml:lang="zh-TW">忘記密碼</display-name>
     <description>Provides users with the ability to click and update their password after email</description>
+    <description xml:lang="zh">忘记密码，使用email发送更新密码的连接。</description>
+    <description xml:lang="zh-TW">忘記密碼，使用email發送更新密碼的連接。</description>
     <portlet-class>org.apache.jetspeed.portlets.registration.ForgottenPasswordPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -995,7 +1111,11 @@ limitations under the License.
        
     <portlet-name>UserRegistrationPortlet</portlet-name>
     <display-name>User Registration Portlet</display-name>
-    <description>Provides users with the ability register anew with the portal</description>
+    <display-name xml:lang="zh">用户注册</display-name>
+    <display-name xml:lang="zh-TW">用戶註冊</display-name>
+    <description>Provides users with the ability register a new with the portal</description>
+    <description xml:lang="zh">注册一个新的门户用户</description>
+    <description xml:lang="zh-TW">註冊一個新的門戶用戶</description>
     <portlet-class>org.apache.jetspeed.portlets.registration.UserRegistrationPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.registration.resources.UserRegistrationResources</resource-bundle>
     <expiration-cache>-1</expiration-cache>
@@ -1020,7 +1140,11 @@ limitations under the License.
      </init-param>
     <portlet-name>CustomizerPortlet</portlet-name>
     <display-name>Customizer</display-name>
+    <display-name xml:lang="zh">定制</display-name>
+    <display-name xml:lang="zh-TW">定制</display-name>
     <description>Site Customization</description>
+    <description xml:lang="zh">站点定制</description>
+    <description xml:lang="zh-TW">站點定制</description>
     <portlet-class>org.apache.jetspeed.portlets.customizer.CustomizerPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -1041,6 +1165,8 @@ limitations under the License.
         </init-param>
         <portlet-name>PortalLoginPortlet</portlet-name>
         <display-name>Portal Login</display-name>
+        <display-name xml:lang="zh">门户登陆</display-name>
+        <display-name xml:lang="zh-TW">門戶登陸</display-name>
         <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
