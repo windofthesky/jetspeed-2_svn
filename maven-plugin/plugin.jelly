@@ -459,7 +459,30 @@
     <attainGoal name="j2:catalina.shared"/>
   </goal>
   
-  <goal name="j2:catalina.base.shared" description="Copy all base jars necessary for common container">
+  <goal name="j2:remove.catalina.base.shared" description="Clean out old base jars necessary for common container">
+      <echo>Removing misc. old jars from Tomcat shared/lib</echo>
+      <delete quiet="true">
+        <fileset dir="${org.apache.jetspeed.server.shared}">
+          <include name="pluto-*.jar"/>
+          <include name="portals-bridges-common-*.jar"/>
+          <include name="derby-*.jar"/>
+        </fileset>
+      </delete>
+  </goal>
+  
+  <goal name="j2:remove.catalina.shared" description="Clean out old jars necessary for common container">
+      <echo>Removing old container jars from Tomcat shared/lib</echo>
+      <delete quiet="true">
+        <fileset dir="${org.apache.jetspeed.server.shared}">
+          <include name="jetspeed-commons-*.jar"/>
+          <include name="jetspeed-api-*.jar"/>
+          <include name="portlet-api-*.jar"/>
+        </fileset>
+      </delete>
+  </goal>
+  
+  <goal name="j2:catalina.base.shared" description="Copy all base jars necessary for common container" 
+        prereqs="j2:remove.catalina.base.shared">
     <echo>Deploys misc. jars shared/lib to Tomcat</echo>
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
     <copy file="${maven.repo.local}/org.apache.pluto/jars/pluto-${pluto.version}.jar"
@@ -470,7 +493,8 @@
           todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
-  <goal name="j2:catalina.shared" description="Copy all jars necessary for common container">
+  <goal name="j2:catalina.shared" description="Copy all jars necessary for common container"
+        prereqs="j2:remove.catalina.shared">
     <echo>Deploys container jars to shared/lib to Tomcat</echo>
     <copy file="${maven.repo.local}/${plugin.groupId}/jars/jetspeed-commons-${jetspeed.version}.jar"
           todir="${org.apache.jetspeed.server.shared}"/>
