@@ -167,6 +167,15 @@ public class ContentFragmentImpl implements ContentFragment
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
+     */
+    public float getFloatProperty(String propName)
+    {
+        
+        return fragment.getFloatProperty(propName);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getSkin()
      */
     public String getSkin()
@@ -182,6 +191,15 @@ public class ContentFragmentImpl implements ContentFragment
     {
         
         return fragment.getState();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getMode()
+     */
+    public String getMode()
+    {
+        
+        return fragment.getMode();
     }
 
     /* (non-Javadoc)
@@ -244,21 +262,110 @@ public class ContentFragmentImpl implements ContentFragment
         return fragment.getLayoutSizes();
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
+     */
+    public float getLayoutX()
+    {
+        return fragment.getLayoutX();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
+     */
+    public float getLayoutY()
+    {
+        return fragment.getLayoutY();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
+     */
+    public float getLayoutZ()
+    {
+        return fragment.getLayoutZ();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
+     */
+    public float getLayoutWidth()
+    {
+        return fragment.getLayoutWidth();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
+     */
+    public float getLayoutHeight()
+    {
+        return fragment.getLayoutHeight();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
+     */
     public void setLayoutRow(int row)
     {
         fragment.setLayoutRow(row);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     */
     public void setLayoutColumn(int column)
     {
         fragment.setLayoutColumn(column);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
+     */
     public void setLayoutSizes(String sizes)
     {
         fragment.setLayoutSizes(sizes);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
+     */
+    public void setLayoutX(float x)
+    {
+        fragment.setLayoutX(x);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
+     */
+    public void setLayoutY(float y)
+    {
+        fragment.setLayoutY(y);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
+     */
+    public void setLayoutZ(float z)
+    {
+        fragment.setLayoutZ(z);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
+     */
+    public void setLayoutWidth(float width)
+    {
+        fragment.setLayoutWidth(width);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
+     */
+    public void setLayoutHeight(float height)
+    {
+        fragment.setLayoutHeight(height);
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setSkin(java.lang.String)
      */
@@ -275,6 +382,15 @@ public class ContentFragmentImpl implements ContentFragment
     {
         
         fragment.setState(state);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setMode(java.lang.String)
+     */
+    public void setMode(String mode)
+    {
+        
+        fragment.setMode(mode);
     }
 
     /* (non-Javadoc)

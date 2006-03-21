@@ -179,6 +179,14 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     }
 
     /**
+     * @return state string
+     */
+    public String getMode()
+    {
+        return f.getMode();
+    }
+
+    /**
      * @return title
      */
     public String getTitle()
@@ -259,6 +267,14 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     }
 
     /**
+     * @param mode
+     */
+    public void setMode(String mode)
+    {
+        f.setMode(mode);
+    }
+
+    /**
      * @param title
      */
     public void setTitle(String title)
@@ -313,19 +329,19 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     }
 
     /**
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
-     */
-    public int getLayoutColumn()
-    {
-        return 0;
-    }
-
-    /**
      * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
      */
     public int getLayoutRow()
     {
-        return 0;
+        return -1;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
+     */
+    public int getLayoutColumn()
+    {
+        return -1;
     }
 
     /**
@@ -337,16 +353,56 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     }
 
     /**
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
      */
-    public void setLayoutColumn(int column)
-    {            
+    public float getLayoutX()
+    {
+        return -1.0F;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
+     */
+    public float getLayoutY()
+    {
+        return -1.0F;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
+     */
+    public float getLayoutZ()
+    {
+        return -1.0F;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
+     */
+    public float getLayoutWidth()
+    {
+        return -1.0F;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
+     */
+    public float getLayoutHeight()
+    {
+        return -1.0F;
     }
 
     /**
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
      */
     public void setLayoutRow(int row)
+    {            
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     */
+    public void setLayoutColumn(int column)
     {            
     }
 
@@ -358,11 +414,54 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     }
 
     /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
+     */
+    public void setLayoutX(float x)
+    {            
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
+     */
+    public void setLayoutY(float y)
+    {            
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
+     */
+    public void setLayoutZ(float z)
+    {            
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
+     */
+    public void setLayoutWidth(float width)
+    {            
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
+     */
+    public void setLayoutHeight(float height)
+    {            
+    }
+
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
      */
     public int getIntProperty(String propName)
     {
-        return 0;
+        return -1;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
+     */
+    public float getFloatProperty(String propName)
+    {
+        return -1.0F;
     }
 
     /**

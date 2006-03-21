@@ -40,6 +40,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private String state = null;
 
+    private String mode = null;
+
     private String decorator = null;
 
     private String skin = null;
@@ -85,6 +87,16 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public void setState( String state )
     {
         this.state = state;
+    }
+
+    public String getMode()
+    {
+        return this.mode;
+    }
+
+    public void setMode( String mode )
+    {
+        this.mode = mode;
     }
 
     public String getDecorator()
@@ -155,6 +167,19 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     }
     
     /**
+     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
+     */
+    public float getFloatProperty(String propName)
+    {
+        String prop = (String)propertiesMap.get(propName);
+        if (prop != null)
+        {
+            return Float.parseFloat(prop);
+        }
+        return -1.0F;
+    }
+    
+    /**
      * @see org.apache.jetspeed.om.page.Fragment#getProperties()
      */
     public Map getProperties()
@@ -167,12 +192,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public int getLayoutRow()
     {
-        String prop = (String)propertiesMap.get(ROW_PROPERTY_NAME);
-        if (prop != null)
-        {
-            return Integer.parseInt(prop);
-        }
-        return -1;
+        return getIntProperty(ROW_PROPERTY_NAME);
     }
 
     /**
@@ -195,12 +215,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public int getLayoutColumn()
     {
-        String prop = (String)propertiesMap.get(COLUMN_PROPERTY_NAME);
-        if (prop != null)
-        {
-            return Integer.parseInt(prop);
-        }
-        return -1;
+        return getIntProperty(COLUMN_PROPERTY_NAME);
     }
 
     /**
@@ -240,7 +255,122 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             propertiesMap.remove(SIZES_PROPERTY_NAME);
         }
     }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
+     */
+    public float getLayoutX()
+    {
+        return getFloatProperty(X_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
+     */
+    public void setLayoutX(float x)
+    {
+        if (x >= 0.0F)
+        {
+            propertiesMap.put(X_PROPERTY_NAME, String.valueOf(x));
+        }
+        else
+        {
+            propertiesMap.remove(X_PROPERTY_NAME);
+        }
+    }
     
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
+     */
+    public float getLayoutY()
+    {
+        return getFloatProperty(Y_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
+     */
+    public void setLayoutY(float y)
+    {
+        if (y >= 0.0F)
+        {
+            propertiesMap.put(Y_PROPERTY_NAME, String.valueOf(y));
+        }
+        else
+        {
+            propertiesMap.remove(Y_PROPERTY_NAME);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
+     */
+    public float getLayoutZ()
+    {
+        return getFloatProperty(Z_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
+     */
+    public void setLayoutZ(float z)
+    {
+        if (z >= 0.0F)
+        {
+            propertiesMap.put(Z_PROPERTY_NAME, String.valueOf(z));
+        }
+        else
+        {
+            propertiesMap.remove(Z_PROPERTY_NAME);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
+     */
+    public float getLayoutWidth()
+    {
+        return getFloatProperty(WIDTH_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
+     */
+    public void setLayoutWidth(float width)
+    {
+        if (width >= 0.0F)
+        {
+            propertiesMap.put(WIDTH_PROPERTY_NAME, String.valueOf(width));
+        }
+        else
+        {
+            propertiesMap.remove(WIDTH_PROPERTY_NAME);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
+     */
+    public float getLayoutHeight()
+    {
+        return getFloatProperty(HEIGHT_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
+     */
+    public void setLayoutHeight(float height)
+    {
+        if (height >= 0.0F)
+        {
+            propertiesMap.put(HEIGHT_PROPERTY_NAME, String.valueOf(height));
+        }
+        else
+        {
+            propertiesMap.remove(HEIGHT_PROPERTY_NAME);
+        }
+    }
+
     /**
      * <p>
      * equals

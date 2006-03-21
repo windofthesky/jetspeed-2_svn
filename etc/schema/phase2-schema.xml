@@ -332,10 +332,16 @@ limitations under the License.
         <column name="TYPE" size="40" type="VARCHAR"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DECORATOR" size="80" type="VARCHAR"/>
-        <column name="STATE" size="40" type="VARCHAR"/>
+        <column name="STATE" size="10" type="VARCHAR"/>
+        <column name="MODE" size="10" type="VARCHAR"/>
         <column name="LAYOUT_ROW" type="INTEGER"/>
         <column name="LAYOUT_COLUMN" type="INTEGER"/>
         <column name="LAYOUT_SIZES" size="20" type="VARCHAR"/>
+        <column name="LAYOUT_X" type="REAL"/>
+        <column name="LAYOUT_Y" type="REAL"/>
+        <column name="LAYOUT_Z" type="REAL"/>
+        <column name="LAYOUT_WIDTH" type="REAL"/>
+        <column name="LAYOUT_HEIGHT" type="REAL"/>
         <column name="EXT_PROP_NAME_1" size="40" type="VARCHAR"/>
         <column name="EXT_PROP_VALUE_1" size="80" type="VARCHAR"/>
         <column name="EXT_PROP_NAME_2" size="40" type="VARCHAR"/>

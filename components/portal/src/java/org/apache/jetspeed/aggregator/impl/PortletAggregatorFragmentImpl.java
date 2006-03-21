@@ -37,6 +37,7 @@ public class PortletAggregatorFragmentImpl implements Fragment
     private String type;
     private String decorator;
     private String state;
+    private String mode;
     
     public PortletAggregatorFragmentImpl(String id)
     {
@@ -229,6 +230,22 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getMode()
+     */
+    public String getMode()
+    {
+        return mode;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setMode(java.lang.String)
+     */
+    public void setMode(String mode)
+    {
+        this.mode = mode;
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getFragments()
      */
     public List getFragments()
@@ -261,7 +278,15 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
+     */
+    public float getFloatProperty(String propName)
+    {
+        return -1.0F;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
      */
     public int getLayoutRow()
     {
@@ -269,7 +294,7 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidths()
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
      */
     public int getLayoutColumn()
     {
@@ -285,10 +310,43 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
      */
-    public void setLayoutColumn(int column)
+    public float getLayoutX()
     {
+        return -1.0F;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
+     */
+    public float getLayoutY()
+    {
+        return -1.0F;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
+     */
+    public float getLayoutZ()
+    {
+        return -1.0F;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
+     */
+    public float getLayoutWidth()
+    {
+        return -1.0F;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
+     */
+    public float getLayoutHeight()
+    {
+        return -1.0F;
     }
     
     /* (non-Javadoc)
@@ -299,12 +357,54 @@ public class PortletAggregatorFragmentImpl implements Fragment
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
+     */
+    public void setLayoutColumn(int column)
+    {
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
      */
     public void setLayoutSizes(String sizes)
     {
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
+     */
+    public void setLayoutX(float x)
+    {
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
+     */
+    public void setLayoutY(float y)
+    {
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
+     */
+    public void setLayoutZ(float z)
+    {
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
+     */
+    public void setLayoutWidth(float width)
+    {
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
+     */
+    public void setLayoutHeight(float height)
+    {
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#isReference()
      */

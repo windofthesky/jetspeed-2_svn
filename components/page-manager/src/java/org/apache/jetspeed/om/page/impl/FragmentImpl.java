@@ -45,9 +45,15 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private String skin;
     private String decorator;
     private String state;
+    private String mode;
     private int layoutRowProperty = -1;
     private int layoutColumnProperty = -1;
     private String layoutSizesProperty;
+    private float layoutXProperty = -1.0F;
+    private float layoutYProperty = -1.0F;
+    private float layoutZProperty = -1.0F;
+    private float layoutWidthProperty = -1.0F;
+    private float layoutHeightProperty = -1.0F;
     private String extendedPropertyName1;
     private String extendedPropertyValue1;
     private String extendedPropertyName2;
@@ -267,6 +273,26 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             keys.add(SIZES_PROPERTY_NAME);
         }
+        if (layoutXProperty >= 0.0F)
+        {
+            keys.add(X_PROPERTY_NAME);
+        }
+        if (layoutYProperty >= 0.0F)
+        {
+            keys.add(Y_PROPERTY_NAME);
+        }
+        if (layoutZProperty >= 0.0F)
+        {
+            keys.add(Z_PROPERTY_NAME);
+        }
+        if (layoutWidthProperty >= 0.0F)
+        {
+            keys.add(WIDTH_PROPERTY_NAME);
+        }
+        if (layoutHeightProperty >= 0.0F)
+        {
+            keys.add(HEIGHT_PROPERTY_NAME);
+        }
         if ((extendedPropertyName1 != null) && (extendedPropertyValue1 != null))
         {
             keys.add(extendedPropertyName1);
@@ -307,6 +333,41 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             return layoutSizesProperty;
         }
+        else if (key.equals(X_PROPERTY_NAME))
+        {
+            if (layoutXProperty >= 0.0F)
+            {
+                return String.valueOf(layoutXProperty);
+            }
+        }
+        else if (key.equals(Y_PROPERTY_NAME))
+        {
+            if (layoutYProperty >= 0.0F)
+            {
+                return String.valueOf(layoutYProperty);
+            }
+        }
+        else if (key.equals(Z_PROPERTY_NAME))
+        {
+            if (layoutZProperty >= 0.0F)
+            {
+                return String.valueOf(layoutZProperty);
+            }
+        }
+        else if (key.equals(WIDTH_PROPERTY_NAME))
+        {
+            if (layoutWidthProperty >= 0.0F)
+            {
+                return String.valueOf(layoutWidthProperty);
+            }
+        }
+        else if (key.equals(HEIGHT_PROPERTY_NAME))
+        {
+            if (layoutHeightProperty >= 0.0F)
+            {
+                return String.valueOf(layoutHeightProperty);
+            }
+        }
         else if (key.equals(extendedPropertyName1))
         {
             return extendedPropertyValue1;
@@ -340,6 +401,26 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         else if (key.equals(SIZES_PROPERTY_NAME))
         {
             layoutSizesProperty = value;
+        }
+        else if (key.equals(X_PROPERTY_NAME))
+        {
+            layoutXProperty = Float.parseFloat(value);
+        }
+        else if (key.equals(Y_PROPERTY_NAME))
+        {
+            layoutYProperty = Float.parseFloat(value);
+        }
+        else if (key.equals(Z_PROPERTY_NAME))
+        {
+            layoutZProperty = Float.parseFloat(value);
+        }
+        else if (key.equals(WIDTH_PROPERTY_NAME))
+        {
+            layoutWidthProperty = Float.parseFloat(value);
+        }
+        else if (key.equals(HEIGHT_PROPERTY_NAME))
+        {
+            layoutHeightProperty = Float.parseFloat(value);
         }
         else if (key.equals(extendedPropertyName1))
         {
@@ -385,6 +466,26 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         else if (key.equals(SIZES_PROPERTY_NAME))
         {
             layoutSizesProperty = null;
+        }
+        else if (key.equals(X_PROPERTY_NAME))
+        {
+            layoutXProperty = -1.0F;
+        }
+        else if (key.equals(Y_PROPERTY_NAME))
+        {
+            layoutYProperty = -1.0F;
+        }
+        else if (key.equals(Z_PROPERTY_NAME))
+        {
+            layoutZProperty = -1.0F;
+        }
+        else if (key.equals(WIDTH_PROPERTY_NAME))
+        {
+            layoutWidthProperty = -1.0F;
+        }
+        else if (key.equals(HEIGHT_PROPERTY_NAME))
+        {
+            layoutHeightProperty = -1.0F;
         }
         else if (key.equals(extendedPropertyName1))
         {
@@ -553,6 +654,22 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getMode()
+     */
+    public String getMode()
+    {
+        return mode;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setMode(java.lang.String)
+     */
+    public void setMode(String mode)
+    {
+        this.mode = mode;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getFragments()
      */
     public List getFragments()
@@ -585,6 +702,19 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             return Integer.parseInt(propValue);
         }
         return -1;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
+     */
+    public float getFloatProperty(String propName)
+    {
+        String propValue = (String)getProperties().get(propName);
+        if (propValue != null)
+        {
+            return Float.parseFloat(propValue);
+        }
+        return -1.0F;
     }
     
     /* (non-Javadoc)
@@ -675,6 +805,131 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
+     */
+    public float getLayoutX()
+    {
+        // get standard float property
+        return getFloatProperty(X_PROPERTY_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
+     */
+    public void setLayoutX(float x)
+    {
+        // set standard float property
+        if (x >= 0.0F)
+        {
+            getProperties().put(X_PROPERTY_NAME, String.valueOf(x));
+        }
+        else
+        {
+            getProperties().remove(X_PROPERTY_NAME);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
+     */
+    public float getLayoutY()
+    {
+        // get standard float property
+        return getFloatProperty(Y_PROPERTY_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
+     */
+    public void setLayoutY(float y)
+    {
+        // set standard float property
+        if (y >= 0.0F)
+        {
+            getProperties().put(Y_PROPERTY_NAME, String.valueOf(y));
+        }
+        else
+        {
+            getProperties().remove(Y_PROPERTY_NAME);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
+     */
+    public float getLayoutZ()
+    {
+        // get standard float property
+        return getFloatProperty(Z_PROPERTY_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
+     */
+    public void setLayoutZ(float z)
+    {
+        // set standard float property
+        if (z >= 0.0F)
+        {
+            getProperties().put(Z_PROPERTY_NAME, String.valueOf(z));
+        }
+        else
+        {
+            getProperties().remove(Z_PROPERTY_NAME);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
+     */
+    public float getLayoutWidth()
+    {
+        // get standard float property
+        return getFloatProperty(WIDTH_PROPERTY_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
+     */
+    public void setLayoutWidth(float width)
+    {
+        // set standard float property
+        if (width >= 0.0F)
+        {
+            getProperties().put(WIDTH_PROPERTY_NAME, String.valueOf(width));
+        }
+        else
+        {
+            getProperties().remove(WIDTH_PROPERTY_NAME);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
+     */
+    public float getLayoutHeight()
+    {
+        // get standard float property
+        return getFloatProperty(HEIGHT_PROPERTY_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
+     */
+    public void setLayoutHeight(float height)
+    {
+        // set standard float property
+        if (height >= 0.0F)
+        {
+            getProperties().put(HEIGHT_PROPERTY_NAME, String.valueOf(height));
+        }
+        else
+        {
+            getProperties().remove(HEIGHT_PROPERTY_NAME);
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#isReference()
      */

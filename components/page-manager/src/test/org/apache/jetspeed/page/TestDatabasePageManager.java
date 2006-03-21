@@ -86,8 +86,19 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             context = ctx;
             lastTestRun = false;
 
-            // lookup page manager in context
+            // lookup page manager in context and reset to initial state
             pageManager = (PageManager)context.getBean("pageManager");
+            try
+            {
+                Folder removeRootFolder = pageManager.getFolder("/");
+                pageManager.removeFolder(removeRootFolder);
+                pageManager.reset();
+            }
+            catch (FolderNotFoundException e)
+            {
+            }
+
+            // setup page manager listener
             pageManager.addListener(this);
         }
         else
@@ -305,6 +316,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         portlet.setState("Normal");
         portlet.setLayoutRow(88);
         portlet.setLayoutColumn(99);
+        portlet.setLayoutX(12.34F);
+        portlet.setLayoutY(23.45F);
+        portlet.setLayoutZ(34.56F);
+        portlet.setLayoutWidth(45.67F);
+        portlet.setLayoutHeight(56.78F);
         List preferences = new ArrayList(2);
         FragmentPreference preference = pageManager.newFragmentPreference();
         preference.setName("pref0");
@@ -329,6 +345,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         portlet.setState("Normal");
         portlet.setLayoutRow(22);
         portlet.setLayoutColumn(11);
+        portlet.setLayoutX(11.11F);
+        portlet.setLayoutY(22.22F);
+        portlet.setLayoutZ(33.33F);
+        portlet.setLayoutWidth(44.44F);
+        portlet.setLayoutHeight(55.55F);
         SecurityConstraints fragmentConstraints = portlet.newSecurityConstraints();
         fragmentConstraints.setOwner("user");
         portlet.setSecurityConstraints(fragmentConstraints);
@@ -636,6 +657,15 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals(88, check0.getLayoutRow());
             assertEquals(88, check0.getIntProperty(Fragment.ROW_PROPERTY_NAME));
             assertEquals(99, check0.getLayoutColumn());
+            assertNotNull(check0.getProperty(Fragment.X_PROPERTY_NAME));
+            assertTrue(check0.getProperty(Fragment.X_PROPERTY_NAME).startsWith("12.3"));
+            assertTrue((check0.getLayoutX() > 12.0F) && (check0.getLayoutX() < 13.0F));
+            assertTrue((check0.getFloatProperty(Fragment.X_PROPERTY_NAME) > 12.0F) &&
+                       (check0.getFloatProperty(Fragment.X_PROPERTY_NAME) < 13.0F));
+            assertTrue((check0.getLayoutY() > 23.0F) && (check0.getLayoutY() < 24.0F));
+            assertTrue((check0.getLayoutZ() > 34.0F) && (check0.getLayoutZ() < 35.0F));
+            assertTrue((check0.getLayoutWidth() > 45.0F) && (check0.getLayoutWidth() < 46.0F));
+            assertTrue((check0.getLayoutHeight() > 56.0F) && (check0.getLayoutWidth() < 57.0F));
             assertNotNull(check0.getPreferences());
             assertEquals(2, check0.getPreferences().size());
             assertEquals("pref0", ((FragmentPreference)check0.getPreferences().get(0)).getName());
@@ -656,6 +686,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("Normal", check1.getState());
             assertEquals(22, check1.getLayoutRow());
             assertEquals(11, check1.getLayoutColumn());
+            assertTrue((check1.getLayoutX() > 11.0F) && (check1.getLayoutX() < 12.0F));
+            assertTrue((check1.getLayoutY() > 22.0F) && (check1.getLayoutY() < 23.0F));
+            assertTrue((check1.getLayoutZ() > 33.0F) && (check1.getLayoutZ() < 34.0F));
+            assertTrue((check1.getLayoutWidth() > 44.0F) && (check1.getLayoutWidth() < 45.0F));
+            assertTrue((check1.getLayoutHeight() > 55.0F) && (check1.getLayoutWidth() < 56.0F));
             assertNotNull(check1.getSecurityConstraints());
             assertEquals("user", check1.getSecurityConstraints().getOwner());
             assertNotNull(check.getFragmentById(check0.getId()));

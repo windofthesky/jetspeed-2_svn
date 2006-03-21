@@ -1620,6 +1620,12 @@ limitations under the License.
       />
 
       <field-descriptor
+         name="mode"
+         column="MODE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
          name="layoutRowProperty"
          column="LAYOUT_ROW"
          jdbc-type="INTEGER"
@@ -1635,6 +1641,36 @@ limitations under the License.
          name="layoutSizesProperty"
          column="LAYOUT_SIZES"
          jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="layoutXProperty"
+         column="LAYOUT_X"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutYProperty"
+         column="LAYOUT_Y"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutZProperty"
+         column="LAYOUT_Z"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutWidthProperty"
+         column="LAYOUT_WIDTH"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutHeightProperty"
+         column="LAYOUT_HEIGHT"
+         jdbc-type="REAL"
       />
 
       <field-descriptor

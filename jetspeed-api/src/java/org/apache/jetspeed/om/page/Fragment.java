@@ -68,9 +68,34 @@ public interface Fragment extends BaseElement, java.io.Serializable
      public String COLUMN_PROPERTY_NAME = "column";
 
     /**
-     * widths standard layout property name
+     * sizes standard layout property name
      */
      public String SIZES_PROPERTY_NAME = "sizes";
+
+    /**
+     * x coordinate standard layout property name
+     */
+     public String X_PROPERTY_NAME = "x";
+
+    /**
+     * y coordinate standard layout property name
+     */
+     public String Y_PROPERTY_NAME = "y";
+
+    /**
+     * z coordinate standard layout property name
+     */
+     public String Z_PROPERTY_NAME = "z";
+
+    /**
+     * width standard layout property name
+     */
+     public String WIDTH_PROPERTY_NAME = "width";
+
+    /**
+     * height standard layout property name
+     */
+     public String HEIGHT_PROPERTY_NAME = "height";
 
     /**
      * Returns the administrative name of this fragment. This name should map
@@ -129,19 +154,32 @@ public interface Fragment extends BaseElement, java.io.Serializable
     public void setDecorator(String decoratorName);
 
     /**
-     * Returns the display state of this fragment. This state may have the
-     * following values:
-     * "Normal","Minimized","Maximized","Hidden".
+     * Returns the display state of this fragment. The state may have the
+     * following values: "Normal","Minimized","Maximized","Hidden"
      */
     public String getState();
 
     /**
      * Sets the display state of this fragment.
-     * Valid states are: "Normal","Minimzed","Maximized","Hidden"
+     * Valid states are: "Normal","Minimized","Maximized","Hidden"
      *
-     * @param decoratorName the name of the decorator applied to this fragment
+     * @param state the new fragment state
      */
     public void setState(String state);
+
+    /**
+     * Returns the display mode of this fragment. The mode may have the
+     * following values: "View","Edit","Help","Config","Print","Custom"
+     */
+    public String getMode();
+
+    /**
+     * Sets the display mode of this fragment.
+     * Valid modes are: "View","Edit","Help","Config","Print","Custom"
+     *
+     * @param mode the new fragment mode
+     */
+    public void setMode(String mode);
 
     /**
      * Returns all fragments used in this node. This may be
@@ -170,6 +208,16 @@ public interface Fragment extends BaseElement, java.io.Serializable
      * @return int value
      */
     public int getIntProperty(String propName);
+    
+    /**
+     * getFloatProperty
+     * 
+     * Get named property value as float.
+     *
+     * @param propName property name
+     * @return float value
+     */
+    public float getFloatProperty(String propName);
     
     /**
      * getProperties
@@ -222,6 +270,76 @@ public interface Fragment extends BaseElement, java.io.Serializable
      */
     public void setLayoutSizes(String sizes);
     
+    /**
+     * get layout x coordinate property
+     *
+     * @return the x coordinate value
+     **/
+    public float getLayoutX();
+
+    /**
+     * set the layout x coordinate property
+     *
+     * @param x the coordinate value
+     */
+    public void setLayoutX(float x);
+
+    /**
+     * get layout y coordinate property
+     *
+     * @return the y coordinate value
+     **/
+    public float getLayoutY();
+
+    /**
+     * set the layout y coordinate property
+     *
+     * @param y the coordinate value
+     */
+    public void setLayoutY(float y);
+
+    /**
+     * get layout z coordinate property
+     *
+     * @return the z coordinate value
+     **/
+    public float getLayoutZ();
+
+    /**
+     * set the layout z coordinate property
+     *
+     * @param z the coordinate value
+     */
+    public void setLayoutZ(float z);
+
+    /**
+     * get layout width property
+     *
+     * @return the width value
+     **/
+    public float getLayoutWidth();
+
+    /**
+     * set the layout width property
+     *
+     * @param width the value
+     */
+    public void setLayoutWidth(float width);
+
+    /**
+     * get layout height property
+     *
+     * @return the height value
+     **/
+    public float getLayoutHeight();
+
+    /**
+     * set the layout height property
+     *
+     * @param height the value
+     */
+    public void setLayoutHeight(float height);
+
     /**
      * Test if this fragment is actually a reference to an external fragment.
      *

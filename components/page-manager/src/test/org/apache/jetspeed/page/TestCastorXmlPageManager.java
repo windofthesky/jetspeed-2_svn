@@ -199,9 +199,20 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
 
         Map properties = f.getProperties();
         assertNotNull(properties);
-        assertTrue(properties.size() == 2);
+        assertTrue(properties.size() == 7);
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(0, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
+        assertEquals(0, f.getLayoutRow());
+        assertEquals(0, f.getLayoutColumn());
+        assertNotNull(f.getProperty(Fragment.X_PROPERTY_NAME));
+        assertTrue(f.getProperty(Fragment.X_PROPERTY_NAME).startsWith("11.1"));
+        assertTrue((f.getLayoutX() > 11.0F) && (f.getLayoutX() < 12.0F));
+        assertTrue((f.getFloatProperty(Fragment.X_PROPERTY_NAME) > 11.0F) &&
+                   (f.getFloatProperty(Fragment.X_PROPERTY_NAME) < 12.0F));
+        assertTrue((f.getLayoutY() > 22.0F) && (f.getLayoutY() < 23.0F));
+        assertTrue((f.getLayoutZ() > 33.0F) && (f.getLayoutZ() < 34.0F));
+        assertTrue((f.getLayoutWidth() > 44.0F) && (f.getLayoutWidth() < 45.0F));
+        assertTrue((f.getLayoutHeight() > 55.0F) && (f.getLayoutWidth() < 56.0F));
 
         List preferences = f.getPreferences();
         assertNotNull(preferences);

@@ -28,6 +28,11 @@ limitations under the License.
     <fragment id="pe001" type="portlet" name="HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
+      <property name="x" value="11.11" />
+      <property name="y" value="22.22" />
+      <property name="z" value="33.33" />
+      <property name="width" value="44.44" />
+      <property name="height" value="55.55" />
       <preference name="pref0" readOnly="true">
         <value>pref0-value0</value>
         <value>pref0-value1</value>

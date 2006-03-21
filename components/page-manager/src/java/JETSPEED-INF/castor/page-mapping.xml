@@ -90,6 +90,10 @@
       <bind-xml name="state" node="attribute"/>
     </field>
 
+    <field name="mode" type="java.lang.String">
+      <bind-xml name="mode" node="attribute"/>
+    </field>
+
     <field name="decorator" type="java.lang.String">
       <bind-xml name="decorator" node="attribute"/>
     </field>

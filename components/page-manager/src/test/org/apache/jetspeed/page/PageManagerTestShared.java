@@ -225,6 +225,17 @@ interface PageManagerTestShared
                     {
                         try
                         {
+                            // reset page manager to initial state
+                            try
+                            {
+                                Folder removeRootFolder = pageManager.getFolder("/");
+                                pageManager.removeFolder(removeRootFolder);
+                                pageManager.reset();
+                            }
+                            catch (FolderNotFoundException e)
+                            {
+                            }
+
                             // create test documents and folders
                             Folder folder = pageManager.newFolder("/");
                             SecurityConstraints constraints = pageManager.newSecurityConstraints();
