@@ -44,6 +44,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
 {
     private final String navBeanName;
     private final String urlBeanName;    
+    private final String desktopUrlBeanName;
     
     // maps containing allowed PortletMode and WindowState objects on their lowercase name
     // ensuring only allowed, and always the same objects are returned and allowing comparision by value
@@ -65,13 +66,14 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
      *             if <code>navClassName</code> or <code>urlClassName</code>
      *             do not exist.
      */
-    public JetspeedNavigationalStateComponent( String  navBeanName, String urlBeanName, PortalContext portalContext )
+    public JetspeedNavigationalStateComponent(String  navBeanName, String urlBeanName, PortalContext portalContext, String desktopUrlBeanName)
             throws ClassNotFoundException
     {
         ArgUtil.assertNotNull(String.class, navBeanName, this);
         ArgUtil.assertNotNull(String.class, urlBeanName, this);        
         this.navBeanName = navBeanName;
-        this.urlBeanName = urlBeanName;        
+        this.urlBeanName = urlBeanName;
+        this.desktopUrlBeanName = desktopUrlBeanName;
 
         Enumeration portletModesEnum = portalContext.getSupportedPortletModes();
         PortletMode portletMode;
@@ -145,5 +147,11 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         this.beanFactory = beanFactory;        
     }
     
-
+    public PortalURL createDesktopURL(HttpServletRequest request, String characterEncoding)
+    {
+        PortalURL url = (PortalURL) beanFactory.getBean(desktopUrlBeanName, PortalURL.class);
+        url.setRequest(request);
+        url.setCharacterEncoding(characterEncoding);
+        return url;        
+    }
 }

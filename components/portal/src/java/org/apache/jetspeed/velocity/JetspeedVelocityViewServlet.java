@@ -42,6 +42,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.desktop.JetspeedDesktopContext;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -175,6 +176,24 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
      */
     protected Template handleRequest(HttpServletRequest request, HttpServletResponse response, Context ctx) throws Exception
     {
+        RequestContext requestContext = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if(requestContext == null)
+        {
+            throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no RequestContext in "+
+                   "the HttpServletRequest.");
+        }
+        
+        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);        
+        if (desktopContext != null)
+        {
+            // standard render request and response also available in context
+            ctx.put(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
+            ctx.put("JS2RequestContext", requestContext);
+            
+            // setup TLS for Context propagation
+            handlingRequestContext.set(ctx);            
+            return super.handleRequest(request, response, ctx);            
+        }
         // configure velocity context
         PortletRequest renderRequest = (PortletRequest) request.getAttribute(Constants.PORTLET_REQUEST);
         RenderResponse renderResponse = (RenderResponse) request.getAttribute(Constants.PORTLET_RESPONSE);
@@ -183,14 +202,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
         }
-        
-        RequestContext requestContext = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        if(requestContext == null)
-        {
-            throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no RequestContext in "+
-                   "the HttpServletRequest.");
-        }
-        
+                
         JetspeedPowerTool jpt = (JetspeedPowerTool) renderRequest.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
         if(jpt == null)
         {
@@ -359,9 +371,18 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
      */
     private VelocityEngine getVelocityEngine(Context ctx)
     {
+        RequestContext requestContext = (RequestContext) ctx.get("JS2RequestContext");        
+        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)requestContext.getRequest().getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);        
+        if (desktopContext != null)
+        {
+            if (defaultVelocityEngine == null)
+            {
+                defaultVelocityEngine = initVelocity((TemplateDescriptor)null);
+            }
+            return defaultVelocityEngine;            
+        }                
         // get render request and request context from Context
         RenderRequest renderRequest = (RenderRequest) ctx.get("renderRequest");
-        RequestContext requestContext = (RequestContext) ctx.get("JS2RequestContext");
         JetspeedPowerTool jpt = (JetspeedPowerTool) ctx.get("jetspeed");
         if ((renderRequest != null) && (requestContext != null))
         {

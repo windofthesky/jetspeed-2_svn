@@ -18,7 +18,6 @@ package org.apache.jetspeed.container.url.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -34,6 +33,12 @@ import org.apache.jetspeed.request.RequestContext;
 public class PortalURLValveImpl extends AbstractValve
 {
     private static final Log log = LogFactory.getLog(PortalURLValveImpl.class);
+    private NavigationalStateComponent navComponent;
+
+    public PortalURLValveImpl(NavigationalStateComponent navComponent)
+    {
+        this.navComponent = navComponent;
+    }
     
     public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
@@ -42,9 +47,16 @@ public class PortalURLValveImpl extends AbstractValve
         {  
             if ( request.getPortalURL() == null )
             {
-                NavigationalStateComponent navComponent = (NavigationalStateComponent)Jetspeed.getComponentManager()
-                    .getComponent(NavigationalStateComponent.class);
-                request.setPortalURL(navComponent.createURL(request.getRequest(), request.getCharacterEncoding()));
+                String encoding = request.getRequestParameter("encoder");
+                if (encoding != null && encoding.equals("desktop"))
+                {
+                    request.setPortalURL(navComponent.createDesktopURL(request.getRequest(), request.getCharacterEncoding()));
+                }
+                else
+                {
+                    request.setPortalURL(navComponent.createURL(request.getRequest(), request.getCharacterEncoding()));
+                }
+                
             }
         }
         catch (Exception e)
