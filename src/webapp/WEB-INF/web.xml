@@ -97,7 +97,7 @@ limitations under the License.
 		</init-param>
 		<load-on-startup>10</load-on-startup>
 	</servlet>
-
+    
   <servlet>
     <servlet-name>LoginProxyServlet</servlet-name>
     <servlet-class>org.apache.jetspeed.login.LoginProxyServlet</servlet-class>
@@ -168,13 +168,21 @@ limitations under the License.
          /ajaxapi/*
        </url-pattern>
     </servlet-mapping>            
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /desktop/*
+       </url-pattern>
+    </servlet-mapping>            
     
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
 		<servlet-name>velocity</servlet-name>
 		<url-pattern>*.vm</url-pattern>
 	</servlet-mapping>	
-
+    
     <servlet-mapping>
         <servlet-name>LoginProxyServlet</servlet-name>
         <url-pattern>/login/proxy</url-pattern>
