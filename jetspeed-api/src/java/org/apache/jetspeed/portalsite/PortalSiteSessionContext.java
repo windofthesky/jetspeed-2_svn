@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.portalsite;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.jetspeed.page.PageManager;
@@ -25,7 +26,7 @@ import org.apache.jetspeed.page.PageManager;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface PortalSiteSessionContext
+public interface PortalSiteSessionContext extends Serializable
 {
     /**
      * newRequestContext - create a new request context instance with fallback
