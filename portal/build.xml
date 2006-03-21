@@ -55,6 +55,10 @@ limitations under the License.
                 <exclude name="WEB-INF/pages/**"/>
             </fileset>
         </copy>
+        <mkdir dir="${basedir}/target/webapp/javascript/dojo"/>
+        <unzip src="${basedir}/../src/javascript/dojo/dojo.zip"
+               dest="${basedir}/target/webapp/javascript/dojo">
+        </unzip>
 
         <!-- Configure runtime jetspeed properties resource -->
         <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">

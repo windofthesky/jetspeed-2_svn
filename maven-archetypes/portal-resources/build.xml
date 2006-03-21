@@ -39,6 +39,10 @@ limitations under the License.
                 <exclude name="WEB-INF/pages/**"/>
             </fileset>
         </copy>
+        <mkdir dir="${basedir}/target/classes/javascript/dojo"/>
+        <unzip src="${basedir}/../../src/javascript/dojo/dojo.zip"
+               dest="${basedir}/target/classes/javascript/dojo">
+        </unzip>
         <mkdir dir="${basedir}/target/classes/WEB-INF/pages"/>
         <copy todir="${basedir}/target/classes/WEB-INF/pages">
             <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages">
