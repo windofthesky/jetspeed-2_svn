@@ -37,8 +37,12 @@ limitations under the License.
   <bean id="portalURLValve"
         class="org.apache.jetspeed.container.url.impl.PortalURLValveImpl"
         init-method="initialize"
-  /> 
-  
+   >
+   <constructor-arg>
+       <ref bean="NavigationalStateComponent" />
+   </constructor-arg>            
+  </bean>
+          
   <bean id="securityValve"
         class="org.apache.jetspeed.security.impl.SecurityValveImpl"
         init-method="initialize"
@@ -169,7 +173,15 @@ limitations under the License.
       <value>/WEB-INF/templates/login</value>
     </constructor-arg>
   </bean> 
-  
+
+  <bean id="desktopValve"
+        class="org.apache.jetspeed.desktop.impl.DesktopValveImpl"
+  > 
+    <constructor-arg>
+        <ref bean="JetspeedDesktop" />
+    </constructor-arg>      
+  </bean>
+      
   <bean id="jetspeed-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
@@ -289,7 +301,26 @@ limitations under the License.
     </list>
     </constructor-arg>
   </bean> 
-  
+
+  <bean id="desktop-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <value>DesktopPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="capabilityValve"/>
+        <ref bean="portalURLValve"/>                
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="desktopValve"/>
+    </list>
+    </constructor-arg>
+  </bean> 
+      
   <bean id='pipeline-map'
         class='java.util.HashMap'>
     <constructor-arg>
@@ -309,6 +340,9 @@ limitations under the License.
             <entry key='/fileserver'>
                 <value>fileserver-pipeline</value>
             </entry>                        
+            <entry key='/desktop'>
+                <value>desktop-pipeline</value>
+            </entry>                                    
         </map>        
     </constructor-arg>        
   </bean>
@@ -316,5 +350,6 @@ limitations under the License.
   <bean id="debugValve"
         class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl"
   /> 
-      
+
+          
 </beans>
