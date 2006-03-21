@@ -22,6 +22,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
   <metadata name="title" xml:lang="hu">Köszönti a Jetspeed 2!</metadata>
   <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
+  <metadata name="title" xml:lang="zh-TW">歡迎來到Jetspeed 2</metadata>
 
   <fragment id="min-dp" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="min-dp-login" type="portlet" name="j2-admin::LoginPortlet">
