@@ -70,5 +70,16 @@ public interface NavigationalStateComponent
      * @param name The string representation of the portlet mode.
      * @return The corresponding PortletMode object
      */    
-    PortletMode lookupPortletMode(String name);    
+    PortletMode lookupPortletMode(String name);   
+
+    /**
+     * Creates a Desktop Portal URL representing the URL of the request.
+     * 
+     * @param request The ubiqitious request.
+     * @param characterEncoding String containing the name of the chararacter encoding
+     * @return A new Portal URL.  This method will never return <code>null</code>;
+     * @throws FailedToCreatePortalUrlException if the portelt url could not be created.  Under normal
+     * circumstances, this should not happen.
+     */    
+    PortalURL createDesktopURL(HttpServletRequest request, String characterEncoding);
 }
