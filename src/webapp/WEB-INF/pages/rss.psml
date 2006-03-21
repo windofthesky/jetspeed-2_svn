@@ -12,7 +12,7 @@ limitations under the License.
 -->
 <page id="rss">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="gray-gradient"
   />

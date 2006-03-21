@@ -15,34 +15,42 @@ limitations under the License.
 -->
 <page>
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>Welcome to Jetspeed 2</title>
   <metadata name="title" xml:lang="fr">Ma Premiere Page de PSML</metadata>
-  <metadata name="title" xml:lang="ja">Jetspeed 2 へようこそ</metadata>
+  <metadata name="title" xml:lang="ja">Jetspeed 2 �?�よ�?��?��??</metadata>
   <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
   <metadata name="title" xml:lang="hu">Köszönti a Jetspeed 2!</metadata>
-  <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
+  <metadata name="title" xml:lang="zh">欢迎�?�到Jetspeed 2</metadata>
   <metadata name="title" xml:lang="zh-TW">歡迎來到Jetspeed 2</metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="dp-3" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
+      <property name="window-width" value="230" />
+      <property name="window-theme" value="theme1" />
+      <property name="window-id" value="localeselector" />
+      <property name="window-icon" value="applications-internet.png" />
     </fragment>                                
     <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
+      <property name="window-theme" value="theme2" />
+      <property name="window-id" value="loginportlet" />
     </fragment>                                
     <fragment id="dp-22" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
+      <property name="window-theme" value="theme1" />
     </fragment>                                
     <fragment id="dp-23" type="portlet" name="j2-admin::UserRegistrationPortlet">
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="1" />
+      <property name="window-theme" value="theme2" />
     </fragment>                                
     
     <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >

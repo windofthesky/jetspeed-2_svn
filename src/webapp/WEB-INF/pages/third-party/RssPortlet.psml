@@ -16,13 +16,13 @@ limitations under the License.
 -->
 <page id="RssPortlet">
     <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   
   <title>Plumtree RSS Portlet</title>
-  <metadata name="title" xml:lang="ja">Plumtree RSS ポートレット</metadata>
+  <metadata name="title" xml:lang="ja">Plumtree RSS �?ートレット</metadata>
   <metadata name="title" xml:lang="es">Portlet RSS de Plumtree</metadata>
   <metadata name="title" xml:lang="hu">RSS hírolvasó</metadata>
   <metadata name="title" xml:lang="zh">Plumtree RSS Portlet</metadata>

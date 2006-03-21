@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <page hidden='true'>
   <defaults     
-     skin="light-blue"
+     skin="blue"
      layout-decorator="clear"
      portlet-decorator="clear"
   />

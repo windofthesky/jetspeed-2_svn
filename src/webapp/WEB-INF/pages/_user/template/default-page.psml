@@ -12,7 +12,7 @@ limitations under the License.
 -->
 <page id="/_user/template/default-page.psml">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />

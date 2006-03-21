@@ -12,16 +12,16 @@ limitations under the License.
 -->
 <page id="user-mgt">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>User Management</title>
-  <metadata name="title" xml:lang="ja">ユーザー管理</metadata>
+  <metadata name="title" xml:lang="ja">ユーザー管�?�</metadata>
   <metadata name="short-title" xml:lang="es">Usuarios</metadata>
   <metadata name="title" xml:lang="es">Gestor de usuarios</metadata>
   <metadata name="title" xml:lang="hu">Felhasználók beállítása</metadata>
-  <metadata name="title" xml:lang="zh">用户管理</metadata>
+  <metadata name="title" xml:lang="zh">用户管�?�</metadata>
   <metadata name="title" xml:lang="zh-TW">用戶管理</metadata>
 
   <fragment id="um-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">

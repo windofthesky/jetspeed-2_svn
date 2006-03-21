@@ -12,16 +12,16 @@ limitations under the License.
 -->
 <page id="site">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>Profiler Admin</title>
-  <metadata name="title" xml:lang="ja">プロファイラ管理</metadata>
+  <metadata name="title" xml:lang="ja">プロファイラ管�?�</metadata>
   <metadata name="short-title" xml:lang="es">Perfiles</metadata>
   <metadata name="title" xml:lang="es">Administrador de perfiles</metadata>
   <metadata name="title" xml:lang="hu">Profil beállítások</metadata>
-  <metadata name="title" xml:lang="zh">Profiler管理</metadata>
+  <metadata name="title" xml:lang="zh">Profiler管�?�</metadata>
   
 
   <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns">

@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <page >
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />

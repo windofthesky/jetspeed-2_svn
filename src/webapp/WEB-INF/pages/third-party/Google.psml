@@ -16,13 +16,13 @@ limitations under the License.
 -->
 <page id="Google">
     <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   
   <title>Google Portlets</title>
-  <metadata name="title" xml:lang="ja">グーグルポートレット</metadata>
+  <metadata name="title" xml:lang="ja">グーグル�?ートレット</metadata>
   <metadata name="title" xml:lang="es">Portlets de Google</metadata>
   <metadata name="title" xml:lang="hu">Google kereső portlet</metadata>
   <metadata name="title" xml:lang="zh">Google Portlets</metadata>

@@ -12,16 +12,16 @@ limitations under the License.
 -->
 <page id="role-mgt">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>Role Management</title>
-  <metadata name="title" xml:lang="ja">ロール管理</metadata>
+  <metadata name="title" xml:lang="ja">ロール管�?�</metadata>
   <metadata name="short-title" xml:lang="es">Roles</metadata>
   <metadata name="title" xml:lang="es">Gestión de roles</metadata>
   <metadata name="title" xml:lang="hu">Szerepkör beállítások</metadata>
-  <metadata name="title" xml:lang="zh">角色管理</metadata>
+  <metadata name="title" xml:lang="zh">角色管�?�</metadata>
 
   <fragment id="rm-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="rm-3" type="portlet" name="j2-admin::RoleBrowserPortlet">

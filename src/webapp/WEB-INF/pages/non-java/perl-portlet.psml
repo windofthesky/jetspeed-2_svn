@@ -12,7 +12,7 @@ limitations under the License.
 -->
 <page id="perl">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />

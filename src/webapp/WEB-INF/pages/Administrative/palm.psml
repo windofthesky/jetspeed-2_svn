@@ -12,7 +12,7 @@ limitations under the License.
 -->
 <page id="palm">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
@@ -22,7 +22,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">PALM</metadata>
   <metadata name="short-title" xml:lang="hu">PALM</metadata>
   <metadata name="title" xml:lang="hu">PALM</metadata>
-  <metadata name="title" xml:lang="zh">Portlet应用生命周期管理</metadata>
+  <metadata name="title" xml:lang="zh">Portlet应用生命周期管�?�</metadata>
   <metadata name="title" xml:lang="zh-TW">Portlet應用生命週期管理</metadata>
 
   <fragment id="palm-layout" type="layout" name="jetspeed-layouts::VelocityOneColumn">

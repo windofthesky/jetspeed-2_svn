@@ -12,16 +12,16 @@ limitations under the License.
 -->
 <page id="pam">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>Portlet Application Manager</title>
-  <metadata name="title" xml:lang="ja">ポートレットアプリケーションマネージャ</metadata>
+  <metadata name="title" xml:lang="ja">�?ートレットアプリケーションマ�?ージャ</metadata>
   <metadata name="title" xml:lang="es">PAM (Gestor de aplicaciones de portlets</metadata>
   <metadata name="short-title" xml:lang="es">PAM</metadata>
   <metadata name="title" xml:lang="hu">Portlet alkalmazás beállítások</metadata>
-  <metadata name="title" xml:lang="zh">Portlet应用程序管理</metadata>
+  <metadata name="title" xml:lang="zh">Portlet应用程�?管�?�</metadata>
   <metadata name="title" xml:lang="zh-TW">Portlet應用程式管理</metadata>
 
   <fragment id="pam-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">

@@ -12,16 +12,16 @@ limitations under the License.
 -->
 <page id="group-mgt">
   <defaults
-     skin="orange"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>Group Management</title>
-  <metadata name="title" xml:lang="ja">グループ管理</metadata>
+  <metadata name="title" xml:lang="ja">グループ管�?�</metadata>
   <metadata name="short-title" xml:lang="es">Grupos</metadata>
   <metadata name="title" xml:lang="es">Gestión de Grupos</metadata>
   <metadata name="title" xml:lang="hu">Csoport beállítások</metadata>
-  <metadata name="title" xml:lang="zh">用户组管理</metadata>
+  <metadata name="title" xml:lang="zh">用户组管�?�</metadata>
   <metadata name="title" xml:lang="zh-TW">用戶組管理</metadata>
   <fragment id="gm-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
     <fragment id="gm-3" type="portlet" name="j2-admin::GroupBrowserPortlet">

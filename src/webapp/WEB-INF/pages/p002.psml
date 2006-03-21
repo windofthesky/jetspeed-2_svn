@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <page >
   <defaults
-     skin="light-blue"
+     skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
@@ -32,7 +32,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Mi 2ª página PSML</metadata>
   <metadata name="short-title" xml:lang="es">Otra página</metadata>
   <metadata name="title" xml:lang="hu">A második PSML oldalam</metadata>
-  <metadata name="title" xml:lang="zh">第二个PSML页面</metadata>
+  <metadata name="title" xml:lang="zh">第二个PSML页�?�</metadata>
   <metadata name="title" xml:lang="zh-TW">第二個PSML頁面</metadata>
 
   <security-constraints>
