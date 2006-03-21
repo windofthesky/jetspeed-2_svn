@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
@@ -382,7 +381,9 @@ public class JetspeedRequestContext implements RequestContext
 
         if (preferedLocale == null || !locale.equals(preferedLocale))
         {
-            request.getSession().setAttribute(PortalReservedParameters.PREFERED_LANGUAGE_ATTRIBUTE, new WeakHashMap());
+            // PREFERED_LANGUAGE_ATTRIBUTE doesn't seem to be used anywhere anymore, and as a WeakHashMap isn't
+            // Serializable, "fixing" that problem (JS2-174) by simply not putting it in the session anymore
+            // request.getSession().setAttribute(PortalReservedParameters.PREFERED_LANGUAGE_ATTRIBUTE, new WeakHashMap());
             request.getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
             request.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         }
