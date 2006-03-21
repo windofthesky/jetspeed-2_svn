@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+  $Id:$
+-->
+<project name="portal-archetype" default="help">
+
+    <!-- Properties -->
+
+    <property name="org.apache.jetspeed.archetype.artifactid" value=""/>
+    <property name="org.apache.jetspeed.archetype.version" value=""/>
+
+    <!-- Usage -->
+
+    <target name="help">
+        <echo message="Buildfile for the portal archetype maven POM."/>
+        <echo message="Usage: ant [ build ]"/>
+        <echo message="Where:"/>
+        <echo message="    build - build resources for archetype."/>
+        <echo message="Configuration:"/>
+        <echo message="    org.apache.jetspeed.archetype.artifactid=${org.apache.jetspeed.archetype.artifactid}"/>
+        <echo message="    org.apache.jetspeed.archetype.version=${org.apache.jetspeed.archetype.version}"/>
+    </target>
+
+    <!-- Additional Task Definitions -->
+
+    <taskdef resource="org/apache/jetspeed/anttasks/antlib.xml"/>
+
+    <!-- Jetspeed Configuration -->
+
+    <target name="build">
+
+        <!--
+            Limitation: The archetype plugin does not know how to skip over
+            binary or velocity template/macro files. Consequently, we have to
+            pull in many resources after the fact using the separate
+            portal-archetype-resources archive. This is currently being addressed
+            by the maven team, but am proceeding with the workaround until a
+            new version of the archetype plugin is developed and released.
+        -->
+        <!-- Assemble required portal webapp resources -->        
+        <!--
+        <delete dir="${basedir}/target/classes/archetype-resources/portal/src/webapp"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/portal/src/webapp"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/portal/src/webapp">
+            <fileset dir="${basedir}/../../src/webapp">
+                <exclude name="WEB-INF/pages/**"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/pages"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/pages">
+            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages">
+                <include name="Administrative/**"/>
+                <include name="page.security"/>
+                <include name="my-account.psml"/>
+            </fileset>
+        </copy>
+        <copy file="${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+              tofile="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/pages/default-page.psml"/>
+        <replace file="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/pages/default-page.psml"
+                 token=" hidden=&quot;true&quot;"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/classes"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/classes">
+            <fileset dir="${basedir}/../../etc/db-ojb"/>
+        </copy>
+        -->
+
+        <!-- Assemble required etc database resources -->
+        <delete dir="${basedir}/target/classes/archetype-resources/etc/schema"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/etc/schema"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/schema">
+            <fileset dir="${basedir}/../../etc/schema">
+                <exclude name="**/velocity.log*"/>
+            </fileset>
+        </copy>
+        <delete dir="${basedir}/target/classes/archetype-resources/etc/sql"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/etc/sql"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/sql">
+            <fileset dir="${basedir}/../../etc/sql"/>
+        </copy>
+
+        <!-- Assemble required etc server configuration resources -->
+        <delete dir="${basedir}/target/classes/archetype-resources/etc/conf"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/etc/conf"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/conf">
+            <fileset dir="${basedir}/../../etc/conf"/>
+        </copy>
+
+        <!-- Set POM default jetspeed-2 version -->
+        <replace file="${basedir}/target/classes/archetype-resources/pom.xml"
+                 token="@JETSPEED_2_VERSION@" value="${org.apache.jetspeed.archetype.version}"/>
+
+        <!-- Dynamically build archetype descriptor metadata -->
+        <fileset id="archetype.resources.id" dir="${basedir}/target/classes/archetype-resources/">
+            <exclude name="pom.xml"/>
+        </fileset>
+        <archetypedescriptor destFile="${basedir}/target/classes/META-INF/archetype.xml"
+                             baseDir="${basedir}/target/classes/archetype-resources"
+                             artifactId="${org.apache.jetspeed.archetype.artifactid}"
+                             resourcesrefid="archetype.resources.id">
+&lt;!--
+Copyright 2006 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--&gt;
+        </archetypedescriptor>
+
+    </target>
+
+</project>

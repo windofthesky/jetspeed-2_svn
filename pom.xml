@@ -175,6 +175,9 @@ limitations under the License.
 
     <modules>
 
+        <!-- Bootstrap Build Tasks -->
+        <module>ant-tasks</module>
+
         <!-- Base Modules -->
         <module>commons</module>
         <module>jetspeed-api</module>
@@ -195,8 +198,12 @@ limitations under the License.
         <!-- J2 Applications -->
         <module>applications</module>
 
+        <!-- J2 Portal Application -->
+        <module>portal</module>
+
         <!-- J2 Application Server Deployment -->
         <module>app-servers</module>
+        <module>maven-archetypes</module>
 
     </modules>
 
@@ -829,6 +836,13 @@ limitations under the License.
                 <version>${rome.version}</version>
             </dependency>
 
+            <!-- Ant -->
+            <dependency>
+                <groupId>ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>    
 
@@ -972,6 +986,13 @@ limitations under the License.
                         <groupId>torque</groupId>
                         <artifactId>torque-gen-templates</artifactId>
                         <version>${torque.version}</version>
+                    </dependency>
+
+                    <!-- J2 Build -->
+                    <dependency>
+                        <groupId>${pom.groupId}</groupId>
+                        <artifactId>ant-tasks</artifactId>
+                        <version>${pom.version}</version>
                     </dependency>
 
                 </dependencies>

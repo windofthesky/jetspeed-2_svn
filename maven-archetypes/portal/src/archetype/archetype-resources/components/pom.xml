@@ -24,54 +24,39 @@ limitations under the License.
 
     <!-- POM Identification -->
 
-    <groupId>org.apache.portals.jetspeed-2</groupId>
-    <version>2.1-dev</version>
-    <artifactId>applications</artifactId>
+    <groupId>${groupId}</groupId>
+    <version>${version}</version>
+    <artifactId>${artifactId}-components</artifactId>
     <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <version>2.1-dev</version>
-        <artifactId>jetspeed-2</artifactId>
+        <groupId>${groupId}</groupId>
+        <version>${version}</version>
+        <artifactId>${artifactId}</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
-    <name>Jetspeed-2 Applications</name>
-    <description>
-        Jetspeed-2 Applications
-    </description>
+    <name>Jetspeed-2 Components</name>
 
-    <!-- Application Modules -->
+    <!-- Component Modules -->
 
     <modules>
-        <module>demo</module>
-        <module>gems</module>
-        <module>j2-admin</module>
-        <module>rss</module>
     </modules>
 
-    <!-- Application Dependencies -->
+    <!-- Component Dependencies -->
 
     <dependencies>
 
         <!-- Provided Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-commons</artifactId>
             <scope>provided</scope>
         </dependency>
 
     </dependencies>
-
-    <!-- Project Information -->
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/</url>
-    </scm>
 
 </project>

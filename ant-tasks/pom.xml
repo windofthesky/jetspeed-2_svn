@@ -26,41 +26,27 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>applications</artifactId>
+    <artifactId>ant-tasks</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
         <artifactId>jetspeed-2</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>pom</packaging>
-    <name>Jetspeed-2 Applications</name>
+    <packaging>jar</packaging>
+    <name>Jetspeed-2 Ant Tasks</name>
     <description>
-        Jetspeed-2 Applications
+        Ant Tasks Required for the Jetspeed-2 Product Build.
     </description>
 
-    <!-- Application Modules -->
-
-    <modules>
-        <module>demo</module>
-        <module>gems</module>
-        <module>j2-admin</module>
-        <module>rss</module>
-    </modules>
-
-    <!-- Application Dependencies -->
+    <!-- Dependencies -->
 
     <dependencies>
 
         <!-- Provided Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -69,9 +55,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/ant-tasks</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/ant-tasks</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/ant-tasks/</url>
     </scm>
 
 </project>

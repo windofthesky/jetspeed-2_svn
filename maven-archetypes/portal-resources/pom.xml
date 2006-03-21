@@ -26,34 +26,18 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>jetspeed-components</artifactId>
+    <artifactId>portal-archetype-resources</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>components</artifactId>
+        <artifactId>maven-archetypes</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
-    <name>Jetspeed-2 Components</name>
+    <name>Jetspeed-2 Maven2 Portal Archetype Resources</name>
     <description>
-        Jetspeed Components
+        Jetspeed-2 Maven2 Archetype Resources archive used to generate portal instances.
     </description>
-
-    <!-- Dependencies -->
-
-    <dependencies>
-
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-
-    </dependencies>
 
     <!-- Build Configuration -->
 
@@ -64,24 +48,11 @@ limitations under the License.
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>hot-deploy-component</id>
-                        <phase>install</phase>
+                        <id>portal-archetype-resources</id>
+                        <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="hot-deploy-jar" antfile="../../app-servers/build.xml" dir="${basedir}" inheritAll="off">
-                                    <property name="org.apache.jetspeed.deploy.enable"
-                                              value="${org.apache.jetspeed.env.hotdeploy}"/>
-                                    <property name="org.apache.jetspeed.deploy.target"
-                                              value="${org.apache.jetspeed.env.deploy.target}"/>
-                                    <property name="org.apache.jetspeed.server.home"
-                                              value="${org.apache.jetspeed.server.home}"/>
-                                    <property name="org.apache.jetspeed.deploy.groupid"
-                                              value="${pom.groupId}"/>
-                                    <property name="org.apache.jetspeed.deploy.artifactid"
-                                              value="${pom.artifactId}"/>
-                                    <property name="org.apache.jetspeed.deploy.version"
-                                              value="${pom.version}"/>
-                                </ant>
+                                <ant target="build" antfile="build.xml" dir="${basedir}" inheritAll="off"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -96,7 +67,7 @@ limitations under the License.
                     Bug: Plugin dependencies are not propagated from pluginManagement.
                     Bug: Versions must be specified here and not in dependencyManagement.
 
-                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                    Note: All ant dependencies are listed to keep ant-tasks in sync.
                 -->
                 <dependencies>
                     <dependency>
@@ -110,14 +81,9 @@ limitations under the License.
                         <version>${ant.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-artifact-ant</artifactId>
-                        <version>${org.apache.maven.artifact.ant.version}</version>
+                        <groupId>${pom.groupId}</groupId>
+                        <artifactId>ant-tasks</artifactId>
+                        <version>${pom.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -127,9 +93,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/jetspeed</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/jetspeed</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/jetspeed/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes/portal-resources</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes/portal-resources</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/maven-archetypes/portal-resources/</url>
     </scm>
 
 </project>

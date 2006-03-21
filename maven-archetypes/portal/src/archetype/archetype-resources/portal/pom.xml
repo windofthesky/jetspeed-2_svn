@@ -24,13 +24,13 @@ limitations under the License.
 
     <!-- POM Identification -->
 
-    <groupId>org.apache.portals.jetspeed-2</groupId>
-    <version>2.1-dev</version>
-    <artifactId>jetspeed</artifactId>
+    <groupId>${groupId}</groupId>
+    <version>${version}</version>
+    <artifactId>${artifactId}-portal</artifactId>
     <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <version>2.1-dev</version>
-        <artifactId>applications</artifactId>
+        <groupId>${groupId}</groupId>
+        <version>${version}</version>
+        <artifactId>${artifactId}</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>war</packaging>
@@ -70,8 +70,6 @@ limitations under the License.
                         <configuration>
                             <tasks>
                                 <ant target="configure" antfile="build.xml" dir="${basedir}" inheritAll="off">
-                                    <property name="org.apache.jetspeed.deploy.type"
-                                              value="${org.apache.jetspeed.env.deploy.type}"/>
                                     <property name="org.apache.jetspeed.catalina.version.major"
                                               value="${org.apache.jetspeed.catalina.version.major}"/>
                                     <property name="org.apache.jetspeed.services.autodeployment.server"
@@ -82,6 +80,10 @@ limitations under the License.
                                               value="${org.apache.jetspeed.services.autodeployment.user}"/>
                                     <property name="org.apache.jetspeed.services.autodeployment.password"
                                               value="${org.apache.jetspeed.services.autodeployment.password}"/>
+                                    <property name="org.apache.jetspeed.groupid"
+                                              value="org.apache.portals.jetspeed-2"/>
+                                    <property name="org.apache.jetspeed.version"
+                                              value="${org.apache.portals.jetspeed-2.version}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -91,6 +93,37 @@ limitations under the License.
                     </execution>
 
                 </executions>
+                <!--
+                    Bug: All plugin dependencies must be copied to the first instance
+                    of the maven-antrun-plugin run, (e.g. to the root pom), since the
+                    first set of deps sticks for the entire maven2 execution cycle.
+                    Bug: Plugin dependencies are not propagated from pluginManagement.
+                    Bug: Versions must be specified here and not in dependencyManagement.
+
+                    Note: All three ant dependencies are listed to keep nodeps in sync.
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact-ant</artifactId>
+                        <version>${org.apache.maven.artifact.ant.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
 
@@ -100,114 +133,140 @@ limitations under the License.
 
     <dependencies>
 
+        <!--
+            Limitation: The archetype plugin does not know how to skip over
+            binary or velocity template/macro files. Consequently, we have to
+            pull in many resources after the fact using the separate
+            portal-archetype-resources archive. This is currently being addressed
+            by the maven team, but am proceeding with the workaround until a
+            new version of the archetype plugin is developed and released.
+        -->
+        <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>portal-archetype-resources</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Provided Dependencies -->
+        <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-commons</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Runtime Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>content-server</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-cm</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-components</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-deploy-tools</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-rdbms</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-prefs</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-search</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-security</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-registry</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-id-generator</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-file-cache</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-locator</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-capability</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-profiler</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-page-manager</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-portal-site</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-portlet-factory</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-sso</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-statistics</artifactId>
             <scope>runtime</scope>
         </dependency>        
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-header-resource</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-webapp-logging</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-portal</artifactId>
             <scope>runtime</scope>
         </dependency>

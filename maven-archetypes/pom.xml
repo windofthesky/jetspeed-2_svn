@@ -26,7 +26,7 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>applications</artifactId>
+    <artifactId>maven-archetypes</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
@@ -34,44 +34,37 @@ limitations under the License.
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
-    <name>Jetspeed-2 Applications</name>
+    <name>Jetspeed-2 Maven2 Archetypes</name>
     <description>
-        Jetspeed-2 Applications
+        Jetspeed-2 Maven2 Archetypes used to generate portal, application, and component instances.
     </description>
 
-    <!-- Application Modules -->
+    <!-- Archetype Modules -->
 
     <modules>
-        <module>demo</module>
-        <module>gems</module>
-        <module>j2-admin</module>
-        <module>rss</module>
+
+        <!-- Portal Archetype -->
+        <module>portal-resources</module>
+        <module>portal</module>
+
     </modules>
 
-    <!-- Application Dependencies -->
+    <!-- Archetype Build Configuration -->
 
-    <dependencies>
-
-        <!-- Provided Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/archetype</directory>
+            </resource>
+        </resources>
+    </build>
 
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/maven-archetypes/</url>
     </scm>
 
 </project>

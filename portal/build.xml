@@ -16,7 +16,7 @@ limitations under the License.
 
   $Id:$
 -->
-<project name="jetspeed" default="help">
+<project name="portal" default="help">
 
     <!-- Properties -->
 
@@ -51,7 +51,7 @@ limitations under the License.
         <delete dir="${basedir}/target/webapp"/>
         <mkdir dir="${basedir}/target/webapp"/>
         <copy todir="${basedir}/target/webapp">
-            <fileset dir="${basedir}/../../src/webapp">
+            <fileset dir="${basedir}/../src/webapp">
                 <exclude name="WEB-INF/pages/**"/>
             </fileset>
         </copy>
@@ -77,7 +77,7 @@ limitations under the License.
         <!-- Build OJB resources -->        
         <mkdir dir="${basedir}/target/webapp/WEB-INF/classes"/>
         <copy todir="${basedir}/target/webapp/WEB-INF/classes">
-            <fileset dir="${basedir}/../../etc/db-ojb"/>
+            <fileset dir="${basedir}/../etc/db-ojb"/>
         </copy>
 
     </target>
@@ -86,13 +86,13 @@ limitations under the License.
         <!-- configure minimal resources -->
         <mkdir dir="${basedir}/target/webapp/WEB-INF/pages"/>
         <copy todir="${basedir}/target/webapp/WEB-INF/pages">
-            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages">
+            <fileset dir="${basedir}/../src/webapp/WEB-INF/pages">
                 <include name="Administrative/**"/>
                 <include name="page.security"/>
                 <include name="my-account.psml"/>
             </fileset>
         </copy>
-        <copy file="${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+        <copy file="${basedir}/../src/webapp/WEB-INF/pages/minimal-default-page.psml"
               tofile="${basedir}/target/webapp/WEB-INF/pages/default-page.psml"/>
         <replace file="${basedir}/target/webapp/WEB-INF/pages/default-page.psml"
                  token=" hidden=&quot;true&quot;"/>
@@ -102,7 +102,7 @@ limitations under the License.
         <!-- configure full resources -->
         <mkdir dir="${basedir}/target/webapp/WEB-INF/pages"/>
         <copy todir="${basedir}/target/webapp/WEB-INF/pages">
-            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages"/>
+            <fileset dir="${basedir}/../src/webapp/WEB-INF/pages"/>
         </copy>
     </target>
 
