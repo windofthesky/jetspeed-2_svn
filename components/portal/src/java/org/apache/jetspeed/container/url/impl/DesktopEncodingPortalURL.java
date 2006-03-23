@@ -15,16 +15,26 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * PathInfoEncodingPortalURL encodes the NavigationalState as PathInfo element
+ * DesktopEncodingPortalURL encodes URLs as javascript calls 
+ * The signature for the javascript call is based on teh constructor argument <code>javascriptDoRender</code>
+ * The script method requires two parameters:
+ *   1. URL the portlet pipeline URL
+ *   2. the entity id of the portlet to render
+ * Example URL for a javascript method doRender:  <code>doRender("http://localhost/jetspeed/portlet", "33")</code>
  * *
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id: PathInfoEncodingPortalURL.java 367856 2006-01-11 01:04:09Z taylor $
@@ -101,6 +111,11 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     }
 
     protected String createPortletURL(String encodedNavState, boolean secure)
+    {
+        return createPortletURL(encodedNavState, secure, null);
+    }
+    
+    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window)
     {   
         StringBuffer buffer = new StringBuffer("");
         if (this.javascriptDoRender != null)
@@ -120,10 +135,32 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             buffer.append(getPath());
         }
-        if (this.javascriptDoRender != null)
+        if (this.javascriptDoRender != null)            
         {
-            buffer.append("\")");
+            if (window != null)
+            {
+                buffer.append("\",\"");
+                buffer.append(window.getPortletEntity().getId());
+                buffer.append("\"");                
+            }
+            buffer.append(")");
         }
         return buffer.toString();
     }        
+    
+    public String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    {
+        try
+        {
+            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // should never happen
+            e.printStackTrace();
+            // to keep the compiler happy
+            return null;
+        }
+    }
+    
 }
