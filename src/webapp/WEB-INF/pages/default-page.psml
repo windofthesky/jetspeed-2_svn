@@ -31,26 +31,18 @@ limitations under the License.
     <fragment id="dp-3" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
-      <property name="window-width" value="230" />
-      <property name="window-theme" value="theme1" />
-      <property name="window-id" value="localeselector" />
-      <property name="window-icon" value="applications-internet.png" />
     </fragment>                                
     <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
-      <property name="window-theme" value="theme2" />
-      <property name="window-id" value="loginportlet" />
     </fragment>                                
     <fragment id="dp-22" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
-      <property name="window-theme" value="theme1" />
     </fragment>                                
     <fragment id="dp-23" type="portlet" name="j2-admin::UserRegistrationPortlet">
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="1" />
-      <property name="window-theme" value="theme2" />
     </fragment>                                
     
     <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
