@@ -227,7 +227,7 @@ http://localhost:8080/jetspeed/ajaxapi/Public/public.psml?action=moveabs&id=ps-1
 	</tr>
 </table>
 </subsection>
-<subsection name='Move'>
+<subsection name='Move Relative'>
 <table>		
     <tr>
         <td>APIs:</td>
@@ -290,6 +290,87 @@ http://localhost:8080/jetspeed/ajaxapi/Public/public.psml?action=movedown&id=ps-
 
 </table>
 </subsection>
+<subsection name='Move'>
+<table>		
+    <tr>
+        <td>API:</td>
+        <td>move</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxMovePortlet</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Move a portlet on a page to a cartesian position (x,y,z,width,height) from request parameters.</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>page</td>
+				<td>implied in the URL</td>				
+			</tr>
+			<tr>
+				<td>action</td>
+				<td>move</td>				
+			</tr>			
+			<tr>
+				<td>id</td>
+				<td>the portlet PSML fragment id of the portlet to be moved</td>				
+			</tr>			
+			<tr>
+				<td>x</td>
+				<td>the portlet cartesian X position</td>				
+			</tr>						
+			<tr>
+				<td>y</td>
+				<td>the portlet cartesian Y position</td>				
+			</tr>
+			<tr>
+				<td>z</td>
+				<td>the portlte cartesian Z position</td>				
+			</tr>
+			<tr>
+				<td>width</td>
+				<td>the width of the portlet</td>				
+			</tr>
+			<tr>
+				<td>height</td>
+				<td>the height cartesian Y position</td>				
+			</tr>            									
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi/Public/public.psml?action=move&id=ps-1003&x=100&y=250&width=200&height=300			
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+   <status>success</status>
+    <action>move</action>
+    <id>ps-1003</id>
+	<old_position>
+      <x>50</x>
+      <y>155</row>
+    </old_position>
+	<new_position>
+      <x>100</x>
+      <y>250</y>
+    </new_position>
+</js>						
+]]></source>			
+		</td>    
+	</tr>
+</table>
+</subsection>    
 <subsection name='Add Portlet'>
 <table>			
     <tr>
