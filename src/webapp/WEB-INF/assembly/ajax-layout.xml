@@ -17,7 +17,26 @@
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    	
 </bean>	
-	
+
+<bean id="AjaxMove"
+    class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/xmove.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+        <value>move</value>
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	
+</bean>
+    	
 <bean id="AjaxMovePortletAbsolute"
     class="org.apache.jetspeed.layout.impl.MovePortletAction">
     <constructor-arg index="0">
@@ -201,7 +220,7 @@
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		        
 </bean>
-	
+    	
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
