@@ -361,6 +361,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(page.getParent().getId(), folder.getId());
         assertNotNull(folder.getPages());
         assertEquals(1, folder.getPages().size());
+        assertNotNull(pageManager.getPages(folder));
+        assertEquals(1, pageManager.getPages(folder).size());
 
         page = pageManager.newPage("/another-page.psml");
         assertEquals("Another Page", page.getTitle());
@@ -375,6 +377,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertNotNull(page.getParent());
         assertEquals(page.getParent().getId(), folder.getId());
         assertEquals(3, folder.getPages().size());
+        assertEquals(3, pageManager.getPages(folder).size());
 
         Link link = pageManager.newLink("/default.link");
         assertEquals("Default", link.getTitle());
@@ -405,6 +408,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(link.getParent().getId(), folder.getId());
         assertNotNull(folder.getLinks());
         assertEquals(1, folder.getLinks().size());
+        assertNotNull(pageManager.getLinks(folder));
+        assertEquals(1, pageManager.getLinks(folder).size());
 
         PageSecurity pageSecurity = pageManager.newPageSecurity();
         List constraintsDefs = new ArrayList(2);
@@ -489,7 +494,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNotNull(deepFolder.getParent());
             assertNotNull(((Folder)deepFolder.getParent()).getFolders());
             assertEquals(1, ((Folder)deepFolder.getParent()).getFolders().size());
-
+            assertNotNull(pageManager.getFolders((Folder)deepFolder.getParent()));
+            assertEquals(1, pageManager.getFolders((Folder)deepFolder.getParent()).size());
             if (pathIndex < deepFolderPath.length())
             {
                 pathIndex = deepFolderPath.indexOf('/', pathIndex+1);
@@ -511,8 +517,12 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         // test folder nodesets
         assertNotNull(folder.getFolders());
         assertEquals(1, folder.getFolders().size());
+        assertNotNull(pageManager.getFolders(folder));
+        assertEquals(1, pageManager.getFolders(folder).size());
         assertNotNull(folder.getAll());
         assertEquals(6, folder.getAll().size());
+        assertNotNull(pageManager.getAll(folder));
+        assertEquals(6, pageManager.getAll(folder).size());
         Iterator all = folder.getAll().iterator();
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
         assertEquals("default-page.psml", ((Node)all.next()).getName());
@@ -882,12 +892,20 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         updateMenu.getMetadata().addField(Locale.JAPANESE, "short-title", "[ja] UPDATED");
         ((MenuOptionsDefinition)updateMenu.getMenuElements().get(2)).setProfile("UPDATED");
         pageManager.updateFolder(folder);
-
         assertNotNull(folder.getAll());
         assertEquals(6, folder.getAll().size());
         Iterator all = folder.getAll().iterator();
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
+
+        folder.setTitle("FOLDER-UPDATED-DEEP");
+        page.setTitle("FOLDER-UPDATED-DEEP");
+        link.setTitle("FOLDER-UPDATED-DEEP");
+        Folder deepFolder = pageManager.getFolder(deepFolderPath);
+        deepFolder.setTitle("FOLDER-UPDATED-DEEP");
+        Page deepPage = pageManager.getPage(deepPagePath);
+        deepPage.setTitle("FOLDER-UPDATED-DEEP");
+        pageManager.updateFolder(folder, true);
     }
 
     public void testRemoves() throws Exception
@@ -973,8 +991,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     {
         // verify listener functionality and operation counts
         assertEquals(22, newNodeCount);
-        assertEquals(4, updatedNodeCount);
-        assertEquals(1, removedNodeCount);
+        assertEquals(26, updatedNodeCount);
+        assertEquals(22, removedNodeCount);
 
         // last test has been run
         lastTestRun = true;

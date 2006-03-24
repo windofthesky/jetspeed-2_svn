@@ -443,7 +443,28 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         }
 
         assertEquals(1, folder.getPages().size());
+        assertEquals(1, pageManager.getPages(folder).size());
         assertNotNull(folder.getPages().get(this.testPage004));
+
+        folder.setTitle("Updated Deep Title");
+        page.setTitle("Updated Deep Title");
+
+        try
+        {
+            pageManager.updateFolder(folder, true);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in deep folder update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        folder = pageManager.getFolder(this.testFolder2);
+        assertTrue(folder.getTitle().equals("Updated Deep Title"));
+        page = pageManager.getPage(this.testPage004);
+        assertTrue(page.getTitle().equals("Updated Deep Title"));
     }
 
     public void testUpdateLink() throws Exception
@@ -478,6 +499,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertTrue(folder1.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
                 
         assertEquals(2, folder1.getFolders().size());
+        assertEquals(2, pageManager.getFolders(folder1).size());
         Iterator childItr = folder1.getFolders().iterator();
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
@@ -488,6 +510,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertEquals("test001.psml", folder3.getDefaultPage());
         assertEquals(1, folder2.getPages().size());
         assertEquals(2, folder3.getPages().size());
+        assertEquals(2, pageManager.getPages(folder3).size());
 
         // test folder decoration inheritance
         Page page = (Page)folder3.getPages().get("test001.psml");
@@ -495,6 +518,8 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertTrue(page.getEffectiveDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
         
         // Check link order
+        assertEquals(6, folder3.getAll().size());
+        assertEquals(6, pageManager.getAll(folder3).size());
         Iterator linkItr = folder3.getAll().iterator();
         assertEquals("Jetspeed2Wiki.link", ((Link)linkItr.next()).getName());
         assertEquals("Jetspeed2.link", ((Link)linkItr.next()).getName());        
@@ -502,7 +527,6 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertEquals("apache.link", ((Link)linkItr.next()).getName());
         assertEquals("test001.psml", ((Page)linkItr.next()).getName());
         assertEquals("default-page.psml", ((Page)linkItr.next()).getName());
-        
 
         //Test FolderSet with both absolute and relative names
         assertNotNull(folder1.getFolders().get("/folder1/folder2"));
@@ -584,6 +608,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertNotNull(folder);
         assertNotNull(folder.getLinks());
         assertEquals(2,folder.getLinks().size());
+        assertEquals(2,pageManager.getLinks(folder).size());
         assertEquals("http://portals.apache.org", ((Document) folder.getLinks().get("/apache_portals.link")).getUrl());
     }
 

@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -34,28 +36,34 @@ import org.apache.ojb.broker.cache.ObjectCache;
  */
 public class DatabasePageManagerCache implements ObjectCache
 {
-    private static LRUMap cacheByOID;
-    private static LRUMap cacheByPath;
+    private static HashMap cacheByOID;
+    private static LinkedList cacheLRUList;
+    private static HashMap cacheByPath;
+    private static int cacheSize;
     private static int cacheExpiresSeconds;
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
+    private static PageManager pageManager;
 
     /**
      * cacheInit
      *
      * Initialize cache using page manager configuration.
      *
-     * @param manager configured page manager
+     * @param pageManager configured page manager
      */
-    public synchronized static void cacheInit(DatabasePageManager pageManager)
+    public synchronized static void cacheInit(DatabasePageManager dbPageManager)
     {
-        if (cacheByOID == null)
+        if (pageManager == null)
         {
-            cacheByOID = new LRUMap(pageManager.getCacheSize());
-            cacheByPath = new LRUMap(pageManager.getCacheSize());
-            cacheExpiresSeconds = pageManager.getCacheExpiresSeconds();
-            constraintsEnabled = pageManager.getConstraintsEnabled();
-            permissionsEnabled = pageManager.getPermissionsEnabled();
+            cacheByOID = new HashMap();
+            cacheLRUList = new LinkedList();
+            cacheByPath = new HashMap();
+            cacheSize = dbPageManager.getCacheSize();
+            cacheExpiresSeconds = dbPageManager.getCacheExpiresSeconds();
+            constraintsEnabled = dbPageManager.getConstraintsEnabled();
+            permissionsEnabled = dbPageManager.getPermissionsEnabled();
+            pageManager = dbPageManager;
         }
     }
 
@@ -69,7 +77,12 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static NodeImpl cacheLookup(String path)
     {
-        return (NodeImpl)cacheLookup((Identity)cacheByPath.get(path));
+        if (path != null)
+        {
+            // return valid object cached by path
+            return (NodeImpl)cacheValidateEntry((Entry)cacheByPath.get(path));
+        }
+        return null;
     }
 
     /**
@@ -86,18 +99,37 @@ public class DatabasePageManagerCache implements ObjectCache
         Entry entry = (Entry)cacheByOID.get(oid);
         if (entry != null)
         {
-            entry.put(obj);
+            // update cache LRU order
+            cacheLRUList.remove(entry);
+            cacheLRUList.addFirst(entry);
+            // refresh cache entry
+            entry.touch();
         }
         else
         {
-            cacheByOID.put(oid, new Entry(obj));
-        }
-        if (obj instanceof NodeImpl)
-        {
-            NodeImpl node = (NodeImpl)obj;
-            node.setConstraintsEnabled(constraintsEnabled);
-            node.setPermissionsEnabled(permissionsEnabled);
-            cacheByPath.put(node.getPath(), oid);
+            // create new cache entry and map
+            entry = new Entry(obj, oid);
+            cacheByOID.put(oid, entry);
+            cacheLRUList.addFirst(entry);
+            // infuse node with page manager configuration
+            // or the page manager itself and add to the
+            // paths cache 
+            if (obj instanceof NodeImpl)
+            {
+                NodeImpl node = (NodeImpl)obj;
+                node.setConstraintsEnabled(constraintsEnabled);
+                node.setPermissionsEnabled(permissionsEnabled);
+                cacheByPath.put(node.getPath(), entry);
+                if (obj instanceof FolderImpl)
+                {
+                    ((FolderImpl)obj).setPageManager(pageManager);
+                }
+            }
+            // trim cache as required to maintain cache size
+            while (cacheLRUList.size() > cacheSize)
+            {
+                cacheRemoveEntry((Entry)cacheLRUList.getLast(), true);
+            }
         }
     }
 
@@ -108,7 +140,15 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheClear()
     {
+        // remove all cache entries
+        Iterator removeIter = cacheLRUList.iterator();
+        while (removeIter.hasNext())
+        {
+            cacheRemoveEntry((Entry)removeIter.next(), false);
+        }
+        // clear cache
         cacheByOID.clear();
+        cacheLRUList.clear();
         cacheByPath.clear();
     }
 
@@ -124,11 +164,8 @@ public class DatabasePageManagerCache implements ObjectCache
     {
         if (oid != null)
         {
-            Entry entry = (Entry)cacheByOID.get(oid);
-            if (entry != null)
-            {
-                return entry.get();
-            }
+            // return valid object cached by oid
+            return cacheValidateEntry((Entry)cacheByOID.get(oid));
         }
         return null;
     }
@@ -142,22 +179,97 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheRemove(Identity oid)
     {
-        Entry entry = (Entry)cacheByOID.remove(oid);
+        // remove from cache by oid
+        cacheRemoveEntry((Entry)cacheByOID.get(oid), true);
+    }
+
+    /**
+     * cacheRemove
+     *
+     * Remove identified object from object and node caches.
+     *
+     * @param path object path
+     */
+    public synchronized static void cacheRemove(String path)
+    {
+        // remove from cache by path
+        cacheRemoveEntry((Entry)cacheByPath.get(path), true);
+    }
+    
+    /**
+     * cacheValidateEntry
+     *
+     * Validate specified entry from cache, returning cached
+     * object if valid.
+     *
+     * @param entry cache entry to validate
+     * @return validated object from cache
+     */
+    private synchronized static Object cacheValidateEntry(Entry entry)
+    {
         if (entry != null)
         {
-            Object obj = entry.get();
-            if (obj instanceof NodeImpl)
+            if (!entry.isExpired())
             {
-                cacheByPath.remove(((NodeImpl)obj).getPath());
+                // update cache LRU order
+                cacheLRUList.remove(entry);
+                cacheLRUList.addFirst(entry);
+                // refresh cache entry and return object
+                entry.touch();
+                return (NodeImpl)entry.getObject();
+            }
+            else
+            {
+                // remove expired entry
+                cacheRemoveEntry(entry, true);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * cacheRemoveEntry
+     *
+     * Remove specified entry from cache.
+     *
+     * @param entry cache entry to remove
+     * @param remove enable removal from cache
+     */
+    private synchronized static void cacheRemoveEntry(Entry entry, boolean remove)
+    {
+        if (entry != null)
+        {
+            Object removeObj = entry.getObject();
+            if (remove)
+            {
+                // remove entry, optimize for removal from end
+                // of list as cache size is met or entries expire
+                if (cacheLRUList.getLast() == entry)
+                {
+                    cacheLRUList.removeLast();
+                }
+                else
+                {
+                    int removeIndex = cacheLRUList.lastIndexOf(entry);
+                    if (removeIndex > 0)
+                    {
+                        cacheLRUList.remove(removeIndex);
+                    }
+                }
+                // unmap entry
+                cacheByOID.remove(entry.getOID());
+                if (removeObj instanceof NodeImpl)
+                {
+                    cacheByPath.remove(((NodeImpl)removeObj).getPath());
+                }
+            }
+            // reset internal FolderImpl caches
+            if (removeObj instanceof FolderImpl)
+            {
+                ((FolderImpl)removeObj).resetAll(true);
             }
         }
     }
-    public synchronized static void cacheRemove(String path)
-    {
-        Identity id = (Identity)cacheByPath.get(path);
-        cacheRemove(id);
-    }
-    
 
     /**
      * resetCachedSecurityConstraints
@@ -167,10 +279,10 @@ public class DatabasePageManagerCache implements ObjectCache
     public synchronized static void resetCachedSecurityConstraints()
     {
         // reset cached objects
-        Iterator objectsIter = cacheByOID.values().iterator();
-        while (objectsIter.hasNext())
+        Iterator resetIter = cacheLRUList.iterator();
+        while (resetIter.hasNext())
         {
-            Object obj = ((Entry)objectsIter.next()).get();
+            Object obj = ((Entry)resetIter.next()).getObject();
             if (obj instanceof NodeImpl)
             {
                 ((NodeImpl)obj).resetCachedSecurityConstraints();
@@ -186,38 +298,47 @@ public class DatabasePageManagerCache implements ObjectCache
     private static class Entry
     {
         public long timestamp;
-        public Object element;
+        public Object object;
+        public Identity oid;
 
-        public Entry(Object element)
+        public Entry(Object object, Identity oid)
         {
-            put(element);
-            timestamp = System.currentTimeMillis();
+            touch();
+            this.object = object;
+            this.oid = oid;
         }
 
-        public Object get()
+        public boolean isExpired()
         {
-            if ((DatabasePageManagerCache.cacheExpiresSeconds > 0) && (element != null))
+            if (DatabasePageManagerCache.cacheExpiresSeconds > 0)
             {
                 long now = System.currentTimeMillis();
-                if (((now - timestamp) / 1000) > DatabasePageManagerCache.cacheExpiresSeconds)
-                {
-                    element = null;
-                }
-                else
+                if (((now - timestamp) / 1000) < DatabasePageManagerCache.cacheExpiresSeconds)
                 {
                     timestamp = now;
+                    return false;
                 }
+                return true;
             }
-            return element;
+            return false;
         }
         
-        public void put(Object element)
+        public void touch()
         {
             if (DatabasePageManagerCache.cacheExpiresSeconds > 0)
             {
                 timestamp = System.currentTimeMillis();
             }
-            this.element = element;
+        }
+
+        public Object getObject()
+        {
+            return object;
+        }
+
+        public Identity getOID()
+        {
+            return oid;
         }
     }
 
@@ -265,22 +386,21 @@ public class DatabasePageManagerCache implements ObjectCache
         cacheRemove(oid);
     }
 
-    public static void dump()
+    public synchronized static void dump()
     {
         System.out.println("--------------------------1");        
-        synchronized (cacheByPath)
+        Iterator dumpIter = cacheLRUList.iterator();
+        while (dumpIter.hasNext())
         {
-            Object[] entries = new Object[100];
-            int count = 0;
-            Iterator paths = cacheByPath.orderedMapIterator();
-            while (paths.hasNext())
+            Entry entry = (Entry)dumpIter.next();
+            Object entryObject = entry.getObject();
+            if (entryObject instanceof NodeImpl)
             {
-                entries[count] = paths.next();
-                count++;
+                System.out.println("entry = " + ((NodeImpl)entryObject).getPath() + ", " + entry.getOID());
             }
-            for (int ix = 0; ix < count; ix++)
+            else
             {
-                System.out.println("entry = " + entries[ix] + ", " + cacheByPath.get(entries[ix]));
+                System.out.println("entry = <none>, " + entry.getOID());
             }
         }
         System.out.println("--------------------------2");

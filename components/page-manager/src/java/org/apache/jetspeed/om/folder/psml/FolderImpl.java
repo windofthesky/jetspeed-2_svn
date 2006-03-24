@@ -524,45 +524,47 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             String[] nodeNames = folderHandler.listAll(getPath());
             for (int i = 0; i < nodeNames.length; i++)
             {
-                Node node = null;
-                try
+                if (!nodeNames[i].equals(FolderMetaDataImpl.DOCUMENT_TYPE))
                 {
-                    if (getPath().endsWith(PATH_SEPARATOR))
+                    Node node = null;
+                    try
                     {
-                        if(nodeNames[i].indexOf(".") > -1)
-                        {    
-                            node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                        if (getPath().endsWith(PATH_SEPARATOR))
+                        {
+                            if(nodeNames[i].indexOf(".") > -1)
+                            {    
+                                node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                            }
+                            else
+                            {
+                                node = folderHandler.getFolder(getPath() + nodeNames[i]);
+                            }
                         }
                         else
                         {
-                            node = folderHandler.getFolder(getPath() + nodeNames[i]);
+                            
+                            if(nodeNames[i].indexOf(".") > -1)
+                            {    
+                                node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
+                            }
+                            else
+                            {
+                                node = folderHandler.getFolder(getPath() + PATH_SEPARATOR + nodeNames[i]);
+                            }
                         }
-                    }
-                    else
+                        node.setParent(this);
+                        allNodes.add(node);
+                    }               
+                    catch (UnsupportedDocumentTypeException e)
                     {
-                        
-                        if(nodeNames[i].indexOf(".") > -1)
-                        {    
-                            node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
-                        }
-                        else
-                        {
-                            node = folderHandler.getFolder(getPath() + PATH_SEPARATOR + nodeNames[i]);
-                        }
+                        // Skip unsupported documents
+                        log.info("getAllNodes() Skipping unsupported document: "+nodeNames[i]);
                     }
-                    
-                    node.setParent(this);
-                    allNodes.add(node);
-                }               
-                catch (UnsupportedDocumentTypeException e)
-                {
-                    // Skip unsupported documents
-                    log.info("getAllNodes() Skipping unsupported document: "+nodeNames[i]);
-                }
-                catch (Exception e)
-                {
-                    log.warn("getAllNodes() failed to create Node: "+nodeNames[i]+":"+e.toString(), e);
-                }               
+                    catch (Exception e)
+                    {
+                        log.warn("getAllNodes() failed to create Node: "+nodeNames[i]+":"+e.toString(), e);
+                    }
+                }       
             }            
         }
         

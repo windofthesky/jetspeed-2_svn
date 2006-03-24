@@ -356,6 +356,8 @@ interface PageManagerTestShared
                             test.assertNotNull(folder.getPageSecurity());
                             test.assertNotNull(folder.getPages());
                             test.assertEquals(2, folder.getPages().size());
+                            test.assertNotNull(pageManager.getPages(folder));
+                            test.assertEquals(2, pageManager.getPages(folder).size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
                             test.assertNotNull(page0.getRootFragment());

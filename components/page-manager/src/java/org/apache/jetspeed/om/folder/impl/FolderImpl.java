@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -61,20 +62,27 @@ public class FolderImpl extends NodeImpl implements Folder
     private String skin;
     private String defaultLayoutDecorator;
     private String defaultPortletDecorator;
-    private List folders;
-    private List pages;
-    private List links;
-    private List pageSecurity;
     private List orders;
     private List menus;
 
+    private PageManager pageManager;
+    private List folders;
+    private boolean foldersCached;
+    private List pages;
+    private boolean pagesCached;
+    private List links;
+    private boolean linksCached;
+    private PageSecurityImpl pageSecurity;
+    private boolean pageSecurityCached;
+    private List all;
+    private boolean allCached;
     private FolderOrderList documentOrder;
     private boolean documentOrderComparatorValid;
     private Comparator documentOrderComparator;
-    private NodeSet allNodeSet;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
     private NodeSet linksNodeSet;
+    private NodeSet allNodeSet;
     private FolderMenuDefinitionList menuDefinitions;
 
     public FolderImpl()
@@ -117,159 +125,252 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /**
-     * addFolder
+     * setPageManager
      *
-     * Adds a folder to the persistent collection and resets cached node sets.
+     * Infuses PageManager for use by this folder instance.
      *
-     * @param folder new folder impl
+     * @param pageManager page manager that manages this folder instance
      */
-    public void addFolder(FolderImpl newFolder)
+    public void setPageManager(PageManager pageManager)
     {
-        // add to folders collection
+        this.pageManager = pageManager;
+    }
+
+    /**
+     * accessFolders
+     *
+     * Access folders transient cache collection for use by PageManager.
+     *
+     * @return folders collection
+     */
+    public List accessFolders()
+    {
+        // create initial collection if necessary
         if (folders == null)
         {
-            folders = new ArrayList(4);
+            folders = new ArrayList();
         }
-        folders.add(newFolder);
-
-        // reset cached node sets
-        allNodeSet = null;
-        foldersNodeSet = null;
+        return folders;
     }
-    
+
     /**
-     * removeFolder
+     * resetFolders
      *
-     * Removes a folder to the persistent collection and resets cached node sets.
+     * Reset folders transient caches for use by PageManager.
      *
-     * @param folder remove folder impl
+     * @param cached set cached state for folders
      */
-    public void removeFolder(FolderImpl removeFolder)
+    public void resetFolders(boolean cached)
     {
-        // remove from folders collection
-        if (folders != null)
+        // save cached state
+        foldersCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
         {
-            folders.remove(removeFolder);
+            accessFolders().clear();
         }
+        accessAll().clear();
 
         // reset cached node sets
-        allNodeSet = null;
         foldersNodeSet = null;
+        allNodeSet = null;
     }
 
     /**
-     * addPage
+     * accessPages
      *
-     * Adds a page to the persistent collection and resets cached node sets.
+     * Access pages transient cache collection for use by PageManager.
      *
-     * @param page new page impl
+     * @return pages collection
      */
-    public void addPage(PageImpl newPage)
+    public List accessPages()
     {
-        // add to pages collection
+        // create initial collection if necessary
         if (pages == null)
         {
-            pages = new ArrayList(8);
+            pages = new ArrayList();
         }
-        pages.add(newPage);
-
-        // reset cached node sets
-        allNodeSet = null;
-        pagesNodeSet = null;
+        return pages;
     }
-    
+
     /**
-     * removePage
+     * resetPages
      *
-     * Removes a page to the persistent collection and resets cached node sets.
+     * Reset pages transient caches for use by PageManager.
      *
-     * @param page remove page impl
+     * @param cached set cached state for pages
      */
-    public void removePage(PageImpl removePage)
+    public void resetPages(boolean cached)
     {
-        // remove from pages collection
-        if (pages != null)
+        // save cached state
+        pagesCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
         {
-            pages.remove(removePage);
+            accessPages().clear();
         }
+        accessAll().clear();
 
         // reset cached node sets
-        allNodeSet = null;
         pagesNodeSet = null;
+        allNodeSet = null;
     }
 
     /**
-     * addLink
+     * accessLinks
      *
-     * Adds a link to the persistent collection and resets cached node sets.
+     * Access links transient cache collection for use by PageManager.
      *
-     * @param link new link impl
+     * @return links collection
      */
-    public void addLink(LinkImpl newLink)
+    public List accessLinks()
     {
-        // add to links collection
+        // create initial collection if necessary
         if (links == null)
         {
-            links = new ArrayList(4);
+            links = new ArrayList();
         }
-        links.add(newLink);
-
-        // reset cached node sets
-        allNodeSet = null;
-        linksNodeSet = null;
-    }
-    
-    /**
-     * removeLink
-     *
-     * Removes a link to the persistent collection and resets cached node sets.
-     *
-     * @param link remove link impl
-     */
-    public void removeLink(LinkImpl removeLink)
-    {
-        // remove from links collection
-        if (links != null)
-        {
-            links.remove(removeLink);
-        }
-
-        // reset cached node sets
-        allNodeSet = null;
-        linksNodeSet = null;
+        return links;
     }
 
     /**
-     * setPageSecurity
+     * resetLinks
      *
-     * Sets the single page security in the persistent collection and resets cached node sets.
+     * Reset links transient caches for use by PageManager.
      *
-     * @param newPageSecurity new page security impl
+     * @param cached set cached state for links
      */
-    public void setPageSecurity(PageSecurityImpl newPageSecurity)
+    public void resetLinks(boolean cached)
     {
-        if (newPageSecurity != null)
+        // save cached state
+        linksCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
         {
-            // add to page security collection
-            if (pageSecurity == null)
+            accessLinks().clear();
+        }
+        accessAll().clear();
+
+        // reset cached node sets
+        linksNodeSet = null;
+        allNodeSet = null;
+    }
+
+    /**
+     * accessPageSecurity
+     *
+     * Access pageSecurity cached instance for use by PageManager.
+     *
+     * @return pageSecurity instance
+     */
+    public PageSecurityImpl accessPageSecurity()
+    {
+        return pageSecurity;
+    }
+
+    /**
+     * resetPageSecurity
+     *
+     * Reset pageSecurity transient cache instance for use by PageManager.
+     *
+     * @param newPageSecurty cached page security instance.
+     * @param cached set cached state for page security
+     */
+    public void resetPageSecurity(PageSecurityImpl newPageSecurity, boolean cached)
+    {
+        // save cached state
+        pageSecurity = newPageSecurity;
+        pageSecurityCached = cached;
+        allCached = false;
+
+        // update node caches
+        accessAll().clear();
+
+        // reset cached node sets
+        allNodeSet = null;
+    }
+
+    /**
+     * accessAll
+     *
+     * Access all transient cache collection for use by PageManager.
+     *
+     * @return all collection
+     */
+    public List accessAll()
+    {
+        // create initial collection if necessary
+        if (all == null)
+        {
+            all = new ArrayList();
+        }
+        return all;
+    }
+
+    /**
+     * resetAll
+     *
+     * Reset all transient caches for use by PageManager.
+     *
+     * @param cached set cached state for all
+     */
+    public void resetAll(boolean cached)
+    {
+        // save cached state
+        allCached = cached;
+        foldersCached = cached;
+        pagesCached = cached;
+        linksCached = cached;
+        pageSecurityCached = cached;
+
+        // update node caches
+        accessFolders().clear();
+        accessPages().clear();
+        accessLinks().clear();
+        pageSecurity = null;
+        if (cached)
+        {
+            // populate node caches
+            Iterator nodeIter = accessAll().iterator();
+            while (nodeIter.hasNext())
             {
-                pageSecurity = new ArrayList(1);
+                Node node = (Node)nodeIter.next();
+                if (node instanceof PageImpl)
+                {
+                    pages.add(node);
+                }
+                else if (node instanceof FolderImpl)
+                {
+                    folders.add(node);
+                }
+                else if (node instanceof LinkImpl)
+                {
+                    links.add(node);
+                }
+                else if (node instanceof PageSecurityImpl)
+                {
+                    pageSecurity = (PageSecurityImpl)node;
+                }
             }
-            pageSecurity.add(newPageSecurity);            
         }
         else
         {
-            // clear page security collection
-            if ((pageSecurity != null) && !pageSecurity.isEmpty())
-            {
-                pageSecurity.clear();
-            }
+            accessAll().clear();
         }
 
         // reset cached node sets
         allNodeSet = null;
+        foldersNodeSet = null;
+        pagesNodeSet = null;
+        linksNodeSet = null;
     }
-    
+
     /**
      * createDocumentOrderComparator
      *
@@ -365,9 +466,20 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public PageSecurity getEffectivePageSecurity()
     {
-        // return single page security if available
-        PageSecurity pageSecurity = getSinglePageSecurity();
-        if (pageSecurity != null)
+        // return page security instance if available
+        if (!pageSecurityCached)
+        {
+            // use PageManager to get and cache page security
+            // instance for this folder
+            try
+            {
+                return pageManager.getPageSecurity(this);
+            }
+            catch (NodeException ne)
+            {
+            }
+        }
+        else if (pageSecurity != null)
         {
             return pageSecurity;
         }
@@ -551,6 +663,14 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getFolders() throws FolderNotFoundException, DocumentException
     {
+        // get folders collection
+        if (!foldersCached)
+        {
+            // use PageManager to get and cache folders
+            // collection for this folder
+            return pageManager.getFolders(this);
+        }
+
         // return nodes with view access
         return filterNodeSetByAccess(getFoldersNodeSet());
     }
@@ -560,7 +680,15 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Folder getFolder(String name) throws FolderNotFoundException, DocumentException
     {
-        // select folder by name
+        // get folder instance if folders collection not available
+        if (!foldersCached)
+        {
+            // use PageManager to get folder instance without
+            // caching the folders collection for this folder
+            return pageManager.getFolder(this, name);
+        }
+
+        // select folder by name from cached folders collection
         Folder folder = (Folder)getFoldersNodeSet().get(name);
         if (folder == null)
         {
@@ -578,6 +706,14 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getPages() throws NodeException
     {
+        // get pages collection
+        if (!pagesCached)
+        {
+            // use PageManager to get and cache pages
+            // collection for this folder
+            return pageManager.getPages(this);
+        }
+
         // return nodes with view access
         return filterNodeSetByAccess(getPagesNodeSet());
     }
@@ -587,7 +723,15 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Page getPage(String name) throws PageNotFoundException, NodeException
     {
-        // select page by name
+        // get page instance if pages collection not available
+        if (!pagesCached)
+        {
+            // use PageManager to get page instance without
+            // caching the pages collection for this folder
+            return pageManager.getPage(this, name);
+        }
+
+        // select page by name from cached pages collection
         Page page = (Page)getPagesNodeSet().get(name);
         if (page == null)
         {
@@ -605,6 +749,14 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getLinks() throws NodeException
     {
+        // get links collection
+        if (!linksCached)
+        {
+            // use PageManager to get and cache links
+            // collection for this folder
+            return pageManager.getLinks(this);
+        }
+
         // return nodes with view access
         return filterNodeSetByAccess(getLinksNodeSet());
     }
@@ -614,7 +766,15 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public Link getLink(String name) throws DocumentNotFoundException, NodeException
     {
-        // select link by name
+        // get link instance if links collection not available
+        if (!linksCached)
+        {
+            // use PageManager to get link instance without
+            // caching the links collection for this folder
+            return pageManager.getLink(this, name);
+        }
+
+        // select link by name from cached links collection
         Link link = (Link)getLinksNodeSet().get(name);
         if (link == null)
         {
@@ -632,8 +792,13 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException
     {
-        // get single page security
-        PageSecurity pageSecurity = getSinglePageSecurity();
+        // get page security instance
+        if (!pageSecurityCached)
+        {
+            // use PageManager to get and cache page security
+            // instance for this folder
+            return pageManager.getPageSecurity(this);
+        }
         if (pageSecurity == null)
         {
             throw new DocumentNotFoundException("Page security document not found");
@@ -650,6 +815,14 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getAll() throws FolderNotFoundException, DocumentException
     {
+        // get all nodes collection
+        if (!allCached)
+        {
+            // use PageManager to get and cache all nodes
+            // collection for this folder
+            return pageManager.getAll(this);
+        }
+
         // return nodes with view access
         return filterNodeSetByAccess(getAllNodeSet());
     }
@@ -766,7 +939,7 @@ public class FolderImpl extends NodeImpl implements Folder
     {
         if (foldersNodeSet == null)
         {
-            if (folders != null)
+            if ((folders != null) && !folders.isEmpty())
             {
                 foldersNodeSet = new NodeSetImpl(folders, createDocumentOrderComparator());
             }
@@ -789,7 +962,7 @@ public class FolderImpl extends NodeImpl implements Folder
     {
         if (pagesNodeSet == null)
         {
-            if (pages != null)
+            if ((pages != null) && !pages.isEmpty())
             {
                 pagesNodeSet = new NodeSetImpl(pages, createDocumentOrderComparator());
             }
@@ -812,7 +985,7 @@ public class FolderImpl extends NodeImpl implements Folder
     {
         if (linksNodeSet == null)
         {
-            if (links != null)
+            if ((links != null) && !links.isEmpty())
             {
                 linksNodeSet = new NodeSetImpl(links, createDocumentOrderComparator());
             }
@@ -835,24 +1008,7 @@ public class FolderImpl extends NodeImpl implements Folder
     {
         if (allNodeSet == null)
         {
-            List all = new ArrayList();
-            if (folders != null)
-            {
-                all.addAll(folders);
-            }
-            if (pages != null)
-            {
-                all.addAll(pages);
-            }
-            if (links != null)
-            {
-                all.addAll(links);
-            }
-            if (pageSecurity != null)
-            {
-                all.addAll(pageSecurity);
-            }
-            if (!all.isEmpty())
+            if ((all != null) && !all.isEmpty())
             {
                 allNodeSet = new NodeSetImpl(all, createDocumentOrderComparator());
             }
@@ -862,22 +1018,6 @@ public class FolderImpl extends NodeImpl implements Folder
             }
         }
         return allNodeSet;
-    }
-
-    /**
-     * getSinglePageSecurity
-     *
-     * Extract single page security from persistent list.
-     *
-     * @return single page security
-     */
-    private PageSecurity getSinglePageSecurity()
-    {
-        if ((pageSecurity != null) && !pageSecurity.isEmpty())
-        {
-            return (PageSecurity)pageSecurity.iterator().next();
-        }
-        return null;
     }
 
     /**

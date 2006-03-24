@@ -41,6 +41,7 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 /**
@@ -240,22 +241,20 @@ public interface PageManager
      */
     public FragmentPreference newFragmentPreference();
 
-   /**
-    * 
-    * <p>
-    * getPage
-    * </p>
-    *
-    * Returns a PSML document for the given key
-    *
-    * @param locator The locator descriptor of the document to be retrieved.
-    * @throws PageNotFoundException if the page cannot be found
-    * @throws NodeException
-    */
+    /**
+     * <p>
+     * getPage
+     * </p>
+     *
+     * Returns a PSML document for the given key
+     *
+     * @param locator The locator descriptor of the document to be retrieved.
+     * @throws PageNotFoundException if the page cannot be found
+     * @throws NodeException
+     */
     public Page getPage(String id) throws PageNotFoundException, NodeException;
     
     /**
-     * 
      * <p>
      * ContentPage
      * </p>
@@ -269,50 +268,197 @@ public interface PageManager
      * @throws PageNotFoundException if the page cannot be found
      * @throws NodeException
      */
-     public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException;
+    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException;
     
-   /**
-    * 
-    * <p>
-    * getLink
-    * </p>
-    *
-    * Returns a Link document for the given path
-    *
-    * @param name The path of the document to be retrieved.
-    * @throws PageNotFoundException if the page cannot be found
-    * @throws NodeException
-    */
+    /**
+     * <p>
+     * getLink
+     * </p>
+     *
+     * Returns a Link document for the given path
+     *
+     * @param name The path of the document to be retrieved.
+     * @throws PageNotFoundException if the page cannot be found
+     * @throws NodeException
+     */
     public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
 
-   /**
-    * 
-    * <p>
-    * getPageSecurity
-    * </p>
-    *
-    * Returns the PageSecurity document
-    *
-    * @throws PageNotFoundException if the page cannot be found
-    * @throws NodeException
-    */
+    /**
+     * <p>
+     * getPageSecurity
+     * </p>
+     *
+     * Returns the PageSecurity document
+     *
+     * @throws DocumentNotFoundException if the document cannot be found
+     * @throws FolderNotFoundException if a folder cannot be found
+     * @throws UnsupportedDocumentTypeException
+     * @throws NodeException
+     */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
     
     /**
-     * 
      * <p>
      * getFolder
      * </p>
+     *
      * Locates a folder for the given path.
+     *
      * @param folderPath
-     * @return <code>Folder</code> object represented by the <code>folderPath</code> or
-     * <code>null</code> if no such folder exists.
-     * @throws DocumentException
+     * @return <code>Folder</code> object represented by the <code>folderPath</code>
      * @throws FolderNotFoundException
      * @throws NodeException
      * @throws InvalidFolderException
      */
-    Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
+    public Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
+
+    /**
+     * <p>
+     * getFolders
+     * </p>
+     *
+     * Locates folders within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getFolders(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> containing all sub-folders
+     *         directly under this folder.
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException;
+
+    /**
+     * <p>
+     * getFolder
+     * </p>
+     *
+     * Locates folders within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of folder to retrieve.
+     * @return A Folder referenced by this folder.
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    public Folder getFolder(Folder folder, String name) throws FolderNotFoundException, DocumentException;
+
+    /**
+     * <p>
+     * getPages
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getPages(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> of all the Pages referenced
+     *         by this Folder.
+     * @throws NodeException
+     */
+    public NodeSet getPages(Folder folder) throws NodeException;
+    
+    /**
+     * <p>
+     * getPage
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getPage(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of page to retrieve.
+     * @return A Page referenced by this folder.
+     * @throws PageNotFoundException if the Page requested could not be found.
+     * @throws NodeException
+     */
+    public Page getPage(Folder folder, String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * <p>
+     * getLinks
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getLinks(org.apache.jetspeed.om.folder.Folder)
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @param folder The parent folder.
+     * @return NodeSet of all the Links referenced by this Folder.
+     * @throws NodeException
+     */    
+    public NodeSet getLinks(Folder folder) throws NodeException;
+    
+    /**
+     * <p>
+     * getLink
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getLink(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of page to retrieve.
+     * @return A Link referenced by this folder.
+     * @throws DocumentNotFoundException if the document requested could not be found.
+     * @throws NodeException
+     */    
+    public Link getLink(Folder folder, String name) throws DocumentNotFoundException, NodeException;
+    
+    /**
+     * <p>
+     * getPageSecurity
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getPageSecurity(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A PageSecurity referenced by this folder.
+     * @throws DocumentNotFoundException if the document requested could not be found.
+     * @throws NodeException
+     */    
+    public PageSecurity getPageSecurity(Folder folder) throws DocumentNotFoundException, NodeException;
+
+    /**
+     * <p>
+     * getAll
+     * </p>
+     *
+     * Locates folders and documents within a specified parent folder.
+     * Returned folders and documents are filtered according to
+     * security constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getAll(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> containing all sub-folders
+     *         and documents directly under this folder.
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException;
 
     /** Update a page in persistent storage
      *
@@ -326,11 +472,19 @@ public interface PageManager
      */
     public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
 
-    /** Update a folder in persistent storage
+    /** Update a folder and all child folders
+     *  and documents in persistent storage
      *
      * @param folder The folder to be updated.
      */
     public void updateFolder(Folder folder) throws JetspeedException, FolderNotUpdatedException;
+
+    /** Update a folder in persistent storage
+     *
+     * @param folder The folder to be updated.
+     * @param deep Flag to control recursive deep updates.
+     */
+    public void updateFolder(Folder folder, boolean deep) throws JetspeedException, FolderNotUpdatedException;
 
     /** Remove a folder.
      *

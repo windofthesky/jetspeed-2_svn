@@ -25,10 +25,12 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 
@@ -101,6 +103,78 @@ public class DelegatingPageManager extends AbstractPageManager
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFolders(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */
+    public Folder getFolder(Folder folder, String name) throws FolderNotFoundException, DocumentException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPages(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getPages(Folder folder) throws NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPage(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */
+    public Page getPage(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getLinks(org.apache.jetspeed.om.folder.Folder)
+     */    
+    public NodeSet getLinks(Folder folder) throws NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getLink(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */    
+    public Link getLink(Folder folder, String name) throws DocumentNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageSecurity(org.apache.jetspeed.om.folder.Folder)
+     */    
+    public PageSecurity getPageSecurity(Folder folder) throws DocumentNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updatePage(org.apache.jetspeed.om.page.Page)
      */
     public void updatePage(Page page) throws JetspeedException,
@@ -124,6 +198,16 @@ public class DelegatingPageManager extends AbstractPageManager
      * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder)
      */
     public void updateFolder(Folder folder) throws JetspeedException,
+            FolderNotUpdatedException
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder,boolean)
+     */
+    public void updateFolder(Folder folder, boolean deep) throws JetspeedException,
             FolderNotUpdatedException
     {
         // TODO Auto-generated method stub

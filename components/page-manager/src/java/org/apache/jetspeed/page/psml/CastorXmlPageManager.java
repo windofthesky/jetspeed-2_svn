@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.psml;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +56,10 @@ import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
+import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
@@ -64,6 +67,7 @@ import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 
@@ -220,11 +224,22 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // update page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
 
-        // update folder
-        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(page))
+        // update parent folder
+        if (parentFolder != null)
         {
-            parentFolder.getAllNodes().add(page);
-            newPage = true;
+            NodeSetImpl parentAllNodes = (NodeSetImpl)parentFolder.getAllNodes();
+            if (!parentAllNodes.contains(page))
+            {
+                // add new page
+                parentAllNodes.add(page);
+                newPage = true;
+            }
+            else if (parentAllNodes.get(page.getPath()) != page)
+            {
+                // remove stale page and add updated page
+                parentAllNodes.remove(page);                
+                parentAllNodes.add(page);
+            }
         }
 
         // notify page manager listeners
@@ -331,11 +346,22 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // update link
         handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).updateDocument(link);
 
-        // update folder
-        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(link))
+        // update parent folder
+        if (parentFolder != null)
         {
-            parentFolder.getAllNodes().add(link);
-            newLink = true;
+            NodeSetImpl parentAllNodes = (NodeSetImpl)parentFolder.getAllNodes();
+            if (!parentAllNodes.contains(link))
+            {
+                // add new link
+                parentAllNodes.add(link);
+                newLink = true;
+            }
+            else if (parentAllNodes.get(link.getPath()) != link)
+            {
+                // remove stale link and add updated link
+                parentAllNodes.remove(link);
+                parentAllNodes.add(link);
+            }
         }
 
         // notify page manager listeners
@@ -437,11 +463,22 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // update pageSecurity
         handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).updateDocument(pageSecurity);
 
-        // update folder
-        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(pageSecurity))
+        // update parent folder
+        if (parentFolder != null)
         {
-            parentFolder.getAllNodes().add(pageSecurity);
-            newPageSecurity = true;
+            NodeSetImpl parentAllNodes = (NodeSetImpl)parentFolder.getAllNodes();
+            if (!parentAllNodes.contains(pageSecurity))
+            {
+                // add new page security
+                parentAllNodes.add(pageSecurity);
+                newPageSecurity = true;
+            }
+            else if (parentAllNodes.get(pageSecurity.getPath()) != pageSecurity)
+            {
+                // remove stale page security and add updated page security
+                parentAllNodes.remove(pageSecurity);
+                parentAllNodes.add(pageSecurity);
+            }
         }
 
         // notify page manager listeners
@@ -494,6 +531,78 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return folder;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFolders(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException
+    {
+        // delegate back to folder instance
+        return folder.getFolders();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */
+    public Folder getFolder(Folder folder, String name) throws FolderNotFoundException, DocumentException
+    {
+        // delegate back to folder instance
+        return folder.getFolder(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPages(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getPages(Folder folder) throws NodeException
+    {
+        // delegate back to folder instance
+        return folder.getPages();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPage(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */
+    public Page getPage(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getPage(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getLinks(org.apache.jetspeed.om.folder.Folder)
+     */    
+    public NodeSet getLinks(Folder folder) throws NodeException
+    {
+        // delegate back to folder instance
+        return folder.getLinks();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getLink(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     */    
+    public Link getLink(Folder folder, String name) throws DocumentNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getLink(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageSecurity(org.apache.jetspeed.om.folder.Folder)
+     */    
+    public PageSecurity getPageSecurity(Folder folder) throws DocumentNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getPageSecurity();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException
+    {
+        // delegate back to folder instance
+        return folder.getAll();
+    }
+
     /**
      * <p>
      * updateFolder
@@ -502,6 +611,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * @see org.apache.jetspeed.services.page.PageManagerService#updateFolder(org.apache.jetspeed.om.folder.Folder)
      */
     public void updateFolder(Folder folder) throws JetspeedException
+    {
+        // shallow update by default
+        updateFolder(folder, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder,boolean)
+     */
+    public void updateFolder(Folder folder, boolean deep) throws JetspeedException, FolderNotUpdatedException
     {
         // make sure path and related members are set
         if (folder.getPath() != null)
@@ -549,10 +667,28 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         folderHandler.updateFolder(folder);
 
         // update parent folder
-        if ((parentFolder != null) && !parentFolder.getAllNodes().contains(folder))
+        if (parentFolder != null)
         {
-            parentFolder.getAllNodes().add(folder);
-            newFolder = true;
+            NodeSetImpl parentAllNodes = (NodeSetImpl)parentFolder.getAllNodes();
+            if (!parentAllNodes.contains(folder))
+            {
+                // add new folder
+                parentAllNodes.add(folder);
+                newFolder = true;
+            }
+            else if (parentAllNodes.get(folder.getPath()) != folder)
+            {
+                // remove stale folder and add updated folder
+                parentAllNodes.remove(folder);
+                parentAllNodes.add(folder);
+            }
+        }
+        
+        // update deep recursively if specified
+        if (deep)
+        {
+            // update recursively, (breadth first)
+            updateFolderNodes(folderImpl);
         }
 
         // notify page manager listeners
@@ -563,6 +699,61 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         else
         {
             notifyUpdatedNode(folder);
+        }
+    }
+
+    /**
+     * updateFolderNodes - recusively update all folder nodes
+     *
+     * @param folderImpl folder whose nodes are to be updated
+     * @param throws FolderNotUpdatedException
+     */
+    private void updateFolderNodes(FolderImpl folderImpl) throws FolderNotUpdatedException
+    {
+        try
+        {
+            // update folder documents
+            NodeSet nodes = folderImpl.getAllNodes();
+            Iterator nodesIter = nodes.iterator();
+            while (nodesIter.hasNext())
+            {
+                Node node = (Node) nodesIter.next();
+                if (node instanceof Page)
+                {
+                    updatePage((Page)node);
+                }
+                else if (node instanceof Link)
+                {
+                    updateLink((Link)node);
+                }
+                else if (node instanceof PageSecurity)
+                {
+                    updatePageSecurity((PageSecurity)node);
+                }
+            }
+
+            // update folders last: breadth first recursion
+            nodesIter = nodes.iterator();
+            while (nodesIter.hasNext())
+            {
+                Node node = (Node) nodesIter.next();
+                if (node instanceof Folder)
+                {
+                    updateFolder((Folder)node, true);
+                }
+            }
+        }
+        catch (FolderNotUpdatedException fnue)
+        {
+            throw fnue;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
+        }
+        catch (Exception e)
+        {
+            throw new FolderNotUpdatedException("Folder " + folderImpl.getPath() + " not updated.", e);
         }
     }
 
