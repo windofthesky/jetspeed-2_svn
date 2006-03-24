@@ -611,15 +611,19 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     private Folder selectTitledFromAggregateFolders(Folder defaultFolder)
     {
         // select most specific folder along search paths
-        // with a specified short title or metadata
+        // with a specified title, short title, or metadata
         try
         {
             Iterator foldersIter = getSearchFolders().iterator();
             while (foldersIter.hasNext())
             {
                 Folder folder = ((SearchFolder)foldersIter.next()).folder;
+                String name = folder.getName();
+                String title = folder.getTitle();
+                String shortTitle = folder.getShortTitle();
                 GenericMetadata folderMetadata = folder.getMetadata();
-                if ((folder.getTitle() != folder.getShortTitle()) ||
+                if (((title != null) && !title.equalsIgnoreCase(name)) ||
+                    ((shortTitle != null) && !shortTitle.equalsIgnoreCase(name)) ||
                     ((folderMetadata != null) && (folderMetadata.getFields() != null) && !folderMetadata.getFields().isEmpty()))
                 {
                     return folder;
