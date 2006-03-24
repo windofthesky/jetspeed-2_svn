@@ -1,0 +1,39 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <id>$id</id> 
+    <old_position>
+#if ($oldx)        
+        <x>$oldx</x>
+#end
+#if ($oldy)        
+        <y>$oldy</y>
+#end        
+#if ($oldz)        
+        <y>$oldz</y>
+#end        
+#if ($oldwidth)        
+        <width>$oldwidth</width>
+#end        
+#if ($oldheight)        
+        <height>$oldheight</height>
+#end        
+    </old_position>    
+    <new_position>
+#if ($x)        
+        <x>$x</x>
+#end
+#if ($y)        
+        <y>$y</y>
+#end        
+#if ($z)        
+        <y>$z</y>
+#end        
+#if ($width)        
+        <width>$width</width>
+#end        
+#if ($height)        
+        <height>$height</height>
+#end            
+    </new_position>
+</js>

@@ -82,19 +82,28 @@ public class MovePortletAction
         if (p_sMoveType.equalsIgnoreCase("moveabs"))
         {
             iMoveType = ABS;
-        } else if (p_sMoveType.equalsIgnoreCase("moveup"))
+        } 
+        else if (p_sMoveType.equalsIgnoreCase("moveup"))
         {
             iMoveType = UP;
-        } else if (p_sMoveType.equalsIgnoreCase("movedown"))
+        } 
+        else if (p_sMoveType.equalsIgnoreCase("movedown"))
         {
             iMoveType = DOWN;
-        } else if (p_sMoveType.equalsIgnoreCase("moveleft"))
+        } 
+        else if (p_sMoveType.equalsIgnoreCase("moveleft"))
         {
             iMoveType = LEFT;
-        } else if (p_sMoveType.equalsIgnoreCase("moveright"))
+        } 
+        else if (p_sMoveType.equalsIgnoreCase("moveright"))
         {
             iMoveType = RIGHT;
-        } else
+        }
+        else if (p_sMoveType.equalsIgnoreCase("move"))
+        {
+            iMoveType = CARTESIAN;
+        }
+        else
         {
             throw new AJAXException("invalid move type of:" + p_sMoveType);
         }
@@ -146,6 +155,9 @@ public class MovePortletAction
             PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
             Fragment fragment = placement.getFragmentById(portletId);
             Coordinate returnCoordinate = null;
+            float oldX = 0f, oldY = 0f, oldZ = 0f, oldWidth = 0f, oldHeight = 0f;
+            float x = -1f, y = -1f, z = -1f, width = -1f, height = -1f;
+            
             // Only required for moveabs
             if (iMoveType == ABS)
             {
@@ -176,7 +188,44 @@ public class MovePortletAction
             {
                 returnCoordinate = placement.moveDown(fragment);
             }
-
+            else if (iMoveType == CARTESIAN)
+            {
+                String sx = requestContext.getRequestParameter(X);
+                String sy = requestContext.getRequestParameter(Y);
+                String sz = requestContext.getRequestParameter(Z);
+                String sWidth = requestContext.getRequestParameter(WIDTH);
+                String sHeight = requestContext.getRequestParameter(HEIGHT);
+                if (sx != null)
+                {
+                    oldX = fragment.getLayoutX();
+                    x = Float.parseFloat(sx); 
+                    fragment.setLayoutX(x);
+                }
+                if (sy != null)
+                {
+                    oldY = fragment.getLayoutY();                    
+                    y = Float.parseFloat(sy); 
+                    fragment.setLayoutY(y);
+                }                
+                if (sz != null)
+                {
+                    oldZ = fragment.getLayoutZ();                    
+                    z = Float.parseFloat(sz); 
+                    fragment.setLayoutZ(z);
+                }                
+                if (sWidth != null)
+                {
+                    oldWidth = fragment.getLayoutWidth();                    
+                    width = Float.parseFloat(sWidth); 
+                    fragment.setLayoutWidth(width);
+                }
+                if (sHeight != null)
+                {
+                    oldHeight = fragment.getLayoutHeight();                    
+                    height = Float.parseFloat(sHeight); 
+                    fragment.setLayoutHeight(height);
+                }                
+            }
             // synchronize back to the page layout root fragment
             Page page = placement.syncPageFragments();
             
@@ -185,16 +234,27 @@ public class MovePortletAction
             
             resultMap.put(STATUS, status);
             resultMap.put(PORTLETID, portletId);
-            // Need to determine what the old col and row were
-            resultMap.put(OLDCOL, String.valueOf(returnCoordinate
-                    .getOldCol()));
-            resultMap.put(OLDROW, String.valueOf(returnCoordinate
-                    .getOldRow()));
-            // Need to determine what the new col and row were
-            resultMap.put(NEWCOL, String.valueOf(returnCoordinate
-                    .getNewCol()));
-            resultMap.put(NEWROW, String.valueOf(returnCoordinate
-                    .getNewRow()));                                   
+            if (iMoveType == CARTESIAN)
+            {
+                putCartesianResult(resultMap, x, oldX, X, OLD_X);
+                putCartesianResult(resultMap, y, oldY, Y, OLD_Y);                
+                putCartesianResult(resultMap, z, oldZ, Z, OLD_Z);
+                putCartesianResult(resultMap, width, oldWidth, WIDTH, OLD_WIDTH);
+                putCartesianResult(resultMap, height, oldHeight, HEIGHT, OLD_HEIGHT);
+            }
+            else
+            {
+                // Need to determine what the old col and row were
+                resultMap.put(OLDCOL, String.valueOf(returnCoordinate
+                        .getOldCol()));
+                resultMap.put(OLDROW, String.valueOf(returnCoordinate
+                        .getOldRow()));
+                // Need to determine what the new col and row were
+                resultMap.put(NEWCOL, String.valueOf(returnCoordinate
+                        .getNewCol()));
+                resultMap.put(NEWROW, String.valueOf(returnCoordinate
+                        .getNewRow()));                
+            }
         } 
         catch (Exception e)
         {
@@ -207,5 +267,13 @@ public class MovePortletAction
 
         return success;
     }
-    
+
+    protected void putCartesianResult(Map resultMap, float value, float oldValue, String name, String oldName)
+    {    
+        if (value != -1F)
+        {
+            resultMap.put(oldName, new Float(oldValue));
+            resultMap.put(name, new Float(value));
+        }
+    }    
 }

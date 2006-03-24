@@ -34,6 +34,17 @@ public interface Constants
 	public static final String NEWROW = "newrow";
 	public static final String COL = "col";
 	public static final String ROW = "row";
+    public static final String X = "x";
+    public static final String Y = "y";
+    public static final String Z = "z";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    public static final String OLD_X = "oldx";
+    public static final String OLD_Y = "oldy";
+    public static final String OLD_Z = "oldz";
+    public static final String OLD_WIDTH = "oldwidth";
+    public static final String OLD_HEIGHT = "oldheight";
+    
     public static final String FILTER = "filter";
     public static final String PORTLETS = "portlets";
     public static final String PAGES = "pages";
@@ -46,6 +57,5 @@ public interface Constants
 	public static final int DOWN = 3;
 	public static final int LEFT = 4;
 	public static final int RIGHT = 5;
-	
-
+	public static final int CARTESIAN = 6;
 }
