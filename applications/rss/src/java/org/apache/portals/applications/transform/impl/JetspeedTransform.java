@@ -63,6 +63,7 @@ public class JetspeedTransform implements Transform
                 System.setProperty(JAX_TRANSFORM_PROPERTY, jaxTransformFactoryProp);
                 System.setProperty(JAX_SAX_PARSER_PROPERTY, jaxSaxFactoryProp);
                 System.setProperty(JAX_DOM_PARSER_PROPERTY, jaxDomFactoryProp);
+                System.setProperty(SAX_XML_READER_PROPERTY, saxXmlReaderProp);
 
                 TransformerFactory tFactory = TransformerFactory.newInstance();
                 domFactory = DocumentBuilderFactory.newInstance();
@@ -109,6 +110,16 @@ public class JetspeedTransform implements Transform
     private static final String JAX_SAX_PARSER_PROPERTY = "javax.xml.parsers.SAXParserFactory";
 
     private static final String JAX_DOM_PARSER_PROPERTY = "javax.xml.parsers.DocumentBuilderFactory";
+
+    //
+    // Standard Parser Vendor Property
+    //
+    private static final String SAX_XML_READER_PROPERTY = "org.xml.sax.driver";
+
+    //
+    // Standard Parser Vendor Configuration
+    //
+    private final static String saxXmlReaderProp = "org.apache.xerces.parsers.SAXParser";
 
     // DTD Map
     static private Map dtds = new HashMap();
@@ -253,6 +264,7 @@ public class JetspeedTransform implements Transform
                 System.setProperty(JAX_TRANSFORM_PROPERTY, jaxTransformFactoryProp);
                 System.setProperty(JAX_SAX_PARSER_PROPERTY, jaxSaxFactoryProp);
                 System.setProperty(JAX_DOM_PARSER_PROPERTY, jaxDomFactoryProp);
+                System.setProperty(SAX_XML_READER_PROPERTY, saxXmlReaderProp);
 
                 TransformerFactory tFactory = TransformerFactory.newInstance();
                 domFactory = DocumentBuilderFactory.newInstance();
