@@ -21,9 +21,9 @@ limitations under the License.
     var djConfig = {isDebug: true};
     djConfig.debugAtAllCosts = true;   <!-- needed for js debuggers (both venkman and visual studio) -->
 
-	    function doRender(url) 
+	    function doRender(url,portletEntityId) 
 	    {
-        		alert(url);
+            jetspeed.doRender(url,portletEntityId);
     	}
 
 </script>
@@ -37,11 +37,20 @@ limitations under the License.
     dojo.require("dojo.dnd.HtmlDragSource");
     dojo.require("dojo.event.*");    
     dojo.require("dojo.io");
+    dojo.require("dojo.widget.Manager");
     dojo.require("dojo.widget.TaskBar");
  	dojo.require("dojo.widget.FloatingPane");
-    dojo.hostenv.writeIncludes();    
-</script>
+    dojo.require("dojo.fx.*");
 
+    dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
+
+    dojo.require("jetspeed.ui.widget.PortalTaskBar");
+
+    dojo.hostenv.writeIncludes();
+</script>
+<script language="JavaScript" type="text/javascript">
+    dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');
+</script>
 <!-- 
   Jetspeed Script
   -->
@@ -50,7 +59,7 @@ limitations under the License.
 <script language="JavaScript" type="text/javascript">
     function init()
     {
-        jetspeed.testLoadPageCreateWidgetPortlets()
+        jetspeed.initializeDesktop();
     }
     dojo.event.connect(dojo, "loaded", "init");
 </script>
@@ -117,10 +126,10 @@ body { padding: 10px 10px 100px 10px; }
 <body id="jetspeedDesktop">
 
 <!-- Start Taskbar -->
-<div dojoType="TaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px">
+<!-- <div dojoType="TaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px"> -->
     <!-- <button onclick="jetspeed.testLoadPageCreateDivPortlets()">Portal (DIV)</button>
     <button onclick="jetspeed.testLoadPageCreateWidgetPortlets()">Portal (WIDGET)</button> -->
-</div>
+<!-- </div> -->
 <!-- End Taskbar -->
 
 </body>

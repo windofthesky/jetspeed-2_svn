@@ -20,21 +20,26 @@
  */
 
 // ... base objects
-jetspeed = {} ;
-jetspeed.om = {} ;
-jetspeed.ui = {} ;
+if ( ! window.jetspeed )
+    jetspeed = {} ;
+if ( ! jetspeed.om )
+    jetspeed.om = {} ;
+if ( ! jetspeed.ui )
+    jetspeed.ui = {} ;
+if ( ! jetspeed.ui.widget )
+    jetspeed.ui.widget = {} ;
 
 jetspeed.version = 
 {
     major: 2, minor: 1, patch: 0, flag: "dev",
     revision: "",
-	toString: function() 
-	{
-		with (jetspeed.version) 
-		{
-			return major + "." + minor + "." + patch + flag + " (" + revision + ")";
-		}
-	}
+    toString: function() 
+    {
+        with (jetspeed.version) 
+        {
+            return major + "." + minor + "." + patch + flag + " (" + revision + ")";
+        }
+    }
 };
 
 jetspeed.basePortalUrl = function()
@@ -47,33 +52,53 @@ jetspeed.basePortalDesktopUrl = function()
     return jetspeed.basePortalUrl() + "/jetspeed" ;
 }
 
+jetspeed.doRender = function(url,portletEntityId)
+{
+    var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
+    if ( targetPortlet )
+    {
+        //dojo.debug( "render " + portletEntityId + " url: " + url );
+        targetPortlet.retrievePortletContent(null,url);
+    }
+}
+
+jetspeed.page = null ;   // BOZO: is this it? one page at a time?
+jetspeed.initializeDesktop = function()
+{
+    jetspeed.loadPage();
+}
+jetspeed.loadPage = function()
+{
+    jetspeed.testLoadPageCreateWidgetPortlets();
+}
 jetspeed.testLoadPageCreateWidgetPortlets = function()
 {
-    var page = new jetspeed.om.Page() ;
-    page.retrievePsml( new jetspeed.om.PageContentListenerCreateWidget() ) ;
+    jetspeed.page = new jetspeed.om.Page() ;
+    jetspeed.currentTaskbar = new jetspeed.ui.PortalTaskBar() ;
+    jetspeed.page.retrievePsml( new jetspeed.om.PageContentListenerCreateWidget() ) ;
 }
 
 jetspeed.testLoadPageCreateDivPortlets = function()
 {
-    var page = new jetspeed.om.Page() ;
-    page.retrievePsml( new jetspeed.om.PageContentListenerCreateDiv() ) ;
+    jetspeed.currentPage = new jetspeed.om.Page() ;
+    jetspeed.page.retrievePsml( new jetspeed.om.PageContentListenerCreateDiv() ) ;
 }
+//jetspeed.testPortletEntityIdFilter = [ "dp-18" ];   // note: uncomment to filter the displayed portlets for testing
 
 jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletWindowFactory )
 {
-    //if ( ! dojo.lang.isArray(portlets) && ! dojo.lang.isObject(portlets) )
-    //{
-    //    if ( portlets && dojo.lang.isSubOf(portlets, jetspeed.om.Portlet))
-    //        portlets = [portlets];
-    //    else
-    //        portlets = null;
-    //}
     if ( portlets )
     {
         for (var portletIndex in portlets)
         {
             var portlet = portlets[portletIndex];
-            portlet.createPortletWindow(portletWindowFactory);
+            if ( jetspeed.testPortletEntityIdFilter )
+            {
+                if (! dojo.lang.inArray(jetspeed.testPortletEntityIdFilter, portletIndex))
+                    portlet = null;
+            }
+            if (portlet)
+                portlet.createPortletWindow(portletWindowFactory);
         }
     }
 }
@@ -208,6 +233,17 @@ jetspeed.om.Page.prototype =
         }
     },
 
+    getPortletArray: function()
+    {
+        if (! this.portlets) return null ;
+        var portletArray = [];
+        for (var portletIndex in this.portlets)
+        {
+            var portlet = this.portlets[portletIndex];
+            portletArray.push(portlet);
+        }
+        return portletArray;
+    },
     getPortlets: function()
     {
         if (this.portlets)
@@ -287,15 +323,15 @@ jetspeed.om.Portlet = function( /* String */ portletName, /* String */ portletEn
     this.title = portletTitle;
     this.properties = {};
 }
-jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool if the object uses dojo.inherits (this would replace pt)*/
-{                                 /* dojo.lang.extend would allow this syntax instead of [<type>.prototype.<propname> = <propval>]* */
+jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool if the object uses dojo.inherits (this would replace pt)  */
+{                                 /* dojo.lang.extend would allow this syntax instead of [<type>.prototype.<propname> = <propval>]*      */
     name: null,
     entityId: null,
     title: null,
     
     windowFactory: null,
     windowObj: null,
-    
+
     createPortletWindow: function(portletWindowFactory, portletContentListener)
     {
         if ( portletWindowFactory == null )
@@ -307,26 +343,32 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
         this.retrievePortletContent(portletContentListener) ;
     },
 
-    getPortletUrl: function()
+    getPortletUrl: function(renderUrl)
     {
-        return jetspeed.basePortalUrl() + "/jetspeed/portlet?entity=" + this.entityId + "&portlet=" + this.name + "&encoder=desktop";
+        var queryString = "?entity=" + this.entityId + "&portlet=" + this.name + "&encoder=desktop";
+        if (renderUrl)
+            return renderUrl + queryString;
+        return jetspeed.basePortalUrl() + "/jetspeed/portlet" + queryString;
     },
 
-    retrievePortletContent: function(portletContentListener)
+    retrievePortletContent: function(portletContentListener,renderUrl)
     {
         if ( portletContentListener == null )
             portletContentListener = new jetspeed.om.PortletContentListener() ;
-
         var portlet = this ;
         dojo.io.bind({
-            url: portlet.getPortletUrl(),
+            url: portlet.getPortletUrl(renderUrl),
             load: function(type, data, evt)
             {
+                //dojo.debug( "loaded content for url: " + this.url );
                 //dojo.debug( "r e t r i e v e P o r t l e t C o n t e n t . l o a d" ) ;
                 //dojo.debug( "  type:" );
                 //dojo.debugShallow( type ) ;
                 //dojo.debug( "  evt:" );
                 //dojo.debugShallow( evt ) ;
+
+                //if ( portlet.entityId == "dp-18" || portlet.entityId == "dp-7" )
+                //    dojo.debug( "content: " + data);
                 if ( portletContentListener && dojo.lang.isFunction( portletContentListener.notifySuccess ) )
                 {
                     portletContentListener.notifySuccess(data, portlet);
@@ -370,6 +412,32 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
     }
 }
 
+// ... jetspeed.ui.PortalTaskBar
+jetspeed.ui.PortalTaskBar = function()
+{
+    var tbProps = {};
+    tbProps.templateCssPath = new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlTaskBar.css") ;
+    tbProps.templatePath = new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlTaskBarItemTemplate.html") ;
+    // BOZO: improve this junk ^^^ 
+
+    this.taskbarProps = tbProps ;
+    this.widgetId = "jetspeedTaskbar";
+
+    this.createTaskBar();
+}
+jetspeed.ui.PortalTaskBar.prototype.createTaskBar = function()
+{
+    var nWidget = dojo.widget.createWidget('PortalTaskBar', this);
+    nWidget.domNode.id = "jetspeedTaskbar";  // BOZO: must set the id here - it gets defensively cleared by dojo
+    nWidget.domNode.style.cssText = "background-color: #666; width: 100%; bottom: 5px; height: 100px";
+
+    var addToElmt = document.getElementById("jetspeedDesktop");
+    addToElmt.appendChild(nWidget.domNode);
+    
+    this.taskbarWidget = nWidget;
+}
+
+
 // ... jetspeed.ui.PortletWidgetWindow
 jetspeed.ui.PortletWidgetWindow = function(/* Portlet */ portletObj)
 {
@@ -399,8 +467,7 @@ jetspeed.ui.PortletWidgetWindow = function(/* Portlet */ portletObj)
     else
         this.iconSrc =  new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowicons/document.gif" ) ;
 
-    dojo.debug("PortletWidgetWindow  widgetId=" + this.widgetId + "  windowtheme=" + windowtheme + "  templateCssPath=" + this.templateCssPath);
-
+    //dojo.debug("PortletWidgetWindow  widgetId=" + this.widgetId + "  windowtheme=" + windowtheme + "  templateCssPath=" + this.templateCssPath);
 
     this.createWindow();
 }
@@ -412,28 +479,95 @@ jetspeed.ui.PortletWidgetWindow.prototype.displayMinimizeAction = true;
 jetspeed.ui.PortletWidgetWindow.prototype.displayMaximizeAction = true;
 jetspeed.ui.PortletWidgetWindow.prototype.taskBarId = "jetspeedTaskbar";
 jetspeed.ui.PortletWidgetWindow.prototype.nextIndex = 1;
+jetspeed.ui.PortletWidgetWindow.prototype.titleMouseIn = 0;
+jetspeed.ui.PortletWidgetWindow.prototype.titleLit = false;
 jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOver = function(evt)
 {
-    this.titleLight( this ) ;  // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+    var self = this ;
+    this.titleMouseIn++ ;
+    if ( this.titleMouseIn == 1 )
+    {
+        window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight( self ); self.titleMouseIn = 0; } }, 270 ) ;
+        // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+    }
+}
+jetspeed.ui.PortletWidgetWindow.prototype.titleButtonInclude = function(condition, requiredResult, button, included)
+{
+    if ( button == null ) return included ;
+    if (dojo.lang.isFunction(condition))
+    {
+        if (condition.call(this) == requiredResult)
+            included.push(button);
+    }
+    else if ( condition == requiredResult )
+    {
+        included.push(button);
+    }
+    return included;
+}
+jetspeed.ui.PortletWidgetWindow.prototype.minimizeWindow = function(evt)
+{
+    var tbiWidget = dojo.widget.byId(this.widgetId + "_tbi");
+
+    //var left = dojo.style.totalOffsetLeft(tbiWidget.domNode);
+    //var top = dojo.style.totalOffsetTop(tbiWidget.domNode) - 100;
+    //dojo.debug( "minimizeWindow: " + this.domNode.id + "  move-to-left: " + left + " move-to-top: " + top ) ;
+    //var widgetToHide = this ;
+    //dojo.fx.html.slideTo( this.domNode, 300, [ left, top ], function() { dojo.fx.html.wipeOut(widgetToHide.domNode, 400); } ) ;
+    if ( tbiWidget && tbiWidget.domNode )
+        dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 300 ) ;
+    else
+        this.hide();
+    
+    this.windowState = "minimized";
 }
 jetspeed.ui.PortletWidgetWindow.prototype.titleLight = function(fpWidget)
 {
-    fpWidget.minimizeAction.style.display = (fpWidget.displayMinimizeAction ? "" : "none");
-    fpWidget.maximizeAction.style.display = (fpWidget.displayMaximizeAction && fpWidget.windowState!="maximized" ? "" : "none");
-    fpWidget.restoreAction.style.display = (fpWidget.displayMaximizeAction && fpWidget.windowState!="normal" ? "" : "none");
-    fpWidget.closeAction.style.display = (fpWidget.displayCloseAction ? "" : "none");
+    var mightBeEnlightened = [] ;
+    this.titleButtonInclude(fpWidget.displayMinimizeAction, true, fpWidget.minimizeAction, mightBeEnlightened);
+    this.titleButtonInclude(fpWidget.displayMaximizeAction, true, fpWidget.maximizeAction, mightBeEnlightened);
+    this.titleButtonInclude(fpWidget.displayRestoreAction, true, fpWidget.restoreAction, mightBeEnlightened);
+    this.titleButtonInclude(fpWidget.displayCloseAction, true, fpWidget.closeAction, mightBeEnlightened);
+    var toBeEnlightened = [] ;
+    for ( var i = 0 ; i < mightBeEnlightened.length ; i++ )
+    {
+        var btn = mightBeEnlightened[i];
+        if (btn.style.display == "none")
+            toBeEnlightened.push(btn);
+    }
+    jetspeed.ui.fadeIn(toBeEnlightened, 325, "");
+    fpWidget.titleLit = true ;
+}
+jetspeed.ui.PortletWidgetWindow.prototype.titleDim = function(fpWidget, immediateForce)
+{
+    var mightBeExtinguished = [ fpWidget.restoreAction, fpWidget.maximizeAction, fpWidget.minimizeAction, fpWidget.closeAction ] ;
+    var toBeExtinguished = [] ;
+    for ( var i = 0 ; i < mightBeExtinguished.length ; i++ )
+    {
+        var btn = mightBeExtinguished[i];
+        if (immediateForce)
+            btn.style.display = "none" ;
+        else if (btn.style.display != "none")
+            toBeExtinguished.push(btn);
+    }
+    jetspeed.ui.fadeOut(toBeExtinguished, 280);
+    fpWidget.titleLit = false ;
 };
 jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOut = function(evt)
 {
-    this.titleDim( this ) ;   // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+    var self = this ;
+    var nTitleMouseIn = this.titleMouseIn ;
+    if ( nTitleMouseIn > 0 )
+    {
+        nTitleMouseIn = Math.max( 0, ( nTitleMouseIn - 1 ) );
+        this.titleMouseIn = nTitleMouseIn ;
+    }
+    if ( nTitleMouseIn == 0 && this.titleLit )
+    {
+        window.setTimeout( function() { if ( self.titleMouseIn == 0 ) { self.titleDim( self ); } }, 200 ) ;
+        // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+    }
 }
-jetspeed.ui.PortletWidgetWindow.prototype.titleDim = function(fpWidget)
-{
-    fpWidget.restoreAction.style.display="none";
-    fpWidget.maximizeAction.style.display="none";
-    fpWidget.minimizeAction.style.display="none";
-    fpWidget.closeAction.style.display="none";
-};
 
 jetspeed.ui.PortletWidgetWindow.prototype.incrementNextIndex = function()
 {
@@ -455,10 +589,10 @@ jetspeed.ui.PortletWidgetWindow.prototype.createWindow = function()
     nWidget.domNode.style.width = "280px";
     nWidget.domNode.style.height = "200px";
     // NOTE: the width/height specified get updated when the size is changed by the user
-    nWidget.domNode.style.left = (((this.getNextIndex() -2) * 30 ) + 100) + "px";
-    nWidget.domNode.style.top = (((this.getNextIndex() -2) * 30 ) + 100) + "px";
+    nWidget.domNode.style.left = (((this.getNextIndex() -2) * 30 ) + 200) + "px";
+    nWidget.domNode.style.top = (((this.getNextIndex() -2) * 30 ) + 170) + "px";
     
-    this.titleDim(nWidget);
+    this.titleDim(nWidget, true);
 
     var addToElmt = document.getElementById("jetspeedDesktop");
     addToElmt.appendChild(nWidget.domNode);
@@ -477,82 +611,82 @@ jetspeed.ui.PortletWidgetWindow.prototype.setPortletContent = function(html)
 // ... jetspeed.ui.PortletDivWindow
 jetspeed.ui.PortletDivWindow = function( /* Portlet */ portletObj )
 {
-	this.portlet = portletObj;
-	this.loaded = false;
+    this.portlet = portletObj;
+    this.loaded = false;
     this.buildPortlet();
 }
 jetspeed.ui.PortletDivWindow.prototype.buildPortlet = function()
 {
     var self = this;
-	var divPortlet = document.createElement("div");
+    var divPortlet = document.createElement("div");
     this.portlet_element = divPortlet;
-	divPortlet.className = "portletBody";
-	divPortlet.dataObj = this;
+    divPortlet.className = "portletBody";
+    divPortlet.dataObj = this;
 
-	var divPortletFrame = document.createElement("div");
-	this.child_portletFrame = divPortletFrame;
-	divPortletFrame.className = "portletFrame";
+    var divPortletFrame = document.createElement("div");
+    this.child_portletFrame = divPortletFrame;
+    divPortletFrame.className = "portletFrame";
 
-	var divPortletHeader = document.createElement("div");
-	this.child_portletHeader = divPortletHeader;
-	divPortletHeader.className = "portletHeader";
-	
-	divPortletHeader.onmouseover = function(){
-		self.highlight();
-	}
-	divPortletHeader.onmouseout = function(){
-		self.unHighlight();
-	}
+    var divPortletHeader = document.createElement("div");
+    this.child_portletHeader = divPortletHeader;
+    divPortletHeader.className = "portletHeader";
+    
+    divPortletHeader.onmouseover = function(){
+        self.highlight();
+    }
+    divPortletHeader.onmouseout = function(){
+        self.unHighlight();
+    }
 
-	var divShowHide = document.createElement("div");
-	this.child_showHide = divShowHide;
-	divShowHide.className = "showHide";
-	divShowHide.innerHTML = (this.portlet.status==0) ? '<img src="/jetspeed/themes/blue/images/showMod.gif"/>' : '<img src="/jetspeed/themes/blue/images/hideMod.gif"/>';
-	divShowHide.style.visibility = "hidden";		
+    var divShowHide = document.createElement("div");
+    this.child_showHide = divShowHide;
+    divShowHide.className = "showHide";
+    divShowHide.innerHTML = (this.portlet.status==0) ? '<img src="/jetspeed/themes/blue/images/showMod.gif"/>' : '<img src="/jetspeed/themes/blue/images/hideMod.gif"/>';
+    divShowHide.style.visibility = "hidden";        
     dojo.event.connect( divShowHide, "onmousedown", showHide ) ;
 
-	var divTitle = document.createElement("div");
-	this.child_title = divTitle;
-	divTitle.className = "title";
-	divTitle.appendChild(document.createTextNode(this.portlet.name));
+    var divTitle = document.createElement("div");
+    this.child_title = divTitle;
+    divTitle.className = "title";
+    divTitle.appendChild(document.createTextNode(this.portlet.name));
 
-	var divClose = document.createElement("div");
-	this.child_close = divClose;
-	divClose.className = "close";
-	divClose.innerHTML = '<img src="/jetspeed/themes/blue/images/closeMod.gif"/>';
-	divClose.style.display = "none";
+    var divClose = document.createElement("div");
+    this.child_close = divClose;
+    divClose.className = "close";
+    divClose.innerHTML = '<img src="/jetspeed/themes/blue/images/closeMod.gif"/>';
+    divClose.style.display = "none";
     dojo.event.connect( divClose, "onmousedown", close ) ;
-	
-	var divEditContent = document.createElement("div");
-	this.child_editContent = divEditContent;
-	divEditContent.className = "editContent";
+    
+    var divEditContent = document.createElement("div");
+    this.child_editContent = divEditContent;
+    divEditContent.className = "editContent";
 
-	var divPortletContent = document.createElement("div");
-	this.child_moduleContent = divPortletContent;
-	divPortletContent.className = "moduleContent";
-	divPortletContent.innerHTML = "Loading ...";
-	if (this.portlet.status==0) divPortletContent.style.display = "none";
+    var divPortletContent = document.createElement("div");
+    this.child_moduleContent = divPortletContent;
+    divPortletContent.className = "moduleContent";
+    divPortletContent.innerHTML = "Loading ...";
+    if (this.portlet.status==0) divPortletContent.style.display = "none";
 
-	divPortletHeader.appendChild(divShowHide);
-	divPortletHeader.appendChild(divClose);
-	divPortletHeader.appendChild(divTitle);
+    divPortletHeader.appendChild(divShowHide);
+    divPortletHeader.appendChild(divClose);
+    divPortletHeader.appendChild(divTitle);
 
-	divPortletFrame.appendChild(divPortletHeader);
-	divPortletFrame.appendChild(divEditContent);
-	divPortletFrame.appendChild(divPortletContent);
+    divPortletFrame.appendChild(divPortletHeader);
+    divPortletFrame.appendChild(divEditContent);
+    divPortletFrame.appendChild(divPortletContent);
 
-	divPortlet.appendChild(divPortletFrame);
+    divPortlet.appendChild(divPortletFrame);
 
-	function showHide(e) {
-		e.cancelBubble = true;
-		self.showHideModule();
-	}
-	function close(e) {
-		e.cancelBubble = true;
-		self.close();
-		delete self;
-	}
-	
+    function showHide(e) {
+        e.cancelBubble = true;
+        self.showHideModule();
+    }
+    function close(e) {
+        e.cancelBubble = true;
+        self.close();
+        delete self;
+    }
+    
     var addtoElmt = document.getElementById( "jetspeedDesktop" ) ;
     addtoElmt.appendChild(divPortlet);
 
@@ -576,11 +710,11 @@ jetspeed.ui.PortletDivWindow.prototype.unHighlight = function() {
     this.child_close.style.display = "none";
 }
 jetspeed.ui.PortletDivWindow.prototype.showHideModule = function() {
-	if (arguments[0] != undefined) {
-		arguments[0] ? this.show() : this.hide();
-	} else {
-		this.child_moduleContent.style.display=='none' ? this.show() : this.hide();
-	}
+    if (arguments[0] != undefined) {
+        arguments[0] ? this.show() : this.hide();
+    } else {
+        this.child_moduleContent.style.display=='none' ? this.show() : this.hide();
+    }
 }
 jetspeed.ui.PortletDivWindow.prototype.close = function()
 {
@@ -588,15 +722,54 @@ jetspeed.ui.PortletDivWindow.prototype.close = function()
 }
 jetspeed.ui.PortletDivWindow.prototype.show = function()
 {
-	this.child_moduleContent.style.display = 'block';
-	this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/hideMod.gif");
-	this.portlet.status = 1;
+    this.child_moduleContent.style.display = 'block';
+    this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/hideMod.gif");
+    this.portlet.status = 1;
 }
 jetspeed.ui.PortletDivWindow.prototype.hide = function()
 {
-	this.child_moduleContent.style.display = 'none';
-	this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/showMod.gif");
-	this.child_editContent.style.display = "none";
-	this.portlet.status = 0;
+    this.child_moduleContent.style.display = 'none';
+    this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/showMod.gif");
+    this.child_editContent.style.display = "none";
+    this.portlet.status = 0;
 }
 
+
+// ... fade-in convenience methods (work with set of nodes)
+jetspeed.ui.fadeIn = function(nodes, duration, displayStyleValue)
+{
+    jetspeed.ui.fade(nodes, duration, displayStyleValue, 0, 1);
+}
+jetspeed.ui.fadeOut = function(nodes, duration)
+{
+    jetspeed.ui.fade(nodes, duration, "none", 1, 0);
+}
+jetspeed.ui.fade = function(nodes, duration, displayStyleValue, startOpac, endOpac)
+{
+    if ( nodes.length > 0 )
+    {   // mimick dojo.fx.html.fade, but for all objects together
+        for ( var i = 0 ; i < nodes.length ; i++ )
+        {
+            dojo.fx.html._makeFadeable(nodes[i]);
+            if (displayStyleValue != "none")
+                nodes[i].style.display = displayStyleValue ;
+        }
+        var anim = new dojo.animation.Animation(
+		                new dojo.math.curves.Line([startOpac],[endOpac]),
+		                duration, 0);
+	    dojo.event.connect(anim, "onAnimate", function(e) {
+            for ( var mi = 0 ; mi < nodes.length ; mi++ )
+            {
+                dojo.style.setOpacity(nodes[mi], e.x);
+	        }});
+        
+        if (displayStyleValue == "none")
+        {
+            dojo.event.connect(anim, "onEnd", function(e) {
+			    for ( var mi = 0 ; mi < nodes.length ; mi++ )
+                    nodes[mi].style.display = displayStyleValue ;
+		    });
+        }
+        anim.play(true);
+    }
+}
