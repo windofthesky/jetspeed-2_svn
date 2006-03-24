@@ -59,7 +59,7 @@ dojo.lang.extend(jetspeed.ui.widget.PortalTaskBarItem, {
         dojo.fx.html.fade( this.domNode, 100, 1, 0.5, function() { dojo.fx.html.fade( btnNode, 100, 0.5, 1 ); } );
         
         if ( this.window.windowState == "minimized" )
-            dojo.fx.html.explode( this.domNode, this.window.domNode, 300, function() { showWindow.show(); } ) ;
+            dojo.fx.html.explode( this.domNode, this.window.domNode, 460, function() { showWindow.show(); } ) ;    // began as 300 in ff
         else
             this.window.show();
 	}

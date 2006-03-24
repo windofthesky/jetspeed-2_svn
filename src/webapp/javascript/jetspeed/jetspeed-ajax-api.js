@@ -52,16 +52,6 @@ jetspeed.basePortalDesktopUrl = function()
     return jetspeed.basePortalUrl() + "/jetspeed" ;
 }
 
-jetspeed.doRender = function(url,portletEntityId)
-{
-    var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
-    if ( targetPortlet )
-    {
-        //dojo.debug( "render " + portletEntityId + " url: " + url );
-        targetPortlet.retrievePortletContent(null,url);
-    }
-}
-
 jetspeed.page = null ;   // BOZO: is this it? one page at a time?
 jetspeed.initializeDesktop = function()
 {
@@ -71,20 +61,19 @@ jetspeed.loadPage = function()
 {
     jetspeed.testLoadPageCreateWidgetPortlets();
 }
+
+
+// ... jetspeed debug options
+//jetspeed.debugPortletEntityIdFilter = [ "dp-18" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
+jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
+jetspeed.debugPortletWindowThemes = [ "theme1", "theme2" ];
+
 jetspeed.testLoadPageCreateWidgetPortlets = function()
 {
     jetspeed.page = new jetspeed.om.Page() ;
     jetspeed.currentTaskbar = new jetspeed.ui.PortalTaskBar() ;
     jetspeed.page.retrievePsml( new jetspeed.om.PageContentListenerCreateWidget() ) ;
 }
-
-jetspeed.testLoadPageCreateDivPortlets = function()
-{
-    jetspeed.currentPage = new jetspeed.om.Page() ;
-    jetspeed.page.retrievePsml( new jetspeed.om.PageContentListenerCreateDiv() ) ;
-}
-//jetspeed.testPortletEntityIdFilter = [ "dp-18" ];   // note: uncomment to filter the displayed portlets for testing
-
 jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletWindowFactory )
 {
     if ( portlets )
@@ -92,14 +81,26 @@ jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletW
         for (var portletIndex in portlets)
         {
             var portlet = portlets[portletIndex];
-            if ( jetspeed.testPortletEntityIdFilter )
+            if ( jetspeed.debugPortletEntityIdFilter )
             {
-                if (! dojo.lang.inArray(jetspeed.testPortletEntityIdFilter, portletIndex))
+                if (! dojo.lang.inArray(jetspeed.debugPortletEntityIdFilter, portletIndex))
                     portlet = null;
             }
             if (portlet)
                 portlet.createPortletWindow(portletWindowFactory);
         }
+    }
+}
+
+
+// ... jetspeed.doRender
+jetspeed.doRender = function(url,portletEntityId)
+{
+    var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
+    if ( targetPortlet )
+    {
+        //dojo.debug( "render " + portletEntityId + " url: " + url );
+        targetPortlet.retrievePortletContent(null,url);
     }
 }
 
@@ -119,21 +120,6 @@ jetspeed.om.PageContentListenerCreateWidget.prototype =
     }
 }
 
-// ... jetspeed.om.PageContentListenerCreateDiv
-jetspeed.om.PageContentListenerCreateDiv = function()
-{
-}
-jetspeed.om.PageContentListenerCreateDiv.prototype =
-{
-    notifySuccess: function( /* Page */ page )
-    {
-        jetspeed.testCreatePortletWindows(page.getPortlets(), new jetspeed.om.PortletDivWindowFactory());
-    },
-    notifyFailure: function( /* String */ type, /* String */ error, /* Page */ page )
-    {
-        alert( "PageContentListenerCreateDiv notifyFailure type=" + type + " error=" + error ) ;
-    }
-}
 
 // ... jetspeed.om.Page
 jetspeed.om.Page = function(pagePsmlPath, pageName, pageTitle)
@@ -172,7 +158,7 @@ jetspeed.om.Page.prototype =
         if ( this.psmlPath == null )
             this.setPsmlPathFromDocumentUrl() ;
 
-        var psmlUrl = jetspeed.basePortalUrl() + this.psmlPath ;   // BOZO: is it appropriate to fix the baseUrl as done here?
+        var psmlUrl = jetspeed.basePortalUrl() + this.psmlPath ;
 
         if ( djConfig.isDebug )
             dojo.debug( "psml url: " + psmlUrl ) ;
@@ -298,17 +284,6 @@ jetspeed.om.PortletWidgetWindowFactory.prototype =
     }
 }
 
-// ... jetspeed.om.PortletDivWindowFactory
-jetspeed.om.PortletDivWindowFactory = function()
-{
-}
-jetspeed.om.PortletDivWindowFactory.prototype =
-{
-    create: function( /* Portlet */ portlet )
-    {
-        return new jetspeed.ui.PortletDivWindow(portlet);
-    }
-}
 
 // ... jetspeed.om.Portlet
 jetspeed.om.Portlet = function( /* String */ portletName, /* String */ portletEntityId, /* String */ portletTitle )
@@ -420,6 +395,11 @@ jetspeed.ui.PortalTaskBar = function()
     tbProps.templatePath = new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlTaskBarItemTemplate.html") ;
     // BOZO: improve this junk ^^^ 
 
+    this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
+    this.templateCssPath = jetspeed.ui.getDefaultFloatingPaneTemplateCss();   // BOZO: this currently is responsible for assuring that 
+                                                                              //       the base FloatingPane styles get included;
+                                                                              //       so, if the taskbar is not included and/or an override
+                                                                              //       css file is needed, the base FloatingPane styles may be absent
     this.taskbarProps = tbProps ;
     this.widgetId = "jetspeedTaskbar";
 
@@ -455,13 +435,29 @@ jetspeed.ui.PortletWidgetWindow = function(/* Portlet */ portletObj)
     this.blee = "fred" ;
 
     var windowtheme = portletObj.getProperty("window-theme");
-    if ( windowtheme )
+    
+    if (! windowtheme)
+    {
+        if ( jetspeed.debugPortletWindowThemes )
+        {
+            windowtheme = jetspeed.debugPortletWindowThemes[Math.floor(Math.random()*jetspeed.debugPortletWindowThemes.length)];
+        }
+    }
+    if (windowtheme)
     {
         this.portletWindowTheme = windowtheme ;
         this.templateCssPath = new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowthemes/" + windowtheme + "/" + windowtheme + ".css");   // BOZO: improve this junk
     }
+    this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
 
     var windowicon = portletObj.getProperty("window-icon");
+    if (! windowicon)
+    {
+        if ( jetspeed.debugPortletWindowIcons )
+        {
+            windowicon = jetspeed.debugPortletWindowIcons[Math.floor(Math.random()*jetspeed.debugPortletWindowIcons.length)];
+        }
+    }
     if ( windowicon )
         this.iconSrc =  new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowicons/" + windowicon ) ;
     else
@@ -515,7 +511,7 @@ jetspeed.ui.PortletWidgetWindow.prototype.minimizeWindow = function(evt)
     //var widgetToHide = this ;
     //dojo.fx.html.slideTo( this.domNode, 300, [ left, top ], function() { dojo.fx.html.wipeOut(widgetToHide.domNode, 400); } ) ;
     if ( tbiWidget && tbiWidget.domNode )
-        dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 300 ) ;
+        dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 550 ) ; // began as 300 in ff
     else
         this.hide();
     
@@ -608,130 +604,14 @@ jetspeed.ui.PortletWidgetWindow.prototype.setPortletContent = function(html)
 }
 
 
-// ... jetspeed.ui.PortletDivWindow
-jetspeed.ui.PortletDivWindow = function( /* Portlet */ portletObj )
+// ... jetspeed.ui methods
+jetspeed.ui.getDefaultFloatingPaneTemplate = function()
 {
-    this.portlet = portletObj;
-    this.loaded = false;
-    this.buildPortlet();
+    return new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlFloatingPane.html");   // BOZO: improve this junk
 }
-jetspeed.ui.PortletDivWindow.prototype.buildPortlet = function()
+jetspeed.ui.getDefaultFloatingPaneTemplateCss = function()
 {
-    var self = this;
-    var divPortlet = document.createElement("div");
-    this.portlet_element = divPortlet;
-    divPortlet.className = "portletBody";
-    divPortlet.dataObj = this;
-
-    var divPortletFrame = document.createElement("div");
-    this.child_portletFrame = divPortletFrame;
-    divPortletFrame.className = "portletFrame";
-
-    var divPortletHeader = document.createElement("div");
-    this.child_portletHeader = divPortletHeader;
-    divPortletHeader.className = "portletHeader";
-    
-    divPortletHeader.onmouseover = function(){
-        self.highlight();
-    }
-    divPortletHeader.onmouseout = function(){
-        self.unHighlight();
-    }
-
-    var divShowHide = document.createElement("div");
-    this.child_showHide = divShowHide;
-    divShowHide.className = "showHide";
-    divShowHide.innerHTML = (this.portlet.status==0) ? '<img src="/jetspeed/themes/blue/images/showMod.gif"/>' : '<img src="/jetspeed/themes/blue/images/hideMod.gif"/>';
-    divShowHide.style.visibility = "hidden";        
-    dojo.event.connect( divShowHide, "onmousedown", showHide ) ;
-
-    var divTitle = document.createElement("div");
-    this.child_title = divTitle;
-    divTitle.className = "title";
-    divTitle.appendChild(document.createTextNode(this.portlet.name));
-
-    var divClose = document.createElement("div");
-    this.child_close = divClose;
-    divClose.className = "close";
-    divClose.innerHTML = '<img src="/jetspeed/themes/blue/images/closeMod.gif"/>';
-    divClose.style.display = "none";
-    dojo.event.connect( divClose, "onmousedown", close ) ;
-    
-    var divEditContent = document.createElement("div");
-    this.child_editContent = divEditContent;
-    divEditContent.className = "editContent";
-
-    var divPortletContent = document.createElement("div");
-    this.child_moduleContent = divPortletContent;
-    divPortletContent.className = "moduleContent";
-    divPortletContent.innerHTML = "Loading ...";
-    if (this.portlet.status==0) divPortletContent.style.display = "none";
-
-    divPortletHeader.appendChild(divShowHide);
-    divPortletHeader.appendChild(divClose);
-    divPortletHeader.appendChild(divTitle);
-
-    divPortletFrame.appendChild(divPortletHeader);
-    divPortletFrame.appendChild(divEditContent);
-    divPortletFrame.appendChild(divPortletContent);
-
-    divPortlet.appendChild(divPortletFrame);
-
-    function showHide(e) {
-        e.cancelBubble = true;
-        self.showHideModule();
-    }
-    function close(e) {
-        e.cancelBubble = true;
-        self.close();
-        delete self;
-    }
-    
-    var addtoElmt = document.getElementById( "jetspeedDesktop" ) ;
-    addtoElmt.appendChild(divPortlet);
-
-    var dragSource = new dojo.dnd.HtmlDragMoveSource(divPortlet) ;
-    dragSource.setDragHandle( divPortletHeader ) ;
-    
-    //Drag.init(divPortletHeader, divPortlet);
-    
-}
-jetspeed.ui.PortletDivWindow.prototype.setPortletContent = function( html )
-{
-    this.child_moduleContent.innerHTML = html ;
-}
-jetspeed.ui.PortletDivWindow.prototype.highlight = function() {
-    this.child_showHide.style.visibility = "visible";
-    this.child_close.style.display = "block";
-}
-jetspeed.ui.PortletDivWindow.prototype.unHighlight = function() {
-    this.child_portletFrame.style.border = "1px solid #79A7E2";
-    this.child_showHide.style.visibility = "hidden";
-    this.child_close.style.display = "none";
-}
-jetspeed.ui.PortletDivWindow.prototype.showHideModule = function() {
-    if (arguments[0] != undefined) {
-        arguments[0] ? this.show() : this.hide();
-    } else {
-        this.child_moduleContent.style.display=='none' ? this.show() : this.hide();
-    }
-}
-jetspeed.ui.PortletDivWindow.prototype.close = function()
-{
-    this.portlet_element.parentNode.removeChild(this.portlet_element);
-}
-jetspeed.ui.PortletDivWindow.prototype.show = function()
-{
-    this.child_moduleContent.style.display = 'block';
-    this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/hideMod.gif");
-    this.portlet.status = 1;
-}
-jetspeed.ui.PortletDivWindow.prototype.hide = function()
-{
-    this.child_moduleContent.style.display = 'none';
-    this.child_showHide.firstChild.setAttribute("src", "/jetspeed/themes/blue/images/showMod.gif");
-    this.child_editContent.style.display = "none";
-    this.portlet.status = 0;
+    return new dojo.uri.Uri(jetspeed.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlFloatingPane.css");   // BOZO: improve this junk
 }
 
 

@@ -1,13 +1,9 @@
 
-.dojoFloatingPaneInDrag { 
-    border: 3px solid;
-
-}
-
 .dojoFloatingPane {
 	/* essential css */
 	position: absolute;
-	overflow: hidden;		/* so drop shadow is displayed */
+	overflow: hidden;		/* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
+                            /* we says 'hidden' cause IE likes to kindly expand div to fit content otherwise */
 	z-index: 5;
 	-moz-box-sizing: border-box;
 	-khtml-box-sizing: border-box;
@@ -95,7 +91,7 @@
 	
 	/* styling css */
 	background-color: ThreeDFace;
-	padding: 8px;
+    /*padding: 8px;	doesn't work!  can't figure out why */
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 12px;
 }
