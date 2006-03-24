@@ -2,7 +2,6 @@
 <link target="top">
  <title>[USER] Apache Portals</title>
   <metadata name="title" xml:lang="ja">Apache Portals [USUARIO]</metadata>
-  <metadata name="title" xml:lang="zh-TW">[用户] Apache Portals</metadata>
   <metadata name="title" xml:lang="zh-TW">[用戶] Apache Portals</metadata>
 
  <url>http://portals.apache.org</url>
