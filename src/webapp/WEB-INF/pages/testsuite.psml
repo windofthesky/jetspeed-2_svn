@@ -35,7 +35,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Página de casos de prueba</metadata>
   <metadata name="short-title" xml:lang="es">Pruebas</metadata>
   <metadata name="title" xml:lang="hu">Teszt gyűjtemény</metadata>
-  <metadata name="title" xml:lang="zh">测试页�?�</metadata>
+  <metadata name="title" xml:lang="zh">测试页面</metadata>
   <metadata name="title" xml:lang="zh-TW">測試頁面</metadata>
 
   <security-constraints>
