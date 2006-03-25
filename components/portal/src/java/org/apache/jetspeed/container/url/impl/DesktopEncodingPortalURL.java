@@ -24,6 +24,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.pluto.om.window.PortletWindow;
@@ -41,30 +42,36 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class DesktopEncodingPortalURL extends AbstractPortalURL
 {
-    private final String javascriptDoRender;
+    protected final String javascriptDoRender;
+    protected final String javascriptDoAction;    
+    protected String baseActionPath;;
     
-    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender, BasePortalURL base)
+    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender, String javascriptDoAction, BasePortalURL base)
     {
         super(navState, portalContext, base);
-        this.javascriptDoRender = javascriptDoRender;        
+        this.javascriptDoRender = javascriptDoRender;
+        this.javascriptDoAction = javascriptDoAction;        
     }
 
-    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender)
+    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender, String javascriptDoAction)
     {
         super(navState, portalContext);
         this.javascriptDoRender = javascriptDoRender;                
+        this.javascriptDoAction = javascriptDoAction;
     }
 
     public DesktopEncodingPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
     {
         super(characterEncoding, navState, portalContext);
         this.javascriptDoRender = null;
+        this.javascriptDoAction = null;
     }
 
     public DesktopEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState, PortalContext portalContext)
     {
         super(request, characterEncoding, navState, portalContext);
-        this.javascriptDoRender = null;        
+        this.javascriptDoRender = null;
+        this.javascriptDoAction = null;
     }
 
     protected void decodePathAndNavigationalState(HttpServletRequest request)
@@ -112,18 +119,35 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
 
     protected String createPortletURL(String encodedNavState, boolean secure)
     {
-        return createPortletURL(encodedNavState, secure, null);
+        return createPortletURL(encodedNavState, secure, null, false);
     }
     
-    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window)
+    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action)
     {   
         StringBuffer buffer = new StringBuffer("");
-        if (this.javascriptDoRender != null)
+        if (action)
         {
-            buffer.append(this.javascriptDoRender + "(\"");
-        }        
+            if (this.javascriptDoAction != null)
+            {
+                buffer.append(this.javascriptDoAction + "(\"");
+            }            
+        }
+        else
+        {
+            if (this.javascriptDoRender != null)
+            {
+                buffer.append(this.javascriptDoRender + "(\"");
+            }            
+        }   
         buffer.append(getBaseURL(secure));
-        buffer.append(getBasePath());
+        if (action)
+        {
+            buffer.append(this.baseActionPath);
+        }
+        else
+        {
+            buffer.append(getBasePath());            
+        }            
         if ( encodedNavState != null )
         {
             buffer.append("/");
@@ -135,16 +159,33 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             buffer.append(getPath());
         }
-        if (this.javascriptDoRender != null)            
+        if (action)
         {
-            if (window != null)
+            if (this.javascriptDoAction != null)            
             {
-                buffer.append("\",\"");
-                buffer.append(window.getPortletEntity().getId());
-                buffer.append("\"");                
+                if (window != null)
+                {
+                    buffer.append("\",\"");
+                    buffer.append(window.getPortletEntity().getId());
+                    buffer.append("\"");                
+                }
+                buffer.append(")");
             }
-            buffer.append(")");
         }
+        else
+        {
+            if (this.javascriptDoRender != null)            
+            {
+                if (window != null)
+                {
+                    buffer.append("\",\"");
+                    buffer.append(window.getPortletEntity().getId());
+                    buffer.append("\"");                
+                }
+                buffer.append(")");
+            }            
+        }
+        System.out.println("*** " + buffer.toString());
         return buffer.toString();
     }        
     
@@ -152,7 +193,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     {
         try
         {
-            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window);
+            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action);
         }
         catch (UnsupportedEncodingException e)
         {
@@ -161,6 +202,12 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             // to keep the compiler happy
             return null;
         }
+    }
+    
+    protected void decodeBasePath(HttpServletRequest request)
+    {
+        super.decodeBasePath(request);
+        this.baseActionPath = contextPath + "/action";
     }
     
 }

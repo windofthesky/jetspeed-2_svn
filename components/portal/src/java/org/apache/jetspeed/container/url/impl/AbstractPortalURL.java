@@ -42,18 +42,18 @@ public abstract class AbstractPortalURL implements PortalURL
 {
     public static final String DEFAULT_NAV_STATE_PARAMETER = "_ns";
     
-    private static String navStateParameter;
+    protected static String navStateParameter;
     
-    private NavigationalState navState;
-    private BasePortalURL base = null;
+    protected NavigationalState navState;
+    protected BasePortalURL base = null;
     
-    private String contextPath;
-    private String basePath;
-    private String path;
-    private String encodedNavState;
-    private String secureBaseURL;
-    private String nonSecureBaseURL;
-    private String characterEncoding = "UTF-8";
+    protected String contextPath;
+    protected String basePath;
+    protected String path;
+    protected String encodedNavState;
+    protected String secureBaseURL;
+    protected String nonSecureBaseURL;
+    protected String characterEncoding = "UTF-8";
     
 
     public AbstractPortalURL(NavigationalState navState, PortalContext portalContext, BasePortalURL base)
