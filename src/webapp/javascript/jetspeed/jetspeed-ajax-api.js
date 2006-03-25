@@ -104,6 +104,17 @@ jetspeed.doRender = function(url,portletEntityId)
     }
 }
 
+// ... jetspeed.doAction
+jetspeed.doAction = function(url,portletEntityId)
+{
+    var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
+    if ( targetPortlet )
+    {
+        dojo.debug( "action " + portletEntityId + " url: " + url );
+        //targetPortlet.retrievePortletContent(null,url);
+    }
+}
+
 // ... jetspeed.om.PageContentListenerCreateWidget
 jetspeed.om.PageContentListenerCreateWidget = function()
 {
