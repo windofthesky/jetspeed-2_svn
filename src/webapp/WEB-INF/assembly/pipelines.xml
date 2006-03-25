@@ -343,6 +343,9 @@ limitations under the License.
             <entry key='/desktop'>
                 <value>desktop-pipeline</value>
             </entry>                                    
+            <entry key='/action'>
+                <value>action-pipeline</value>
+            </entry>                                                
         </map>        
     </constructor-arg>        
   </bean>
