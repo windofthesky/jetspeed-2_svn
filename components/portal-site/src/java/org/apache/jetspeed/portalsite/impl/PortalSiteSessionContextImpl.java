@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.portalsite.impl;
 
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.HashMap;
@@ -51,12 +52,26 @@ import org.apache.jetspeed.security.UserPrincipal;
 /**
  * This class encapsulates managed session state for and
  * interface to the portal-site component and subscribes
- * to page manager and session events to flush stale state
+ * to page manager and session events to flush stale state.
+ *
+ * Note that is object is Serializable since it is designed
+ * to be cached in the session. However, because this object
+ * is cached only for these two reasons:
+ *
+ * 1. a performance optimization to reuse SiteViews, and 
+ * 2. to hold optional folder page history,
+ *
+ * this object need not be relocatable between J2 instances.
+ * Consequently, all data members are marked transient and
+ * the isValid() method is used to test whether this object
+ * is a valid context for the session or if it was
+ * transferred from another server or the persistent session
+ * store and needs to be discarded.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, PageManagerEventListener, HttpSessionActivationListener, HttpSessionBindingListener
+public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, PageManagerEventListener, HttpSessionActivationListener, HttpSessionBindingListener, Serializable
 {
     /**
      * log - logging instance
@@ -66,45 +81,45 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * pageManager - PageManager component
      */
-    private PageManager pageManager;
+    private transient PageManager pageManager;
 
     /**
      * profileLocators - map of session profile locators by locator names
      */
-    private Map profileLocators;
+    private transient Map profileLocators;
 
     /**
      * userPrincipal - session user principal
      */
-    private String userPrincipal;
+    private transient String userPrincipal;
 
     /**
      * siteView - session site view
      */
-    private SiteView siteView;
+    private transient SiteView siteView;
 
     /**
      * folderPageHistory - map of last page visited by folder 
      */
-    private Map folderPageHistory;
+    private transient Map folderPageHistory;
 
     /**
      * menuDefinitionLocatorCache - cached menu definition locators for
      *                              absolute menus valid for session
      */
-    private Map menuDefinitionLocatorCache;
+    private transient Map menuDefinitionLocatorCache;
 
     /**
      * subscribed - flag that indicates whether this context
      *              is subscribed as event listeners
      */
-    private boolean subscribed;
+    private transient boolean subscribed;
 
     /**
      * stale - flag that indicates whether the state
      *         managed by this context is stale
      */
-    private boolean stale;
+    private transient boolean stale;
 
     /**
      * PortalSiteSessionContextImpl - constructor
@@ -802,6 +817,19 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public PageManager getPageManager()
     {
         return pageManager;
+    }
+
+    /**
+     * isValid - return flag indicating whether this context instance
+     *           is valid or if it is stale after being persisted and
+     *           reloaded as session state
+     *
+     * @return valid context status
+     */
+    public boolean isValid()
+    {
+        // existant transient page manager implies valid context 
+        return (pageManager != null);
     }
 
     /**

@@ -178,9 +178,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // used to build site menus from its extent; this is
                 // cached in the session because locators seldom change
                 // during the session so the session view of the site can
-                // be cached unless locators do change;
+                // be cached unless locators do change; if the context
+                // is invalid, (perhaps because the session was persisted
+                // and is now being reloaded in a new server), it must be
+                // replaced with a newly created session context
                 PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
-                if (sessionContext == null)
+                if ((sessionContext == null) || !sessionContext.isValid())
                 {
                     sessionContext = portalSite.newSessionContext();
                     request.setSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY, sessionContext);

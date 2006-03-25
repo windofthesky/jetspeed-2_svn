@@ -52,4 +52,13 @@ public interface PortalSiteSessionContext extends Serializable
      * @return PageManager instance
      */
     PageManager getPageManager();
+
+    /**
+     * isValid - return flag indicating whether this context instance
+     *           is valid or if it is stale after being persisted and
+     *           reloaded as session state
+     *
+     * @return valid context status
+     */
+    boolean isValid();
 }
