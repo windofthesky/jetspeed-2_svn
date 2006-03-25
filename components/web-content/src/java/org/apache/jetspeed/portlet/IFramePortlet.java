@@ -40,6 +40,7 @@ public class IFramePortlet extends GenericPortlet
      * Configuration constants.
      */
     public static final String ENABLE_SOURCE_PREFERENCES_PARAM = "enableSourcePreferences";
+    public static final String ENABLE_PREFERENCES_PARAM = "enablePreferences";
     public static final String CUSTOM_SOURCE_PARAM = "customSource";
     public static final String MAXIMIZED_CUSTOM_SOURCE_PARAM = "maximizedCustomSource";
     public static final String EDIT_SOURCE_PARAM = "editSource";
@@ -79,9 +80,9 @@ public class IFramePortlet extends GenericPortlet
     public static final String WIDTH_ATTR_DEFAULT = "100%";
 
     /**
-     * Enable source parameter preferences overrides member.
+     * Enable parameter preferences overrides member.
      */
-    private boolean enableSourcePreferences;
+    private boolean enablePreferences;
 
     /**
      * Default IFRAME source attribute members.
@@ -96,23 +97,23 @@ public class IFramePortlet extends GenericPortlet
     private String defaultMaximizedViewSource;
 
     /**
-     * IFRAME attribute members.
+     * Default IFRAME attribute members.
      */
-    private String alignAttr;
-    private String classAttr;
-    private String frameBorderAttr;
-    private String heightAttr;
-    private String idAttr;
-    private String marginHeightAttr;
-    private String marginWidthAttr;
-    private String maximizedHeightAttr;
-    private String maximizedScrollingAttr;
-    private String maximizedStyleAttr;
-    private String maximizedWidthAttr;
-    private String nameAttr;
-    private String scrollingAttr;
-    private String styleAttr;
-    private String widthAttr;
+    private String defaultAlignAttr;
+    private String defaultClassAttr;
+    private String defaultFrameBorderAttr;
+    private String defaultHeightAttr;
+    private String defaultIdAttr;
+    private String defaultMarginHeightAttr;
+    private String defaultMarginWidthAttr;
+    private String defaultMaximizedHeightAttr;
+    private String defaultMaximizedScrollingAttr;
+    private String defaultMaximizedStyleAttr;
+    private String defaultMaximizedWidthAttr;
+    private String defaultNameAttr;
+    private String defaultScrollingAttr;
+    private String defaultStyleAttr;
+    private String defaultWidthAttr;
 
     /**
      * Portlet constructor.
@@ -129,9 +130,15 @@ public class IFramePortlet extends GenericPortlet
     {
         super.init(config);
 
-        String initParam = config.getInitParameter(ENABLE_SOURCE_PREFERENCES_PARAM);
+        String initParam = config.getInitParameter(ENABLE_PREFERENCES_PARAM);
+        if (initParam == null)
+        {
+            initParam = config.getInitParameter(ENABLE_SOURCE_PREFERENCES_PARAM);
+        }
         if (initParam != null)
-            enableSourcePreferences = (new Boolean(initParam)).booleanValue();
+        {
+            enablePreferences = (new Boolean(initParam)).booleanValue();
+        }
 
         defaultCustomSource = config.getInitParameter(CUSTOM_SOURCE_PARAM);
         defaultMaximizedCustomSource = config.getInitParameter(MAXIMIZED_CUSTOM_SOURCE_PARAM);
@@ -142,21 +149,21 @@ public class IFramePortlet extends GenericPortlet
         defaultViewSource = config.getInitParameter(VIEW_SOURCE_PARAM);
         defaultMaximizedViewSource = config.getInitParameter(MAXIMIZED_VIEW_SOURCE_PARAM);
 
-        alignAttr = getAttributeParam(config, ALIGN_ATTR_PARAM, ALIGN_ATTR_DEFAULT);
-        classAttr = getAttributeParam(config, CLASS_ATTR_PARAM, null);
-        frameBorderAttr = getAttributeParam(config, FRAME_BORDER_ATTR_PARAM, FRAME_BORDER_ATTR_DEFAULT);
-        heightAttr = getAttributeParam(config, HEIGHT_ATTR_PARAM, HEIGHT_ATTR_DEFAULT);
-        idAttr = getAttributeParam(config, ID_ATTR_PARAM, null);
-        marginHeightAttr = getAttributeParam(config, MARGIN_HEIGHT_ATTR_PARAM, MARGIN_HEIGHT_ATTR_DEFAULT);
-        marginWidthAttr = getAttributeParam(config, MARGIN_WIDTH_ATTR_PARAM, MARGIN_WIDTH_ATTR_DEFAULT);
-        maximizedHeightAttr = getAttributeParam(config, MAXIMIZED_HEIGHT_ATTR_PARAM, MAXIMIZED_HEIGHT_ATTR_DEFAULT);
-        maximizedScrollingAttr = getAttributeParam(config, MAXIMIZED_SCROLLING_ATTR_PARAM, MAXIMIZED_SCROLLING_ATTR_DEFAULT);
-        maximizedStyleAttr = getAttributeParam(config, MAXIMIZED_STYLE_ATTR_PARAM, null);
-        maximizedWidthAttr = getAttributeParam(config, MAXIMIZED_WIDTH_ATTR_PARAM, MAXIMIZED_WIDTH_ATTR_DEFAULT);
-        nameAttr = getAttributeParam(config, NAME_ATTR_PARAM, null);
-        scrollingAttr = getAttributeParam(config, SCROLLING_ATTR_PARAM, SCROLLING_ATTR_DEFAULT);
-        styleAttr = getAttributeParam(config, STYLE_ATTR_PARAM, null);
-        widthAttr = getAttributeParam(config, WIDTH_ATTR_PARAM, WIDTH_ATTR_DEFAULT);
+        defaultAlignAttr = getAttributeParam(config, ALIGN_ATTR_PARAM, ALIGN_ATTR_DEFAULT);
+        defaultClassAttr = getAttributeParam(config, CLASS_ATTR_PARAM, null);
+        defaultFrameBorderAttr = getAttributeParam(config, FRAME_BORDER_ATTR_PARAM, FRAME_BORDER_ATTR_DEFAULT);
+        defaultHeightAttr = getAttributeParam(config, HEIGHT_ATTR_PARAM, HEIGHT_ATTR_DEFAULT);
+        defaultIdAttr = getAttributeParam(config, ID_ATTR_PARAM, null);
+        defaultMarginHeightAttr = getAttributeParam(config, MARGIN_HEIGHT_ATTR_PARAM, MARGIN_HEIGHT_ATTR_DEFAULT);
+        defaultMarginWidthAttr = getAttributeParam(config, MARGIN_WIDTH_ATTR_PARAM, MARGIN_WIDTH_ATTR_DEFAULT);
+        defaultMaximizedHeightAttr = getAttributeParam(config, MAXIMIZED_HEIGHT_ATTR_PARAM, MAXIMIZED_HEIGHT_ATTR_DEFAULT);
+        defaultMaximizedScrollingAttr = getAttributeParam(config, MAXIMIZED_SCROLLING_ATTR_PARAM, MAXIMIZED_SCROLLING_ATTR_DEFAULT);
+        defaultMaximizedStyleAttr = getAttributeParam(config, MAXIMIZED_STYLE_ATTR_PARAM, null);
+        defaultMaximizedWidthAttr = getAttributeParam(config, MAXIMIZED_WIDTH_ATTR_PARAM, MAXIMIZED_WIDTH_ATTR_DEFAULT);
+        defaultNameAttr = getAttributeParam(config, NAME_ATTR_PARAM, null);
+        defaultScrollingAttr = getAttributeParam(config, SCROLLING_ATTR_PARAM, SCROLLING_ATTR_DEFAULT);
+        defaultStyleAttr = getAttributeParam(config, STYLE_ATTR_PARAM, null);
+        defaultWidthAttr = getAttributeParam(config, WIDTH_ATTR_PARAM, WIDTH_ATTR_DEFAULT);
     }
     
     /**
@@ -168,15 +175,25 @@ public class IFramePortlet extends GenericPortlet
         // get IFRAME source
         String source = null;
         if (request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_CUSTOM_SOURCE_PARAM, defaultMaximizedCustomSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_CUSTOM_SOURCE_PARAM, defaultMaximizedCustomSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, CUSTOM_SOURCE_PARAM, defaultCustomSource);
+        {
+            source = getPreferenceOrDefault(request, CUSTOM_SOURCE_PARAM, defaultCustomSource);
+        }
         if ((source == null) && request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        {
+            source = getPreferenceOrDefault(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        }
         if (source == null)
+        {
             throw new PortletException("IFRAME source not specified for custom portlet mode.");
+        }
 
         // render IFRAME content
         doIFrame(request, source, response);
@@ -191,15 +208,25 @@ public class IFramePortlet extends GenericPortlet
         // get IFRAME source
         String source = null;
         if (request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_EDIT_SOURCE_PARAM, defaultMaximizedEditSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_EDIT_SOURCE_PARAM, defaultMaximizedEditSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, EDIT_SOURCE_PARAM, defaultEditSource);
+        {
+            source = getPreferenceOrDefault(request, EDIT_SOURCE_PARAM, defaultEditSource);
+        }
         if ((source == null) && request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        {
+            source = getPreferenceOrDefault(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        }
         if (source == null)
+        {
             throw new PortletException("IFRAME source not specified for edit portlet mode.");
+        }
 
         // render IFRAME content
         doIFrame(request, source, response);
@@ -214,15 +241,25 @@ public class IFramePortlet extends GenericPortlet
         // get IFRAME source
         String source = null;
         if (request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_HELP_SOURCE_PARAM, defaultMaximizedHelpSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_HELP_SOURCE_PARAM, defaultMaximizedHelpSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, HELP_SOURCE_PARAM, defaultHelpSource);
+        {
+            source = getPreferenceOrDefault(request, HELP_SOURCE_PARAM, defaultHelpSource);
+        }
         if ((source == null) && request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        {
+            source = getPreferenceOrDefault(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        }
         if (source == null)
+        {
             throw new PortletException("IFRAME source not specified for help portlet mode.");
+        }
 
         // render IFRAME content
         doIFrame(request, source, response);
@@ -237,11 +274,17 @@ public class IFramePortlet extends GenericPortlet
         // get IFRAME source
         String source = null;
         if (request.getWindowState().equals(WindowState.MAXIMIZED))
-            source = getSourcePreference(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        {
+            source = getPreferenceOrDefault(request, MAXIMIZED_VIEW_SOURCE_PARAM, defaultMaximizedViewSource);
+        }
         if (source == null)
-            source = getSourcePreference(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        {
+            source = getPreferenceOrDefault(request, VIEW_SOURCE_PARAM, defaultViewSource);
+        }
         if (source == null)
+        {
             throw new PortletException("IFRAME source not specified for view portlet mode.");
+        }
 
         // render IFRAME content
         doIFrame(request, source, response);
@@ -261,41 +304,102 @@ public class IFramePortlet extends GenericPortlet
         
         content.append("<IFRAME");
         content.append(" SRC=\"").append(sourceAttr).append("\"");
+        String alignAttr = getPreferenceOrDefault(request, ALIGN_ATTR_PARAM, defaultAlignAttr);
         if (alignAttr != null)
+        {
             content.append(" ALIGN=\"").append(alignAttr).append("\"");
+        }
+        String classAttr = getPreferenceOrDefault(request, CLASS_ATTR_PARAM, defaultClassAttr);
         if (classAttr != null)
+        {
             content.append(" CLASS=\"").append(classAttr).append("\"");
+        }
+        String frameBorderAttr = getPreferenceOrDefault(request, FRAME_BORDER_ATTR_PARAM, defaultFrameBorderAttr);
         if (frameBorderAttr != null)
+        {
             content.append(" FRAMEBORDER=\"").append(frameBorderAttr).append("\"");
+        }
+        String idAttr = getPreferenceOrDefault(request, ID_ATTR_PARAM, defaultIdAttr);
         if (idAttr != null)
+        {
             content.append(" ID=\"").append(idAttr).append("\"");
+        }
+        String marginHeightAttr = getPreferenceOrDefault(request, MARGIN_HEIGHT_ATTR_PARAM, defaultMarginHeightAttr);
         if (marginHeightAttr != null)
+        {
             content.append(" MARGINHEIGHT=\"").append(marginHeightAttr).append("\"");
+        }
+        String marginWidthAttr = getPreferenceOrDefault(request, MARGIN_WIDTH_ATTR_PARAM, defaultMarginWidthAttr);
         if (marginWidthAttr != null)
+        {
             content.append(" MARGINWIDTH=\"").append(marginWidthAttr).append("\"");
+        }
+        String nameAttr = getPreferenceOrDefault(request, NAME_ATTR_PARAM, defaultNameAttr);
         if (nameAttr != null)
+        {
             content.append(" NAME=\"").append(nameAttr).append("\"");
+        }
         if (request.getWindowState().equals(WindowState.MAXIMIZED))
         {
+            String maximizedHeightAttr = getPreferenceOrDefault(request, MAXIMIZED_HEIGHT_ATTR_PARAM, defaultMaximizedHeightAttr);
+            if (maximizedHeightAttr == null)
+            {
+                maximizedHeightAttr = getPreferenceOrDefault(request, HEIGHT_ATTR_PARAM, defaultHeightAttr);
+            }
             if (maximizedHeightAttr != null)
+            {
                 content.append(" HEIGHT=\"").append(maximizedHeightAttr).append("\"");
+            }
+            String maximizedScrollingAttr = getPreferenceOrDefault(request, MAXIMIZED_SCROLLING_ATTR_PARAM, defaultMaximizedScrollingAttr);
+            if (maximizedScrollingAttr == null)
+            {
+                maximizedScrollingAttr = getPreferenceOrDefault(request, SCROLLING_ATTR_PARAM, defaultScrollingAttr);
+            }
             if (maximizedScrollingAttr != null)
+            {
                 content.append(" SCROLLING=\"").append(maximizedScrollingAttr).append("\"");
+            }
+            String maximizedStyleAttr = getPreferenceOrDefault(request, MAXIMIZED_STYLE_ATTR_PARAM,  defaultMaximizedStyleAttr);
+            if (maximizedStyleAttr == null)
+            {
+                maximizedStyleAttr = getPreferenceOrDefault(request, STYLE_ATTR_PARAM, defaultStyleAttr);
+            }
             if (maximizedStyleAttr != null)
+            {
                 content.append(" STYLE=\"").append(maximizedStyleAttr).append("\"");
+            }
+            String maximizedWidthAttr = getPreferenceOrDefault(request, MAXIMIZED_WIDTH_ATTR_PARAM, defaultMaximizedWidthAttr);
+            if (maximizedWidthAttr == null)
+            {
+                maximizedWidthAttr = getPreferenceOrDefault(request, WIDTH_ATTR_PARAM, defaultWidthAttr);
+            }
             if (maximizedWidthAttr != null)
+            {
                 content.append(" WIDTH=\"").append(maximizedWidthAttr).append("\"");
+            }
         }
         else
         {
+            String heightAttr = getPreferenceOrDefault(request, HEIGHT_ATTR_PARAM, defaultHeightAttr);
             if (heightAttr != null)
+            {
                 content.append(" HEIGHT=\"").append(heightAttr).append("\"");
+            }
+            String scrollingAttr = getPreferenceOrDefault(request, SCROLLING_ATTR_PARAM, defaultScrollingAttr);
             if (scrollingAttr != null)
+            {
                 content.append(" SCROLLING=\"").append(scrollingAttr).append("\"");
+            }
+            String styleAttr = getPreferenceOrDefault(request, STYLE_ATTR_PARAM, defaultStyleAttr);
             if (styleAttr != null)
+            {
                 content.append(" STYLE=\"").append(styleAttr).append("\"");
+            }
+            String widthAttr = getPreferenceOrDefault(request, WIDTH_ATTR_PARAM, defaultWidthAttr);
             if (widthAttr != null)
+            {
                 content.append(" WIDTH=\"").append(widthAttr).append("\"");
+            }
         }
         content.append(">");
         content.append("<P STYLE=\"textAlign:center\"><A HREF=\"").append(sourceAttr).append("\">").append(sourceAttr).append("</A></P>");
@@ -316,17 +420,21 @@ public class IFramePortlet extends GenericPortlet
     {
         String value = config.getInitParameter(name);
         if (value == null)
+        {
             value = defaultValue;
+        }
         return (((value != null) && (value.length() > 0) && ! value.equalsIgnoreCase("none")) ? value : null);
     }
 
     /**
-     * Get IFRAME source preference value if enabled.
+     * Get IFRAME preference value if enabled.
      */
-    private String getSourcePreference(RenderRequest request, String name, String defaultValue)
+    private String getPreferenceOrDefault(RenderRequest request, String name, String defaultValue)
     {
-        if (! enableSourcePreferences)
+        if (! enablePreferences)
+        {
             return defaultValue;
+        }
         PortletPreferences prefs = request.getPreferences();
         return ((prefs != null) ? prefs.getValue(name, defaultValue) : defaultValue);
     }

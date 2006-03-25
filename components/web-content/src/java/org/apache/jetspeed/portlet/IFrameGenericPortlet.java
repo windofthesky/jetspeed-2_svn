@@ -55,6 +55,7 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         attributes.put("MARGINWIDTH", "0");
         attributes.put("NAME", "");
 
+        attributes.put("HEIGHT", "");
         attributes.put("WIDTH", "100%");
         attributes.put("SCROLLING", "NO");
         attributes.put("STYLE", "");
@@ -89,7 +90,7 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         else
             value = getAttributePreference(prefs, attribute);
 
-        if (value == null || value == "") { return; }
+        if (value == null || value.length() == 0) { return; }
         content.append(" ").append(attribute).append("=\"").append(value).append("\"");
     }
 
