@@ -424,7 +424,7 @@ limitations under the License.
         <!-- copy only the artifact and ignore dependencies using mapper -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/lib">
             <fileset refid="component.dependencies.id"/>
-            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.jar" to="\1.jar"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid}-${org.apache.jetspeed.deploy.version}).jar" to="\1.jar"/>
         </copy>
     </target>
 
