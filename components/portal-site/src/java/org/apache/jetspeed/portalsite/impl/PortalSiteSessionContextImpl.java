@@ -133,18 +133,18 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * newRequestContext - create a new request context instance with fallback
+     * newRequestContext - create a new request context instance with fallback and history
      *
      * @param requestProfileLocators request profile locators
      * @return new request context instance
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators)
     {
-        return newRequestContext(requestProfileLocators, true);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, true, true);
     }
 
     /**
-     * newRequestContext - create a new request context instance
+     * newRequestContext - create a new request context instance with history
      *
      * @param requestProfileLocators request profile locators
      * @param requestFallback flag specifying whether to fallback to root folder
@@ -153,8 +153,22 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback)
     {
-        // TODO - potentially cache N request contexts and reuse
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, true);
+    }
+
+    /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory)
+    {
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, useHistory);
     }
 
     /**
@@ -163,11 +177,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param requestProfileLocators map of profile locators for request
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
      * @return selected page proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback) throws NodeNotFoundException
+    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators))
@@ -201,7 +217,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // attempt to access requested path
                 try
                 {
-                    return selectRequestPage(requestPath);
+                    return selectRequestPage(requestPath, useHistory);
                 }
                 catch (NodeNotFoundException nnfe)
                 {
@@ -380,11 +396,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                     associated with this context
      *
      * @param requestPath request path
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
      * @return selected page proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    private Page selectRequestPage(String requestPath) throws NodeNotFoundException
+    private Page selectRequestPage(String requestPath, boolean useHistory) throws NodeNotFoundException
     {
         // save access exceptions
         SecurityException accessException = null;
@@ -511,19 +529,24 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 }
                 if ((requestFolder != null) && (requestFolderPages != null) && !requestFolderPages.isEmpty())
                 {
+                    Page requestPage = null;
+
                     // attempt to lookup last visited page by folder proxy
                     // path, (proxies are hashed by their path), contains
                     // test must be performed since identical paths may
                     // occur in multiple site views
-                    Page requestPage = (Page)folderPageHistory.get(requestFolder);
-                    if ((requestPage != null) && requestFolderPages.contains(requestPage))
+                    if (useHistory)
                     {
-                        // log selected request page
-                        if (log.isDebugEnabled())
+                        requestPage = (Page)folderPageHistory.get(requestFolder);
+                        if ((requestPage != null) && requestFolderPages.contains(requestPage))
                         {
-                            log.debug("Selected folder historical page: path=" + view.getManagedPage(requestPage).getPath());
+                            // log selected request page
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Selected folder historical page: path=" + view.getManagedPage(requestPage).getPath());
+                            }
+                            return requestPage;
                         }
-                        return requestPage;
                     }
                     
                     // get default page for folder proxy if more than one

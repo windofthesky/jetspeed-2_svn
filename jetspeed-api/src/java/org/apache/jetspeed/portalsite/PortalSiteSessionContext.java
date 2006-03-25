@@ -29,7 +29,7 @@ import org.apache.jetspeed.page.PageManager;
 public interface PortalSiteSessionContext extends Serializable
 {
     /**
-     * newRequestContext - create a new request context instance with fallback
+     * newRequestContext - create a new request context instance with fallback and history
      *
      * @param requestProfileLocators request profile locators
      * @return new request context instance
@@ -37,7 +37,7 @@ public interface PortalSiteSessionContext extends Serializable
     PortalSiteRequestContext newRequestContext(Map requestProfileLocators);
 
     /**
-     * newRequestContext - create a new request context instance
+     * newRequestContext - create a new request context instance with history
      *
      * @param requestProfileLocators request profile locators
      * @param requestFallback flag specifying whether to fallback to root folder
@@ -45,6 +45,18 @@ public interface PortalSiteSessionContext extends Serializable
      * @return new request context instance
      */
     PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback);
+
+    /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory);
 
     /**
      * getPageManager - return PageManager component instance

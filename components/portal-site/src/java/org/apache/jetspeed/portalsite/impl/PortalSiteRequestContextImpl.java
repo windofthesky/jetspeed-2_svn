@@ -62,6 +62,12 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private boolean requestFallback;
 
     /**
+     * useHistory - flag indicating whether to use visited page
+     *              history to select default page per site folder
+     */
+    private boolean useHistory;
+
+    /**
      * page - cached request profiled page proxy
      */
     private Page requestPage;
@@ -117,12 +123,43 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
+                                        boolean requestFallback, boolean useHistory)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
         this.requestFallback = requestFallback;
+        this.useHistory = useHistory;
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - constructor
+     *
+     * @param sessionContext session context
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
+                                        boolean requestFallback)
+    {
+        this(sessionContext, requestProfileLocators, requestFallback, true);
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - constructor
+     *
+     * @param sessionContext session context
+     * @param requestProfileLocators request profile locators
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators)
+    {
+        this(sessionContext, requestProfileLocators, true, true);
     }
 
     /**
@@ -172,7 +209,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // cached in this context
         if (requestPage == null)
         {
-            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback);            
+            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory);            
         }
         return requestPage;
     }

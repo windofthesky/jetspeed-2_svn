@@ -97,6 +97,31 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     private boolean requestFallback;
 
     /**
+     * useHistory - flag indicating whether to use visited page
+     *              history to select default page per site folder
+     */
+    private boolean useHistory;
+
+    /**
+     * ProfilerValveImpl - constructor
+     *
+     * @param profiler profiler component reference
+     * @param portalSite portal site component reference
+     * @param pageManager page manager component reference
+     * @param requestFallback flag to enable root folder fallback
+     * @param useHistory flag to enable selection of last visited folder page
+     */
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager,
+                              boolean requestFallback, boolean useHistory)
+    {
+        this.profiler = profiler;
+        this.portalSite = portalSite;
+        this.pageManager = pageManager;
+        this.requestFallback = requestFallback;
+        this.useHistory = useHistory;
+    }
+
+    /**
      * ProfilerValveImpl - constructor
      *
      * @param profiler profiler component reference
@@ -104,17 +129,22 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      * @param pageManager page manager component reference
      * @param requestFallback flag to enable root folder fallback
      */
-    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager, boolean requestFallback )
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageManager pageManager,
+                             boolean requestFallback)
     {
-        this.profiler = profiler;
-        this.portalSite = portalSite;
-        this.pageManager = pageManager;
-        this.requestFallback = requestFallback;
+        this(profiler, portalSite, pageManager, requestFallback, true);
     }
 
-    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager)
+    /**
+     * ProfilerValveImpl - constructor
+     *
+     * @param profiler profiler component reference
+     * @param portalSite portal site component reference
+     * @param pageManager page manager component reference
+     */
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageManager pageManager)
     {
-        this(profiler, portalSite, pageManager, true);
+        this(profiler, portalSite, pageManager, true, true);
     }
     
     /*
@@ -190,15 +220,16 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 }
 
                 // construct and save a new portalsite request context
-                // using session context, locators map, and fallback; the
-                // request context uses the locators to initialize or resets
-                // the session context if locators have changed for this
-                // request; the request context also acts as a short term
-                // request cache for the selected page and built menus;
-                // however, creating the request context here does not
-                // select the page or build menus: that is done when the
-                // request context is accessed subsequently
-                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback);
+                // using session context, locators map, fallback, and
+                // folder page histories; the request context uses the
+                // locators to initialize or resets the session context if
+                // locators have changed for this request; the request
+                // context also acts as a short term request cache for the
+                // selected page and built menus; however, creating the
+                // request context here does not select the page or build
+                // menus: that is done when the request context is
+                // accessed subsequently
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback, useHistory);
                 request.setAttribute(PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY, requestContext);
 
                 // additionally save request context under legacy key

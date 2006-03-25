@@ -92,6 +92,13 @@ limitations under the License.
        for access errors or missing pages
    -->
    <constructor-arg index="3"><value>true</value></constructor-arg>    
+   <!--
+       use last visited page histories to select default page
+       for folder navigational urls; if set to false, the
+       default page specified in PSML, (or the first page in
+       the folder), is always selected
+   -->
+   <constructor-arg index="4"><value>true</value></constructor-arg>    
   </bean> 
   
   <bean id="containerValve"
