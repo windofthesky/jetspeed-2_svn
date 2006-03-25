@@ -331,13 +331,21 @@ public class StandardDeploymentManager implements DeploymentManager
             // see: http://issues.apache.org/jira/browse/JS2-261
             try
             {
-                sleep(scanningDelay*2);
+                //
+                // this is just too abusive for server class machines
+                // and modern CPU/RAM configurations... if one REALLY
+                // needs to slow the startup sequence, edit this setting
+                // in WEB-INF/conf/jetspeed.properties:
+                //
+                // autodeployment.delay=10000
+                //
+                //sleep(scanningDelay*2);
+                sleep(scanningDelay);
             }
             catch (InterruptedException e)
             {
-
             }
-           while (started)
+            while (started)
             {
                 fireDeploymentEvent();
 
