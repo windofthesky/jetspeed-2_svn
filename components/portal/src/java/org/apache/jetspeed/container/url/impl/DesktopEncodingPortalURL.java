@@ -24,7 +24,6 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.pluto.om.window.PortletWindow;
@@ -129,7 +128,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             if (this.javascriptDoAction != null)
             {
-                buffer.append(this.javascriptDoAction + "(\"");
+                buffer.append(this.javascriptDoAction + "('");
             }            
         }
         else
@@ -165,9 +164,9 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             {
                 if (window != null)
                 {
-                    buffer.append("\",\"");
+                    buffer.append("','");
                     buffer.append(window.getPortletEntity().getId());
-                    buffer.append("\"");                
+                    buffer.append("', this");                
                 }
                 buffer.append(")");
             }
