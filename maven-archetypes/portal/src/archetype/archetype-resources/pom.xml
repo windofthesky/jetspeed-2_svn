@@ -474,7 +474,6 @@ limitations under the License.
 
         <!-- J2 Standard Directories -->
         <sourceDirectory>src/java</sourceDirectory>
-        <scriptSourceDirectory>src/scripts</scriptSourceDirectory>
         <testSourceDirectory>src/test</testSourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
