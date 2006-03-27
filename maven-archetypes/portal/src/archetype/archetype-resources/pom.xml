@@ -101,7 +101,8 @@ limitations under the License.
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
         <org.apache.maven.artifact.ant.version>2.0.1</org.apache.maven.artifact.ant.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
-        <org.apache.portals.bridges.version>1.0</org.apache.portals.bridges.version>
+        <org.apache.portals.bridges.common.version>1.0.1-dev</org.apache.portals.bridges.common.version>
+        <org.apache.portals.bridges.velocity.version>1.0</org.apache.portals.bridges.velocity.version>
         <org.apache.portals.jetspeed-2.version>@JETSPEED_2_VERSION@</org.apache.portals.jetspeed-2.version>
         <portlet-api.version>1.0</portlet-api.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
@@ -452,17 +453,12 @@ limitations under the License.
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-common</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.common.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-velocity</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.portals.bridges</groupId>
-                <artifactId>portals-bridges-frameworks</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.velocity.version}</version>
             </dependency>
 
         </dependencies>

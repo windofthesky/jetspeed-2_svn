@@ -30,7 +30,7 @@ limitations under the License.
     <property name="org.apache.jetspeed.production.database.password" value=""/>
     <property name="org.apache.jetspeed.groupid" value=""/>
     <property name="org.apache.jetspeed.version" value=""/>
-    <property name="org.apache.portals.bridges.version" value=""/>
+    <property name="org.apache.portals.bridges.common.version" value=""/>
     <property name="org.apache.pluto.version" value=""/>
     <property name="portlet-api.version" value=""/>
     <property name="org.apache.derby.version" value=""/>
@@ -60,7 +60,7 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}"/>
         <echo message="    org.apache.jetspeed.groupid=${org.apache.jetspeed.groupid}"/>
         <echo message="    org.apache.jetspeed.version=${org.apache.jetspeed.version}"/>
-        <echo message="    org.apache.portals.bridges.version=${org.apache.portals.bridges.version}"/>
+        <echo message="    org.apache.portals.bridges.common.version=${org.apache.portals.bridges.common.version}"/>
         <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
@@ -94,7 +94,7 @@ limitations under the License.
                         version="${org.apache.pluto.version}"/>
             <dependency groupId="org.apache.portals.bridges"
                         artifactId="portals-bridges-common"
-                        version="${org.apache.portals.bridges.version}"/>
+                        version="${org.apache.portals.bridges.common.version}"/>
             <dependency groupId="${org.apache.jetspeed.groupid}"
                         artifactId="jetspeed-commons"
                         version="${org.apache.jetspeed.version}"/>

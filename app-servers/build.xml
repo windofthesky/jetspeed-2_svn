@@ -34,7 +34,11 @@ limitations under the License.
     <property name="org.apache.jetspeed.production.database.password" value=""/>
     <property name="org.apache.jetspeed.groupid" value=""/>
     <property name="org.apache.jetspeed.version" value=""/>
-    <property name="org.apache.portals.bridges.version" value=""/>
+    <property name="org.apache.portals.bridges.common.version" value=""/>
+    <property name="org.apache.portals.bridges.jpetstore.version" value=""/>
+    <property name="org.apache.portals.bridges.jsf-demo.version" value=""/>
+    <property name="org.apache.portals.bridges.perl.version" value=""/>
+    <property name="org.apache.portals.bridges.php.version" value=""/>
     <property name="org.apache.pluto.version" value=""/>
     <property name="portlet-api.version" value=""/>
     <property name="org.apache.derby.version" value=""/>
@@ -68,7 +72,11 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}"/>
         <echo message="    org.apache.jetspeed.groupid=${org.apache.jetspeed.groupid}"/>
         <echo message="    org.apache.jetspeed.version=${org.apache.jetspeed.version}"/>
-        <echo message="    org.apache.portals.bridges.version=${org.apache.portals.bridges.version}"/>
+        <echo message="    org.apache.portals.bridges.common.version=${org.apache.portals.bridges.common.version}"/>
+        <echo message="    org.apache.portals.bridges.jpetstore.version=${org.apache.portals.bridges.jpetstore.version}"/>
+        <echo message="    org.apache.portals.bridges.jsf-demo.version=${org.apache.portals.bridges.jsf-demo.version}"/>
+        <echo message="    org.apache.portals.bridges.perl.version=${org.apache.portals.bridges.perl.version}"/>
+        <echo message="    org.apache.portals.bridges.php.version=${org.apache.portals.bridges.php.version}"/>
         <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
@@ -155,8 +163,16 @@ limitations under the License.
                       value="${org.apache.jetspeed.groupid}"/>
             <property name="org.apache.jetspeed.version"
                       value="${org.apache.jetspeed.version}"/>
-            <property name="org.apache.portals.bridges.version"
-                      value="${org.apache.portals.bridges.version}"/>
+            <property name="org.apache.portals.bridges.common.version"
+                      value="${org.apache.portals.bridges.common.version}"/>
+            <property name="org.apache.portals.bridges.jpetstore.version"
+                      value="${org.apache.portals.bridges.jpetstore.version}"/>
+            <property name="org.apache.portals.bridges.jsf-demo.version"
+                      value="${org.apache.portals.bridges.jsf-demo.version}"/>
+            <property name="org.apache.portals.bridges.perl.version"
+                      value="${org.apache.portals.bridges.perl.version}"/>
+            <property name="org.apache.portals.bridges.php.version"
+                      value="${org.apache.portals.bridges.php.version}"/>
             <property name="org.apache.pluto.version"
                       value="${org.apache.pluto.version}"/>
             <property name="portlet-api.version"
@@ -178,8 +194,14 @@ limitations under the License.
                       value="${org.apache.jetspeed.groupid}"/>
             <property name="org.apache.jetspeed.version"
                       value="${org.apache.jetspeed.version}"/>
-            <property name="org.apache.portals.bridges.version"
-                      value="${org.apache.portals.bridges.version}"/>
+            <property name="org.apache.portals.bridges.jpetstore.version"
+                      value="${org.apache.portals.bridges.jpetstore.version}"/>
+            <property name="org.apache.portals.bridges.jsf-demo.version"
+                      value="${org.apache.portals.bridges.jsf-demo.version}"/>
+            <property name="org.apache.portals.bridges.perl.version"
+                      value="${org.apache.portals.bridges.perl.version}"/>
+            <property name="org.apache.portals.bridges.php.version"
+                      value="${org.apache.portals.bridges.php.version}"/>
         </ant>
     </target>
 

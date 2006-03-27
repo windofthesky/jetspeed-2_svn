@@ -31,7 +31,11 @@ limitations under the License.
     <property name="org.apache.jetspeed.production.database.password" value=""/>
     <property name="org.apache.jetspeed.groupid" value=""/>
     <property name="org.apache.jetspeed.version" value=""/>
-    <property name="org.apache.portals.bridges.version" value=""/>
+    <property name="org.apache.portals.bridges.common.version" value=""/>
+    <property name="org.apache.portals.bridges.jpetstore.version" value=""/>
+    <property name="org.apache.portals.bridges.jsf-demo.version" value=""/>
+    <property name="org.apache.portals.bridges.perl.version" value=""/>
+    <property name="org.apache.portals.bridges.php.version" value=""/>
     <property name="org.apache.pluto.version" value=""/>
     <property name="portlet-api.version" value=""/>
     <property name="org.apache.derby.version" value=""/>
@@ -65,7 +69,11 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.production.database.password=${org.apache.jetspeed.production.database.password}"/>
         <echo message="    org.apache.jetspeed.groupid=${org.apache.jetspeed.groupid}"/>
         <echo message="    org.apache.jetspeed.version=${org.apache.jetspeed.version}"/>
-        <echo message="    org.apache.portals.bridges.version=${org.apache.portals.bridges.version}"/>
+        <echo message="    org.apache.portals.bridges.common.version=${org.apache.portals.bridges.common.version}"/>
+        <echo message="    org.apache.portals.bridges.jpetstore.version=${org.apache.portals.bridges.jpetstore.version}"/>
+        <echo message="    org.apache.portals.bridges.jsf-demo.version=${org.apache.portals.bridges.jsf-demo.version}"/>
+        <echo message="    org.apache.portals.bridges.perl.version=${org.apache.portals.bridges.perl.version}"/>
+        <echo message="    org.apache.portals.bridges.php.version=${org.apache.portals.bridges.php.version}"/>
         <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
@@ -99,7 +107,7 @@ limitations under the License.
                         version="${org.apache.pluto.version}"/>
             <dependency groupId="org.apache.portals.bridges"
                         artifactId="portals-bridges-common"
-                        version="${org.apache.portals.bridges.version}"/>
+                        version="${org.apache.portals.bridges.common.version}"/>
             <dependency groupId="${org.apache.jetspeed.groupid}"
                         artifactId="jetspeed-commons"
                         version="${org.apache.jetspeed.version}"/>
@@ -356,22 +364,22 @@ limitations under the License.
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="jpetstore"/>
-            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.jpetstore.version}"/>
         </antcall>
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="jsf-demo"/>
-            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.jsf-demo.version}"/>
         </antcall>
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="perl"/>
-            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.perl.version}"/>
         </antcall>
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="php"/>
-            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.version}"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.php.version}"/>
         </antcall>
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>

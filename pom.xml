@@ -150,7 +150,14 @@ limitations under the License.
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
         <org.apache.maven.artifact.ant.version>2.0.1</org.apache.maven.artifact.ant.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
-        <org.apache.portals.bridges.version>1.0</org.apache.portals.bridges.version>
+        <org.apache.portals.bridges.common.version>1.0.1-dev</org.apache.portals.bridges.common.version>
+        <org.apache.portals.bridges.frameworks.version>1.0</org.apache.portals.bridges.frameworks.version>
+        <org.apache.portals.bridges.jpetstore.version>1.0</org.apache.portals.bridges.jpetstore.version>
+        <org.apache.portals.bridges.jsf-demo.version>1.0</org.apache.portals.bridges.jsf-demo.version>
+        <org.apache.portals.bridges.jsf.version>1.0</org.apache.portals.bridges.jsf.version>
+        <org.apache.portals.bridges.perl.version>1.0</org.apache.portals.bridges.perl.version>
+        <org.apache.portals.bridges.php.version>1.0</org.apache.portals.bridges.php.version>
+        <org.apache.portals.bridges.velocity.version>1.0</org.apache.portals.bridges.velocity.version>
         <org.springframework.version>1.1.5</org.springframework.version>
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
@@ -768,22 +775,22 @@ limitations under the License.
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-common</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.common.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-velocity</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.velocity.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-frameworks</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.frameworks.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-jsf</artifactId>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.jsf.version}</version>
             </dependency>
 
             <!-- Portals Bridges Applications -->
@@ -791,25 +798,25 @@ limitations under the License.
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>jpetstore</artifactId>
                 <type>war</type>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.jpetstore.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>jsf-demo</artifactId>
                 <type>war</type>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.jsf-demo.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>perl</artifactId>
                 <type>war</type>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.perl.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>php</artifactId>
                 <type>war</type>
-                <version>${org.apache.portals.bridges.version}</version>
+                <version>${org.apache.portals.bridges.php.version}</version>
             </dependency>
 
             <!-- MyFaces -->

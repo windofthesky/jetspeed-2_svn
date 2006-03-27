@@ -85,8 +85,16 @@ limitations under the License.
                                               value="${pom.groupId}"/>
                                     <property name="org.apache.jetspeed.version"
                                               value="${pom.version}"/>
-                                    <property name="org.apache.portals.bridges.version"
-                                              value="${org.apache.portals.bridges.version}"/>
+                                    <property name="org.apache.portals.bridges.common.version"
+                                              value="${org.apache.portals.bridges.common.version}"/>
+                                    <property name="org.apache.portals.bridges.jpetstore.version"
+                                              value="${org.apache.portals.bridges.jpetstore.version}"/>
+                                    <property name="org.apache.portals.bridges.jsf-demo.version"
+                                              value="${org.apache.portals.bridges.jsf-demo.version}"/>
+                                    <property name="org.apache.portals.bridges.perl.version"
+                                              value="${org.apache.portals.bridges.perl.version}"/>
+                                    <property name="org.apache.portals.bridges.php.version"
+                                              value="${org.apache.portals.bridges.php.version}"/>
                                     <property name="org.apache.pluto.version"
                                               value="${org.apache.pluto.version}"/>
                                     <property name="portlet-api.version"
@@ -111,8 +119,14 @@ limitations under the License.
                                               value="${pom.groupId}"/>
                                     <property name="org.apache.jetspeed.version"
                                               value="${pom.version}"/>
-                                    <property name="org.apache.portals.bridges.version"
-                                              value="${org.apache.portals.bridges.version}"/>
+                                    <property name="org.apache.portals.bridges.jpetstore.version"
+                                              value="${org.apache.portals.bridges.jpetstore.version}"/>
+                                    <property name="org.apache.portals.bridges.jsf-demo.version"
+                                              value="${org.apache.portals.bridges.jsf-demo.version}"/>
+                                    <property name="org.apache.portals.bridges.perl.version"
+                                              value="${org.apache.portals.bridges.perl.version}"/>
+                                    <property name="org.apache.portals.bridges.php.version"
+                                              value="${org.apache.portals.bridges.php.version}"/>
                                 </ant>
 
                             </tasks>
