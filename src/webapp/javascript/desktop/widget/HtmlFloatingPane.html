@@ -1,15 +1,15 @@
 <div id="${this.widgetId}" class="dojoFloatingPane" datasrc="${this.blee}" dojoAttachEvent="onMouseDown">
 	<div dojoAttachPoint="titleBar" class="dojoFloatingPaneTitleBar" style="display:none" dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut">
         <img dojoAttachPoint="titleBarIcon" src="${this.iconSrc}" class="dojoTitleBarIcon">
-		<div dojoAttachPoint="closeAction" dojoAttachEvent="onClick:closeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
-   	  		class="dojoFloatingPaneCloseIcon"></div>
-		<div dojoAttachPoint="restoreAction" dojoAttachEvent="onClick:restoreWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
-   	  		class="dojoFloatingPaneRestoreIcon"></div>
-		<div dojoAttachPoint="maximizeAction" dojoAttachEvent="onClick:maximizeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
-   	  		class="dojoFloatingPaneMaximizeIcon"></div>
-		<div dojoAttachPoint="minimizeAction" dojoAttachEvent="onClick:minimizeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
-   	  		class="dojoFloatingPaneMinimizeIcon"></div>
-	  	<div dojoAttachPoint="titleBarText" class="dojoFloatingPaneTitleText">${this.title}</div>
+		<div class="dojoFloatingPaneCloseIcon" dojoAttachPoint="closeAction" dojoAttachEvent="onClick:closeWindow"></div>
+        <!-- dojoAttachEvent="onClick:closeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"></div> -->
+		<div class="dojoFloatingPaneRestoreIcon" dojoAttachPoint="restoreAction" dojoAttachEvent="onClick:restoreWindow"></div>
+        <!--  dojoAttachEvent="onClick:restoreWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"></div> -->
+		<div class="dojoFloatingPaneMaximizeIcon" dojoAttachPoint="maximizeAction" dojoAttachEvent="onClick:maximizeWindow"></div>
+        <!--  dojoAttachEvent="onClick:maximizeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"></div> -->
+		<div class="dojoFloatingPaneMinimizeIcon" dojoAttachPoint="minimizeAction" dojoAttachEvent="onClick:minimizeWindow"></div>
+        <!-- dojoAttachEvent="onClick:minimizeWindow;onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"></div> -->
+	  	<div class="dojoFloatingPaneTitleText" dojoAttachPoint="titleBarText">${this.title}</div>
 	</div>
 
     <div dojoAttachPoint="containerNodeWrapper"

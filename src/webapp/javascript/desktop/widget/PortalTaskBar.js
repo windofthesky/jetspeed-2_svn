@@ -53,15 +53,33 @@ dojo.lang.extend(jetspeed.ui.widget.PortalTaskBarItem, {
 	},
     onClick: function() {
         var showWindow = this.window;
+        var showWindowNode = showWindow.domNode;
         var btnNode = this.domNode;
         
-        // simulate button click
-        dojo.fx.html.fade( this.domNode, 100, 1, 0.5, function() { dojo.fx.html.fade( btnNode, 100, 0.5, 1 ); } );
+        // sequencing these effects makes IE happier
+        //   - we fadeOut the button to 50% opacity
+        //   - we fadeIn the button back to normal
+        //   - we explode or show the window
         
-        if ( this.window.windowState == "minimized" )
-            dojo.fx.html.explode( this.domNode, this.window.domNode, 460, function() { showWindow.show(); } ) ;    // began as 300 in ff
-        else
-            this.window.show();
+        var showWindowCallback = function()
+        {
+            if (dojo.render.html.ie)
+                dojo.lang.setTimeout( function() { showWindow.show(); }, 100 );
+            else
+                showWindow.show();
+        }
+        var explodeCallback = function()
+        {   
+            if ( showWindow.windowState == "minimized" )
+                dojo.fx.html.explode( btnNode, showWindowNode, 300, showWindowCallback ) ;    // began as 300 in ff
+            else
+                showWindow.show();
+        }
+        var fadeCallback = function()
+        {
+            dojo.fx.html.fade( btnNode, 75, 0.5, 1, explodeCallback );
+        }
+        dojo.fx.html.fade( btnNode, 80, 1, 0.5, fadeCallback );
 	}
 });
 
