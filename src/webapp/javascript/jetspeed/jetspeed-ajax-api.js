@@ -67,6 +67,7 @@ jetspeed.loadPage = function()
 //jetspeed.debugPortletEntityIdFilter = [ "dp-18" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
 jetspeed.debugPortletWindowThemes = [ "theme1", "theme2" ];
+jetspeed.debugPortletDumpRawContent = [ "dp-7" ];
 
 jetspeed.testLoadPageCreateWidgetPortlets = function()
 {
@@ -78,6 +79,7 @@ jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletW
 {
     if ( portlets )
     {
+        var createdPortlets = [];
         for (var portletIndex in portlets)
         {
             var portlet = portlets[portletIndex];
@@ -87,8 +89,13 @@ jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletW
                     portlet = null;
             }
             if (portlet)
-                portlet.createPortletWindow(portletWindowFactory);
+            {
+                createdPortlets.push(portlet);
+                portlet.createPortletWindow(portletWindowFactory,null,true);
+            }
         }
+        for (var i = 0; i < createdPortlets.length; i++)
+            createdPortlets[i].retrievePortletContent();
     }
 }
 
@@ -99,19 +106,19 @@ jetspeed.doRender = function(url,portletEntityId)
     var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
     if ( targetPortlet )
     {
-        //dojo.debug( "render " + portletEntityId + " url: " + url );
+        dojo.debug( "render " + portletEntityId + " url: " + url );
         targetPortlet.retrievePortletContent(null,url);
     }
 }
 
 // ... jetspeed.doAction
-jetspeed.doAction = function(url,portletEntityId)
+jetspeed.doAction = function(url,portletEntityId,currentForm)
 {
     var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
     if ( targetPortlet )
     {
         dojo.debug( "action " + portletEntityId + " url: " + url );
-        //targetPortlet.retrievePortletContent(null,url);
+        targetPortlet.retrievePortletContent(new jetspeed.om.PortletActionContentListener(), url);
     }
 }
 
@@ -282,6 +289,23 @@ jetspeed.om.PortletContentListener.prototype =
     }
 }
 
+// ... jetspeed.om.PortletContentListener
+jetspeed.om.PortletActionContentListener = function()
+{
+}
+jetspeed.om.PortletActionContentListener.prototype =
+{
+    notifySuccess: function( /* String */ portletContent, /* Portlet */ portlet )
+    {
+        dojo.debug( "PortletActionContentListener: " + portletContent ) ;
+    },
+    notifyFailure: function( /* String */ type, /* String */ error, /* Portlet */ portlet )
+    {
+        alert( "PortletActionContentListener notifyFailure type=" + type ) ;
+        dojo.debugShallow( error );
+    }
+}
+
 
 // ... jetspeed.om.PortletWidgetWindowFactory
 jetspeed.om.PortletWidgetWindowFactory = function()
@@ -318,7 +342,7 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
     windowFactory: null,
     windowObj: null,
 
-    createPortletWindow: function(portletWindowFactory, portletContentListener)
+    createPortletWindow: function(portletWindowFactory, portletContentListener, doNotRetrieveContent)
     {
         if ( portletWindowFactory == null )
             portletWindowFactory = new jetspeed.om.PortletWidgetWindowFactory() ;
@@ -326,7 +350,8 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
         this.windowFactory = portletWindowFactory ;
         this.windowObj = portletWindowFactory.create( this ) ;
 
-        this.retrievePortletContent(portletContentListener) ;
+        if (! doNotRetrieveContent)
+            this.retrievePortletContent(portletContentListener) ;
     },
 
     getPortletUrl: function(renderUrl)
@@ -353,8 +378,11 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
                 //dojo.debug( "  evt:" );
                 //dojo.debugShallow( evt ) ;
 
-                //if ( portlet.entityId == "dp-18" || portlet.entityId == "dp-7" )
-                //    dojo.debug( "content: " + data);
+                if ( jetspeed.debugPortletDumpRawContent )
+                {
+                    if (dojo.lang.inArray(jetspeed.debugPortletDumpRawContent, portlet.entityId))
+                        dojo.debug( portlet.entityId + " content: " + data);  
+                }
                 if ( portletContentListener && dojo.lang.isFunction( portletContentListener.notifySuccess ) )
                 {
                     portletContentListener.notifySuccess(data, portlet);
@@ -491,7 +519,11 @@ jetspeed.ui.PortletWidgetWindow.prototype.titleLit = false;
 jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOver = function(evt)
 {
     var self = this ;
-    this.titleMouseIn++ ;
+    this.titleMouseIn = 1 ;   // was ++
+    if ( djConfig.isDebug )
+    {
+        //dojo.debug( "mouseover (" + this.titleMouseIn +"): " + evt.currentTarget.className );
+    }
     if ( this.titleMouseIn == 1 )
     {
         window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight( self ); self.titleMouseIn = 0; } }, 270 ) ;
@@ -516,13 +548,8 @@ jetspeed.ui.PortletWidgetWindow.prototype.minimizeWindow = function(evt)
 {
     var tbiWidget = dojo.widget.byId(this.widgetId + "_tbi");
 
-    //var left = dojo.style.totalOffsetLeft(tbiWidget.domNode);
-    //var top = dojo.style.totalOffsetTop(tbiWidget.domNode) - 100;
-    //dojo.debug( "minimizeWindow: " + this.domNode.id + "  move-to-left: " + left + " move-to-top: " + top ) ;
-    //var widgetToHide = this ;
-    //dojo.fx.html.slideTo( this.domNode, 300, [ left, top ], function() { dojo.fx.html.wipeOut(widgetToHide.domNode, 400); } ) ;
     if ( tbiWidget && tbiWidget.domNode )
-        dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 550 ) ; // began as 300 in ff
+        dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 340 ) ; // began as 300 in ff
     else
         this.hide();
     
@@ -564,9 +591,13 @@ jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOut = function(evt)
 {
     var self = this ;
     var nTitleMouseIn = this.titleMouseIn ;
+    if ( djConfig.isDebug )
+    {
+        //dojo.debug( "mouseout (" + this.titleMouseIn +"): " + evt.currentTarget.className );
+    }
     if ( nTitleMouseIn > 0 )
     {
-        nTitleMouseIn = Math.max( 0, ( nTitleMouseIn - 1 ) );
+        nTitleMouseIn = 0 ; // was Math.max( 0, ( nTitleMouseIn - 1 ) );
         this.titleMouseIn = nTitleMouseIn ;
     }
     if ( nTitleMouseIn == 0 && this.titleLit )

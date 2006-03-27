@@ -30,9 +30,9 @@ limitations under the License.
 	{
         jetspeed.doRender(url,portletEntityId);
 	}
-    function doAction(url, portletEntityId)
+    function doAction(url, portletEntityId, currentForm)
     {
-        jetspeed.doAction(url,portletEntityId);
+        jetspeed.doAction(url,portletEntityId, currentForm);
     }	    
 </script>
 <!-- 
