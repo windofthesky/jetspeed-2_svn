@@ -76,7 +76,7 @@ limitations under the License.
                         <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <ant target="resources" antfile="build.xml" dir="${basedir}" inheritAll="off"/>
+                                <ant target="resources" antfile="build.xml" dir="${basedir}" inheritall="off"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -89,7 +89,7 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="hot-deploy-jar" antfile="../../app-servers/build.xml" dir="${basedir}" inheritAll="off">
+                                <ant target="hot-deploy-jar" antfile="build.xml" dir="${basedir}/../../app-servers" inheritall="off">
                                     <property name="org.apache.jetspeed.deploy.enable"
                                               value="${org.apache.jetspeed.env.hotdeploy}"/>
                                     <property name="org.apache.jetspeed.deploy.target"

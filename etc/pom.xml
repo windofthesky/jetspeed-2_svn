@@ -85,7 +85,7 @@ limitations under the License.
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritAll="off">
+                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.test.database.default.name}"/>
                                 </ant>

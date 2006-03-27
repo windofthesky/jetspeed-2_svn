@@ -58,7 +58,7 @@ limitations under the License.
                             <tasks>
 
                                 <!-- normal deployment to app server -->
-                                <ant target="deploy" antfile="build.xml" dir="${basedir}" inheritAll="off">
+                                <ant target="deploy" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.deploy.skip"
                                               value="${org.apache.jetspeed.env.hotdeploy}"/>
                                     <property name="org.apache.jetspeed.deploy.target"
@@ -98,7 +98,7 @@ limitations under the License.
                                 </ant>
 
                                 <!-- hot deployment to app server -->
-                                <ant target="hot-deploy" antfile="build.xml" dir="${basedir}" inheritAll="off">
+                                <ant target="hot-deploy" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.deploy.enable"
                                               value="${org.apache.jetspeed.env.hotdeploy}"/>
                                     <property name="org.apache.jetspeed.deploy.target"
