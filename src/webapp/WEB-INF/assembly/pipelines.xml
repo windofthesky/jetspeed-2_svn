@@ -247,7 +247,27 @@ limitations under the License.
     </list>
     </constructor-arg>
   </bean> 
-  
+
+  <bean id="desktop-action-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <value>DesktopActionPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="securityValve"/>                        
+        <ref bean="localizationValve"/>
+        <ref bean="capabilityValve"/>
+        <ref bean="portalURLValve"/>
+        <ref bean="profilerValve"/>        
+        <ref bean="containerValve"/>
+        <ref bean="actionValve"/>
+    </list>
+    </constructor-arg>
+  </bean> 
+      
   <bean id="portlet-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
@@ -258,7 +278,7 @@ limitations under the License.
    <constructor-arg>
     <list>
         <ref bean="portalURLValve"/>                
-        <ref bean="capabilityValve"/>
+        <ref bean="capabilityValve"/>        
         <ref bean="securityValve"/>                
         <ref bean="localizationValve"/>
         <ref bean="profilerValve"/>                        
@@ -351,7 +371,7 @@ limitations under the License.
                 <value>desktop-pipeline</value>
             </entry>                                    
             <entry key='/action'>
-                <value>action-pipeline</value>
+                <value>desktop-action-pipeline</value>
             </entry>                                                
         </map>        
     </constructor-arg>        
