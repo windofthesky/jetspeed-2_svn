@@ -349,8 +349,9 @@ limitations under the License.
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/pages">
                 <include name="Administrative/**"/>
-                <include name="page.security"/>
                 <include name="my-account.psml"/>
+                <include name="page.security"/>
+                <include name="system/**"/>
             </fileset>
         </copy>
         <copy file="${basedir}/../src/webapp/WEB-INF/pages/minimal-default-page.psml"
