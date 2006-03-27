@@ -135,7 +135,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             if (this.javascriptDoRender != null)
             {
-                buffer.append(this.javascriptDoRender + "(\"");
+                buffer.append(this.javascriptDoRender + "(&quot;");
             }            
         }   
         buffer.append(getBaseURL(secure));
@@ -164,9 +164,9 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             {
                 if (window != null)
                 {
-                    buffer.append("','");
+                    buffer.append("&quot;,&quot;");
                     buffer.append(window.getPortletEntity().getId());
-                    buffer.append("', this");                
+                    buffer.append("&quot;, this");                
                 }
                 buffer.append(")");
             }
@@ -177,9 +177,9 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             {
                 if (window != null)
                 {
-                    buffer.append("\",\"");
+                    buffer.append("&quot;,&quot;");
                     buffer.append(window.getPortletEntity().getId());
-                    buffer.append("\"");                
+                    buffer.append("&quot;");                
                 }
                 buffer.append(")");
             }            
