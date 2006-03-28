@@ -801,7 +801,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             profileLocators = null;
             userPrincipal = null;
             siteView = null;
-            folderPageHistory.clear();
+            if (folderPageHistory != null)
+            {
+                folderPageHistory.clear();
+            }
             if (menuDefinitionLocatorCache != null)
             {
                 menuDefinitionLocatorCache.clear();
@@ -1204,7 +1207,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         // subscribe this session context to page manager events
         synchronized (this)
         {
-            if (!subscribed)
+            if (!subscribed && (pageManager != null))
             {
                 pageManager.addListener(this);
                 subscribed = true;
@@ -1229,7 +1232,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         // unsubscribe this session context to page manager events
         synchronized (this)
         {
-            if (subscribed)
+            if (subscribed && (pageManager != null))
             {
                 pageManager.removeListener(this);
                 subscribed = false;

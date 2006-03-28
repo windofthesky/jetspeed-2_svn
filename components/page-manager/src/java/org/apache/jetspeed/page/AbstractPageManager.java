@@ -672,7 +672,10 @@ public abstract class AbstractPageManager
     public void addListener(PageManagerEventListener listener)
     {
         // add listener to listeners list
-        listeners.add(listener);
+        synchronized (listeners)
+        {
+            listeners.add(listener);
+        }
     }
 
     /**
@@ -683,7 +686,10 @@ public abstract class AbstractPageManager
     public void removeListener(PageManagerEventListener listener)
     {
         // remove listener from listeners list
-        listeners.remove(listener);
+        synchronized (listeners)
+        {
+            listeners.remove(listener);
+        }
     }
 
     /* (non-Javadoc)
@@ -702,7 +708,14 @@ public abstract class AbstractPageManager
      */
     public void notifyNewNode(Node node)
     {
-        Iterator listenersIter = listeners.iterator();
+        // copy listeners list to reduce synchronization deadlock
+        List listenersList = null;
+        synchronized (listeners)
+        {
+            listenersList = new ArrayList(listeners);
+        }
+        // notify listeners
+        Iterator listenersIter = listenersList.iterator();
         while (listenersIter.hasNext())
         {
             PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
@@ -725,7 +738,14 @@ public abstract class AbstractPageManager
      */
     public void notifyUpdatedNode(Node node)
     {
-        Iterator listenersIter = listeners.iterator();
+        // copy listeners list to reduce synchronization deadlock
+        List listenersList = null;
+        synchronized (listeners)
+        {
+            listenersList = new ArrayList(listeners);
+        }
+        // notify listeners
+        Iterator listenersIter = listenersList.iterator();
         while (listenersIter.hasNext())
         {
             PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
@@ -748,7 +768,14 @@ public abstract class AbstractPageManager
      */
     public void notifyRemovedNode(Node node)
     {
-        Iterator listenersIter = listeners.iterator();
+        // copy listeners list to reduce synchronization deadlock
+        List listenersList = null;
+        synchronized (listeners)
+        {
+            listenersList = new ArrayList(listeners);
+        }
+        // notify listeners
+        Iterator listenersIter = listenersList.iterator();
         while (listenersIter.hasNext())
         {
             PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
