@@ -117,7 +117,19 @@ limitations under the License.
        <ref bean="PortletWindowAccessor" />    
    </constructor-arg>   
   </bean> 
-  
+
+  <bean id="desktopActionValve"
+        class="org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="org.apache.pluto.DesktopPortletContainer" />
+   </constructor-arg>
+   <constructor-arg>   
+       <ref bean="PortletWindowAccessor" />    
+   </constructor-arg>   
+  </bean> 
+      
   <bean id="portletValve"
         class="org.apache.jetspeed.aggregator.PortletValve"
         init-method="initialize"
@@ -263,7 +275,7 @@ limitations under the License.
         <ref bean="portalURLValve"/>
         <ref bean="profilerValve"/>        
         <ref bean="containerValve"/>
-        <ref bean="actionValve"/>
+        <ref bean="desktopActionValve"/>
     </list>
     </constructor-arg>
   </bean> 
