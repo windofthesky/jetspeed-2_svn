@@ -166,7 +166,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
                 {
                     buffer.append("&quot;,&quot;");
                     buffer.append(window.getPortletEntity().getId());
-                    buffer.append("&quot;, this");                
+                    buffer.append("&quot;");                
                 }
                 buffer.append(")");
             }
