@@ -111,6 +111,7 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
                     .getResponse();
         }
         //redirectResponse.sendRedirect(location);
+        location = location.replaceAll("/action/", "/portlet/");
         System.out.println("+++ >>>> location is " + location);
         redirectResponse.getWriter().print(location);
     }
