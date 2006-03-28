@@ -128,7 +128,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             if (this.javascriptDoAction != null)
             {
-                buffer.append(this.javascriptDoAction + "('");
+                buffer.append(this.javascriptDoAction + "(&quot;");
             }            
         }
         else
