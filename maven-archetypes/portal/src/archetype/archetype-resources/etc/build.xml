@@ -81,6 +81,7 @@ limitations under the License.
     <target name="schema" depends="test-database-default-name, test-database-filter-drops">
 
         <!-- make target directory -->
+        <delete dir="${org.apache.jetspeed.database.target.sql}"/>
         <mkdir dir="${org.apache.jetspeed.database.target.sql}"/>
 
         <!-- copy general sql -->

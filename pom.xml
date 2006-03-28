@@ -55,6 +55,14 @@ limitations under the License.
             </properties>
         </profile>
 
+        <!-- Production Profile -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <org.apache.jetspeed.env.skip.production>false</org.apache.jetspeed.env.skip.production>
+            </properties>
+        </profile>
+
         <!-- Tomcat Production Profile -->
         <profile>
             <id>tomcat</id>
@@ -97,6 +105,14 @@ limitations under the License.
             </properties>
         </profile>
 
+        <!-- Hot Deployment Profile -->
+        <profile>
+            <id>dbpsml</id>
+            <properties>
+                <org.apache.jetspeed.env.deploy.db.psml>true</org.apache.jetspeed.env.deploy.db.psml>
+            </properties>
+        </profile>
+
     </profiles>
 
     <!-- Properties -->
@@ -111,6 +127,7 @@ limitations under the License.
         <org.apache.jetspeed.env.deploy.type>full</org.apache.jetspeed.env.deploy.type>
         <org.apache.jetspeed.env.deploy.db>true</org.apache.jetspeed.env.deploy.db>
         <org.apache.jetspeed.env.hotdeploy>false</org.apache.jetspeed.env.hotdeploy>
+        <org.apache.jetspeed.env.deploy.db.psml>false</org.apache.jetspeed.env.deploy.db.psml>
 
         <!-- Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
@@ -209,6 +226,7 @@ limitations under the License.
         <module>portal</module>
 
         <!-- J2 Application Server Deployment -->
+        <module>etc/import</module>
         <module>app-servers</module>
         <module>maven-archetypes</module>
 

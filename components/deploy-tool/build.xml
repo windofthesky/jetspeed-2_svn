@@ -31,6 +31,7 @@ limitations under the License.
 
     <target name="resources">
 
+        <!-- merge portlet.tld with existing component resources -->
         <mkdir dir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy"/>
         <copy file="${basedir}/../../src/webapp/WEB-INF/tld/portlet.tld"
               todir="${basedir}/target/classes/org/apache/jetspeed/tools/deploy"/>

@@ -62,6 +62,7 @@ limitations under the License.
             new version of the archetype plugin is developed and released.
         -->
         <!-- Assemble required portal webapp resources -->        
+        <delete dir="${basedir}/target/webapp"/>
         <mkdir dir="${basedir}/target/webapp"/>
         <dependencies filesetId="portal.resources.dependencies.id" useScope="runtime">
             <dependency groupId="${org.apache.jetspeed.groupid}"

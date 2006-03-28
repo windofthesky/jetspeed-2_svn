@@ -32,7 +32,7 @@ limitations under the License.
     <target name="testdata">
 
         <delete dir="${basedir}/target/testdata"/>
-        <mkdir dir="${basedir}/target"/>
+        <mkdir dir="${basedir}/target/testdata"/>
         <copy todir="${basedir}/target/testdata">
             <fileset dir="${basedir}/testdata"/>
         </copy>

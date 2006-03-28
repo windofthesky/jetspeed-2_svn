@@ -21,6 +21,7 @@ limitations under the License.
     <!-- Properties -->
 
     <property name="org.apache.jetspeed.deploy.type" value="full"/>
+    <property name="org.apache.jetspeed.database.psml" value="false"/>
     <property name="org.apache.jetspeed.server.home" value=""/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
     <property name="org.apache.jetspeed.production.database.default.name" value=""/>
@@ -55,10 +56,8 @@ limitations under the License.
         <echo message="    hot-deploy-jar - hot deploy component jar Tomcat app server."/>
         <echo message="    hot-deploy-war - hot deploy application war Tomcat app server."/>
         <echo message="Configuration:"/>
-        <echo message="    org.apache.jetspeed.deploy.enable=${org.apache.jetspeed.deploy.enable}"/>
-        <echo message="    org.apache.jetspeed.deploy.skip=${org.apache.jetspeed.deploy.skip}"/>
-        <echo message="    org.apache.jetspeed.deploy.target=${org.apache.jetspeed.deploy.target}"/>
         <echo message="    org.apache.jetspeed.deploy.type=${org.apache.jetspeed.deploy.type}"/>
+        <echo message="    org.apache.jetspeed.database.psml=${org.apache.jetspeed.database.psml}"/>
         <echo message="    org.apache.jetspeed.server.home=${org.apache.jetspeed.server.home}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         <echo message="    org.apache.jetspeed.production.database.default.name=${org.apache.jetspeed.production.database.default.name}"/>
@@ -244,14 +243,32 @@ limitations under the License.
     </target>
 
     <target name="test-deploy-type">
-        <condition property="org.apache.jetspeed.deploy.full">
+        <!-- application deploy types are additive -->
+        <condition property="org.apache.jetspeed.deploy.full.apps">
             <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
         </condition>
-        <condition property="org.apache.jetspeed.deploy.min">
+        <condition property="org.apache.jetspeed.deploy.min.apps">
             <or>
                 <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
                 <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
             </or>
+        </condition>
+        <!-- pages deploy types are exclusive -->
+        <condition property="org.apache.jetspeed.deploy.full.pages">
+            <and>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
+                </not>
+            </and>
+        </condition>
+        <condition property="org.apache.jetspeed.deploy.min.pages">
+            <and>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
+                </not>
+            </and>
         </condition>
     </target>
 
@@ -289,7 +306,7 @@ limitations under the License.
         </copy>
     </target>
 
-    <target name="deploy-min-apps" if="org.apache.jetspeed.deploy.min">
+    <target name="deploy-min-apps" if="org.apache.jetspeed.deploy.min.apps">
         <!-- deploy minimal set of portlet and layout applications -->
         <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
         <delete>
@@ -305,7 +322,7 @@ limitations under the License.
         <antcall target="hot-deploy-min-apps"/>
     </target>
 
-    <target name="deploy-full-apps" if="org.apache.jetspeed.deploy.full">
+    <target name="deploy-full-apps" if="org.apache.jetspeed.deploy.full.apps">
         <!-- deploy additional set of portlet applications -->
         <delete dir="${org.apache.jetspeed.server.home}/webapps/demo"/>
         <delete dir="${org.apache.jetspeed.server.home}/webapps/jpetstore"/>
@@ -331,7 +348,7 @@ limitations under the License.
         <antcall target="hot-deploy-full-apps"/>
     </target>
 
-    <target name="hot-deploy-min-pages" if="org.apache.jetspeed.deploy.min">
+    <target name="hot-deploy-min-pages" if="org.apache.jetspeed.deploy.min.pages">
         <!-- hot deploy minimum pages content -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/pages">
@@ -347,14 +364,14 @@ limitations under the License.
                  token=" hidden=&quot;true&quot;"/>
     </target>
 
-    <target name="hot-deploy-full-pages" if="org.apache.jetspeed.deploy.full">
+    <target name="hot-deploy-full-pages" if="org.apache.jetspeed.deploy.full.pages">
         <!-- hot deploy full pages content -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/pages"/>
         </copy>
     </target>
 
-    <target name="hot-deploy-full-apps" if="org.apache.jetspeed.deploy.full">
+    <target name="hot-deploy-full-apps" if="org.apache.jetspeed.deploy.full.apps">
         <!-- hot deploy additional set of portlet applications -->
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
@@ -388,7 +405,7 @@ limitations under the License.
         </antcall>
     </target>
 
-    <target name="hot-deploy-min-apps" if="org.apache.jetspeed.deploy.min">
+    <target name="hot-deploy-min-apps" if="org.apache.jetspeed.deploy.min.apps">
         <!-- hot deploy minimal set of portlet and layout applications -->
         <antcall target="hot-deploy-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>

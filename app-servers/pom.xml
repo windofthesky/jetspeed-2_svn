@@ -113,6 +113,8 @@ limitations under the License.
                                               value="${org.apache.jetspeed.env.deploy.target}"/>
                                     <property name="org.apache.jetspeed.deploy.type"
                                               value="${org.apache.jetspeed.env.deploy.type}"/>
+                                    <property name="org.apache.jetspeed.database.psml"
+                                              value="${org.apache.jetspeed.env.deploy.db.psml}"/>
                                     <property name="org.apache.jetspeed.server.home"
                                               value="${org.apache.jetspeed.server.home}"/>
                                     <property name="org.apache.jetspeed.groupid"

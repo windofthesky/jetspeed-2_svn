@@ -81,6 +81,7 @@ limitations under the License.
     <target name="schema" depends="test-database-default-name, test-database-filter-drops">
 
         <!-- make target directory -->
+        <delete dir="${org.apache.jetspeed.database.target.sql}"/>
         <mkdir dir="${org.apache.jetspeed.database.target.sql}"/>
 
         <!-- copy general sql -->
@@ -256,7 +257,7 @@ limitations under the License.
 
     <!-- Populate Database -->
 
-    <target name="populate-db" depends="populate-skip" unless="org.apache.jetspeed.skip">
+    <target name="populate-db" depends="test-populate-skip" unless="org.apache.jetspeed.skip">
 
         <!-- execute drop scripts -->
         <antcall target="sql-execute" inheritall="on" inheritrefs="on">
@@ -292,16 +293,7 @@ limitations under the License.
 
     </target>
 
-    <target name="populate-skip">
-        <condition property="org.apache.jetspeed.skip">
-            <or>
-                <equals arg1="${org.apache.jetspeed.database.skip}" arg2="true"/>
-                <not>
-                    <equals arg1="${org.apache.jetspeed.database.enable}" arg2="true"/>
-                </not>
-            </or>
-        </condition>
-    </target>
+    <!-- SQL Execution -->
 
     <target name="sql-execute" depends="sql-test-database-classpath, sql-execute-drivers-path, sql-execute-derby, sql-execute-hsql"/>
 
@@ -416,6 +408,19 @@ limitations under the License.
                 <include name="${database.arg.scripts}"/>
             </fileset> 
         </sql>
+    </target>
+
+    <!-- Utilities -->
+
+    <target name="test-populate-skip">
+        <condition property="org.apache.jetspeed.skip">
+            <or>
+                <equals arg1="${org.apache.jetspeed.database.skip}" arg2="true"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.enable}" arg2="true"/>
+                </not>
+            </or>
+        </condition>
     </target>
 
 </project>

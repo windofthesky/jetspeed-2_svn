@@ -24,6 +24,7 @@ limitations under the License.
     <property name="org.apache.jetspeed.deploy.skip" value="false"/>
     <property name="org.apache.jetspeed.deploy.target" value="none"/>
     <property name="org.apache.jetspeed.deploy.type" value="full"/>
+    <property name="org.apache.jetspeed.database.psml" value="false"/>
     <property name="org.apache.jetspeed.server.home" value=""/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
     <property name="org.apache.jetspeed.production.database.default.name" value=""/>
@@ -62,6 +63,7 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.deploy.skip=${org.apache.jetspeed.deploy.skip}"/>
         <echo message="    org.apache.jetspeed.deploy.target=${org.apache.jetspeed.deploy.target}"/>
         <echo message="    org.apache.jetspeed.deploy.type=${org.apache.jetspeed.deploy.type}"/>
+        <echo message="    org.apache.jetspeed.database.psml=${org.apache.jetspeed.database.psml}"/>
         <echo message="    org.apache.jetspeed.server.home=${org.apache.jetspeed.server.home}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         <echo message="    org.apache.jetspeed.production.database.default.name=${org.apache.jetspeed.production.database.default.name}"/>
@@ -188,6 +190,8 @@ limitations under the License.
         <ant antfile="${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy" inheritall="off">
             <property name="org.apache.jetspeed.deploy.type"
                       value="${org.apache.jetspeed.deploy.type}"/>
+            <property name="org.apache.jetspeed.database.psml"
+                      value="${org.apache.jetspeed.database.psml}"/>
             <property name="org.apache.jetspeed.server.home"
                       value="${org.apache.jetspeed.server.home}"/>
             <property name="org.apache.jetspeed.groupid"

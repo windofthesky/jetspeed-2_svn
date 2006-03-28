@@ -291,8 +291,10 @@
             <pathelement path="${maven.build.dest}"/>
             <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>            
           </classpath>
-		<sysproperty key="org.apache.jetspeed.page.import.configuration" 
-                     value="./etc/import/import.properties"/>		
+          <sysproperty key="org.apache.jetspeed.page.import.configuration" 
+                       value="./etc/import/import.properties"/>       
+          <sysproperty key="org.apache.jetspeed.page.import.pages"
+                       value="./src/webapp/WEB-INF/pages"/>
         </java>
     </goal>
     

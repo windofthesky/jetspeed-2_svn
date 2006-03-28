@@ -21,6 +21,7 @@ limitations under the License.
     <!-- Properties -->
 
     <property name="org.apache.jetspeed.deploy.type" value="full"/>
+    <property name="org.apache.jetspeed.database.psml" value="false"/>
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.server" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.port" value=""/>
@@ -36,6 +37,7 @@ limitations under the License.
         <echo message="    configure - setup runtime configuration for jetspeed."/>
         <echo message="Configuration:"/>
         <echo message="    org.apache.jetspeed.deploy.type=${org.apache.jetspeed.deploy.type}"/>
+        <echo message="    org.apache.jetspeed.database.psml=${org.apache.jetspeed.database.psml}"/>
         <echo message="    org.apache.jetspeed.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         <echo message="    org.apache.jetspeed.services.autodeployment.server=${org.apache.jetspeed.services.autodeployment.server}"/>
         <echo message="    org.apache.jetspeed.services.autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
@@ -55,6 +57,7 @@ limitations under the License.
                 <exclude name="WEB-INF/pages/**"/>
             </fileset>
         </copy>
+        <antcall target="configure-database-psml"/>
         <mkdir dir="${basedir}/target/webapp/javascript/dojo"/>
         <unzip src="${basedir}/../src/javascript/dojo/dojo.zip"
                dest="${basedir}/target/webapp/javascript/dojo">
@@ -111,12 +114,38 @@ limitations under the License.
         </copy>
     </target>
 
+    <target name="configure-database-psml" depends="test-configure-database-psml" if="org.apache.jetspeed.configure.database.psml">
+        <!-- swap spring configurations to configure database psml -->
+        <move file="${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml"
+              todir="${basedir}/target/webapp/WEB-INF/assembly/alternate"/>
+        <move file="${basedir}/target/webapp/WEB-INF/assembly/alternate/db-page-manager.xml"
+              todir="${basedir}/target/webapp/WEB-INF/assembly"/>
+        <move file="${basedir}/target/webapp/WEB-INF/assembly/alternate/interceptors.xml"
+              todir="${basedir}/target/webapp/WEB-INF/assembly"/>
+    </target>
+
     <target name="test-deploy-type">
         <condition property="org.apache.jetspeed.deploy.full">
-            <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+            <and>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="full"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
+                </not>
+            </and>
         </condition>
         <condition property="org.apache.jetspeed.deploy.min">
-            <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
+            <and>
+                <equals arg1="${org.apache.jetspeed.deploy.type}" arg2="min"/>
+                <not>
+                    <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
+                </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="test-configure-database-psml">
+        <condition property="org.apache.jetspeed.configure.database.psml">
+            <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
         </condition>
     </target>
 
