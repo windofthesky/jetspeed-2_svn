@@ -25,6 +25,11 @@ limitations under the License.
 
     var djConfig = {isDebug: true};
     djConfig.debugAtAllCosts = true;     <!-- needed for js debuggers (both venkman and visual studio) -->
+    djConfig.baseScriptUri = '<%= desktop.getPortalResourceUrl("/javascript/dojo/") %>' ;
+    {
+        var tEnds = djConfig.baseScriptUri.indexOf(";jsessionid=");
+        if (tEnds > 0) djConfig.baseScriptUri = djConfig.baseScriptUri.substring(0, tEnds);
+    }
 
 	function doRender(url,portletEntityId)
 	{
@@ -132,6 +137,25 @@ body { padding: 10px 10px 100px 10px; }
 
 <!-- Start Jetspeed Desktop -->
 <body id="jetspeedDesktop">
+
+<!--
+<div dojoType="FloatingPane"
+	title="Layout window w/shadow"
+	constrainToContainer="true"
+	hasShadow="true"
+	resizable="true"
+	displayMinimizeAction="true"
+	displayMaximizeAction="true"
+	contentWrapper="layout"
+	style="width: 300px; height: 200px; top: 600px; left: 400px;"
+>
+	<div dojoType="ContentPane" layoutAlign="top" style="border: solid white;">TOP</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="border: solid white;">BOTTOM</div>
+	<div dojoType="ContentPane" layoutAlign="left" style="border: solid white;">LEFT</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="border: solid white;">RIGHT</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="border: solid white;">CENTER</div>
+</div>
+-->
 
 <!-- Start Taskbar -->
 <!-- <div dojoType="TaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px"> -->

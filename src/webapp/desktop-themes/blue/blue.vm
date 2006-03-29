@@ -20,6 +20,16 @@ limitations under the License.
 
     var djConfig = {isDebug: true};
     djConfig.debugAtAllCosts = true;   <!-- needed for js debuggers (both venkman and visual studio) -->
+    djConfig.baseScriptUri = '$jetspeedDesktop.getPortalResourceUrl("/javascript/dojo/")';
+    {
+        var tEnds = djConfig.baseScriptUri.indexOf(";jsessionid=");
+        if (tEnds > 0) djConfig.baseScriptUri = djConfig.baseScriptUri.substring(0, tEnds);
+    }
+        
+    str.lastIndexOf(end) == str.length - end.length;
+
+
+    if ( djConfig.baseScriptUri
 
 	    function doRender(url,portletEntityId) 
 	    {

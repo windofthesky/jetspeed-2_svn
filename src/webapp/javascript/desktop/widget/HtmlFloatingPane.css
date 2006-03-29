@@ -21,7 +21,6 @@
 	top: 0px;
 	left: 0px;
 	width: 100%;
-    overflow: hidden;
 
 	/* styling css */
 	vertical-align: middle;
@@ -36,9 +35,18 @@
     float:left;
 }
 
-.dojoTitleBarIcon { 
+.dojoFloatingPaneTitleBarIcon {
+    /* essential css */
     float: left;
-    vertical-align: middle;
+
+    /* styling css */
+    margin-top: 3px;
+    margin-left: 2px;
+    margin-right: 3px;
+    height: 16px;
+	width: 16px;
+    /* height: 22px; */
+    /* vertical-align: middle; */
 }
 
 /* minimize/maximize icons are specified by CSS only */
@@ -91,7 +99,7 @@
 	
 	/* styling css */
 	background-color: ThreeDFace;
-    /*padding: 8px;	doesn't work!  can't figure out why */
+    padding: 8px;   /* doesn't work!  can't figure out why */
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 12px;
 }

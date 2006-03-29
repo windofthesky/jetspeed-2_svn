@@ -64,10 +64,10 @@ jetspeed.loadPage = function()
 
 
 // ... jetspeed debug options
-//jetspeed.debugPortletEntityIdFilter = [ "dp-18" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
+//jetspeed.debugPortletEntityIdFilter = [ "dp-7" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
 jetspeed.debugPortletWindowThemes = [ "theme1", "theme2" ];
-jetspeed.debugPortletDumpRawContent = [ "dp-7" ];
+//jetspeed.debugPortletDumpRawContent = [ "dp-7" ];
 
 jetspeed.testLoadPageCreateWidgetPortlets = function()
 {
@@ -101,14 +101,29 @@ jetspeed.testCreatePortletWindows = function( /* Portlet[] */ portlets, portletW
 
 
 // ... jetspeed.doRender
-jetspeed.doRender = function(url,portletEntityId)
+jetspeed.doRender = function(url,portletEntityId,currentForm)
 {
     var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
     if ( targetPortlet )
     {
-        dojo.debug( "render " + portletEntityId + " url: " + url );
-        targetPortlet.retrievePortletContent(null,url);
+        dojo.debug( "doRender [" + portletEntityId + "] url: " + url );
+        targetPortlet.retrievePortletContent(null, url, currentForm);
     }
+}
+jetspeed.doRenderAll = function(url)
+{
+    var portlets = jetspeed.page.getPortlets();
+    var renderMsg = ""
+    var portletCount = 0;
+    for (var portletIndex in portlets)
+    {
+        var portlet = portlets[portletIndex];
+        if ( portletCount++ > 0 )
+            renderMsg = renderMsg + ", ";
+        renderMsg = renderMsg + portlet.entityId;
+        portlet.retrievePortletContent(null, url);
+    }
+    dojo.debug( "doRenderAll [" + renderMsg + "] url: " + url );
 }
 
 // ... jetspeed.doAction
@@ -117,8 +132,8 @@ jetspeed.doAction = function(url,portletEntityId,currentForm)
     var targetPortlet = jetspeed.page.getPortlet( portletEntityId );
     if ( targetPortlet )
     {
-        dojo.debug( "action " + portletEntityId + " url: " + url );
-        targetPortlet.retrievePortletContent(new jetspeed.om.PortletActionContentListener(), url);
+        dojo.debug( "doAction [" + portletEntityId + "] url: " + url + " form: " + currentForm);
+        targetPortlet.retrievePortletContent(new jetspeed.om.PortletActionContentListener(), url, currentForm);
     }
 }
 
@@ -270,6 +285,28 @@ jetspeed.om.Page.prototype =
     {
         if (! portlet || ! this.portlets) return ;
         delete this.portlets[ portlet.entityId ] ;
+    },
+    debugDumpWindowStateAllPortlets: function()
+    {
+        dojo.debug("==== window-state all-portlets ====" );
+        for (var portletIndex in this.portlets)
+        {
+            var portlet = this.portlets[portletIndex];
+            var portletWindowState = portlet.getCurrentWindowState();
+            var dumpMsg = "portlet " + portlet.entityId + " : ";    
+            if ( ! portletWindowState )
+                dumpMsg = dumpMsg + "null window state";
+            else
+            {   
+                var propCount = 0;
+                for (var propName in portletWindowState)
+                {
+                    if (propCount++ > 0) dumpMsg = dumpMsg + ", ";
+                    dumpMsg = dumpMsg + propName + "=" + portletWindowState[propName];
+                }
+            }
+            dojo.debug( dumpMsg );
+        }
     }
 }
 
@@ -279,9 +316,9 @@ jetspeed.om.PortletContentListener = function()
 }
 jetspeed.om.PortletContentListener.prototype =
 {
-    notifySuccess: function( /* String */ portletContent, /* Portlet */ portlet )
+    notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        portlet.setPortletContent( portletContent );
+        portlet.setPortletContent( portletContent, requestUrl );
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* Portlet */ portlet )
     {
@@ -295,9 +332,25 @@ jetspeed.om.PortletActionContentListener = function()
 }
 jetspeed.om.PortletActionContentListener.prototype =
 {
-    notifySuccess: function( /* String */ portletContent, /* Portlet */ portlet )
+    notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.debug( "PortletActionContentListener: " + portletContent ) ;
+        var renderUrl = null;
+        var parsedPseudoUrl = portlet.parseJSPseudoUrlActionRender( portletContent );
+        if ( parsedPseudoUrl.operation == portlet.PORTLET_REQUEST_ACTION || parsedPseudoUrl.operation == portlet.PORTLET_REQUEST_RENDER )
+        {
+            //dojo.debug( "PortletActionContentListener extracted from javascript-pseudo-url: " + portletContent + "  url: " + parsedPseudoUrl.url + " operation: " + parsedPseudoUrl.operation + " entity-id: " + parsedPseudoUrl.portletEntityId ) ;
+            renderUrl = parsedPseudoUrl.url;
+        }
+        else
+        {
+            //dojo.debug( "PortletActionContentListener: " + portletContent ) ;
+            renderUrl = portletContent;
+        }
+        if ( renderUrl )
+        {
+            jetspeed.doRenderAll( renderUrl );    // render all portlets
+            //  portlet.retrievePortletContent(null,renderUrl);    // render just the one portlet
+        }        
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* Portlet */ portlet )
     {
@@ -341,7 +394,109 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
     
     windowFactory: null,
     windowObj: null,
+    
+    lastSavedWindowState: null,
 
+    JAVASCRIPT_ACTION_PREFIX: "javascript:doAction(",
+    JAVASCRIPT_RENDER_PREFIX: "javascript:doRender(",
+    JAVASCRIPT_ARG_QUOTE: "&" + "quot;",
+    PORTLET_REQUEST_ACTION: "action",
+    PORTLET_REQUEST_RENDER: "render",
+    
+
+    parseJSPseudoUrlActionRender: function( /* String */ javascriptPseudoUrl )
+    {
+        var op = null;
+        var justTheUrl = javascriptPseudoUrl;
+        var entityId = null;
+        var argsSuffix = null;
+        if ( javascriptPseudoUrl && javascriptPseudoUrl.length > this.JAVASCRIPT_ACTION_PREFIX.length && javascriptPseudoUrl.indexOf( this.JAVASCRIPT_ACTION_PREFIX ) == 0 )
+        {   // annotate away javascript invocation in form action
+            justTheUrl = null;
+            op = this.PORTLET_REQUEST_ACTION;
+            argsSuffix = javascriptPseudoUrl.substring( this.JAVASCRIPT_ACTION_PREFIX.length );
+        }
+        else if ( javascriptPseudoUrl && javascriptPseudoUrl.length > this.JAVASCRIPT_RENDER_PREFIX.length && javascriptPseudoUrl.indexOf( this.JAVASCRIPT_RENDER_PREFIX ) == 0 )
+        {
+            justTheUrl = null;
+            op = this.PORTLET_REQUEST_RENDER;
+            argsSuffix = javascriptPseudoUrl.substring( this.JAVASCRIPT_RENDER_PREFIX.length );
+        }
+        if ( argsSuffix )
+        {
+            var quoteDelim = "\"";
+            var argsEnd = argsSuffix.lastIndexOf( quoteDelim );
+            var altargsEnd = argsSuffix.lastIndexOf( this.JAVASCRIPT_ARG_QUOTE );
+            if ( altargsEnd > argsEnd )
+            {
+                quoteDelim = this.JAVASCRIPT_ARG_QUOTE;
+                argsEnd = altargsEnd;
+            }
+            if ( argsEnd >= 0 )
+            {
+                argsSuffix = dojo.string.trim( argsSuffix.substring( 0, argsEnd + quoteDelim.length ) );
+                var argsData = argsSuffix.split( quoteDelim );
+                if ( argsData && argsData.length >=4 )
+                {
+                    justTheUrl = argsData[1];
+                    entityId = argsData[3];
+                }
+            }
+        }
+        return { url: justTheUrl, operation: op, portletEntityId: entityId };
+    },
+
+    postParseAnnotateContent: function( /* DOMNode */ containerNode )
+    {   
+        if ( containerNode )
+        {
+            var self = this;
+            var cNode = containerNode;
+            var formList = cNode.getElementsByTagName("form");
+            if ( formList )
+            {
+                for ( var i = 0 ; i < formList.length ; i++ )
+                {
+                    var cForm = formList[i];                    
+                    var cFormAction = cForm.action;
+                    var cFormActionType = null;
+                    var cFormPortletEntityId = this.entityId;  // BOZO:can I assume that it is always my entity-id (ignoring the one in parsedPseudoUrl)
+
+                    var parsedPseudoUrl = this.parseJSPseudoUrlActionRender( cFormAction );
+                    
+                    var newActionUrl = parsedPseudoUrl.url;
+                    var submitOperation = parsedPseudoUrl.operation;
+
+                    if ( submitOperation == this.PORTLET_REQUEST_ACTION || submitOperation == this.PORTLET_REQUEST_RENDER )
+                    {
+                        //dojo.debug( "postParseAnnotateContent " + this.entityId + " adding onSubmit (portlet-" + submitOperation + ") and changing form action attribute from: " + cFormAction + " to: " +  newActionUrl );
+                        cForm.action = newActionUrl;
+                        dojo.event.connect(cForm, "onsubmit", function(e) {
+                            e.preventDefault();
+                            if ( submitOperation == self.PORTLET_REQUEST_ACTION )
+                                doAction( cForm.action, cFormPortletEntityId, cForm);
+                            else
+                                doRender( cForm.action, cFormPortletEntityId, cForm);
+                        });
+                    }
+                }
+            }
+        }
+    },
+    getCurrentWindowState: function()
+    {
+        if ( ! this.windowObj ) return null;
+        return this.windowObj.getCurrentWindowState();
+    },
+    getChangedWindowState: function()
+    {
+        var currentState = this.getCurrentWindowState();
+        var lastSaved = this.lastSavedWindowState;
+        if ( ! lastSaved )
+            return currentState;
+        
+        return currentState;
+    },
     createPortletWindow: function(portletWindowFactory, portletContentListener, doNotRetrieveContent)
     {
         if ( portletWindowFactory == null )
@@ -362,13 +517,15 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
         return jetspeed.basePortalUrl() + "/jetspeed/portlet" + queryString;
     },
 
-    retrievePortletContent: function(portletContentListener,renderUrl)
+    retrievePortletContent: function(portletContentListener,renderOrActionUrl,actionForm)
     {
         if ( portletContentListener == null )
             portletContentListener = new jetspeed.om.PortletContentListener() ;
         var portlet = this ;
+        var requestUrl = portlet.getPortletUrl(renderOrActionUrl);
         dojo.io.bind({
-            url: portlet.getPortletUrl(renderUrl),
+            formNode: actionForm,
+            url: requestUrl,
             load: function(type, data, evt)
             {
                 //dojo.debug( "loaded content for url: " + this.url );
@@ -385,7 +542,7 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
                 }
                 if ( portletContentListener && dojo.lang.isFunction( portletContentListener.notifySuccess ) )
                 {
-                    portletContentListener.notifySuccess(data, portlet);
+                    portletContentListener.notifySuccess(data, requestUrl, portlet);
                 }
             },
             error: function(type, error)
@@ -404,11 +561,11 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
         });     
 
     },
-    setPortletContent: function( portletContent )
+    setPortletContent: function(portletContent, renderUrl)
     {
         if ( this.windowObj )
         {
-            this.windowObj.setPortletContent(portletContent);
+            this.windowObj.setPortletContent(portletContent, renderUrl);
         }
     },
 
@@ -516,20 +673,6 @@ jetspeed.ui.PortletWidgetWindow.prototype.taskBarId = "jetspeedTaskbar";
 jetspeed.ui.PortletWidgetWindow.prototype.nextIndex = 1;
 jetspeed.ui.PortletWidgetWindow.prototype.titleMouseIn = 0;
 jetspeed.ui.PortletWidgetWindow.prototype.titleLit = false;
-jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOver = function(evt)
-{
-    var self = this ;
-    this.titleMouseIn = 1 ;   // was ++
-    if ( djConfig.isDebug )
-    {
-        //dojo.debug( "mouseover (" + this.titleMouseIn +"): " + evt.currentTarget.className );
-    }
-    if ( this.titleMouseIn == 1 )
-    {
-        window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight( self ); self.titleMouseIn = 0; } }, 270 ) ;
-        // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
-    }
-}
 jetspeed.ui.PortletWidgetWindow.prototype.titleButtonInclude = function(condition, requiredResult, button, included)
 {
     if ( button == null ) return included ;
@@ -587,14 +730,17 @@ jetspeed.ui.PortletWidgetWindow.prototype.titleDim = function(fpWidget, immediat
     jetspeed.ui.fadeOut(toBeExtinguished, 280);
     fpWidget.titleLit = false ;
 };
+jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOver = function(evt)
+{
+    var self = this ;
+    this.titleMouseIn = 1 ;   // was ++
+    window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight( self ); self.titleMouseIn = 0; } }, 270 ) ;
+        // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+}
 jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOut = function(evt)
 {
     var self = this ;
     var nTitleMouseIn = this.titleMouseIn ;
-    if ( djConfig.isDebug )
-    {
-        //dojo.debug( "mouseout (" + this.titleMouseIn +"): " + evt.currentTarget.className );
-    }
     if ( nTitleMouseIn > 0 )
     {
         nTitleMouseIn = 0 ; // was Math.max( 0, ( nTitleMouseIn - 1 ) );
@@ -602,7 +748,7 @@ jetspeed.ui.PortletWidgetWindow.prototype.titleMouseOut = function(evt)
     }
     if ( nTitleMouseIn == 0 && this.titleLit )
     {
-        window.setTimeout( function() { if ( self.titleMouseIn == 0 ) { self.titleDim( self ); } }, 200 ) ;
+        window.setTimeout( function() { if ( self.titleMouseIn == 0 && self.titleLit ) { self.titleDim( self ); } }, 200 ) ;
         // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
     }
 }
@@ -619,6 +765,11 @@ jetspeed.ui.PortletWidgetWindow.prototype.getNextIndex = function()
 }
 jetspeed.ui.PortletWidgetWindow.prototype.createWindow = function()
 {
+    if ( dojo.render.html.mozilla )  // dojo.render.html.ie
+    {
+        this.hasShadow = "true";
+    }
+
     var nWidget = dojo.widget.createWidget('FloatingPane', this);
 
     nWidget.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
@@ -639,12 +790,25 @@ jetspeed.ui.PortletWidgetWindow.prototype.createWindow = function()
 
     this.windowWidget = nWidget;
 }
-jetspeed.ui.PortletWidgetWindow.prototype.setPortletContent = function(html)
+jetspeed.ui.PortletWidgetWindow.prototype.getCurrentWindowState = function()
+{
+    if ( ! this.windowWidget || ! this.windowWidget.domNode ) return null;
+    var cWinState = {};
+    cWinState.zIndex = this.windowWidget.domNode.style.zIndex;
+    cWinState.width = this.windowWidget.domNode.style.width;
+    cWinState.height = this.windowWidget.domNode.style.heigth;
+    cWinState.left = this.windowWidget.domNode.style.left;
+    cWinState.top = this.windowWidget.domNode.style.top;
+    return cWinState;
+}
+jetspeed.ui.PortletWidgetWindow.prototype.setPortletContent = function(html,url)
 {
     if (this.windowWidget)
-        this.windowWidget.setContent(html);
+    {
+        this.windowWidget.setContent( { titles: [], scripts: [], linkStyles: [], styles: [], remoteScripts: [], xml: html.toString(), url: url } );
+        this.portlet.postParseAnnotateContent( this.windowWidget.containerNode );
+    }
 }
-
 
 // ... jetspeed.ui methods
 jetspeed.ui.getDefaultFloatingPaneTemplate = function()
