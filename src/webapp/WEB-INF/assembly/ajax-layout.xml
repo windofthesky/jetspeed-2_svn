@@ -224,6 +224,9 @@
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
+            <entry key="move">
+                <ref bean="AjaxMove"/>
+            </entry>            
             <entry key="moveabs">
                 <ref bean="AjaxMovePortletAbsolute"/>
             </entry>
