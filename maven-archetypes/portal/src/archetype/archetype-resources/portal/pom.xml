@@ -34,7 +34,7 @@ limitations under the License.
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>war</packaging>
-    <name>Jetspeed-2 Enterprise Portal WAR</name>
+    <name>${artifactId} Portal WAR</name>
 
     <!-- Build Configuration -->
 

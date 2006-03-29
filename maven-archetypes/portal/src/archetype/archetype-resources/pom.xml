@@ -31,7 +31,7 @@ limitations under the License.
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
     <packaging>pom</packaging>
-    <name>Jetspeed-2 Enterprise Portal</name>
+    <name>${artifactId} Portal</name>
 
     <!-- Profiles -->
 

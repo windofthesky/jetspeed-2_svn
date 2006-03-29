@@ -30,14 +30,11 @@ limitations under the License.
     <parent>
         <groupId>${groupId}</groupId>
         <version>${version}</version>
-        <artifactId>components</artifactId>
+        <artifactId>portal-components</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
-    <name>${artifactId} Component</name>
-    <description>
-        ${artifactId} component implementation.
-    </description>
+    <name>${artifactId} Portal Component</name>
 
     <!-- Dependencies -->
 

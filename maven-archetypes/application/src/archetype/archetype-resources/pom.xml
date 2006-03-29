@@ -30,14 +30,11 @@ limitations under the License.
     <parent>
         <groupId>${groupId}</groupId>
         <version>${version}</version>
-        <artifactId>applications</artifactId>
+        <artifactId>portal-applications</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>war</packaging>
-    <name>${artifactId} Application</name>
-    <description>
-        ${artifactId} application implementation.
-    </description>
+    <name>${artifactId} Portal Application</name>
 
     <!-- Dependencies -->
 
@@ -55,7 +52,7 @@ limitations under the License.
 
         <!-- Runtime Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-webapp-logging</artifactId>
             <scope>runtime</scope>
         </dependency>

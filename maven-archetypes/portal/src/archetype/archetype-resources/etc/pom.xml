@@ -26,7 +26,7 @@ limitations under the License.
 
     <groupId>${groupId}</groupId>
     <version>${version}</version>
-    <artifactId>${artifactId}-etc</artifactId>
+    <artifactId>portal-etc</artifactId>
     <parent>
         <groupId>${groupId}</groupId>
         <version>${version}</version>
@@ -34,7 +34,7 @@ limitations under the License.
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
-    <name>Jetspeed-2 Portal Database</name>
+    <name>${artifactId} Portal Database</name>
 
     <!-- Profiles -->
 

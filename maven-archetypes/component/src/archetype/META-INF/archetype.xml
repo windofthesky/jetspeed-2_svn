@@ -23,4 +23,14 @@ limitations under the License.
     <resources>
         <resource>pom.xml</resource>
     </resources>
+    <sources>
+        <source>src/java/Component.java</source>
+        <source>src/java/ComponentImpl.java</source>
+    </sources>
+    <testSources>
+        <source>src/test/TestComponent.java</source>
+    </testSources>
+    <testResources>
+        <resource>src/test/log4j.properties</resource>
+    </testResources>
 </archetype>
