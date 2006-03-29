@@ -21,6 +21,8 @@ limitations under the License.
 
 <html>   <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
+<link rel="stylesheet" type="text/css" media="screen, projection" href="desktop-themes/blue/css/styles.css"/>
+
 <script type="text/javascript">
 
     var djConfig = {isDebug: true};
@@ -136,7 +138,8 @@ body { padding: 10px 10px 100px 10px; }
 </head>
 
 <!-- Start Jetspeed Desktop -->
-<body id="jetspeedDesktop">
+<body id="jetspeedDesktop" class="layout-blue">
+<div class="layout-blue">
 
 <!--
 <div dojoType="FloatingPane"
@@ -163,7 +166,7 @@ body { padding: 10px 10px 100px 10px; }
     <button onclick="jetspeed.testLoadPageCreateWidgetPortlets()">Portal (WIDGET)</button> -->
 <!-- </div> -->
 <!-- End Taskbar -->
-
+</div>
 </body>
 <!-- End Jetspeed Desktop -->
 
