@@ -90,6 +90,10 @@ limitations under the License.
                                               value="${org.apache.derby.version}"/>
                                     <property name="hsqldb.version"
                                               value="${hsqldb.version}"/>
+                                    <property name="portal.groupid"
+                                              value="${pom.groupId}"/>
+                                    <property name="portal.version"
+                                              value="${pom.version}"/>
                                 </ant>
 
                                 <!-- hot deployment to app server -->
@@ -104,6 +108,16 @@ limitations under the License.
                                               value="org.apache.portals.jetspeed-2"/>
                                     <property name="org.apache.jetspeed.version"
                                               value="${org.apache.portals.jetspeed-2.version}"/>
+                                    <property name="org.apache.portals.bridges.common.version"
+                                              value="${org.apache.portals.bridges.common.version}"/>
+                                    <property name="org.apache.pluto.version"
+                                              value="${org.apache.pluto.version}"/>
+                                    <property name="portlet-api.version"
+                                              value="${portlet-api.version}"/>
+                                    <property name="portal.groupid"
+                                              value="${pom.groupId}"/>
+                                    <property name="portal.version"
+                                              value="${pom.version}"/>
                                 </ant>
 
                             </tasks>

@@ -49,10 +49,11 @@ limitations under the License.
 
     <target name="help">
         <echo message="Buildfile for the app-servers Tomcat deployment."/>
-        <echo message="Usage: ant [ deploy | hot-deploy | hot-deploy-jar | hot-deploy-war ]"/>
+        <echo message="Usage: ant [ deploy | hot-deploy | hot-deploy-shared-jar | hot-deploy-jar | hot-deploy-war ]"/>
         <echo message="Where:"/>
         <echo message="    deploy - deploy to Tomcat app server."/>
         <echo message="    hot-deploy - hot deploy content and applications Tomcat app server."/>
+        <echo message="    hot-deploy-shared-jar - hot deploy shared component jar Tomcat app server."/>
         <echo message="    hot-deploy-jar - hot deploy component jar Tomcat app server."/>
         <echo message="    hot-deploy-war - hot deploy application war Tomcat app server."/>
         <echo message="Configuration:"/>
@@ -91,35 +92,7 @@ limitations under the License.
     <target name="deploy" depends="version-5-5, test-embedded-database, test-deploy-type">
 
         <!-- deploy provided libraries in shared/lib -->
-        <delete>
-            <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
-                <include name="pluto-*.jar"/>
-                <include name="portals-bridges-common-*.jar"/>
-                <include name="jetspeed-commons-*.jar"/>
-                <include name="jetspeed-api-*.jar"/>
-                <include name="portlet-api-*.jar"/>
-            </fileset>
-        </delete>
-        <dependencies filesetId="shared.lib.dependencies.id" useScope="runtime">
-            <dependency groupId="org.apache.pluto"
-                        artifactId="pluto"
-                        version="${org.apache.pluto.version}"/>
-            <dependency groupId="org.apache.portals.bridges"
-                        artifactId="portals-bridges-common"
-                        version="${org.apache.portals.bridges.common.version}"/>
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="jetspeed-commons"
-                        version="${org.apache.jetspeed.version}"/>
-            <dependency groupId="${org.apache.jetspeed.groupid}"
-                        artifactId="jetspeed-api"
-                        version="${org.apache.jetspeed.version}"/>
-            <dependency groupId="portlet-api"
-                        artifactId="portlet-api"
-                        version="${portlet-api.version}"/>
-        </dependencies>
-        <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="on">
-            <fileset refid="shared.lib.dependencies.id"/>
-        </copy>
+        <antcall target="deploy-shared-components"/>
 
         <!-- deploy embedded database in shared/lib -->
         <antcall target="embedded-database-derby"/>
@@ -170,6 +143,9 @@ limitations under the License.
 
     <target name="hot-deploy" depends="test-deploy-type">
 
+        <!-- hot deploy provided libraries in shared/lib -->
+        <antcall target="hot-deploy-shared-components"/>
+
         <!-- hot deploy templates content -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/templates">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/templates"/>
@@ -188,6 +164,19 @@ limitations under the License.
             <fileset dir="${basedir}/../src/webapp/decorations"/>
         </copy>
 
+    </target>
+
+    <target name="hot-deploy-shared-jar">
+        <!-- hot deploy shared component -->
+        <dependencies filesetId="shared.lib.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="${org.apache.jetspeed.deploy.artifactid}"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+        </dependencies>
+        <!-- copy the artifact and any dependencies -->
+        <copy todir="${org.apache.jetspeed.server.home}/shared/lib" flatten="on">
+            <fileset refid="shared.lib.dependencies.id"/>
+        </copy>
     </target>
 
     <target name="hot-deploy-jar">
@@ -272,8 +261,22 @@ limitations under the License.
         </condition>
     </target>
 
+    <target name="deploy-shared-components">
+        <!-- deploy embedded derby database in shared/lib -->
+        <delete>
+            <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
+                <include name="pluto-*.jar"/>
+                <include name="portals-bridges-common-*.jar"/>
+                <include name="jetspeed-commons-*.jar"/>
+                <include name="jetspeed-api-*.jar"/>
+                <include name="portlet-api-*.jar"/>
+            </fileset>
+        </delete>
+        <antcall target="hot-deploy-shared-components"/>
+    </target>
+
     <target name="embedded-database-derby" if="org.apache.jetspeed.production.database.is.derby.embedded">
-        <!-- Deploy embedded derby database in shared/lib -->
+        <!-- deploy embedded derby database in shared/lib -->
         <delete>
             <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
                 <include name="derby-*.jar"/>
@@ -290,7 +293,7 @@ limitations under the License.
     </target>
 
     <target name="embedded-database-hsql" if="org.apache.jetspeed.production.database.is.hsql.embedded">
-        <!-- Deploy embedded hsql database in shared/lib -->
+        <!-- deploy embedded hsql database in shared/lib -->
         <delete>
             <fileset dir="${org.apache.jetspeed.server.home}/shared/lib">
                 <include name="hsqldb-*.jar"/>
@@ -346,6 +349,35 @@ limitations under the License.
             </fileset>
         </delete>
         <antcall target="hot-deploy-full-apps"/>
+    </target>
+
+    <target name="hot-deploy-shared-components">
+        <!-- hot deploy shared components -->
+        <antcall target="hot-deploy-shared-jar">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.pluto"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="pluto"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.pluto.version}"/>
+        </antcall>
+        <antcall target="hot-deploy-shared-jar">
+            <param name="org.apache.jetspeed.deploy.groupid" value="org.apache.portals.bridges"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="portals-bridges-common"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.common.version}"/>
+        </antcall>
+        <antcall target="hot-deploy-shared-jar">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="jetspeed-commons"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+        <antcall target="hot-deploy-shared-jar">
+            <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="jetspeed-api"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
+        </antcall>
+        <antcall target="hot-deploy-shared-jar">
+            <param name="org.apache.jetspeed.deploy.groupid" value="portlet-api"/>
+            <param name="org.apache.jetspeed.deploy.artifactid" value="portlet-api"/>
+            <param name="org.apache.jetspeed.deploy.version" value="${portlet-api.version}"/>
+        </antcall>
     </target>
 
     <target name="hot-deploy-min-pages" if="org.apache.jetspeed.deploy.min.pages">

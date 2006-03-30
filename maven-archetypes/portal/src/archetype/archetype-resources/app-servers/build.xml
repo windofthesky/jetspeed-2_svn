@@ -38,6 +38,8 @@ limitations under the License.
     <property name="portlet-api.version" value=""/>
     <property name="org.apache.derby.version" value=""/>
     <property name="hsqldb.version" value=""/>
+    <property name="portal.groupid" value=""/>
+    <property name="portal.version" value=""/>
     <property name="org.apache.jetspeed.deploy.groupid" value=""/>
     <property name="org.apache.jetspeed.deploy.artifactid" value=""/>
     <property name="org.apache.jetspeed.deploy.version" value=""/>
@@ -46,10 +48,11 @@ limitations under the License.
 
     <target name="help">
         <echo message="Buildfile for the app-servers maven POM."/>
-        <echo message="Usage: ant [ deploy | hot-deploy | hot-deploy-jar | hot-deploy-war ]"/>
+        <echo message="Usage: ant [ deploy | hot-deploy | hot-deploy-shared-jar | hot-deploy-jar | hot-deploy-war ]"/>
         <echo message="Where:"/>
         <echo message="    deploy - deploy to the target app server."/>
         <echo message="    hot-deploy - hot deploy content and applications to the target app server."/>
+        <echo message="    hot-deploy-shared-jar - hot deploy shared component jar to the target app server."/>
         <echo message="    hot-deploy-jar - hot deploy component jar to the target app server."/>
         <echo message="    hot-deploy-war - hot deploy application war to the target app server."/>
         <echo message="Configuration:"/>
@@ -71,6 +74,8 @@ limitations under the License.
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
         <echo message="    hsqldb.version=${hsqldb.version}"/>
+        <echo message="    portal.groupid=${portal.groupid}"/>
+        <echo message="    portal.version=${portal.version}"/>
         <echo message="    org.apache.jetspeed.deploy.groupid=${org.apache.jetspeed.deploy.groupid}"/>
         <echo message="    org.apache.jetspeed.deploy.artifactid=${org.apache.jetspeed.deploy.artifactid}"/>
         <echo message="    org.apache.jetspeed.deploy.version=${org.apache.jetspeed.deploy.version}"/>
@@ -89,6 +94,13 @@ limitations under the License.
 
         <antcall target="unsupported-deploy"/>
         <antcall target="invoke-hot-deploy"/>
+ 
+    </target>
+
+    <target name="hot-deploy-shared-jar" depends="test-deploy-target, test-deploy-skip" unless="org.apache.jetspeed.skip">
+
+        <antcall target="unsupported-deploy"/>
+        <antcall target="invoke-hot-deploy-shared-jar"/>
  
     </target>
 
@@ -161,6 +173,10 @@ limitations under the License.
                       value="${org.apache.derby.version}"/>
             <property name="hsqldb.version"
                       value="${hsqldb.version}"/>
+            <property name="portal.groupid"
+                      value="${portal.groupid}"/>
+            <property name="portal.version"
+                      value="${portal.version}"/>
         </ant>
     </target>
 
@@ -172,6 +188,27 @@ limitations under the License.
                       value="${org.apache.jetspeed.groupid}"/>
             <property name="org.apache.jetspeed.version"
                       value="${org.apache.jetspeed.version}"/>
+            <property name="org.apache.portals.bridges.common.version"
+                      value="${org.apache.portals.bridges.common.version}"/>
+            <property name="org.apache.pluto.version"
+                      value="${org.apache.pluto.version}"/>
+            <property name="portlet-api.version"
+                      value="${portlet-api.version}"/>
+            <property name="portal.groupid"
+                      value="${portal.groupid}"/>
+            <property name="portal.version"
+                      value="${portal.version}"/>
+        </ant>
+    </target>
+
+    <target name="invoke-hot-deploy-shared-jar" unless="org.apache.jetspeed.unsupported">
+        <ant antfile="${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy-shared-jar" inheritall="off">
+            <property name="org.apache.jetspeed.deploy.groupid"
+                      value="${org.apache.jetspeed.deploy.groupid}"/>
+            <property name="org.apache.jetspeed.deploy.artifactid"
+                      value="${org.apache.jetspeed.deploy.artifactid}"/>
+            <property name="org.apache.jetspeed.deploy.version"
+                      value="${org.apache.jetspeed.deploy.version}"/>
         </ant>
     </target>
 
