@@ -22,13 +22,30 @@ limitations under the License.
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 
 <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+<%
+  RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
+  String encoder = rc.getRequest().getParameter("encoder");
+  System.out.println("encoder = " + encoder);  
+  String dstLogin = "/login/proxy";
+  String dstLogout = "/login/logout";
+  String dstAccount = "/portal/my-account.psml";
+  if (encoder != null && encoder.equals("desktop"))
+  {
+      dstLogin = dstLogin + "?" +  LoginConstants.DESTINATION + "=" + rc.getRequest().getContextPath() + "/desktop";
+      dstLogout = dstLogout + "?" +  LoginConstants.DESTINATION + "=" + rc.getRequest().getContextPath() + "/desktop";
+      dstAccount = "/desktop/my-account.psml" + "?" +  LoginConstants.DESTINATION + "=" + rc.getRequest().getContextPath() + "/desktop";
+  }
+%>
+<c_rt:set var="destLogin" value="<%=dstLogin%>"/>
+<c_rt:set var="destLogout" value="<%=dstLogout%>"/>
+<c_rt:set var="destAccount" value="<%=dstAccount%>"/>
 
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url context="${requestContext.request.contextPath}" value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
-    <a href='<c:url context="${requestContext.request.contextPath}" value="/portal/my-account.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
@@ -48,7 +65,7 @@ limitations under the License.
         </c:if>
       </c:otherwise>
     </c:choose>   
-    <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="/login/proxy"/>'>
+    <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="${destLogin}"/>'>
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>
