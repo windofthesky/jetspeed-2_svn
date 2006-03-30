@@ -1,0 +1,89 @@
+## application portlet
+<b>EDIT: Application Portlet</b>
+<p>portlet name: $portlet.getPortletName()
+<p>portlet mode: $renderRequest.getPortletMode()
+<p>window state: $renderRequest.getWindowState()
+
+## render links to change window state/portlet modes
+<p>
+#if ($renderRequest.isWindowStateAllowed($STATE_NORMAL))
+    #set ($normalRenderURL = $renderResponse.createRenderURL())
+    $normalRenderURL.setWindowState($STATE_NORMAL)
+    <p>NORMAL render link: <a href="$normalRenderURL">$normalRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MAX))
+    #set ($maximizedRenderURL = $renderResponse.createRenderURL())
+    $maximizedRenderURL.setWindowState($STATE_MAX)
+    <p>MAXIMIZED render link: <a href="$maximizedRenderURL">$maximizedRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MIN))
+    #set ($minimizedRenderURL = $renderResponse.createRenderURL())
+    $minimizedRenderURL.setWindowState($STATE_MIN)
+    <p>MINIMIZED render link: <a href="$minimizedRenderURL">$minimizedRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    #set ($viewRenderURL = $renderResponse.createRenderURL())
+    $viewRenderURL.setPortletMode($MODE_VIEW)
+    <p>VIEW render link: <a href="$viewRenderURL">$viewRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_EDIT))
+    #set ($editRenderURL = $renderResponse.createRenderURL())
+    $editRenderURL.setPortletMode($MODE_EDIT)
+    <p>EDIT render link: <a href="$editRenderURL">$editRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_HELP))
+    #set ($helpRenderURL = $renderResponse.createRenderURL())
+    $helpRenderURL.setPortletMode($MODE_HELP)
+    <p>HELP render link: <a href="$helpRenderURL">$helpRenderURL</a>
+#end
+<p>
+
+## edit links/forms to change portlet state
+#set ($testActionURL = $renderResponse.createActionURL())
+$testActionURL.setParameter("test-action", "test-me-to-tears")
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $testActionURL.setPortletMode($MODE_VIEW)
+#end
+<p>test action link: <a href="$testActionURL">$testActionURL</a>
+
+#set ($redirectActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $redirectActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$redirectActionURL">redirect url: <input name="redirect-action" type="TEXT" size="64"></form>
+
+#set ($editContextAttributesActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $editContextAttributesActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$editContextAttributesActionURL">edit context attributes: <input name="edit-context-attributes-name-action" type="TEXT" size="32" value="context-attr"><input name="edit-context-attributes-value-action" type="TEXT" size="32"><input type="submit"></form>
+
+#set ($editPreferencesActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $editPreferencesActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$editPreferencesActionURL">edit preferences: <input name="edit-preferences-name-action" type="TEXT" size="32" value="preference"><input name="edit-preferences-value-action" type="TEXT" size="32"><input type="submit"></form>
+
+#set ($editSessionApplicationAttributesActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $editSessionApplicationAttributesActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$editSessionApplicationAttributesActionURL">edit session application attributes: <input name="edit-session-application-attributes-name-action" type="TEXT" size="32" value="app-attr"><input name="edit-session-application-attributes-value-action" type="TEXT" size="32"><input type="submit"></form>
+
+#set ($editSessionPortletAttributesActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $editSessionPortletAttributesActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$editSessionPortletAttributesActionURL">edit session portlet attributes: <input name="edit-session-portlet-attributes-name-action" type="TEXT" size="32" value="portlet-attr"><input name="edit-session-portlet-attributes-value-action" type="TEXT" size="32"><input type="submit"></form>
+
+#set ($editRequestAttributesActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $editRequestAttributesActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$editRequestAttributesActionURL">edit request attributes: <input name="edit-request-attributes-name-action" type="TEXT" size="32" value="request-attr"><input name="edit-request-attributes-value-action" type="TEXT" size="32"><input type="submit"></form>
+
+#set ($setRenderParametersActionURL = $renderResponse.createActionURL())
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    $setRenderParametersActionURL.setPortletMode($MODE_VIEW)
+#end
+<p><form method="POST" action="$setRenderParametersActionURL">set render parameters: <input name="set-render-parameters-name-action" type="TEXT" size="32" value="render-param"><input name="set-render-parameters-value-action" type="TEXT" size="32"><input type="submit"></form>

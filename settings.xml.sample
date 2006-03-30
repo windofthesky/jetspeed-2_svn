@@ -26,6 +26,14 @@ limitations under the License.
 -->
 <settings xmlns="http://maven.apache.org/POM/4.0.0">
 
+    <!-- Local Repository Location -->
+
+    <!--
+    <localRepository>c:/maven2/repository</localRepository>
+    -->
+
+    <!-- Jetspeed-2 Profile Configuration -->
+
     <profiles>
 
         <!-- Default Profile -->

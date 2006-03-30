@@ -1,0 +1,46 @@
+## application portlet
+<b>HELP: Application Portlet</b>
+<p>portlet name: $portlet.getPortletName()
+<p>portlet mode: $renderRequest.getPortletMode()
+<p>window state: $renderRequest.getWindowState()
+
+## dump window state/portlet modes; render links to change
+## window state/portlet modes
+<p>
+<p>NORMAL window state allowed: $renderRequest.isWindowStateAllowed($STATE_NORMAL)
+<p>MAXIMIZED window state allowed: $renderRequest.isWindowStateAllowed($STATE_MAX)
+<p>MINIMIZED window state allowed: $renderRequest.isWindowStateAllowed($STATE_MIN)
+<p>VIEW portlet mode allowed: $renderRequest.isPortletModeAllowed($MODE_VIEW)
+<p>EDIT portlet mode allowed: $renderRequest.isPortletModeAllowed($MODE_EDIT)
+<p>HELP portlet mode allowed: $renderRequest.isPortletModeAllowed($MODE_HELP)
+#if ($renderRequest.isWindowStateAllowed($STATE_NORMAL))
+    #set ($normalRenderURL = $renderResponse.createRenderURL())
+    $normalRenderURL.setWindowState($STATE_NORMAL)
+    <p>NORMAL render link: <a href="$normalRenderURL">$normalRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MAX))
+    #set ($maximizedRenderURL = $renderResponse.createRenderURL())
+    $maximizedRenderURL.setWindowState($STATE_MAX)
+    <p>MAXIMIZED render link: <a href="$maximizedRenderURL">$maximizedRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MIN))
+    #set ($minimizedRenderURL = $renderResponse.createRenderURL())
+    $minimizedRenderURL.setWindowState($STATE_MIN)
+    <p>MINIMIZED render link: <a href="$minimizedRenderURL">$minimizedRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    #set ($viewRenderURL = $renderResponse.createRenderURL())
+    $viewRenderURL.setPortletMode($MODE_VIEW)
+    <p>VIEW render link: <a href="$viewRenderURL">$viewRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_EDIT))
+    #set ($editRenderURL = $renderResponse.createRenderURL())
+    $editRenderURL.setPortletMode($MODE_EDIT)
+    <p>EDIT render link: <a href="$editRenderURL">$editRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_HELP))
+    #set ($helpRenderURL = $renderResponse.createRenderURL())
+    $helpRenderURL.setPortletMode($MODE_HELP)
+    <p>HELP render link: <a href="$helpRenderURL">$helpRenderURL</a>
+#end
+<p>

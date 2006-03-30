@@ -16,51 +16,67 @@ limitations under the License.
 -->
 <portlet-app id="${artifactId}" version="1.0">
 
-  <!--
-  <portlet id="HelloPortlet">
-    <portlet-name>HelloPortlet</portlet-name>
-    <display-name>HelloWorld Portlet Wrapper</display-name>
-    <description>This is the hello world of portlets, it doesn't do much</description>
-    <portlet-class>${groupId}.${artifactId}..HelloWorld</portlet-class>
-    <expiration-cache>-1</expiration-cache>
-    <init-param>
-      <description>test init param</description>
-      <name>hello</name>
-      <value>Hello Portlet</value>
-     </init-param>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
-    </supports>
-    <supported-locale>en</supported-locale>
-    <supported-locale>ja</supported-locale>
-    <resource-bundle>${groupId}.${artifactId}.HelloWorldResources</resource-bundle>
-    <portlet-preferences>
-      <preference>                            
-        <name>hello</name>                    
-        <value></value>    
-      </preference>                               		
-    </portlet-preferences>        
-    <security-role-ref>
-      <role-name>Administrator</role-name>
-      <role-link>admin</role-link>
-    </security-role-ref>
-    <security-role-ref>
-      <role-name>Manager</role-name>
-      <role-link>manager</role-link>
-    </security-role-ref>
-    <security-role-ref>
-      <role-name>User</role-name>
-      <role-link>user</role-link>
-    </security-role-ref>
-    <portlet-info>
-      <title>HelloWorldTitle</title>
-      <short-title>This is the short title</short-title>
-      <keywords>Test</keywords>
-    </portlet-info>
-  </portlet>
-  -->
-  
+    <portlet id="application">
+
+        <description xml:lang="en">Application Velocity portlet example.</description>
+        <portlet-name>Application</portlet-name>
+        <display-name xml:lang="en">Application Portlet</display-name>
+
+        <portlet-class>${groupId}.ApplicationPortlet</portlet-class>
+
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/view/application-view.vm</value>
+        </init-param>
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/view/application-edit.vm</value>
+        </init-param>
+        <init-param>
+            <name>HelpPage</name>
+            <value>/WEB-INF/view/application-help.vm</value>
+        </init-param>
+
+        <init-param>
+            <name>application-init-param</name>
+            <value>application-init-param-value</value>
+        </init-param>
+
+        <expiration-cache>-1</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+            <portlet-mode>help</portlet-mode>
+        </supports>
+
+        <supported-locale>en</supported-locale>    
+
+        <portlet-info>
+            <title>Application Velocity Portlet</title>
+            <short-title>Application</short-title>
+            <keywords>Velocity</keywords>
+        </portlet-info>
+
+        <portlet-preferences>
+            <preference>
+                <name>application-preference</name>
+                <value>application-preference-value</value>
+                <read-only>true</read-only>
+            </preference>
+            <preference>
+                <name>application-writable-preference</name>
+                <value>application-writable-preference-value-0</value>
+                <value>application-writable-preference-value-1</value>
+            </preference>
+        </portlet-preferences>
+
+    </portlet>
+
+    <user-attribute>
+        <description>Given User Name USER_INFO Attribute</description>
+        <name>user.name.given</name>
+    </user-attribute>
+
 </portlet-app>

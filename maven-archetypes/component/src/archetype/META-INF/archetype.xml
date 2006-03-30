@@ -17,6 +17,7 @@ limitations under the License.
 -->
         
 <archetype>
+
     <id>portal-archetype</id>
     <allowPartial>true</allowPartial>
 
@@ -33,4 +34,5 @@ limitations under the License.
     <testResources>
         <resource>src/test/log4j.properties</resource>
     </testResources>
+
 </archetype>

@@ -1,0 +1,176 @@
+## application portlet
+<b>VIEW: Application Portlet</b>
+<p>portlet name: $portlet.getPortletName()
+<p>portlet mode: $renderRequest.getPortletMode()
+<p>window state: $renderRequest.getWindowState()
+
+## render links to change window state/portlet modes
+<p>
+#if ($renderRequest.isWindowStateAllowed($STATE_NORMAL))
+    #set ($normalRenderURL = $renderResponse.createRenderURL())
+    $normalRenderURL.setWindowState($STATE_NORMAL)
+    <p>NORMAL render link: <a href="$normalRenderURL">$normalRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MAX))
+    #set ($maximizedRenderURL = $renderResponse.createRenderURL())
+    $maximizedRenderURL.setWindowState($STATE_MAX)
+    <p>MAXIMIZED render link: <a href="$maximizedRenderURL">$maximizedRenderURL</a>
+#end
+#if ($renderRequest.isWindowStateAllowed($STATE_MIN))
+    #set ($minimizedRenderURL = $renderResponse.createRenderURL())
+    $minimizedRenderURL.setWindowState($STATE_MIN)
+    <p>MINIMIZED render link: <a href="$minimizedRenderURL">$minimizedRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_VIEW))
+    #set ($viewRenderURL = $renderResponse.createRenderURL())
+    $viewRenderURL.setPortletMode($MODE_VIEW)
+    <p>VIEW render link: <a href="$viewRenderURL">$viewRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_EDIT))
+    #set ($editRenderURL = $renderResponse.createRenderURL())
+    $editRenderURL.setPortletMode($MODE_EDIT)
+    <p>EDIT render link: <a href="$editRenderURL">$editRenderURL</a>
+#end
+#if ($renderRequest.isPortletModeAllowed($MODE_HELP))
+    #set ($helpRenderURL = $renderResponse.createRenderURL())
+    $helpRenderURL.setPortletMode($MODE_HELP)
+    <p>HELP render link: <a href="$helpRenderURL">$helpRenderURL</a>
+#end
+<p>
+
+## dump all portlet state information
+<p>response is committed: $renderResponse.isCommitted()
+<p>locale: $renderRequest.getLocale()
+<p>has locale resource bundle:
+#if ($portlet.getResourceBundle($renderRequest.getLocale()))
+    true
+#else
+    false
+#end
+<p>init parameters:
+<ul>
+#foreach ($name in $portlet.getInitParameterNames())
+    <li>$name: $portlet.getInitParameter($name)</li>
+#end
+</ul>
+<p>portlet context name: getPortletContext().getPortletContextName()
+<p>context server info: getPortletContext().getServerInfo()
+<p>context major version: getPortletContext().getMajorVersion()
+<p>context minor version: getPortletContext().getMinorVersion()
+<p>context real path for "/": getPortletContext().getRealPath("/")
+
+<p>context resource paths for "/":
+<ul>
+#foreach ($path in $portlet.getPortletContext().getResourcePaths("/"))
+    <li>$path</li>
+#end
+</ul>
+<p>context resource url for "/":$portlet.getPortletContext().getResource("/")
+<p>context attributes:
+<ul>
+#foreach ($name in $portlet.getPortletContext().getAttributeNames())
+    <li>$name: $portlet.getPortletContext().getAttribute($name)</li>
+#end
+</ul>
+<p>context init parameters:
+<ul>
+#foreach ($name in $portlet.getPortletContext().getInitParameterNames())
+    <li>$name: $portlet.getPortletContext().getInitParameter($name)</li>
+#end
+</ul>
+#set ($prefs = $renderRequest.getPreferences())
+#if ($prefs)
+    <p>preferences:
+    <ul>
+    #foreach ($name in $prefs.getNames())
+        #set ($values = $prefs.getValues($name, null))
+        #if ($prefs.isReadOnly($name))
+            <li>$name: $portlet.concatArrayValues($values), (read only)</li>
+        #else
+            <li>$name: $portlet.concatArrayValues($values)</li>
+        #end
+    #end
+    </ul>
+#end
+<p>requested session id: $renderRequest.getRequestedSessionId()
+<p>requested session id is valid: $renderRequest.isRequestedSessionIdValid()
+#set ($session = $renderRequest.getPortletSession(false))
+#if ($session)
+    <p>session is new: $session.isNew()
+    <p>session id: $session.getId()
+    <p>session creation time: $session.getCreationTime()
+    <p>session last accessed time: $session.getLastAccessedTime()
+    <p>session max inactive: $session.getMaxInactiveInterval()
+    <p>session application attributes:
+    <ul>
+    #foreach ($name in $session.getAttributeNames($session.APPLICATION_SCOPE))
+        <li>$name: $session.getAttribute($name, $session.APPLICATION_SCOPE)</li>
+    #end
+    </ul>
+    <p>session portlet attributes:
+    <ul>
+    #foreach ($name in $session.getAttributeNames($session.PORTLET_SCOPE))
+        <li>$name: $session.getAttribute($name, $session.PORTLET_SCOPE)</li>
+    #end
+    </ul>
+#end
+<p>request properties:
+<ul>
+#foreach ($name in $renderRequest.getPropertyNames())
+    #set ($values = $renderRequest.getProperties($name))
+    <li>$name: $portlet.concatArrayValues($values)</li>
+#end
+</ul>
+<p>authentication type: $renderRequest.getAuthType()
+<p>context path: $renderRequest.getContextPath()
+<p>remote user: $renderRequest.getRemoteUser()
+#set ($principal = $renderRequest.getUserPrincipal())
+#if ($principal)
+    <p>principal: $principal.getName()
+    <p>principal is in user role: $renderRequest.isUserInRole("user")
+    <p>principal is in manager role: $renderRequest.isUserInRole("manager")
+    <p>principal is in admin role: $renderRequest.isUserInRole("admin")
+#end
+<p>request attributes:
+<ul>
+#foreach ($name in $renderRequest.getAttributeNames())
+    <li>$name: $renderRequest.getAttribute($name)</li>
+#end
+</ul>
+<p>request parameters:
+<ul>
+#foreach ($name in $renderRequest.getParameterNames())
+    #set ($values = $renderRequest.getParameterValues($name))
+    <li>$name: $portlet.concatArrayValues($values)</li>
+#end
+</ul>
+<p>is secure: $renderRequest.isSecure()
+
+<p>preferred content type: $renderRequest.getResponseContentType()
+<p>accepted content types:
+<ol>
+#foreach ($type in $renderRequest.getResponseContentTypes())
+    <li>$type</li>
+#end
+</ol>
+<p>preferred locale: $renderRequest.getLocale()
+<p>accepted locales:
+<ol>
+#foreach ($locale in $renderRequest.getLocales())
+    <li>$locale</li>
+#end
+</ol>
+<p>scheme: $renderRequest.getScheme()
+<p>server name: $renderRequest.getServerName()
+<p>server port: $renderRequest.getServerPort()
+<p>namespace: $renderResponse.getNamespace()
+<p>response is committed: $renderResponse.isCommitted()
+#set ($userInfo = $renderRequest.getAttribute($USER_INFO))
+#if ($userInfo)
+    <p>user info request attribute values:
+    <ul>
+    #foreach ($userInfoEntry in $userInfo.entrySet())
+        <li>$userInfoEntry.getKey(): $userInfoEntry.getValue()</li>
+    #end
+    </ul>
+#end

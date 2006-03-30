@@ -22,27 +22,27 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import ${groupId}.ComponentImpl;
+import ${groupId}.ApplicationPortlet;
 
 /**
- * TestComponent
+ * TestApplicationPortlet
  *
  * @author <a href="mailto:"></a>
  * @version $Id:$
  */
-public class TestComponent extends TestCase
+public class TestApplicationPortlet extends TestCase
 {
     /**
      * Class specific log instance.
      */
-    private final static Log log = LogFactory.getLog(TestComponent.class);
+    private final static Log log = LogFactory.getLog(TestApplicationPortlet.class);
 
     /**
      * Main test runner entry point.
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(new String[]{TestComponent.class.getName()});
+        junit.awtui.TestRunner.main(new String[]{TestApplicationPortlet.class.getName()});
     }
     
     /**
@@ -50,7 +50,7 @@ public class TestComponent extends TestCase
      */
     public static Test suite()
     {
-        return new TestSuite(TestComponent.class);
+        return new TestSuite(TestApplicationPortlet.class);
     }
     
     /**
@@ -72,12 +72,12 @@ public class TestComponent extends TestCase
     /**
      * Unit test method.
      */
-    public void testComponent() throws Exception
+    public void testApplicationPortlet() throws Exception
     {
-        log.info("TestComponent start...");
+        log.info("TestApplicationPortlet start...");
 
-        log.info("TestComponent testing: " + ComponentImpl.class.getName());
+        log.info("TestApplicationPortlet testing: " + ApplicationPortlet.class.getName());
 
-        log.info("TestComponent done.");
+        log.info("TestApplicationPortlet done.");
     }
 }

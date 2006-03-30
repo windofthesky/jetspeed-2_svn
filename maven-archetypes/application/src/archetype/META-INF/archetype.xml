@@ -17,6 +17,7 @@ limitations under the License.
 -->
         
 <archetype>
+
     <id>portal-archetype</id>
     <allowPartial>true</allowPartial>
 
@@ -33,6 +34,18 @@ limitations under the License.
         <resource>src/webapp/WEB-INF/velocity/toolbox.xml</resource>
         <resource>src/webapp/WEB-INF/velocity/velocity-macros.vm</resource>
         <resource>src/webapp/WEB-INF/velocity/velocity.properties</resource>
+        <resource>src/webapp/WEB-INF/view/application-portlet-edit.vm</resource>
+        <resource>src/webapp/WEB-INF/view/application-portlet-help.vm</resource>
+        <resource>src/webapp/WEB-INF/view/application-portlet-view.vm</resource>
     </resources>
+    <sources>
+        <source>src/java/ApplicationPortlet.java</source>
+    </sources>
+    <testSources>
+        <source>src/test/TestApplicationPortlet.java</source>
+    </testSources>
+    <testResources>
+        <resource>src/test/log4j.properties</resource>
+    </testResources>
 
 </archetype>
