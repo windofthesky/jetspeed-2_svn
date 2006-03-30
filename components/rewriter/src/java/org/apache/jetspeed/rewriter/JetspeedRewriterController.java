@@ -18,6 +18,7 @@ package org.apache.jetspeed.rewriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,34 @@ public class JetspeedRewriterController implements RewriterController
 
         loadMapping();
     }
+    
+    public JetspeedRewriterController( String mappingFile, String basicRewriterClassName, String rulesetRewriterClassName, 
+                    String adaptorHtmlClassName, String adaptorXmlClassName )
+    throws RewriterException
+    {
+        this(mappingFile, toClassList(basicRewriterClassName,rulesetRewriterClassName), toClassList(adaptorHtmlClassName,adaptorXmlClassName));
+    }
+
+    private static List toClassList(String classNameA, String classNameB)
+    {
+        try
+        {
+            List list = new ArrayList(2);
+            if ( classNameA != null )
+            {
+                list.add(Class.forName(classNameA));
+            }
+            if ( classNameB != null )
+            {
+                list.add(Class.forName(classNameB));
+            }
+            return list;
+        } 
+        catch (ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }    
 
     /*
      * (non-Javadoc)
