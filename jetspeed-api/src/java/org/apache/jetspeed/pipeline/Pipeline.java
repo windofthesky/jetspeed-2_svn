@@ -21,8 +21,7 @@ import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- *
- * NOTE: This class will be deprecated once we merge with Summit
+ * Jetspeed Pipeline
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
@@ -74,5 +73,12 @@ public interface Pipeline
      * @param valve Valve to be removed.
      */
     void removeValve(Valve valve);
+    
+    /**
+     * Get the name of the pipeine
+     * 
+     * @return name of the pipeline
+     */
+    String getName();
 
 }

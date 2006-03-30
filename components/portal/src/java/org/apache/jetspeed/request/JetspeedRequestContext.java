@@ -38,6 +38,7 @@ import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
@@ -66,6 +67,7 @@ public class JetspeedRequestContext implements RequestContext
     private Subject subject;
     private Locale locale;
     private ContentDispatcher dispatcher;
+    private Pipeline pipeline;
 
     private CapabilityMap capabilityMap;
     private String mimeType;
@@ -576,7 +578,26 @@ public class JetspeedRequestContext implements RequestContext
     {
         setSessionAttribute(ACTION_ERROR_ATTR + window.getId(),
                 actionFailure);
-
+    }
+    
+    /**
+     * Get the current executing pipeline
+     * 
+     * @return Pipeline
+     */
+    public Pipeline getPipeline()
+    {
+        return pipeline;
+    }
+    
+    
+    /**
+     * Set the current pipeline
+     * @param pipeline
+     */
+    public void setPipeline(Pipeline pipeline)
+    {
+        this.pipeline = pipeline;
     }
     
 

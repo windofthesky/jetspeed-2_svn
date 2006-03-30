@@ -34,7 +34,12 @@ public class LogoutServlet extends HttpServlet
     public void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {
+        String destination = request.getParameter(LoginConstants.DESTINATION);
         request.getSession(true).invalidate();
-        response.sendRedirect(response.encodeURL(request.getContextPath()));
+        if (destination == null)
+        {
+            destination = request.getContextPath(); 
+        }
+        response.sendRedirect(response.encodeURL(destination));
     }
 }

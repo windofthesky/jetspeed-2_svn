@@ -30,6 +30,7 @@ import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -60,6 +61,8 @@ public class MockRequestContext implements RequestContext
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Object session;
+    private Pipeline pipeline;
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
      */
@@ -503,4 +506,25 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         
     }
+
+    /**
+     * Get the current executing pipeline
+     * 
+     * @return Pipeline
+     */
+    public Pipeline getPipeline()
+    {
+        return pipeline;
+    }
+    
+    
+    /**
+     * Set the current pipeline
+     * @param pipeline
+     */
+    public void setPipeline(Pipeline pipeline)
+    {
+        this.pipeline = pipeline;
+    }
+    
 }

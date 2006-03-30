@@ -29,6 +29,7 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -389,5 +390,18 @@ public interface RequestContext
      */
     void setActionFailure(PortletWindow window, Throwable actionFailure);
         
+    /**
+     * Get the current executing pipeline
+     * 
+     * @return Pipeline
+     */
+    Pipeline getPipeline();
+    
+    /**
+     * Set the current pipeline
+     * @param pipeline
+     */
+    void setPipeline(Pipeline pipeline);
+    
 }
 

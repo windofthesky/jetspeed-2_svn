@@ -210,6 +210,7 @@ public class JetspeedEngine implements Engine
         else
             pipeline = getPipeline();
         
+        context.setPipeline(pipeline);
         pipeline.invoke(context);
    
         long end = System.currentTimeMillis();
