@@ -26,51 +26,26 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>2.1-dev</version>
-    <artifactId>maven-archetypes</artifactId>
+    <artifactId>portal-component-archetype</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <version>2.1-dev</version>
-        <artifactId>jetspeed-2</artifactId>
+        <artifactId>maven-archetypes</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <packaging>pom</packaging>
-    <name>Jetspeed-2 Maven2 Archetypes</name>
+    <packaging>jar</packaging>
+    <name>Jetspeed-2 Maven2 Portal Component Archetype</name>
     <description>
-        Jetspeed-2 Maven2 Archetypes used to generate portal, application, and component instances.
+        Jetspeed-2 Maven2 Archetype used to generate component templates to
+        be injected/installed as a library in the portal application itself.
     </description>
-
-    <!-- Archetype Modules -->
-
-    <modules>
-
-        <!-- Portal Archetype -->
-        <module>portal-resources</module>
-        <module>portal</module>
-
-        <!-- Portal Application/Component Archetypes -->
-        <module>application</module>
-        <module>component</module>
-        <module>shared-component</module>
-        <module>portal-component</module>
-
-    </modules>
-
-    <!-- Archetype Build Configuration -->
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/archetype</directory>
-            </resource>
-        </resources>
-    </build>
 
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/maven-archetypes/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes/component</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/maven-archetypes/component</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/maven-archetypes/component/</url>
     </scm>
 
 </project>

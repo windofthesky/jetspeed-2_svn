@@ -34,9 +34,10 @@ limitations under the License.
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
-    <name>Jetspeed-2 Maven2 Portal Component Archetype</name>
+    <name>Jetspeed-2 Maven2 Component Archetype</name>
     <description>
-        Jetspeed-2 Maven2 Archetype used to generate portal component templates.
+        Jetspeed-2 Maven2 Archetype used to generate component templates to
+        be used by other components and applications.
     </description>
 
     <!-- Project Information -->

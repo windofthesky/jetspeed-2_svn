@@ -18,18 +18,18 @@ limitations under the License.
         
 <archetype>
 
-    <id>component-archetype</id>
+    <id>portal-component-archetype</id>
     <allowPartial>true</allowPartial>
 
     <resources>
         <resource>pom.xml</resource>
     </resources>
     <sources>
-        <source>src/java/Component.java</source>
-        <source>src/java/ComponentImpl.java</source>
+        <source>src/java/PortalComponent.java</source>
+        <source>src/java/PortalComponentImpl.java</source>
     </sources>
     <testSources>
-        <source>src/test/TestComponent.java</source>
+        <source>src/test/TestPortalComponent.java</source>
     </testSources>
     <testResources>
         <resource>src/test/log4j.properties</resource>

@@ -175,7 +175,7 @@ limitations under the License.
             <!-- Subprojects -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>${artifactId}-etc</artifactId>
+                <artifactId>portal-etc</artifactId>
                 <type>pom</type>
                 <version>${pom.version}</version>
             </dependency>

@@ -18,7 +18,7 @@ limitations under the License.
         
 <archetype>
 
-    <id>portal-archetype</id>
+    <id>application-archetype</id>
     <allowPartial>true</allowPartial>
 
     <resources>

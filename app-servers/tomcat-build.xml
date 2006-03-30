@@ -135,6 +135,9 @@ limitations under the License.
             <mapper type="merge" to="jetspeed.xml"/>
         </copy>
 
+        <!-- deploy portal application components -->
+        <antcall target="deploy-components"/>
+
         <!-- deploy portlet and layout applications -->
         <antcall target="deploy-min-apps"/>
         <antcall target="deploy-full-apps"/>
@@ -150,6 +153,9 @@ limitations under the License.
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/templates">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/templates"/>
         </copy>
+
+        <!-- hot deploy portal application components -->
+        <antcall target="hot-deploy-components"/>
 
         <!-- hot deploy portlet and layout applications -->
         <antcall target="hot-deploy-min-apps"/>
@@ -309,6 +315,11 @@ limitations under the License.
         </copy>
     </target>
 
+    <target name="deploy-components">
+        <!-- deploy portal application components -->
+        <antcall target="hot-deploy-components"/>
+    </target>
+
     <target name="deploy-min-apps" if="org.apache.jetspeed.deploy.min.apps">
         <!-- deploy minimal set of portlet and layout applications -->
         <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
@@ -401,6 +412,10 @@ limitations under the License.
         <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/pages">
             <fileset dir="${basedir}/../src/webapp/WEB-INF/pages"/>
         </copy>
+    </target>
+
+    <target name="hot-deploy-components">
+        <!-- hot deploy portal application components -->
     </target>
 
     <target name="hot-deploy-full-apps" if="org.apache.jetspeed.deploy.full.apps">

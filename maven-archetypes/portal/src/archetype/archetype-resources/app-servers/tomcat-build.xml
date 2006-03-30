@@ -127,6 +127,9 @@ limitations under the License.
             <mapper type="merge" to="${artifactId}.xml"/>
         </copy>
 
+        <!-- deploy portal application components -->
+        <antcall target="deploy-components"/>
+
         <!-- deploy portlet and layout applications -->
         <antcall target="deploy-apps"/>
 
@@ -160,6 +163,9 @@ limitations under the License.
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
+
+        <!-- hot deploy portal application components -->
+        <antcall target="hot-deploy-components"/>
 
         <!-- hot deploy portlet and layout applications -->
         <antcall target="hot-deploy-apps"/>
@@ -209,7 +215,7 @@ limitations under the License.
         <!-- copy only the artifact and ignore dependencies using mapper -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/${artifactId}/WEB-INF/lib">
             <fileset refid="component.dependencies.id"/>
-            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.jar" to="\1.jar"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid}-${org.apache.jetspeed.deploy.version}).jar" to="\1.jar"/>
         </copy>
     </target>
 
@@ -299,6 +305,11 @@ limitations under the License.
         </copy>
     </target>
 
+    <target name="deploy-components">
+        <!-- deploy portal application components -->
+        <antcall target="hot-deploy-components"/>
+    </target>
+
     <target name="deploy-apps">
         <!-- deploy portlet and layout applications -->
         <delete dir="${org.apache.jetspeed.server.home}/webapps/j2-admin"/>
@@ -342,6 +353,10 @@ limitations under the License.
             <param name="org.apache.jetspeed.deploy.artifactid" value="portlet-api"/>
             <param name="org.apache.jetspeed.deploy.version" value="${portlet-api.version}"/>
         </antcall>
+    </target>
+
+    <target name="hot-deploy-components">
+        <!-- hot deploy portal application components -->
     </target>
 
     <target name="hot-deploy-apps">
