@@ -28,26 +28,39 @@ import javax.portlet.WindowState;
  */
 public class PortletWindowBaseNavigationalState implements Serializable
 {
-    private PortletMode portletMode;
-    private WindowState windowState;
+    private String modeName;
+    private String stateName;
+    
+    private transient PortletMode portletMode;
+    private transient WindowState windowState;
     
     public PortletMode getPortletMode()
     {
-        return portletMode;
+        if ( portletMode == null && modeName != null )
+        {
+            portletMode = new PortletMode(modeName);
+        }
+        return portletMode ;
     }
     
     public void setPortletMode(PortletMode portletMode)
     {
         this.portletMode = portletMode;
+        this.modeName = portletMode == null ? null : portletMode.toString();
     }
     
     public WindowState getWindowState()
     {
+        if ( windowState == null && stateName != null )
+        {
+            windowState = new WindowState(stateName);
+        }
         return windowState;
     }
     
     public void setWindowState(WindowState windowState)
     {
         this.windowState = windowState;
+        this.stateName = windowState == null ? null : windowState.toString();
     }
 }
