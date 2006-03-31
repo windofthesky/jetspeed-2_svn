@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <id>commons-httpclient</id>
-            <version>2.0</version>
+            <version>3.0</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>

@@ -15,7 +15,11 @@
  */
 package org.apache.jetspeed.portlet;
 
+import java.util.Map;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 
@@ -30,6 +34,13 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
@@ -49,6 +60,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
     public static final String SSO_TYPE_URL_BASE64 = "url.base64";
     public static final String SSO_TYPE_HTTP = "http";
     public static final String SSO_TYPE_CERTIFICATE = "certificate";
+    public static final String SSO_TYPE_DEFAULT = SSO_TYPE_HTTP;
     
     public static final String SSO_TYPE_URL_USERNAME = "sso.url.Principal";
     public static final String SSO_TYPE_URL_PASSWORD = "sso.url.Credential";
@@ -124,8 +136,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
         String site = request.getPreferences().getValue("SRC", null);
         if (site == null)
         {
-            // no credentials configured in SSO store
-            // switch to SSO Configure View
+            // no SRC configured in prefs - switch to SSO Configure View
             request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
             setupPreferencesEdit(request, response);
             super.doView(request, response);
@@ -193,44 +204,52 @@ public class SSOWebContentPortlet extends WebContentPortlet
         return Subject.getSubject(context);         
     }
     
-    public String getURLSource(String src, RenderRequest request, RenderResponse response)
+    public String getURLSource(String src, Map params, RenderRequest request, RenderResponse response)
     {
+        String baseSource = super.getURLSource(src, params, request, response);
+        
         PortletPreferences prefs = request.getPreferences();
-        String baseSource = super.getURLSource(src, request, response);
-        String type = prefs.getValue(SSO_TYPE, SSO_TYPE_URL);
-        if (type.equals(SSO_TYPE_URL))
+        String type = prefs.getValue(SSO_TYPE, SSO_TYPE_DEFAULT);
+        if (type.equals(SSO_TYPE_URL) || type.equals(SSO_TYPE_URL_BASE64))
         {
+            // set user name and password parameters
             String userNameParam = prefs.getValue(SSO_TYPE_URL_USERNAME, "user");
             String passwordParam = prefs.getValue(SSO_TYPE_URL_PASSWORD, "password");
-            StringBuffer source = new StringBuffer(baseSource);
-            if (baseSource.indexOf("?") == -1)
-            {
-                source.append("?");
-            }            
-            else
-            {
-                source.append("&");
-            }
-            source.append(userNameParam);
-            source.append("=");
-            
             String userName = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME);
             if (userName == null) userName = "";
             String password = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD);
             if (password == null) password = "";
+            if (type.equals(SSO_TYPE_URL_BASE64))
+            {
+                Base64 encoder = new Base64() ;
+                userName = new String( encoder.encode( userName.getBytes() ));
+                password = new String( encoder.encode( password.getBytes() ));
+            }
             
-            source.append(userName);
-            source.append("&");
-            source.append(passwordParam);
-            source.append("=");
-            source.append(password);
-            
-            return response.encodeURL(source.toString());
+            params.put(userNameParam,new String[]{ userName }) ;
+            params.put(passwordParam,new String[]{ password }) ;
         }
-        else
-        {
-            return baseSource;
-        }
+        
+        return baseSource;
     }
-    
+
+    protected HttpClient getHttpClient(RenderRequest request) throws IOException
+    {
+        HttpClient client = super.getHttpClient(request) ;
+
+        PortletPreferences prefs = request.getPreferences();
+        String type = prefs.getValue(SSO_TYPE, SSO_TYPE_DEFAULT);
+        if (type.equals(SSO_TYPE_HTTP))
+        {
+            String userName = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME);
+            if (userName == null) userName = "";
+            String password = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD);
+            if (password == null) password = "";
+
+            HttpState state = client.getState() ;
+            state.setCredentials(new AuthScope(null, -1), new UsernamePasswordCredentials(userName, password));
+        }
+
+        return client;
+    }
 }

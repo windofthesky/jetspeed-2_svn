@@ -56,7 +56,11 @@ public class XMLAttributesWrapper implements MutableAttributes
      */
     public int addAttribute( QName arg0, String arg1, String arg2 )
     {
-        return attrs.addAttribute(arg0, arg1, arg2);
+        int i = getIndex( arg0.rawname );
+        if ( i >= 0 )
+             attrs.removeAttributeAt( i );
+         
+        return attrs.addAttribute( arg0, arg1, arg2 );
     }
     /**
      * <p>
@@ -91,9 +95,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg0
      * @return
      */
-    public Augmentations getAugmentations( String arg0 )
+    public Augmentations getAugmentations( String qName )
     {
-        return attrs.getAugmentations(arg0);
+        return attrs.getAugmentations(asNekoAttributeName(qName)) ;
     }
     /**
      * <p>
@@ -104,9 +108,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg1
      * @return
      */
-    public Augmentations getAugmentations( String arg0, String arg1 )
+    public Augmentations getAugmentations( String uri, String localPart )
     {
-        return attrs.getAugmentations(arg0, arg1);
+        return attrs.getAugmentations(uri,asNekoAttributeName(localPart));
     }
     /**
      * <p>
@@ -116,9 +120,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg0
      * @return
      */
-    public int getIndex( String arg0 )
+    public int getIndex( String qName )
     {
-        return attrs.getIndex(arg0);
+        return attrs.getIndex(asNekoAttributeName(qName));
     }
     /**
      * <p>
@@ -129,9 +133,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg1
      * @return
      */
-    public int getIndex( String arg0, String arg1 )
+    public int getIndex( String uri, String localName )
     {
-        return attrs.getIndex(arg0, arg1);
+        return attrs.getIndex(uri,asNekoAttributeName(localName));
     }
     /**
      * <p>
@@ -224,9 +228,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg0
      * @return
      */
-    public String getType( String arg0 )
+    public String getType( String qName )
     {
-        return attrs.getType(arg0);
+        return attrs.getType(asNekoAttributeName(qName));
     }
     /**
      * <p>
@@ -237,9 +241,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg1
      * @return
      */
-    public String getType( String arg0, String arg1 )
+    public String getType( String uri, String localName )
     {
-        return attrs.getType(arg0, arg1);
+        return attrs.getType(uri, asNekoAttributeName(localName));
     }
     /**
      * <p>
@@ -273,9 +277,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg0
      * @return
      */
-    public String getValue( String arg0 )
+    public String getValue( String qName )
     {
-        return attrs.getValue(arg0);
+        return attrs.getValue(asNekoAttributeName(qName));
     }
     /**
      * <p>
@@ -286,9 +290,9 @@ public class XMLAttributesWrapper implements MutableAttributes
      * @param arg1
      * @return
      */
-    public String getValue( String arg0, String arg1 )
+    public String getValue( String uri, String localName )
     {
-        return attrs.getValue(arg0, arg1);
+        return attrs.getValue(uri, asNekoAttributeName(localName));
     }
     /**
      * <p>
@@ -431,7 +435,29 @@ public class XMLAttributesWrapper implements MutableAttributes
      */
     public void addAttribute( String name, Object value )
     {
-        addAttribute(new QName(null, name.toUpperCase(), name.toUpperCase(), null),"CDATA", value.toString());
-
+        QName qName = null ;
+        int i = name.indexOf(':');
+        if (i < 0)
+        {
+            name = name.toLowerCase();
+            qName = new QName(null,name,name,null);
+        }
+        else
+        {
+            String prefix = name.substring(0,i);
+            String localPart = name.substring(i+1).toLowerCase();
+            name = name.toLowerCase();
+            qName = new QName(prefix,localPart,name,null);
+        }
+        addAttribute(qName,"CDATA",value.toString());
+    }
+    
+    
+    // Support Methods
+    
+    protected String asNekoAttributeName(String n)
+    {
+        // neko, by default, converts attribute names to lower case
+        return n != null ? n.toLowerCase() : null ;
     }
 }

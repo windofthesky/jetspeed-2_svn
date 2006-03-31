@@ -18,6 +18,10 @@ package org.apache.jetspeed.rewriter;
 import java.net.URL;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Attribute;
 import org.apache.jetspeed.rewriter.rules.Rule;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
@@ -32,6 +36,8 @@ import org.apache.jetspeed.rewriter.rules.Tag;
  */
 public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewriter
 {
+    protected final static Log log = LogFactory.getLog(RulesetRewriterImpl.class);
+    
     private Ruleset ruleset = null;
     private boolean removeComments = false;
 
@@ -102,17 +108,15 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
      */
     public void enterConvertTagEvent(String tagid, MutableAttributes attributes)
     {
-        // System.out.println("tagid = " + tagid);
-        
         if (null == ruleset)
         {
             return;
         }
         
-        Tag tag = ruleset.getTag(tagid.toUpperCase());
+         Tag tag = ruleset.getTag(tagid.toUpperCase());
         if (null == tag)
         {
-            return;
+             return;
         }
 
         Iterator attribRules = tag.getAttributes().iterator();
@@ -121,11 +125,7 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
             Attribute attribute = (Attribute)attribRules.next();
             String name = attribute.getId();
             String value = (String)attributes.getValue(name);
-            //String id = (String)attributes.getValue("name");
-            //System.out.println("id = " + id);
-            //System.out.println("value = " + value);
-            //System.out.println("name = " + name);
-                
+ 
             if (value != null) // && name.equalsIgnoreCase(attribute.getId()))
             {
                 Rule rule = attribute.getRule();
@@ -139,7 +139,7 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
                     continue;
                 }                                        
                 
-                String rewritten = rewriteUrl(value, tag.getId(), name);
+                String rewritten = rewriteUrl(value, tag.getId(), name, attributes);
                 if (null != rewritten) // return null indicates "don't rewrite" 
                 {
                     if (rule.getSuffix() != null)
@@ -167,15 +167,12 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
      * @return the rewritten URL to the proxy server.
      *
      */
-    public String rewriteUrl(
-        String url,
-        String tag,
-        String attribute)
+    public String rewriteUrl(String url, String tag, String attribute, MutableAttributes otherAttribues )
     {
         String fullPath = "";
         try
         {
-            String baseUrl = super.getBaseUrl();
+            String baseUrl = getBaseUrl();
             if (baseUrl != null)
             {
                 URL full = new URL(new URL(baseUrl), url);
@@ -188,7 +185,7 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
         }
         catch (Exception e)
         {
-            System.err.println(e);
+            log.error("failure to rewriteUrl: "+url,e) ;
         }
         return fullPath;
     }

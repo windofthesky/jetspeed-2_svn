@@ -1387,25 +1387,26 @@ public class PersistenceBrokerSSOProvider extends
         }
 		
 		
-		//try
-		//{
+		try
+		{
 			//bis = new BufferedInputStream(get.getResponseBodyAsStream());
 			resultPage = get.getResponseBodyAsString();
-		//}
-		//catch(IOException ioe)
-		//{
-		//	log.error(strErrorMessage, ioe);
-		//	throw new SSOException (strErrorMessage, ioe);
-		//	
-		//}
-		//catch (Exception e)
-		//{
-		//	log.error(strErrorMessage, e);
-		//	throw new SSOException (strErrorMessage, e);
-		//	
-		//}
-		
-		get.releaseConnection();
+		}
+		catch(IOException ioe)
+		{
+			log.error(strErrorMessage, ioe);
+			throw new SSOException (strErrorMessage, ioe);
+        }
+		catch (Exception e)
+		{
+			log.error(strErrorMessage, e);
+			throw new SSOException (strErrorMessage, e);
+			
+		}
+        finally
+        {
+            get.releaseConnection();
+        }
 		
 		//return bis;
 		return resultPage;

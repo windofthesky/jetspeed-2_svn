@@ -26,9 +26,9 @@ import javax.portlet.PortletURL;
  */
 public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
 {
-
-    /** WebContentURL */
-    public static final String ACTION_PARAMETER_URL = "WCURL";
+    /** parameters that need to be propagated in the action URL (since HTTP request parameters will not be available) */
+    public static final String ACTION_PARAMETER_URL    = "_AP_URL";
+    public static final String ACTION_PARAMETER_METHOD = "_AP_METHOD";
 
     /*
      * Portlet URL will be used to replace all URL's
@@ -54,11 +54,12 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
      * @param url
      * @param tag
      * @param attribute
+     * @param otherAttributes
      * @return the modified url which is a portlet action
      * 
      * Rewrites all urls HREFS with a portlet action
      */
-    public String rewriteUrl(String url, String tag, String attribute)
+    public String rewriteUrl(String url, String tag, String attribute, MutableAttributes otherAttributes)
     {
          String modifiedURL = url;
         
@@ -69,7 +70,7 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
             {
                 if (this.getBaseUrl() != null)
                 {
-                    URL full = new URL(new URL(this.getBaseUrl()), url);
+                    URL full = new URL(new URL(getBaseUrl()), url);
                     modifiedURL = full.toString();
   	            }
 	            else
@@ -83,48 +84,31 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
             }
         }
          
-        // Only add PortletActions to URL's which are anchors (tag=a) and HREF's (attribute= HREF) -- ignore all others links
-        if ( tag.compareToIgnoreCase("A") == 0 && attribute.compareToIgnoreCase("HREF") == 0)
+        // translate "submit" URL's as actions
+        //  <A href="..."/>
+        //  <FORM submit="..."/>
+        if (( tag.equalsIgnoreCase("A") && attribute.equalsIgnoreCase("href")) ||
+            ( tag.equalsIgnoreCase("FORM") && attribute.equalsIgnoreCase("action")))
+                
         {
                 // Regular URL just add a portlet action
                 if (this.actionURL != null)
                 {
                     // create Action URL
                     actionURL.setParameter(ACTION_PARAMETER_URL, modifiedURL);
+                    if (tag.equalsIgnoreCase("FORM"))
+                    {
+                        String httpMethod = otherAttributes.getValue("method");
+                        if (httpMethod != null)
+                            actionURL.setParameter(ACTION_PARAMETER_METHOD, httpMethod);
+                    }
                     modifiedURL = actionURL.toString();
                 }
         }
         
+        // if ( !url.equalsIgnoreCase( modifiedURL ))
+        //      System.out.println("In tag: "+tag+", for attribute: "+attribute+", converted url: "+url+", to: "+modifiedURL+", base URL was: "+getBaseUrl());
+
         return modifiedURL;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.rewriter.Rewriter#shouldRemoveTag(java.lang.String)
-     */
-    /*
-     * public boolean shouldRemoveTag(String tag) { if
-     * (tag.equalsIgnoreCase("html")) { return true; } return false; }
-     */
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.rewriter.Rewriter#shouldStripTag(java.lang.String)
-     */
-    /*
-     * public boolean shouldStripTag(String tag) { if
-     * (tag.equalsIgnoreCase("head")) { return true; } return false; }
-     */
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.rewriter.Rewriter#shouldRemoveComments()
-     */
-    /*
-     * public boolean shouldRemoveComments() { return true; }
-     */
-
 }

@@ -57,78 +57,75 @@ public class URLToDocHandler extends AbstractObjectHandler
         URL pageToAdd = (URL) o;
 
         HttpClient client = new HttpClient();
-        client.startSession(pageToAdd);
-        GetMethod method = new GetMethod(pageToAdd.getPath());
+        GetMethod method = new GetMethod(pageToAdd.toString());
         method.setFollowRedirects(true);
         int statusCode = -1;
         int attempt = 0;
 
-        // We will retry up to 3 times.
-        while (statusCode == -1 && attempt < 3)
+        try
         {
-            try
-            {
-                // execute the method.
-                client.executeMethod(method);
-                statusCode = method.getStatusCode();
-                //if (logger.isDebugEnabled())
-                {
-                    //logger.debug("URL = " + pageToAdd.toString() + "Status code = " + statusCode);
-                }
-            }
-            catch (HttpException e)
-            {
-                // We will retry
-                attempt++;
-            }
-            catch (IOException e)
-            {
-                return null;
-            }
-        }
-        // Check that we didn't run out of retries.
-        if (statusCode != -1)
-        {
-            String content = null;
-            try
-            {
-                content = method.getResponseBodyAsString();
-            }
-            catch (Exception ioe)
-            {
-                //logger.error("Getting content for " + pageToAdd.toString(), ioe);
-            }
-
-            if (content != null)
+            // We will retry up to 3 times.
+            while (statusCode == -1 && attempt < 3)
             {
                 try
                 {
-                    result.setKey(java.net.URLEncoder.encode(pageToAdd.toString()));
-                    result.setType(org.apache.jetspeed.search.ParsedObject.OBJECT_TYPE_URL);
-                    // TODO: We should extract the <title> tag here.
-                    result.setTitle(pageToAdd.toString());
-                    result.setContent(content);
-                    result.setDescription("");
-                    result.setLanguage("");
-                    result.setURL(pageToAdd);
-                    result.setClassName(o.getClass().getName());
-                    //logger.info("Parsed '" + pageToAdd.toString() + "'");
+                    // execute the method.
+                    client.executeMethod(method);
+                    statusCode = method.getStatusCode();
+                    //if (logger.isDebugEnabled())
+                    {
+                        //logger.debug("URL = " + pageToAdd.toString() + "Status code = " + statusCode);
+                    }
                 }
-                catch (Exception e)
+                catch (HttpException e)
                 {
-                    e.printStackTrace();
-                    //logger.error("Adding document to index", e);
+                    // We will retry
+                    attempt++;
+                }
+                catch (IOException e)
+                {
+                    return null;
+                }
+            }
+            // Check that we didn't run out of retries.
+            if (statusCode != -1)
+            {
+                String content = null;
+                try
+                {
+                    content = method.getResponseBodyAsString();
+                }
+                catch (Exception ioe)
+                {
+                    //logger.error("Getting content for " + pageToAdd.toString(), ioe);
+                }
+
+                if (content != null)
+                {
+                    try
+                    {
+                        result.setKey(java.net.URLEncoder.encode(pageToAdd.toString(),"UTF-8"));
+                        result.setType(org.apache.jetspeed.search.ParsedObject.OBJECT_TYPE_URL);
+                        // TODO: We should extract the <title> tag here.
+                        result.setTitle(pageToAdd.toString());
+                        result.setContent(content);
+                        result.setDescription("");
+                        result.setLanguage("");
+                        result.setURL(pageToAdd);
+                        result.setClassName(o.getClass().getName());
+                        //logger.info("Parsed '" + pageToAdd.toString() + "'");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        //logger.error("Adding document to index", e);
+                    }
                 }
             }
         }
-        try
+        finally
         {
-            client.endSession();
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-            //logger.error("Ending session to " + pageToAdd.toString(), ioe);
+            method.releaseConnection();
         }
 
         return result;

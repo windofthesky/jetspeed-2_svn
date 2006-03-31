@@ -34,15 +34,12 @@ public class BasicRewriter extends AbstractRewriter implements Rewriter
      * @return the rewritten URL to the proxy server.
      *
      */
-    public String rewriteUrl(
-        String url,
-        String tag,
-        String attribute)
+    public String rewriteUrl(String url, String tag, String attribute)
     {
         String fullPath = "";
         try
         {
-            String baseUrl = super.getBaseUrl();
+            String baseUrl = getBaseUrl();
             if (baseUrl != null)
             {
                 URL full = new URL(new URL(baseUrl), url);
