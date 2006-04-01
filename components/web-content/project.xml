@@ -34,7 +34,16 @@ limitations under the License.
 
   <shortDescription>Web Content</shortDescription>
   <dependencies>  
-  	
+
+    <dependency>
+        <id>commons-httpclient</id>
+        <version>3.0</version>
+        <type>jar</type>
+        <properties>
+            <war.bundle>true</war.bundle>
+        </properties>		  
+    </dependency>		
+        	
   	<dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-rewriter</id>
       <version>${jetspeed.version}</version>
