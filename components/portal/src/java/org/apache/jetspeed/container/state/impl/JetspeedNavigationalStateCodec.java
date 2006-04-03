@@ -381,7 +381,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 paramBuffer.setLength(0);
                 paramBuffer.append(encodeArgument(parameterName, PARAMETER_ELEMENT_SEPARATOR));
                 paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
-                paramBuffer.append(parameterValues.length);
+                paramBuffer.append(Integer.toHexString(parameterValues.length));
                 for ( int i = 0; i < parameterValues.length; i++ )
                 {
                     paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
