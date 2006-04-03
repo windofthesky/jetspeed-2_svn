@@ -297,7 +297,45 @@
                        value="./src/webapp/WEB-INF/pages"/>
         </java>
     </goal>
-    
+
+    <goal name='export'>
+        <filterset id="dbSet" begintoken="$" endtoken="}">
+          <filter token="{org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+          <filter token="{org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>      
+          <filter token="{org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>            
+          <filter token="{org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>            
+        </filterset>            
+        <copy file="./etc/import/assembly/repository-datasource-spring.xml"
+              tofile="${maven.build.dir}/classes/repository-datasource-spring.xml"
+              overwrite="true"
+              failonerror="true">
+          <filterset refid="dbSet"/>
+        </copy>                
+        <copy todir='${maven.build.dir}/classes'
+          file="./etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'>
+          <fileset dir="./etc/db-ojb/"/>
+        </copy>              
+        <copy todir="${maven.build.dir}/classes"
+              file="./etc/import/assembly/import-page-manager.xml"/>
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>        
+        <mkdir dir="./target/export/psml"></mkdir>
+        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>            
+          </classpath>
+          <sysproperty key="org.apache.jetspeed.page.import.configuration" 
+                       value="./etc/import/export.properties"/>       
+          <sysproperty key="org.apache.jetspeed.page.import.pages"
+                       value="./target/export/psml"/>
+        </java>
+    </goal>
+        
     <goal name='pages'>
 	<copy todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/pages/">
         <fileset dir="./src/webapp/WEB-INF/pages/"/>        

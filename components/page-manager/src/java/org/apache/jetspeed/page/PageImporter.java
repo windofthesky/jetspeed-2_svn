@@ -78,9 +78,11 @@ public class PageImporter
             boolean overwriteFolders = configuration.getBoolean("overwrite.folders", true);
             boolean overwritePages = configuration.getBoolean("overwrite.pages", true);
             boolean fullImport = configuration.getBoolean("full.import", true);
+            String sourcePageManager = configuration.getString("source.page.manager", "castorPageManager");
+            String destPageManager = configuration.getString("dest.page.manager", "dbPageManager");
             
-            PageManager srcManager = (PageManager)ctx.getBean("castorPageManager");
-            PageManager dstManager = (PageManager)ctx.getBean("dbPageManager");
+            PageManager srcManager = (PageManager)ctx.getBean(sourcePageManager);
+            PageManager dstManager = (PageManager)ctx.getBean(destPageManager);
             PageImporter importer = new PageImporter(srcManager, dstManager, rootFolder, overwriteFolders, overwritePages);
             if (fullImport)
             {
