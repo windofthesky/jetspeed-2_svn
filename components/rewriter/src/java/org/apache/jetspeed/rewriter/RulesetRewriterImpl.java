@@ -156,38 +156,21 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
                 }
             }            
         }
-        
-    }
-
-    /*    
-     * This callback is called by the ParserAdaptor implementation to write
-     * back all rewritten URLs to point to the proxy server.
-     * Given the targetURL, rewrites the link as a link back to the proxy server.
-     *
-     * @return the rewritten URL to the proxy server.
-     *
-     */
-    public String rewriteUrl(String url, String tag, String attribute, MutableAttributes otherAttribues )
-    {
-        String fullPath = "";
-        try
-        {
-            String baseUrl = getBaseUrl();
-            if (baseUrl != null)
-            {
-                URL full = new URL(new URL(baseUrl), url);
-                fullPath = full.toString();
-            }
-            else
-            {
-                return url; // leave as is
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("failure to rewriteUrl: "+url,e) ;
-        }
-        return fullPath;
     }
     
+    /**
+     * rewriteURL
+     * 
+     * @param url
+     * @param tag
+     * @param attribute
+     * @param otherAttributes
+     * @return the modified url which is a portlet action
+     * 
+     * Rewrites all urls HREFS with a portlet action
+     */
+    public String rewriteUrl(String url, String tag, String attribute, MutableAttributes otherAttributes)
+    {
+        return getBaseRelativeUrl(url);
+    }
 }

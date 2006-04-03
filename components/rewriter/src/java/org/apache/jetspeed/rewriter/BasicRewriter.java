@@ -15,7 +15,8 @@
  */
 package org.apache.jetspeed.rewriter;
 
-import java.net.URL;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -26,6 +27,8 @@ import java.net.URL;
  */
 public class BasicRewriter extends AbstractRewriter implements Rewriter
 {
+    protected final static Log log = LogFactory.getLog(BasicRewriter.class);
+
     /*    
      * This callback is called by the ParserAdaptor implementation to write
      * back all rewritten URLs to point to the proxy server.
@@ -36,25 +39,7 @@ public class BasicRewriter extends AbstractRewriter implements Rewriter
      */
     public String rewriteUrl(String url, String tag, String attribute)
     {
-        String fullPath = "";
-        try
-        {
-            String baseUrl = getBaseUrl();
-            if (baseUrl != null)
-            {
-                URL full = new URL(new URL(baseUrl), url);
-                fullPath = full.toString();
-            }
-            else
-            {
-                return url; // leave as is
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println(e);
-        }
-        return fullPath;
+        return getBaseRelativeUrl(url);
     }
     
     /* (non-Javadoc)

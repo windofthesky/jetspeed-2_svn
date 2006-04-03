@@ -17,7 +17,10 @@ package org.apache.jetspeed.rewriter;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 /**
  * AbstractRewriter
  *
@@ -26,6 +29,8 @@ import java.io.Writer;
  */
 public abstract class AbstractRewriter implements Rewriter
 {
+    protected final static Log log = LogFactory.getLog(AbstractRewriter.class);
+    
     private String baseUrl = null;
     private boolean useProxy = false; 
         
@@ -48,10 +53,7 @@ public abstract class AbstractRewriter implements Rewriter
     /* (non-Javadoc)
      * @see org.apache.jetspeed.syndication.services.crawler.rewriter.Rewriter#rewriteUrl(java.lang.String, java.lang.String, java.lang.String)
      */
-    public abstract String rewriteUrl(
-        String url,
-        String tag,
-        String attribute);
+    public abstract String rewriteUrl(String url, String tag, String attribute);
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.syndication.services.crawler.rewriter.Rewriter#setBaseUrl(java.lang.String)
@@ -67,6 +69,23 @@ public abstract class AbstractRewriter implements Rewriter
     public String getBaseUrl()
     {
         return baseUrl;
+    }
+    public String getBaseRelativeUrl(String relativeUrl)
+    {        
+        try
+        {
+            String baseUrl = getBaseUrl();
+            if (baseUrl != null)
+            {
+                URL xlate = new URL(new URL(baseUrl), relativeUrl);
+                return xlate.toString();
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Unable to translate URL relative to base URL", e);
+        }
+        return relativeUrl;
     }
     
     /* (non-Javadoc)

@@ -38,6 +38,7 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.portals.messaging.PortletMessaging;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.Cookie;
@@ -277,10 +278,13 @@ public class WebContentPortlet extends GenericVelocityPortlet
         byte[] content = useCache ? (byte[])request.getPortletSession().getAttribute(CACHE, PortletSession.PORTLET_SCOPE) : null;
         if (content == null)
         {
+            // System.out.println("WebContentPortlet.doView() >>>fetching content from: "+sourceURL+", using method: "+sourceMethod+"<<<");
+            
             // Draw the content            
             content = doWebContent(sourceURL, sourceParams, sourceMethod, request, response);
             request.getPortletSession().setAttribute(CACHE, content, PortletSession.PORTLET_SCOPE);
         }
+        // else System.out.println("WebContentPortlet.doView() - Using *cached* content");
 
         // drain the stream to the portlet window
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
@@ -305,25 +309,50 @@ public class WebContentPortlet extends GenericVelocityPortlet
     protected byte[] doWebContent(String sourceAttr, Map sourceParams, String sourceMethod, RenderRequest request, RenderResponse response)
             throws PortletException
     {
-        ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-        HttpMethodBase httpMethod = null ;
-
+        HttpMethod httpMethod = null ;
+        
         try
         {
             // Set the action and base URLs in the rewriter
             PortletURL action = response.createActionURL();
             ((WebContentRewriter) rewriter).setActionURL(action);
-  
             URL baseURL = new URL(sourceAttr);
             rewriter.setBaseUrl(baseURL.toString());
             
-            // Get the input stream...
+            // ...set up URL and HttpClient stuff
+            HttpClient httpClient = getHttpClient(request) ;
+            httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, sourceMethod, request);
+            return doHttpWebContent(httpClient, httpMethod, 0, request, response);
+        }
+        catch (PortletException pex)
+        {
+            // already reported
+            throw pex;
+        }
+        catch (Exception ex)
+        {
+            throw new PortletException("Exception while rewritting HTML content. Error: " + ex.getMessage());
+        }
+        finally
+        {
+            // release the http connection
+            if (httpMethod != null)
+                httpMethod.releaseConnection();
+        }
+    }
+
+    protected byte[] doHttpWebContent(HttpClient httpClient, HttpMethod httpMethod, int retryCount, RenderRequest request, RenderResponse response)
+            throws PortletException
+    {
+        try
+        {
+            // Get the input stream from the provided httpClient/httpMethod
             
             // ...set up URL and HttpClient stuff
-            sourceAttr = getURLSource(sourceAttr, sourceParams, request, response);
-            HttpClient httpClient = getHttpClient(request) ;
-            httpMethod = getHttpMethod(sourceAttr, sourceParams, sourceMethod, request);
             httpClient.executeMethod(httpMethod);
+            
+            // ...reset base URL with fully resolved path (e.g. if a directory, path will end with a /, which it may not have in the call to this method)
+            rewriter.setBaseUrl((new URL(new URL(rewriter.getBaseUrl()),httpMethod.getPath())).toString());
             
             // ...save updated state
             Cookie[] cookies = httpClient.getState().getCookies();
@@ -338,6 +367,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
                 String redirectLocation = locationHeader != null ? locationHeader.getValue() : null ;
                 if (redirectLocation != null)
                 {
+                    // System.out.println("WebContentPortlet.doHttpWebContent() >>>handling redirect to: "+redirectLocation+"<<<");
+                    
                     // one more time (assume most params are already encoded & new URL is using GET protocol!)
                     return doWebContent( redirectLocation, new HashMap(), "get", request, response ) ;
                 }
@@ -347,10 +378,40 @@ public class WebContentPortlet extends GenericVelocityPortlet
                     throw new PortletException("Redirection code: "+responseCode+", but with no redirectionLocation set.");
                 }
             }
+            else if ( responseCode >= 400 )
+            {
+                if ( responseCode == 401 )
+                {
+                    // System.out.println("WebContentPortlet.doHttpWebContent() - handling authorization request");
+                    
+                    if (retryCount++ < 1 && doAuthorize( httpClient, httpMethod, request))
+                    {
+                        // try again, now that we are authorizied
+                        return doHttpWebContent(httpClient, httpMethod, retryCount, request, response);
+                    }
+                    else
+                    {
+                        // could not authorize
+                        throw new PortletException("Site requested authorization, but we are unable to provide credentials");
+                    }
+                }
+                else if (retryCount++ < 2)
+                {
+                    // System.out.println("WebContentPortlet.doHttpWebContent() - retrying: "+httpMethod.getPath()+", response code: "+responseCode);
+                    
+                    // retry
+                    return doHttpWebContent(httpClient, httpMethod, retryCount, request, response);
+                }
+                else
+                {
+                    // bad
+                    throw new PortletException("Failure reading: "+httpMethod.getPath()+", response code: "+responseCode);
+                }
+            }
             
             // ...ok - *now* create the input stream and reader
             BufferedInputStream bis = new BufferedInputStream(httpMethod.getResponseBodyAsStream());
-            String encoding = httpMethod.getResponseCharSet();
+            String encoding = ((HttpMethodBase)httpMethod).getResponseCharSet();
             if (encoding == null)
                 encoding = getContentCharSet(bis);
             Reader htmlReader = new InputStreamReader(bis, encoding);
@@ -358,11 +419,16 @@ public class WebContentPortlet extends GenericVelocityPortlet
             // get the output buffer
             if (encoding == null)
                 encoding = this.defaultEncoding ;
+            ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
             Writer htmlWriter = new OutputStreamWriter(byteOutputStream, encoding);
 
             // rewrite and flush output
             rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), htmlReader, htmlWriter);
             htmlWriter.flush();
+
+            // Page has been rewritten
+            // TODO: Write it to cache
+            return byteOutputStream.toByteArray();
         }
         catch (UnsupportedEncodingException ueex)
         {
@@ -376,23 +442,20 @@ public class WebContentPortlet extends GenericVelocityPortlet
         {
             throw new PortletException("Exception while rewritting HTML page. Error: " + e.getMessage());
         }
-        finally
-        {
-            // release the http connection
-            if (httpMethod != null)
-                httpMethod.releaseConnection();
-        }
-
-        // Page has been rewritten
-        // TODO: Write it to cache
-        return byteOutputStream.toByteArray();
     }
-
-    public String getURLSource(String source, Map params, RenderRequest request, RenderResponse response)
+    
+    protected String getURLSource(String source, Map params, RenderRequest request, RenderResponse response)
     {
         return source;    
     }
     
+    protected boolean doAuthorize(HttpClient clent,HttpMethod method, RenderRequest request)
+    {
+        // derived class responsibilty - return true, if credentials have been set
+        return false ;
+    }
+
+        
     /*
      * Get WebContent source preference value
      */
@@ -431,18 +494,25 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // reuse existing state, if we have been here before
         Cookie[] cookies = (Cookie[])PortletMessaging.receive(request, HTTP_STATE);
         if (cookies != null)
+        {
+            // ...so far, just saving cookies - may need a more complex Serializable object here
             client.getState().addCookies(cookies);
+
+            // System.out.println("WebContentPortlet.getHttpClient() - reusing: "+cookies.length+", cookies...");
+            // for(int i=0,limit = cookies.length; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
+        }
  
         return client ;
     }
     
-    protected HttpMethodBase getHttpMethod(String uri, Map params, String method, RenderRequest request) throws IOException
+    protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, String method, RenderRequest request) throws IOException
     {
         HttpMethodBase httpMethod = null;
         String useragentProperty = request.getProperty("User-Agent");
         if (method == null || !method.equalsIgnoreCase("post"))
         {
-            // System.out.println(">>>>>>>>>>>> HTTP GET from URL: "+uri);
+            // System.out.println("WebContentPortlet.getHttpMethod() - HTTP GET from URL: "+uri);
+            
             // http GET
             httpMethod = new GetMethod(uri);
             if (params != null && !params.isEmpty())
@@ -457,7 +527,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
                     if (values != null)
                         for (int i = 0,limit = values.length; i < limit; i++)
                         {
-                            // System.out.println("...adding GET parameter: "+name+", with value: "+values[i]);
+                            // System.out.println("...adding >>>GET parameter: "+name+", with value: "+values[i]+"<<<");
                             pairs.add(new NameValuePair(name, values[i]));
                         }
                 }
@@ -469,7 +539,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
         }
         else
         {
-            // System.out.println(">>>>>>>>>>>> HTTP POST to URL: "+uri);
+            // System.out.println("WebContentPortlet.getHttpMethod() - HTTP POST to URL: "+uri);
+            
             // http POST
             PostMethod postMethod = (PostMethod)( httpMethod = new PostMethod(uri)) ; 
             if (params != null && !params.isEmpty())
@@ -483,7 +554,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
                     if (values != null)
                         for (int i=0,limit=values.length; i<limit; i++)
                         {
-                            // System.out.println("...adding POST parameter: "+name+", with value: "+values[i]);
+                            // System.out.println("...adding >>>POST parameter: "+name+", with value: "+values[i]+"<<<");
+                            
                             postMethod.addParameter(name, values[i]);
                         }
                 }   
@@ -493,7 +565,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // propagate User-Agent, so target site does not think we are a D.O.S. attack
         httpMethod.addRequestHeader( "User-Agent", useragentProperty );
         
-        // NO - DON'T do this.   default policy seems to be more flexible!!!
+        // BOZO - DON'T do this.   default policy seems to be more flexible!!!
         //httpMethod.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         // ...ready to use!

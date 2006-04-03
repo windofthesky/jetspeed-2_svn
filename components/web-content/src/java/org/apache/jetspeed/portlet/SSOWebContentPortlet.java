@@ -38,9 +38,11 @@ import javax.security.auth.Subject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.AuthState;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
@@ -103,13 +105,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
             // ssoUserName 
             String ssoPrincipal = request.getParameter(SSO_FORM_PRINCIPAL);
             String ssoCredential = request.getParameter(SSO_FORM_CREDENTIAL);        
-            /*
-            if (ssoPrincipal == null || ssoCredential == null)
-            {
-                
-                actionResponse.setPortletMode(PortletMode.EDIT); // stay on edit
-            }
-            */
+
             String site = request.getPreferences().getValue("SRC", "");
             try
             {
@@ -232,11 +228,15 @@ public class SSOWebContentPortlet extends WebContentPortlet
         
         return baseSource;
     }
-
-    protected HttpClient getHttpClient(RenderRequest request) throws IOException
+    
+    protected boolean doAuthorize(HttpClient client,HttpMethod method, RenderRequest request)
     {
-        HttpClient client = super.getHttpClient(request) ;
-
+        if ( super.doAuthorize(client, method, request ))
+        {
+            // already handled
+            return true ;
+        }
+        
         PortletPreferences prefs = request.getPreferences();
         String type = prefs.getValue(SSO_TYPE, SSO_TYPE_DEFAULT);
         if (type.equals(SSO_TYPE_HTTP))
@@ -245,11 +245,17 @@ public class SSOWebContentPortlet extends WebContentPortlet
             if (userName == null) userName = "";
             String password = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD);
             if (password == null) password = "";
-
-            HttpState state = client.getState() ;
-            state.setCredentials(new AuthScope(null, -1), new UsernamePasswordCredentials(userName, password));
+            
+            method.setDoAuthentication(true);
+            AuthState state = method.getHostAuthState();
+            AuthScope scope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, state.getRealm(), state.getAuthScheme().getSchemeName()) ;
+            client.getState().setCredentials(scope, new UsernamePasswordCredentials(userName, password));
+            
+            // handled!
+            return true ;
         }
 
-        return client;
+        // only know how to handle Basic authentication, in this context
+        return false;
     }
 }
