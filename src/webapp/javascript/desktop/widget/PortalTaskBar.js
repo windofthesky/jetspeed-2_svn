@@ -9,12 +9,9 @@ jetspeed.ui.widget.PortalTaskBar = function()
 {    
     this.widgetType = "PortalTaskBar";
 
-    if ( ! this.taskbarProps )
-        this.taskbarProps = {} ;
-
     dojo.widget.html.FloatingPane.call(this);
 
-    dojo.widget.TaskBar.call(this.taskbarProps);
+    //dojo.widget.TaskBar.call(this);  // can't call with 'this' since the widgetType will kill it  2006-03-31
 
     this.titleBarDisplay = "none";
 }

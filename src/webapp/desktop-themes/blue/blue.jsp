@@ -52,6 +52,8 @@ limitations under the License.
     dojo.require("dojo.dnd.HtmlDragSource");
     dojo.require("dojo.event.*");    
     dojo.require("dojo.io");
+    dojo.require("dojo.collections.ArrayList");
+    dojo.require("dojo.collections.Set");
     dojo.require("dojo.widget.Manager");
     dojo.require("dojo.widget.TaskBar");
     dojo.require("dojo.widget.FloatingPane");
@@ -60,6 +62,7 @@ limitations under the License.
     dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
 
     dojo.require("jetspeed.ui.widget.PortalTaskBar");
+    dojo.require("jetspeed.ui.widget.PortletWindow");
 
     dojo.hostenv.writeIncludes();    
 </script>
