@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.HandlerFactory;
 import org.apache.jetspeed.search.ObjectHandler;
@@ -53,6 +55,7 @@ import org.apache.lucene.search.Searcher;
  */
 public class SearchEngineImpl implements SearchEngine
 {
+    protected final static Log log = LogFactory.getLog(SearchEngineImpl.class);
     private File rootIndexDir = null;
     private String analyzerClassName = null;
     private boolean optimizeAfterUpdate = true;
@@ -62,6 +65,7 @@ public class SearchEngineImpl implements SearchEngine
     private static final int TEXT = 1;
     
     public SearchEngineImpl(String indexRoot, String analyzerClassName, boolean optimzeAfterUpdate, HandlerFactory handlerFactory)
+    throws Exception
     {
         //assume it's full path for now
         rootIndexDir = new File(indexRoot);
@@ -82,17 +86,22 @@ public class SearchEngineImpl implements SearchEngine
         }
         catch (Exception e)
         {
+            log.error("Failed to create Portal Registry indexes in "  + rootIndexDir.getPath(), e);
             try
             {
+                rootIndexDir.delete();
+                rootIndexDir.mkdirs();
+                
                 IndexWriter indexWriter = new IndexWriter(rootIndexDir, newAnalyzer(), true);
                 indexWriter.close();
                 indexWriter = null;
-                //logger.info("Created Lucene Index in " + rootIndexDir.getPath());
+                log.warn("Re-created Lucene Index in " + rootIndexDir.getPath());
             }
             catch (Exception e1)
             {
-                //logger.error(this.getClass().getName() + ".initConfiguration - Getting or creating IndexSearcher", e);
-                //throw new InitializationException("Getting or creating Index Searcher");
+                String message = "Cannot RECREATE Portlet Registry indexes in "  + rootIndexDir.getPath();
+                log.error(message, e);
+                throw new Exception(message);
             }
         }
     }
