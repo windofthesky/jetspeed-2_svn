@@ -72,12 +72,12 @@ public class PortalFilter implements Filter
                 }
                 else
                 {
-                    request.getSession().setAttribute(LoginConstants.ERRORCODE, "2");                    
+                    request.getSession().setAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_INVALID_PASSWORD);                    
                 }
             }
             else
             {
-                HttpSession session = request.getSession();
+                //HttpSession session = request.getSession();
                 //System.out.println("*** session = " + session);
                 Subject subject = (Subject)request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
                 if (subject != null)
@@ -92,8 +92,10 @@ public class PortalFilter implements Filter
                     }
                 }                
             }              
-        }
 
+            sRequest.setAttribute(PortalReservedParameters.PORTAL_FILTER_ATTRIBUTE, "true");
+        }
+        
         if (filterChain != null)
         {
             filterChain.doFilter(sRequest, sResponse);

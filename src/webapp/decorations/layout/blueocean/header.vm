@@ -26,6 +26,13 @@ limitations under the License.
 #* Username *#
 #set($username = $JS2RequestContext.request.remoteUser)
 
+#* Login Error Code *#
+#set($errorcode = $JS2RequestContext.getSessionAttribute("org.apache.jetspeed.login.errorcode"))
+
+#* check Portal Filter *#
+#set($portalFilter = $JS2RequestContext.getRequestAttribute("org.apache.jetspeed.login.filter.PortalFilter"))
+
+
 <html>
   <head>
 	<base href="#BaseHref()">
@@ -51,14 +58,6 @@ limitations under the License.
       <div id="banner">
         <table>
           <tr>
-            <td>&nbsp;</td>
-            <td>
-              <div class="action">
-                &nbsp;
-              </div>
-            </td>
-          </tr>
-          <tr>
             <td>
               <div class="logo">
               <img src="#GetPageResource('images/logo.gif')" alt="Logo" border="0"/>
@@ -66,8 +65,21 @@ limitations under the License.
             </td>
             <td>
               <div class="info">
+## For PortalFilter
+#if($portalFilter)
 #if($username)
-                Username: $username<br/>
+                <div>$messages.getString("portal.loginform.username") $username</div>
+                <div class="action"><span class="button"><a href="#BaseHref()login/logout">$messages.getString("portal.loginform.logout")</a></span></div>
+#else
+                <form name="loginform" method="POST">
+                  <div>$messages.getString("portal.loginform.username") <input type="text" size="10" name="org.apache.jetspeed.login.username" value=""></div>
+                  <div>$messages.getString("portal.loginform.password") <input type="password" size="10" name="org.apache.jetspeed.login.password"></div>
+                  <div class="action"><span class="button"><a href="#" onclick="javascript:document.loginform.submit()">$messages.getString("portal.loginform.login")</a></span></div>
+  #if($errorcode == 2) ## ERROR_INVALID_PASSWORD
+                  <div>$messages.getString("portal.loginform.error.invalid_password")</div>
+  #end
+                </form>
+#end
 #end
               </div>
             </td>
