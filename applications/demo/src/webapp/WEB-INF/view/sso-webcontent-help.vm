@@ -1,0 +1,26 @@
+<h1>Help</h1>
+<p>
+<h3>Basic authentication</h3> is the default and can be supported effectively without even setting <b>sso.type</b>
+Just by providing credentials for the domain. The credentials will not be sent preemptively, 
+but if a 401 request is returned for Basic authentication, it will be handled properly.   
+Tis is equivalent to setting sso.type=basic (or sso.type=html (old - now deprecated in favor of calling it <b>basic</b>).
+if you set sso.type=basic.preemptive, it will send the credentials preemptively.
+</p>
+<br/>
+<p>
+<h3>URL authentication</h3> (query args) is supported as <b>sso.type=url</b> or <b>sso.type=url.base64</b>.
+By definition, this type of authentication is <quote>preemptive</quote>, so no distinction is made 
+there.   
+</p>
+<br/>
+<p>
+<h3>Form-authentication</h3> is supported with <b>sso.type=form</b> (which is equivalent to sso.type=form.post - you can also specify sso.type=form.get, 
+if GET protocol is used on the login form). This form also requires a bunch of other data 
+( e.g. the action URL, other args, names of the fields for credentials, etc.).   
+All of this is in an example that is in the demo portlet.xml.   
+Form-based authentication is also considred "preemptive", in that it authenticates before any other 
+content is read. However, it only does it once.  If it succeeds, all should be well.
+If it fails, the user will have to login by hand (since the initial content URL will 
+cause a redirect to the login page).
+</p>
+<br/>

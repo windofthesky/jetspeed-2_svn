@@ -595,13 +595,17 @@ limitations under the License.
 		<name>EditPage</name>
 		  <value>/WEB-INF/view/sso-edit-prefs.vm</value>
 		</init-param>
-
+        <init-param>
+  		  <name>HelpPage</name>
+		  <value>/WEB-INF/view/sso-webcontent-help.vm</value>
+		</init-param>        
         <portlet-class>org.apache.jetspeed.portlet.SSOWebContentPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>EDIT</portlet-mode>
             <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
          </supports>
         <portlet-preferences>
             <!--  NY TIMES EXAMPLE, user ID is 'jetspeed_test0' and password is 'jetspeed' -->
@@ -632,7 +636,7 @@ limitations under the License.
 		</portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
-            <title>WebContent Prototype Portlet</title>
+            <title>WebContent</title>
             <short-title>WebContent</short-title>
             <keywords>WebContent,Web, SSO, single signon</keywords>
         </portlet-info>
@@ -672,7 +676,7 @@ limitations under the License.
       </preference>                               
       <preference>                            
         <name>JndiDatasource</name>                    
-        <value></value>    
+        <value>jdbc/jetspeed</value>    
       </preference>                               
       <preference>                            
         <name>JdbcDriver</name>                    
