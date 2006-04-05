@@ -47,6 +47,8 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.rewriter.JetspeedRewriterController;
 import org.apache.jetspeed.rewriter.RewriterController;
 import org.apache.jetspeed.rewriter.RewriterException;
@@ -96,14 +98,12 @@ public class WebContentPortlet extends GenericVelocityPortlet
      * Configuration constants.
      */
     public static final String VIEW_SOURCE_PARAM = "viewSource";
-
     public static final String EDIT_SOURCE_PARAM = "editSource";
 
     /**
      * Default WebContent source attribute members.
      */
     private String defaultViewSource;
-
     private String defaultEditSource;
 
     /**
@@ -123,6 +123,10 @@ public class WebContentPortlet extends GenericVelocityPortlet
     public static final String LAST_WINDOW_STATE = "webcontent.window.last.state";
     public static final String CACHE = "webcontent.cache";
     public static final String HTTP_STATE = "webcontent.http.state";
+    
+    // Class Data
+    
+    protected final static Log log = LogFactory.getLog(WebContentPortlet.class);
 
     /** Default encoding */
     public String defaultEncoding = "UTF-8";
@@ -271,11 +275,18 @@ public class WebContentPortlet extends GenericVelocityPortlet
         String lastWindowState = (String)PortletMessaging.receive(request, LAST_WINDOW_STATE);
 
         // if *everything* is the same, we can use the cache
-        boolean useCache = (lastURL != null && sourceURL.equals(lastURL) && lastParams != null && sourceParams != null && sourceParams.equals(lastParams) && lastWindowState != null && newWindowState != null && newWindowState.equals(lastWindowState)); 
-
+        boolean useCache = (lastURL != null && sourceURL.equals(lastURL) && lastParams != null && sourceParams != null && sourceParams.equals(lastParams) && lastWindowState != null && newWindowState != null && newWindowState.equals(lastWindowState));
+        
         // Set the content type
         response.setContentType("text/html");
         byte[] content = useCache ? (byte[])request.getPortletSession().getAttribute(CACHE, PortletSession.PORTLET_SCOPE) : null;
+        if (content != null)
+        {
+            // BOZO - no caching until we get everything else worked out (back button, etc)
+            useCache = false;
+            content = null;
+            log.info("WebContentPortlet.doView() - cache available, but is being ignored, for now.");            
+        }
         if (content == null)
         {
             // System.out.println("WebContentPortlet.doView() >>>fetching content from: "+sourceURL+", using method: "+sourceMethod+"<<<");
@@ -322,6 +333,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             // ...set up URL and HttpClient stuff
             HttpClient httpClient = getHttpClient(request) ;
             httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, sourceMethod, request);
+            doPreemptiveAuthentication(httpClient, httpMethod, request, response);
             return doHttpWebContent(httpClient, httpMethod, 0, request, response);
         }
         catch (PortletException pex)
@@ -347,16 +359,20 @@ public class WebContentPortlet extends GenericVelocityPortlet
         try
         {
             // Get the input stream from the provided httpClient/httpMethod
+            // System.out.println("WebContentPortlet.doHttpWebContent() - from path: "+httpMethod.getPath());
             
             // ...set up URL and HttpClient stuff
             httpClient.executeMethod(httpMethod);
             
             // ...reset base URL with fully resolved path (e.g. if a directory, path will end with a /, which it may not have in the call to this method)
-            rewriter.setBaseUrl((new URL(new URL(rewriter.getBaseUrl()),httpMethod.getPath())).toString());
+            rewriter.setBaseUrl( rewriter.getBaseRelativeUrl( httpMethod.getPath() )) ;
+            // System.out.println("...reset base URL from final path: "+httpMethod.getPath());
             
             // ...save updated state
             Cookie[] cookies = httpClient.getState().getCookies();
-            PortletMessaging.publish(request, HTTP_STATE, cookies); 
+            PortletMessaging.publish(request, HTTP_STATE, cookies);
+            // System.out.println("...saving: "+(cookies != null ? cookies.length : 0)+", cookies...");
+            // for(int i=0,limit = cookies != null ? cookies.length : 0; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
 
             // ...check for manual redirects
             int responseCode = httpMethod.getStatusCode();
@@ -382,9 +398,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             {
                 if ( responseCode == 401 )
                 {
-                    // System.out.println("WebContentPortlet.doHttpWebContent() - handling authorization request");
-                    
-                    if (retryCount++ < 1 && doAuthorize( httpClient, httpMethod, request))
+                    if (httpMethod.getHostAuthState().isAuthRequested() && retryCount++ < 1 && doRequestedAuthentication( httpClient, httpMethod, request, response))
                     {
                         // try again, now that we are authorizied
                         return doHttpWebContent(httpClient, httpMethod, retryCount, request, response);
@@ -408,6 +422,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
                     throw new PortletException("Failure reading: "+httpMethod.getPath()+", response code: "+responseCode);
                 }
             }
+            
+            // System.out.println("...response code: "+responseCode+", fetching content as stream and rewriting.");
             
             // ...ok - *now* create the input stream and reader
             BufferedInputStream bis = new BufferedInputStream(httpMethod.getResponseBodyAsStream());
@@ -449,7 +465,13 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return source;    
     }
     
-    protected boolean doAuthorize(HttpClient clent,HttpMethod method, RenderRequest request)
+    protected boolean doPreemptiveAuthentication(HttpClient clent,HttpMethod method, RenderRequest request, RenderResponse response)
+    {
+        // derived class responsibilty - return true, if credentials have been set
+        return false ;
+    }
+    
+    protected boolean doRequestedAuthentication(HttpClient clent,HttpMethod method, RenderRequest request, RenderResponse response)
     {
         // derived class responsibilty - return true, if credentials have been set
         return false ;
