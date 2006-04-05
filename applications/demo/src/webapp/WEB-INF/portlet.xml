@@ -77,7 +77,7 @@ limitations under the License.
         <value>http://portals.apache.org/jetspeed-2/</value>    
       </preference>                               		
       <preference>                            
-        <name>Bluesunrise Site</name>                    
+        <name>Bluesunrise Site</name>
         <value>http://www.bluesunrise.com/</value>    
       </preference>                               
       <preference>                            
@@ -574,7 +574,7 @@ limitations under the License.
         <portlet-preferences>
             <preference>
                 <name>SRC</name>
-				<value>http://www.apache.org</value>
+				<value>http://www.google.com</value>
             </preference>
         </portlet-preferences>
         <supported-locale>en</supported-locale>
@@ -604,11 +604,32 @@ limitations under the License.
             <portlet-mode>VIEW</portlet-mode>
          </supports>
         <portlet-preferences>
+            <!--  NY TIMES EXAMPLE, user ID is 'jetspeed_test0' and password is 'jetspeed' -->
             <preference>
                 <name>SRC</name>
-				<value>http://www.apache.org</value>
+				<value>http://www.nytimes.com</value>
             </preference>
-			</portlet-preferences>
+            <preference>
+                <name>sso.type</name>
+				<value>form</value>
+            </preference>
+            <preference>
+                <name>sso.form.Action</name>
+				<value>http://www.nytimes.com/auth/login</value>
+            </preference>
+            <preference>
+                <name>sso.form.Principal</name>
+				<value>USERID</value>
+            </preference>
+            <preference>
+                <name>sso.form.Credential</name>
+				<value>PASSWORD</value>
+            </preference>
+            <preference>
+                <name>sso.form.Args</name>
+				<value>Submit2=Log In;OP=;OQ=;is_continue=false</value>
+            </preference>
+		</portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
             <title>WebContent Prototype Portlet</title>

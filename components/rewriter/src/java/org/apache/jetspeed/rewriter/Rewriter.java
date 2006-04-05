@@ -107,6 +107,14 @@ public interface Rewriter
     String getBaseUrl();
     
     /**
+     * Gets a new URL relative to Base according to the site / and URL
+     * rewriting rules of java.net.URL
+     * 
+     * @return The new URL from path, relative to the base URL (or path, if path is absolute)
+     */
+    String getBaseRelativeUrl(String path);
+    
+    /**
      * Gets whether this rewriter require a proxy server.
      * 
      * @return true if it requires a proxy

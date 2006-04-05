@@ -66,22 +66,15 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
         // Any relative URL needs to be converted to a full URL
         if (url.startsWith("/") || (!url.startsWith("http:") && !url.startsWith("https:"))) 
         {
-            try
+            if (this.getBaseUrl() != null)
             {
-                if (this.getBaseUrl() != null)
-                {
-                    URL full = new URL(new URL(getBaseUrl()), url);
-                    modifiedURL = full.toString();
-  	            }
-	            else
-	            {
-	                modifiedURL = url; // leave as is
-	            }
-            }
-            catch (Exception e)
+                modifiedURL = getBaseRelativeUrl(url) ;
+                // System.out.println("WebContentRewriter.rewriteUrl() - translated URL relative to base URL - result is: "+modifiedURL);
+  	        }
+            else
             {
-                modifiedURL = url;
-            }
+                modifiedURL = url; // leave as is
+	        }
         }
          
         // translate "submit" URL's as actions
@@ -107,7 +100,7 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
         }
         
         // if ( !url.equalsIgnoreCase( modifiedURL ))
-        //      System.out.println("In tag: "+tag+", for attribute: "+attribute+", converted url: "+url+", to: "+modifiedURL+", base URL was: "+getBaseUrl());
+        //     System.out.println("WebContentRewriter.rewriteUrl() - In tag: "+tag+", for attribute: "+attribute+", converted url: "+url+", to: "+modifiedURL+", base URL was: "+getBaseUrl());
 
         return modifiedURL;
     }
