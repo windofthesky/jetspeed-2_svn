@@ -21,27 +21,23 @@ limitations under the License.
 
 <html>   <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
-<link rel="stylesheet" type="text/css" media="screen, projection" href="desktop-themes/blue/css/styles.css"/>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-style-type" content="text/css" />
 
+<!-- 
+  DOJO Config Script ( djConfig )
+  -->
 <script type="text/javascript">
-
-    var djConfig = {isDebug: true};
-    djConfig.debugAtAllCosts = true;     <!-- needed for js debuggers (both venkman and visual studio) -->
+    var djConfig = {isDebug: false};
+    // djConfig.debugAtAllCosts = true;     
+    // needed for js debuggers (both venkman and visual studio)
     djConfig.baseScriptUri = '<%= desktop.getPortalResourceUrl("/javascript/dojo/") %>' ;
     {
         var tEnds = djConfig.baseScriptUri.indexOf(";jsessionid=");
         if (tEnds > 0) djConfig.baseScriptUri = djConfig.baseScriptUri.substring(0, tEnds);
     }
-
-	function doRender(url,portletEntityId)
-	{
-        jetspeed.doRender(url,portletEntityId);
-	}
-    function doAction(url, portletEntityId, currentForm)
-    {
-        jetspeed.doAction(url,portletEntityId, currentForm);
-    }	    
 </script>
+
 <!-- 
   DOJO Script
   -->
@@ -57,9 +53,13 @@ limitations under the License.
     dojo.require("dojo.widget.Manager");
     dojo.require("dojo.widget.TaskBar");
     dojo.require("dojo.widget.FloatingPane");
-    dojo.require("dojo.fx.*");
+    dojo.require("dojo.widget.Menu2");
+    dojo.require("dojo.fx.html");
 
     dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
+    dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');
+
+    dojo.require("jetspeed.desktop.core");
 
     dojo.require("jetspeed.ui.widget.PortalTaskBar");
     dojo.require("jetspeed.ui.widget.PortletWindow");
@@ -69,15 +69,22 @@ limitations under the License.
 <script language="JavaScript" type="text/javascript">
     dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');
 </script>
-<!-- 
-  Jetspeed Script
-  -->
-<script type="text/javascript" src="<%= desktop.getPortalResourceUrl("/javascript/jetspeed/jetspeed-ajax-api.js") %>"></script>
 
+<!-- <base> tag must appear after dojo load in IE6 ( see http://trac.dojotoolkit.org/ticket/557 ) -->
+<base id="basetag" href="<%= desktop.getPortalResourceUrl("/") %>"> <!-- http://localhost:8080/jetspeed/ -->
+<link rel="stylesheet" type="text/css" media="screen, projection" href="desktop-themes/blue/css/styles.css"/>
 <script language="JavaScript" type="text/javascript">
     function init()
     {
         jetspeed.initializeDesktop();
+    }
+    function doRender(url,portletEntityId)
+    {
+        jetspeed.doRender(url,portletEntityId);
+    }
+    function doAction(url, portletEntityId, currentForm)
+    {
+        jetspeed.doAction(url,portletEntityId, currentForm);
     }
     dojo.event.connect(dojo, "loaded", "init");
 </script>
@@ -89,52 +96,8 @@ html, body
     height: 100%;
     /*overflow: hidden;*/  /* erase window level scrollbars */
     margin: 0 0 0 0;
-    font-family: Arial, Helvetica, sans-serif;
 }
-body { padding: 10px 10px 100px 10px; }
-
-<!-- below styles are for jetspeed.ui.PortletDivWindow; jetspeed.ui.PortletDivWindow is for testing purposes only at this point -->
-.portletBody{
-	border: 3px solid #EEE;
-	background: #FFF;
-	margin: 5px;
-}
-
-.portletFrame{
-	border : 1px solid #79A7E2;
-	overflow: hidden;
-}
-
-.portletHeader{
-	cursor: move;
-	background: #EFF5FF;
-	height: 1.8em;
-	overflow: hidden;
-}
-.portletHeader .showHide{
-	width: 16px;
-	height: 16px;
-	cursor: pointer;
-	float: left;
-	padding: 2px 0 0 2px;
-}
-.portletHeader .title{
-	font-weight: bold;
-	padding-top: 2px;
-	line-height: 1.4em;
-	color: #00368F;
-}
-.portletHeader .title a{
-	color: #00368F;
-}
-.portletHeader .title a:hover{
-	color: #F60;
-}
-.portletHeader .close{
-	float: right;
-	padding: 2px 2px 2px 0;
-	cursor: pointer;
-}
+/* body { padding: 10px 10px 100px 10px; } */
 
 </style>
 
@@ -144,30 +107,10 @@ body { padding: 10px 10px 100px 10px; }
 <body id="jetspeedDesktop" class="layout-blue">
 <div class="layout-blue">
 
-<!--
-<div dojoType="FloatingPane"
-	title="Layout window w/shadow"
-	constrainToContainer="true"
-	hasShadow="true"
-	resizable="true"
-	displayMinimizeAction="true"
-	displayMaximizeAction="true"
-	contentWrapper="layout"
-	style="width: 300px; height: 200px; top: 600px; left: 400px;"
->
-	<div dojoType="ContentPane" layoutAlign="top" style="border: solid white;">TOP</div>
-	<div dojoType="ContentPane" layoutAlign="bottom" style="border: solid white;">BOTTOM</div>
-	<div dojoType="ContentPane" layoutAlign="left" style="border: solid white;">LEFT</div>
-	<div dojoType="ContentPane" layoutAlign="right" style="border: solid white;">RIGHT</div>
-	<div dojoType="ContentPane" layoutAlign="client" style="border: solid white;">CENTER</div>
-</div>
--->
 
 <!-- Start Taskbar -->
-<!-- <div dojoType="TaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px"> -->
-    <!-- <button onclick="jetspeed.testLoadPageCreateDivPortlets()">Portal (DIV)</button>
-    <button onclick="jetspeed.testLoadPageCreateWidgetPortlets()">Portal (WIDGET)</button> -->
-<!-- </div> -->
+<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px">
+</div>
 <!-- End Taskbar -->
 </div>
 </body>

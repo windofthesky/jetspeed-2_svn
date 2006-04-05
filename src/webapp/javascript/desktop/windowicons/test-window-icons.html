@@ -1,0 +1,251 @@
+<html>
+<head>
+
+<title>Simple Window Icon Demo</title>
+
+<style>
+.floatingPane {
+	/* essential css */
+	position: relative;
+	overflow: hidden;		/* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
+                            /* we says 'hidden' cause IE likes to kindly expand div to fit content otherwise */
+	z-index: 5;
+	-moz-box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	
+	/* styling css */
+	border: 1px solid;
+	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
+	background-color: ThreeDFace;
+
+    width: 200;
+    height: 50;
+}
+.titleBar {
+	/* essential css */
+	z-index: 2;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+
+	/* styling css */
+	vertical-align: middle;
+	height: 22px;
+	font: small-caption;
+	cursor: default;
+
+    /* overrides */
+    background: #98FB98;    /* palegreen */ 
+    line-height: 1.4em;
+	color: #4682B4;  /* steelblue */
+}
+
+.titleBar2 {
+	/* essential css */
+	z-index: 2;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+
+	/* styling css */
+	vertical-align: middle;
+	height: 22px;
+	font: small-caption;
+	cursor: default;
+
+    /* overrides */
+    background: #B0C4DE;  /* lightsteelblue */
+    line-height: 1.4em;
+	color: #00368F;
+}
+.titleBarIcon {
+    /* essential css */
+    float: left;
+
+    /* styling css */
+    margin-top: 3px;
+    margin-left: 2px;
+    margin-right: 3px;
+    height: 16px;
+	width: 16px;
+    /* height: 22px; */
+    /* vertical-align: middle; */
+}
+.titleText {
+	padding: 2px 4px 2px 2px;
+    float:left;
+}
+</style>
+
+<script language="JavaScript" type="text/javascript">
+
+</script>
+</head>
+<body>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="application-certificate.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="application-x-executable.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="applications-internet.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="audio-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="document.gif" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="font-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="image-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="package-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="text-html.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="text-x-generic-template.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="text-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="text-x-script.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="video-x-generic.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="x-office-address-book.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="x-office-calendar.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="x-office-document.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar"  >
+        <img class="titleBarIcon" src="x-office-presentation.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+<br>
+
+<div class="floatingPane" >
+	<div class="titleBar2"  >
+        <img class="titleBarIcon" src="x-office-spreadsheet.png" >
+        <div class="titleText" >Untitled</div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

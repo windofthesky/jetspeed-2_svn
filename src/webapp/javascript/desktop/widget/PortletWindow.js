@@ -1,6 +1,7 @@
 
 dojo.provide("jetspeed.ui.widget.PortletWindow");
 
+dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
 
@@ -9,7 +10,7 @@ jetspeed.ui.widget.PortletWindow = function()
     dojo.widget.html.FloatingPane.call( this );
     this.widgetType = "PortletWindow";
     this.portletInitialized = false;
-}
+};
 
 dojo.inherits(jetspeed.ui.widget.PortletWindow, dojo.widget.html.FloatingPane);
 
@@ -20,13 +21,13 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     displayCloseAction: true,
     displayMinimizeAction: true,
     displayMaximizeAction: true,
-    taskBarId: "jetspeedTaskbar",
+    taskBarId: jetspeed.id.TASKBAR,
     nextIndex: 1,
     titleMouseIn: 0,
     titleLit: false,
 
     // dojo.widget.Widget create protocol
-    postMixInProperties: function(args, fragment, parentComp)
+    postMixInProperties: function( args, fragment, parentComp )
     {
         jetspeed.ui.widget.PortletWindow.superclass.postMixInProperties.call( this );
 
@@ -70,7 +71,7 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         if (windowtheme)
         {
             this.portletWindowTheme = windowtheme ;
-            this.templateCssPath = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowthemes/" + windowtheme + "/" + windowtheme + ".css");   // BOZO: improve this junk
+            this.templateCssPath = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowthemes/" + windowtheme + "/css/styles.css");
         }
         this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
         
@@ -110,7 +111,7 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     },
 
     // dojo.widget.Widget create protocol
-    postCreate: function(args, fragment, parentComp)
+    postCreate: function( args, fragment, parentComp )
     {
         jetspeed.ui.widget.PortletWindow.superclass.postCreate.call( this );
 
@@ -122,8 +123,28 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         this.dragSource.setDragHandle( this.titleBar );
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
+        
+
+        var domNodeClassName = this.domNode.className;
         if ( this.portletWindowTheme )
-            this.domNode.className = this.portletWindowTheme + " " + this.domNode.className ;
+        {
+            domNodeClassName = this.portletWindowTheme + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
+            this.domNode.className = domNodeClassName;
+        }
+        this.domNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
+
+
+        if ( this.containerNode )
+        {
+            var containerNodeClassName = this.containerNode.className;
+            if ( this.portletWindowTheme )
+            {
+                var existingClassName = this.containerNode.className;
+                containerNodeClassName = this.portletWindowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
+            }
+            this.containerNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
+            dojo.debug( "setting containerNode [" + this.portlet.entityId + "] className=" + this.containerNode.className );
+        }
     
         var portletWindowState = this.portlet.getLastSavedWindowState();
         var portletWidth = portletWindowState.width;
@@ -132,19 +153,19 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         var portletTop = portletWindowState.top;
         // NOTE: portletWindowState.zIndex;  - should be dealt with in the creation order
 
-        if ( portletWidth && portletWidth > 0 ) portletWidth = Math.floor(portletWidth) + "px";
+        if ( portletWidth != null && portletWidth > 0 ) portletWidth = Math.floor(portletWidth) + "px";
         else portletWidth = "280px";
         this.domNode.style.width = portletWidth;
     
-        if ( portletHeight && portletHeight > 0 ) portletHeight = Math.floor(portletHeight) + "px";
+        if ( portletHeight != null && portletHeight > 0 ) portletHeight = Math.floor(portletHeight) + "px";
         else portletHeight = "200px";
         this.domNode.style.height = portletHeight;
             
-        if ( portletLeft && portletLeft > 0 ) portletLeft = Math.floor(portletLeft) + "px";
+        if ( portletLeft != null && portletLeft >= 0 ) portletLeft = Math.floor(portletLeft) + "px";
         else portletLeft = (((this._getNextIndex() -2) * 30 ) + 200) + "px";
         this.domNode.style.left = portletLeft;
     
-        if ( portletTop && portletTop > 0 ) portletTop = Math.floor(portletTop) + "px";
+        if ( portletTop != null && portletTop >= 0 ) portletTop = Math.floor(portletTop) + "px";
         else portletTop = (((this._getNextIndex() -2) * 30 ) + 170) + "px";
         this.domNode.style.top =  portletTop;
     
@@ -196,13 +217,25 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
             //dojo.debug( "bringToTop [" + this.portlet.entityId + "] zIndex   before=" + beforeZIndex + " after=" + this.domNode.style.zIndex );
         }
     },
+
+    closeWindow: function()
+    {
+        jetspeed.ui.widget.PortletWindow.superclass.closeWindow.call( this );
+        var resizeWidget = this.getResizeHandleWidget();
+        if ( resizeWidget )
+            resizeWidget.destroy();
+    },
+    getResizeHandleWidget: function()
+    {
+        return dojo.widget.byId( this.widgetId + "_resize" );   // BOZO:DOJO: bad way of obtaining this reference
+    },
     onResized: function()
     {
         jetspeed.ui.widget.PortletWindow.superclass.onResized.call( this );
         
         if ( ! this.windowIsSizing )
         {
-            var resizeWidget = dojo.widget.byId( this.widgetId + "_resize" );   // BOZO:DOJO: bad way of obtaining this reference
+            var resizeWidget = this.getResizeHandleWidget();
             if ( ! resizeWidget )
                 dojo.raise( "PortletWindow cannot find its resize widget" );
         
@@ -295,8 +328,13 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     },
     setPortletContent: function( html, url )
     {
-        var preParsePortletResult = this.portlet.preParseAnnotateHtml( html.toString() );
+        var initialHtmlStr = html.toString();
+        
+        initialHtmlStr = '<div class="PContent" >' + initialHtmlStr + '</div>';    // style="overflow: auto"
+
+        var preParsePortletResult = this.portlet.preParseAnnotateHtml( initialHtmlStr );
         //this.executeScripts = true;
+
         var setContentObj = { titles: [], scripts: preParsePortletResult.scripts, linkStyles: [], styles: [], remoteScripts: preParsePortletResult.remoteScripts, xml: preParsePortletResult.portletContent, url: url };
 
         this.setContent( setContentObj );

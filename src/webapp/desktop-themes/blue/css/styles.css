@@ -14,7 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url("../../../layout/css/portal-standard.css");
+@import url("../../../decorations/layout/css/portal-standard.css");
+
+DIV.portlet
+{
+    margin: 0px;    /* necessary to override margin settings from decorations/layout/css/standard-columns.css */
+}
+
+
+/*  begin layout decorator blueocean  */
 
 body {
     font-family: Verdana, Helvetica, Arial, sans-serif;
@@ -343,3 +351,4 @@ body.layout-blue
    display: inline;
 }
 
+/*  end layout decorator blueocean  */

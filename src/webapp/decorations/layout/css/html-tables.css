@@ -18,12 +18,12 @@ limitations under the License.
  *  Standardized Table formating for portlets.
  */
 
-.portlet th, td, input {
+.portlet th, .portlet td, .portlet input {
     font-family: Verdana, Helvetica, Arial, sans-serif;
     font-size: small;
 }
 
-.portlet table, th, td {
+.portlet table, .portlet th, .portlet td {
     vertical-align: top;
     font-size: small;
     border: none;
