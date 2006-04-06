@@ -26,7 +26,6 @@ import javax.security.auth.Subject;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -85,7 +84,6 @@ import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
@@ -139,7 +137,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
     private int cacheExpiresSeconds;
 
-    private DatabasePageManagerCache cache;
+    private PageManager pageManagerProxy;
 
     public DatabasePageManager(String repositoryPath, int cacheSize, int cacheExpiresSeconds, boolean isPermissionsSecurity, boolean isConstraintsSecurity)
     {
@@ -179,6 +177,35 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public int getCacheExpiresSeconds()
     {
         return cacheExpiresSeconds;
+    }
+
+    /**
+     * getPageManagerProxy
+     *
+     * @return proxied page manager interface used to
+     *         inject into Folder instances to provide
+     *         transaction/interception
+     */
+    public PageManager getPageManagerProxy()
+    {
+        return pageManagerProxy;
+    }
+
+    /**
+     * setPageManagerProxy
+     *
+     * @param proxy proxied page manager interface used to
+     *              inject into Folder instances to provide
+     *              transaction/interception
+     */
+    public void setPageManagerProxy(PageManager proxy)
+    {
+        // set/reset page manager proxy and propagate to cache
+        if (pageManagerProxy != proxy)
+        {
+            pageManagerProxy = proxy;
+            DatabasePageManagerCache.setPageManagerProxy(proxy);
+        }
     }
 
     /* (non-Javadoc)
@@ -480,7 +507,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
      */
-    public Link getLink(String path) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public Link getLink(String path) throws DocumentNotFoundException, NodeException
     {
         // construct link attributes from path
         path = NodeImpl.getCanonicalNodePath(path);
@@ -531,7 +558,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
      */
-    public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException
     {
         // construct document attributes from path
         String path = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
@@ -633,7 +660,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getFolders(org.apache.jetspeed.om.folder.Folder)
      */
-    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders(Folder folder) throws DocumentException
     {
         FolderImpl folderImpl = (FolderImpl)folder;
 
@@ -846,7 +873,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
      */
-    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException
+    public NodeSet getAll(Folder folder) throws DocumentException
     {
         FolderImpl folderImpl = (FolderImpl)folder;
 
@@ -902,7 +929,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException
+    public void updatePage(Page page) throws NodeException, PageNotUpdatedException
     {
         try
         {
@@ -978,7 +1005,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage(Page page) throws JetspeedException, PageNotRemovedException
+    public void removePage(Page page) throws NodeException, PageNotRemovedException
     {
         try
         {
@@ -1025,7 +1052,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder)
      */
-    public void updateFolder(Folder folder) throws JetspeedException, FolderNotUpdatedException
+    public void updateFolder(Folder folder) throws NodeException, FolderNotUpdatedException
     {
         // shallow update by default
         updateFolder(folder, false);
@@ -1034,7 +1061,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder,boolean)
      */
-    public void updateFolder(Folder folder, boolean deep) throws JetspeedException, FolderNotUpdatedException
+    public void updateFolder(Folder folder, boolean deep) throws NodeException, FolderNotUpdatedException
     {
         try
         {
@@ -1207,7 +1234,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removeFolder(org.apache.jetspeed.om.folder.Folder)
      */
-    public void removeFolder(Folder folder) throws JetspeedException, FolderNotRemovedException
+    public void removeFolder(Folder folder) throws NodeException, FolderNotRemovedException
     {
         try
         {
@@ -1328,7 +1355,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateLink(org.apache.jetspeed.om.page.Link)
      */
-    public void updateLink(Link link) throws JetspeedException, LinkNotUpdatedException
+    public void updateLink(Link link) throws NodeException, LinkNotUpdatedException
     {
         try
         {
@@ -1400,7 +1427,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removeLink(org.apache.jetspeed.om.page.Link)
      */
-    public void removeLink(Link link) throws JetspeedException, LinkNotRemovedException
+    public void removeLink(Link link) throws NodeException, LinkNotRemovedException
     {
         try
         {
@@ -1443,7 +1470,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updatePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
-    public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException
+    public void updatePageSecurity(PageSecurity pageSecurity) throws NodeException, FailedToUpdateDocumentException
     {
         try
         {
@@ -1473,7 +1500,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // do not replace existing page security documents
                 try
                 {
-                    // test for page security document
                     parent.getPageSecurity();
                     throw new FailedToUpdateDocumentException("Parent folder page security exists: " + parentPath);
                 }
@@ -1532,7 +1558,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
-    public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException
+    public void removePageSecurity(PageSecurity pageSecurity) throws NodeException, FailedToDeleteDocumentException
     {
         try
         {
@@ -1579,7 +1605,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#copyPage(org.apache.jetspeed.om.page.Page,java.lang.String)
      */
     public Page copyPage(Page source, String path)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyPage(source, path);
     }
@@ -1588,7 +1614,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#copyLink(org.apache.jetspeed.om.page.Link,java.lang.String)
      */
     public Link copyLink(Link source, String path)
-    throws JetspeedException, LinkNotUpdatedException
+    throws NodeException, LinkNotUpdatedException
     {
         return this.delegator.copyLink(source, path);
     }
@@ -1597,7 +1623,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#copyFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String)
      */
     public Folder copyFolder(Folder source, String path)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyFolder(source, path);
     }
@@ -1606,7 +1632,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment,java.lang.String)
      */
     public Fragment copyFragment(Fragment source, String name)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyFragment(source, name);
     }
@@ -1615,7 +1641,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#copyPageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
     public PageSecurity copyPageSecurity(PageSecurity source) 
-    throws JetspeedException
+    throws NodeException
     {
         return this.delegator.copyPageSecurity(source);
     }
@@ -1722,7 +1748,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#createUserHomePagesFromRoles(java.security.auth.Subject)
      */
     public void createUserHomePagesFromRoles(Subject subject)
-    throws JetspeedException
+    throws NodeException
     {
         PageManagerUtils.createUserHomePagesFromRoles(this, subject);
     }
@@ -1731,7 +1757,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String,java.lang.String)
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException, PageNotUpdatedException
     {
         PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
     }
@@ -1740,7 +1766,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @see org.apache.jetspeed.page.PageManager#addPages(org.apache.jetspeed.om.page.Page[])
      */
     public int addPages(Page[] pages)
-    throws JetspeedException
+    throws NodeException
     {   
         if (pages.length > 0 && pages[0].getPath().equals("/tx__test1.psml"))
         {
@@ -1750,7 +1776,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             System.out.println("Adding second page");
             this.updatePage(pages[1]);
             System.out.println("About to throw ex");
-            throw new JetspeedException("Its gonna blow captain!");
+            throw new NodeException("Its gonna blow captain!");
         }
         for (int ix = 0; ix < pages.length; ix++)
         {

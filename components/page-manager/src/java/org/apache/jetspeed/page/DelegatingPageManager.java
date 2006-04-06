@@ -17,7 +17,6 @@ package org.apache.jetspeed.page;
 
 import java.util.Map;
 
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -74,8 +73,7 @@ public class DelegatingPageManager extends AbstractPageManager
      * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
      */
     public Link getLink(String name) throws DocumentNotFoundException,
-            UnsupportedDocumentTypeException, FolderNotFoundException,
-            NodeException
+            UnsupportedDocumentTypeException, NodeException
     {
         // TODO Auto-generated method stub
         return null;
@@ -85,8 +83,7 @@ public class DelegatingPageManager extends AbstractPageManager
      * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
      */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException,
-            UnsupportedDocumentTypeException, FolderNotFoundException,
-            NodeException
+            UnsupportedDocumentTypeException, NodeException
     {
         // TODO Auto-generated method stub
         return null;
@@ -105,7 +102,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getFolders(org.apache.jetspeed.om.folder.Folder)
      */
-    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders(Folder folder) throws DocumentException
     {
         // TODO Auto-generated method stub
         return null;
@@ -168,7 +165,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
      */
-    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException
+    public NodeSet getAll(Folder folder) throws DocumentException
     {
         // TODO Auto-generated method stub
         return null;
@@ -177,7 +174,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void updatePage(Page page) throws JetspeedException,
+    public void updatePage(Page page) throws NodeException,
             PageNotUpdatedException
     {
         // TODO Auto-generated method stub
@@ -187,7 +184,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage(Page page) throws JetspeedException,
+    public void removePage(Page page) throws NodeException,
             PageNotRemovedException
     {
         // TODO Auto-generated method stub
@@ -197,7 +194,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder)
      */
-    public void updateFolder(Folder folder) throws JetspeedException,
+    public void updateFolder(Folder folder) throws NodeException,
             FolderNotUpdatedException
     {
         // TODO Auto-generated method stub
@@ -207,7 +204,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder,boolean)
      */
-    public void updateFolder(Folder folder, boolean deep) throws JetspeedException,
+    public void updateFolder(Folder folder, boolean deep) throws NodeException,
             FolderNotUpdatedException
     {
         // TODO Auto-generated method stub
@@ -217,7 +214,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removeFolder(org.apache.jetspeed.om.folder.Folder)
      */
-    public void removeFolder(Folder folder) throws JetspeedException,
+    public void removeFolder(Folder folder) throws NodeException,
             FolderNotRemovedException
     {
         // TODO Auto-generated method stub
@@ -227,7 +224,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updateLink(org.apache.jetspeed.om.page.Link)
      */
-    public void updateLink(Link link) throws JetspeedException,
+    public void updateLink(Link link) throws NodeException,
             LinkNotUpdatedException
     {
         // TODO Auto-generated method stub
@@ -237,7 +234,7 @@ public class DelegatingPageManager extends AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#removeLink(org.apache.jetspeed.om.page.Link)
      */
-    public void removeLink(Link link) throws JetspeedException,
+    public void removeLink(Link link) throws NodeException,
             LinkNotRemovedException
     {
         // TODO Auto-generated method stub
@@ -248,7 +245,7 @@ public class DelegatingPageManager extends AbstractPageManager
      * @see org.apache.jetspeed.page.PageManager#updatePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
     public void updatePageSecurity(PageSecurity pageSecurity) throws
-            JetspeedException, FailedToUpdateDocumentException
+            NodeException, FailedToUpdateDocumentException
     {
         // TODO Auto-generated method stub
 
@@ -258,15 +255,15 @@ public class DelegatingPageManager extends AbstractPageManager
      * @see org.apache.jetspeed.page.PageManager#removePageSecurity(org.apache.jetspeed.om.page.PageSecurity)
      */
     public void removePageSecurity(PageSecurity pageSecurity) throws
-            JetspeedException, FailedToDeleteDocumentException
+            NodeException, FailedToDeleteDocumentException
     {
         // TODO Auto-generated method stub
 
     }
     
     public int addPages(Page[] pages)
-    throws JetspeedException
+    throws NodeException
     {
-        throw new JetspeedException("not impl");
+        throw new NodeException("not impl");
     }
 }

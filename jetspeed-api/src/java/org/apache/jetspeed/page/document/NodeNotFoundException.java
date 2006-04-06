@@ -15,18 +15,21 @@
  */
 package org.apache.jetspeed.page.document;
 
+import org.apache.jetspeed.exception.JetspeedException;
+
 /**
  * <p>
  * NodeNotFoundException
  * </p>
  * <p>
- *
+ * Note that these "informational" exceptions must not derive from
+ * NodeException and instead derive from only the base JetspeedException.
  * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class NodeNotFoundException extends NodeException
+public class NodeNotFoundException extends JetspeedException
 {
 
     /**

@@ -13,7 +13,9 @@ import org.apache.jetspeed.exception.JetspeedException;
  * NodeException
  * </p>
  * <p>
- *
+ * Note that these exceptions are assumed to be "unexpected" and/or
+ * fatal; use NodeNotFoundException or other exceptions derived from
+ * the base JetspeedException for "informational" exceptions.
  * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$

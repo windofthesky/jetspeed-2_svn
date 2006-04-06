@@ -45,7 +45,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="link"
           auto-update="link"
-          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -56,7 +55,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="folderId"/>
       </collection-descriptor>
@@ -176,7 +174,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -188,7 +185,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -200,7 +196,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="sortOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -212,7 +207,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -491,7 +485,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -502,7 +495,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="elementOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -723,7 +715,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -798,7 +789,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="link"
           auto-update="link"
-          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -809,7 +799,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -820,7 +809,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -940,7 +928,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -952,7 +939,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -964,7 +950,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -1212,7 +1197,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -1223,7 +1207,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="elementOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -1444,7 +1427,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -1517,7 +1499,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="id" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -1662,7 +1643,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1674,7 +1654,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1686,7 +1665,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1817,7 +1795,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="prefId"/>
       </collection-descriptor>
@@ -1884,7 +1861,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="link"
           auto-update="link"
-          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -1895,7 +1871,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -2015,7 +1990,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -2027,7 +2001,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -2190,7 +2163,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="link"
           auto-update="link"
-          proxy="true"
           >
          <foreignkey field-ref="parentId"/>
       </reference-descriptor>
@@ -2267,7 +2239,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="pageSecurityId"/>
@@ -2279,7 +2250,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageSecurityId"/>
@@ -2317,7 +2287,6 @@ limitations under the License.
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
-          proxy="true"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="constraintsDefId"/>

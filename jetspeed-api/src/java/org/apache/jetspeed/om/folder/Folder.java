@@ -151,10 +151,9 @@ public interface Folder extends Node
      *
      * @return A <code>NodeSet</code> containing all sub-folders directly under
      * this folder.
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    NodeSet getFolders() throws FolderNotFoundException, DocumentException;
+    NodeSet getFolders() throws DocumentException;
     
     /**
      * 
@@ -242,10 +241,9 @@ public interface Folder extends Node
      *
      * @return A <code>NodeSet</code> containing all sub-folders and documents directly under
      * this folder.
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    NodeSet getAll() throws FolderNotFoundException, DocumentException;
+    NodeSet getAll() throws DocumentException;
 
     /**
      * getMenuDefinitions - get list of menu definitions

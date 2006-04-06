@@ -332,7 +332,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
     }
 
-    protected Object unmarshallDocument( Class clazz, String path, String extension ) throws NodeNotFoundException,
+    protected Object unmarshallDocument( Class clazz, String path, String extension ) throws DocumentNotFoundException,
             DocumentException
     {
         Document document = null;
@@ -586,7 +586,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
      * @return @throws
      *         DocumentNotFoundException
      */
-    public Document getDocument( String name, boolean fromCache ) throws NodeException
+    public Document getDocument( String name, boolean fromCache ) throws DocumentNotFoundException, NodeException
     {
         Document document = null;
         if (fromCache)

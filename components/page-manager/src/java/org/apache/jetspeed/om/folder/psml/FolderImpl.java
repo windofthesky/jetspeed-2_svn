@@ -43,6 +43,7 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
@@ -192,10 +193,9 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * 
      * @param checkAccess flag
      * @return folders node set
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    public NodeSet getFolders(boolean checkAccess) throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders(boolean checkAccess) throws DocumentException
     {
         // get list of all folders
         NodeSet folders = getAllNodes().subset(FOLDER_TYPE);
@@ -213,7 +213,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getFolders()
      */
-    public NodeSet getFolders() throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders() throws DocumentException
     {
         // by default enable access checks
         return getFolders(true);
@@ -446,7 +446,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getAll()
      */
-    public NodeSet getAll() throws FolderNotFoundException, DocumentException
+    public NodeSet getAll() throws DocumentException
     {
         // return secure set of all nodes: enforce access checks
         // on folders and documents while creating filtered nodes
@@ -499,9 +499,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      *
      * @return all nodes immediatley under this
      * @throws DocumentException
-     * @throws FolderNotFoundException
      */
-    public NodeSet getAllNodes() throws FolderNotFoundException, DocumentException
+    public NodeSet getAllNodes() throws DocumentException
     {
         if((allNodes == null) && (folderHandler != null))
         {            
@@ -520,52 +519,59 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             {
                 allNodes = new NodeSetImpl(getPath());
             }
-            
-            String[] nodeNames = folderHandler.listAll(getPath());
-            for (int i = 0; i < nodeNames.length; i++)
+
+            try
             {
-                if (!nodeNames[i].equals(FolderMetaDataImpl.DOCUMENT_TYPE))
+                String[] nodeNames = folderHandler.listAll(getPath());
+                for (int i = 0; i < nodeNames.length; i++)
                 {
-                    Node node = null;
-                    try
+                    if (!nodeNames[i].equals(FolderMetaDataImpl.DOCUMENT_TYPE))
                     {
-                        if (getPath().endsWith(PATH_SEPARATOR))
+                        Node node = null;
+                        try
                         {
-                            if(nodeNames[i].indexOf(".") > -1)
-                            {    
-                                node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                            if (getPath().endsWith(PATH_SEPARATOR))
+                            {
+                                if(nodeNames[i].indexOf(".") > -1)
+                                {    
+                                    node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                                }
+                                else
+                                {
+                                    node = folderHandler.getFolder(getPath() + nodeNames[i]);
+                                }
                             }
                             else
                             {
-                                node = folderHandler.getFolder(getPath() + nodeNames[i]);
+                                
+                                if(nodeNames[i].indexOf(".") > -1)
+                                {    
+                                    node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
+                                }
+                                else
+                                {
+                                    node = folderHandler.getFolder(getPath() + PATH_SEPARATOR + nodeNames[i]);
+                                }
                             }
-                        }
-                        else
+                            node.setParent(this);
+                            allNodes.add(node);
+                        }               
+                        catch (UnsupportedDocumentTypeException e)
                         {
-                            
-                            if(nodeNames[i].indexOf(".") > -1)
-                            {    
-                                node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
-                            }
-                            else
-                            {
-                                node = folderHandler.getFolder(getPath() + PATH_SEPARATOR + nodeNames[i]);
-                            }
+                            // Skip unsupported documents
+                            log.info("getAllNodes() Skipping unsupported document: "+nodeNames[i]);
                         }
-                        node.setParent(this);
-                        allNodes.add(node);
-                    }               
-                    catch (UnsupportedDocumentTypeException e)
-                    {
-                        // Skip unsupported documents
-                        log.info("getAllNodes() Skipping unsupported document: "+nodeNames[i]);
-                    }
-                    catch (Exception e)
-                    {
-                        log.warn("getAllNodes() failed to create Node: "+nodeNames[i]+":"+e.toString(), e);
-                    }
-                }       
-            }            
+                        catch (Exception e)
+                        {
+                            log.warn("getAllNodes() failed to create Node: "+nodeNames[i]+":"+e.toString(), e);
+                        }
+                    }       
+                }
+            }
+            catch (FolderNotFoundException fnfe)
+            {
+                log.error("getAllNodes() unexpected missing folder", fnfe);
+            }
         }
         
         return allNodes;
@@ -651,6 +657,9 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             }
         }
         catch (NodeException ne)
+        {
+        }
+        catch (NodeNotFoundException nnfe)
         {
         }
 

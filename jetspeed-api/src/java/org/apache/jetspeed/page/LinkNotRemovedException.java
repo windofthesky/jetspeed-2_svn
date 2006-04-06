@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.page;
 
-import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.page.document.NodeException;
 
 /**
  * <p>
@@ -26,7 +26,7 @@ import org.apache.jetspeed.exception.JetspeedException;
  * @version $Id$
  *
  */
-public class LinkNotRemovedException extends JetspeedException
+public class LinkNotRemovedException extends NodeException
 {
 
     /**

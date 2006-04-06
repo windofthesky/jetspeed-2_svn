@@ -269,11 +269,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                              return e1;
                          } catch (NodeException e1){
                              return e1;
-                         } catch (PageNotUpdatedException e1) {
-                             return e1;
-                         } catch (JetspeedException e1) {
-                             return e1;
-                         }                     
+                         }
                     }
                 }, null);
                 

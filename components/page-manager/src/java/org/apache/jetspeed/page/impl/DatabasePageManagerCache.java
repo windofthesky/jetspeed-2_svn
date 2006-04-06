@@ -68,6 +68,24 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
+     * setPageManagerProxy
+     *
+     * @param proxy proxied page manager interface used to
+     *              inject into Folder instances to provide
+     *              transaction/interception
+     */
+    public synchronized static void setPageManagerProxy(PageManager proxy)
+    {
+        // set/reset page manager proxy and clear cache to
+        // flush any objects referencing replaced page manager
+        if (pageManager != proxy)
+        {
+            pageManager = proxy;
+            cacheClear();
+        }
+    }
+
+    /**
      * cacheLookup
      *
      * Lookup node instances by unique path.

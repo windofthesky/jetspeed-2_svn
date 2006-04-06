@@ -22,12 +22,12 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -51,14 +51,14 @@ public class PageManagerUtils
      * @param subject
      */
     public static void createUserHomePagesFromRoles(PageManager pageManager, Subject subject)
-    throws JetspeedException
+    throws NodeException
     {
         Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class); 
         if (principal == null)
         {
             String errorMessage = "Could not create user home for null principal";
             log.error(errorMessage);
-            throw new JetspeedException(errorMessage);
+            throw new NodeException(errorMessage);
         }
         try
         {
@@ -95,7 +95,7 @@ public class PageManagerUtils
         {
             String errorMessage = "createUserHomePagesFromRoles failed: " + e.getMessage();
             log.error(errorMessage, e);
-            throw new JetspeedException(errorMessage, e);
+            throw new NodeException(errorMessage, e);
         }
     }
 
@@ -111,10 +111,10 @@ public class PageManagerUtils
      * @param destinationPath
      * @param owner
      * @param uniqueName
-     * @throws JetspeedException
+     * @throws NodeException
      */
     public static void deepMergeFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner, String uniqueName)
-    throws JetspeedException
+    throws NodeException
     {        
         Iterator pages = srcFolder.getPages().iterator();
         while (pages.hasNext())
@@ -210,7 +210,7 @@ public class PageManagerUtils
      * @param dest destination folder
      */
     public static void deepCopyFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException
     {
         boolean found = true;
         try
@@ -223,7 +223,7 @@ public class PageManagerUtils
         }
         if (found)
         {
-            throw new JetspeedException("Destination already exists");
+            throw new NodeException("Destination already exists");
         }
         Folder dstFolder = pageManager.copyFolder(srcFolder, destinationPath);
         if (owner != null)

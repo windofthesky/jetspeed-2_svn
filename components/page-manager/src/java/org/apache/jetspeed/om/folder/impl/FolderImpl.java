@@ -44,6 +44,7 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.jetspeed.page.document.impl.NodeSetImpl;
@@ -478,6 +479,9 @@ public class FolderImpl extends NodeImpl implements Folder
             catch (NodeException ne)
             {
             }
+            catch (NodeNotFoundException nnfe)
+            {
+            }
         }
         else if (pageSecurity != null)
         {
@@ -661,7 +665,7 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getFolders()
      */
-    public NodeSet getFolders() throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders() throws DocumentException
     {
         // get folders collection
         if (!foldersCached)
@@ -813,7 +817,7 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getAll()
      */
-    public NodeSet getAll() throws FolderNotFoundException, DocumentException
+    public NodeSet getAll() throws DocumentException
     {
         // get all nodes collection
         if (!allCached)

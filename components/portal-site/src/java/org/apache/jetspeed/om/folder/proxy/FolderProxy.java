@@ -37,6 +37,7 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.page.document.proxy.NodeSetImpl;
@@ -298,10 +299,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *
      * @param proxy this folder proxy
      * @return list containing sub-folders and documents in folder
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    public NodeSet getAll(Object proxy) throws FolderNotFoundException, DocumentException
+    public NodeSet getAll(Object proxy) throws DocumentException
     {
         // latently aggregate all children
         if (!childrenAggregated)
@@ -329,10 +329,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *
      * @param proxy this folder proxy
      * @return list containing all sub-folders in folder
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    public NodeSet getFolders(Object proxy) throws FolderNotFoundException, DocumentException
+    public NodeSet getFolders(Object proxy) throws DocumentException
     {
         // latently subset folders by type from aggregated children
         if (!foldersAggregated)
@@ -681,6 +680,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                         catch (NodeException ne)
                         {
                         }
+                        catch (NodeNotFoundException nnfe)
+                        {
+                        }
                         catch (SecurityException se)
                         {
                         }
@@ -693,6 +695,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                                 return defaultPageName;
                             }
                             catch (NodeException ne)
+                            {
+                            }
+                            catch (NodeNotFoundException nnfe)
                             {
                             }
                             catch (SecurityException se)
@@ -711,6 +716,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                         return Folder.FALLBACK_DEFAULT_PAGE;
                     }
                     catch (NodeException ne)
+                    {
+                        fallbackDefaultPageNotFound = true;
+                    }
+                    catch (NodeNotFoundException nnfe)
                     {
                         fallbackDefaultPageNotFound = true;
                     }
@@ -897,6 +906,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     }
                 }
                 catch (NodeException ne)
+                {
+                }
+                catch (NodeNotFoundException ne)
                 {
                 }
                 catch (SecurityException se)

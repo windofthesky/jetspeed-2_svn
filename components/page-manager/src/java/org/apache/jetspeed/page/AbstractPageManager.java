@@ -26,7 +26,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -277,7 +276,7 @@ public abstract class AbstractPageManager
         {
             String message = "Failed to create page object for " + this.pageClass;
             log.error(message, e);
-            // throw new JetspeedException(message, e);
+            // throw new NodeException(message, e);
         }
         return fragment;        
     }
@@ -297,7 +296,7 @@ public abstract class AbstractPageManager
         {
             String message = "Failed to create page object for " + this.pageClass;
             log.error(message, e);
-            // throw new JetspeedException(message, e);
+            // throw new NodeException(message, e);
         }
         return fragment;        
     }
@@ -791,7 +790,7 @@ public abstract class AbstractPageManager
     }
         
     public Folder copyFolder(Folder source, String path)
-    throws JetspeedException, FolderNotUpdatedException
+    throws NodeException
     {
         // create the new folder and copy attributes
         Folder folder = newFolder(path);
@@ -835,7 +834,7 @@ public abstract class AbstractPageManager
     }
     
     public Page copyPage(Page source, String path)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException
     {
         // create the new page and copy attributes
         Page page = newPage(path);
@@ -874,6 +873,7 @@ public abstract class AbstractPageManager
     }
 
     public Fragment copyFragment(Fragment source, String name)
+    throws NodeException
     {
         // create the new fragment and copy attributes
         Fragment copy = newFragment();
@@ -932,7 +932,7 @@ public abstract class AbstractPageManager
     }
     
     public Link copyLink(Link source, String path)
-    throws JetspeedException, LinkNotUpdatedException
+    throws NodeException
     {
         // create the new link and copy attributes
         Link link = newLink(path);
@@ -959,7 +959,7 @@ public abstract class AbstractPageManager
     }
 
     public PageSecurity copyPageSecurity(PageSecurity source) 
-    throws JetspeedException, FailedToUpdateDocumentException
+    throws NodeException
     {
         // create the new page security document and copy attributes
         PageSecurity copy = this.newPageSecurity();
@@ -1209,7 +1209,7 @@ public abstract class AbstractPageManager
      * @param dest destination folder
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
-    throws JetspeedException, PageNotUpdatedException
+    throws NodeException
     {
         PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
     }
@@ -1298,7 +1298,7 @@ public abstract class AbstractPageManager
      * @param subject
      */
     public void createUserHomePagesFromRoles(Subject subject)
-    throws JetspeedException
+    throws NodeException
     {
         PageManagerUtils.createUserHomePagesFromRoles(this, subject);
     }

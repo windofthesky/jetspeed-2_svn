@@ -168,6 +168,9 @@ public class SiteView
                     catch (NodeException ne)
                     {
                     }
+                    catch (NodeNotFoundException nnfe)
+                    {
+                    }
                     catch (SecurityException se)
                     {
                     }
@@ -641,6 +644,12 @@ public class SiteView
                 fnfe.initCause(ne);
                 throw fnfe;
             }
+            catch (NodeNotFoundException nnfe)
+            {
+                FolderNotFoundException fnfe = new FolderNotFoundException("Root folder not found");
+                fnfe.initCause(nnfe);
+                throw fnfe;
+            }
         }
         return rootFolderProxy;
     }
@@ -728,6 +737,12 @@ public class SiteView
                         NodeNotFoundException nnfe = new NodeNotFoundException("Specified path " + path + " not found.");
                         nnfe.initCause(ne);
                         throw nnfe;
+                    }
+                    catch (NodeNotFoundException nnfe)
+                    {
+                        NodeNotFoundException nnfeWrapper = new NodeNotFoundException("Specified path " + path + " not found.");
+                        nnfeWrapper.initCause(nnfe);
+                        throw nnfeWrapper;
                     }
                 }
             }
@@ -826,7 +841,7 @@ public class SiteView
             {
                 currentFolder = getRootFolderProxy();
             }
-            catch (NodeException ne)
+            catch (FolderNotFoundException fnfe)
             {
                 return null;
             }
@@ -928,6 +943,11 @@ public class SiteView
                         }
                     }
                     catch (NodeException ne)
+                    {
+                        // could not access sub-folders
+                        return null;
+                    }
+                    catch (NodeNotFoundException nnfe)
                     {
                         // could not access sub-folders
                         return null;

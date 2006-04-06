@@ -44,13 +44,29 @@ limitations under the License.
         <property name="transactionAttributes">
             <props>
                 <prop key="*">PROPAGATION_SUPPORTS</prop>
-                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
-                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
-                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>
-                <prop key="create*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>                                								
-                <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>                              
-				<prop key="deepCopyFolder*">PROPAGATION_REQUIRED,-org.apache.jetspeed.exception.JetspeedException</prop>				
+                <prop key="get*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="create*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="deepCopy*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="add*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="folderExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="pageExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="linkExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="userFolderExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+                <prop key="userPageExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
             </props>
+        </property>
+    </bean>
+
+    <!-- Inject Page Manager Proxy into Page Manager -->
+    <bean id="injectPageManagerProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject"><ref bean="pageManagerImpl"/></property>
+        <property name="targetMethod"><value>setPageManagerProxy</value></property>
+        <property name="arguments">
+            <list>
+                <ref bean="dbPageManager"/>
+            </list>
         </property>
     </bean>
 

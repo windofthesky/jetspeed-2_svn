@@ -495,6 +495,9 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 catch (NodeException ne)
                 {
                 }
+                catch (NodeNotFoundException nnfe)
+                {
+                }
                 catch (SecurityException se)
                 {
                     requestFolder = null;
@@ -579,6 +582,9 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             return requestPage;
                         }
                         catch (NodeException ne)
+                        {
+                        }
+                        catch (NodeNotFoundException nnfe)
                         {
                         }
                         catch (SecurityException se)

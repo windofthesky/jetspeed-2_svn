@@ -18,7 +18,6 @@ package org.apache.jetspeed.page;
 
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -281,7 +280,7 @@ public interface PageManager
      * @throws PageNotFoundException if the page cannot be found
      * @throws NodeException
      */
-    public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
+    public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, NodeException;
 
     /**
      * <p>
@@ -291,11 +290,10 @@ public interface PageManager
      * Returns the PageSecurity document
      *
      * @throws DocumentNotFoundException if the document cannot be found
-     * @throws FolderNotFoundException if a folder cannot be found
      * @throws UnsupportedDocumentTypeException
      * @throws NodeException
      */
-    public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, NodeException;
     
     /**
      * <p>
@@ -326,10 +324,9 @@ public interface PageManager
      * @param folder The parent folder.
      * @return A <code>NodeSet</code> containing all sub-folders
      *         directly under this folder.
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    public NodeSet getFolders(Folder folder) throws FolderNotFoundException, DocumentException;
+    public NodeSet getFolders(Folder folder) throws DocumentException;
 
     /**
      * <p>
@@ -455,66 +452,65 @@ public interface PageManager
      * @param folder The parent folder.
      * @return A <code>NodeSet</code> containing all sub-folders
      *         and documents directly under this folder.
-     * @throws FolderNotFoundException
      * @throws DocumentException
      */
-    public NodeSet getAll(Folder folder) throws FolderNotFoundException, DocumentException;
+    public NodeSet getAll(Folder folder) throws DocumentException;
 
     /** Update a page in persistent storage
      *
      * @param page The page to be updated.
      */
-    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException;
+    public void updatePage(Page page) throws NodeException, PageNotUpdatedException;
 
     /** Remove a document.
      *
      * @param page The page to be removed.
      */
-    public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
+    public void removePage(Page page) throws NodeException, PageNotRemovedException;
 
     /** Update a folder and all child folders
      *  and documents in persistent storage
      *
      * @param folder The folder to be updated.
      */
-    public void updateFolder(Folder folder) throws JetspeedException, FolderNotUpdatedException;
+    public void updateFolder(Folder folder) throws NodeException, FolderNotUpdatedException;
 
     /** Update a folder in persistent storage
      *
      * @param folder The folder to be updated.
      * @param deep Flag to control recursive deep updates.
      */
-    public void updateFolder(Folder folder, boolean deep) throws JetspeedException, FolderNotUpdatedException;
+    public void updateFolder(Folder folder, boolean deep) throws NodeException, FolderNotUpdatedException;
 
     /** Remove a folder.
      *
      * @param page The folder to be removed.
      */
-    public void removeFolder(Folder folder) throws JetspeedException, FolderNotRemovedException;
+    public void removeFolder(Folder folder) throws NodeException, FolderNotRemovedException;
 
     /** Update a link in persistent storage
      *
      * @param link The link to be updated.
      */
-    public void updateLink(Link link) throws JetspeedException, LinkNotUpdatedException;
+    public void updateLink(Link link) throws NodeException, LinkNotUpdatedException;
 
     /** Remove a link.
      *
      * @param link The link to be removed.
      */
-    public void removeLink(Link link) throws JetspeedException, LinkNotRemovedException;
+    public void removeLink(Link link) throws NodeException, LinkNotRemovedException;
 
     /** Update a page security document in persistent storage
      *
      * @param pageSecurity The document to be updated.
      */
-    public void updatePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToUpdateDocumentException;
+    public void updatePageSecurity(PageSecurity pageSecurity) throws NodeException, FailedToUpdateDocumentException;
 
     /** Remove a page security document.
      *
      * @param pageSecurity The document to be removed.
      */
-    public void removePageSecurity(PageSecurity pageSecurity) throws JetspeedException, FailedToDeleteDocumentException;
+    public void removePageSecurity(PageSecurity pageSecurity) throws NodeException, FailedToDeleteDocumentException;
 
     /**
      * addListener - add page manager event listener
@@ -545,7 +541,7 @@ public interface PageManager
      * @return a new Page object copied from the source, with new fragment ids
      */
     public Page copyPage(Page source, String path) 
-        throws JetspeedException, PageNotUpdatedException;
+        throws NodeException;
 
     /** 
      * Copy the source link creating and returning a new copy of the link  
@@ -555,7 +551,7 @@ public interface PageManager
      * @return a new Link object copied from the source
      */
     public Link copyLink(Link source, String path) 
-        throws JetspeedException, LinkNotUpdatedException;
+        throws NodeException;
 
     /** 
      * Copy the source folder creating and returning a new copy of the folder  
@@ -567,7 +563,7 @@ public interface PageManager
      * @return a new Folder object copied from the source, with new subobject ids
      */
     public Folder copyFolder(Folder source, String path) 
-        throws JetspeedException, PageNotUpdatedException;
+        throws NodeException;
 
     /** 
      * Copy the source fragment creating and returning a new copy of the fragment  
@@ -579,7 +575,7 @@ public interface PageManager
      * @return a new Fragment object copied from the source
      */
     public Fragment copyFragment(Fragment source, String name) 
-        throws JetspeedException, PageNotUpdatedException;
+        throws NodeException;
 
     /**
      * Copy the source page security (both global constraints and constraint references)
@@ -587,10 +583,10 @@ public interface PageManager
      *  
      * @param source The source PageSecurity definitions
      * @return the new page security object
-     * @throws JetspeedException
+     * @throws NodeException
      */
     public PageSecurity copyPageSecurity(PageSecurity source) 
-        throws JetspeedException;
+        throws NodeException;
         
     /**
      * Deep copy a folder. Copies a folder and all subcontents including
@@ -601,7 +597,7 @@ public interface PageManager
      * @param owner set owner of the new folder(s), or null for no owner
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
-    throws JetspeedException, PageNotUpdatedException;
+        throws NodeException;
 
     /**
      * Retrieve a page for the given user name and page name
@@ -676,14 +672,14 @@ public interface PageManager
      * @param subject The full user Java Security subject.
      */
     public void createUserHomePagesFromRoles(Subject subject)
-    throws JetspeedException;
+    throws NodeException;
     
     /**
      * 
      * @param pages
      * @return
-     * @throws JetspeedException
+     * @throws NodeException
      */
     public int addPages(Page[] pages)
-    throws JetspeedException;
+    throws NodeException;
 }
