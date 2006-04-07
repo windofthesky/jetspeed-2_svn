@@ -146,23 +146,24 @@ public class SSOWebContentPortlet extends WebContentPortlet
         }        
     }
     
-    public void processAction(ActionRequest request, ActionResponse actionResponse)
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse)
     throws PortletException, IOException
     {
+        // grab parameters - they will be cleared in processing of edit response
+        String webContentParameter = actionRequest.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
+        String ssoPrincipal = actionRequest.getParameter(SSO_EDIT_FIELD_PRINCIPAL);
+        String ssoCredential = actionRequest.getParameter(SSO_EDIT_FIELD_CREDENTIAL);        
+
         // save the prefs
-        super.processAction(request, actionResponse);
+        super.processAction(actionRequest, actionResponse);
   
-        String webContentParameter = request.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
-        
-        if (webContentParameter == null || request.getPortletMode() == PortletMode.EDIT)            
+        // process credentials
+        if (webContentParameter == null || actionRequest.getPortletMode() == PortletMode.EDIT)            
         {
             // processPreferencesAction(request, actionResponse);
-            // get the POST params -- requires HTML post params named
-            // ssoUserName 
-            String ssoPrincipal = request.getParameter(SSO_EDIT_FIELD_PRINCIPAL);
-            String ssoCredential = request.getParameter(SSO_EDIT_FIELD_CREDENTIAL);        
-
-            String site = request.getPreferences().getValue("SRC", "");
+            // get the POST params -- requires HTML post params named above 
+            String site = actionRequest.getPreferences().getValue("SRC", "");
+            
             try
             {
                 Subject subject = getSubject();
@@ -178,11 +179,6 @@ public class SSOWebContentPortlet extends WebContentPortlet
             catch (SSOException e)
             {
                 throw new PortletException(e);
-            }
-            finally
-            {
-                // parameters are for the EDIT mode form, and should not be propagated to the subsequent GET in doView
-                PortletMessaging.publish(request, CURRENT_URL_PARAMS, new HashMap());
             }
         }
     }
@@ -331,7 +327,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
 
                 // get submit method
                 int i = type.indexOf('.');
-                String submitMethod = i > 0 ? type.substring(i+1) : "post" ;    // default to post, since it is a form 
+                boolean isPost = i > 0 ? type.substring(i+1).equalsIgnoreCase("post") : true ;    // default to post, since it is a form 
             
                 // get parameter map
                 HashMap formParams = new HashMap();
@@ -351,7 +347,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 }
 
                 // resuse client - in case new cookies get set - but create a new method (for the formAction)
-                method = getHttpMethod(client, getURLSource(formAction, formParams, request, response), formParams, submitMethod, request);
+                method = getHttpMethod(client, getURLSource(formAction, formParams, request, response), formParams, isPost, request);
                 // System.out.println("...posting credentials");
                 byte[] result = doHttpWebContent(client, method, 0, request, response) ;
                 boolean success = result != null; 

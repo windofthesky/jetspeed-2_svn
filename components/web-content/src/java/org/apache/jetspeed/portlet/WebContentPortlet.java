@@ -15,12 +15,28 @@
 package org.apache.jetspeed.portlet;
 
 import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -57,25 +73,9 @@ import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
+import org.apache.jetspeed.portlet.webcontent.WebContentHistoryList;
+import org.apache.jetspeed.portlet.webcontent.WebContentHistoryPage;
 
-//standard java stuff
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.MalformedURLException;
-
-import java.io.Reader;
-
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.StringTokenizer;
 
 /**
  * WebContentPortlet
@@ -99,6 +99,12 @@ public class WebContentPortlet extends GenericVelocityPortlet
      */
     public static final String VIEW_SOURCE_PARAM = "viewSource";
     public static final String EDIT_SOURCE_PARAM = "editSource";
+    
+    // ...browser action buttons
+    public static final String BROWSER_ACTION_PARAM = "wcBrowserAction"; 
+    public static final String BROWSER_ACTION_PREVIOUS_PAGE = "previousPage"; 
+    public static final String BROWSER_ACTION_REFRESH_PAGE = "refreshPage"; 
+    public static final String BROWSER_ACTION_NEXT_PAGE = "nextPage"; 
 
     /**
      * Default WebContent source attribute members.
@@ -110,37 +116,25 @@ public class WebContentPortlet extends GenericVelocityPortlet
      * Action Parameter
      */
 
-    /** WebContent Messages 
-     *  TODO: this is a simple implementation
-     *  until we introduce a more sophisticated caching algorithm 
-     * 
-     * */
-    public static final String CURRENT_URL = "webcontent.url.current";
-    public static final String CURRENT_URL_PARAMS = "webcontent.url.current.params";
-    public static final String CURRENT_URL_METHOD = "webcontent.url.current.method";
-    public static final String LAST_URL = "webcontent.url.last";
-    public static final String LAST_URL_PARAMS = "webcontent.url.last.params";
-    public static final String LAST_WINDOW_STATE = "webcontent.window.last.state";
-    public static final String CACHE = "webcontent.cache";
+    // WebContent session data 
+
+    public static final String HISTORY = "webcontent.history";
     public static final String HTTP_STATE = "webcontent.http.state";
     
     // Class Data
     
     protected final static Log log = LogFactory.getLog(WebContentPortlet.class);
+    public final static String defaultEncoding = "UTF-8";
 
-    /** Default encoding */
-    public String defaultEncoding = "UTF-8";
-
-    /* WebContent rewriter */
-    RulesetRewriter rewriter = null;
-
-    RewriterController rewriteController = null;
+    // Data Members
+    
+    private RulesetRewriter rewriter = null;
+    private RewriterController rewriteController = null;
 
     
     public WebContentPortlet()
     {
         super();
-
     }
 
     /**
@@ -165,15 +159,49 @@ public class WebContentPortlet extends GenericVelocityPortlet
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException,
             IOException
     {
-
+        // check to see if it is a meta-navigation command
+        String browserAction = actionRequest.getParameter(BROWSER_ACTION_PARAM);
+        if (browserAction != null)
+        {
+            if (!browserAction.equalsIgnoreCase(BROWSER_ACTION_REFRESH_PAGE))
+            {
+                // for Refresh, there is nothing special to do - current history page will be re-displayed
+                WebContentHistoryList history = (WebContentHistoryList)PortletMessaging.receive(actionRequest, HISTORY);
+                
+                if (browserAction.equalsIgnoreCase(BROWSER_ACTION_PREVIOUS_PAGE))
+                {
+                    if (history.hasPreviousPage())
+                        history.getPreviousPage();
+                }
+                else if (browserAction.equalsIgnoreCase(BROWSER_ACTION_NEXT_PAGE))
+                {
+                    if (history.hasNextPage())
+                        history.getNextPage();
+                }
+            }
+            
+            return ;   // proceed to doView() with adjusted history
+        }
+        
         // Check if an action parameter was defined        
         String webContentURL = actionRequest.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
         String webContentMethod = actionRequest.getParameter(WebContentRewriter.ACTION_PARAMETER_METHOD);
+        Map webContentParams = new HashMap(actionRequest.getParameterMap()) ;
+        
+        // defaults
+        if (webContentMethod == null) webContentMethod = "" ;   // default to GET
+        
+        // parameter map includes the URL (as ACTION_PARAMETER_URL), but all actual params as well
+        webContentParams.remove(WebContentRewriter.ACTION_PARAMETER_URL);
+        webContentParams.remove(WebContentRewriter.ACTION_PARAMETER_METHOD);
         
         if (webContentURL == null || actionRequest.getPortletMode() == PortletMode.EDIT)
         {
             processPreferencesAction(actionRequest, actionResponse);            
             webContentURL = actionRequest.getPreferences().getValue("SRC", "http://portals.apache.org");
+
+            // parameters are for the EDIT mode form, and should not be propagated to the subsequent GET in doView
+            webContentParams.clear();
         }
 
         /*
@@ -181,18 +209,12 @@ public class WebContentPortlet extends GenericVelocityPortlet
          */
         if (webContentURL != null && webContentURL.length() > 0)
         {
-            // Map BOZO String sessionObj = new String(webContentParameter);
-            // getParameterMap() includes the URL (as ACTION_PARAMETER_URL), but all actual params as well
-            Map params = actionRequest.getParameterMap() ;
-            Map webContentParams = params != null ? new HashMap(params) : new HashMap() ;
-            if (webContentMethod == null) webContentMethod = "" ;   // default to GET
-
-            webContentParams.remove(WebContentRewriter.ACTION_PARAMETER_URL);
-            webContentParams.remove(WebContentRewriter.ACTION_PARAMETER_METHOD);
-
-            PortletMessaging.publish(actionRequest, CURRENT_URL, webContentURL);
-            PortletMessaging.publish(actionRequest, CURRENT_URL_PARAMS, webContentParams);
-            PortletMessaging.publish(actionRequest, CURRENT_URL_METHOD, webContentMethod);
+            // new page visit - make it the current page in the history
+            WebContentHistoryList history = (WebContentHistoryList)PortletMessaging.receive(actionRequest, HISTORY);
+            if (history == null)
+                history = new WebContentHistoryList();
+            history.visitPage(new WebContentHistoryPage(webContentURL,webContentParams,webContentMethod));
+            PortletMessaging.publish(actionRequest, HISTORY, history);
         }
     }
 
@@ -209,48 +231,21 @@ public class WebContentPortlet extends GenericVelocityPortlet
             return;
         }
         
-        // Find the source URL to execute
-        String sourceURL = null;
-        Map sourceParams = null;
-        String sourceMethod = null;
-        String lastURL = null;
-        Map lastParams = null;
-        
-        // Check if the source was defined in the session
-        try
+        // view the current page in the history
+        WebContentHistoryList history = (WebContentHistoryList)PortletMessaging.receive(request, HISTORY);
+        if (history == null)
+            history = new WebContentHistoryList();
+        WebContentHistoryPage currentPage = history.getCurrentPage();
+        if (currentPage == null)
         {
-            sourceURL = (String)PortletMessaging.receive(request, CURRENT_URL);
-            sourceParams = (Map)PortletMessaging.receive(request, CURRENT_URL_PARAMS);
-            sourceMethod = (String)PortletMessaging.receive(request, CURRENT_URL_METHOD);
-
-            lastURL = (String)PortletMessaging.receive(request, LAST_URL);
-            lastParams = (Map)PortletMessaging.receive(request, LAST_URL_PARAMS);
-            // TODO: This is just a kludge. Filtering of bad uRL's should be
-            // more sophisticated
-            if (sourceURL.startsWith("/") || sourceURL.startsWith("..")) sourceURL = null;
+            String sourceURL = request.getPreferences().getValue("SRC", "");
+            if (sourceURL == null)
+            {
+                // BOZO - switch to edit mode automatically here, instead of throwing exception!
+                throw new PortletException("WebContent source not specified. Go to edit mode and specify an URL.");
+            }
+            currentPage = new WebContentHistoryPage(sourceURL);
         }
-        catch (Exception e)
-        {
-            sourceURL = null;
-        }
-
-        // Check if the page was rendered at least once
-        if (sourceURL == null && lastURL != null)
-        {
-            // Use the cache
-            sourceURL = lastURL;
-        }
-        
-        if (sourceURL == null)
-        {
-            // Use the URL defined in the preferences
-            sourceURL =  request.getPreferences().getValue("SRC", "");
-        }
-
-        // If all above fails throw an error asking the user to define an URL in
-        // edit mode
-        if (sourceURL == null)
-            throw new PortletException("WebContent source not specified. Go to edit mode and specify an URL.");
 
         // Initialize the controller if it's not already done
         if (rewriteController == null)
@@ -266,46 +261,44 @@ public class WebContentPortlet extends GenericVelocityPortlet
             catch (Exception e)
             {
                 // Failed to create rewriter controller
-                throw new PortletException("WebContentProtlet failed to create rewriter controller. Error:"
-                        + e.getMessage());
+                String msg = "WebContentPortlet failed to create rewriter controller.";
+                log.error(msg,e);
+                throw new PortletException(e.getMessage());
             }
         }
 
-        String newWindowState = request.getWindowState().toString();
-        String lastWindowState = (String)PortletMessaging.receive(request, LAST_WINDOW_STATE);
-
-        // if *everything* is the same, we can use the cache
-        boolean useCache = (lastURL != null && sourceURL.equals(lastURL) && lastParams != null && sourceParams != null && sourceParams.equals(lastParams) && lastWindowState != null && newWindowState != null && newWindowState.equals(lastWindowState));
-        
-        // Set the content type
+        // get content from current page
         response.setContentType("text/html");
-        byte[] content = useCache ? (byte[])request.getPortletSession().getAttribute(CACHE, PortletSession.PORTLET_SCOPE) : null;
-        if (content != null)
+        byte[] content = doWebContent(currentPage.getUrl(), currentPage.getParams(), currentPage.isPost(), request, response);
+        
+        // write the meta-control navigation header
+        PrintWriter writer = response.getWriter();
+        writer.print("<block>");
+        if (history.hasPreviousPage())
         {
-            // BOZO - no caching until we get everything else worked out (back button, etc)
-            useCache = false;
-            content = null;
-            log.info("WebContentPortlet.doView() - cache available, but is being ignored, for now.");            
+            PortletURL prevAction = response.createActionURL() ;
+            prevAction.setParameter(BROWSER_ACTION_PARAM, BROWSER_ACTION_PREVIOUS_PAGE);
+            writer.print(" [<a href=\"" + prevAction.toString() +"\">Previous Page</a>] ");
         }
-        if (content == null)
+        PortletURL refreshAction = response.createActionURL() ;
+        refreshAction.setParameter(BROWSER_ACTION_PARAM, BROWSER_ACTION_REFRESH_PAGE);
+        writer.print(" [<a href=\"" + refreshAction.toString() +"\">Refresh Page</a>] ");
+        if (history.hasNextPage())
         {
-            // System.out.println("WebContentPortlet.doView() >>>fetching content from: "+sourceURL+", using method: "+sourceMethod+"<<<");
-            
-            // Draw the content            
-            content = doWebContent(sourceURL, sourceParams, sourceMethod, request, response);
-            request.getPortletSession().setAttribute(CACHE, content, PortletSession.PORTLET_SCOPE);
+            PortletURL nextAction = response.createActionURL() ;
+            nextAction.setParameter(BROWSER_ACTION_PARAM, BROWSER_ACTION_NEXT_PAGE);
+            writer.print(" [<a href=\"" + nextAction.toString() +"\">Next Page</a>] ");
         }
-        // else System.out.println("WebContentPortlet.doView() - Using *cached* content");
+        writer.print("</block><hr/>");
 
         // drain the stream to the portlet window
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
-        drain(new InputStreamReader(bais, this.defaultEncoding), response.getWriter());
+        drain(new InputStreamReader(bais, this.defaultEncoding), writer);
         bais.close();
         
-        // Done just save the last set of parameters
-        PortletMessaging.publish(request, LAST_URL, sourceURL);
-        PortletMessaging.publish(request, LAST_URL_PARAMS, sourceParams != null?sourceParams:new HashMap());
-        PortletMessaging.publish(request, LAST_WINDOW_STATE, newWindowState);
+        // done, cache results in the history and save the history
+        history.visitPage(currentPage);
+        PortletMessaging.publish(request, HISTORY, history);
     }
 
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
@@ -317,8 +310,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
     /*
      * Privaye helpers for generating WebContent
      */
-    protected byte[] doWebContent(String sourceAttr, Map sourceParams, String sourceMethod, RenderRequest request, RenderResponse response)
-            throws PortletException
+    protected byte[] doWebContent(String sourceAttr, Map sourceParams, boolean isPost, RenderRequest request, RenderResponse response)
+        throws PortletException
     {
         HttpMethod httpMethod = null ;
         
@@ -332,8 +325,10 @@ public class WebContentPortlet extends GenericVelocityPortlet
             
             // ...set up URL and HttpClient stuff
             HttpClient httpClient = getHttpClient(request) ;
-            httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, sourceMethod, request);
+            httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, isPost, request);
             doPreemptiveAuthentication(httpClient, httpMethod, request, response);
+            
+            // ...get, cache, and return the content
             return doHttpWebContent(httpClient, httpMethod, 0, request, response);
         }
         catch (PortletException pex)
@@ -386,7 +381,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
                     // System.out.println("WebContentPortlet.doHttpWebContent() >>>handling redirect to: "+redirectLocation+"<<<");
                     
                     // one more time (assume most params are already encoded & new URL is using GET protocol!)
-                    return doWebContent( redirectLocation, new HashMap(), "get", request, response ) ;
+                    return doWebContent( redirectLocation, new HashMap(), false, request, response ) ;
                 }
                 else
                 {
@@ -409,9 +404,9 @@ public class WebContentPortlet extends GenericVelocityPortlet
                         throw new PortletException("Site requested authorization, but we are unable to provide credentials");
                     }
                 }
-                else if (retryCount++ < 2)
+                else if (retryCount++ < 3)
                 {
-                    // System.out.println("WebContentPortlet.doHttpWebContent() - retrying: "+httpMethod.getPath()+", response code: "+responseCode);
+                    log.info("WebContentPortlet.doHttpWebContent() - retrying: "+httpMethod.getPath()+", response code: "+responseCode);
                     
                     // retry
                     return doHttpWebContent(httpClient, httpMethod, retryCount, request, response);
@@ -477,16 +472,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return false ;
     }
 
-        
-    /*
-     * Get WebContent source preference value
-     */
-    private String getSourcePreference(RenderRequest request, String name, String defaultValue)
-    {
-        PortletPreferences prefs = request.getPreferences();
-        return ((prefs != null) ? prefs.getValue(name, defaultValue) : defaultValue);
-    }
-
     /*
      * Generate a rewrite controller using the basic rules file
      */
@@ -527,11 +512,11 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return client ;
     }
     
-    protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, String method, RenderRequest request) throws IOException
+    protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, boolean isPost, RenderRequest request) throws IOException
     {
         HttpMethodBase httpMethod = null;
         String useragentProperty = request.getProperty("User-Agent");
-        if (method == null || !method.equalsIgnoreCase("post"))
+        if (!isPost)
         {
             // System.out.println("WebContentPortlet.getHttpMethod() - HTTP GET from URL: "+uri);
             
