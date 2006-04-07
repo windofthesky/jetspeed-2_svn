@@ -71,19 +71,18 @@ public class PortletInvokerFactoryImpl
     
     private final PortletFactory portletFactory;
     
-    private final JetspeedPortletInvoker servletPortletInvoker;
+    private final ServletPortletInvokerFactory servletPortletInvokerFactory;
     
-    private final JetspeedPortletInvoker localPortletInvoker;
-    
+    private final LocalPortletInvokerFactory localPortletInvokerFactory;
+            
     public PortletInvokerFactoryImpl(ServletConfig servletConfig, PortalContext portalContext, 
-            PortletFactory portletFactory, JetspeedPortletInvoker servletPortletInvoker, JetspeedPortletInvoker localPortletInvoker)
+            PortletFactory portletFactory, ServletPortletInvokerFactory servletPortletInvokerFactory, LocalPortletInvokerFactory localPortletInvokerFactory)
     {
         this.servletConfig = servletConfig;        
         this.portalContext = portalContext;        
         this.portletFactory = portletFactory;
-        this.servletPortletInvoker = servletPortletInvoker;
-        this.localPortletInvoker = localPortletInvoker;
-        
+        this.servletPortletInvokerFactory = servletPortletInvokerFactory;
+        this.localPortletInvokerFactory = localPortletInvokerFactory;                
     }
                
     /* (non-Javadoc)
@@ -108,8 +107,6 @@ public class PortletInvokerFactoryImpl
      */
     public PortletInvoker getPortletInvoker(PortletDefinition portletDefinition)
     {
-        
-
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
         if(app == null)
         {
@@ -118,12 +115,14 @@ public class PortletInvokerFactoryImpl
         
         if (app.getApplicationType() == MutablePortletApplication.LOCAL)
         {
+            LocalPortletInvoker localPortletInvoker = localPortletInvokerFactory.createInstance();
             localPortletInvoker.activate(portletFactory, portletDefinition, servletConfig);
             return localPortletInvoker;           
         }
         else
         {             
-            String servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
+            ServletPortletInvoker servletPortletInvoker = servletPortletInvokerFactory.createInstance();
+            String servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);            
             servletPortletInvoker.activate(portletFactory, portletDefinition, servletConfig, servletMappingName);            
             return servletPortletInvoker;
         }

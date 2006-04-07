@@ -78,14 +78,7 @@ public class PortletAggregatorImpl implements PortletAggregator
         PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(entity);
         fragment.setType(Fragment.PORTLET);
         fragment.setName(name);
-        String decorator = fragment.getDecorator();
-
-        // render and write portlet content to response
-        if (decorator == null)
-        {
-            // decorator = context.getPage().getEffectiveDefaultDecorator(fragment.getType());
-            log.debug("No sepecific decorator portlet so using page default: "+decorator);
-        }
+        //String decorator = fragment.getDecorator();
         ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
         ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
         renderer.renderNow(contentFragment, context);
@@ -95,8 +88,9 @@ public class PortletAggregatorImpl implements PortletAggregator
     
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
+        /*        
         log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
-/*
+
         HeaderResourceFactory headerResourceFactory=(HeaderResourceFactory)Jetspeed.getComponentManager().getComponent(HeaderResourceFactory.class);
         HeaderResource headerResource=headerResourceFactory.getHeaderResouce(context);
         
