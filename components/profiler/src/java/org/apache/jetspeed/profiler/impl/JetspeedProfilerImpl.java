@@ -17,6 +17,7 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,9 +74,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     /** The configured default rule for this portal */
     private String defaultRule = DEFAULT_RULE;
 
-    private Map principalRules = new HashMap();
+    private Map principalRules = Collections.synchronizedMap(new HashMap());
 
-    private Map rulesPerPrincipal = new HashMap();
+    private Map rulesPerPrincipal = Collections.synchronizedMap(new HashMap());
 
     private ProfileResolvers resolvers;
     
