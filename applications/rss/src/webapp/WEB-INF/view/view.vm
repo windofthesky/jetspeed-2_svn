@@ -38,8 +38,10 @@ limitations under the License.
 	  #end
 
 	  #set ($syncEntries = $syncFeed.getEntries())
+	  #set ($counter = 0)
 	  <ul>
 		#foreach($syncEntry in $syncEntries)
+			#if ($counter < $rssInfo.getItemdisplayed()) 
 			<li>
 				<a href="$syncEntry.getLink()" 
 					#if($rssInfo.isOpeninpopup())  target="_blank" #end />
@@ -51,6 +53,8 @@ limitations under the License.
 					$syncEntry.getDescription().getValue()
 				#end	
 	      	</li>		
+	      	#end
+	      	#set ($counter = $counter + 1)
 		#end
 	  </ul>
       #if($rssInfo.isShowtextinput())	  
