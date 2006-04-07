@@ -1555,7 +1555,7 @@ limitations under the License.
 
       <field-descriptor
          name="mode"
-         column="MODE"
+         column="PMODE"
          jdbc-type="VARCHAR"
       />
 

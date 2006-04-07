@@ -333,7 +333,7 @@ limitations under the License.
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DECORATOR" size="80" type="VARCHAR"/>
         <column name="STATE" size="10" type="VARCHAR"/>
-        <column name="MODE" size="10" type="VARCHAR"/>
+        <column name="PMODE" size="10" type="VARCHAR"/>
         <column name="LAYOUT_ROW" type="INTEGER"/>
         <column name="LAYOUT_COLUMN" type="INTEGER"/>
         <column name="LAYOUT_SIZES" size="20" type="VARCHAR"/>
