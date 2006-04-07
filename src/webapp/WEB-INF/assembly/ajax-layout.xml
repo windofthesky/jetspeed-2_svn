@@ -12,7 +12,7 @@
     index 4 = Registry (getPortlets)
     -->
 <bean id="PortletActionSecurityBehavior"
-	  class="org.apache.jetspeed.layout.impl.PortletActionSecurityPathBehavior">
+	  class="org.apache.jetspeed.layout.impl.PortletActionSecurityConstraintsBehavior">
     <constructor-arg index='0'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    	
@@ -146,6 +146,9 @@
     <constructor-arg index='3'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		  
+    <constructor-arg index='4'>
+        <ref bean="AjaxGetPortlets"/>        
+    </constructor-arg>     	    
 </bean>
 
 <bean id="AjaxRemovePortlet"
@@ -220,7 +223,29 @@
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		        
 </bean>
-    	
+
+<bean id="AjaxChangeWindow"
+    class="org.apache.jetspeed.layout.impl.ChangePortletAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/window.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+        <value>window</value>
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+    <constructor-arg index='4'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	
+    <constructor-arg index='5'>
+        <ref bean="PortalContextProvider"/>        
+    </constructor-arg>    	        
+</bean>
+        	
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
@@ -257,13 +282,16 @@
             <entry key="getpages">
                 <ref bean="AjaxGetPages"/>
             </entry>			
+            <entry key="window">
+                <ref bean="AjaxChangeWindow"/>
+            </entry>			            
         </map>
     </constructor-arg>
     <constructor-arg index="1">
         <ref bean="AjaxVelocityEngine"/>
     </constructor-arg>
 </bean>
-
+        
 <bean id="AjaxVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
     <property name="velocityProperties">
         <props>
