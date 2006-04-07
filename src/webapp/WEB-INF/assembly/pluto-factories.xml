@@ -15,12 +15,12 @@
        <constructor-arg index="0"><value>js_</value></constructor-arg>
   </bean>
   
-  <bean id="LocalPortletInvoker"
-        class="org.apache.jetspeed.container.invoker.LocalPortletInvoker" singleton="false"
+  <bean id="LocalPortletInvokerFactory"
+        class="org.apache.jetspeed.container.invoker.LocalPortletInvokerFactory" 
   />   
           
-  <bean id="ServletPortletInvoker"
-        class="org.apache.jetspeed.container.invoker.ServletPortletInvoker" singleton="false"
+  <bean id="ServletPortletInvokerFactory"
+        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory" 
   /> 	
 	
   <bean id="javax.portlet.ActionRequest"
@@ -122,10 +122,10 @@
 		<ref bean="portletFactory" />
 	</constructor-arg>
 	<constructor-arg index="3">
-		<ref bean="ServletPortletInvoker"/>
+		<ref bean="ServletPortletInvokerFactory"/>
 	</constructor-arg>
 	<constructor-arg index="4">
-		<ref bean="LocalPortletInvoker"/>
+		<ref bean="LocalPortletInvokerFactory"/>
 	</constructor-arg>
   </bean>
   
