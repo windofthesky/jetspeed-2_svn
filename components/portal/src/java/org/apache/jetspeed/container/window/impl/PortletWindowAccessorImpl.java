@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.container.window.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
 {
     protected final static Log log = LogFactory.getLog(PortletWindowAccessorImpl.class);
    
-    private Map windows = new HashMap();
+    private Map windows = Collections.synchronizedMap(new HashMap());    
     private PortletEntityAccessComponent entityAccessor;
     private boolean validateWindows = false;
     
