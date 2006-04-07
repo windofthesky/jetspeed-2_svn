@@ -118,8 +118,8 @@ public class RemovePortletAction
                 resultMap.put(REASON, "Fragment not found");
                 return success;                
             }
-            //Coordinate coordinate = placement.remove(fragment);
-            Page page = requestContext.getPage();
+            placement.remove(fragment);
+            Page page = placement.syncPageFragments();
             page.removeFragmentById(fragment.getId());            
             pageManager.updatePage(page);            
             // Build the results for the response

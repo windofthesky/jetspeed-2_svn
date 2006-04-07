@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -50,18 +51,21 @@ public class AddPortletAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(AddPortletAction.class);
+    protected GetPortletsAction getPortletsAction = null;
 
-    public AddPortletAction(String template, String errorTemplate)
+    public AddPortletAction(String template, String errorTemplate, GetPortletsAction getPortletsAction)
     {
-        this(template, errorTemplate, null, null);
+        this(template, errorTemplate, null, null, getPortletsAction);
     }
 
     public AddPortletAction(String template, 
                             String errorTemplate, 
                             PageManager pageManager,
-                            PortletActionSecurityBehavior securityBehavior)
+                            PortletActionSecurityBehavior securityBehavior,
+                            GetPortletsAction getPortletsAction)
     {
-        super(template, errorTemplate, pageManager, securityBehavior);        
+        super(template, errorTemplate, pageManager, securityBehavior); 
+        this.getPortletsAction = getPortletsAction;
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -78,6 +82,10 @@ public class AddPortletAction
             { 
                 throw new RuntimeException("portlet id not provided"); 
             }
+            // Verify that the specified portlet id is valid and accessible
+            // If the portletid is not valid an exception will be thrown
+            verifyPortletId(requestContext, portletId);
+            
             resultMap.put(PORTLETID, portletId);
             if (false == checkAccess(requestContext, JetspeedActions.EDIT))
             {
@@ -135,5 +143,24 @@ public class AddPortletAction
         }
 
         return success;
+    }
+    
+    protected void verifyPortletId(RequestContext requestContext, String portletId) throws Exception
+    {
+        // Get the list of valid portlets from the getPortletAction
+        List portletList = getPortletsAction.retrievePortlets(requestContext, null);
+        if(portletList != null) {
+            for(int i = 0; i < portletList.size(); i++) {
+                PortletInfo portletInfo = (PortletInfo)portletList.get(i);
+                if(portletInfo != null) {
+                    if(portletInfo.getName().equalsIgnoreCase(portletId)) {
+                        // A match was found there is no need to continue
+                        return;
+                    }
+                }
+            }
+        }
+        // If we got here, then no match was found
+        throw new Exception(portletId + " is not a valid portlet or not allowed for this user");
     }
 }

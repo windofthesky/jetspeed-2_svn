@@ -107,7 +107,7 @@ public class GetPortletsAction
         return success;
 	}
     
-    protected List retrievePortlets(RequestContext requestContext, String filter)
+    public List retrievePortlets(RequestContext requestContext, String filter)
     {
         Iterator portlets = null;
         List list = new ArrayList();

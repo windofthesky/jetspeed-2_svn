@@ -27,7 +27,11 @@ public interface Constants
 	public static final String STATUS = "status";
 	public static final String ACTION = "action";
     public static final String REASON = "reason";
-	public static final String PORTLETID = "id";    
+	public static final String PORTLETID = "id";
+    public static final String WINDOW_STATE = "state";
+    public static final String PORTLET_MODE = "mode";
+    public static final String OLD_WINDOW_STATE = "oldState";
+    public static final String OLD_PORTLET_MODE = "oldMode";    
 	public static final String OLDCOL = "oldcol";
 	public static final String OLDROW = "oldrow";
 	public static final String NEWCOL = "newcol";

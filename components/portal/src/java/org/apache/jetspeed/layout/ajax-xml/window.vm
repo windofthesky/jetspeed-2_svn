@@ -1,0 +1,13 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <id>$id</id> 
+#if ($state)    
+    <old_state>$oldState</old_state>
+    <new_state>$state</new_state>
+#end
+#if ($mode)    
+    <old_mode>$oldMode</old_mode>
+    <new_mode>$mode</new_mode>
+#end   
+</js>
