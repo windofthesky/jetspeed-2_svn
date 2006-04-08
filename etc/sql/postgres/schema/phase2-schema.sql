@@ -377,7 +377,7 @@ CREATE TABLE FRAGMENT
     SKIN varchar(80),
     DECORATOR varchar(80),
     STATE varchar(10),
-    MODE varchar(10),
+    PMODE varchar(10),
     LAYOUT_ROW int4,
     LAYOUT_COLUMN int4,
     LAYOUT_SIZES varchar(20),
