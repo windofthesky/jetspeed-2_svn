@@ -46,13 +46,20 @@ public abstract class BasePortletAction
     
     public BasePortletAction(String template, 
                              String errorTemplate, 
-                             PageManager pageManager,
                              PortletActionSecurityBehavior securityBehavior)
     {
         this.template = template;
         this.errorTemplate = errorTemplate;
-        this.pageManager = pageManager;
         this.securityBehavior = securityBehavior;
+    }
+
+    public BasePortletAction(String template, 
+                             String errorTemplate, 
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior)
+    {
+        this(template, errorTemplate, securityBehavior);
+        this.pageManager = pageManager;
     }
 
     public boolean buildContext(RequestContext requestContext, Map responseContext)

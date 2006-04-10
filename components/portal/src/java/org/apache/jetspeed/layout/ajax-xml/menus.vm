@@ -1,0 +1,14 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    
+    <menus>
+#foreach ($menu in $standardMenus)    
+        <menu type="standard">${menu}</menu>
+#end        
+#foreach ($menu in $customMenus)    
+        <menu type="custom">${menu}</menu>
+#end        
+    </menus>
+    
+</js>

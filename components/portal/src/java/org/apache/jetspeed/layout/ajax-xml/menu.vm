@@ -1,0 +1,84 @@
+#macro (serializeMenu $_menu $_context $_locale $_indent)
+${_indent}<menu>
+#if("$!_menu.getName()" != "")
+${_indent}    <name>$_menu.getName()</name>
+#end
+#if("$!_locale" != "")
+${_indent}    <title>$_menu.getTitle($_locale)</title>
+${_indent}    <short-title>$_menu.getShortTitle($_locale)</short-title>
+#else
+${_indent}    <title>$_menu.getTitle()</title>
+${_indent}    <short-title>$_menu.getShortTitle()</short-title>
+#end
+#if("$!_menu.getSkin()" != "")
+${_indent}    <skin>$_menu.getSkin()</skin>
+#end
+#if("$!_menu.getUrl()" != "")
+${_indent}    <url>$_menu.getUrl()</url>
+#end
+${_indent}    <hidden>$menu.isHidden()</hidden>
+#if("$!_context" != "")
+${_indent}    <selected>$menu.isSelected($_context)</selected>
+#else
+${_indent}    <selected>false</selected>
+#end
+#foreach($element in $_menu.elements.iterator())
+#if($element.elementType == "option")
+${_indent}    <option>
+${_indent}        <type>$element.getType()</type>
+#if("$!_locale" != "")
+${_indent}        <title>$element.getTitle($_locale)</title>
+${_indent}        <short-title>$element.getShortTitle($_locale)</short-title>
+#else
+${_indent}        <title>$element.getTitle()</title>
+${_indent}        <short-title>$element.getShortTitle()</short-title>
+#end
+#if("$!element.getSkin()" != "")
+${_indent}        <skin>$element.getSkin()</skin>
+#end
+#if("$!element.getUrl()" != "")
+${_indent}        <url>$element.getUrl()</url>
+#end
+#if("$!element.getTarget()" != "")
+${_indent}        <target>$element.getTarget()</target>
+#end
+${_indent}        <hidden>$element.isHidden()</hidden>
+#if("$!_context" != "")
+${_indent}        <selected>$element.isSelected($_context)</selected>
+#else
+${_indent}        <selected>false</selected>
+#end
+${_indent}    </option>
+#elseif($element.elementType == "separator")
+${_indent}    <separator>
+#if("$!_locale" != "")
+#if("$!element.getTitle($_locale)" != "")
+${_indent}        <title>$element.getTitle($_locale)</title>
+#end
+#if("$!element.getText($_locale)" != "")
+${_indent}        <text>$element.getText($_locale)</text>
+#end
+#else
+#if("$!element.getTitle()" != "")
+${_indent}        <title>$element.getTitle()</title>
+#end
+#if("$!element.getText()" != "")
+${_indent}        <text>$element.getText()</text>
+#end
+#end
+#if("$!element.getSkin()" != "")
+${_indent}        <skin>$element.getSkin()</skin>
+#end
+${_indent}    </separator>
+#elseif($element.elementType == "menu")
+#serializeMenu($element $_context $_locale "${_indent}    ")
+#end
+#end
+${_indent}</menu>
+#end
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    
+#serializeMenu($menu $menuContext $menuLocale "    ")
+</js>
