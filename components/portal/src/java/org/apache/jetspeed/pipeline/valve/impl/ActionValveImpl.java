@@ -58,11 +58,19 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     private static final Log log = LogFactory.getLog(ActionValveImpl.class);
     private PortletContainer container;
     private PortletWindowAccessor windowAccessor;
-    
+    private boolean patchResponseCommitted = false;
+
     public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
+    }
+    
+    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, boolean patchResponseCommitted)
+    {
+        this.container = container;
+        this.windowAccessor = windowAccessor;
+        this.patchResponseCommitted = patchResponseCommitted;
     }
 
     /**
@@ -93,7 +101,14 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 
                 //msg.processActionMessage("todo", request);
                 
-                responseCommitted = response.isCommitted();
+                if (patchResponseCommitted)
+                {
+                    responseCommitted = true;
+                }
+                else
+                {
+                    responseCommitted = response.isCommitted();
+                }
                 request.setAttribute(PortalReservedParameters.PIPELINE, null); // clear the pipeline
             }
         }
