@@ -60,6 +60,11 @@ public class GetPortletsAction
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
     
+    public GetPortletsAction(String template, String errorTemplate)
+    {
+        this(template, errorTemplate, null, null, null, null, null);
+    }
+    
     public GetPortletsAction(String template, 
                              String errorTemplate,
                              PageManager pageManager,

@@ -121,6 +121,9 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="AjaxGetPortlets"/>        
+    </constructor-arg>     	        
     <!-- constructor-arg index='2'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>      
@@ -196,4 +199,14 @@
 		</constructor-arg>
 	</bean>
   
+<bean id="AjaxGetPortlets"
+    class="org.apache.jetspeed.layout.impl.GetPortletsAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getportlets.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+</bean>
+    
 </beans>
