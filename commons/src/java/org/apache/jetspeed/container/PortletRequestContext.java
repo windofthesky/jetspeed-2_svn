@@ -26,8 +26,8 @@ public class PortletRequestContext
     }
     
     public static void clearContext()
-    {
-        context.remove();
+    {        
+        context.set(null);
     }
 
     private PortletRequestContext(PortletDefinition pd, Portlet portlet, PortletRequest request, PortletResponse response)
