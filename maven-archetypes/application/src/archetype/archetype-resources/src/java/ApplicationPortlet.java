@@ -16,25 +16,14 @@
 package ${groupId};
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -156,168 +145,7 @@ public class ApplicationPortlet extends GenericVelocityPortlet
         getPortletContext().log("ApplicationPortlet.processAction() invoked...");
         log.debug("ApplicationPortlet.processAction() invoked...");
 
-        // precess action from request parameters
-        Enumeration requestParametersEnum = request.getParameterNames();
-        while (requestParametersEnum.hasMoreElements())
-        {
-            String name = (String) requestParametersEnum.nextElement();
-            String [] values = request.getParameterValues(name);
-
-            // log.debug, redirect, or side effect various parameters, attributes,
-            // and preferences
-            if (name.equals("test-action") && (values.length == 1) && (values[0] != null))
-            {
-                getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+" value="+values[0]);
-                log.debug("ApplicationPortlet.processAction() received action: "+name+" value="+values[0]);
-            }
-            else if (name.equals("redirect-action") && (values.length == 1) && (values[0] != null))
-            {
-                getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+" url="+values[0]);
-                log.debug("ApplicationPortlet.processAction() received action: "+name+" url="+values[0]);
-                if (values[0].startsWith("http://") || values[0].startsWith("https://"))
-                {
-                    response.sendRedirect(values[0]);
-                    return ;
-                }
-            }
-            else if (name.equals("edit-context-attributes-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                String [] attributeValues = request.getParameterValues("edit-context-attributes-value-action");
-                if ((attributeValues != null) && (attributeValues.length == 1) && (attributeValues[0] != null))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    getPortletContext().setAttribute(values[0], attributeValues[0]);
-                }
-                else
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    getPortletContext().removeAttribute(values[0]);
-                }
-            }
-            else if (name.equals("edit-preferences-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                PortletPreferences prefs = request.getPreferences();
-                String [] preferenceValues = request.getParameterValues("edit-preferences-value-action");
-                if ((preferenceValues != null) && (preferenceValues.length == 1))
-                {
-                    preferenceValues = splitArrayValues(preferenceValues[0]);
-                }
-                if ((preferenceValues != null) && (preferenceValues.length > 0))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+concatArrayValues(preferenceValues));
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+concatArrayValues(preferenceValues));
-                    if (! prefs.isReadOnly(values[0]))
-                    {
-                        prefs.setValues(values[0], preferenceValues);
-                        try
-                        {
-                            prefs.store();
-                        }
-                        catch (Exception e)
-                        {
-                            getPortletContext().log("ApplicationPortlet.processAction() preferences store exception caught", e);
-                            log.debug("ApplicationPortlet.processAction() preferences store exception caught", e);
-                        }
-                    }
-                    else
-                    {
-                        getPortletContext().log("ApplicationPortlet.processAction() read only preference: "+values[0]);
-                        log.debug("ApplicationPortlet.processAction() read only preference: "+values[0]);
-                    }
-                }
-                else
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    if (! prefs.isReadOnly(values[0]))
-                    {
-                        prefs.reset(values[0]);
-                        try
-                        {
-                            prefs.store();
-                        }
-                        catch (Exception e)
-                        {
-                            getPortletContext().log("ApplicationPortlet.processAction() preferences store exception caught", e);
-                            log.debug("ApplicationPortlet.processAction() preferences store exception caught", e);
-                        }
-                    }
-                    else
-                    {
-                        getPortletContext().log("ApplicationPortlet.processAction() read only preference: "+values[0]);
-                        log.debug("ApplicationPortlet.processAction() read only preference: "+values[0]);
-                    }
-                }
-            }
-            else if (name.equals("edit-session-application-attributes-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                PortletSession session = request.getPortletSession(false);
-                String [] attributeValues = request.getParameterValues("edit-session-application-attributes-value-action");
-                if ((attributeValues != null) && (attributeValues.length == 1) && (attributeValues[0] != null))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    session.setAttribute(values[0], attributeValues[0], PortletSession.APPLICATION_SCOPE);
-                }
-                else
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    session.removeAttribute(values[0], PortletSession.APPLICATION_SCOPE);
-                }
-            }
-            else if (name.equals("edit-session-portlet-attributes-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                PortletSession session = request.getPortletSession(false);
-                String [] attributeValues = request.getParameterValues("edit-session-portlet-attributes-value-action");
-                if ((attributeValues != null) && (attributeValues.length == 1) && (attributeValues[0] != null))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    session.setAttribute(values[0], attributeValues[0], PortletSession.PORTLET_SCOPE);
-                }
-                else
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    session.removeAttribute(values[0], PortletSession.PORTLET_SCOPE);
-                }
-            }
-            else if (name.equals("edit-request-attributes-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                String [] attributeValues = request.getParameterValues("edit-request-attributes-value-action");
-                if ((attributeValues != null) && (attributeValues.length == 1) && (attributeValues[0] != null))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+attributeValues[0]);
-                    request.setAttribute(values[0], attributeValues[0]);
-                }
-                else
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]);
-                    request.removeAttribute(values[0]);
-                }
-            }
-            else if (name.equals("set-render-parameters-name-action") && (values.length == 1) && (values[0] != null))
-            {
-                String [] parameterValues = request.getParameterValues("set-render-parameters-value-action");
-                if ((parameterValues != null) && (parameterValues.length == 1))
-                {
-                    parameterValues = splitArrayValues(parameterValues[0]);
-                }
-                if ((parameterValues != null) && (parameterValues.length > 0))
-                {
-                    getPortletContext().log("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+concatArrayValues(parameterValues));
-                    log.debug("ApplicationPortlet.processAction() received action: "+name+", name="+values[0]+", value="+concatArrayValues(parameterValues));
-                    response.setRenderParameter(values[0], parameterValues);
-                }
-            }
-
-            // propagate action request parameters as render parameters
-            response.setRenderParameter((name.startsWith("ACTION-PARAMETER-") ? name : "ACTION-PARAMETER-"+name), values);
-        }
+        super.processAction(request, response);
     }
     
     /**
@@ -508,72 +336,5 @@ public class ApplicationPortlet extends GenericVelocityPortlet
         log.debug("ApplicationPortlet.destroy() invoked...");
 
         super.destroy();
-    }
-
-    // utilities
-
-    /**
-     * Convert String to String array.
-     *
-     * @param values string to split
-     * @return split array of strings
-     */
-    public String [] splitArrayValues(String values)
-    {
-        if (values != null)
-        {
-            return values.split(",");
-        }
-        return null;
-    }
-
-    /**
-     * Concatinate String array to String.
-     *
-     * @param values array of string to concatinate
-     * @return concatinated string
-     */
-    public String concatArrayValues(String [] values)
-    {
-        if (values != null)
-        {
-            StringBuffer concat = new StringBuffer();
-            if (values.length > 0)
-            {
-                concat.append(values[0]);
-            }
-            for (int i = 1; (i < values.length); i++)
-            {
-                concat.append(',');
-                concat.append(values[i]);
-            }
-            return concat.toString();
-        }
-        return null;
-    }
-
-    /**
-     * Concatinate String Enumeration to String.
-     *
-     * @param values enumeration of strings to concatinate
-     * @return concatinated string
-     */
-    public String concatArrayValues(Enumeration values)
-    {
-        if (values != null)
-        {
-            StringBuffer concat = new StringBuffer();
-            if (values.hasMoreElements())
-            {
-                concat.append(values.nextElement());
-            }
-            while (values.hasMoreElements())
-            {
-                concat.append(',');
-                concat.append(values.nextElement());
-            }
-            return concat.toString();
-        }
-        return null;
     }
 }

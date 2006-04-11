@@ -26,15 +26,15 @@ limitations under the License.
 
         <init-param>
             <name>ViewPage</name>
-            <value>/WEB-INF/view/application-view.vm</value>
+            <value>/WEB-INF/view/application-portlet-view.vm</value>
         </init-param>
         <init-param>
             <name>EditPage</name>
-            <value>/WEB-INF/view/application-edit.vm</value>
+            <value>/WEB-INF/view/application-portlet-edit.vm</value>
         </init-param>
         <init-param>
             <name>HelpPage</name>
-            <value>/WEB-INF/view/application-help.vm</value>
+            <value>/WEB-INF/view/application-portlet-help.vm</value>
         </init-param>
 
         <init-param>

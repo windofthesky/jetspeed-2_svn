@@ -15,9 +15,6 @@
  */
 package ${groupId};
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import ${groupId}.SharedComponent;
 
 /**
@@ -28,11 +25,6 @@ import ${groupId}.SharedComponent;
  */
 public class SharedComponentImpl implements SharedComponent
 {
-    /**
-     * Class specific log instance.
-     */
-    private final static Log log = LogFactory.getLog(SharedComponentImpl.class);
-
     /**
      * SharedComponentImpl constructor.
      */

@@ -18,10 +18,6 @@ limitations under the License.
 
   <!-- Velocity Tools -->
   <tool>
-    <key>toolLoader</key>
-    <class>org.apache.velocity.tools.generic.ToolLoader</class>
-  </tool> 
-  <tool>
     <key>date</key>
     <scope>application</scope>
     <class>org.apache.velocity.tools.generic.DateTool</class>

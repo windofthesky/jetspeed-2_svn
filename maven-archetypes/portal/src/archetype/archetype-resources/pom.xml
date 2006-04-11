@@ -92,6 +92,7 @@ limitations under the License.
 
         <!-- Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
+        <commons-digester.version>1.5</commons-digester.version>
         <commons-logging.version>1.0.3</commons-logging.version>
         <hsqldb.version>1.8.0.2</hsqldb.version>
         <javax.servlet.jstl.version>1.0.6</javax.servlet.jstl.version>
@@ -387,6 +388,11 @@ limitations under the License.
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-digester</groupId>
+                <artifactId>commons-digester</artifactId>
+                <version>${commons-digester.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>

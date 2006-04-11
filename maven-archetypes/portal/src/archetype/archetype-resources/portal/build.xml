@@ -84,6 +84,7 @@ limitations under the License.
         <copy todir="${basedir}/target/webapp" overwrite="on">
             <fileset dir="${basedir}/src/webapp">
                 <exclude name="WEB-INF/assembly/readme.txt"/>
+                <exclude name="WEB-INF/conf/readme.txt"/>
                 <exclude name="WEB-INF/pages/readme.txt"/>
                 <exclude name="WEB-INF/templates/readme.txt"/>
                 <exclude name="decorations/readme.txt"/>
