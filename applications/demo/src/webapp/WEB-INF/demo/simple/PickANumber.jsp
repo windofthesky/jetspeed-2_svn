@@ -107,6 +107,8 @@ limitations under the License.
 
 <a href='<%=helpMe%>'>Help</a>
 <a href='<%=editMe%>'>Edit</a>
-<a href='<%=maxMe%>'>Max</a>
-<a href='<%=minMe%>'>Min</a>
-<a href='<%=normalMe%>'>Normal</a>
+<c:if test="${renderRequest.windowState != 'popup'}">
+  <a href='<%=maxMe%>'>Max</a>
+  <a href='<%=minMe%>'>Min</a>
+  <a href='<%=normalMe%>'>Normal</a>
+</c:if>

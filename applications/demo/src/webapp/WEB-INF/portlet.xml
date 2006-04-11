@@ -16,6 +16,16 @@ limitations under the License.
 -->
 <portlet-app id="demo" version="1.0">
 
+  <custom-window-state>
+    <!--  the custom "popup" window state is mapped to the Jetspeed-2 solo" window state in jetspeed-portlet.xml --> 
+    <name>popup</name>
+    <description>a Custom Popup State</description> 
+  </custom-window-state>
+  <custom-portlet-mode>
+    <name>print</name>
+    <description>a Custom Print Mode</description> 
+  </custom-portlet-mode>
+
 <portlet id="HelloPortlet">
     <init-param>
       <description>test init param</description>
@@ -206,6 +216,8 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
       <portlet-mode>EDIT</portlet-mode>
+      <!--  support custom print mode --> 
+      <portlet-mode>print</portlet-mode>
     </supports>
     <supported-locale>en</supported-locale>
     <supported-locale>fr</supported-locale>

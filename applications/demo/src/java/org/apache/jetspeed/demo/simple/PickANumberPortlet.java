@@ -20,11 +20,13 @@ import java.io.IOException;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.apache.portals.bridges.common.GenericServletPortlet;
 
@@ -38,6 +40,8 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  */
 public class PickANumberPortlet extends GenericServletPortlet
 {
+    private static final PortletMode PRINT_MODE = new PortletMode("print");
+    
     /**
      * Default action page when preference does not exist
      *
@@ -112,6 +116,24 @@ public class PickANumberPortlet extends GenericServletPortlet
     }
 
             
+    protected void doDispatch(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        if ( !request.getWindowState().equals(WindowState.MINIMIZED))
+        {
+            // Handle custom PRINT_MODE ourselves as GenericPortlet nor GenericServletPortlet do
+            if (PRINT_MODE.equals(request.getPortletMode()))
+            {
+                // simply delegate to doView rendering
+                doView(request, response);
+            }
+            else
+            {
+                super.doDispatch(request, response);
+            }
+        }
+    }
+
+
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         PortletSession session = request.getPortletSession();
