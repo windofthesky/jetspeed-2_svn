@@ -25,7 +25,6 @@ limitations under the License.
 <%
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
   String encoder = rc.getRequest().getParameter("encoder");
-  System.out.println("encoder = " + encoder);  
   String dstLogin = "/login/proxy";
   String dstLogout = "/login/logout";
   String dstAccount = "/portal/my-account.psml";
