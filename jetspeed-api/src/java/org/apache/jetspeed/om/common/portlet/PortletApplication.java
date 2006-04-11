@@ -17,6 +17,9 @@ package org.apache.jetspeed.om.common.portlet;
 
 import java.util.Collection;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -101,4 +104,14 @@ public interface PortletApplication extends PortletApplicationDefinition
      */
     Collection getJetspeedServices();
     
+    Collection getCustomPortletModes();        
+    Collection getCustomWindowStates();
+    
+    PortletMode getMappedPortletMode(PortletMode mode);
+    WindowState getMappedWindowState(WindowState state);
+    PortletMode getCustomPortletMode(PortletMode mode);
+    WindowState getCustomWindowState(WindowState state);
+        
+    Collection getSupportedPortletModes();
+    Collection getSupportedWindowStates();
 }

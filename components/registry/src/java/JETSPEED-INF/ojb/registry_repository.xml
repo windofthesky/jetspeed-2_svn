@@ -222,6 +222,26 @@ limitations under the License.
          <inverse-foreignkey field-ref="appId"/>
       </collection-descriptor>
 
+      <collection-descriptor
+         name="customPortletModes"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl"
+         auto-delete="object"
+         auto-update = "object"
+         auto-retrieve = "true"
+       >
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="customWindowStates"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl"
+         auto-delete="object"
+         auto-update = "object"
+         auto-retrieve = "true"
+       >
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+
    </class-descriptor>
 
 
@@ -1272,6 +1292,94 @@ limitations under the License.
       <field-descriptor
          name="name"
          column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+       <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      />
+
+   </class-descriptor>
+
+
+   <!--
+   - C U S T O M   P O R T L E T   M O D E
+   -->
+     <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl"
+      table="CUSTOM_PORTLET_MODE"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         indexed="true"         
+      />
+
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+      />
+
+      <field-descriptor
+         name="customName"
+         column="CUSTOM_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mappedName"
+         column="MAPPED_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+       <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      />
+
+   </class-descriptor>
+
+
+   <!--
+   - C U S T O M   W I N D O W   S T A T E
+   -->
+     <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl"
+      table="CUSTOM_WINDOW_STATE"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         indexed="true"         
+      />
+
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+      />
+
+      <field-descriptor
+         name="customName"
+         column="CUSTOM_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mappedName"
+         column="MAPPED_NAME"
          jdbc-type="VARCHAR"
       />
 

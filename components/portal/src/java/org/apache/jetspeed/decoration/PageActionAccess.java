@@ -106,7 +106,7 @@ public class PageActionAccess implements PageEditAccess, Serializable
     {
         try
         {
-            int actionIndex = getActionMask(action);
+            int actionIndex = JetspeedActions.getContainerActionMask(action);
             ActionAccess actionAccess = (ActionAccess)fragmentActionAccess.get(fragmentId);
             if ( actionAccess == null )
             {
@@ -173,14 +173,5 @@ public class PageActionAccess implements PageEditAccess, Serializable
         }       
         catch (SecurityException se) {}
         return allowed;
-    }
-
-    protected int getActionMask(String action)
-    throws IndexOutOfBoundsException
-    {
-        int i = 0;
-        // will throw IndexOutOfBoundsExceptions on unknown action
-        while ( !JetspeedActions.ACTIONS[i++].equals(action) ) ;
-        return 1<<i;
     }
 }

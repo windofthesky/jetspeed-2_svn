@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
@@ -167,6 +168,8 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try
         {
+            PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
+
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
@@ -225,6 +228,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         }
         finally
         {
+            PortletRequestContext.clearContext();
             servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);

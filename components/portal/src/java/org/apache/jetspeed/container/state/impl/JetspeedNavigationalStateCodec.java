@@ -17,7 +17,6 @@ package org.apache.jetspeed.container.state.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
@@ -55,32 +55,19 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final String keytable = "01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     protected final PortletMode[] portletModes;
     protected final WindowState[] windowStates;
-    private final PortalContext portalContext;
     private final PortletWindowAccessor windowAccessor;
     
     public JetspeedNavigationalStateCodec(PortalContext portalContext, PortletWindowAccessor windowAccessor)
     {
-        Object o;
         ArrayList list = new ArrayList();
-        Enumeration portletModesEnum = portalContext.getSupportedPortletModes();
-        this.portalContext = portalContext;
         this.windowAccessor = windowAccessor;
         
         // ensure standard modes will be first in the portletModeNames array
         // this ensures those modes are never lost from a bookmarked url when new modes are added somewhere in the
         // middle
-        list.add(PortletMode.VIEW);
-        list.add(PortletMode.EDIT);
-        list.add(PortletMode.HELP);
+        list.addAll(JetspeedActions.getStandardPortletModes());
+        list.addAll(JetspeedActions.getExtendedPortletModes());
         
-        while ( portletModesEnum.hasMoreElements() )
-        {
-            o = portletModesEnum.nextElement();
-            if ( !list.contains(o) )
-            {
-                list.add(o);
-            }
-        }
         portletModes = (PortletMode[])list.toArray(new PortletMode[list.size()]);
         if (portletModes.length > keytable.length())
         {
@@ -92,18 +79,9 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         // ensure standard states will be first in the windowStateNames array
         // this ensures those states are never lost from a bookmarked url when new states are added somewhere in the
         // middle
-        list.add(WindowState.NORMAL);
-        list.add(WindowState.MAXIMIZED);
-        list.add(WindowState.MINIMIZED);
-        Enumeration windowStatesEnum = portalContext.getSupportedWindowStates();
-        while ( windowStatesEnum.hasMoreElements() )
-        {
-            o = windowStatesEnum.nextElement();
-            if ( !list.contains(o) )
-            {
-                list.add(o);
-            }
-        }
+        list.addAll(JetspeedActions.getStandardWindowStates());
+        list.addAll(JetspeedActions.getExtendedWindowStates());
+        
         windowStates = (WindowState[])list.toArray(new WindowState[list.size()]);        
         if (windowStates.length > keytable.length())
         {
@@ -217,7 +195,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     {
         String windowId = window.getId().toString();
         PortletWindowRequestNavigationalState currentState = states.getPortletWindowNavigationalState(windowId);
-        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId);        
+        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId);
         targetState.setPortletMode(portletMode != null ? portletMode : currentState != null ? currentState.getPortletMode() : null);
         targetState.setWindowState(windowState != null ? windowState : currentState != null ? currentState.getWindowState() : null);
 
@@ -432,7 +410,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             {
                 case MODE_KEY:
                 {
-                    char c = parameter.charAt(1);
                     PortletMode portletMode = decodePortletMode(parameter.charAt(1));
                     if ( portletMode != null )
                     {
@@ -442,7 +419,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
                 case STATE_KEY:
                 {
-                    char c = parameter.charAt(1);
                     WindowState windowState = decodeWindowState(parameter.charAt(1));
                     if ( windowState != null )
                     {

@@ -117,60 +117,14 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
     public boolean isPortletModeAllowed(PortletMode mode)
     {
-        //checks whether PortletMode is supported as example
-        String[] supportedModes = Jetspeed.getContext().getConfiguration().getStringArray("supported.portletmode");
-        for (int i=0; i<supportedModes.length; i++)
-        {
-            if (supportedModes[i].equalsIgnoreCase(mode.toString()))
-            {
-                return true;
-            }
-        }
-        return false;
+        return Jetspeed.getContext().isPortletModeAllowed(mode);
     }
 
     public boolean isWindowStateAllowed(WindowState state)
     {
-        //checks whether WindowState is supported as example
-        String[] supportedStates = Jetspeed.getContext().getConfiguration().getStringArray("supported.windowstate");
-        for (int i=0; i<supportedStates.length; i++)
-        {
-            if (supportedStates[i].equalsIgnoreCase(state.toString()))
-            {
-                return true;
-            }
-        }
-        return false;
+        return Jetspeed.getContext().isWindowStateAllowed(state);
     }
     
-    public java.util.Iterator getSupportedPortletModes()
-    {
-        HashSet set = new HashSet();
-
-        String[] supportedStates = Jetspeed.getContext().getConfiguration().getStringArray("supported.portletmode");
-
-        for (int i=0; i<supportedStates.length; i++)
-        {
-            set.add(supportedStates[i].toString());
-        }
-        return set.iterator();
-
-    }
-
-    public java.util.Iterator getSupportedWindowStates()
-    {
-        HashSet set = new HashSet();
-
-        String[] supportedStates = Jetspeed.getContext().getConfiguration().getStringArray("supported.windowstate");
-
-        for (int i=0; i<supportedStates.length; i++)
-        {
-            set.add(supportedStates[i].toString());
-        }
-        return set.iterator();
-
-    }
-
     public String getBasePortalURL()
     {
          return context.getPortalURL().getBaseURL();

@@ -225,5 +225,32 @@ limitations under the License.
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
     </table>
     
+    <!--
+       CustomPortletMode
+    -->
+    <table name="CUSTOM_PORTLET_MODE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
+        <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
+        <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
+        <column name="DESCRIPTION" type="LONGVARCHAR"/>
+        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
+        </foreign-key>        
+    </table>
+                         
+    <!--
+       CustomWindowState
+    -->
+    <table name="CUSTOM_WINDOW_STATE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
+        <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
+        <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
+        <column name="DESCRIPTION" type="LONGVARCHAR"/>
+        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
+        </foreign-key>        
+    </table>
                          
 </database>

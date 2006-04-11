@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -210,6 +211,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
+            PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
             dispatcher.include(servletRequest, servletResponse);
             
         }
@@ -222,6 +224,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         }
         finally
         {
+            PortletRequestContext.clearContext();
             servletRequest.removeAttribute(ContainerConstants.PORTLET);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);

@@ -216,3 +216,34 @@ CREATE TABLE LOCALIZED_DISPLAY_NAME
     LOCALE_STRING VARCHAR(50) NOT NULL,
     PRIMARY KEY(ID));
 
+-----------------------------------------------------------------------------
+-- CUSTOM_PORTLET_MODE
+-----------------------------------------------------------------------------
+
+CREATE TABLE CUSTOM_PORTLET_MODE
+(
+    ID INTEGER NOT NULL,
+    APPLICATION_ID INTEGER NOT NULL,
+    CUSTOM_NAME VARCHAR(150) NOT NULL,
+    MAPPED_NAME VARCHAR(150) NOT NULL,
+    DESCRIPTION LONG VARCHAR,
+    PRIMARY KEY(ID),
+    FOREIGN KEY (APPLICATION_ID) REFERENCES PORTLET_APPLICATION (APPLICATION_ID)
+        ON DELETE CASCADE 
+  );
+
+-----------------------------------------------------------------------------
+-- CUSTOM_WINDOW_STATE
+-----------------------------------------------------------------------------
+
+CREATE TABLE CUSTOM_WINDOW_STATE
+(
+    ID INTEGER NOT NULL,
+    APPLICATION_ID INTEGER NOT NULL,
+    CUSTOM_NAME VARCHAR(150) NOT NULL,
+    MAPPED_NAME VARCHAR(150) NOT NULL,
+    DESCRIPTION LONG VARCHAR,
+    PRIMARY KEY(ID),
+    FOREIGN KEY (APPLICATION_ID) REFERENCES PORTLET_APPLICATION (APPLICATION_ID)
+        ON DELETE CASCADE 
+  );

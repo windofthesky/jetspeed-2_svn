@@ -200,6 +200,26 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     }
 
     /**
+     * Gets the internal (portal) window state for the current portlet window (fragment)
+     * 
+     * @return The window state for the current window
+     * @throws Exception
+     */
+    public WindowState getMappedWindowState() throws Exception
+    {
+        try
+        {
+            NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
+            return nav.getMappedState(windowAccess.getPortletWindow(getCurrentFragment()));
+        }
+        catch (Exception e)
+        {
+            handleError(e, e.toString(), getCurrentFragment());
+            return null;
+        }
+    }
+
+    /**
      * Gets the portlet mode for a current portlet window (fragment)
      * 
      * @return The portlet mode of the current window
@@ -212,6 +232,27 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         try
         {
             return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));
+        }
+        catch (FailedToRetrievePortletWindow e)
+        {
+            handleError(e, e.toString(), getCurrentFragment());
+            return null;
+        }
+    }
+
+    /**
+     * Gets the internal (portal) portlet mode for a current portlet window (fragment)
+     * 
+     * @return The portlet mode of the current window
+     * @throws Exception
+     */
+    public PortletMode getMappedPortletMode() throws Exception
+    {
+
+        NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
+        try
+        {
+            return nav.getMappedMode(windowAccess.getPortletWindow(getCurrentFragment()));
         }
         catch (FailedToRetrievePortletWindow e)
         {

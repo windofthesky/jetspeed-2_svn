@@ -34,6 +34,8 @@ import org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
+import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.pluto.om.common.SecurityRoleRef;
@@ -141,6 +143,16 @@ public class PortletApplicationDescriptor
             digester.addBeanPropertySetter("portlet-app/user-attribute/description", "description");
             digester.addBeanPropertySetter("portlet-app/user-attribute/name", "name");
             digester.addSetNext("portlet-app/user-attribute", "addUserAttribute");
+            
+            digester.addObjectCreate("portlet-app/custom-portlet-mode", CustomPortletModeImpl.class);
+            digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/description", "description");
+            digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/name", "customName");
+            digester.addSetNext("portlet-app/custom-portlet-mode", "addCustomPortletMode");
+            
+            digester.addObjectCreate("portlet-app/custom-window-state", CustomWindowStateImpl.class);
+            digester.addBeanPropertySetter("portlet-app/custom-window-state/description", "description");
+            digester.addBeanPropertySetter("portlet-app/custom-window-state/name", "customName");
+            digester.addSetNext("portlet-app/custom-window-state", "addCustomWindowState");
             
             digester.addObjectCreate("portlet-app/portlet/security-role-ref", SecurityRoleRefImpl.class);
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/role-name", "roleName");

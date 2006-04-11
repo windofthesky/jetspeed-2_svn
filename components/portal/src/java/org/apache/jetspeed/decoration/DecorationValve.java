@@ -16,6 +16,7 @@
 package org.apache.jetspeed.decoration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,13 +26,12 @@ import javax.portlet.WindowState;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -41,7 +41,6 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -68,11 +67,16 @@ public class DecorationValve extends AbstractValve implements Valve
     private final DecorationFactory decorationFactory;
 
     private final PortletWindowAccessor windowAccessor;
+    
+    private HashMap decoratorActionsAdapterCache = new HashMap();
+    
+    private DecoratorActionsFactory defaultDecoratorActionsFactory;
 
     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor)
     {
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
+        this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();
     }
     
 
@@ -101,37 +105,35 @@ public class DecorationValve extends AbstractValve implements Valve
         return "DecorationValve";
     }
     
-    /**
-     * Returns the current <code>PortletMode</code> for the target 
-     * <code>Fragment</code> in the current portal request.
-     * 
-     * @param requestContext RequestContext of the current portal request.
-     * @param fragment Fragment for which the PortletMode has been requested.
-     * @return <code>PortletMode</code> for the target 
-     * <code>Fragment</code> in the current portal request.
-     * 
-     * @throws FailedToRetrievePortletWindow
-     * @throws PortletEntityNotStoredException
-     */
-    protected PortletMode getPortletMode(RequestContext requestContext, ContentFragment fragment)
-            throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
+    public DecoratorActionsFactory getDecoratorActionsAdapter(Decoration decoration)
     {
-        NavigationalState nav = requestContext.getPortalURL().getNavigationalState();
-        return nav.getMode(windowAccessor.getPortletWindow(fragment));
-    }
-    
-    /**
-     * Gets the window state for the current portlet window (fragment)
-     * 
-     * @return The window state for the current window
-     * @throws PortletEntityNotStoredException 
-     * @throws FailedToRetrievePortletWindow 
-     * @throws Exception
-     */
-    protected WindowState getWindowState(RequestContext requestContext, ContentFragment fragment) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException 
-    {
-        NavigationalState nav = requestContext.getPortalURL().getNavigationalState();
-        return nav.getState(windowAccessor.getPortletWindow(fragment));    
+        String decoratorActionsAdapterClassName = decoration.getProperty("actions.factory");
+        if ( decoratorActionsAdapterClassName == null )
+        {
+            decoratorActionsAdapterClassName = defaultDecoratorActionsFactory.getClass().getName();
+        }
+        synchronized (decoratorActionsAdapterCache)
+        {
+            DecoratorActionsFactory adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(decoratorActionsAdapterClassName);
+            if ( adapter == null )
+            {
+                try
+                {
+                    adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
+                }
+                catch (Exception e)
+                {
+                    log.error("Failed to instantiate custom DecoratorActionsAdaptor "+decoratorActionsAdapterClassName+", falling back to default.",e);
+                    adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(defaultDecoratorActionsFactory.getClass().getName());
+                    if ( adapter == null )
+                    {
+                        adapter = defaultDecoratorActionsFactory;
+                    }
+                }
+                decoratorActionsAdapterCache.put(decoratorActionsAdapterClassName,adapter);
+            }
+            return adapter;
+        }
     }
     
     /**
@@ -146,38 +148,78 @@ public class DecorationValve extends AbstractValve implements Valve
      */
     protected void initActionsForFragment(RequestContext requestContext, ContentFragment fragment, PageActionAccess pageActionAccess, Decoration decoration) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
     {
-        PortletEntity portletEntity = windowAccessor.getPortletWindow(fragment).getPortletEntity();
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) portletEntity.getPortletDefinition();
-        ContentPage page = requestContext.getPage();
+        PortletWindow window = windowAccessor.getPortletWindow(fragment); 
+        PortletDefinitionComposite portlet = (PortletDefinitionComposite) window.getPortletEntity().getPortletDefinition();
         
         if (null == portlet)
         {
             return; // allow nothing
         }
 
-        List actions = new ArrayList();
+        List actions = Collections.EMPTY_LIST;
 
-        PortletMode mode = getPortletMode(requestContext, fragment);
-        WindowState state = getWindowState(requestContext, fragment);
-
+        PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode(window);
+        WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState(window);
         ContentTypeSet content = portlet.getContentTypeSet();
-
-        String portletName = portlet.getUniqueName();
-        PortletWindow window = windowAccessor.getPortletWindow(fragment);        
         
-        boolean isRootLayout = fragment.equals(page.getRootFragment());
-
-        if ( isRootLayout )
+        if ( fragment.equals(requestContext.getPage().getRootFragment()) )
         {
-            List pageModeActions = getPageModes(requestContext, pageActionAccess, page);
-            actions.addAll(pageModeActions);
+            actions = getPageModes(requestContext, window, content, currentMode, currentState, pageActionAccess, decoration);
         }
         else if ( !Fragment.LAYOUT.equals(fragment.getType()) )
         {
-            List portletModeActions = getPortletModes(requestContext, pageActionAccess, mode, content, portletName, window, fragment);
-            actions.addAll(portletModeActions);
-            List stateActions = getWindowStates(requestContext, pageActionAccess, state, portletName, window, fragment);
-            actions.addAll(stateActions);
+            String fragmentId = fragment.getId();
+            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+
+            String portletName = portlet.getUniqueName();
+
+            PortletMode currentMappedMode = pa.getMappedPortletMode(currentMode);
+            WindowState currentMappedState = pa.getMappedWindowState(currentState);
+
+            Object action;
+            PortletMode mappedMode;
+            PortletMode customMode;
+            WindowState mappedState;
+            WindowState customState;
+            
+            ArrayList actionTemplates = new ArrayList();
+            
+            DecoratorActionsFactory actionsAdapter = getDecoratorActionsAdapter(decoration);
+            
+            Iterator iter = actionsAdapter.getSupportedActions(requestContext, pa, window, currentMappedMode, currentMappedState, decoration).iterator();
+            
+            while ( iter.hasNext() )
+            {
+                action = iter.next();
+                if ( action instanceof PortletMode )
+                {
+                    mappedMode = (PortletMode)action;
+                    customMode = pa.getCustomPortletMode(mappedMode);
+                    if ( customMode != null && !customMode.equals(currentMode) )
+                    {
+                        if (    content.supportsPortletMode(customMode) 
+                             && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
+                             && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
+                           )
+                        {
+                            actionTemplates.add(new DecoratorActionTemplate(mappedMode, customMode));
+                        }
+                    }
+                }
+                else if ( action instanceof WindowState )
+                {
+                    mappedState = (WindowState)action;
+                    customState = pa.getCustomWindowState(mappedState);
+                    if ( customState != null && !customState.equals(currentState) )
+                    {
+                        if ( pageActionAccess.checkWindowState(fragmentId, portletName, mappedState ) )
+                        {
+                            actionTemplates.add(new DecoratorActionTemplate(mappedState, customState));
+                        }
+                    }
+                }
+            }
+            actions = actionsAdapter.getDecoratorActions(requestContext, pa, window, currentMode, currentState, decoration, actionTemplates);
         }
         
         decoration.setActions(actions);
@@ -195,236 +237,61 @@ public class DecorationValve extends AbstractValve implements Valve
      * @param window
      * @param fragment
      * @return <code>java.util.List</code> of modes excluding the current one.
-     */
-    protected List getPortletModes(RequestContext requestContext, PageActionAccess pageActionAccess, PortletMode mode, ContentTypeSet content, String portletName, PortletWindow window, ContentFragment fragment)
-    {
-        String fragmentId = fragment.getId();
-        Decoration decoration = fragment.getDecoration();
-        List portletModes = new ArrayList();
-        
-        if (mode.equals(PortletMode.VIEW))
-        {
-            if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed()
-                    && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT, requestContext, decoration));
-            }
-            if (content.supportsPortletMode(PortletMode.HELP)
-                    && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP, requestContext, decoration));
-            }
-        }
-        else if (mode.equals(PortletMode.EDIT))
-        {
-            if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW, requestContext, decoration));
-            }
-            if (content.supportsPortletMode(PortletMode.HELP)
-                    && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.HELP))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.HELP, PortletMode.HELP, requestContext, decoration));
-            }
-        }
-        else
-        // help
-        {
-            if (pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.VIEW))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.VIEW, PortletMode.VIEW, requestContext, decoration));
-            }
-            if (content.supportsPortletMode(PortletMode.EDIT) && pageActionAccess.isEditAllowed()
-                    && pageActionAccess.checkPortletMode(fragmentId, portletName, PortletMode.EDIT))
-            {
-                portletModes.add(createPortletModeAction(window, JetspeedActions.EDIT, PortletMode.EDIT, requestContext, decoration));
-            }
-        }
-        
-        return portletModes;
-    }
-    
-    
-    /**
-     * Builds a list of portlet modes that can be executed on the current
-     * <code>fragment</code> excluding the portlet's current mode.
-     * 
-     * @param requestContext RequestContext of the current portal request.
-     * @param pageActionAccess
-     * @param mode
-     * @param content
-     * @param portletName
-     * @param window
-     * @param fragment
-     * @return <code>java.util.List</code> of modes excluding the current one.
      * @throws PortletEntityNotStoredException 
      */
-    protected List getPageModes(RequestContext requestContext, PageActionAccess pageActionAccess, ContentPage page)
+    protected List getPageModes(RequestContext requestContext, PortletWindow window, ContentTypeSet content, 
+                    PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration)
     {
         List pageModes = new ArrayList();
         
-        ContentFragment fragment = page.getRootContentFragment();
-        Decoration decoration = fragment.getDecoration();
         
         try
         {
-            PortletWindow window = windowAccessor.getPortletWindow(fragment);        
-            PortletEntity portletEntity = window.getPortletEntity();
-            PortletDefinitionComposite portlet = (PortletDefinitionComposite) portletEntity.getPortletDefinition();        
-            ContentTypeSet content = portlet.getContentTypeSet();
-
-            NavigationalState nav = requestContext.getPortalURL().getNavigationalState();
-            PortletMode mode = nav.getMode(window);
-            WindowState state = nav.getState(window);
-            
             if (mode.equals(PortletMode.HELP) || !state.equals(WindowState.NORMAL))
             {
                 // switch back to VIEW mode and NORMAL state.
-                DecoratorAction action = createDecoratorAction(PortletMode.VIEW.toString(), decoration);                        
                 PortalURL portalURL = requestContext.getPortalURL();
-                action.setAction(portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString());
-                pageModes.add(action);
+                String action = portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString();
+                String actionName = PortletMode.VIEW.toString();
+                pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action));
             }
             else if ( pageActionAccess.isEditAllowed() )
             {
                 String targetMode = pageActionAccess.isEditing() ? PortletMode.VIEW.toString() : PortletMode.EDIT.toString();
-                DecoratorAction action = createDecoratorAction(targetMode, decoration);
                 PortalURL portalURL = requestContext.getPortalURL();
                 HashMap parameters = new HashMap();
                 String[] paramValues = new String[]{targetMode};
                 parameters.put("pageMode",paramValues);
 
                 // Use an ActionURL to set the oposite pageMode and always set VIEW mode and state NORMAL 
-                action.setAction(portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString());
-                pageModes.add(action);
+                String action = portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString();
+                pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action));
                 
                 if (content.supportsPortletMode(PortletMode.HELP))
                 {
-                    action = createDecoratorAction(PortletMode.HELP.toString(), decoration);
                     if ( pageActionAccess.isEditing() )
                     {
                         // force it back to VIEW mode first with an ActionURL, as well as setting HELP mode and MAXIMIZED state
                         paramValues[0] = PortletMode.VIEW.toString();
-                        action.setAction(portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString());
+                        action = portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString();
                     }
                     else
                     {
                         // switch to mode HELP and state MAXIMIZED
-                        action.setAction(portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString());
+                        action = portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString();
                     }
-                    pageModes.add(action);
+                    String actionName = PortletMode.HELP.toString();
+                    pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action));
                 }
             }
         }
         catch (Exception e)
         {
-            log.warn("Unable to initalize PageLayout actions for fragment "+fragment.getId(), e);
+            log.warn("Unable to initalize PageLayout actions", e);
             pageModes = null;
         }
         
         return pageModes;
-    }  
-    
-    /**
-     * Builds a list of window states that can be executed on the current
-     * <code>fragment</code> excluding the portlet's current window state.
-     * 
-     * @param requestContext RequestContext of the current portal request.
-     * @param pageActionAccess
-     * @param state
-     * @param portletName
-     * @param window
-     * @param fragment
-     * @return <code>java.util.List</code> of window states excluding the current one.
-     */
-    protected List getWindowStates(RequestContext requestContext, PageActionAccess pageActionAccess, WindowState state, String portletName, PortletWindow window, ContentFragment fragment)
-    {
-        String fragmentId = fragment.getId();
-        Decoration decoration = fragment.getDecoration();
-        ArrayList actions = new ArrayList();
-            
-        if (state.equals(WindowState.NORMAL))
-        {
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED,
-                        requestContext, decoration));
-            }
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED,
-                        requestContext, decoration));
-            }
-        }
-        else if (state.equals(WindowState.MAXIMIZED))
-        {
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MINIMIZED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.MINIMIZE, WindowState.MINIMIZED,
-                        requestContext, decoration));
-            }
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL,
-                        requestContext, decoration));
-            }
-        }
-        else
-        // minimized
-        {
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, WindowState.MAXIMIZED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.MAXIMIZE, WindowState.MAXIMIZED,
-                        requestContext, decoration));
-            }
-            if (pageActionAccess.checkWindowState(fragmentId, portletName, JetspeedActions.RESTORED))
-            {
-                actions.add(createWindowStateAction(window, JetspeedActions.RESTORE, WindowState.NORMAL,
-                        requestContext, decoration));
-            }
-        }
-        
-        return actions;
-    }
-    
-    /**
-     * Creates a Decorator PortletMode Action to be added to the list of actions
-     * decorating a portlet.
-     */
-    protected DecoratorAction createPortletModeAction(PortletWindow window, String actionName, PortletMode mode,
-            RequestContext requestContext, Decoration decoration)
-    {
-        DecoratorAction action = createDecoratorAction(actionName, decoration);        
-        
-        PortalURL portalURL = requestContext.getPortalURL();
-        action.setAction(portalURL.createPortletURL(window, mode, null, portalURL.isSecure())
-                .toString());
-        return action;
-    }
-    
-    protected DecoratorAction createDecoratorAction(String actionName, Decoration decoration)
-    {
-        String imageExt = ".gif";
-        if (imageExt == null)
-        {
-            imageExt = ".gif";
-        }
-        String link = decoration.getResource("images/" + actionName + ".gif");
-        return new DecoratorAction(actionName, actionName, link);
-    }
-
-    /**
-     * Creates a Decorator WindowState Action to be added to the list of actions
-     * decorating a portlet.
-     */
-    protected DecoratorAction createWindowStateAction(PortletWindow window, String actionName, WindowState state,
-            RequestContext requestContext, Decoration decoration)
-    {
-        DecoratorAction action = createDecoratorAction(actionName, decoration);
-        PortalURL portalURL = requestContext.getPortalURL();
-        action.setAction(portalURL.createPortletURL(window, null, state, portalURL.isSecure())
-                .toString());
-        return action;
     }  
     
     /**
@@ -458,7 +325,7 @@ public class DecorationValve extends AbstractValve implements Valve
         }
         catch (Exception e)
         {
-            log.warn("Unable to initalize actions for fragment "+fragment.getId());
+            log.warn("Unable to initalize actions for fragment "+fragment.getId(), e);
         }
        
     }   

@@ -16,16 +16,26 @@
 package org.apache.jetspeed.util.descriptor;
 
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.common.portlet.CustomWindowState;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
+import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
 import org.apache.jetspeed.tools.pamanager.rules.JetspeedServicesRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 import org.apache.jetspeed.tools.pamanager.rules.UserAttributeRefRuleSet;
+import org.xml.sax.Attributes;
 
 /**
  * This class is used to load extended MetaData, like that of the Dublin Core, 
@@ -38,6 +48,26 @@ import org.apache.jetspeed.tools.pamanager.rules.UserAttributeRefRuleSet;
  */
 public class ExtendedPortletMetadata
 {
+    private static class CollectionRule extends Rule
+    {
+        private Collection collection;
+        
+        public CollectionRule(Collection collection)
+        {
+            this.collection = collection;
+        }
+
+        public void begin(String arg0, String arg1, Attributes arg2) throws Exception
+        {
+            digester.push(collection);
+        }
+
+        public void end(String arg0, String arg1) throws Exception
+        {
+            digester.pop();
+        }        
+    }
+    
     protected final static Log log = LogFactory.getLog(ExtendedPortletMetadata.class);
 
     protected Reader extendedMetaData;
@@ -60,7 +90,6 @@ public class ExtendedPortletMetadata
      */
     public void load() throws MetaDataException
     {
-        boolean result = false;
         try
         {
             Digester digester = new Digester();
@@ -77,9 +106,66 @@ public class ExtendedPortletMetadata
 
             digester.addRuleSet(new UserAttributeRefRuleSet(portletApp));
             
-            digester.parse(extendedMetaData);
+            ArrayList mappedPortletModes = new ArrayList();
+            digester.addRule("portlet-app/custom-portlet-mode",new CollectionRule(mappedPortletModes));
+            digester.addObjectCreate("portlet-app/custom-portlet-mode",CustomPortletModeImpl.class);
+            
+            digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/name", "customName");
+            digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/mapped-name", "mappedName");
+            digester.addSetNext("portlet-app/custom-portlet-mode", "add");
 
-            result = true;
+            ArrayList mappedWindowStates = new ArrayList();
+            digester.addRule("portlet-app/custom-window-state",new CollectionRule(mappedWindowStates));
+            digester.addObjectCreate("portlet-app/custom-window-state",CustomWindowStateImpl.class);
+            
+            digester.addBeanPropertySetter("portlet-app/custom-window-state/name", "customName");
+            digester.addBeanPropertySetter("portlet-app/custom-window-state/mapped-name", "mappedName");
+            digester.addSetNext("portlet-app/custom-window-state", "add");
+            
+            digester.parse(extendedMetaData);
+            
+            if (mappedPortletModes.size() > 0)
+            {
+                PortletApplicationDefinitionImpl pa = (PortletApplicationDefinitionImpl)portletApp;
+                ArrayList customModes = new ArrayList(pa.getCustomPortletModes());
+                Iterator mappedModesIter = mappedPortletModes.iterator();
+                while ( mappedModesIter.hasNext() )
+                {
+                    CustomPortletModeImpl mappedMode = (CustomPortletModeImpl)mappedModesIter.next();
+                    if (!mappedMode.getMappedMode().equals(mappedMode.getCustomMode()))
+                    {
+                        int index = customModes.indexOf(mappedMode);
+                        if ( index > -1 )
+                        {
+                            CustomPortletMode customMode = (CustomPortletMode)customModes.get(index);
+                            mappedMode.setDescription(customMode.getDescription());
+                            customModes.set(index,mappedMode);
+                        }
+                    }
+                }
+                pa.setCustomPortletModes(customModes);
+            }
+            if ( mappedWindowStates.size() > 0)
+            {
+                PortletApplicationDefinitionImpl pa = (PortletApplicationDefinitionImpl)portletApp;
+                ArrayList customStates = new ArrayList(pa.getCustomWindowStates());
+                Iterator mappedStatesIter = mappedWindowStates.iterator();
+                while ( mappedStatesIter.hasNext() )
+                {
+                    CustomWindowStateImpl mappedState = (CustomWindowStateImpl)mappedStatesIter.next();
+                    if (!mappedState.getMappedState().equals(mappedState.getCustomState()))
+                    {
+                        int index = customStates.indexOf(mappedState);
+                        if ( index > -1 )
+                        {
+                            CustomWindowState customState = (CustomWindowState)customStates.get(index);
+                            mappedState.setDescription(customState.getDescription());
+                            customStates.set(index,mappedState);
+                        }
+                    }
+                }
+                pa.setCustomWindowStates(customStates);
+            }
         }
         catch (Throwable t)
         {

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
@@ -113,6 +114,8 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
                 
         // Authorization.
         pms = (PermissionManager) ctx.getBean("org.apache.jetspeed.security.PermissionManager");
+        
+        new JetspeedActions(new String[] {"secure"}, new String[] {});
     }
 
     /**

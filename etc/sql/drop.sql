@@ -82,3 +82,5 @@ drop table SECURITY_PRINCIPAL;
 drop table PORTLET_STATISTICS;
 drop table PAGE_STATISTICS;
 drop table USER_STATISTICS;
+drop table CUSTOM_PORTLET_MODE;
+drop table CUSTOM_WINDOW_STATE;

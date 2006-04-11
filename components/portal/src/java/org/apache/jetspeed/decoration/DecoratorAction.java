@@ -16,6 +16,9 @@
 package org.apache.jetspeed.decoration;
 
 import java.io.Serializable;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * DecoratorAction
@@ -29,23 +32,77 @@ public class DecoratorAction implements Serializable
     String link = null;
     String alt = null;
     String action = null;
+    String target;
+    boolean custom;
+    
+    private static ResourceBundle getBundle(String base, Locale locale)
+    {
+        ResourceBundle bundle = null;
+        try
+        {
+            if ( locale != null )
+            {
+                bundle = ResourceBundle.getBundle(base, locale);
+            }
+            else
+            {
+                bundle = ResourceBundle.getBundle(base);
+            }        
+        }
+        catch (MissingResourceException mre)
+        {            
+        }
+        return bundle;
+    }
+    
+    private static String getResourceString(ResourceBundle bundle, String key, String defaultValue)
+    {
+        String value = defaultValue;
+        
+        if ( key != null && bundle != null )
+        try
+        {
+            value = bundle.getString(key);
+        }
+        catch (MissingResourceException mre)
+        {            
+        }
+        return value;
+    }
 
-    /**
-     * Constructor
-     * 
-     * @param name   Name of the action
-     * @param alt    Alternative text description (localized)
-     */
+    public DecoratorAction(String name, String alt, Locale locale, String link, String action, boolean custom)
+    {
+        ResourceBundle bundle = getBundle("org.apache.jetspeed.decoration.resources.DecoratorActions", locale);
+        this.name = getResourceString(bundle,name,name);
+        this.alt = getResourceString(bundle,alt,alt);
+        this.link = link;
+        this.action = action;
+        this.custom = custom;
+    }
+    
+    public DecoratorAction(String name, Locale locale, String link, String action, boolean custom)
+    {
+        this(name,name,locale,link,action,custom);
+    }
+    
+    public DecoratorAction(String name, Locale locale, String link, String action)
+    {
+        this(name,name,locale,link,action,false);
+    }
+    
     public DecoratorAction(String name, String alt, String link)
     {
-        this.name = name;
-        this.alt = alt;
-        this.link = link;
+        this(name,alt,null,link,null,false);
     }
     
     public String getName()
     {
         return this.name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
     }
     
     public String getLink()
@@ -62,6 +119,11 @@ public class DecoratorAction implements Serializable
     {
         return this.alt;
     }
+    
+    public void setAlt(String alt)
+    {
+        this.alt = alt;
+    }
 
     public String getAction()
     {
@@ -73,4 +135,23 @@ public class DecoratorAction implements Serializable
         this.action = action;
     }
     
+    public String getTarget()
+    {
+        return this.target;
+    }
+    
+    public void setTarget(String target)
+    {
+        this.target = target;
+    }
+    
+    public boolean isCustom()
+    {
+        return custom;
+    }
+
+    public void setCustom(boolean custom)
+    {
+        this.custom = custom;
+    }
 }

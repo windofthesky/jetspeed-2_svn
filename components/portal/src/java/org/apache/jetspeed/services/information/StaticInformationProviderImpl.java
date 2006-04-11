@@ -34,14 +34,18 @@ import org.apache.pluto.services.information.StaticInformationProvider;
  */
 public class StaticInformationProviderImpl implements StaticInformationProvider
 {
-    private final ServletConfig config;
-    private final PortalContextProvider portalContextProvider;
     private final PortletRegistry portletRegistry;
 
+    /**
+     * @obsolete
+     */
     public StaticInformationProviderImpl(ServletConfig config, PortalContextProvider portalContextProvider, PortletRegistry portletRegistry)
     {
-        this.config = config;
-        this.portalContextProvider = portalContextProvider;
+        this(portletRegistry);
+    }
+    
+    public StaticInformationProviderImpl(PortletRegistry portletRegistry)
+    {
         this.portletRegistry = portletRegistry;
     }
 
@@ -66,7 +70,7 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
      */
     public PortalContextProvider getPortalContextProvider()
     {
-        return portalContextProvider;
+        throw new UnsupportedOperationException();
     }
 
     /** 

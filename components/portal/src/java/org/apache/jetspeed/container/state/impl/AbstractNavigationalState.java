@@ -23,7 +23,9 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -60,6 +62,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         if ( windowState != null )
         {
+            if (!JetspeedActions.getStandardWindowStates().contains(windowState))
+            {
+                PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                windowState = pa.getMappedWindowState(windowState);
+            }
             String windowId = window.getId().toString();
             PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
             if (state != null && (state.getWindowState() == null || !state.getWindowState().equals(windowState)))
@@ -79,6 +86,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         if ( portletMode != null )
         {
+            if (!JetspeedActions.getStandardPortletModes().contains(portletMode))
+            {
+                PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                portletMode = pa.getMappedPortletMode(portletMode);
+            }
             String windowId = window.getId().toString();
             PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
             if (state != null && (state.getPortletMode() == null || !state.getPortletMode().equals(portletMode)))
@@ -94,7 +106,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         }
     }
 
-    public WindowState getState(String windowId)
+    public WindowState getMappedState(String windowId)
     {
         WindowState windowState = null;
         PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
@@ -105,12 +117,31 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return windowState != null ? windowState : WindowState.NORMAL;
     }
 
-    public WindowState getState(PortletWindow window)
+    /**
+     * @deprecated
+     */
+    public WindowState getState(String windowId)
     {
-        return getState(window.getId().toString());
+        return getMappedState(windowId);
     }
 
-    public PortletMode getMode(String windowId)
+    public WindowState getState(PortletWindow window)
+    {
+        WindowState state = getMappedState(window.getId().toString());
+        if (state != null && !JetspeedActions.getStandardWindowStates().contains(state))
+        {
+            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+            state = pa.getCustomWindowState(state);
+        }
+        return state;
+    }
+
+    public WindowState getMappedState(PortletWindow window)
+    {
+        return getMappedState(window.getId().toString());
+    }
+
+    public PortletMode getMappedMode(String windowId)
     {
         PortletMode portletMode = null;
         PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
@@ -121,9 +152,28 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return portletMode != null ? portletMode : PortletMode.VIEW;
     }
     
+    /**
+     * @deprecated
+     */
+    public PortletMode getMode(String windowId)
+    {
+        return getMappedMode(windowId);
+    }
+    
     public PortletMode getMode(PortletWindow window)
     {
-        return getMode(window.getId().toString());
+        PortletMode mode = getMappedMode(window.getId().toString());
+        if (mode != null && !JetspeedActions.getStandardPortletModes().contains(mode))
+        {
+            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+            mode = pa.getCustomPortletMode(mode);
+        }
+        return mode;
+    }
+
+    public PortletMode getMappedMode(PortletWindow window)
+    {
+        return getMappedMode(window.getId().toString());
     }
 
     public PortletWindow getMaximizedWindow()
@@ -165,6 +215,23 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     public String encode(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
     throws UnsupportedEncodingException
     {
+        if ( mode != null || state != null )
+        {
+            PortletApplication pa = null;
+            if (mode != null && !JetspeedActions.getStandardPortletModes().contains(mode))
+            {
+                pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                mode = pa.getMappedPortletMode(mode);
+            }
+            if (state != null && !JetspeedActions.getStandardWindowStates().contains(state))
+            {
+                if ( pa == null )
+                {
+                    pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                }
+                state = pa.getMappedWindowState(state);
+            }
+        }
         return codec.encode(requestStates, window, parameters, mode, state, action, isNavigationalParameterStateFull(),
                 isRenderParameterStateFull());
     }
@@ -172,6 +239,23 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     public String encode(PortletWindow window, PortletMode mode, WindowState state)
     throws UnsupportedEncodingException
     {
+        if ( mode != null || state != null )
+        {
+            PortletApplication pa = null;
+            if (mode != null && !JetspeedActions.getStandardPortletModes().contains(mode))
+            {
+                pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                mode = pa.getMappedPortletMode(mode);
+            }
+            if (state != null && !JetspeedActions.getStandardWindowStates().contains(state))
+            {
+                if ( pa == null )
+                {
+                    pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+                }
+                state = pa.getMappedWindowState(state);
+            }
+        }
         return codec.encode(requestStates, window, mode, state, isNavigationalParameterStateFull(), 
                 isRenderParameterStateFull());
     }

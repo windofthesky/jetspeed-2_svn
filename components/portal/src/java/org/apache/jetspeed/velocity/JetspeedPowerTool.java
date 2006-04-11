@@ -63,12 +63,28 @@ public interface JetspeedPowerTool
     WindowState getWindowState() throws Exception;
 
     /**
+     * Gets the internal (portal) window state for the current portlet window (fragment)
+     * 
+     * @return The window state for the current window
+     * @throws Exception
+     */
+    WindowState getMappedWindowState() throws Exception;
+
+    /**
      * Gets the portlet mode for a current portlet window (fragment)
      * 
      * @return The portlet mode of the current window
      * @throws Exception
      */
     PortletMode getPortletMode() throws Exception;
+
+    /**
+     * Gets the internal (portal) portlet mode for a current portlet window (fragment)
+     * 
+     * @return The portlet mode of the current window
+     * @throws Exception
+     */
+    PortletMode getMappedPortletMode() throws Exception;
 
     /**
      * 

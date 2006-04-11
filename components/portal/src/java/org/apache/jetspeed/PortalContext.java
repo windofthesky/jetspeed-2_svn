@@ -15,6 +15,11 @@
  */
 package org.apache.jetspeed;
 
+import java.util.List;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.engine.Engine;
 
@@ -50,5 +55,7 @@ public interface PortalContext extends javax.portlet.PortalContext
      * @param applicationRoot - the applicationRoot path on the file system.
      */
     public void setApplicationRoot(String applicationRoot);
-
+    
+    public boolean isPortletModeAllowed(PortletMode mode);
+    public boolean isWindowStateAllowed(WindowState state);
 }

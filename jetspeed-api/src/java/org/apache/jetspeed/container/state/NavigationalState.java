@@ -68,12 +68,29 @@ public interface NavigationalState
     WindowState getState(PortletWindow window);    
     
     /**
+     * Gets the internal (portal) window state for given portlet window.
+     * 
+     * @param window
+     * @return
+     */
+    WindowState getMappedState(PortletWindow window);    
+    
+    /**
      * Gets the window state for given portlet window id.
      * 
      * @param windowId
      * @return
+     * @deprecated
      */
     WindowState getState(String windowId);    
+    
+    /**
+     * Gets the internal (portal) window state for given portlet window id.
+     * 
+     * @param windowId
+     * @return
+     */
+    WindowState getMappedState(String windowId);    
     
     /**
      * Gets the portlet mode for the given portlet window.
@@ -84,12 +101,29 @@ public interface NavigationalState
     PortletMode getMode(PortletWindow window);
     
     /**
+     * Gets the internal (portal) portlet mode for the given portlet window.
+     * 
+     * @param window
+     * @return
+     */
+    PortletMode getMappedMode(PortletWindow window);
+    
+    /**
      * Gets the portlet mode for the given portlet window id.
      * 
      * @param windowId
      * @return
+     * @deprecated
      */
     PortletMode getMode(String windowId);
+    
+    /**
+     * Gets the internal (portal) portlet mode for the given portlet window id.
+     * 
+     * @param windowId
+     * @return
+     */
+    PortletMode getMappedMode(String windowId);
     
     /**
      * For the current request return the (first) maximized window or

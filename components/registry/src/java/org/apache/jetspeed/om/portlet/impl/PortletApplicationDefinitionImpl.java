@@ -19,13 +19,23 @@ package org.apache.jetspeed.om.portlet.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.common.portlet.CustomWindowState;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
@@ -90,12 +100,24 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     private String checksum = "0";
     private long checksumLong = -1;
     
+    private List customPortletModes;
+    private List customWindowStates;
+    
+    private transient Map supportedCustomModes;
+    private transient Map supportedCustomStates;
+    private transient Map mappedCustomModes;
+    private transient Map mappedCustomStates;    
+    private transient Collection supportedPortletModes;
+    private transient Collection supportedWindowStates;
+    
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
         portlets = new ArrayList();
-        userAttributes = new ArrayList();
+        userAttributes = new ArrayList();        
         userAttributeRefs = new ArrayList();
+        customPortletModes = new ArrayList();
+        customWindowStates = new ArrayList();
     }
 
     /**
@@ -391,4 +413,179 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
         }
     }
 
+    public Collection getCustomPortletModes()
+    {
+        return customPortletModes;
+    }
+    
+    public void addCustomPortletMode(CustomPortletMode customPortletMode)
+    {
+        // clear transient cache
+        supportedPortletModes = null;
+        supportedCustomModes = null;
+        mappedCustomModes = null;
+        
+        if ( !customPortletModes.contains(customPortletMode) )
+        {
+            customPortletModes.add(customPortletMode);
+        }
+    }
+    
+    public void setCustomPortletModes(Collection customPortletModes)
+    {
+        // clear transient cache
+        supportedPortletModes = null;
+        supportedCustomModes = null;
+        mappedCustomModes = null;
+
+        this.customPortletModes.clear();
+        
+        if ( customPortletModes != null )
+        {
+            this.customPortletModes.addAll(customPortletModes);
+        }
+    }
+    
+    public PortletMode getMappedPortletMode(PortletMode mode)
+    {
+        if ( JetspeedActions.getStandardPortletModes().contains(mode) )
+        {
+            return mode;
+        }
+        else if ( getSupportedPortletModes().contains(mode) )
+        {
+            return (PortletMode)mappedCustomModes.get(mode);
+        }
+        return null;
+    }
+    
+    public PortletMode getCustomPortletMode(PortletMode mode)
+    {
+        if (JetspeedActions.getStandardPortletModes().contains(mode))
+        {
+            return mode;
+        }
+        else if (JetspeedActions.getExtendedPortletModes().contains(mode))
+        {
+            // make sure transient cache is setup
+            getSupportedPortletModes();
+            return (PortletMode)supportedCustomModes.get(mode);
+        }
+        return null;            
+    }
+    
+    public Collection getSupportedPortletModes()
+    {
+        if ( supportedPortletModes == null )
+        {
+            ArrayList list = new ArrayList(JetspeedActions.getStandardPortletModes());
+            supportedCustomModes = new HashMap();
+            mappedCustomModes = new HashMap();
+            
+            if ( customPortletModes.size() > 0 )
+            {
+                Iterator iter = customPortletModes.iterator();
+                while ( iter.hasNext() )
+                {
+                    CustomPortletMode customMode = (CustomPortletMode)iter.next();
+                    if ( !list.contains(customMode.getCustomMode()) && JetspeedActions.getExtendedPortletModes().contains(customMode.getMappedMode()) )
+                    {
+                        list.add(customMode.getCustomMode());
+                        supportedCustomModes.put(customMode.getMappedMode(), customMode.getCustomMode());
+                        mappedCustomModes.put(customMode.getCustomMode(), customMode.getMappedMode());
+                    }
+                }
+            }
+            supportedPortletModes = Collections.unmodifiableCollection(list);
+        }
+        return supportedPortletModes;
+    }
+    
+    public Collection getCustomWindowStates()
+    {
+        return customWindowStates;
+    }
+    
+    public void addCustomWindowState(CustomWindowState customWindowState)
+    {
+        // clear transient cache
+        supportedWindowStates = null;
+        supportedCustomStates = null;
+        mappedCustomStates = null;
+        
+        if ( !customWindowStates.contains(customWindowState) )
+        {
+            customWindowStates.add(customWindowState);
+        }
+    }
+    
+    public void setCustomWindowStates(Collection customWindowStates)
+    {
+        // clear transient cache
+        supportedWindowStates = null;
+        supportedCustomStates = null;
+        mappedCustomStates = null;
+
+        this.customWindowStates.clear();
+
+        if ( customWindowStates != null )
+        {
+            this.customWindowStates.addAll(customWindowStates);
+        }
+    }
+    
+    public WindowState getMappedWindowState(WindowState state)
+    {
+        if (JetspeedActions.getStandardWindowStates().contains(state) )
+        {
+            return state;
+        }
+        else if ( getSupportedWindowStates().contains(state) )
+        {
+            return (WindowState)mappedCustomStates.get(state);
+        }
+        return null;
+    }
+    
+    public WindowState getCustomWindowState(WindowState state)
+    {
+        if (JetspeedActions.getStandardWindowStates().contains(state))
+        {
+            return state;
+        }
+        else if (JetspeedActions.getExtendedWindowStates().contains(state))
+        {
+            // make sure transient cache is setup
+            getSupportedWindowStates();
+            return (WindowState)supportedCustomStates.get(state);
+        }
+        return null;            
+    }
+    
+    public Collection getSupportedWindowStates()
+    {
+        if ( supportedWindowStates == null )
+        {
+            ArrayList list = new ArrayList(JetspeedActions.getStandardWindowStates());
+            supportedCustomStates = new HashMap();
+            mappedCustomStates = new HashMap();
+            
+            if ( customWindowStates.size() > 0 )
+            {
+                Iterator iter = customWindowStates.iterator();
+                while ( iter.hasNext() )
+                {
+                    CustomWindowState customState = (CustomWindowState)iter.next();
+                    if ( !list.contains(customState.getCustomState()) && JetspeedActions.getExtendedWindowStates().contains(customState.getMappedState()) )
+                    {
+                        list.add(customState.getCustomState());
+                        supportedCustomStates.put(customState.getMappedState(),customState.getCustomState());
+                        mappedCustomStates.put(customState.getCustomState(),customState.getMappedState());
+                    }
+                }
+            }
+            supportedWindowStates = Collections.unmodifiableCollection(list);
+        }
+        return supportedWindowStates;
+    }
 }

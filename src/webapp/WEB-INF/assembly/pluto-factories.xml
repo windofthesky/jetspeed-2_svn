@@ -3,14 +3,6 @@
 
 <beans> 
    
-  <!-- PortalContextProvider implementations.  Just a facade over the true PortletContext
-	   that is created when the Engine is started -->	
-  <bean id="PortalContextProvider" class="org.apache.jetspeed.engine.core.PortalContextProviderImpl">
-	<constructor-arg>
-		<ref bean="PortalContext" />
-	</constructor-arg>
-  </bean>
-  
   <bean id="JetspeedNamespaceMapper" class="org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperImpl">
        <constructor-arg index="0"><value>js_</value></constructor-arg>
   </bean>
@@ -75,7 +67,7 @@
   <bean id="javax.portlet.PortalContext"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
-       <property name="className"><value>org.apache.pluto.factory.impl.PortalContextFactoryImpl</value></property>
+       <property name="className"><value>org.apache.jetspeed.PortalContextFactoryImpl</value></property>
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
   </bean>
   
@@ -144,12 +136,6 @@
   </bean>
   
   <bean id="StaticInformationProvider" class="org.apache.jetspeed.services.information.StaticInformationProviderImpl">
-	<constructor-arg>
-		<ref bean="javax.servlet.ServletConfig"/>
-	</constructor-arg>
-	<constructor-arg>
-		<ref bean="PortalContextProvider" />
-	</constructor-arg>
 	<constructor-arg>
 		<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
 	</constructor-arg>	

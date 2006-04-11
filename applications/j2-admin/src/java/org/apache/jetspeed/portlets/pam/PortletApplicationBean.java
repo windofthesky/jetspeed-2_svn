@@ -17,6 +17,9 @@ package org.apache.jetspeed.portlets.pam;
 
 import java.util.Collection;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.om.common.ObjectID;
@@ -148,5 +151,45 @@ public class PortletApplicationBean implements PortletApplication
     public Collection getJetspeedServices()
     {
         return pa.getJetspeedServices();
+    }
+
+    public Collection getCustomPortletModes()
+    {
+        return pa.getCustomPortletModes();
+    }
+
+    public Collection getCustomWindowStates()
+    {
+        return pa.getCustomWindowStates();
+    }
+
+    public Collection getSupportedPortletModes()
+    {
+        return pa.getSupportedPortletModes();
+    }
+
+    public Collection getSupportedWindowStates()
+    {
+        return pa.getSupportedWindowStates();
+    }
+
+    public PortletMode getMappedPortletMode(PortletMode mode)
+    {
+        return pa.getMappedPortletMode(mode);
+    }
+
+    public WindowState getMappedWindowState(WindowState state)
+    {
+        return pa.getMappedWindowState(state);
+    }
+
+    public PortletMode getCustomPortletMode(PortletMode mode)
+    {
+        return pa.getCustomPortletMode(mode);
+    }
+
+    public WindowState getCustomWindowState(WindowState state)
+    {
+        return pa.getCustomWindowState(state);
     }
 }
