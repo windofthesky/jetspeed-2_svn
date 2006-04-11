@@ -69,12 +69,15 @@ limitations under the License.
 #if($portalFilter)
 #if($username)
                 <div>$messages.getString("portal.loginform.username") $username</div>
-                <div class="action"><span class="button"><a href="#BaseHref()login/logout">$messages.getString("portal.loginform.logout")</a></span></div>
+                <div class="action">
+                  <span class="button"><a href="#BaseHref()portal/my-account.psml">$messages.getString("portal.loginform.change_password")</a></span>
+                  <span class="button"><a href="#BaseHref()login/logout">$messages.getString("portal.loginform.logout")</a></span>
+                </div>
 #else
                 <form name="loginform" method="POST">
                   <div>$messages.getString("portal.loginform.username") <input type="text" size="10" name="org.apache.jetspeed.login.username" value=""></div>
                   <div>$messages.getString("portal.loginform.password") <input type="password" size="10" name="org.apache.jetspeed.login.password"></div>
-                  <div class="action"><span class="button"><a href="#" onclick="javascript:document.loginform.submit()">$messages.getString("portal.loginform.login")</a></span></div>
+                  <div class="action"><span class="button"><a href="#" onclick="document.loginform.submit();return false;">$messages.getString("portal.loginform.login")</a></span></div>
   #if($errorcode == 2) ## ERROR_INVALID_PASSWORD
                   <div>$messages.getString("portal.loginform.error.invalid_password")</div>
   #end
