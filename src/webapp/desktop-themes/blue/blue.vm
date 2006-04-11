@@ -23,8 +23,8 @@ limitations under the License.
   DOJO Config Script ( djConfig )
   -->
 <script type="text/javascript">
-    var djConfig = {isDebug: false};
-    // djConfig.debugAtAllCosts = true;   
+    var djConfig = {isDebug: true, debugAtAllCosts: true};
+    //var djConfig = {isDebug: false, debugAtAllCosts: false};
     // needed for js debuggers (both venkman and visual studio)
     djConfig.baseScriptUri = '$jetspeedDesktop.getPortalResourceUrl("/javascript/dojo/")';
     {
@@ -85,29 +85,25 @@ limitations under the License.
 </script>
 <style>
 
-html, body
+html, body, .jetspeedDesktop
 {	
     width: 100%;	/* make the body expand to fill the visible window */
     height: 100%;
-    /*overflow: hidden;*/  /* erase window level scrollbars */
     margin: 0 0 0 0;
 }
-/* body { padding: 10px 10px 100px 10px; } */
 
 </style>
 
 </head>
 
 <!-- Start Jetspeed Desktop -->
-<body id="jetspeedDesktop" class="layout-blue">
-<div class="layout-blue">
-
+<body class="layout-blue" id="jetspeedPage">
+<div class="layout-blue" id="jetspeedDesktop">
 <!-- Start Taskbar -->
-<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 100%; bottom: 5px; height: 100px">
+<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 98%; bottom: 5px; height: 110px" resizable="false">
 </div>
 <!-- End Taskbar -->
 </div>
 </body>
 <!-- End Jetspeed Desktop -->
-
 </html>

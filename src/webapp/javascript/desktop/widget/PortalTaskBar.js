@@ -51,7 +51,6 @@ dojo.lang.extend(jetspeed.ui.widget.PortalTaskBar, {
         //this.domNode.style.cssText = "background-color: #666; width: 100%; bottom: 5px; height: 100px";
         if ( ! this.domNode.id )
             this.domNode.id = this.widgetId;
-        dojo.debug( "PortalTaskBar.postCreate  widgetId=" + this.widgetId + " domNode.id=" + this.domNode.id );
 
         this.contextMenuCreate();
     },
@@ -66,11 +65,20 @@ dojo.lang.extend(jetspeed.ui.widget.PortalTaskBar, {
     },
     contextMenuCreate: function()
     {
-        var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "m1", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
-        var resetLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "menu-item1", caption: "Reset Window Layout"} );
+        var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstb_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
+        var resetLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item1", caption: "Reset Window Layout"} );
+        var freeFormLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item2", caption: "Free Flowing Layout"} );
+        var twoColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item3", caption: "Two Column Layout"} );
+        var threeColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item4", caption: "Three Column Layout"} );
         
         dojo.event.connect( resetLayoutMenuItem, "onClick", function(e) { jetspeed.page.resetWindowLayout(); } );
+        dojo.event.connect( freeFormLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = false; jetspeed.page.resetWindowLayout(); jetspeed.page.reload(); } );
+        dojo.event.connect( twoColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 2; jetspeed.page.reload(); } );
+        dojo.event.connect( threeColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 3; jetspeed.page.reload(); } );
         taskBarContextMenu.addChild( resetLayoutMenuItem );
+        taskBarContextMenu.addChild( freeFormLayoutMenuItem );
+        taskBarContextMenu.addChild( twoColummLayoutMenuItem );
+        taskBarContextMenu.addChild( threeColummLayoutMenuItem );
         document.body.appendChild( taskBarContextMenu.domNode );
     }
 });

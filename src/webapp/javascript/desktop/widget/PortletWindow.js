@@ -9,6 +9,7 @@ jetspeed.ui.widget.PortletWindow = function()
 {
     dojo.widget.html.FloatingPane.call( this );
     this.widgetType = "PortletWindow";
+    this.windowTiling = jetspeed.prefs.windowTiling;
     this.portletInitialized = false;
 };
 
@@ -16,13 +17,16 @@ dojo.inherits(jetspeed.ui.widget.PortletWindow, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     title: "Unknown Portlet",
-    constrainToContainer: "1",
+    constrainToContainer: ( jetspeed.prefs.windowTiling ? 0 : 1 ),
     contentWrapper: "layout",
     displayCloseAction: true,
     displayMinimizeAction: true,
     displayMaximizeAction: true,
     taskBarId: jetspeed.id.TASKBAR,
+    hasShadow: false,
     nextIndex: 1,
+
+    windowTiling: false,
     titleMouseIn: 0,
     titleLit: false,
 
@@ -45,6 +49,9 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         }
         this._incrementNextIndex();
 
+        if ( portletObj.getProperty( "forceAbsolute" ) )
+            this.windowTiling = 0;
+
         var windowid = null;
         var windowtheme = null;
         var windowicon = null;
@@ -61,21 +68,21 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
             windowicon = portletObj.getProperty("window-icon");
         }
         
-        if (! windowtheme)
+        if ( ! windowtheme )
         {
             if ( jetspeed.debugPortletWindowThemes )
             {
                 windowtheme = jetspeed.debugPortletWindowThemes[Math.floor(Math.random()*jetspeed.debugPortletWindowThemes.length)];
             }
         }
-        if (windowtheme)
+        if ( windowtheme )
         {
             this.portletWindowTheme = windowtheme ;
             this.templateCssPath = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl(), "jetspeed/javascript/desktop/windowthemes/" + windowtheme + "/css/styles.css");
         }
         this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
         
-        if (! windowicon)
+        if ( ! windowicon )
         {
             if ( jetspeed.debugPortletWindowIcons )
             {
@@ -89,11 +96,37 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     
         if ( dojo.render.html.mozilla )  // dojo.render.html.ie
         {
-            this.hasShadow = "true";
+            //this.hasShadow = "true";
             //        dojo.debug( "nWidget.domNode.cssText: " + 
             //nWidget.domNode.style = "overflow: visible;";   // so that drop shadow is displayed
         }
 
+        var portletWindowState = portletObj.getLastSavedWindowState();
+        var portletWidth = portletWindowState.width;
+        var portletHeight = portletWindowState.height;
+        var portletLeft = portletWindowState.left;
+        var portletTop = portletWindowState.top;
+        // NOTE: portletWindowState.zIndex;  - should be dealt with in the creation order
+
+        if ( portletWidth != null && portletWidth > 0 ) portletWidth = Math.floor(portletWidth) + "px";
+        else portletWidth = "280px";
+    
+        if ( portletHeight != null && portletHeight > 0 ) portletHeight = Math.floor(portletHeight) + "px";
+        else portletHeight = "200px";
+            
+        if ( portletLeft != null && portletLeft >= 0 ) portletLeft = Math.floor(portletLeft) + "px";
+        else portletLeft = (((this._getNextIndex() -2) * 30 ) + 200) + "px";
+    
+        if ( portletTop != null && portletTop >= 0 ) portletTop = Math.floor(portletTop) + "px";
+        else portletTop = (((this._getNextIndex() -2) * 30 ) + 170) + "px";
+
+        var source = this.getFragNodeRef( fragment );
+        var dimensionsCss = "width: " + portletWidth + "; height: " + portletHeight;
+        if ( ! this.windowTiling )
+            dimensionsCss += "; left: " + portletLeft + "; top: " + portletTop + ";";
+        
+        source.style.cssText = dimensionsCss;
+        
         //dojo.debug("PortletWindow  widgetId=" + this.widgetId + "  windowtheme=" + windowtheme + "  templateCssPath=" + this.templateCssPath);
     },
 
@@ -110,6 +143,22 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         return jetspeed.ui.widget.PortletWindow.prototype.nextIndex;
     },
 
+    // dojo.widget.Widget create->buildRendering protocol
+    fillInTemplate: function( args, frag )
+    {
+        var isResizable = this.resizable;
+        if ( isResizable )
+        {
+			this.resizeBar.style.display = "";
+			var rh = dojo.widget.createWidget( "ResizeHandle", { targetElmId: this.widgetId, id: this.widgetId+"_resize" } );
+            if ( this.windowTiling && dojo.render.html.mozilla )  // dojo.render.html.ie
+                rh.domNode.style.position = "static";
+			this.resizeBar.appendChild( rh.domNode );
+		}
+
+        jetspeed.ui.widget.PortletWindow.superclass.fillInTemplate.call( this, args, frag );
+    },
+
     // dojo.widget.Widget create protocol
     postCreate: function( args, fragment, parentComp )
     {
@@ -124,12 +173,10 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
         
-
         var domNodeClassName = this.domNode.className;
         if ( this.portletWindowTheme )
         {
             domNodeClassName = this.portletWindowTheme + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
-            this.domNode.className = domNodeClassName;
         }
         this.domNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
 
@@ -139,38 +186,14 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
             var containerNodeClassName = this.containerNode.className;
             if ( this.portletWindowTheme )
             {
-                var existingClassName = this.containerNode.className;
                 containerNodeClassName = this.portletWindowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
             }
             this.containerNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
-            dojo.debug( "setting containerNode [" + this.portlet.entityId + "] className=" + this.containerNode.className );
         }
-    
-        var portletWindowState = this.portlet.getLastSavedWindowState();
-        var portletWidth = portletWindowState.width;
-        var portletHeight = portletWindowState.height;
-        var portletLeft = portletWindowState.left;
-        var portletTop = portletWindowState.top;
-        // NOTE: portletWindowState.zIndex;  - should be dealt with in the creation order
-
-        if ( portletWidth != null && portletWidth > 0 ) portletWidth = Math.floor(portletWidth) + "px";
-        else portletWidth = "280px";
-        this.domNode.style.width = portletWidth;
-    
-        if ( portletHeight != null && portletHeight > 0 ) portletHeight = Math.floor(portletHeight) + "px";
-        else portletHeight = "200px";
-        this.domNode.style.height = portletHeight;
-            
-        if ( portletLeft != null && portletLeft >= 0 ) portletLeft = Math.floor(portletLeft) + "px";
-        else portletLeft = (((this._getNextIndex() -2) * 30 ) + 200) + "px";
-        this.domNode.style.left = portletLeft;
-    
-        if ( portletTop != null && portletTop >= 0 ) portletTop = Math.floor(portletTop) + "px";
-        else portletTop = (((this._getNextIndex() -2) * 30 ) + 170) + "px";
-        this.domNode.style.top =  portletTop;
-    
+        //dojo.debug( "PortletWindow.postCreate [" + this.portlet.entityId + "] setting domNode.className=" + this.domNode.className + " containerNode.className=" + this.containerNode.className );
+        
         if ( jetspeed.debug.createWindow )
-            dojo.debug( "createWindow [" + this.portlet.entityId + "]" + " width=" + portletWidth + " height=" + portletHeight + " left=" + portletLeft + " top=" + portletTop ) ;
+            dojo.debug( "createdWindow [" + this.portlet.entityId + "]" + " width=" + this.domNode.style.width + " height=" + this.domNode.style.height + " left=" + this.domNode.style.left + " top=" + this.domNode.style.top ) ;
     
         this.titleDim( true );
 
@@ -265,7 +288,7 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         for ( var i = 0 ; i < mightBeEnlightened.length ; i++ )
         {
             var btn = mightBeEnlightened[i];
-            if (btn.style.display == "none")
+            if (btn.style.visibility == "hidden")
                 toBeEnlightened.push(btn);
         }
         jetspeed.ui.fadeIn(toBeEnlightened, 325, "");
@@ -279,8 +302,8 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
         {
             var btn = mightBeExtinguished[i];
             if (immediateForce)
-                btn.style.display = "none" ;
-            else if (btn.style.display != "none")
+                btn.style.visibility = "hidden" ;
+            else if (btn.style.display != "hidden")
                 toBeExtinguished.push(btn);
         }
         jetspeed.ui.fadeOut(toBeExtinguished, 280);
@@ -330,7 +353,8 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
     {
         var initialHtmlStr = html.toString();
         
-        initialHtmlStr = '<div class="PContent" >' + initialHtmlStr + '</div>';    // style="overflow: auto"
+        if ( ! this.portlet.getProperty( "excludePContent" ) )
+            initialHtmlStr = '<div class="PContent" >' + initialHtmlStr + '</div>';   // BOZO: get this into the template ?
 
         var preParsePortletResult = this.portlet.preParseAnnotateHtml( initialHtmlStr );
         //this.executeScripts = true;
@@ -373,6 +397,9 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindow, {
 
 dojo.widget.tags.addParseTreeHandler("dojo:portletwindow");
 
+// ... PortletWindow drag ghost
+jetspeed.ui.widget.pwGhost = document.createElement("div");
+jetspeed.ui.widget.pwGhost.id = "pwGhost";
 
 jetspeed.ui.widget.PortletWindowDragMoveSource = function( /* jetspeed.ui.widget.PortletWindow */ portletWindow, type)
 {
@@ -380,14 +407,21 @@ jetspeed.ui.widget.PortletWindowDragMoveSource = function( /* jetspeed.ui.widget
 	dojo.dnd.HtmlDragMoveSource.call(this, portletWindow.domNode, type);
 };
 
-dojo.inherits(jetspeed.ui.widget.PortletWindowDragMoveSource, dojo.dnd.HtmlDragMoveSource);
+dojo.inherits( jetspeed.ui.widget.PortletWindowDragMoveSource, dojo.dnd.HtmlDragMoveSource );
 
-dojo.lang.extend(jetspeed.ui.widget.PortletWindowDragMoveSource, {
+dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveSource, {
 	onDragStart: function()
     {
-        //dojo.debug( "jetspeed.ui.widget.PortletWindowDragMoveSource.onDragStart" );
+        // BOZO: code copied from dojo.dnd.HtmlDragMoveSource.onDragStart to change dragObject
         this.portletWindow.isDragging = true;
-        return jetspeed.ui.widget.PortletWindowDragMoveSource.superclass.onDragStart.call( this );
+        var dragObj = new jetspeed.ui.widget.PortletWindowDragMoveObject( this.portletWindow, this.dragObject, this.type );
+
+		if ( this.constrainToContainer )
+        {
+			dragObj.constrainTo( this.constrainingContainer );
+		}
+
+		return dragObj;
 	},
     onDragEnd: function()
     {
@@ -396,4 +430,161 @@ dojo.lang.extend(jetspeed.ui.widget.PortletWindowDragMoveSource, {
         this.portletWindow.portlet.submitChangedWindowState();
         //dojo.debug( "jetspeed.ui.widget.PortletWindowDragMoveSource.onDragEnd" );
     }
+});
+
+jetspeed.ui.widget.PortletWindowDragMoveObject = function( portletWindow, node, type )
+{
+    this.portletWindow = portletWindow;
+    this.windowTiling = this.portletWindow.windowTiling;
+	dojo.dnd.HtmlDragMoveObject.call( this, node, type );
+}
+
+dojo.inherits( jetspeed.ui.widget.PortletWindowDragMoveObject, dojo.dnd.HtmlDragMoveObject );
+
+dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
+    onDragStart: function(e) {
+        var portletWindowNode = this.domNode;
+
+        jetspeed.ui.widget.PortletWindowDragMoveObject.superclass.onDragStart.call( this, e );
+
+        // ghost placement - must happen after superclass.onDragStart
+        var pwGhost = jetspeed.ui.widget.pwGhost;
+
+        if ( this.windowTiling )
+        {
+            // ghost placement - must happen after superclass.onDragStart
+            pwGhost.style.height = portletWindowNode.offsetHeight+"px";
+            portletWindowNode.parentNode.insertBefore( pwGhost, portletWindowNode );
+
+            // domNode removal from column - add to desktop for visual freeform drag
+            document.getElementById( jetspeed.id.DESKTOP ).appendChild( portletWindowNode );
+
+            var inColIndex = null;
+            this.columnsX = new Array( jetspeed.columns.length );
+            for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+            {
+                var columnElmt = jetspeed.columns[i];
+                this.columnsX[ i ] = dojo.style.getAbsoluteX( columnElmt, true );
+                if ( dojo.dom.isDescendantOf( portletWindowNode, columnElmt, true ) )
+                    inColIndex = i;
+            }
+            
+            var inCol = ( inColIndex >= 0 ? jetspeed.columns[ inColIndex ] : null );
+            pwGhost.col = inCol;
+        }
+
+        dojo.debug( "PortletWindowDragMoveObject [" + this.portletWindow.portlet.entityId + "] onDragStart:  portletWindowNode.hasParent=" + dojo.dom.hasParent( portletWindowNode ) + " dragOffset.left=" + this.dragOffset.left + " dragOffset.top=" + this.dragOffset.top + " dragStartPosition.left=" + this.dragStartPosition.left + " dragStartPosition.top=" + this.dragStartPosition.top );
+    },
+    onDragMove: function(e)
+    {
+        //jetspeed.ui.widget.PortletWindowDragMoveObject.superclass.onDragMove.call( this, e );
+        // BOZO: code copied from dojo.dnd.HtmlDragMoveObject.onDragMove
+
+        var mouse = dojo.html.getCursorPosition(e);
+		this.updateDragOffset();
+		var x = this.dragOffset.left + mouse.x;
+		var y = this.dragOffset.top + mouse.y;
+        //var x = mouse.x ;
+        //var y = mouse.y ;
+
+		if (this.constrainToContainer) {
+			if (x < this.constraints.minX) { x = this.constraints.minX; }
+			if (y < this.constraints.minY) { y = this.constraints.minY; }
+			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
+			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
+		}
+
+		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
+		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
+
+        var pwGhost = jetspeed.ui.widget.pwGhost;
+
+        if ( this.windowTiling )
+        {
+            var colIndex = -1;
+            for ( var i = jetspeed.columns.length-1 ; i >= 0  ; i-- )
+            {
+                //dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + i + "] columnsX=" + this.columnsX[i] + " this.domNode.offsetWidth/2=" + (this.domNode.offsetWidth/2) + " x=" + x );
+                if ( ( x + ( this.domNode.offsetWidth / 2 ) ) >= this.columnsX[ i ] )
+                {
+                    colIndex = i;
+                    break;
+                }
+            }
+            var col = ( colIndex >= 0 ? jetspeed.columns[ colIndex ] : null );
+            //if ( col != null )
+            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + colIndex + "] columnsX=" + this.columnsX[colIndex] + " this.domNode.offsetWidth=" + this.domNode.offsetWidth + " x=" + x );
+            //else
+            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: no col  this.domNode.offsetWidth=" + this.domNode.offsetWidth + " x=" + x );
+            
+            if ( pwGhost.col != col )
+            {
+                dojo.dom.removeNode( pwGhost );
+				pwGhost.col = col;
+				col.appendChild(pwGhost);
+			}
+            
+            var portletWindowsResult = jetspeed.ui.getPortletWindowChildren( col, pwGhost );
+            var portletWindowsInCol = portletWindowsResult.portletWindowNodes;
+            
+            if ( portletWindowsInCol )
+            {
+                var ghostIndex = portletWindowsResult.matchIndex;
+                if ( ghostIndex > 0 )
+                {
+                    var yAboveWindow = dojo.style.getAbsoluteY( portletWindowsInCol[ ghostIndex -1 ], true );
+                    if ( y <= yAboveWindow )
+                    {
+                        dojo.debug( "onDragMove y <= yAbove [" + this.portletWindow.portlet.entityId + "] y=" + y + " yAboveWindow=" + yAboveWindow + " ghostIndex=" + ghostIndex );
+                        dojo.dom.removeNode( pwGhost );
+                        dojo.dom.insertBefore( pwGhost, portletWindowsInCol[ ghostIndex -1 ], true );
+                    }
+                    else
+                    {
+                        dojo.debug( "onDragMove noadjust y > yAbove [" + this.portletWindow.portlet.entityId + "] y=" + y + " yAboveWindow=" + yAboveWindow + " ghostIndex=" + ghostIndex );
+                    }
+                }
+                if ( ghostIndex != (portletWindowsInCol.length -1) )
+                {
+                    var yBelowWindow = dojo.style.getAbsoluteY( portletWindowsInCol[ ghostIndex +1 ], true );
+                    if ( y >= yBelowWindow )
+                    {
+                        dojo.debug( "onDragMove y >= yBelow [" + this.portletWindow.portlet.entityId + "] y=" + y + " yBelowWindow=" + yBelowWindow + " ghostIndex=" + ghostIndex );
+                        if ( ghostIndex + 2 < portletWindowsInCol.length )
+                            dojo.dom.insertBefore( pwGhost, portletWindowsInCol[ ghostIndex +2 ], true );
+                        else
+                            col.appendChild( pwGhost );
+                    }
+                    else
+                    {
+                        dojo.debug( "onDragMove noadjust y < yBelow [" + this.portletWindow.portlet.entityId + "] y=" + y + " yBelowWindow=" + yBelowWindow + " ghostIndex=" + ghostIndex );
+                    }
+                }
+            }
+        }
+    },
+	onDragEnd: function(e)
+    {
+        jetspeed.ui.widget.PortletWindowDragMoveObject.superclass.onDragEnd.call( this, e );
+        
+        //dojo.debug( "PortletWindowDragMoveObject [" + this.portletWindow.portlet.entityId + "] onDragEnd:  portletWindowNode.hasParent=" + dojo.dom.hasParent( this.domNode ) );
+
+        var pwGhost = jetspeed.ui.widget.pwGhost;
+        
+        if ( this.windowTiling )
+        {
+            if ( pwGhost && pwGhost.col )
+            {
+                dojo.dom.insertBefore( this.domNode, pwGhost, true );
+                dojo.dom.removeNode( pwGhost );
+            }
+            this.domNode.style.position = "static";
+        }
+        else
+        {
+            dojo.dom.removeNode( pwGhost );
+        }
+
+        jetspeed.ui.dumpPortletWindowsPerColumn();
+	}
 });

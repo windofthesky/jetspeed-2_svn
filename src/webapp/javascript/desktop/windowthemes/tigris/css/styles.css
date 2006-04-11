@@ -22,7 +22,9 @@ limitations under the License.
 
 .tigris .dojoFloatingPaneTitleBar {
     background: #98FB98;    /* palegreen */ 
-    line-height: 1.4em;
+}
+
+.tigris .dojoFloatingPaneTitleText {
 	color: #4682B4;  /* steelblue */
 }
 

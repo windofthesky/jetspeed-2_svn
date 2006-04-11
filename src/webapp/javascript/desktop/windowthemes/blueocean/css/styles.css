@@ -22,7 +22,9 @@ limitations under the License.
 
 .blueocean .dojoFloatingPaneTitleBar {
     background: #B0C4DE;  /* lightsteelblue */
-    line-height: 1.4em;
+}
+
+.blueocean .dojoFloatingPaneTitleText {
 	color: #00368F;
 }
 

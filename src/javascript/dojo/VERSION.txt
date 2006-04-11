@@ -1,2 +1,36 @@
- dojo-nightly 2006-03-26 
+dojo.zip contains copy of dojo nightly build form 2006-03-26
+
+dojo-2006-04-06.tgz
+
+see http://archive.dojotoolkit.org
+
+
+diff modified-dojo/src/widget/FloatingPane.js dojo/src/widget/FloatingPane.js
+
+78,82c78,82
+< 			//var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+< 			//if (this.constrainToContainer) {
+< 			//	drag.constrainTo();
+< 			//}
+< 			//drag.setDragHandle(this.titleBar);
+---
+> 			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+> 			if (this.constrainToContainer) {
+> 				drag.constrainTo();
+> 			}
+> 			drag.setDragHandle(this.titleBar);
+85,90c85,89
+<         if ( ! this.resizable && this.resizeBar ) { this.resizeBar.style.display = "none"; }
+< 		//if(this.resizable){
+< 		//	this.resizeBar.style.display="";
+< 		//	var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
+< 		//	this.resizeBar.appendChild(rh.domNode);
+< 		//}
+---
+> 		if(this.resizable){
+> 			this.resizeBar.style.display="";
+> 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
+> 			this.resizeBar.appendChild(rh.domNode);
+> 		}
+
  

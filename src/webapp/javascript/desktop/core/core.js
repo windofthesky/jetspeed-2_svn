@@ -53,13 +53,16 @@ jetspeed.id =
 {
     DESKTOP: "jetspeedDesktop",
     TASKBAR: "jetspeedTaskbar",
-    PORTLET_STYLE_CLASS: "portlet"
+    COLUMNS: "jetspeedColumns",
+    PORTLET_STYLE_CLASS: "portlet",
+    PORTLET_WINDOW_STYLE_CLASS: "dojoFloatingPane"
 };
 
 // ... jetspeed desktop preferences
 jetspeed.prefs = 
 {
-    windowTiling: false
+    windowTiling: 3
+    //windowTiling: false
     
 };
 
@@ -75,22 +78,32 @@ jetspeed.debug =
     confirmOnSubmit: false,
     createWindow: false,
     initializeWindowState: false,
-    submitChangedWindowState: 0
+    submitChangedWindowState: 0,
+
+    debugContainerId: ( djConfig.debugContainerId ? djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId )
 };
+jetspeed.debugInPortletWindow = true;
 jetspeed.debugPsmlDumpContent = false;
-//jetspeed.debugPortletEntityIdFilter = [ "dp-7", "um-3", "um-4" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
-//jetspeed.debugPortletEntityIdFilter = [ "dp-12" ];
+jetspeed.debugPortletEntityIdFilter = [ "dp-3", "dp-16", "dp-17", "dp-22", "dp-18", "dp-23", "dp-7", "dp-12" ];   // all default-page except IFrame
+//jetspeed.debugPortletEntityIdFilter = [ "dp-7", "dp-3", "dp-12", "dp-18" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
+//portlets: [dp-3 LocaleSelector, dp-16 RoleSecurityTest, dp-17 UserInfoTest, dp-22 ForgottenPasswordPortlet, dp-18 BookmarkPortlet, dp-23 UserRegistrationPortlet, dp-7 PickANumberPortlet, dp-9 IFramePortlet, dp-12 LoginPortlet]
+//jetspeed.debugPortletEntityIdFilter = [ "dp-7" ];
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
-jetspeed.debugPortletWindowThemes = [ "tigris", "blueocean" ];
+jetspeed.debugPortletWindowThemes = [ "tigris", "blueocean" ];  /* , "blueocean" ]; */
 //jetspeed.debugPortletDumpRawContent = [ "dp-7" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
 //jetspeed.debugPortletDumpRawContent = [ "*" ];
 
 
 // ... load page /portlets
 jetspeed.page = null ;   // BOZO: is this it? one page at a time?
+jetspeed.columns = [];
 jetspeed.initializeDesktop = function()
 {
     jetspeed.loadPage();
+    if ( jetspeed.prefs.windowTiling > 0 )
+    {
+        jetspeed.ui.createColumns( document.getElementById( jetspeed.id.DESKTOP ), jetspeed.prefs.windowTiling );
+    }
     //jetspeed.currentTaskbar = new jetspeed.ui.PortalTaskBar() ;
 };
 jetspeed.loadPage = function()
@@ -105,20 +118,35 @@ jetspeed.loadPortletWindows = function( /* Portlet[] */ portletArray, portletWin
     if ( portletArray )
     {
         var createdPortlets = [];
+
+        if ( djConfig.isDebug && jetspeed.debugInPortletWindow && dojo.byId( jetspeed.debug.debugContainerId ) == null )
+        {
+            var dojoDebugPortlet = new jetspeed.om.Portlet( "DojoDebug", "dojo-debug", "Dojo Debug", new jetspeed.om.DojoDebugPortletContentRetriever() );
+            dojoDebugPortlet.putProperty( "forceAbsolute", true );
+            dojoDebugPortlet.putProperty( "excludePContent", true );
+            dojoDebugPortlet.putProperty( "window-theme", "tigris" );
+            dojoDebugPortlet.putProperty( "width", "700" );
+            dojoDebugPortlet.putProperty( "height", "400" );
+            dojoDebugPortlet.putProperty( "x", "35" );
+            createdPortlets.push( dojoDebugPortlet );
+            dojoDebugPortlet.createPortletWindow( portletWindowFactory, null, true );
+        }
+
         for ( var i = 0; i < portletArray.length; i++ )
         {
             var portlet = portletArray[i];
             if ( jetspeed.debugPortletEntityIdFilter )
             {
-                if (! dojo.lang.inArray(jetspeed.debugPortletEntityIdFilter, portlet.entityId))
+                if ( ! dojo.lang.inArray( jetspeed.debugPortletEntityIdFilter, portlet.entityId ) )
                     portlet = null;
             }
             if (portlet)
             {
                 createdPortlets.push(portlet);
-                portlet.createPortletWindow(portletWindowFactory,null,true);
+                portlet.createPortletWindow( portletWindowFactory, null, true );
             }
         }
+
         jetspeed.doRenderAll( null, createdPortlets, true );
     }
 };
@@ -239,6 +267,7 @@ jetspeed.url.validateUrlStartsWithHttp = function( url )
     }
     return false;
 };
+
 
 // ... jetspeed.om.PageContentListenerCreateWidget
 jetspeed.om.PageContentListenerCreateWidget = function()
@@ -487,7 +516,8 @@ jetspeed.om.Page.prototype =
     reload: function()
     {
         this._destroyPortlets();
-        jetspeed.loadPage();
+        jetspeed.ui.removeColumns();
+        jetspeed.initializeDesktop();
     }
 };
 
@@ -549,29 +579,116 @@ jetspeed.om.PortletWindowFactory.prototype =
 {
     create: function( /* Portlet */ portlet )
     {
-        return jetspeed.ui.createPortletWindowWidget(portlet);
+        return jetspeed.ui.createPortletWindowWidget( portlet );
+    },
+    layout: function( /* Portlet */ portlet, /* PortletWindow */ portletWindowWidget )
+    {
+        var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
+        addToElmt.appendChild( portletWindowWidget.domNode );
+    }
+};
+
+jetspeed.om.PortletTilingWindowFactory = function()
+{
+};
+jetspeed.om.PortletTilingWindowFactory.prototype =
+{
+    create: function( /* Portlet */ portlet )
+    {
+        var portletWinParams = {};
+        portletWinParams.inTileLayout = true;
+        return jetspeed.ui.createPortletWindowWidget( portlet, portletWinParams );
+    },
+    layout: function( /* Portlet */ portlet, /* PortletWindow */ portletWindowWidget )
+    {
+        var useColumnElmt = null;    // select a column based on least populated (least number of child nodes)
+        var useColumnIndex = -1;
+        for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+        {
+            var columnElmt = jetspeed.columns[i];
+            if ( ! columnElmt.hasChildNodes() )
+            {
+                useColumnElmt = columnElmt;
+                useColumnIndex = i;
+                break;
+            }
+            if ( useColumnElmt == null || useColumnElmt.childNodes.length > columnElmt.childNodes.length )
+            {
+                useColumnElmt = columnElmt;
+                useColumnIndex = i;
+            }
+        }
+        if ( useColumnElmt )
+        {
+            //portletWindowWidget.domNode.style.width = "";
+            if ( ! portlet.getProperty( "forceAbsolute" ) )
+            {
+                portletWindowWidget.domNode.style.left = "auto";
+                portletWindowWidget.domNode.style.top = "auto";
+                portletWindowWidget.domNode.style.position = "static";
+                useColumnElmt.appendChild( portletWindowWidget.domNode );
+            }
+            else
+            {
+                var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
+                addToElmt.appendChild( portletWindowWidget.domNode );
+            }
+        }
+    }
+};
+
+//        if ( jetspeed.columns && jetspeed.columns.length > 0 )
+
+// ... jetspeed.om.PortletContentRetriever
+jetspeed.om.PortletContentRetriever = function()
+{
+};
+jetspeed.om.PortletContentRetriever.prototype =
+{
+    getContent: function( /* Portlet */ portlet, /* String */ requestUrl, /* PortletContentListener */ portletContentListener )
+    {
+    }
+};
+
+// ... jetspeed.om.DojoDebugPortletContentRetriever
+jetspeed.om.DojoDebugPortletContentRetriever = function()
+{
+    this.initialized = false;
+};
+jetspeed.om.DojoDebugPortletContentRetriever.prototype =
+{
+    getContent: function( /* Portlet */ portlet, /* String */ requestUrl, /* PortletContentListener */ portletContentListener )
+    {
+        if ( ! this.initialized )
+        {
+            var content = '<div id="' + jetspeed.debug.debugContainerId + '"></div>';
+            portletContentListener.notifySuccess( content, requestUrl, portlet ) ;
+            this.initialized = true;
+        }
     }
 };
 
 
 // ... jetspeed.om.Portlet
-jetspeed.om.Portlet = function( /* String */ portletName, /* String */ portletEntityId, /* String */ portletTitle )
+jetspeed.om.Portlet = function( /* String */ portletName, /* String */ portletEntityId, /* String */ portletTitle, /* special */ alternateContentRetriever )
 {
     this.name = portletName;
     this.entityId = portletEntityId;
-    if (portletTitle == null && portletName)
+    if ( portletTitle == null && portletName )
     {
         var re = (/^[^:]*:*/);
         portletTitle = portletName.replace( re, "" );
     }
     this.title = portletTitle;
     this.properties = {};
+    this.alternateContentRetriever = alternateContentRetriever;
 };
 jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool if the object uses dojo.inherits (this would replace pt)  */
 {                                 /* dojo.lang.extend would allow this syntax instead of [<type>.prototype.<propname> = <propval>]*      */
     name: null,
     entityId: null,
     title: null,
+    alternateContentRetriever: null,
     
     windowFactory: null,
 
@@ -929,13 +1046,24 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
     createPortletWindow: function(portletWindowFactory, portletContentListener, doNotRetrieveContent)
     {
         if ( portletWindowFactory == null )
-            portletWindowFactory = new jetspeed.om.PortletWindowFactory() ;
+        {
+            if ( ! jetspeed.prefs.windowTiling )
+                portletWindowFactory = new jetspeed.om.PortletWindowFactory() ;
+            else
+                portletWindowFactory = new jetspeed.om.PortletTilingWindowFactory() ;
+        }
 
         this.windowFactory = portletWindowFactory ;
-        this.windowWidgetId = portletWindowFactory.create( this ) ;
+        var windowWidget = portletWindowFactory.create( this ) ;
+        if ( windowWidget )
+        {
+            this.windowWidgetId = windowWidget.widgetId;
 
-        if (! doNotRetrieveContent)
-            this.retrievePortletContent(portletContentListener) ;
+            portletWindowFactory.layout( this, windowWidget );
+
+            if (! doNotRetrieveContent)
+                this.retrievePortletContent(portletContentListener) ;
+        }
     },
 
     getPortletUrl: function(renderUrl)
@@ -1010,6 +1138,12 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
             portletContentListener = new jetspeed.om.PortletContentListener() ;
         var portlet = this ;
         var requestUrl = portlet.getPortletUrl( renderOrActionUrl ) ;
+
+        if ( this.alternateContentRetriever != null )
+        {
+            this.alternateContentRetriever.getContent( portlet, requestUrl, portletContentListener );
+            return ;
+        }
         dojo.io.bind({
             formNode: actionForm,
             url: requestUrl,
@@ -1081,6 +1215,7 @@ jetspeed.om.Portlet.prototype =   /* defining prototypes like this is not cool i
 
 
 // ... jetspeed.ui methods
+
 jetspeed.ui.createPortalTaskBar = function( taskbarParameters )
 {
     if ( ! taskbarParameters )
@@ -1089,12 +1224,110 @@ jetspeed.ui.createPortalTaskBar = function( taskbarParameters )
         taskbarParameters.widgetId = jetspeed.id.TASKBAR;
     
     var nWidget = dojo.widget.createWidget( 'PortalTaskBar', taskbarParameters );
-    nWidget.domNode.style.cssText = "background-color: #666; width: 100%; bottom: 5px; height: 100px";
+    nWidget.domNode.style.cssText = "background-color: #666; width: 100%; bottom: 5px; height: 110px";
 
     var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
     addToElmt.appendChild( nWidget.domNode );
 };
-
+jetspeed.ui.createColumns = function( columnsParent, columnTotal )
+{
+    if ( columnTotal > 0 )
+    {
+        jetspeed.columns = new Array( columnTotal );
+        var columnContainer = document.createElement("div");
+        columnContainer.id = jetspeed.id.COLUMNS;
+        for ( var i = 0 ; i < columnTotal ; i++ )
+        {
+            jetspeed.ui.createColumn( columnContainer, i, columnTotal );
+        }
+        columnsParent.appendChild( columnContainer );
+    }
+};
+jetspeed.ui.removeColumns = function()
+{
+    if ( jetspeed.columns && jetspeed.columns.length > 0 )
+    {
+        for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+        {
+            if ( jetspeed.columns[i] )
+                dojo.dom.removeNode( jetspeed.columns[i] );
+            jetspeed.columns[i] = null;
+        }
+        var columnContainer = dojo.byId( jetspeed.id.COLUMNS );
+        if ( columnContainer )
+            dojo.dom.removeNode( columnContainer );
+    }
+    jetspeed.columns = [];
+};
+jetspeed.ui.createColumn = function( columnContainer, columnIndex, columnTotal )
+{
+    var divElmt = document.createElement("div");
+    divElmt.setAttribute("columnIndex", columnIndex);
+    var colWidthPctg = Math.round(100/columnTotal);
+    if ( columnIndex == (columnTotal-1) && ( (columnTotal * colWidthPctg) >= 100 ) )
+        colWidthPctg = colWidthPctg -1;
+    divElmt.style.width = colWidthPctg + "%";
+    divElmt.style.minHeight = "1px";
+    divElmt.className = "DesktopColumn";
+    jetspeed.columns[columnIndex]  = divElmt;
+    columnContainer.appendChild(divElmt);
+    //divElmt.appendChild( document.createTextNode( "LayoutColumn" + (columnIndex +1) ) );
+};
+jetspeed.ui.getPortletWindowChildren = function( /* DOM node */ parentNode, /* DOM node */ matchNodeIfFound )
+{
+    var nodesPW = null;
+    var nodeMatchIndex = -1;
+    if ( parentNode )
+    {
+        var nodesPW = [];
+        var children = parentNode.childNodes;
+        for ( var i = 0 ; i < children.length ; i++ )
+        {
+            var child = children[i];
+            if ( dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_STYLE_CLASS ) )
+            {
+                nodesPW.push( child );
+                if ( matchNodeIfFound && child == matchNodeIfFound )
+                    nodeMatchIndex = nodesPW.length -1;
+            }
+            else if ( matchNodeIfFound && child == matchNodeIfFound )
+            {
+                nodesPW.push( child );
+                nodeMatchIndex = nodesPW.length -1;
+            }
+        }
+    }
+    return { portletWindowNodes: nodesPW, matchIndex: nodeMatchIndex };
+};
+jetspeed.ui.getPortletWindowsFromNodes = function( /* DOM node [] */ portletWindowNodes )
+{
+    var portletWindows = null;
+    if ( portletWindowNodes )
+    {
+        portletWindows = new Array();
+        for ( var i = 0 ; i < portletWindowNodes.length ; i++ )
+        {
+            var widget = dojo.widget.byNode( portletWindowNodes[ i ] );
+            if ( widget )
+                portletWindows.push( widget ) ;
+        }
+    }
+    return portletWindows;
+};
+jetspeed.ui.dumpPortletWindowsPerColumn = function()
+{
+    for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+    {
+        var columnElmt = jetspeed.columns[i];
+        var windowNodesInColumn = jetspeed.ui.getPortletWindowChildren( columnElmt, null );
+        var portletWindowsInColumn = jetspeed.ui.getPortletWindowsFromNodes( windowNodesInColumn.portletWindowNodes );
+        var dumpClosure = { dumpMsg: "" };
+        dojo.lang.forEach( portletWindowsInColumn,
+                                function(portletWindow) { dumpClosure.dumpMsg = dumpClosure.dumpMsg + ( dumpClosure.dumpMsg.length > 0 ? ", " : "" ) + portletWindow.portlet.entityId; } );
+        dumpClosure.dumpMsg = "column " + i + ": " + dumpClosure.dumpMsg;
+        dojo.debug( dumpClosure.dumpMsg );
+    }
+};
 jetspeed.ui.createPortletWindowWidget = function(/* Portlet */ portletObj, portletParameters)
 {
     if ( ! portletParameters )
@@ -1103,10 +1336,7 @@ jetspeed.ui.createPortletWindowWidget = function(/* Portlet */ portletObj, portl
     // NOTE: other parameters, such as widgetId could be set here (to override what PortletWindow does)
     var nWidget = dojo.widget.createWidget( 'PortletWindow', portletParameters );
     
-    var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
-    addToElmt.appendChild( nWidget.domNode );
-
-    return nWidget.widgetId;
+    return nWidget;
 };
 
 jetspeed.ui.getDefaultFloatingPaneTemplate = function()
@@ -1120,23 +1350,23 @@ jetspeed.ui.getDefaultFloatingPaneTemplateCss = function()
 
 
 // ... fade-in convenience methods (work with set of nodes)
-jetspeed.ui.fadeIn = function(nodes, duration, displayStyleValue)
+jetspeed.ui.fadeIn = function(nodes, duration, visibilityStyleValue)
 {
-    jetspeed.ui.fade(nodes, duration, displayStyleValue, 0, 1);
+    jetspeed.ui.fade(nodes, duration, visibilityStyleValue, 0, 1);
 };
 jetspeed.ui.fadeOut = function(nodes, duration)
 {
-    jetspeed.ui.fade(nodes, duration, "none", 1, 0);
+    jetspeed.ui.fade(nodes, duration, "hidden", 1, 0);
 };
-jetspeed.ui.fade = function(nodes, duration, displayStyleValue, startOpac, endOpac)
+jetspeed.ui.fade = function(nodes, duration, visibilityStyleValue, startOpac, endOpac)
 {
     if ( nodes.length > 0 )
     {   // mimick dojo.fx.html.fade, but for all objects together
         for ( var i = 0 ; i < nodes.length ; i++ )
         {
             dojo.fx.html._makeFadeable(nodes[i]);
-            if (displayStyleValue != "none")
-                nodes[i].style.display = displayStyleValue ;
+            if (visibilityStyleValue != "none")
+                nodes[i].style.visibility = visibilityStyleValue ;
         }
         var anim = new dojo.animation.Animation(
 		                new dojo.math.curves.Line([startOpac],[endOpac]),
@@ -1147,11 +1377,11 @@ jetspeed.ui.fade = function(nodes, duration, displayStyleValue, startOpac, endOp
                 dojo.style.setOpacity(nodes[mi], e.x);
 	        }});
         
-        if (displayStyleValue == "none")
+        if (visibilityStyleValue == "hidden")
         {
             dojo.event.connect(anim, "onEnd", function(e) {
 			    for ( var mi = 0 ; mi < nodes.length ; mi++ )
-                    nodes[mi].style.display = displayStyleValue ;
+                    nodes[mi].style.visibility = visibilityStyleValue ;
 		    });
         }
         anim.play(true);
