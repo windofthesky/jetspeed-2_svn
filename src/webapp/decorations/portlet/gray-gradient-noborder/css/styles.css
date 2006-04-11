@@ -55,6 +55,10 @@ limitations under the License.
 {
 }
 
+.gray-gradient-noborder .PContentBorder
+{
+}
+
 .gray-gradient-noborder .PContent
 {
     white-space: normal;

@@ -60,13 +60,17 @@ limitations under the License.
 {
 }
 
+.tigris .PContentBorder
+{    
+    border-right: 1px solid #AAAAAA;
+    border-bottom: 1px solid #AAAAAA;
+}
+
 .tigris .PContent
 {    
     padding-left: 1em;
     white-space: normal;
     background-color: #EFEFEF;
-    border-right: 1px solid #AAAAAA;
-    border-bottom: 1px solid #AAAAAA;
     font-size: small;
 }
 

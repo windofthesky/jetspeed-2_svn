@@ -33,6 +33,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
@@ -67,6 +68,8 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     public static final String LAYOUT_TEMPLATE_TYPE = "layout";
 
     public static final String DECORATOR_TYPE = "decorator";
+    
+    public static final String PARAM_SOLO_PAGE = "SoloPage";
     
     
     /** Commons logging */
@@ -167,10 +170,16 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         RequestContext context = getRequestContext(request);
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         boolean maximized = (window != null);
+        boolean solo = false;
 
         if (maximized)
         {
             request.setAttribute("layout", getMaximizedLayout(request));
+            solo = JetspeedActions.SOLO_STATE.equals(context.getPortalURL().getNavigationalState().getMappedState(window));
+            if ( solo )
+            {
+                maximized = false;
+            }
         }
         else
         {
@@ -193,6 +202,18 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                         viewPage = this.getInitParameter(PARAM_MAX_PAGE);
                         if (viewPage == null)
                             viewPage = "maximized";
+                    }
+                }
+                else if (solo)
+                {
+                    viewPage = prefs.getValue(PARAM_SOLO_PAGE, null);
+                    if (viewPage == null)
+                    {
+                        viewPage = this.getInitParameter(PARAM_SOLO_PAGE);
+                        if (viewPage == null)
+                        {
+                            viewPage = "solo";
+                        }
                     }
                 }
                 else

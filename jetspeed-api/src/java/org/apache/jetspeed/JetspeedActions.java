@@ -35,6 +35,9 @@ import javax.portlet.WindowState;
  */
 public class JetspeedActions
 {
+  public static final PortletMode PRINT_MODE = new PortletMode("print");
+  public static final WindowState SOLO_STATE = new WindowState("solo");
+  
     public static final int MASK_MINIMIZE = 0x01;    
     public static final int MASK_MAXIMIZE = 0x02;
     public static final int MASK_NORMAL = 0x04;
@@ -45,9 +48,11 @@ public class JetspeedActions
     static public final String VIEW = PortletMode.VIEW.toString();
     static public final String EDIT = PortletMode.EDIT.toString();
     static public final String HELP = PortletMode.HELP.toString();
+    static public final String PRINT = PRINT_MODE.toString();
     static public final String NORMAL = WindowState.NORMAL.toString();
     static public final String MINIMIZE = WindowState.MINIMIZED.toString();
     static public final String MAXIMIZE = WindowState.MAXIMIZED.toString();
+    static public final String SOLO = SOLO_STATE.toString();
     
     private static final List standardPortletModes;
     private static final List standardWindowStates;

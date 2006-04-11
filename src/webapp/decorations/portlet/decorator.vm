@@ -27,18 +27,29 @@ the root of your decortaion.  This will be used instead of the default.
 <!-- Begin: Fragment: ${f.id} Decoration: ${decoratorId} -->
 
 <div id="${f.id}" class="portlet ${decoration.baseCSSClass}">
-  <div class="PTitle" >
-    <div class="PTitleContent">	
-      $!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)
-    </div>
+  #set($solo = $jetspeed.MappedWindowState.toString()=="solo")
+  #if (!$solo)
+    <div class="PTitle" >
+      <div class="PTitleContent">	
+        #set ($ws=$jetspeed.MappedWindowState)
+        
+        $!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)
+      </div>
     
-    #PortletActionBar($decoration)
+      #PortletActionBar($decoration)
 	
-  </div>
-  #if (!$jetspeed.isHidden($f) || $jetspeed.WindowState != "minimized")
-  <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span>
-    $f.renderedContent
-  </div>   
+    </div>
+  #end    
+  #if (!$jetspeed.isHidden($f) && $jetspeed.WindowState.toString() != "minimized")
+    #if (!$solo)
+      <div class="PContentBorder">
+    #end
+    <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span>
+      $f.renderedContent
+    </div>
+    #if (!$solo)
+      </div>
+    #end
   #end
 </div>
 

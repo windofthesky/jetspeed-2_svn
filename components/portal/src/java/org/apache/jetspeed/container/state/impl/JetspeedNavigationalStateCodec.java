@@ -423,7 +423,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     if ( windowState != null )
                     {
                         currentState.setWindowState(windowState);
-                        if (windowState.equals(WindowState.MAXIMIZED))
+                        if (windowState.equals(WindowState.MAXIMIZED) || windowState.equals(JetspeedActions.SOLO_STATE))
                         {
                             PortletWindow window = accessor.getPortletWindow(currentState.getWindowId());
                             if ( window == null )

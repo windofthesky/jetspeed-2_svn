@@ -51,13 +51,17 @@ limitations under the License.
 
 }
  
+.blue-gradient .PContentBorder
+{   
+    border-left: 1px solid #517B94;
+    border-right: 1px solid #517B94;
+    border-bottom: 1px solid #517B94;
+}
+
 .blue-gradient .PContent
 {   
     padding-left:2px;
     padding-right:2px;
-    border-left: 1px solid #517B94;
-    border-right: 1px solid #517B94;
-    border-bottom: 1px solid #517B94;
 }
 
 /* Custom stuff for UGS added by EDB */

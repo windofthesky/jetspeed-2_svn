@@ -112,7 +112,7 @@
   
  <div class="PActionBar">
     #foreach ($_action in $_actions)
-     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" ><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
+     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
     #end    
  </div>
 #end

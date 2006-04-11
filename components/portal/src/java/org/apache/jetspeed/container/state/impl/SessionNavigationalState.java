@@ -15,8 +15,10 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -35,6 +37,24 @@ public class SessionNavigationalState extends AbstractNavigationalState
 
     public synchronized void sync(RequestContext context)
     {
+        PortletWindowRequestNavigationalStates requestStates = getPortletWindowRequestNavigationalStates();
+        
+        // First check if a maximized window is set in the request.
+        // This can mean a window with state MAXIMIZED *or* SOLO.
+        // With a SOLO, skip all synchroniziations!!!
+        String requestMaximizedWindowId = null;
+        
+        if ( requestStates.getMaximizedWindow() != null )
+        {
+            requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
+            WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
+            if (JetspeedActions.SOLO_STATE.equals(state))
+            {
+                // skip *any* synchronizations when in SOLO state
+                return;
+            }
+        }
+        
         HttpSession session = context.getRequest().getSession();
         if ( session != null )
         {
@@ -44,7 +64,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
                 sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
                 session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
             }
-            sessionStates.sync(context.getPage(),getPortletWindowRequestNavigationalStates());
+            sessionStates.sync(context.getPage(), requestStates);
         }
     }
     

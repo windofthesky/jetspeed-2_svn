@@ -40,6 +40,11 @@ limitations under the License.
    display: inline;
 }
  
+.blueocean .PContentBorder
+{    
+    border: 1px solid #90d0ff;
+ }
+
 .blueocean .PContent
 {    
     clear:both;
@@ -47,7 +52,6 @@ limitations under the License.
     padding-left: 1em;
     white-space: normal;
     background-color: #ffffff;
-    border: 1px solid #90d0ff;
     font-size: 10pt;
 }
 

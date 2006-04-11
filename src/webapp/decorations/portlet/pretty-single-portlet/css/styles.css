@@ -28,6 +28,10 @@ limitations under the License.
 }
 
 
+.pretty-single-portlet .PContentBorder
+{
+}
+
 .pretty-single-portlet .PContent
 {
     font-size: small;

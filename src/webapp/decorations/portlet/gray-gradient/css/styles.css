@@ -63,15 +63,18 @@ limitations under the License.
 {
 }
 
+.gray-gradient .PContentBorder
+{
+    border-left: 1px solid #999999;
+    border-right: 1px solid #999999;
+    border-bottom: 1px solid #999999;
+}
+
 .gray-gradient .PContent
 {
     padding-left:2px;
     padding-right:2px;
     white-space: normal;
-    border-left: 1px solid #999999;
-    border-right: 1px solid #999999;
-    border-bottom: 1px solid #999999;
-    
 }
 
 .gray-gradient .PContentRight
