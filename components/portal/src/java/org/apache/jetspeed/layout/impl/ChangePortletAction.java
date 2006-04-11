@@ -30,7 +30,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.services.information.PortalContextProvider;
 
 /**
  * Move Portlet portlet placement action
@@ -54,7 +53,6 @@ public class ChangePortletAction
 {
     protected Log log = LogFactory.getLog(ChangePortletAction.class);
     protected String action;
-    protected PortalContextProvider portalContext;
     protected Map validWindowStates = new HashMap();
     protected Map validPortletModes = new HashMap();
     
@@ -63,27 +61,39 @@ public class ChangePortletAction
             String action)
     throws AJAXException    
     {
-        this(template, errorTemplate, action, null, null, null);
+        this(template, errorTemplate, action, null, null);
     }
     
     public ChangePortletAction(String template, 
                              String errorTemplate, 
                              String action,
                              PageManager pageManager,
-                             PortletActionSecurityBehavior securityBehavior,
-                             PortalContextProvider portalContext)
+                             PortletActionSecurityBehavior securityBehavior)
     throws AJAXException
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.action = action;
-        this.portalContext = portalContext;
-        Iterator modes = this.portalContext.getSupportedPortletModes().iterator();        
+        
+        // Build the maps of allowed (internal) modes and states
+        Iterator modes = JetspeedActions.getStandardPortletModes().iterator();        
         while (modes.hasNext())
         {
             String mode = modes.next().toString();
             this.validPortletModes.put(mode, mode);
         }
-        Iterator states = this.portalContext.getSupportedWindowStates().iterator();        
+        modes = JetspeedActions.getExtendedPortletModes().iterator();
+        while (modes.hasNext())
+        {
+            String mode = modes.next().toString();
+            this.validPortletModes.put(mode, mode);
+        }
+        Iterator states = JetspeedActions.getStandardWindowStates().iterator();        
+        while (states.hasNext())
+        {
+            String state = states.next().toString();
+            this.validWindowStates.put(state, state);
+        }        
+        states = JetspeedActions.getExtendedWindowStates().iterator();        
         while (states.hasNext())
         {
             String state = states.next().toString();
@@ -188,6 +198,15 @@ public class ChangePortletAction
 
         return success;
     }
+    
+    // TODO: The validWindowStates and validPortletModes maps only contain 
+    //       internal (portal level) valid modes and states.
+    //       *if* a pa defines a custom mode/state with a different name but
+    //       mapped onto a interal (portal) mode/state 
+    //       *then* first the real internal mode/state needs to be retrieved from the 
+    //       targetted portlet its application:
+    //       o.a.j.om.common.portlet.PortletApplication.getMappedMode(customMode) and
+    //       o.a.j.om.common.portlet.PortletApplication.getMappedState(customState)        
     
     protected boolean isValidWindowState(String windowState)
     {
