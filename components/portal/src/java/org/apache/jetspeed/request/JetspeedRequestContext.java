@@ -26,6 +26,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -61,6 +62,7 @@ public class JetspeedRequestContext implements RequestContext
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
+    private HttpSession session;
     private Map locators;
     private ContentPage page;
     private PortletDefinition portletDefinition;
@@ -95,6 +97,7 @@ public class JetspeedRequestContext implements RequestContext
         this.request = request;
         this.response = response;
         this.config = config;
+        this.session = request.getSession();
         this.userInfoMgr = userInfoMgr;
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
@@ -277,7 +280,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setCharacterEncoding( String enc )
     {
-        String preferedEnc = (String) request.getSession().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+        String preferedEnc = (String) session.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
 
         if (preferedEnc == null || !enc.equals(preferedEnc))
         {
@@ -379,14 +382,14 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setLocale( Locale locale )
     {
-        Locale preferedLocale = (Locale) request.getSession().getAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
+        Locale preferedLocale = (Locale) session.getAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
         if (preferedLocale == null || !locale.equals(preferedLocale))
         {
             // PREFERED_LANGUAGE_ATTRIBUTE doesn't seem to be used anywhere anymore, and as a WeakHashMap isn't
             // Serializable, "fixing" that problem (JS2-174) by simply not putting it in the session anymore
             // request.getSession().setAttribute(PortalReservedParameters.PREFERED_LANGUAGE_ATTRIBUTE, new WeakHashMap());
-            request.getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
+            session.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
             request.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         }
 
@@ -422,7 +425,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Object getSessionAttribute( String key )
     {
-        return request.getSession().getAttribute(key);
+        return session.getAttribute(key);
     }
 
     /**
@@ -431,7 +434,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setSessionAttribute( String key, Object value )
     {
-        request.getSession().setAttribute(key, value);
+        session.setAttribute(key, value);
     }
 
     /**
@@ -562,8 +565,8 @@ public class JetspeedRequestContext implements RequestContext
     {
 
         String key = ACTION_ERROR_ATTR + window.getId();
-        Throwable t = (Throwable) request.getSession().getAttribute(key);
-        request.getSession().removeAttribute(key);
+        Throwable t = (Throwable) session.getAttribute(key);
+        session.removeAttribute(key);
         return t;
 
     }
