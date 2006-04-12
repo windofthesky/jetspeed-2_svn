@@ -861,6 +861,7 @@
    <sql driver="${org.apache.jetspeed.database.driver}" url="${org.apache.jetspeed.database.url}"
          userid="${org.apache.jetspeed.database.user}" password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}"
+         autocommit="true"
          onerror="${database.arg.onerror}">
       <classpath>
         <pathelement path="${plugin.getDependencyPath('org.apache.derby:derby')}"/>
