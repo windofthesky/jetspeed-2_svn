@@ -47,6 +47,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     protected final static Log log = LogFactory.getLog(PortletWindowAccessorImpl.class);
    
     private Map windows = Collections.synchronizedMap(new HashMap());    
+        
     private PortletEntityAccessComponent entityAccessor;
     private boolean validateWindows = false;
     
@@ -167,8 +168,9 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     }
     
     private PortletWindow createPortletWindow(ContentFragment fragment, String principal) throws FailedToCreateWindowException, PortletEntityNotStoredException
-    {
+    {        
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
+        boolean temporaryWindow = false;
                 
         MutablePortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment, principal);
         if (portletEntity == null)
@@ -181,6 +183,11 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
                 if(portletEntity.getPortletDefinition() != null)
                 {
                     entityAccessor.storePortletEntity(portletEntity);
+                }
+                else
+                {
+                    // don't cache the incomplete window
+                    temporaryWindow = true;
                 }
             }
             catch (PortletEntityNotGeneratedException e)
@@ -200,8 +207,10 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         }
         ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
         
-        windows.put(fragment.getId(), portletWindow);       
-        
+        if ( !temporaryWindow )
+        {
+            windows.put(fragment.getId(), portletWindow);       
+        }
         
         return portletWindow;
     }
