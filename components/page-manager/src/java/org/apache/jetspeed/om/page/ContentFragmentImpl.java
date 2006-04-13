@@ -105,11 +105,18 @@ public class ContentFragmentImpl implements ContentFragment
      */
     public void overrideRenderedContent(String contnent)
     {
-        if(overridenContent == null)
+        if ( contnent != null )
         {
-            overridenContent = new StringBuffer();
+            if(overridenContent == null)
+            {
+                overridenContent = new StringBuffer();
+            }
+            // prevent repeated storing of the same error message
+            else if (!contnent.equals(overridenContent.toString()))
+            {
+                overridenContent.append(contnent);
+            }
         }
-        overridenContent.append(contnent);
         
     }
 
