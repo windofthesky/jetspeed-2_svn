@@ -47,6 +47,7 @@ import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
+import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
@@ -129,10 +130,13 @@ public class PortletApplicationWar
         this.webAppContextRoot = webAppContextRoot;
         this.openedResources = new ArrayList();
         this.warStruct = warStruct;
-        this.paChecksum = warStruct.getChecksum(PORTLET_XML_PATH);
+        this.paChecksum = MultiFileChecksumHelper.getChecksum(new File[] {
+                        new File(warStruct.getRootDirectory(), WEB_XML_PATH),
+                        new File(warStruct.getRootDirectory(), PORTLET_XML_PATH),
+                        new File(warStruct.getRootDirectory(), EXTENDED_PORTLET_XML_PATH) });
         if (paChecksum == 0)
         {
-          throw new IOException("Cannot find required "+PORTLET_XML_PATH+" for Portlet Application "+paName);
+          throw new IOException("Cannot find any deployment descriptor for Portlet Application "+paName);
         }
     }
 
