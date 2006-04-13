@@ -207,7 +207,17 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         // (becuase the PortletApplication has yet to be registered).
         if(this.portletDefinition == null)
         {
-            setPortletDefinition(registry.getPortletDefinitionByIdentifier(getPortletUniqueName()));
+            PortletDefinition pd = registry.getPortletDefinitionByIdentifier(getPortletUniqueName());
+            if ( pd != null )
+            {
+              // only store a really found PortletDefinition
+              // to prevent an IllegalArgumentException to be thrown
+              setPortletDefinition(pd);
+            }
+            else
+            {
+                return null;
+            }
         }        
         
         // Wrap the portlet defintion every request
