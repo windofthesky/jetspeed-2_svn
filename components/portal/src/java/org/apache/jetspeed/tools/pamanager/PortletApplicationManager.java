@@ -269,8 +269,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		{
 			String msg = "Failed to load portlet application for "
 				+ paWar.getPortletApplicationName();
-			log.error(msg);
-			throw new RegistryException(msg, e);
+			log.error(msg, e);
+			throw new RegistryException(msg);
 		}
 
 		// register the portlet application
