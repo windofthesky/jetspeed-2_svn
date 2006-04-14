@@ -86,7 +86,7 @@ public class CustomWindowStateImpl implements CustomWindowState
 
     public int hashCode()
     {
-        return customName.hashCode();
+        return customName != null ? customName.hashCode() : super.hashCode();
     }
 
     public boolean equals(Object object)

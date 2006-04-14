@@ -555,7 +555,10 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         hasher.append(name);
         if (app != null)
         {
-            hasher.append(getId().toString());
+            if ( getId() != null )
+            {
+              hasher.append(getId().toString());
+            }
             hasher.append(app.getName());
         }
         return hasher.toHashCode();
