@@ -17,12 +17,14 @@ package org.apache.jetspeed.portlets.layout;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -70,7 +72,8 @@ public class ColumnLayout implements Serializable
     private final static double PERCENTAGE_WIDTH_GUTTER = 0.01;
 
     /** Percentage widths format */
-    private final static DecimalFormat PERCENTAGE_WIDTH_FORMAT = new DecimalFormat("0.00'%'");
+    private final static DecimalFormat PERCENTAGE_WIDTH_FORMAT = new DecimalFormat("0.00'%'", new DecimalFormatSymbols(
+                                                                               Locale.ENGLISH));
 
     /** Constrains the columns for this layout */
     private final int numberOfColumns;
