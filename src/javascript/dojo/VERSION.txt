@@ -1,8 +1,18 @@
-dojo.zip contains copy of dojo nightly build form 2006-03-26
+dojo.zip contains copy of dojo nightly build form 2006-04-06
 
 dojo-2006-04-06.tgz
 
 see http://archive.dojotoolkit.org
+
+
+diff modified-dojo/src/bootstrap1.js dojo/src/bootstrap1.js
+
+65c65
+<       return (!dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
+---
+>       return (obj && !dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined)); //return (!dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
+
+
 
 
 diff modified-dojo/src/widget/FloatingPane.js dojo/src/widget/FloatingPane.js
@@ -32,5 +42,3 @@ diff modified-dojo/src/widget/FloatingPane.js dojo/src/widget/FloatingPane.js
 > 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 > 			this.resizeBar.appendChild(rh.domNode);
 > 		}
-
- 
