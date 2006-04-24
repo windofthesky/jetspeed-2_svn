@@ -59,6 +59,8 @@ limitations under the License.
     dojo.require("jetspeed.ui.widget.PortalTaskBar");
     dojo.require("jetspeed.ui.widget.PortletWindow");
 
+</script>
+<script language="JavaScript" type="text/javascript">
     dojo.hostenv.writeIncludes();
 </script>
 <script language="JavaScript" type="text/javascript">

@@ -1,0 +1,162 @@
+.dojoTabContainer {
+	position : relative;
+}
+
+.dojoTabPaneWrapper {
+	position : relative;
+	border : 1px solid;
+    display: none;
+}
+
+.dojoTabLabels-top {
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	overflow : visible;
+	margin-bottom : -1px;
+	width : 100%;
+}
+
+.dojoTabPaneTab {
+	position : relative;
+	float : left;
+	padding-left : 9px;
+	border-bottom : 1px solid;
+	background : no-repeat left top;
+	cursor: pointer;
+}
+
+.dojoTabPaneTab span {
+	display : block;
+	padding : 4px 15px 4px 6px;
+	background : no-repeat right top;
+	color : #333;
+	font-size : 90%;
+}
+
+.dojoTabPanePaneClose {
+	position : absolute;
+	bottom : 0px;
+	right : 6px;
+	height : 12px;
+	width : 12px;
+	background : no-repeat right top;
+}
+
+.dojoTabPanePaneCloseHover {
+	
+}
+
+.dojoTabPaneTabClose {
+	display : inline;
+	height : 12px;
+	width : 12px;
+	padding : 0 12px 0 0;
+	margin : 0 -10px 0 10px;
+	background : no-repeat right top;
+	cursor : default;
+}
+
+.dojoTabPaneTabCloseHover {
+
+}
+
+.dojoTabPaneTab.current {
+	padding-bottom : 1px;
+	border-bottom : 0;
+	background-position : 0 -150px;
+}
+
+.dojoTabPaneTab.current span {
+	padding-bottom : 5px;
+	margin-bottom : -1px;
+	background-position : 100% -150px;
+}
+
+/* bottom tabs */
+
+.dojoTabLabels-bottom {
+	position : absolute;
+	bottom : 0px;
+	left : 0px;
+	overflow : visible;
+	margin-top : -1px;
+	width : 100%;
+}
+
+.dojoTabLabels-bottom .dojoTabPaneTab {
+	border-top :  1px solid;
+	border-bottom : 0;
+	background : no-repeat left bottom;
+}
+
+.dojoTabLabels-bottom .dojoTabPaneTab span {
+	background : no-repeat right bottom;
+}
+
+.dojoTabLabels-bottom .dojoTabPaneTab.current {
+	padding-top : 1px;
+	border-top : 0;
+	background : no-repeat left bottom;
+}
+
+.dojoTabLabels-bottom .dojoTabPaneTab.current span {
+	padding-top : 5px;
+	margin-top : -1px;
+	background : no-repeat right bottom;
+}
+
+/* right-h tabs */
+
+.dojoTabLabels-right-h {
+	position : absolute;
+	top : 0px;
+	right : 0px;
+	overflow : visible;
+	margin-left : -1px;
+}
+
+.dojoTabLabels-right-h .dojoTabPaneTab {
+	padding-left : 0;
+	border-left :  1px solid;
+	border-bottom : 0;
+	background : no-repeat right bottom;
+	float : none;
+}
+
+.dojoTabLabels-right-h .dojoTabPaneTab span {
+	padding : 4px 15px 4px 15px;
+}
+
+.dojoTabLabels-right-h .dojoTabPaneTab.current {
+	border-left :  0;
+	border-bottom :  1px solid;
+}
+
+/* left-h tabs */
+
+.dojoTabLabels-left-h {
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	overflow : visible;
+	margin-right : -1px;
+}
+
+.dojoTabLabels-left-h .dojoTabPaneTab {
+	border-right :  1px solid;
+	border-bottom : 0;
+	float : none;
+	background : no-repeat left top;
+}
+
+.dojoTabLabels-left-h .dojoTabPaneTab.current {
+	border-right : 0;
+	border-bottom :  1px solid;
+	padding-bottom : 0;
+	background : no-repeat 0 -150px;
+}
+
+.dojoTabLabels-left-h .dojoTabPaneTab span {
+	background : 0;
+}

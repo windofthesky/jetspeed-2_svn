@@ -1,6 +1,6 @@
-dojo.zip contains copy of dojo nightly build form 2006-04-06
+dojo.zip contains copy of dojo nightly build form 2006-04-21
 
-dojo-2006-04-06.tgz
+dojo-2006-04-21.tgz
 
 see http://archive.dojotoolkit.org
 

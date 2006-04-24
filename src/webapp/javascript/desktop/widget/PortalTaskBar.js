@@ -30,8 +30,8 @@ dojo.lang.extend(jetspeed.ui.widget.PortalTaskBar, {
         //    this.widgetId = jetspeed.id.TASKBAR;
 
         var tbProps = {};
-        tbProps.templateCssPath = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlTaskBar.css") ;
-        tbProps.templatePath = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl(), "jetspeed/javascript/desktop/widget/HtmlTaskBarItemTemplate.html") ;
+        tbProps.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/desktop/widget/HtmlTaskBar.css" ) ;
+        tbProps.templatePath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/desktop/widget/HtmlTaskBarItemTemplate.html" ) ;
         // BOZO: improve this junk ^^^ 
 
         this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();

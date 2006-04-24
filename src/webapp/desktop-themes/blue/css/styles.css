@@ -82,6 +82,64 @@ body.layout-blue
 
 
 
+/*  begin dojo styles  */
+
+/* tabcontainer */
+
+.layout-blue .dojoTabPaneTab {
+    background-image: url(../images/tabs/tab_left.gif);
+}
+
+.layout-blue .dojoTabPaneTab span {
+    background-image: url(../images/tabs/tab_top_right.gif);
+}
+
+.layout-blue .dojoTabPanePaneClose {
+    background-image: url(../images/tabs/tab_close.gif);
+}
+
+.layout-blue .dojoTabPanePaneCloseHover {
+    background-image: url(../images/tabs/tab_close_h.gif);
+}
+
+.layout-blue .dojoTabPaneTabClose {
+    background-image: url(../images/tabs/tab_close.gif);
+}
+
+.layout-blue .dojoTabPaneTabCloseHover {
+    background-image: url(../images/tabs/tab_close_h.gif);
+}
+
+.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab {
+    background-image: url(../images/tabs/tab_bot_left.gif);
+}
+
+.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab span {
+    background-image: url(../images/tabs/tab_bot_right.gif);
+}
+
+.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab.current {
+    background-image: url(../images/tabs/tab_bot_left_curr.gif);
+}
+
+.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab.current span {
+    background-image: url(../images/tabs/tab_bot_right_curr.gif);
+}
+
+.layout-blue .dojoTabLabels-right-h .dojoTabPaneTab {
+    background-image: url(../images/tabs/tab_bot_right.gif);
+}
+
+.layout-blue .dojoTabLabels-left-h .dojoTabPaneTab {
+    background-image: url(../images/tabs/tab_top_left.gif);
+}
+
+.layout-blue .dojoTabLabels-left-h .dojoTabPaneTab.current {
+    background-image: url(../images/tabs/tab_top_left.gif);
+}
+
+
+/*  end dojo styles  */
 
 
 

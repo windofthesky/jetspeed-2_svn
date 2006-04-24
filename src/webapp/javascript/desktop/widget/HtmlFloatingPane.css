@@ -2,6 +2,9 @@
 	float:left;
     /* background-color: transparent; */
 }
+.columnSpacer { 
+    
+}
 *html .desktopColumn {
 	overflow: hidden;
     /* background-color: transparent; */
@@ -36,8 +39,9 @@
 	margin: 2px 2px 2px 2px;
 	z-index: 10;
 	background-color: #7596c6;
-	cursor: default;
+	cursor: move;
 	overflow: hidden;
+    height: 22px;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	vertical-align: middle;
 }
@@ -88,18 +92,7 @@
 	height: 22px;
 	width: 22px;
 	float: right;
-}
-.dojoFloatingPaneMinimizeIcon {
-	background-image: url(images/floatingPaneMinimize.gif);
-}
-.dojoFloatingPaneMaximizeIcon {
-	background-image: url(images/floatingPaneMaximize.gif);
-}
-.dojoFloatingPaneRestoreIcon {
-	background-image: url(images/floatingPaneRestore.gif);
-}
-.dojoFloatingPaneCloseIcon {
-	background-image: url(images/floatingPaneClose.gif);
+    cursor: default;
 }
 
 /* bar at bottom of window that holds resize handle */

@@ -14,9 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ page language="java" import="org.apache.jetspeed.desktop.JetspeedDesktopContext" session="true" %>
-
+<%@ page import="org.apache.jetspeed.request.RequestContext"%>
+<%@ page import="org.apache.jetspeed.Jetspeed" %>
+<%@ page import="org.apache.jetspeed.headerresource.HeaderResourceFactory" %>
 <% 
     JetspeedDesktopContext desktop = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);
+    //RequestContext requestContext = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
+    //HeaderResourceFactory resourceHeaderFactory = (HeaderResourceFactory)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory");
+    //String resourceHeader = resourceHeaderFactory.getHeaderResouce(requestContext).toString();
 %>
 
 <html>   <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
@@ -37,7 +42,6 @@ limitations under the License.
         if (tEnds > 0) djConfig.baseScriptUri = djConfig.baseScriptUri.substring(0, tEnds);
     }
 </script>
-
 <!-- 
   DOJO Script
   -->
@@ -50,9 +54,11 @@ limitations under the License.
     dojo.require("dojo.io");
     dojo.require("dojo.collections.ArrayList");
     dojo.require("dojo.collections.Set");
+    //dojo.require("dojo.layout");
     dojo.require("dojo.widget.Manager");
     dojo.require("dojo.widget.TaskBar");
     dojo.require("dojo.widget.FloatingPane");
+    dojo.require("dojo.widget.TabContainer");
     dojo.require("dojo.widget.Menu2");
     dojo.require("dojo.fx.html");
 
@@ -63,30 +69,56 @@ limitations under the License.
 
     dojo.require("jetspeed.ui.widget.PortalTaskBar");
     dojo.require("jetspeed.ui.widget.PortletWindow");
-
-    dojo.hostenv.writeIncludes();    
+    dojo.require("jetspeed.ui.widget.PortalTabContainer");
+</script>
+<script language="JavaScript" type="text/javascript">
+    dojo.hostenv.writeIncludes();
 </script>
 <script language="JavaScript" type="text/javascript">
     dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');
 </script>
-
 <!-- <base> tag must appear after dojo load in IE6 ( see http://trac.dojotoolkit.org/ticket/557 ) -->
-<base id="basetag" href="<%= desktop.getPortalResourceUrl("/") %>"> <!-- http://localhost:8080/jetspeed/ -->
+<base id="basetag" href="<%= desktop.getPortalResourceUrl("/") %>">  <!-- http://localhost:8080/jetspeed/ --> 
 <link rel="stylesheet" type="text/css" media="screen, projection" href="desktop-themes/blue/css/styles.css"/>
 <script language="JavaScript" type="text/javascript">
     function init()
     {
         jetspeed.initializeDesktop();
     }
-    function doRender(url,portletEntityId)
+    function doRender( url, portletEntityId )
     {
-        jetspeed.doRender(url,portletEntityId);
+        jetspeed.doRender( url, portletEntityId );
     }
-    function doAction(url, portletEntityId, currentForm)
+    function doAction( url, portletEntityId, currentForm )
     {
-        jetspeed.doAction(url,portletEntityId, currentForm);
+        jetspeed.doAction( url,portletEntityId, currentForm );
     }
-    dojo.event.connect(dojo, "loaded", "init");
+    dojo.event.connect( dojo, "loaded", "init" );
+</script>
+<script language="JavaScript" type="text/javascript">
+/*
+javascript: var tab = document.createElement( "div" ); tab.setAttribute( "label", "Blee" ); dojo.widget.byId( 'mainTabContainer' ).addChild( { domNode: tab } ); 
+javascript: var tab = document.createElement( "div" ); var tabText = document.createTextNode("Blee"); tab.appendChild( tabText ); dojo.widget.byId( 'mainTabContainer' ).addChild( { domNode: tab } );
+javascript: var tab = document.createElement( "div" ); var tabText = document.createTextNode("Blee"); tab.appendChild( tabText ); dojo.widget.byId( 'mainTabContainer' ).addChild( { domNode: tab, label: "Blee" } );
+javascript: dojo.widget.byId( 'mainTabContainer' ).addChild( { domNode: tab, label: "Blee" } );
+*/
+    function notifyRetrieveAllMenusFinished()
+    {
+        dojo.debug( "window.notifyRetrieveAllMenusFinished" );
+        jetspeed.pageNavigateSuppress = true;
+        var menuObj = jetspeed.page.getMenu( "pages" );
+        if ( ! menuObj ) return;
+        var menuName = menuObj.getName();
+        if ( menuName == "pages" )
+        {
+            var portalTabWidget = dojo.widget.byId( "mainTabContainer" );
+            if ( ! portalTabWidget )
+                dojo.raise( "window.notifyRetrieveMenuFinished could not find widget for mainTabContainer" );
+            portalTabWidget.createTabsFromMenu( menuObj );
+        }
+        jetspeed.pageNavigateSuppress = false;
+    }
+    dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );  // jetspeed.notifyRetrieveMenuFinished
 </script>
 <style>
 
@@ -103,9 +135,13 @@ html, body, .jetspeedDesktop
 
 <!-- Start Jetspeed Desktop -->
 <body class="layout-blue" id="jetspeedPage">
+<div widgetId="mainTabContainer" dojoType="PortalTabContainer" style="width: 100%; height: 25px;"></div>
 <div class="layout-blue" id="jetspeedDesktop">
 <!-- Start Taskbar -->
-<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 98%; bottom: 5px; height: 110px" resizable="false">
+<!-- the presence of the PortalTaskBar here is hiding a style load problem (at least in ff - sure to be worse in IE) -->
+<!-- for now we need to keep this here until this can be fixed -->
+<!-- (when we don't want a taskbar - set windowState to "minimized", otherwise omit windowState) -->
+<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 98%; bottom: 5px; height: 110px" windowState="minimized" resizable="false">
 </div>
 <!-- End Taskbar -->
 </div>
