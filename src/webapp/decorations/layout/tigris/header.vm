@@ -109,7 +109,7 @@ limitations under the License.
 #end
 
 <!-- Content Table Data -->
-          <td nowrap valign="top">
+          <td nowrap="nowrap" valign="top">
   
 ## $jetspeed.include($jetspeed.currentFragment)
 

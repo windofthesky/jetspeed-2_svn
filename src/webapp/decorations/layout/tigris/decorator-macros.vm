@@ -20,14 +20,14 @@
         #set($tabName = $element.getShortTitle($preferedLocale))
         #if($_orientation == $LEFT_TO_RIGHT)
           #if($element.isSelected($site))
-            <td class="LTabLeft" nowrap="true">&nbsp;</td>
-            <td class="LTab" align="center" valign="middle" nowrap="true" title="$!tabTitle">${tabName}</td>
-            <td class="LTabRight"  nowrap="true">&nbsp;</td>
+            <td class="LTabLeft" nowrap="nowrap">&nbsp;</td>
+            <td class="LTab" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle">${tabName}</td>
+            <td class="LTabRight"  nowrap="nowrap">&nbsp;</td>
           #else
             #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
-            <td class="LTabLeftLow"  nowrap="true">&nbsp;</td>
-            <td class="LTabLow" align="center" valign="middle" nowrap="true" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
-            <td class="LTabRightLow"  nowrap="true">&nbsp;</td>
+            <td class="LTabLeftLow"  nowrap="nowrap">&nbsp;</td>
+            <td class="LTabLow" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
+            <td class="LTabRightLow"  nowrap="nowrap">&nbsp;</td>
           #end
         #end
       #end
