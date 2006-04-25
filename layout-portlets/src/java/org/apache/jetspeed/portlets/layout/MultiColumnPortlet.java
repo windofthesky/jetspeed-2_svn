@@ -382,7 +382,7 @@ public class MultiColumnPortlet extends LayoutPortlet
                     {
                         // TODO: for now retrieve the real Page instead of ContentPage
                         //       because removing fragments isn't working through the ContentFragment wrapping
-                        page = pageManager.getPage(requestPage.getId());
+                        page = pageManager.getPage(requestPage.getPath());
                     }
                     catch (Exception e)
                     {

@@ -245,13 +245,13 @@ public interface PageManager
      * getPage
      * </p>
      *
-     * Returns a PSML document for the given key
+     * Returns a Page based on its path
      *
-     * @param locator The locator descriptor of the document to be retrieved.
+     * @param path
      * @throws PageNotFoundException if the page cannot be found
      * @throws NodeException
      */
-    public Page getPage(String id) throws PageNotFoundException, NodeException;
+    public Page getPage(String path) throws PageNotFoundException, NodeException;
     
     /**
      * <p>
