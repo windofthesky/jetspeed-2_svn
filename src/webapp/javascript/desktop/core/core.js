@@ -21,6 +21,8 @@
 
 dojo.provide("jetspeed.desktop.core");
 
+// ... testing
+
 // ... jetspeed base objects
 if ( ! window.jetspeed )
     jetspeed = {} ;
@@ -75,7 +77,7 @@ jetspeed.id =
 // ... jetspeed desktop preferences
 jetspeed.prefs = 
 {
-    windowTiling: 3,     // number > 0 is interpreted as number of columns; 0 or false indicates no-columns, free-floating windows
+    windowTiling: 2,     // number > 0 is interpreted as number of columns; 0 or false indicates no-columns, free-floating windows
     windowTilingVariableWidth: false,   // only meaningful when windowTitling > 0
     windowTilingVariableHeight: true   // only meaningful when windowTitling > 0
     //portalTaskBarType: "blee"  // BOZO: need pref/s to handle this ( instead of html elements in the content )
@@ -104,13 +106,13 @@ jetspeed.debugInPortletWindow = true;
 //portlets: [dp-3 LocaleSelector, dp-16 RoleSecurityTest, dp-17 UserInfoTest, dp-22 ForgottenPasswordPortlet, dp-18 BookmarkPortlet, dp-23 UserRegistrationPortlet, dp-7 PickANumberPortlet, dp-9 IFramePortlet, dp-12 LoginPortlet]
 //jetspeed.debugPortletEntityIdFilter = [ "dp-18" ];
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
-jetspeed.debugPortletWindowThemes = [ "tigris", "blueocean" ];  /* , "blueocean" ]; */
+jetspeed.debugPortletWindowThemes = [ "tigris", "blueocean" ];  /* , "tigris", "blueocean" ]; */
 //jetspeed.debugContentDumpIds = [ ".*" ];                        // dump all responses
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
-//jetspeed.debugContentDumpIds = [ "dp-7" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
+//jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
 //jetspeed.debugContentDumpIds = [ "P-10aba.*" ];
-
 
 // ... load page /portlets
 jetspeed.page = null ;   // BOZO: is this it? one page at a time?
@@ -190,7 +192,7 @@ jetspeed.ui._loadPortletWindows = function( /* Portlet[] */ portletArray, window
             }
         }
     }
-}
+};
 
 // ... jetspeed.doRender
 jetspeed.renderForm = null;
@@ -611,7 +613,12 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
         if ( ! this.initialized )
         {
             var content = "";
-            content += '<div id="' + jetspeed.debug.debugContainerId + '"></div>';
+            if ( jetspeed.altDebugWindowContent )
+                content = jetspeed.altDebugWindowContent();
+            else
+            {
+                content += '<div id="' + jetspeed.debug.debugContainerId + '"></div>';
+            }
             if ( ! contentListener )
                 contentListener = new jetspeed.om.BasicContentListener();
             contentListener.notifySuccess( content, requestUrl, domainModelObject ) ;
@@ -817,9 +824,13 @@ dojo.lang.extend( jetspeed.om.Page,
     _portletColumnRowCompare: function( portletA, portletB )
     {   // uses saved state only - does not check with window widget
         var windowState = portletA.getLastSavedWindowState();
-        var aVal = ( windowState.column * 1000 ) + windowState.row;
+        var col = ( windowState.column == null ? 50 : windowState.column );
+        var row = ( windowState.row == null ? 0 : windowState.row );
+        var aVal = ( col * 1000 ) + row;
         windowState = portletB.getLastSavedWindowState();
-        var bVal = ( windowState.column * 1000 ) + windowState.row;
+        col = ( windowState.column == null ? 50 : windowState.column );
+        row = ( windowState.row == null ? 0 : windowState.row );
+        var bVal = ( col * 1000 ) + row;
         return ( aVal - bVal );
     },
 
@@ -862,12 +873,13 @@ dojo.lang.extend( jetspeed.om.Page,
                 filteredPortletArray.push( portletArray[i] );
         }
         filteredPortletArray.sort( this._portletColumnRowCompare );
+
         return filteredPortletArray;
     },
     getPortletArrayList: function()
     {
         var portletArrayList = new dojo.collections.ArrayList();
-        for (var portletIndex in this.portlets)
+        for ( var portletIndex in this.portlets )
         {
             var portlet = this.portlets[portletIndex];
             portletArrayList.add(portlet);
@@ -876,7 +888,7 @@ dojo.lang.extend( jetspeed.om.Page,
     },
     getPortletArray: function()
     {
-        if (! this.portlets) return null ;
+        if (! this.portlets) return null;
         var portletArray = [];
         for (var portletIndex in this.portlets)
         {
@@ -887,13 +899,26 @@ dojo.lang.extend( jetspeed.om.Page,
     },
     getPortlets: function()
     {
-        if (this.portlets)
+        if ( this.portlets )
             return dojo.lang.shallowCopy(this.portlets) ;
         return null ;
     },
+    getPortletByName: function( /* String */ portletName )
+    {
+        if ( this.portlets && portletName )
+        {
+            for (var portletIndex in this.portlets)
+            {
+                var portlet = this.portlets[portletIndex];
+                if ( portlet.name == portletName )
+                    return portlet;
+            }
+        }
+        return null;
+    },
     getPortlet: function( /* String */ portletEntityId )
     {
-        if (this.portlets && portletEntityId)
+        if ( this.portlets && portletEntityId )
             return this.portlets[portletEntityId];
         return null;
     },
@@ -1128,7 +1153,7 @@ jetspeed.om.PortletActionContentListener.prototype =
         {
             jetspeed.doRenderAll( renderUrl );    // render all portlets
             //  portlet.retrieveContent(null,renderUrl);    // render just the one portlet
-        }        
+        }
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {

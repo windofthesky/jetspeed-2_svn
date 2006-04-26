@@ -59,13 +59,19 @@ DEALINGS IN THE SOFTWARE.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
+
+## include header resources immdiately after head and before base is reset to the portal
+## web application context path root; this implies that header resources can not reliably
+## employ relative urls to locate content
+#includeHeaderResource()
+
 	<base href="#BaseHref()">
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />
 
 #includeJavaScriptForHead()
 #IncludeStylesheets()
-#includeHeaderResource()
+
     <title>#PageTitle()</title>
 
     <meta name="version" content="/* $Id$" />

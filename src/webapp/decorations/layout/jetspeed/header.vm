@@ -23,12 +23,19 @@ limitations under the License.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+
+## include header resources immdiately after head and before base is reset to the portal
+## web application context path root; this implies that header resources can not reliably
+## employ relative urls to locate content
+#includeHeaderResource()
+
     <meta http-equiv="Content-type" content="#ContentType()" />
 	<base href="#BaseHref()">
     <title>#PageTitle()</title>
+
 #includeJavaScriptForHead()
 #IncludeStylesheets()
-#includeHeaderResource()
+
 </head>
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->

@@ -97,10 +97,10 @@ limitations under the License.
 }
  
 .blueocean .PContent
-{    
+{
     clear:both;
     margin:0px;
-    padding-left: 1em;
+    padding-left: 10px; /* was 1em;  - dojo dies when calculating width of object - can't convert to pixels */
     white-space: normal;
     /* background-color: #ffffff; */    /* BOZO: desktop color should not be set here */
     /* border: 1px solid #90d0ff; */    /* BOZO: desktop cannot be having this behavior */

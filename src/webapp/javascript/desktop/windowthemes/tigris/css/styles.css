@@ -65,7 +65,6 @@ limitations under the License.
     margin-right: 3px;   /* these margin settings are restated from desktop/widget/HtmlFloatingPane.css - to override the .tigris img styles in this file */
 }
 
-
 /*  end dojo styles  */
 
 
@@ -118,7 +117,7 @@ limitations under the License.
 
 .tigris .PContent
 {    
-    padding-left: 1em;
+    padding-left: 10px; /* was 1em;  - dojo dies when calculating width of object - can't convert to pixels */
     white-space: normal;
     /* background-color: #EFEFEF; */    /* BOZO: desktop color should not be set here */
     /* border-right: 1px solid #AAAAAA;
