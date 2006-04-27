@@ -21,11 +21,12 @@ limitations under the License.
 /*  begin dojo styles  */
 
 .blueocean .dojoFloatingPaneTitleBar {
-    background: #B0C4DE;  /* lightsteelblue */
+    /* background: #B0C4DE; */  /* lightsteelblue */
+    background: url(../images/stripe_blue_m4.gif);
 }
 
 .blueocean .dojoFloatingPaneTitleText {
-	color: #00368F;
+	color: #ffffff;
 }
 
 /* minimize/maximize icons are specified by CSS only */
