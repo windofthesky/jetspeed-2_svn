@@ -27,6 +27,14 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
     /** The serial version uid. */
     private static final long serialVersionUID = -3521731040045006314L;
 
+    private static boolean hiearchicalNames = true;
+
+    public static final Object useHierarchicalNames(boolean hierarchicalNames)
+    {
+        RolePrincipalImpl.hiearchicalNames = hierarchicalNames;
+        return null;
+    }
+    
     /**
      * <p>The role principal constructor.</p>
      * @param roleName The role principal name.
@@ -62,7 +70,7 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
      */
     public static String getFullPathFromPrincipalName(String name)
     {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_ROLE_ROOT);
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_ROLE_ROOT, hiearchicalNames);
     }
 
     /**
@@ -73,6 +81,6 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
      */
     public static String getPrincipalNameFromFullPath(String fullPath)
     {
-        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_ROLE_ROOT);
+        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_ROLE_ROOT, hiearchicalNames);
     }
 }

@@ -26,7 +26,16 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
 
     /** The serial version uid. */
     private static final long serialVersionUID = 4134905654850335230L;
+    
+    private static boolean hiearchicalNames = true;
 
+    
+    public static final Object useHierarchicalNames(boolean hierarchicalNames)
+    {
+        UserPrincipalImpl.hiearchicalNames = hierarchicalNames;
+        return null;
+    }
+    
     /**
      * <p>The user principal constructor.</p>
      * @param userName The user principal name.
@@ -61,7 +70,7 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
      */
     public static String getFullPathFromPrincipalName(String name)
     {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_USER_ROOT);
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_USER_ROOT, hiearchicalNames);
     }
 
     /**
@@ -72,6 +81,6 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
      */
     public static String getPrincipalNameFromFullPath(String fullPath)
     {
-        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_USER_ROOT);
+        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_USER_ROOT, hiearchicalNames);
     }
 }

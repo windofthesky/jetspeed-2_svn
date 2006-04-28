@@ -99,16 +99,69 @@ public class BasePrincipalImpl implements BasePrincipal
      * 
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
+     * @param hiearchicalNames indicator if hierarchy encoding (replacing '.' with '/') should be done
+     * @return The preferences full path / principal name.
+     */
+    public static String getFullPathFromPrincipalName(String name, String prefsRoot, boolean hiearchicalNames)
+    {
+        String fullPath = name;
+        if (null != name )
+        {
+            fullPath = prefsRoot + (hiearchicalNames ? name.replace(',','/') : name );
+        }
+        return fullPath;
+    }
+
+    /**
+     * <p>
+     * Gets the principal implementation full path from the principal name.
+     * </p>
+     * <p>
+     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
+     * separator for hierarchical elements.
+     * </p>
+     * <p>
+     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
+     * </p>
+     * 
+     * @param name The principal name.
+     * @param prefsRoot The preferences root node.
      * @return The preferences full path / principal name.
      */
     public static String getFullPathFromPrincipalName(String name, String prefsRoot)
     {
-        String fullPath = name;
-        if (null != fullPath)
+        return getFullPathFromPrincipalName(name, prefsRoot, true);
+    }
+
+    /**
+     * <p>
+     * Gets the principal name from the principal implementation full path.
+     * </p>
+     * <p>
+     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
+     * separator for hierarchical elements.
+     * </p>
+     * <p>
+     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
+     * </p>
+     * 
+     * @param fullPath The principal full path.
+     * @param prefsRoot The preferences root node.
+     * @param hiearchicalNames indicator if hierarchical decoding (replacing '/' with '.') should be done
+     * @return The principal name.
+     */
+    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot, boolean hiearchicalNames)
+    {
+        String name = fullPath;
+        if (null != name)
         {
-            fullPath = prefsRoot + fullPath.replace('.', '/');
+            name = name.substring(prefsRoot.length(), name.length());
+            if ( hiearchicalNames )
+            {
+                name = name.replace('/', '.');
+            }
         }
-        return fullPath;
+        return name;
     }
 
     /**
@@ -129,20 +182,7 @@ public class BasePrincipalImpl implements BasePrincipal
      */
     public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot)
     {
-        String name = fullPath;
-        if (null != name)
-        {
-            if (prefsRoot.equals(UserPrincipalImpl.PREFS_USER_ROOT))
-            {
-                name = name.substring(prefsRoot.length(), name.length());
-            }
-            else
-            {
-                name = name.substring(prefsRoot.length(), name.length());
-            }
-            name = name.replace('/', '.');
-        }
-        return name;
+        return getPrincipalNameFromFullPath(fullPath, prefsRoot, true);
     }
 
     private boolean enabled = true;

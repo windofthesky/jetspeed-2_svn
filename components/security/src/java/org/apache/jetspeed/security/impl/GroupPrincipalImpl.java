@@ -27,6 +27,14 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
     /** The serial version uid. */
     private static final long serialVersionUID = 6061115481776568899L;
 
+    private static boolean hiearchicalNames = true;
+
+    public static final Object useHierarchicalNames(boolean hierarchicalNames)
+    {
+        GroupPrincipalImpl.hiearchicalNames = hierarchicalNames;
+        return null;
+    }
+    
     /**
      * <p>The group principal constructor.</p>
      * @param groupName The group principal name.
@@ -61,7 +69,7 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
      */
     public static String getFullPathFromPrincipalName(String name)
     {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_GROUP_ROOT);
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_GROUP_ROOT, hiearchicalNames);
     }
 
     /**
@@ -72,7 +80,7 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
      */
     public static String getPrincipalNameFromFullPath(String fullPath)
     {
-        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_GROUP_ROOT);
+        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_GROUP_ROOT, hiearchicalNames);
     }
     
 }
