@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Reader;
 import java.io.Writer;
@@ -270,6 +271,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // get content from current page
         response.setContentType("text/html");
         byte[] content = doWebContent(currentPage.getUrl(), currentPage.getParams(), currentPage.isPost(), request, response);
+        // System.out.println("Rewritten content is\n..."+new String(content));
         
         // write the meta-control navigation header
         PrintWriter writer = response.getWriter();
@@ -323,6 +325,17 @@ public class WebContentPortlet extends GenericVelocityPortlet
             URL baseURL = new URL(sourceAttr);
             rewriter.setBaseUrl(baseURL.toString());
             
+            // ...file URLs may be used for testing
+            if (baseURL.getProtocol().equals("file"))
+            {
+                Reader reader = new InputStreamReader((InputStream)baseURL.getContent());
+                StringWriter writer = new StringWriter();
+                rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), reader, writer);
+                writer.flush();
+                return writer.toString().getBytes();
+            }
+            // else fall through to normal case (http/https)...
+            
             // ...set up URL and HttpClient stuff
             HttpClient httpClient = getHttpClient(request) ;
             httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, isPost, request);
@@ -338,7 +351,9 @@ public class WebContentPortlet extends GenericVelocityPortlet
         }
         catch (Exception ex)
         {
-            throw new PortletException("Exception while rewritting HTML content. Error: " + ex.getMessage());
+            String msg = "Exception while rewritting HTML content" ;
+            log.error(msg,ex);
+            throw new PortletException(msg+", Error: "+ex.getMessage());
         }
         finally
         {
@@ -367,7 +382,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             Cookie[] cookies = httpClient.getState().getCookies();
             PortletMessaging.publish(request, HTTP_STATE, cookies);
             // System.out.println("...saving: "+(cookies != null ? cookies.length : 0)+", cookies...");
-            // for(int i=0,limit = cookies != null ? cookies.length : 0; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
+            //    for(int i=0,limit = cookies != null ? cookies.length : 0; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
 
             // ...check for manual redirects
             int responseCode = httpMethod.getStatusCode();
@@ -506,7 +521,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             client.getState().addCookies(cookies);
 
             // System.out.println("WebContentPortlet.getHttpClient() - reusing: "+cookies.length+", cookies...");
-            // for(int i=0,limit = cookies.length; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
+            //    for(int i=0,limit = cookies.length; i<limit; i++) System.out.println("...cookie["+i+"] is: "+cookies[i]);
         }
  
         return client ;
