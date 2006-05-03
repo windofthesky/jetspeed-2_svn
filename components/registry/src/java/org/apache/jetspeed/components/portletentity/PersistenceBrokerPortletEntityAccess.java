@@ -64,11 +64,14 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     public PersistenceBrokerPortletEntityAccess( PortletRegistry registry )
     {
         super();
-        this.registry = registry;
-        PortletEntityImpl.pac = this;
+        this.registry = registry;        
         PortletEntityImpl.registry = registry;
     }
 
+    public void setEntityAccessProxy(PortletEntityAccessComponent proxy)
+    {
+        PortletEntityImpl.pac = proxy;
+    }
     /**
      * 
      * <p>
