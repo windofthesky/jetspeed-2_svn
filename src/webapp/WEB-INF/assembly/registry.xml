@@ -125,4 +125,16 @@
             </props>
         </property>
     </bean>
+    
+  <!-- Inject Portlet Entity Proxy into Portlet Entity impl -->
+  <bean id="injectEntityAccessProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="targetObject"><ref bean="portletEntityAccessImpl"/></property>
+      <property name="targetMethod"><value>setEntityAccessProxy</value></property>
+      <property name="arguments">
+          <list>
+              <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/>
+          </list>
+      </property>
+  </bean>
+    
 </beans>
