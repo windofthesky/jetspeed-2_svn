@@ -21,16 +21,17 @@ limitations under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
 
     <!-- POM Identification -->
 
-    <groupId>${groupId}</groupId>
-    <version>${version}</version>
     <artifactId>${artifactId}</artifactId>
     <parent>
         <groupId>${groupId}</groupId>
-        <version>${version}</version>
         <artifactId>portal-components</artifactId>
+        <version>${version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>

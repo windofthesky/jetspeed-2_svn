@@ -22,7 +22,7 @@ limitations under the License.
 
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
-        <maven>2.0.2</maven>
+        <maven>2.0.4</maven>
     </prerequisites>
 
     <!-- POM Identification -->
@@ -129,8 +129,17 @@ limitations under the License.
         <org.apache.jetspeed.env.hotdeploy>false</org.apache.jetspeed.env.hotdeploy>
         <org.apache.jetspeed.env.deploy.db.psml>false</org.apache.jetspeed.env.deploy.db.psml>
 
-        <!-- Dependency Version Properties -->
+        <!-- Build Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
+        <jmock.version>1.0.1</jmock.version>
+        <junit.version>3.8.1</junit.version>
+        <mockrunner.version>0.2.7</mockrunner.version>
+        <org.apache.maven.artifact.ant.version>2.0.4</org.apache.maven.artifact.ant.version>
+        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.3</org.apache.maven.plugins.maven-surefire-plugin.version>
+        <torque.version>3.2-rc3</torque.version>
+        <tyrex.version>1.0.1</tyrex.version>
+
+        <!-- Project Dependency Version Properties -->
         <aopalliance.version>1.0</aopalliance.version>
         <castor.version>0.9.4.3</castor.version>
         <cglib.version>2.0.2</cglib.version>
@@ -156,16 +165,12 @@ limitations under the License.
         <javax.transaction.version>1.0.1B</javax.transaction.version>
         <jaxen.version>1.0-FCS-full</jaxen.version>
         <jdom.version>1.0</jdom.version>
-        <jmock.version>1.0.1</jmock.version>
-        <junit.version>3.8.1</junit.version>
         <log4j.version>1.2.8</log4j.version>
         <lucene.version>1.4.1</lucene.version>
-        <mockrunner.version>0.2.7</mockrunner.version>
         <myfaces.version>1.1.0</myfaces.version>
         <nekohtml.version>0.9.5</nekohtml.version>
         <ojb.version>1.0.3</ojb.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
-        <org.apache.maven.artifact.ant.version>2.0.1</org.apache.maven.artifact.ant.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
         <org.apache.portals.bridges.common.version>1.0.1-dev</org.apache.portals.bridges.common.version>
         <org.apache.portals.bridges.frameworks.version>1.0</org.apache.portals.bridges.frameworks.version>
@@ -184,9 +189,7 @@ limitations under the License.
         <taglibs-random.version>1.0.2</taglibs-random.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.0.6</taglibs-standard.version>
-        <torque.version>3.2-rc3</torque.version>
-        <tyrex.version>1.0.1</tyrex.version>
-        <velocity-tools.version>1.1</velocity-tools.version>
+        <velocity-tools.version>1.2</velocity-tools.version>
         <velocity.version>1.4</velocity.version>
         <xalan.version>2.4.1</xalan.version>
         <xerces.version>2.3.0</xerces.version>
@@ -926,6 +929,7 @@ limitations under the License.
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.maven-surefire-plugin.version}</version>
                     <configuration>
                         <includes>
                             <include>**/Test*.java</include>
@@ -942,85 +946,77 @@ limitations under the License.
                     </configuration>
                 </plugin> 
 
+                <!-- antrun plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <dependencies>
+
+                        <!-- Ant -->
+                        <dependency>
+                            <groupId>ant</groupId>
+                            <artifactId>ant</artifactId>
+                            <version>${ant.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>ant</groupId>
+                            <artifactId>ant-launcher</artifactId>
+                            <version>${ant.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>ant</groupId>
+                            <artifactId>ant-nodeps</artifactId>
+                            <version>${ant.version}</version>
+                        </dependency>
+
+                        <!-- Maven AntLib -->
+                        <dependency>
+                            <groupId>org.apache.maven</groupId>
+                            <artifactId>maven-artifact-ant</artifactId>
+                            <version>${org.apache.maven.artifact.ant.version}</version>
+                        </dependency>
+
+                        <!-- Torque -->
+                        <dependency>
+                            <groupId>torque</groupId>
+                            <artifactId>torque</artifactId>
+                            <version>${torque.version}</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>jndi</groupId>
+                                    <artifactId>jndi</artifactId>
+                                </exclusion>
+                                <exclusion>
+                                    <groupId>javax.sql</groupId>
+                                    <artifactId>jdbc-stdext</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                        <dependency>
+                            <groupId>torque</groupId>
+                            <artifactId>torque-gen</artifactId>
+                            <version>${torque.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>torque</groupId>
+                            <artifactId>torque-gen-templates</artifactId>
+                            <version>${torque.version}</version>
+                        </dependency>
+
+                        <!-- J2 Build -->
+                        <dependency>
+                            <groupId>${pom.groupId}</groupId>
+                            <artifactId>ant-tasks</artifactId>
+                            <version>${pom.version}</version>
+                        </dependency>
+
+                    </dependencies>
+                </plugin>
+
             </plugins>
         </pluginManagement>    
 
-        <!--
-            Bug: All plugin dependencies must be copied to the first instance
-            of the maven-antrun-plugin run, (e.g. here in root pom), since the
-            first set of deps sticks for the entire maven2 execution cycle.
-            Bug: Plugin dependencies are not propagated from pluginManagement.
-            Bug: Versions must be specified here and not in dependencyManagement.
-
-            Note: All three ant dependencies are listed to keep nodeps in sync.
-        -->
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <inherited>false</inherited>
-                <dependencies>
-
-                    <!-- Ant -->
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-
-                    <!-- Maven AntLib -->
-                    <dependency>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-artifact-ant</artifactId>
-                        <version>${org.apache.maven.artifact.ant.version}</version>
-                    </dependency>
-
-                    <!-- Torque -->
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque</artifactId>
-                        <version>${torque.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>jndi</groupId>
-                                <artifactId>jndi</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>javax.sql</groupId>
-                                <artifactId>jdbc-stdext</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen-templates</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-
-                    <!-- J2 Build -->
-                    <dependency>
-                        <groupId>${pom.groupId}</groupId>
-                        <artifactId>ant-tasks</artifactId>
-                        <version>${pom.version}</version>
-                    </dependency>
-
-                </dependencies>
-            </plugin>
         </plugins>
 
     </build>

@@ -34,7 +34,8 @@ limitations under the License.
 
     <property name="org.apache.jetspeed.source.sql" value="${basedir}/sql"/>
     <property name="org.apache.jetspeed.database.source.sql" value="${org.apache.jetspeed.source.sql}/${org.apache.jetspeed.database.default.name}"/>
-    <property name="org.apache.jetspeed.database.target.sql" value="${basedir}/target/sql/${org.apache.jetspeed.database.default.name}"/>
+    <property name="org.apache.jetspeed.database.target.sql.root" value="${basedir}/target/sql"/>
+    <property name="org.apache.jetspeed.database.target.sql" value="${org.apache.jetspeed.database.target.sql.root}/${org.apache.jetspeed.database.default.name}"/>
 
     <property name="torque.contextProperties" value=""/>
     <property name="torque.runOnlyOnSchemaChange" value="true"/>
@@ -52,9 +53,10 @@ limitations under the License.
 
     <target name="help">
         <echo message="Buildfile for the etc maven POM."/>
-        <echo message="Usage: ant [ schema | populate-db | populate-db-userinfo ]"/>
+        <echo message="Usage: ant [ clean-schema | schema | populate-db | populate-db-userinfo ]"/>
         <echo message="Where:"/>
-        <echo message="    schema - build schema for database."/>
+        <echo message="    clean-schema - clean schemas for all databases."/>
+        <echo message="    schema - build schema for database if not already built."/>
         <echo message="    populate-db - build and minimally populate database instance."/>
         <echo message="    populate-db-userinfo - build and populate database instance with default users."/>
         <echo message="Configuration:"/>
@@ -78,10 +80,17 @@ limitations under the License.
 
     <!-- Schema Generation -->
 
-    <target name="schema" depends="test-database-default-name, test-database-filter-drops">
+    <target name="clean-schema">
+
+        <!-- clean target directories -->
+        <delete dir="${org.apache.jetspeed.database.target.sql.root}"/>
+
+    </target>
+
+    <target name="schema" depends="test-database-default-name, test-database-filter-drops, test-database-target-sql"
+            unless="org.apache.jetspeed.database.target.sql.exists">
 
         <!-- make target directory -->
-        <delete dir="${org.apache.jetspeed.database.target.sql}"/>
         <mkdir dir="${org.apache.jetspeed.database.target.sql}"/>
 
         <!-- copy general sql -->
@@ -145,6 +154,11 @@ limitations under the License.
                 <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="derby"/>
             </or>
         </condition>
+    </target>
+
+    <target name="test-database-target-sql">
+        <available file="${org.apache.jetspeed.database.target.sql}"
+                   property="org.apache.jetspeed.database.target.sql.exists"/>
     </target>
 
     <target name="schema-mssql" if="org.apache.jetspeed.database.is.mssql">

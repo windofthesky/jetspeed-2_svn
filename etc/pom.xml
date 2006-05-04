@@ -21,16 +21,17 @@ limitations under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
 
     <!-- POM Identification -->
 
-    <groupId>org.apache.portals.jetspeed-2</groupId>
-    <version>2.1-dev</version>
     <artifactId>etc</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
-        <version>2.1-dev</version>
         <artifactId>jetspeed-2</artifactId>
+        <version>2.1-dev</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
@@ -85,9 +86,14 @@ limitations under the License.
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
+                                <ant target="clean-schema" antfile="build.xml" dir="${basedir}" inheritall="off"/>
                                 <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.test.database.default.name}"/>
+                                </ant>
+                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                    <property name="org.apache.jetspeed.database.default.name"
+                                              value="${org.apache.jetspeed.production.database.default.name}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -169,62 +175,6 @@ limitations under the License.
                     </execution>
 
                 </executions>
-                <!--
-                    Bug: All plugin dependencies must be copied to the first instance
-                    of the maven-antrun-plugin run, (e.g. to the root pom), since the
-                    first set of deps sticks for the entire maven2 execution cycle.
-                    Bug: Plugin dependencies are not propagated from pluginManagement.
-                    Bug: Versions must be specified here and not in dependencyManagement.
-
-                    Note: All three ant dependencies are listed to keep nodeps in sync.
-                -->
-                <dependencies>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>${ant.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque</artifactId>
-                        <version>${torque.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>jndi</groupId>
-                                <artifactId>jndi</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>javax.sql</groupId>
-                                <artifactId>jdbc-stdext</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>torque</groupId>
-                        <artifactId>torque-gen-templates</artifactId>
-                        <version>${torque.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-artifact-ant</artifactId>
-                        <version>${org.apache.maven.artifact.ant.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

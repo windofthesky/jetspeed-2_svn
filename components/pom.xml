@@ -21,16 +21,17 @@ limitations under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
 
     <!-- POM Identification -->
 
-    <groupId>org.apache.portals.jetspeed-2</groupId>
-    <version>2.1-dev</version>
     <artifactId>components</artifactId>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
-        <version>2.1-dev</version>
         <artifactId>jetspeed-2</artifactId>
+        <version>2.1-dev</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
@@ -196,13 +197,18 @@ limitations under the License.
                         <!--
                             Note: using forking to prevent module test case connection
                             pools and spring crosstalk via surefire isolation class
-                            loaders when multipe modules are built, (e.g. components/registry).
+                            loaders when multiple modules are built, (e.g. components/registry).
                             Specifying a fork option also sets appropriate working
                             directory for test via default basedir configuration.
                             This setting also has ramifactions for embedded databases
                             that lock access to a single JVM instance, (e.g. derby).
                         -->
                         <forkMode>once</forkMode>
+                        <!--
+                            Note: some component tests depend on current working directory
+                            being set to the project base directory to locate test data.
+                        -->
+                        <workingDirectory>${basedir}</workingDirectory>
                     </configuration>
                 </plugin>
 

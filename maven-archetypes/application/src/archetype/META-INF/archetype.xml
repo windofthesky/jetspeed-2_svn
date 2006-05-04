@@ -24,6 +24,7 @@ limitations under the License.
     <resources>
         <resource>pom.xml</resource>
         <resource>src/webapp/logs/pa.log</resource>
+        <resource>src/webapp/META-INF/context.xml</resource>
         <resource>src/webapp/WEB-INF/c-rt.tld</resource>
         <resource>src/webapp/WEB-INF/c.tld</resource>
         <resource>src/webapp/WEB-INF/jetspeed-portlet.xml</resource>
