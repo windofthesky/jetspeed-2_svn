@@ -215,6 +215,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             do
             {
                 // attempt to access requested path
+                Exception fallbackException = null;
                 try
                 {
                     return selectRequestPage(requestPath, useHistory);
@@ -225,6 +226,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     {
                         throw nnfe;
                     }
+                    fallbackException = nnfe;
                 }
                 catch (SecurityException se)
                 {
@@ -232,6 +234,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     {
                         throw se;
                     }
+                    fallbackException = se;
                 }
 
                 // compute fallback request path
@@ -261,7 +264,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         // log fallback
                         if (log.isDebugEnabled())
                         {
-                            log.debug("Missing/forbidden page selection fallback: request path=" + requestPath + ", attempting fallback request path=" + fallbackRequestPath);
+                            log.debug("Missing/forbidden page selection fallback: request path=" + requestPath + ", attempting fallback request path=" + fallbackRequestPath, fallbackException);
                         }
                         
                         // clear all history entries for fallback
