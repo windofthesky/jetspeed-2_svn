@@ -41,5 +41,27 @@ public interface JetspeedDesktopContext
      * @return
      */
     String getPortalResourceUrl(String relativePath);
+
+    /**
+     * Gets the desktop-theme name
+     * 
+     * @return
+     */
+    public String getDesktopTheme();
+
+    /**
+     * Gets an absolute resource URL to the desktop-theme directory
+     * 
+     * @return
+     */
+    public String getDesktopThemeRootUrl();
+
+    /**
+     * Gets an absolute resource URL to a desktop-theme resource
+     * 
+     * @param relativePath
+     * @return
+     */
+    String getDesktopThemeResourceUrl(String relativePath);
     
 }
