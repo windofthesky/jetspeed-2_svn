@@ -115,8 +115,12 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         {
             if ( this.portletWindowTheme )
                 windowtheme = this.portletWindowTheme;
-            else if ( jetspeed.debugPortletWindowThemes )
+            else if ( dojo.lang.indexOf( jetspeed.id.WINDOW_THEMES, jetspeed.page.getPortletDecorator() ) != -1 )
+                windowtheme = jetspeed.page.getPortletDecorator();
+            else if ( djConfig.isDebug && jetspeed.debugPortletWindowThemes )
                 windowtheme = jetspeed.debugPortletWindowThemes[ Math.floor( Math.random() * jetspeed.debugPortletWindowThemes.length ) ];
+            else if ( jetspeed.id.WINDOW_THEMES )
+                windowtheme = jetspeed.id.WINDOW_THEMES[0];
         }
         this.portletWindowTheme = windowtheme ;
         var prevCssPath = ( this.templateCssPath == null ? null : this.templateCssPath.toString() );
@@ -179,7 +183,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
             // NOTE: portletWindowState.zIndex;  - should be dealt with in the creation order
         }
         else
-        {   
+        {
             portletWidth = this.getInitProperty( jetspeed.id.PORTLET_PROP_WIDTH );
             portletHeight = this.getInitProperty( jetspeed.id.PORTLET_PROP_HEIGHT );
             portletLeft = this.getInitProperty( jetspeed.id.PORTLET_PROP_LEFT );
@@ -417,6 +421,10 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
             dojo.debug( "createdWindow [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" + " width=" + this.domNode.style.width + " height=" + this.domNode.style.height + " left=" + this.domNode.style.left + " top=" + this.domNode.style.top ) ;
 
         this.portletInitialized = true;
+
+        var initWindowState = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_STATE );
+        if ( initWindowState == "minimized" )
+            this.minimizeWindow();
     },
 
     isPortletWindowInitialized: function()
@@ -515,7 +523,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
             dojo.style.getInnerHeight( document.body ) - yPos
 		);
 
-		this.windowState="maximized";
+		this.windowState ="maximized";
 	},
     bringToTop: function( evt )
     {
@@ -777,11 +785,11 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         var ppR = null;
         if ( this.portlet )
         {
-            ppR = this.portlet.preParseAnnotateHtml( initialHtmlStr );
+            ppR = this.portlet.preParseAnnotateHtml( initialHtmlStr, url );
         }
         else
         {
-            ppR = jetspeed.ui.preParseAnnotateHtml( initialHtmlStr );
+            ppR = jetspeed.ui.preParseAnnotateHtml( initialHtmlStr, url );
         }
         //this.executeScripts = true;
 

@@ -71,7 +71,12 @@ jetspeed.id =
     PORTLET_PROP_TOP: "top",
     PORTLET_PROP_COLUMN: "column",
     PORTLET_PROP_ROW: "row",
-    PORTLET_PROP_EXCLUDE_PCONTENT: "excludePContent"
+    PORTLET_PROP_EXCLUDE_PCONTENT: "excludePContent",
+    PORTLET_PROP_WINDOW_STATE: "windowState",
+
+    MENU_WIDGET_ID_PREFIX: "jetspeed-menu-",
+
+    WINDOW_THEMES: [ "tigris", "blueocean" ]     // temporary validation to avoid trying to use an undefined window theme
 };
 
 // ... jetspeed desktop preferences
@@ -79,9 +84,23 @@ jetspeed.prefs =
 {
     windowTiling: 2,     // number > 0 is interpreted as number of columns; 0 or false indicates no-columns, free-floating windows
     windowTilingVariableWidth: false,   // only meaningful when windowTitling > 0
-    windowTilingVariableHeight: true   // only meaningful when windowTitling > 0
+    windowTilingVariableHeight: true,   // only meaningful when windowTitling > 0
     //portalTaskBarType: "blee"  // BOZO: need pref/s to handle this ( instead of html elements in the content )
     
+    desktopTheme: null,
+    desktopThemeRootUrl: null,
+    getDesktopTheme: function()
+    {
+        if ( jetspeed.prefs.desktopTheme == null )
+            return djConfig.desktopTheme;
+        return jetspeed.prefs.desktopTheme;
+    },
+    getDesktopThemeRootUrl: function()
+    {
+        if ( jetspeed.prefs.desktopThemeRootUrl == null )
+            return djConfig.desktopThemeRootUrl;
+        return jetspeed.prefs.desktopThemeRootUrl;
+    }        
 };
 
 // ... jetspeed debug options
@@ -106,25 +125,23 @@ jetspeed.debugInPortletWindow = true;
 //portlets: [dp-3 LocaleSelector, dp-16 RoleSecurityTest, dp-17 UserInfoTest, dp-22 ForgottenPasswordPortlet, dp-18 BookmarkPortlet, dp-23 UserRegistrationPortlet, dp-7 PickANumberPortlet, dp-9 IFramePortlet, dp-12 LoginPortlet]
 //jetspeed.debugPortletEntityIdFilter = [ "dp-18" ];
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
-jetspeed.debugPortletWindowThemes = [ "tigris", "blueocean" ];  /* , "tigris", "blueocean" ]; */
+jetspeed.debugPortletWindowThemes = [ "blueocean" ];  /* , "tigris", "blueocean" ]; */
 //jetspeed.debugContentDumpIds = [ ".*" ];                        // dump all responses
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
-jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
 //jetspeed.debugContentDumpIds = [ "P-10aba.*" ];
 
 // ... load page /portlets
 jetspeed.page = null ;   // BOZO: is this it? one page at a time?
 jetspeed.columns = [];
-jetspeed.initializeDesktop = function()
+jetspeed.initializeDesktop = function( desktopThemeName, desktopThemeRootUrl )
 {
     jetspeed.url.pathInitialize();
+    jetspeed.prefs.desktopTheme = desktopThemeName;
+    jetspeed.prefs.desktopThemeRootUrl = desktopThemeRootUrl;
     jetspeed.loadPage();
-    if ( jetspeed.prefs.windowTiling > 0 )
-    {
-        jetspeed.ui.createColumns( document.getElementById( jetspeed.id.DESKTOP ), jetspeed.prefs.windowTiling );
-    }
     //jetspeed.currentTaskbar = new jetspeed.ui.PortalTaskBar() ;
 };
 jetspeed.loadPage = function()
@@ -143,12 +160,13 @@ jetspeed.loadDebugWindow = function()
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = "Dojo Debug";
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = "text-x-script.png";
         windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + "dojo-debug";
-        windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = "700";
+        windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = "400";
         windowParams[ jetspeed.id.PORTLET_PROP_HEIGHT ] = "400";
-        windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = "35";
+        windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = "320";
+        windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = "0";
         windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = false;
         windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = new jetspeed.om.DojoDebugContentRetriever();
-
+        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_STATE ] = "minimized" ;
         var pwWidgetParams = jetspeed.ui.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
         jetspeed.ui.createPortletWindow( pwWidgetParams, null, null );
         pwWidgetParams.retrieveContent( null, null );
@@ -157,6 +175,12 @@ jetspeed.loadDebugWindow = function()
 
 jetspeed.loadPortletWindows = function( portletWindowFactory )
 {
+    if ( jetspeed.prefs.windowTiling > 0 )
+    {
+        var numberOfColumns = jetspeed.page.getNumberOfColumns();
+        jetspeed.ui.createColumns( document.getElementById( jetspeed.id.DESKTOP ), numberOfColumns );
+    }
+
     var windowsToRender = [];
 
     var portletArray = jetspeed.page.getPortletArrayByColumnRow();
@@ -333,43 +357,35 @@ jetspeed.purifyIdentifier = function( src, replaceCh, camel )
 // ... jetspeed.notifyRetrieveAllMenusFinished
 jetspeed.notifyRetrieveAllMenusFinished = function()
 {   // dojo.event.connect to this or add to your page content, one of the functions that it invokes ( doMenuBuildAll() or doMenuBuild() )
-    dojo.debug( "jetspeed.notifyRetrieveAllMenusFinished" );
+    jetspeed.pageNavigateSuppress = true;
+
     if ( dojo.lang.isFunction( window.doMenuBuildAll ) )
     {   
         window.doMenuBuildAll();
     }
-    else if ( dojo.lang.isFunction( window.doMenuBuild ) )
+    
+    var menuNames = jetspeed.page.getMenuNames();
+    for ( var i = 0 ; i < menuNames.length; i++ )
     {
-        for ( var menuName in this.menus )
+        var menuNm = menuNames[i];
+        var menuWidget = dojo.widget.byId( jetspeed.id.MENU_WIDGET_ID_PREFIX + menuNm );
+        if ( menuWidget )
         {
-            var menuObj = this.menus[ menuName ];
-            window.doMenuBuild( menuObj );
+            menuWidget.createJetspeedMenu( jetspeed.page.getMenu( menuNm ) );
         }
     }
+    
+    jetspeed.pageNavigateSuppress = false;
 };
 
 // ... jetspeed.notifyRetrieveMenuFinished
 jetspeed.notifyRetrieveMenuFinished = function( /* jetspeed.om.Menu */ menuObj )
 {   // dojo.event.connect to this or add to your page content the function that it invokes ( doMenuBuild() )
-    dojo.debug( "jetspeed.notifyRetrieveMenuFinished" );
     if ( dojo.lang.isFunction( window.doMenuBuild ) )
     {
         window.doMenuBuild( menuObj );
     }
 };
-
-jetspeed.menuNavClick = function( /* jetspeed.om.MenuOption */ menuOpt )
-{
-    if ( menuOpt && menuOpt.isLeaf() )
-    {
-        var navUrl = menuOpt.getUrl();
-        if ( navUrl )
-        {
-            var navTarget = menuOpt.getTarget();
-            jetspeed.pageNavigate( navUrl, navTarget );
-        }
-    }
-}
 
 jetspeed.menuNavClickWidget = function( /* Tab widget || Tab widgetId */ tabWidget, /* int || String */ selectedTab )
 {
@@ -403,11 +419,10 @@ jetspeed.pageNavigate = function( navUrl, navTarget )
 {
     if ( ! navUrl || jetspeed.pageNavigateSuppress ) return;
 
-    if ( jetspeed.page && jetspeed.page.isPageUrl( navUrl ) )
+    if ( jetspeed.page && jetspeed.page.equalsPageUrl( navUrl ) )
         return ;
 
-    if ( ! jetspeed.url.validateUrlStartsWithHttp( navUrl ) )
-        navUrl = jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + navUrl;
+    navUrl = jetspeed.page.makePageUrl( navUrl );
 
     if ( navTarget == "top" )
         top.location.href = navUrl;
@@ -686,7 +701,7 @@ jetspeed.om.Page = function( pagePsmlPath, pageName, pageTitle )
     this.portlets = [] ;
     this.menus = [];
 };
-dojo.inherits( jetspeed.om.Page, jetspeed.om.Id);
+dojo.inherits( jetspeed.om.Page, jetspeed.om.Id );
 dojo.lang.extend( jetspeed.om.Page,
 {
     psmlPath: null,
@@ -848,7 +863,25 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         return dumpMsg;
     },
-
+    getNumberOfColumns: function()
+    {
+        var numberOfColumns = 1;
+        if ( this.columns != null )
+            return this.columns;
+        var portletArray = this.getPortletArray();
+        if ( ! portletArray ) return portletArray;
+        var filteredPortletArray = [];
+        for ( var i = 0 ; i < portletArray.length; i++ )
+        {
+            if ( portletArray[i].getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ) )
+            {
+                var windowState = portletArray[i].getLastSavedWindowState();
+                if ( windowState && windowState.column != null && (windowState.column + 1) > numberOfColumns )
+                    numberOfColumns = new Number( windowState.column ) + 1;
+            }
+        }
+        return numberOfColumns;
+    },
     getPortletArrayByZIndex: function()
     {
         var portletArray = this.getPortletArray();
@@ -1051,16 +1084,28 @@ dojo.lang.extend( jetspeed.om.Page,
         jetspeed.url.retrieveContent( psmlMenuActionUrl, contentListener, null, mimeType, ajaxApiContext, jetspeed.debugContentDumpIds );
     },
 
-    isPageUrl: function( url )
+    getPageUrl: function()
     {
-        var pagePath = this.getPath();
-        if ( url == pagePath )
+        return jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + this.getPath();
+    },
+
+    equalsPageUrl: function( url )
+    {
+        if ( url == this.getPath() )
             return true;
-        var pageUrl = jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + pagePath;
-        if ( url == pageUrl )
+        if ( url == this.getPageUrl() )
             return true;
         return false;
     },
+
+    makePageUrl: function( pathOrUrl )
+    {
+        if ( ! pathOrUrl ) pathOrUrl = "";
+        if ( ! jetspeed.url.validateUrlStartsWithHttp( pathOrUrl ) )
+            return jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + pathOrUrl;
+        return pathOrUrl;
+    },
+
 
     // ... access
     getName: function()
@@ -1083,7 +1128,7 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         return this.layoutDecorator;
     },
-    getPortletDecorator: function()
+    getPortletDecorator : function()
     {
         return this.portletDecorator;
     }
@@ -1109,7 +1154,7 @@ jetspeed.om.BasicContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, domainModelObject )
     {
-        alert( "BasicContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.debug( "BasicContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
     }
 };
 
@@ -1125,7 +1170,7 @@ jetspeed.om.PortletContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        alert( "PortletContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.debug( "PortletContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
     }
 };
 
@@ -1157,7 +1202,7 @@ jetspeed.om.PortletActionContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        alert( "PortletActionContentListener notifyFailure type=" + type ) ;
+        dojo.debug( "PortletActionContentListener notifyFailure type=" + type ) ;
         dojo.debugShallow( error );
     }
 };
@@ -1759,6 +1804,24 @@ jetspeed.om.MenuOption = function()
 };
 dojo.lang.extend( jetspeed.om.MenuOption,
 {
+    // operations
+    navigateTo: function()
+    {
+        if ( this.isLeaf() )
+        {
+            var navUrl = this.getUrl();
+            if ( navUrl )
+            {
+                jetspeed.pageNavigate( navUrl, this.getTarget() );
+            }
+        }
+    },
+    navigateUrl: function()
+    {
+        return jetspeed.page.makePageUrl( this.getUrl() );
+    },
+
+    // data
     getType: function()
     {
         return this.type;
@@ -1790,6 +1853,10 @@ dojo.lang.extend( jetspeed.om.MenuOption,
     getSelected: function()
     {
         return this.selected;
+    },
+    getText: function()
+    {
+        return this.text;
     },
     isLeaf: function()
     {
@@ -1997,7 +2064,6 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiContentListener,
             {
                 if ( menu != null )
                     dojo.raise( "unexpected multiple top level <menu> elements in menu xml" );
-                dojo.debug( "parse menuObject" );
                 menu = this.parseMenuObject( child, new jetspeed.om.Menu() );
             }
         }
@@ -2298,7 +2364,7 @@ jetspeed.ui.createPortletWindow = function( windowConfigObject, portletWindowFac
     }
 };
 
-jetspeed.ui.preParseAnnotateHtml = function( /* String */ initialHtmlStr )
+jetspeed.ui.preParseAnnotateHtml = function( /* String */ initialHtmlStr, /* String */ url )
 {   // deal with embedded script tags -  /=/=/=/=/=  taken from dojo ContentPane.js  splitAndFixPaths()  =/=/=/=/=/
     var scripts = [];
     var remoteScripts = [];
@@ -2338,6 +2404,14 @@ jetspeed.ui.preParseAnnotateHtml = function( /* String */ initialHtmlStr )
         }
         initialHtmlStr = initialHtmlStr.replace(/<script[^>]*>[\s\S]*?<\/script>/i, "");
     }
+    //dojo.debug( "= = = = = =  annotated content for: " + ( url ? url : "unknown url" ) );
+    //dojo.debug( initialHtmlStr );
+    //if ( scripts.length > 0 )
+    //{
+    //    dojo.debug( "      = = =  script content for: " + ( url ? url : "unknown url" ) );
+    //    for ( var i = 0 ; i < scripts.length; i++ )
+    //        dojo.debug( "      =[" + (i+1) + "]:" + scripts[i] );
+    //}
     //     /=/=/=/=/=  end of taken from dojo ContentPane.js  splitAndFixPaths()  =/=/=/=/=/
     //dojo.debug( "preParse  scripts: " + ( scripts ? scripts.length : "0" ) + " remoteScripts: " + ( remoteScripts ? remoteScripts.length : "0" ) );
     return { preParsedContent: initialHtmlStr, preParsedScripts: scripts, preParsedRemoteScripts: remoteScripts };

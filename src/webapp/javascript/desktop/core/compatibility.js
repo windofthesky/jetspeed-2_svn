@@ -26,7 +26,6 @@ if ( ! window.jetspeed )
 
 jetspeed.addOnLoad = function( adviceFnc )
 {
-    dojo.debug( "jetspeed.addOnLoad" );
     if ( dojo.hostenv.post_load_ )
     {
         adviceFnc.call( this );

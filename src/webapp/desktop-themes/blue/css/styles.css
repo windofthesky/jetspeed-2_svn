@@ -82,66 +82,30 @@ body.layout-blue
 
 
 
-/*  begin dojo styles  */
 
-/* tabcontainer */
 
-.layout-blue .dojoTabPaneTab {
-    background-image: url(../images/tabs/tab_left.gif);
+.layout-blue .button
+{
+    background-image:url(../images/button_background.gif);
+    padding-left:5px;
+    padding-right:5px;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin:1px;
+    text-align:center;
+    vertical-align:middle;
 }
 
-.layout-blue .dojoTabPaneTab span {
-    background-image: url(../images/tabs/tab_top_right.gif);
+.layout-blue .button a
+{
+    color:#0080b0;
+    text-decoration: none;
+    font-weight:bold;
+    font-family:Verdana,Helvetica,Arial,sans-serif;
+    voice-family:"\"}\"";
+    voice-family:inherit;
+    font-size:9pt;
 }
-
-.layout-blue .dojoTabPanePaneClose {
-    background-image: url(../images/tabs/tab_close.gif);
-}
-
-.layout-blue .dojoTabPanePaneCloseHover {
-    background-image: url(../images/tabs/tab_close_h.gif);
-}
-
-.layout-blue .dojoTabPaneTabClose {
-    background-image: url(../images/tabs/tab_close.gif);
-}
-
-.layout-blue .dojoTabPaneTabCloseHover {
-    background-image: url(../images/tabs/tab_close_h.gif);
-}
-
-.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab {
-    background-image: url(../images/tabs/tab_bot_left.gif);
-}
-
-.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab span {
-    background-image: url(../images/tabs/tab_bot_right.gif);
-}
-
-.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab.current {
-    background-image: url(../images/tabs/tab_bot_left_curr.gif);
-}
-
-.layout-blue .dojoTabLabels-bottom .dojoTabPaneTab.current span {
-    background-image: url(../images/tabs/tab_bot_right_curr.gif);
-}
-
-.layout-blue .dojoTabLabels-right-h .dojoTabPaneTab {
-    background-image: url(../images/tabs/tab_bot_right.gif);
-}
-
-.layout-blue .dojoTabLabels-left-h .dojoTabPaneTab {
-    background-image: url(../images/tabs/tab_top_left.gif);
-}
-
-.layout-blue .dojoTabLabels-left-h .dojoTabPaneTab.current {
-    background-image: url(../images/tabs/tab_top_left.gif);
-}
-
-
-/*  end dojo styles  */
-
-
 
 .layout-blue #banner {
     margin:0px;
@@ -164,26 +128,40 @@ body.layout-blue
 .layout-blue #banner .action {
     margin:0px;
     padding:0px;
-    height:30px;
+    height:20px;
     vertical-align:middle;
 }
 
 .layout-blue #banner .logo {
-    vertical-align:top;
-    height:70px;
+    height:95px;
+}
+
+.layout-blueocean #banner .logo img {
+    margin-top:25px;
 }
 
 .layout-blue #banner .info {
     vertical-align:top;
     text-align:right;
-    height:70px;
+    height:95px;
 
     color:#ffffff;
-    font-weight:bold;
-    font-family:monospace;
+    font-family:Verdana,Helvetica,Arial,sans-serif;
     voice-family:"\"}\"";
     voice-family:inherit;
     font-size:10pt;
+}
+
+.layout-blueocean #banner .info div {
+    margin:0px;
+    padding:2px;
+}
+
+.layout-blueocean #banner .info input {
+    border:1px;
+    border-color:#0000ff;
+
+    font-weight:bold;
 }
 
 .layout-blue #poweredby {

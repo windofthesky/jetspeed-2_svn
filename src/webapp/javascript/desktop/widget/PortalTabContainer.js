@@ -18,7 +18,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
     // dojo.widget.Widget create protocol
     postMixInProperties: function( args, fragment, parentComp )
     {
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/desktop/widget/HtmlTabContainer.css" ) ;
+        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getDesktopThemeRootUrl() + "/css/PortalTabContainer.css" ) ;
         jetspeed.ui.widget.PortalTabContainer.superclass.postMixInProperties.call( this, args, fragment, parentComp );
     },
     addTab: function( /* jetspeed.om.MenuOption */ menuOpt )
@@ -32,7 +32,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
         tab.label = menuOpt.getShortTitle();
         this.addChild( tab );
         //dojo.debug( "PortalTabContainer.addTab" );
-        if ( jetspeed.page.isPageUrl( menuOpt.getUrl() ) )
+        if ( jetspeed.page.equalsPageUrl( menuOpt.getUrl() ) )
         {
             this.selectTab( tab );   // this.selectedTab
             this.selectedTab = null;  // to keep it from matching the fake widgets with no widgetdI
@@ -44,7 +44,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
         jetspeed.ui.widget.PortalTabContainer.superclass.selectTab.call( this, tab );
         //dojo.debug( "PortalTabContainer.selectTab " + tab.label);
         if ( ! this.js_addingTab )
-            jetspeed.menuNavClick( tab.menuOption );
+            tab.menuOption.navigateTo();
 	},
     _showTab: function( tab )
     {
@@ -56,7 +56,18 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
 		dojo.html.removeClass( tab.div, "current" );
 		tab.selected=false;
 	},
-    createTabsFromMenu: function( /* jetspeed.om.Menu */ menuObj )
+    _doSizing: function()
+    {
+        // position the labels and the container node
+		var labelAlign=this.labelPosition.replace(/-h/,"");
+		var children = [
+			{domNode: this.dojoTabLabels, layoutAlign: labelAlign},
+			{domNode: this.containerNode, layoutAlign: "client"}
+		];
+		dojo.layout(this.domNode, children);
+    },
+
+    createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
     {
         if ( ! menuObj ) return;
         var menuOpts = menuObj.getOptions();
