@@ -86,7 +86,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         try
         {
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(path);                
-            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(request, this.baseUrlAccess);
+            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(request, this.baseUrlAccess, theme, getThemeRootPath( theme ) );
             request.getRequest().setAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
             dispatcher.include(request.getRequest(), request.getResponse());
         }
@@ -134,10 +134,15 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         String ext = themeConfiguration.getProperty("template.extension");
         if (ext == null)
             ext = this.defaultExtension;
+        return getThemeRootPath(theme) + "/" + id + ext;
+    }
+
+    protected String getThemeRootPath(String theme)
+    {
         if (this.themesRoot.endsWith("/"))
-            return this.themesRoot + theme + "/" + id + ext;
+            return this.themesRoot + theme;
         else
-            return this.themesRoot + "/" + theme + "/" + id + ext;
+            return this.themesRoot + "/" + theme;
     }
     
     protected Properties getConfiguration(String theme)

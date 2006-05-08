@@ -35,11 +35,15 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     
     /** base portal URL to override default URL server info from servlet */
     private BasePortalURL baseUrlAccess = null;
+    private String themeRootPath = null;
+    private String theme = null;
         
-    public JetspeedDesktopContextImpl(RequestContext context, BasePortalURL baseUrlAccess)
+    public JetspeedDesktopContextImpl(RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath )
     {
         this.context = context;
         this.baseUrlAccess = baseUrlAccess;
+        this.theme = theme;
+        this.themeRootPath = themeRootPath;
     }
     
     public String getPortalResourceUrl(String relativePath)
@@ -98,4 +102,19 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
         }
     }
     
+    public String getDesktopThemeResourceUrl(String relativePath)
+    {
+        if ( relativePath.startsWith( "/" ) )
+            return getPortalResourceUrl(themeRootPath + relativePath);
+        else
+            return getPortalResourceUrl(themeRootPath + "/" + relativePath);
+    }
+    public String getDesktopThemeRootUrl()
+    {
+        return getPortalResourceUrl(themeRootPath);
+    }
+    public String getDesktopTheme()
+    {
+        return theme;
+    }
 }
