@@ -107,7 +107,7 @@ public class BasePrincipalImpl implements BasePrincipal
         String fullPath = name;
         if (null != name )
         {
-            fullPath = prefsRoot + (hiearchicalNames ? name.replace(',','/') : name );
+            fullPath = prefsRoot + (hiearchicalNames ? name.replace('.','/') : name );
         }
         return fullPath;
     }
