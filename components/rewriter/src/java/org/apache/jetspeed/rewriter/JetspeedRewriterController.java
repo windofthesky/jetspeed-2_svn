@@ -17,6 +17,8 @@ package org.apache.jetspeed.rewriter;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +111,7 @@ public class JetspeedRewriterController implements RewriterController
         this(mappingFile, toClassList(basicRewriterClassName,rulesetRewriterClassName), toClassList(adaptorHtmlClassName,adaptorXmlClassName));
     }
 
-    private static List toClassList(String classNameA, String classNameB)
+    protected static List toClassList(String classNameA, String classNameB)
     {
         try
         {
@@ -223,6 +225,24 @@ public class JetspeedRewriterController implements RewriterController
 
     }
 
+    protected Reader getReader(String resource)
+    throws RewriterException
+    {
+        File file = new File(resource);
+        if (file.exists() && file.isFile() && file.canRead())
+        {
+            try
+            {
+                return new FileReader(file);
+            }
+            catch (Exception e)
+            {
+                throw new RewriterException("could not open rewriter file " + resource, e);
+            }
+        }
+        throw new RewriterException("could not access rewriter file " + resource);
+    }
+        
     /*
      * (non-Javadoc)
      * 
