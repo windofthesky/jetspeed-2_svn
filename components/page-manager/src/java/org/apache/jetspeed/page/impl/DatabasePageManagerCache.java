@@ -284,7 +284,7 @@ public class DatabasePageManagerCache implements ObjectCache
             // reset internal FolderImpl caches
             if (removeObj instanceof FolderImpl)
             {
-                ((FolderImpl)removeObj).resetAll(true);
+                ((FolderImpl)removeObj).resetAll(false);
             }
         }
     }
