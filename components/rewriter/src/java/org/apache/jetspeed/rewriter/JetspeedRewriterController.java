@@ -196,33 +196,22 @@ public class JetspeedRewriterController implements RewriterController
      */
     protected void loadMapping() throws RewriterException
     {
-        File map = new File(this.mappingFile);
-        if (map.exists() && map.isFile() && map.canRead())
+        try
         {
-            try
-            {
-                this.mapper = new Mapping();
-                InputSource is = new InputSource(new FileReader(map));
-                is.setSystemId(this.mappingFile);
-                this.mapper.loadMapping(is);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                String msg = "RewriterService: Error in castor mapping creation";
-                log.error(msg, e);
-                throw new RewriterException(msg, e);
-            }
+            Reader reader = getReader(this.mappingFile);
+            
+            this.mapper = new Mapping();
+            InputSource is = new InputSource(reader);
+            is.setSystemId(this.mappingFile);
+            this.mapper.loadMapping(is);
         }
-        else
+        catch (Exception e)
         {
-
-            String msg = "RewriterService: Mapping not found or not a file or unreadable: " + this.mappingFile;
-            System.out.println(msg);
-            log.error(msg);
-            throw new RewriterException(msg);
+            e.printStackTrace();
+            String msg = "RewriterService: Error in castor mapping creation";
+            log.error(msg, e);
+            throw new RewriterException(msg, e);
         }
-
     }
 
     protected Reader getReader(String resource)
