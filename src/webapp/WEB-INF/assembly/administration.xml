@@ -24,6 +24,12 @@
   
 <bean id="adminVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
     <property name="resourceLoaderPath"><value>/WEB-INF/templates/</value></property>
+    <property name="velocityProperties">
+      <props>
+        <!-- clear out default global VM_global_library.vm leading to ERROR logging because its not available -->
+        <prop key="velocimacro.library"></prop>
+      </props>
+    </property>
 </bean>
   
 <bean id='PortalAdministrationImpl' init-method="start"

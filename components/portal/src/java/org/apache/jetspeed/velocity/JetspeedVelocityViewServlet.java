@@ -53,6 +53,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.Constants;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.exception.ParseErrorException;
@@ -164,6 +165,30 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         cacheValidationInterval = getLongInitParameter(config, CACHE_VALIDATION_INTERVAL_PARAMETER, DEFAULT_CACHE_VALIDATION_INTERVAL);
     }
 
+    /**
+     * overriding VelocityViewServlet initialization of global Velocity to properly provide our own velocity.properties
+     * so to prevent an ERROR logging for not finding the default global VM_global_library.vm (which isn't available).
+     */
+    protected void initVelocity(ServletConfig config) throws ServletException
+    {
+        try
+        {
+            Velocity.setApplicationAttribute(SERVLET_CONTEXT_KEY, getServletContext());
+            Velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.tools.view.servlet.ServletLogger");
+            ExtendedProperties configuration = loadConfiguration(getServletConfig());
+            configuration.addProperty("velocimacro.library", "/WEB-INF/jetspeed_macros.vm");
+            configuration.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
+            Velocity.setExtendedProperties(configuration);
+
+            // initialize and return velocity engine
+            Velocity.init();
+        }
+        catch (Exception e)
+        {
+            log.error("initVelocity(): unable to initialize default Velocity engine", e);
+        }
+    }
+    
     /**
      * Handle the template processing request.
      *
