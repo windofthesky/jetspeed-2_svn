@@ -33,23 +33,24 @@ limitations under the License.
 #set($portalFilter = $JS2RequestContext.getRequestAttribute("org.apache.jetspeed.login.filter.PortalFilter"))
 
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     ## include header resources immdiately after head and before base is reset to the portal
     ## web application context path root; this implies that header resources can not reliably
     ## employ relative urls to locate content
     #includeHeaderResource()
 
-	<base href="#BaseHref()">
+	<base href="#BaseHref()" />
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />   
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
 
     #includeJavaScriptForHead()
     #IncludeStylesheets()
 	
     <title>#PageTitle()</title>
 
-    <meta name="version" content="#SiteVersionTag()">
+    <meta name="version" content="#SiteVersionTag()" />
     <meta name="keywords" content="" />
     <meta name="description" content="#PageDescription()" />
   </head>
@@ -63,7 +64,7 @@ limitations under the License.
           <tr>
             <td>
               <div class="logo">
-              <img src="#GetPageResource('images/logo.gif')" alt="Logo" border="0"/>
+              <img src="#GetPageResource('images/logo.gif')" alt="Logo" border="0" />
               </div>
             </td>
             <td>
@@ -77,10 +78,10 @@ limitations under the License.
                   <span class="button"><a href="#BaseHref()login/logout">$messages.getString("portal.loginform.logout")</a></span>
                 </div>
 #else
-                <form name="loginform" method="POST">
-                  <div>$messages.getString("portal.loginform.username") <input type="text" size="10" name="org.apache.jetspeed.login.username" value=""></div>
-                  <div>$messages.getString("portal.loginform.password") <input type="password" size="10" name="org.apache.jetspeed.login.password"></div>
-                  <div class="action"><span class="button"><a href="#" onclick="document.loginform.submit();return false;">$messages.getString("portal.loginform.login")</a></span></div>
+                <form name="loginform" method="post">
+                  <div>$messages.getString("portal.loginform.username") <input type="text" size="10" name="org.apache.jetspeed.login.username" value="" /></div>
+                  <div>$messages.getString("portal.loginform.password") <input type="password" size="10" name="org.apache.jetspeed.login.password" /></div>
+                  <div class="action"><span class="button"><a href="#" onclick="document.loginform.submit();return false;" onkeypress="document.loginform.submit();return false;">$messages.getString("portal.loginform.login")</a></span></div>
   #if($errorcode == 2) ## ERROR_INVALID_PASSWORD
                   <div>$messages.getString("portal.loginform.error.invalid_password")</div>
   #end
@@ -95,7 +96,7 @@ limitations under the License.
 
 <!-- Powered By -->
       <div id="poweredby">
-        <img src="#GetPageResource('images/poweredby.gif')" border="0"/>
+        <img src="#GetPageResource('images/poweredby.gif')" alt="Powerd by" border="0" />
       </div>
 
 <!-- Top Tabs Menu -->

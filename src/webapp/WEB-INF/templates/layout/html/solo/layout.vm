@@ -1,3 +1,4 @@
+<?xml version="1.0" #if($response.characterEncoding)encoding="$response.characterEncoding"#end?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 #*
 Copyright 2004 The Apache Software Foundation
@@ -25,9 +26,10 @@ limitations under the License.
 
 <html>
   <head>
-	<base href="#BaseHref()">
+	<base href="#BaseHref()"/>
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />   
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
     #includeJavaScriptForHead()
 
     #IncludeStylesheets()
@@ -36,7 +38,7 @@ limitations under the License.
 
     <title>$!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)</title>
 
-    <meta name="version" content="#SiteVersionTag()">
+    <meta name="version" content="#SiteVersionTag()"/>
     <meta name="keywords" content="" />
     <meta name="description" content="#PageDescription()" />
   </head>
