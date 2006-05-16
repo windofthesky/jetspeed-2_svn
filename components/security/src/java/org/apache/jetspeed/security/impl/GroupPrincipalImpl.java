@@ -41,7 +41,7 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
      */
     public GroupPrincipalImpl(String groupName)
     {
-        super(groupName, PREFS_GROUP_ROOT);
+        super(groupName, PREFS_GROUP_ROOT, hiearchicalNames);
     }
 
     /**
@@ -81,6 +81,11 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
     public static String getPrincipalNameFromFullPath(String fullPath)
     {
         return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_GROUP_ROOT, hiearchicalNames);
+    }
+
+    public static String getFullPathFromPrincipalName(String name, String prefsRoot)    
+    {
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
     }
     
 }

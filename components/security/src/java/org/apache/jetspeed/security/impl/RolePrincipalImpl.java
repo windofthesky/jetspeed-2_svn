@@ -41,7 +41,7 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
      */
     public RolePrincipalImpl(String roleName)
     {
-        super(roleName, PREFS_ROLE_ROOT);
+        super(roleName, PREFS_ROLE_ROOT, hiearchicalNames);
     }
 
     /**
@@ -83,4 +83,10 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
     {
         return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_ROLE_ROOT, hiearchicalNames);
     }
+    
+    public static String getFullPathFromPrincipalName(String name, String prefsRoot)    
+    {
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
+    }
+    
 }

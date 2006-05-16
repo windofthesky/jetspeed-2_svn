@@ -42,7 +42,7 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
      */
     public UserPrincipalImpl(String userName)
     {
-        super(userName, PREFS_USER_ROOT);   
+        super(userName, PREFS_USER_ROOT, hiearchicalNames);   
     }
 
     /**
@@ -83,4 +83,10 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
     {
         return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_USER_ROOT, hiearchicalNames);
     }
+
+    public static String getFullPathFromPrincipalName(String name, String prefsRoot)    
+    {
+        return BasePrincipalImpl.getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
+    }
+    
 }

@@ -23,7 +23,7 @@ import org.apache.jetspeed.security.BasePrincipal;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class BasePrincipalImpl implements BasePrincipal
+public abstract class BasePrincipalImpl implements BasePrincipal
 {
     
     /** The version uid. */
@@ -43,10 +43,10 @@ public class BasePrincipalImpl implements BasePrincipal
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
      */
-    public BasePrincipalImpl(String name, String prefsRoot)
+    public BasePrincipalImpl(String name, String prefsRoot, boolean hiearchicalNames)
     {
         this.name = name;
-        this.fullPath = getFullPathFromPrincipalName(name, prefsRoot);
+        this.fullPath = getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
     }
 
     /**
@@ -127,11 +127,7 @@ public class BasePrincipalImpl implements BasePrincipal
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
      * @return The preferences full path / principal name.
-     */
-    public static String getFullPathFromPrincipalName(String name, String prefsRoot)
-    {
-        return getFullPathFromPrincipalName(name, prefsRoot, true);
-    }
+     */        
 
     /**
      * <p>
@@ -180,10 +176,11 @@ public class BasePrincipalImpl implements BasePrincipal
      * @param prefsRoot The preferences root node.
      * @return The principal name.
      */
-    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot)
-    {
-        return getPrincipalNameFromFullPath(fullPath, prefsRoot, true);
-    }
+// MOVED TO DERVICED CLASSES    
+//    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot)
+//    {
+//        return getPrincipalNameFromFullPath(fullPath, prefsRoot, true);
+//    }
 
     private boolean enabled = true;
 
