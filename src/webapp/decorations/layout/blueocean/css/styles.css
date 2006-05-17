@@ -289,12 +289,16 @@ body.layout-blueocean
     font-size: 10pt;
 }
 
+.layout-blueocean #masthead {
+    margin:0px;
+    padding:0px;
+    width:100%;
+    height:175px;
+}
+
 .layout-blueocean #main {
     margin:0px;
     padding:3px;
-    position:absolute;
-    top:170px;
-    left:0px;
     width:100%;
 }
 
