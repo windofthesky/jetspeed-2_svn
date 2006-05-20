@@ -112,7 +112,7 @@ public class ContentFragmentImpl implements ContentFragment
                 overridenContent = new StringBuffer();
             }
             // prevent repeated storing of the same error message
-            else if (!contnent.equals(overridenContent.toString()))
+            if (!contnent.equals(overridenContent.toString()))
             {
                 overridenContent.append(contnent);
             }
