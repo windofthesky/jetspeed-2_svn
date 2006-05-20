@@ -40,7 +40,6 @@ public class PortletRule extends Rule
 
     public void body(String namespace, String name, String text) throws Exception
     {
-        log.debug("Found portlet name " + name);
         PortletDefinitionComposite def = (PortletDefinitionComposite) app.getPortletDefinitionByName(text);
         digester.push(def);
     }

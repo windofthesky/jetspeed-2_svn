@@ -113,7 +113,6 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
                 while (st.nextToken() != StreamTokenizer.TT_EOF)
                 {
                     list.add(createObject(st.sval));
-                    log.debug("Parsed token value: "+st.sval);
                 }
             }
             catch (IOException e)
