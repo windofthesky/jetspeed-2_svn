@@ -78,8 +78,8 @@ limitations under the License.
       &nbsp;
       <c:if test="${requestScope.serverManagerAvailable}">
         <c:choose>
-          <c:when test="${pa.local}">
-            <%-- management of local pa not yet supported --%>
+          <c:when test="${pa.local or pa.path == pageContext.request.contextPath}">
+            <%-- management of local pa not yet supported and mustn't for current (this) pa --%>
             start&nbsp;&nbsp;stop&nbsp;&nbsp;undeploy&nbsp;
           </c:when>
           <c:otherwise>
