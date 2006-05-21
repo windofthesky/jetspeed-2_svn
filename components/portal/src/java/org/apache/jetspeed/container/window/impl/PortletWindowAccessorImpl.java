@@ -28,7 +28,9 @@ import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredExcept
 import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.ArgUtil;
@@ -49,12 +51,14 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     private Map windows = Collections.synchronizedMap(new HashMap());    
         
     private PortletEntityAccessComponent entityAccessor;
+    private PortletFactory portletFactory;
     private boolean validateWindows = false;
     
 
-    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, boolean validateWindows)
+    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, PortletFactory portletFactory, boolean validateWindows)
     {
         this.entityAccessor = entityAccessor;
+        this.portletFactory = portletFactory;
         this.validateWindows = validateWindows;
     }
 
@@ -68,13 +72,18 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         PortletWindow found = getWindowFromCache(windowId);
         if (found != null)
         {
+            // remove from cache if invalid entity
+            checkPortletWindowEntity(found);
             ((PortletWindowCtrl)found).setPortletEntity(entity);
             return found;
         }
         
         PortletWindowImpl window = new PortletWindowImpl(windowId);
         window.setPortletEntity(entity);
-        windows.put(windowId, window);
+        if ( isValidPortletEntity(entity))
+        {
+            windows.put(windowId, window);
+        }
         return window;        
     }
 
@@ -83,6 +92,8 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         PortletWindow found = getWindowFromCache(windowId);
         if (found != null)
         {
+            // remove from cache if invalid entity
+            checkPortletWindowEntity(found);
             return found;
         }        
         PortletWindowImpl window = new PortletWindowImpl(windowId);
@@ -91,14 +102,20 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     
     public PortletWindow getPortletWindow(String windowId)
     {
-        return getWindowFromCache(windowId);
+        PortletWindow window = getWindowFromCache(windowId);
+        if (window != null)
+        {
+            // remove from cache if invalid entity
+            checkPortletWindowEntity(window);
+        }        
+        return window;
     }
     
     public PortletWindow getPortletWindow(ContentFragment fragment) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
     {
         ArgUtil.assertNotNull(ContentFragment.class, fragment, this, "getPortletWindow(Fragment fragment)");
-        PortletWindow portletWindow = getWindowFromCache(fragment);
-        if (portletWindow == null)
+        PortletWindow portletWindow = getWindowFromCache(fragment);        
+        if (portletWindow == null || !checkPortletWindowEntity(portletWindow))
         {
             try
             {
@@ -137,6 +154,8 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         if(portletEntity != null)
         {
             ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
+            // if not a valid entity, remove window from cache
+            checkPortletWindowEntity(portletWindow);
         }
         else
         {
@@ -180,7 +199,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
             {
                 portletEntity = entityAccessor.generateEntityFromFragment(fragment, principal);
                 // not portlet definition most likely means that the portlet has not been deployed so dont worry about storing off the entity
-                if(portletEntity.getPortletDefinition() != null)
+                if(isValidPortletEntity(portletEntity))
                 {
                     entityAccessor.storePortletEntity(portletEntity);
                 }
@@ -240,5 +259,23 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     {
         return (PortletWindow)windows.get(id);
     }
+
+    private boolean checkPortletWindowEntity(PortletWindow window)
+    {
+        if (!isValidPortletEntity(window.getPortletEntity()))
+        {
+            removeWindow(window);
+            return false;
+        }
+        return true;
+    }
     
+    private boolean isValidPortletEntity(PortletEntity pe)
+    {
+        return pe != null
+                && pe.getPortletDefinition() != null
+                && pe.getPortletDefinition().getPortletApplicationDefinition() != null
+                && portletFactory.isPortletApplicationRegistered((PortletApplication) pe.getPortletDefinition()
+                        .getPortletApplicationDefinition());
+    }
 }

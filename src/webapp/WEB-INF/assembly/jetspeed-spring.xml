@@ -103,6 +103,9 @@
         <constructor-arg>
             <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
         </constructor-arg>
+        <constructor-arg>
+            <ref bean="portletFactory" />
+        </constructor-arg>
         <!-- enable window validation -->
         <constructor-arg type="boolean">
             <value>false</value>
