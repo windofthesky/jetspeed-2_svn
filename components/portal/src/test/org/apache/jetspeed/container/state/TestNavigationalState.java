@@ -42,12 +42,16 @@ import org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL;
 import org.apache.jetspeed.container.url.impl.QueryStringEncodingPortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
@@ -109,19 +113,25 @@ public class TestNavigationalState extends TestCase
         engineHelper = new SpringEngineHelper(context);
         engineHelper.setUp();
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
-        // mock test PortletWindow
+        // mock test PortletWindow, PortletEntity, PortletDefinition and PortletApplication
         Mock entityMock = new Mock(MutablePortletEntity.class);        
+        Mock portletDefinitionMock = new Mock(PortletDefinition.class);
+        Mock portletApplicationMock = new Mock(PortletApplication.class);
         Mock windowListMock = new Mock(CompositeWindowList.class);
         PortletWindowListCtrl windowList = (PortletWindowListCtrl)windowListMock.proxy();
-        entityMock.expects(new AnyArgumentsMatcher()).method("getPortletWindowList").withNoArguments().will(
-                new ReturnStub(windowList));
-        windowListMock.expects(new AnyArgumentsMatcher()).method("add").withAnyArguments().will(
-                new VoidStub());
-
+        entityMock.expects(new AnyArgumentsMatcher()).method("getPortletWindowList").withNoArguments().will(new ReturnStub(windowList));
+        windowListMock.expects(new AnyArgumentsMatcher()).method("add").withAnyArguments().will(new VoidStub());
+        portletApplicationMock.expects(new AnyArgumentsMatcher()).method("getId").withNoArguments().will(new ReturnStub(new JetspeedLongObjectID(1)));
+        portletDefinitionMock.expects(new AnyArgumentsMatcher()).method("getPortletApplicationDefinition").withNoArguments().will(new ReturnStub(portletApplicationMock.proxy()));
+        entityMock.expects(new AnyArgumentsMatcher()).method("getPortletDefinition").withNoArguments().will(new ReturnStub(portletDefinitionMock.proxy()));
         PortletWindowAccessor accessor = (PortletWindowAccessor) engine.getComponentManager().getComponent(PortletWindowAccessor.class);        
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "111");
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "222");
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "333");
+        
+        // register mocked PortletApplication in PortletFactory so the PortletWindowAccessor check for it won't break the tests
+        PortletFactory portletFactory = (PortletFactory)engine.getComponentManager().getComponent("portletFactory");
+        portletFactory.registerPortletApplication((PortletApplication)portletApplicationMock.proxy(),Thread.currentThread().getContextClassLoader());
         
         codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
         portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");        

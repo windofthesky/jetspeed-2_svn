@@ -24,6 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.PortletFactoryMock;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
@@ -75,7 +76,7 @@ public class TestWindows extends TestCase
         fragMock = new Mock(Fragment.class);
         entityMock = new Mock(MutablePortletEntity.class);
         windowListMock = new Mock(CompositeWindowList.class);
-        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), true);
+        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), PortletFactoryMock.instance,true);
     }
 
     public void testWindowAccess() throws Exception

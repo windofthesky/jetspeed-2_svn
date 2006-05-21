@@ -15,12 +15,11 @@
  */
 package org.apache.jetspeed;
 
+
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
-import org.apache.jetspeed.container.JetspeedPortletContainerWrapper;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerImpl;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
@@ -28,7 +27,6 @@ import org.apache.pluto.PortletContainerImpl;
  */
 public class AbstractPortalContainerTestCase extends RegistrySupportedTestCase
 {
-
     protected PortletWindowAccessor windowAccessor;
     protected PortletContainer portletContainer;
     
@@ -38,7 +36,6 @@ public class AbstractPortalContainerTestCase extends RegistrySupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        windowAccessor = new PortletWindowAccessorImpl(entityAccess, true);
-       //  portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
+        windowAccessor = new PortletWindowAccessorImpl(entityAccess,PortletFactoryMock.instance,true);
     }
 }
