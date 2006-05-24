@@ -190,9 +190,7 @@ public class PortletApplicationDescriptor
         }
         catch (Throwable t)
         {
-            t.printStackTrace();
             String msg = "Could not unmarshal portlet.xml. " + t.toString();
-            log.error(msg, t);
             throw new PortletApplicationException(msg, t);
         }
     }
