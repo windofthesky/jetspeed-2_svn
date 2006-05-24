@@ -93,6 +93,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     private Fragment fragment;
     
+    private static ThreadLocal fragmentPortletDefinition = new ThreadLocal();
+    
     public PortletEntityImpl(Fragment fragment)
     {
         setFragment(fragment);
@@ -220,8 +222,14 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             }
         }        
         
-        // Wrap the portlet defintion every request
-        return new FragmentPortletDefinition(this.portletDefinition, fragment);
+        // Wrap the portlet defintion every request thread
+        PortletDefinition fpd = (PortletDefinition)fragmentPortletDefinition.get();
+        if (fpd == null)
+        {
+            fpd = new FragmentPortletDefinition(this.portletDefinition, fragment);
+            fragmentPortletDefinition.set(fpd);
+        }        
+        return fpd;
     }
 
     public PortletApplicationEntity getPortletApplicationEntity()
@@ -377,6 +385,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         if(composite != null)
         {
             portletDefinition = (PortletDefinitionComposite) composite;
+            // if the portletDefinition is modified, clear threadlocal fragmentPortletDefinition cache
+            fragmentPortletDefinition.set(null);
             this.appName = ((MutablePortletApplication)portletDefinition.getPortletApplicationDefinition()).getName();
             this.portletName = portletDefinition.getName();
         }
@@ -545,7 +555,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     public void setFragment(Fragment fragment)
     {
         this.fragment = fragment;
-    }
-    
-    
+        // if the fragment is set, clear threadlocal fragmentPortletDefinition cache
+        fragmentPortletDefinition.set(null);
+    }   
 }
