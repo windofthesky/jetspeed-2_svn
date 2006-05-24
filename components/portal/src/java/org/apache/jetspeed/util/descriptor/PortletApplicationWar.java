@@ -85,9 +85,9 @@ public class PortletApplicationWar
            "'http://java.sun.com/dtd/web-app_2_3.dtd'>\n" +
             "<web-app></web-app>";
 
-    protected static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
-    protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
-    protected static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
+    public static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
+    public static final String WEB_XML_PATH = "WEB-INF/web.xml";
+    public static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
 
     protected static final int MAX_BUFFER_SIZE = 1024;
 
@@ -119,10 +119,13 @@ public class PortletApplicationWar
      *            the portlet application the <code>warPath</code> contains
      * @param webAppContextRoot
      *            context root relative to the servlet container of this app
-     * @throws IOException
      */
     public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot )
-            throws IOException
+    {
+        this(warStruct, paName, webAppContextRoot, 0);
+    }
+
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, long paChecksum )
     {
         validatePortletApplicationName(paName);
 
@@ -130,18 +133,22 @@ public class PortletApplicationWar
         this.webAppContextRoot = webAppContextRoot;
         this.openedResources = new ArrayList();
         this.warStruct = warStruct;
-        this.paChecksum = MultiFileChecksumHelper.getChecksum(new File[] {
-                        new File(warStruct.getRootDirectory(), WEB_XML_PATH),
-                        new File(warStruct.getRootDirectory(), PORTLET_XML_PATH),
-                        new File(warStruct.getRootDirectory(), EXTENDED_PORTLET_XML_PATH) });
-        if (paChecksum == 0)
+        this.paChecksum = paChecksum;
+    }
+    
+    public long getPortletApplicationChecksum() throws IOException
+    {
+        if ( this.paChecksum == 0)
+        {
+            this.paChecksum = MultiFileChecksumHelper.getChecksum(new File[] {
+                    new File(warStruct.getRootDirectory(), WEB_XML_PATH),
+                    new File(warStruct.getRootDirectory(), PORTLET_XML_PATH),
+                    new File(warStruct.getRootDirectory(), EXTENDED_PORTLET_XML_PATH) });
+        }
+        if (this.paChecksum == 0)
         {
           throw new IOException("Cannot find any deployment descriptor for Portlet Application "+paName);
         }
-    }
-
-    public long getPortletApplicationChecksum()
-    {
       return paChecksum;
     }
 
@@ -243,12 +250,12 @@ public class PortletApplicationWar
                 }
                 else
                 {
-                    log.warn("Failed to load existing metadata: " + e.toString());
+                    throw new PortletApplicationException("Failed to load existing metadata.",e);
                 }
             }
             catch (MetaDataException e)
             {
-                log.warn("Failed to load existing metadata.  " + e.toString(), e);
+                throw new PortletApplicationException("Failed to load existing metadata.", e);
             }
             finally
             {
@@ -417,7 +424,7 @@ public class PortletApplicationWar
         {
             target.copyFrom(warStruct.getRootDirectory());
 
-            return new PortletApplicationWar(target, paName, webAppContextRoot);
+            return new PortletApplicationWar(target, paName, webAppContextRoot, paChecksum);
 
         }
         catch (IOException e)

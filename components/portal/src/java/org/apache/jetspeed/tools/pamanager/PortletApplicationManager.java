@@ -31,7 +31,9 @@ import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
+import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.pluto.om.common.SecurityRole;
@@ -39,9 +41,11 @@ import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -54,8 +58,8 @@ import java.util.List;
  */
 public class PortletApplicationManager implements PortletApplicationManagement
 {
+    private static int DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL = 10*1000; // 10 seconds
     private static final Log    log = LogFactory.getLog("deployment");
-    private static final String PORTLET_XML = "WEB-INF/portlet.xml";
 
     protected PortletEntityAccessComponent entityAccess;
     protected PortletFactory        portletFactory;
@@ -66,6 +70,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
     protected List                  permissionRoles;
+    protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
+    protected DescriptorChangeMonitor monitor;
+    protected boolean started;
 
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -85,6 +92,44 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.permissionRoles    = permissionRoles;
 	}
     
+    public void start()
+    {
+        if ( descriptorChangeMonitorInterval > 0 )
+        {
+            try
+            {
+                monitor = new DescriptorChangeMonitor(Thread.currentThread().getThreadGroup(),
+                                                "PortletApplicationManager Descriptor Change Monitor Thread", this, descriptorChangeMonitorInterval);
+
+                monitor.setContextClassLoader(getClass().getClassLoader());
+                monitor.start();
+                log.info("PortletApplicationManager Descriptor Change Monitor started!");
+            }
+            catch (Exception e)
+            {
+                log.warn("Unable to start PortletApplicationManager Descriptor Change Monitor: "+ e.toString(), e);
+                monitor.safeStop();
+                monitor = null;
+            }
+        }
+        started = true;
+    }
+    
+    public void stop()
+    {
+        started = false;
+        if (monitor != null)
+        {
+            monitor.safeStop();
+            monitor = null;
+        }
+    }
+    
+    public boolean isStarted()
+    {
+        return started;
+    }
+    
     public void setRoleManager(RoleManager roleManager)
     {
         this.roleManager = roleManager;
@@ -99,11 +144,20 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	{
 		this.searchEngine = searchEngine;
 	}
+    
+    private void checkStarted()
+    {
+        if (!started)
+        {
+            throw new IllegalStateException("Not started yet");
+        }
+    }
 
 	public void startLocalPortletApplication(String contextName, FileSystemHelper warStruct,
 		ClassLoader paClassLoader)
 		throws RegistryException
 	{
+        checkStarted();
         checkValidContextName(contextName, true);
         startPA(contextName, warStruct, paClassLoader, true);
 	}
@@ -112,6 +166,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		ClassLoader paClassLoader)
 		throws RegistryException
 	{
+        checkStarted();
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
@@ -168,7 +223,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
             if (pa != null)
             {
-                if (portletFactory.getPortletApplicationClassLoader(pa) != null)
+                if (portletFactory.isPortletApplicationRegistered(pa))
                 {
                     throw new RegistryException("Portlet Application " + paName + " still running");
                 }
@@ -337,41 +392,75 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	protected void startPA(String contextName, FileSystemHelper warStruct,
-		ClassLoader paClassLoader, boolean local)
-		throws RegistryException
+	        ClassLoader paClassLoader, boolean local)
+	throws RegistryException
 	{
-		PortletApplicationWar paWar = null;
-
+	    startPA(contextName, warStruct, paClassLoader, local, 0);
+	}
+	
+	protected void startPA(String contextName, FileSystemHelper warStruct,
+	        ClassLoader paClassLoader, boolean local, long checksum)
+	throws RegistryException
+	{
+        PortletApplicationWar paWar = null;
 		try
 		{
-			try
-			{
-				paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName);
+            boolean register = true;
+            boolean monitored = checksum != 0;
+            paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
+            try
+            {
+                if (paClassLoader == null)
+                {
+                    paClassLoader = paWar.createClassloader(getClass().getClassLoader());
+                }                
+                checksum = paWar.getPortletApplicationChecksum();                
+            }
+            catch (IOException e)
+            {
+                String msg = "Invalid PA WAR for " + contextName;
+                log.error(msg, e);
+                if ( paClassLoader == null )
+                {
+                    // nothing to be done about it anymore: this pa is beyond repair :(
+                    throw new RegistryException(e);
+                }
+                register = false;
+            }
 
-				if (paClassLoader == null)
-				{
-					paClassLoader = paWar.createClassloader(getClass().getClassLoader());
-				}
-			}
-			catch (IOException e)
-			{
-				String msg = "Failed to create PA WAR for " + contextName;
-				log.error(msg, e);
-				throw new RegistryException(msg, e);
-			}
+			MutablePortletApplication pa = (MutablePortletApplication) registry.getPortletApplication(contextName);
 
-			MutablePortletApplication pa = (MutablePortletApplication) registry
-				.getPortletApplication(contextName);
-
-			if ((pa != null) && (paWar.getPortletApplicationChecksum() == pa.getChecksum()))
-			{
-                portletFactory.unregisterPortletApplication(pa);
-			}
-			else
-			{
-				pa = registerPortletApplication(paWar, pa, local, paClassLoader);
-			}
-            portletFactory.registerPortletApplication(pa, paClassLoader);
+            if (pa != null)
+            {
+                DescriptorChangeMonitor changeMonitor = this.monitor;
+                if (!monitored && changeMonitor != null)
+                {
+                    changeMonitor.remove(contextName);
+                }
+                portletFactory.unregisterPortletApplication(pa);                        
+            }
+            if (register)
+            {
+                try
+                {
+                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
+                }
+                catch (Exception e)
+                {
+                    // don't register the pa
+                    register = false;
+                }
+            }
+            if (register)
+            {
+                portletFactory.registerPortletApplication(pa, paClassLoader);
+            }
+            
+            DescriptorChangeMonitor changeMonitor = this.monitor;
+            if (!monitored && changeMonitor != null)
+            {
+                changeMonitor.monitor(contextName,paClassLoader, local, warStruct.getRootDirectory(), checksum);
+            }
 		}
 		finally
 		{
@@ -402,9 +491,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             // ignore errors during portal shutdown
         }
+        DescriptorChangeMonitor monitor = this.monitor;
+        if ( monitor != null )
+        {
+            monitor.remove(contextName);
+        }
 		if (pa != null)
 		{
-			portletFactory.unregisterPortletApplication(pa);
+            portletFactory.unregisterPortletApplication(pa);
 		}
 	}
 
@@ -508,5 +602,227 @@ public class PortletApplicationManager implements PortletApplicationManagement
             log.error("Error revoking default permissions for " + paName, e);
         }
     }
+
+    public int getDescriptorChangeMonitorInterval()
+    {
+        return descriptorChangeMonitorInterval/1000;
+    }
+
+    public void setDescriptorChangeMonitorInterval(int descriptorChangeMonitorInterval)
+    {
+        this.descriptorChangeMonitorInterval = descriptorChangeMonitorInterval*1000;
+    }    
     
+    private static class DescriptorChangeMonitor extends Thread
+    {
+        private static class DescriptorChangeMonitorInfo
+        {
+            private String contextName;
+            private ClassLoader paClassLoader;
+            private boolean local;
+            private File paDir;
+            private File[] descriptors;
+            private long descriptorModificationTime;
+            private long extendedDescriptorModificationTime;
+            private long checksum;
+            private boolean obsolete;
+                        
+            /*
+             * Constructor only used for looking up the matching registered one in monitorsInfo
+             */
+            public DescriptorChangeMonitorInfo(String contextName)
+            {
+                this.contextName = contextName;
+            }
+            
+            public DescriptorChangeMonitorInfo(String contextName, ClassLoader paClassLoader, boolean local, File paDir, long checksum)
+            {
+                this.contextName = contextName;
+                this.paClassLoader = paClassLoader;
+                this.local = local;
+                this.paDir = paDir.isAbsolute() ? paDir : paDir.getAbsoluteFile();
+                this.checksum = checksum;
+                
+                this.descriptors = new File[] { 
+                        new File(paDir, PortletApplicationWar.WEB_XML_PATH),
+                        new File(paDir, PortletApplicationWar.PORTLET_XML_PATH),
+                        new File(paDir, PortletApplicationWar.EXTENDED_PORTLET_XML_PATH) };
+
+                descriptorModificationTime = descriptors[1].lastModified();
+                extendedDescriptorModificationTime = descriptors[2].lastModified();
+            }
+            
+            public String getContextName()
+            {
+                return contextName;
+            }
+            
+            public ClassLoader getPAClassLoader()
+            {
+                return paClassLoader;
+            }
+            
+            public boolean isLocal()
+            {
+                return local;
+            }
+            
+            public File getPADir()
+            {
+                return paDir;
+            }
+
+            public long getChecksum()
+            {
+                return checksum;
+            }
+            
+            public boolean isChanged()
+            {
+                if ( !obsolete)
+                {
+                    long newDescriptorModificationTime = descriptors[1].lastModified();
+                    long newExtendedDescriptorModificationTime = descriptors[2].lastModified();
+                    if ( descriptorModificationTime != newDescriptorModificationTime ||
+                            extendedDescriptorModificationTime != newExtendedDescriptorModificationTime )
+                    {
+                        descriptorModificationTime = newDescriptorModificationTime;
+                        extendedDescriptorModificationTime = newExtendedDescriptorModificationTime;
+                        long newChecksum = MultiFileChecksumHelper.getChecksum(descriptors);
+                        if ( checksum != newChecksum )
+                        {
+                            checksum = newChecksum;
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            public void setObsolete()
+            {
+                obsolete = true;
+            }
+            
+            public boolean isObsolete()
+            {
+                return obsolete;
+            }
+        }        
+
+        private PortletApplicationManager pam;
+        private long interval;
+        private boolean started = true;
+        private ArrayList monitorInfos;
+
+        public DescriptorChangeMonitor(ThreadGroup group, String name, PortletApplicationManager pam, long interval)
+        {
+            super(group, name);
+            this.pam = pam;
+            this.interval = interval;
+            monitorInfos = new ArrayList();
+            setPriority(MIN_PRIORITY);
+            setDaemon(true);
+        }
+        
+        public void run()
+        {
+            try
+            {
+                sleep(interval);
+            }
+            catch (InterruptedException e)
+            {
+            }
+            while (started)
+            {
+                checkDescriptorChanges();
+
+                try
+                {
+                    sleep(interval);
+                }
+                catch (InterruptedException e)
+                {
+
+                }
+            }
+        }
+
+        /**
+         * notifies a switch variable that exits the watcher's montior loop started in the <code>run()</code> method.
+         */
+        public synchronized void safeStop()
+        {
+            started = false;
+            monitorInfos.clear();
+        }
+        
+        public synchronized void monitor(String contextName, ClassLoader paClassLoader, boolean local, File paDir, long checksum)
+        {
+            monitorInfos.add(new DescriptorChangeMonitorInfo(contextName, paClassLoader, local, paDir, checksum));
+        }
+        
+        public synchronized void remove(String contextName)
+        {
+            DescriptorChangeMonitorInfo monitorInfo;
+            for ( int i = monitorInfos.size()-1; i > -1; i-- )
+            {
+                monitorInfo = (DescriptorChangeMonitorInfo)monitorInfos.get(i);
+                if (contextName.equals(monitorInfo.getContextName()))
+                {
+                    // will be removed by checkDescriptorChanges on next iteration
+                    monitorInfo.setObsolete();
+                    break;
+                }
+            }
+        }
+        
+        private void checkDescriptorChanges()
+        {
+            int size;
+            synchronized (this)
+            {
+                size = monitorInfos.size();
+            }
+            for (int i = size-1; i > -1; i--)
+            {
+                DescriptorChangeMonitorInfo monitorInfo;
+                synchronized (this)
+                {
+                    if ( started )
+                    {
+                        monitorInfo = (DescriptorChangeMonitorInfo)monitorInfos.get(i);
+                        if (monitorInfo.isObsolete())
+                        {
+                            monitorInfos.remove(i);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                if (monitorInfo.isChanged())
+                                {
+                                    try
+                                    {
+                                        pam.startPA(monitorInfo.getContextName(), new DirectoryHelper(monitorInfo.getPADir()),
+                                                monitorInfo.getPAClassLoader(), monitorInfo.isLocal(), monitorInfo.getChecksum());
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        log.error("Failed to restart PortletApplication "+monitorInfo.getContextName(),e);
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // ignore filesystem and/or descriptor errors, maybe next time round they'll be fixed again
+                                log.error("Descriptor Change check failure for PortletApplication "+monitorInfo.getContextName(),e);
+                            }
+                        }
+                    }
+                }
+            }
+        }        
+    }    
 }

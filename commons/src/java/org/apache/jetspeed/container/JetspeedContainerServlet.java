@@ -162,7 +162,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 PortletApplicationManagement pam =
                     (PortletApplicationManagement)services.getService("PAM");
 
-                if (pam != null)
+                if (pam != null && pam.isStarted())
                 {
                     DirectoryHelper paDirHelper = new DirectoryHelper(new File(paDir));
                     pam.startPortletApplication(contextPath, paDirHelper, paClassLoader);

@@ -36,7 +36,7 @@ limitations under the License.
  
   <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory"/>
   <bean id="PAM" 
-  	   class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager"
+  	   class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" init-method="start" destroy-method="stop"
   >  	   
   	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
@@ -54,6 +54,9 @@ limitations under the License.
 
    <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
        <property name="autoCreateRoles"><value>true</value></property>
+   -->      
+   <!-- optional descriptor change monitor check interval in seconds (0: disabled, default: 10):
+       <property name="descriptorChangeMonitorInterval"><value>10</value></property>
    -->      
   </bean>
 

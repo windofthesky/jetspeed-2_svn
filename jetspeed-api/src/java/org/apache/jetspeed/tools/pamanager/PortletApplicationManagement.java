@@ -29,6 +29,7 @@ public interface PortletApplicationManagement
 {
   public static final String LOCAL_PA_PREFIX = "jetspeed-";
   
+  public boolean isStarted();
   void startPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
   void stopPortletApplication(String contextName) throws RegistryException;
   void startLocalPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
