@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import javax.portlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -122,8 +123,16 @@ public class RenderingJobImpl implements RenderingJob
         }
         catch (Throwable t)
         {
-            // this will happen is request is prematurely aborted            
-            log.error("Error rendering portlet OID " + this.window.getId(), t);
+            // this will happen is request is prematurely aborted
+            if ( t instanceof UnavailableException)
+            {
+                // no need to dump a full stack trace to the log
+                log.error("Error rendering portlet OID "+this.window.getId()+": "+t.toString());
+            }
+            else
+            {
+                log.error("Error rendering portlet OID " + this.window.getId(), t);
+            }
             fragment.overrideRenderedContent(t.getMessage());
         }
         finally
