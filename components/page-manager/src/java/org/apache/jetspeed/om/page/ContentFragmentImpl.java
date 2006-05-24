@@ -53,6 +53,14 @@ public class ContentFragmentImpl implements ContentFragment
     {
         return getContentFragments();
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getOverriddenContent()
+     */
+    public String getOverriddenContent()
+    {
+        return overridenContent != null ? overridenContent.toString() : null;
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getRenderedContent()

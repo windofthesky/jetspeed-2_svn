@@ -66,6 +66,10 @@ public interface ContentFragment extends Fragment
     public void overrideRenderedContent(String contnent);
 
     /**
+     * @return the overridden content set by overrideRenderedContent
+     */
+    public String getOverriddenContent();
+    /**
      * 
      * <p>
      * setPortletContent

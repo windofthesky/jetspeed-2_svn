@@ -238,19 +238,22 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
                 // unique name has changed and access the portlet definition
                 // using that unique name.
                 parentPortletDef = registry.getPortletDefinitionByUniqueName(fragment.getName());
-                ((PortletEntityCtrl)portletEntity).setPortletDefinition(parentPortletDef);
-                storePortletEntity(portletEntity);
+                if ( parentPortletDef != null)
+                {
+                    ((PortletEntityCtrl)portletEntity).setPortletDefinition(parentPortletDef);
+                    storePortletEntity(portletEntity);
+                }
             }
-            
-            
             
             if(parentPortletDef == null)
             {
-                final String msg = "No parent portlet definition could be located using unique name: "+portletUniqueName+
-                            ".  Unless you plan on redploying this portlet definition, it is highly recommended "+
-                            "that you delete the orphaned portlet entity with the id: "+portletEntity.getId();
-                fragment.overrideRenderedContent(msg);
-                logger.warn(msg);                
+                final String msg = "Portlet "+portletUniqueName+" not found";
+                String content = fragment.getOverriddenContent();
+                if (content == null || !content.equals(msg))
+                {
+                    fragment.overrideRenderedContent(msg);
+                    logger.error(msg);
+                }
             }           
             
             return (MutablePortletEntity) portletEntity;                

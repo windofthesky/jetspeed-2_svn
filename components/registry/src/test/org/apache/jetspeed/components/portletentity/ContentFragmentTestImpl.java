@@ -320,6 +320,14 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
     public void overrideRenderedContent(String contnent)
     {
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getOverriddenContent()
+     */
+    public String getOverriddenContent()
+    {
+        return null;
+    }
 
     /** 
      * @see org.apache.jetspeed.om.page.ContentFragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
