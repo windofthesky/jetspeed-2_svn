@@ -439,7 +439,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
                 portletFactory.unregisterPortletApplication(pa);                        
             }
-            if (register)
+            if (register && (pa == null || checksum != pa.getChecksum()))
             {
                 try
                 {
