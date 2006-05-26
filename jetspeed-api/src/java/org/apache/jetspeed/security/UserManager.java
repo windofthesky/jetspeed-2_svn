@@ -108,16 +108,24 @@ public interface UserManager
      * An iterator of {@link User}finding users matching the corresponding
      * filter criteria.
      * </p>
-     * <p>
-     * Current implementation only allows for getting back all users with "" as
-     * a fitler.
-     * </p>
      * TODO Complete filter implementation.
      * 
      * @param filter The filter used to retrieve matching users.
      * @return The Iterator of {@link User}.
      */
     Iterator getUsers(String filter) throws SecurityException;
+
+    /**
+     * <p>
+     * An iterator of user names, finding users matching the corresponding
+     * filter criteria.
+     * </p>
+     * TODO Complete filter implementation.
+     * 
+     * @param filter The filter used to retrieve matching users.
+     * @return The Iterator of {@link User}.
+     */
+    Iterator getUserNames(String filter) throws SecurityException;
 
     /**
      * <p>

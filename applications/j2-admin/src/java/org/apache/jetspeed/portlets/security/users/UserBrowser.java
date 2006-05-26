@@ -145,13 +145,11 @@ public class UserBrowser extends BrowserPortlet
         List list = new ArrayList();
         try
         {
-            Iterator users = userManager.getUsers(filter);
+            Iterator users = userManager.getUserNames(filter);
 
             while (users.hasNext())
             {
-                User user = (User)users.next();
-                Principal principal = SecurityUtil.getPrincipal(user.getSubject(),UserPrincipal.class);                
-                list.add(principal.getName());
+                list.add(users.next());
             }            
         }
         catch (SecurityException sex)

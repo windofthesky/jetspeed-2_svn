@@ -381,6 +381,20 @@ public class UserManagerImpl implements UserManager
     }
 
     /**
+     * @see org.apache.jetspeed.security.UserManager#getUserNames(java.lang.String)
+     */
+    public Iterator getUserNames(String filter) throws SecurityException
+    {
+        List usernames = new LinkedList();
+        Iterator userPrincipals = atnProviderProxy.getUserPrincipals(filter).iterator();
+        while (userPrincipals.hasNext())
+        {
+            usernames.add(((Principal) userPrincipals.next()).getName());
+        }
+        return usernames.iterator();
+    }
+
+    /**
      * @see org.apache.jetspeed.security.UserManager#getUsersInRole(java.lang.String)
      */
     public Collection getUsersInRole(String roleFullPathName)
