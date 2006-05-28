@@ -93,7 +93,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     private Fragment fragment;
     
-    private static ThreadLocal fragmentPortletDefinition = new ThreadLocal();
+    private ThreadLocal fragmentPortletDefinition = new ThreadLocal();
     
     public PortletEntityImpl(Fragment fragment)
     {
