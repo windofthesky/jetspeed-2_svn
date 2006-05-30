@@ -15,10 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <toolbox>
-  <tool>
-     <key>toolLoader</key>
-     <class>org.apache.velocity.tools.generic.ToolLoader</class>
-  </tool> 
    <tool>
    <key>date</key>
      <scope>application</scope>
