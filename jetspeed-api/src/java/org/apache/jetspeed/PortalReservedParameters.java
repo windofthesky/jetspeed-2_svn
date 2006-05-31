@@ -53,6 +53,11 @@ public interface PortalReservedParameters
     public static final String RESOVLER_CACHE_ATTR = "org.apache.jetspeed.resovler.cache";
     public static final String PORTLET_WINDOW_ATTRIBUTE = "org.apache.jetspeed.portlet.window";
     public static final String PAGE_THEME_ATTRIBUTE = "org.apache.jetspeed.theme";
+    /**
+     * Setting this as a session attribute will override all themes declared in
+     * psml. Sample values are "simple", "tigris", "jetspeed"
+     */
+    public static final String PAGE_THEME_OVERRIDE_ATTRIBUTE = "org.apache.jetspeed.theme.override";
     public static final String PORTAL_FILTER_ATTRIBUTE = "org.apache.jetspeed.login.filter.PortalFilter";
     
 }
