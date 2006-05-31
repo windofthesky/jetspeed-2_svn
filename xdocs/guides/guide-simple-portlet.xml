@@ -20,6 +20,7 @@
 		<subtitle>Documentation for Creating a Simple Portlet</subtitle>
 		<authors>
 			<person name="David Le Strat" email="dlestrat@apache.org" />
+			<person name="Philip Mark Donaghy" email="philip.donaghy@gmail.com" />
 		</authors>
 	</properties>
 	<body>
@@ -90,10 +91,33 @@ javac -cp ~/.maven/repository/org.apache.portals.jetspeed-2/jars/portlet-api-1.0
 			</source>
 			</p>
 			</subsection>
-			<subsection name="4. The PSML">
+			<subsection name="4. The WAR file">
 			<p>
-			Create the file simplest.psml in the src/webapp/WEB-INF/pages directory of your Jetspeed Portal.
-			The portlet-app id and the portlet-name are combined to identify the portlet fragment. Rebuild your portal.
+			From the directory simplest combine the files above into a war file using the command,
+			<source>
+jar cvf ../simplest.war .
+			</source>
+			</p>
+			</subsection>
+			<subsection name="5. Deploy the WAR file">
+			<p>
+			Copy the war file to <code>$CATALINA_HOME/webapps/jetspeed/WEB-INF/deploy</code>. Jetspeed-2
+			will deploy the webapp.
+			</p>
+			</subsection>
+			<subsection name="6. The PSML">
+			<p>
+			Create the file simplest.psml and copy it to the
+                        <code>$CATALINA_HOME/webapps/jetspeed/WEB-INF/pages</code> 
+                        directory of your Jetspeed Portal.
+			The portlet-app id and the portlet-name are combined to identify the portlet fragment.
+                        Alternatively one can use the portlet chooser by clicking on the edit page icon.
+                        Your user must have the permission to edit pages. The user <code>admin</code> password
+                        <code>admin</code> has permission to edit all pages. The user <code>user</code>
+                        password <code>user</code> has permission to edit the
+                        <a href="http://localhost:8080/jetspeed/portal/anotherdir">[USER 004] PSML Page</a>.
+                        And by default Jetspeed-2 allows newly registered users to add portlets and customize 
+                        their home page.
 			<source><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?> 
  <page> 
@@ -117,21 +141,9 @@ javac -cp ~/.maven/repository/org.apache.portals.jetspeed-2/jars/portlet-api-1.0
   </security-constraints>
 </page>]]>
 			</source>
-			</p>
-			</subsection>
-			<subsection name="5. The WAR file">
-			<p>
-			From the directory simplest combine the files above into a war file using the command,
-			<source>
-jar cvf ../simplest.war .
-			</source>
-			</p>
-			</subsection>
-			<subsection name="6. Deploy the WAR file">
-			<p>
-			Copy the war file to <code>$CATALINA_HOME/webapps/jetspeed/WEB-INF/deploy</code>. Jetspeed-2
-			will deploy the webapp. Access the page in your navigator 
-			<code>http://localhost:8080/jetspeed/portal/simplest.psml</code>.
+                        Test the portlet using the
+                        <a href="http://localhost:8080/jetspeed/portal/simplest.psml">simplest.psml</a> in
+                        your browser.
 			</p>
 			</subsection>
 		</section>
