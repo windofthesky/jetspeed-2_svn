@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.PortalReservedParameters;
+
 /**
  * LoginProxyServlet
  * 
@@ -54,6 +56,17 @@ public class LoginProxyServlet extends HttpServlet
             session.setAttribute(LoginConstants.PASSWORD, parameter);
         else
             session.removeAttribute(LoginConstants.PASSWORD);
+
+        // Globaly override all psml themes
+        if (request
+                .getParameter(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE) != null)
+        {
+            String decoratorName = request
+                    .getParameter(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE);
+            session.setAttribute(
+                    PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE,
+                    decoratorName);
+        }
 
         response.sendRedirect(response.encodeURL(request.getContextPath()
                 + "/login/redirector"));

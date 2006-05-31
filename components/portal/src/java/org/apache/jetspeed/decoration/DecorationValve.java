@@ -87,6 +87,16 @@ public class DecorationValve extends AbstractValve implements Valve
             decorationFactory.clearCache(requestContext);
         }
         ContentPage page = requestContext.getPage();
+
+        // Globaly override all psml themes if override session attribute has been set
+        if (requestContext
+                .getSessionAttribute(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE) != null)
+        {
+            String decoratorName = (String) requestContext
+                    .getSessionAttribute(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE);
+            page.setDefaultDecorator(decoratorName, Fragment.LAYOUT);
+        }
+
         Theme theme = decorationFactory.getTheme(page, requestContext);
 
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
