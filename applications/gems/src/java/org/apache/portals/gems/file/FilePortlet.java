@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 
 import org.apache.jetspeed.PortalReservedParameters;
@@ -37,7 +38,41 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  */
 public class FilePortlet extends GenericServletPortlet
 {
-    
+    /**
+     * Name of portlet preference for source file url
+     */
+    public static final String PARAM_SOURCE_FILE = "file";
+
+    /**
+     * Name of portlet preference for source file url
+     */
+    public static final String PARAM_SOURCE_BASE_PATH = "basepath";
+
+    /**
+     * Name of portlet preference for source file url
+     */
+    public static final String PARAM_SOURCE_FILE_PATH = "filepath";
+
+
+    /**
+     * Default URL for the source file
+     */
+    private String defaultSourceFile = null;
+
+    /**
+     * Default base URL for the source file
+     */
+    private String defaultSourceBasePath = null;
+
+    public void init(PortletConfig config)
+        throws PortletException
+    {
+        super.init(config);
+        this.defaultSourceFile = config.getInitParameter(PARAM_SOURCE_FILE);
+        this.defaultSourceBasePath = config.getInitParameter(PARAM_SOURCE_BASE_PATH);
+    }
+
+
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
@@ -46,14 +81,23 @@ public class FilePortlet extends GenericServletPortlet
         if (null == path)
         {
             PortletPreferences prefs = request.getPreferences();
-            path = prefs.getValue("file", null);            
+            path = prefs.getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
         }
-        else
+        
+        if (null == path && this.defaultSourceBasePath != null )
         {
-            // default to 'content' area
-            File temp = new File(path);             
-            path = "/WEB-INF/" + temp.getPath();            
+            String filepath = (String)request.getParameter(PARAM_SOURCE_FILE_PATH);
+            if (filepath == null)
+            {
+                filepath = (String)request.getAttribute(PARAM_SOURCE_FILE_PATH);
+            }
+
+            if (filepath != null)
+            {
+                path = ( ( this.defaultSourceBasePath.length() > 0 ) ? ( this.defaultSourceBasePath + "/" ) : "" ) + filepath;
+            }
         }
+
         if (null == path)
         {
             response.setContentType("text/html");
@@ -61,6 +105,10 @@ public class FilePortlet extends GenericServletPortlet
         }
         else
         {
+            // default to 'content' area
+            File temp = new File(path);             
+            path = "/WEB-INF/" + temp.getPath();            
+
             setContentType(path, response);        
             renderFile(response, path);
         }        
@@ -68,7 +116,7 @@ public class FilePortlet extends GenericServletPortlet
 
     protected void setContentType(String path, RenderResponse response)
     {
-        // Note these content types need to be added to the portlet.xml        
+        // Note these content types need to be added to the portlet.xml
         if (path.endsWith(".html"))
         {
             response.setContentType("text/html");
@@ -84,7 +132,11 @@ public class FilePortlet extends GenericServletPortlet
         else if (path.endsWith(".csv"))
         {
             response.setContentType("text/csv");
-        }                
+        }
+        else if (path.endsWith(".xml") || path.endsWith(".xsl"))
+        {
+            response.setContentType("text/xml");
+        }
         else
         {
             response.setContentType("text/html");
