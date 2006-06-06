@@ -60,6 +60,18 @@ limitations under the License.
     <servlet-class>org.apache.jetspeed.demo.servlet.SSOBasicDemoServlet</servlet-class>
   </servlet>       
 
+    <!-- jdp YahooGeocodeProxyServlet -->
+    <servlet>
+    <servlet-name>YahooGeocodeProxyServlet</servlet-name>
+    <servlet-class>org.apache.portals.gems.googlemaps.YahooGeocodeProxyServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- jdp Map /yahoogecode files to YahooGeocodeProxy  -->
+    <servlet-mapping>
+    <servlet-name>YahooGeocodeProxyServlet</servlet-name>
+    <url-pattern>/yahoogeocode</url-pattern>
+    </servlet-mapping>    
+        
 	<servlet-mapping>
 		<servlet-name>SSODemo</servlet-name>
 		<url-pattern>/sso-demo</url-pattern>

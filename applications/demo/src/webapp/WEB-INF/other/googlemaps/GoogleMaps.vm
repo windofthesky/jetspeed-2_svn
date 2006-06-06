@@ -1,0 +1,36 @@
+<script language="JavaScript" type="text/javascript">
+	dojo.io.bind({
+		url: "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=$renderRequest.getPreferences().getValue('Location','')",
+		mimetype: "text/xml",
+		error: function(type, error){
+			top.alert("error");
+		},
+		load: function(type, data, event) {
+			lat = data.getElementsByTagName("Latitude").item(0).firstChild.nodeValue;
+			lng = data.getElementsByTagName("Longitude").item(0).firstChild.nodeValue;
+			//alert ("ll: " + lat + "," + lng);
+			mapit(lat,lng);
+		}
+	});
+</script>
+<script language="JavaScript" type="text/javascript">
+	function mapit(la, ln) {
+		var map = new GMap2(document.getElementById("map"));
+		// map.addControl(new GSmallMapControl());
+		// map.addControl(new GMapTypeControl());
+		map.setCenter(new GLatLng(la, ln), 13);
+	}
+</script>
+<div id="map" style="width: 500px; height: 300px"></div>
+
+
+
+
+
+
+
+
+
+
+
+

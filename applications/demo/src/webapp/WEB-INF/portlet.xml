@@ -795,5 +795,35 @@ limitations under the License.
     </portlet-preferences>
   </portlet>
 
+  <portlet id="GoogleMapsPortlet">
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/other/googlemaps/GoogleMaps.vm</value>
+    </init-param>
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/other/googlemaps/EditGoogleMaps.vm</value>
+    </init-param>
+    <portlet-name>GoogleMapsPortlet</portlet-name>
+    <display-name>Google Maps Portlet</display-name>
+    <portlet-class>org.apache.portals.gems.googlemaps.GoogleMapsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Google Map</title>
+    </portlet-info>
+    <portlet-preferences>
+      <preference>
+        <name>Location</name>
+        <value>denver, co</value>
+      </preference>
+    </portlet-preferences>
+  </portlet>         
+    
 </portlet-app>
 
