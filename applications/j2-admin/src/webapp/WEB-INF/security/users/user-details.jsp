@@ -561,7 +561,7 @@ limitations under the License.
 <c:if test="${user == null}">
 <script language="JavaScript">function t(i,f){if(i.checked) f.value='true';else f.value='false';}</script>
 
-<h3 class="portlet-section-header"><fmt:message key="security.add.user"/></h3>
+<h4 class="portlet-section-header"><fmt:message key="security.add.user"/></h4>
 
   <c:if test="${errorMessages != null}">
     <jsp:include page="/WEB-INF/view/errors-include.jsp"/>

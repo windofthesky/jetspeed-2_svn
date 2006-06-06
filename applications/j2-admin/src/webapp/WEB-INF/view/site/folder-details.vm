@@ -31,6 +31,7 @@ $link.setParameter('new', 'add-link')
 <a href="$sub">[$MESSAGES.getString('add.subfolder')]</a>
 <a href="$page">[$MESSAGES.getString('add.page')]</a>
 <a href="$link">[$MESSAGES.getString('add.link')]</a>
+<a href="$link">[$MESSAGES.getString('security')]</a>
 </table>
 </form>
 
