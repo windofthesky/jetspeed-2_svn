@@ -101,6 +101,18 @@
             <id>velocity</id>
             <version>1.4</version>
         </dependency>
-    </dependencies>
-
+        
+    <dependency>
+        <id>commons-httpclient</id>
+        <version>3.0</version>
+        <type>jar</type>
+    </dependency>		
+                
+    <dependency>
+        <id>servletapi</id>
+        <version>2.3</version>
+        <type>jar</type>
+    </dependency>
+        
+    </dependencies>    
 </project>
