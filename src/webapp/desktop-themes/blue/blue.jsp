@@ -78,6 +78,13 @@ limitations under the License.
     dojo.require("dojo.widget.Menu2");
     dojo.require("dojo.fx.html");
 
+    dojo.require('dojo.widget.LayoutContainer');
+    dojo.require('dojo.widget.ContentPane');
+    dojo.require('dojo.widget.LinkPane');
+    dojo.require('dojo.widget.SplitContainer');
+    dojo.require('dojo.widget.TabContainer');
+    dojo.require('dojo.widget.Tree');
+
     dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
     dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');
 
