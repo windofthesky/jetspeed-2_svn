@@ -17,11 +17,11 @@
 <head>
 <script type="text/javascript">
 
-    var djConfig = {isDebug: true, baseRelativePath: "./", baseScriptUri: "http://localhost:8080/j2-admin/dojo/"};
+    var djConfig = {isDebug: true, baseRelativePath: "./", baseScriptUri: "http://localhost:8080/jetspeed/javascript/dojo/"};
     //djConfig.debugAtAllCosts = true;
 
 </script>
-<script type="text/javascript" src="http://localhost:8080/j2-admin/dojo/dojo.js"></script>
+<script type="text/javascript" src="http://localhost:8080/jetspeed/java/script/dojo/dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
     dojo.require("dojo.lang.*");
     dojo.require("dojo.dnd.*");

@@ -1181,6 +1181,26 @@ limitations under the License.
             <short-title>Login</short-title>
         </portlet-info>
     </portlet>
+    <portlet id="SecurityPermissionsPortlet">
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/security/permissions/view.vm</value>
+        </init-param>
+        <portlet-name>SecurityPermissionsPortlet</portlet-name>
+        <display-name>Security Permissions</display-name>
+        <portlet-class>org.apache.jetspeed.portlets.security.permissions.SecurityPermissionsPortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>            
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Security Permissions</title>
+            <short-title>Permissions</short-title>
+        </portlet-info>
+    </portlet>
      
 </portlet-app>
 

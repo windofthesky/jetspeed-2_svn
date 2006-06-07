@@ -51,7 +51,8 @@ limitations under the License.
         <js:service name='RoleManager'/>
 	    <js:service name='SearchComponent'/>                
         <js:service name="SSO" />                 
-        <js:service name='UserManager'/>        
+        <js:service name='UserManager'/>     
+        <js:service name='HeaderResource'/>   
 	</js:services>
 
 </portlet-app>
