@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.security.permissions;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
 import org.apache.velocity.context.Context;
 
@@ -45,6 +47,21 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
 {
     protected final Log logger = LogFactory.getLog(this.getClass());
     protected PermissionManager pm = null;
+    
+    // TODO: move to prefs
+    static final String CLASSNAMES[] = 
+    {
+        "org.apache.jetspeed.security.FolderPermission",
+        "org.apache.jetspeed.security.PagePermission",
+        "org.apache.jetspeed.security.PortletPermission"
+    };
+    static final String TITLES[] = 
+    {
+        "Folders",
+        "Pages",
+        "Portlets"
+    };
+    
     
     public void init(PortletConfig config) throws PortletException
     {
@@ -68,24 +85,52 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         appendHeaderText(headerInfoText, "dojo.widget.SplitContainer");
         appendHeaderText(headerInfoText, "dojo.widget.TabContainer");
         appendHeaderText(headerInfoText, "dojo.widget.Tree");
+        appendHeaderText(headerInfoText, "dojo.widget.SortableTable");        
     }
     
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        Context velocityContext = getContext(request);
-        PortletSession session = request.getPortletSession();
-        List permissions = new LinkedList();
-        permissions.add("one");
-        permissions.add("two");
-        permissions.add("three");
-        permissions.add("four");
-        permissions.add("five");
-        permissions.add("six");        
-        velocityContext.put("permissions", permissions);
+        retrievePermissions(request.getPortletSession(), getContext(request));
         super.doView(request, response);
     }
 
+    public void retrievePermissions(PortletSession session, Context context)
+    {
+        Iterator folderPermissions = (Iterator)session.getAttribute("folderPermissions", PortletSession.PORTLET_SCOPE);
+        Iterator pagePermissions = (Iterator)session.getAttribute("pagePermissions", PortletSession.PORTLET_SCOPE);
+        Iterator portletPermissions = (Iterator)session.getAttribute("portletPermissions", PortletSession.PORTLET_SCOPE);
+        if (portletPermissions == null)
+        {
+            List folders = new LinkedList();
+            List pages = new LinkedList();
+            List portlets = new LinkedList();
+            Iterator all = pm.getPermissions();
+            while (all.hasNext())
+            {
+                InternalPermission permission = (InternalPermission)all.next();
+                if (permission.getClassname().equals(CLASSNAMES[0]))
+                {
+                    folders.add(permission);                    
+                }
+                else if (permission.getClassname().equals(CLASSNAMES[1]))
+                {
+                    pages.add(permission);
+                }
+                else if (permission.getClassname().equals(CLASSNAMES[2]))
+                {
+                    portlets.add(permission);
+                }
+                folderPermissions = folders.iterator();
+                pagePermissions = pages.iterator();
+                portletPermissions = portlets.iterator();
+            }            
+        }
+        context.put("folderPermissions", folderPermissions);
+        context.put("pagePermissions", pagePermissions);
+        context.put("portletPermissions", portletPermissions);
+    }
+    
     public void processAction(ActionRequest request,
             ActionResponse actionResponse) throws PortletException, IOException
     {
