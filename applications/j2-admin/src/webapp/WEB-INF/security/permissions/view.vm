@@ -80,11 +80,12 @@
 <tr>
     <th field="name" dataType="String">Resource</th>
     <th field="actions" dataType="String">Actions</th>
+    <th field="roles" dataType="String">Roles</th>        
 </tr>
 </thead>
 <tbody>
-#foreach($permission in $portletPermissions)
-<tr><td>$permission.Name</td><td>$permission.Actions</td></tr>
+#foreach($p in $portletPermissions)
+<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
 #end
 </tbody>
 </table>
@@ -95,11 +96,12 @@
 <tr>
     <th field="name" dataType="String">Resource</th>
     <th field="actions" dataType="String">Actions</th>
+    <th field="roles" dataType="String">Roles</th>        
 </tr>
 </thead>
 <tbody>
-#foreach($permission in $folderPermissions)
-<tr><td>$permission.Name</td><td>$permission.Actions</td></tr>
+#foreach($p in $folderPermissions)
+<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
 #end
 </tbody>
 </table>
@@ -110,11 +112,12 @@
 <tr>
     <th field="name" dataType="String">Resource</th>
     <th field="actions" dataType="String">Actions</th>
+    <th field="roles" dataType="String">Roles</th>    
 </tr>
 </thead>
 <tbody>
-#foreach($permission in $pagePermissions)
-<tr><td>$permission.Name</td><td>$permission.Actions</td></tr>
+#foreach($p in $pagePermissions)
+<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
 #end
 </tbody>
 </table>
@@ -147,6 +150,8 @@
 function processTableRowEvent(e, tableName)
 {
     alert( tableName + ", " + e.currentTarget.cells.item(0).innerHTML ); 
+    alert( tableName + ", " + e.currentTarget.cells.item(1).innerHTML ); 
+    alert( tableName + ", " + e.currentTarget.cells.item(2).innerHTML ); 
 }
 function addTableRowSelectListener()
 {

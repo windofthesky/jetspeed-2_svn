@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.om.InternalPermission;
+import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
 import org.apache.velocity.context.Context;
 
@@ -108,24 +109,24 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
             Iterator all = pm.getPermissions();
             while (all.hasNext())
             {
-                InternalPermission permission = (InternalPermission)all.next();
+                InternalPermission permission = (InternalPermission)all.next();                
                 if (permission.getClassname().equals(CLASSNAMES[0]))
                 {
-                    folders.add(permission);                    
+                    folders.add(new PermissionData(permission));                    
                 }
                 else if (permission.getClassname().equals(CLASSNAMES[1]))
                 {
-                    pages.add(permission);
+                    pages.add(new PermissionData(permission));
                 }
                 else if (permission.getClassname().equals(CLASSNAMES[2]))
                 {
-                    portlets.add(permission);
-                }
-                folderPermissions = folders.iterator();
-                pagePermissions = pages.iterator();
-                portletPermissions = portlets.iterator();
-            }            
-        }
+                    portlets.add(new PermissionData(permission));
+                }                
+            }
+            folderPermissions = folders.iterator();
+            pagePermissions = pages.iterator();
+            portletPermissions = portlets.iterator();            
+        }        
         context.put("folderPermissions", folderPermissions);
         context.put("pagePermissions", pagePermissions);
         context.put("portletPermissions", portletPermissions);
@@ -138,4 +139,55 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         //session.setAttribute(SESSION_RESULTS, stats);
     }
 
+    public class PermissionData
+    {
+        public PermissionData(InternalPermission permission)
+        {
+            this.permission = permission;
+            this.roles = ""; 
+            int size = permission.getPrincipals().size(); 
+            if (size == 0)
+            {
+                return;
+            }
+            Iterator principals = permission.getPrincipals().iterator();
+            int count = 0;
+            StringBuffer result = new StringBuffer();
+            while (principals.hasNext())
+            {
+                InternalPrincipal principal = (InternalPrincipal)principals.next();
+                int last = principal.getFullPath().lastIndexOf("/") + 1;
+                result.append(principal.getFullPath().substring(last));            
+                count++;
+                if (count < size)
+                {
+                    result.append(",");
+                }
+            }
+            this.roles = result.toString();
+        }
+        
+        InternalPermission permission;
+        String roles;
+        
+        public InternalPermission getPermission()
+        {
+            return permission;
+        }
+        
+        public void setPermission(InternalPermission permission)
+        {
+            this.permission = permission;
+        }
+        
+        public String getRoles()
+        {
+            return roles;
+        }
+        
+        public void setRoles(String roles)
+        {
+            this.roles = roles;
+        }
+    }
 }
