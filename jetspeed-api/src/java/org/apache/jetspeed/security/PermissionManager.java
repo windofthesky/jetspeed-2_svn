@@ -18,6 +18,7 @@ import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.security.auth.Subject;
 
@@ -141,4 +142,19 @@ public interface PermissionManager
      */
     boolean checkPermission(Subject subject, Permission permission);
     
+    /**
+     * Retrieve a list of all Permissions in the system ordered by Permission Type, resource
+     * 
+     * @return A list of type InternalPermission
+     */
+    Iterator getPermissions();    
+    
+    /**
+     * Retrieve a list of all Permissions in the system for a given resource
+     * The resource can be a prefix, for example "j2-admin" will retrieve all 
+     * portlet permissions starting with j2-admin
+     * 
+     * @return A list of type InternalPermission
+     */
+    Iterator getPermissions(String classname, String resource);    
 }
