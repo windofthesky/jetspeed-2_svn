@@ -72,16 +72,6 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
 		dojo.html.removeClass( tab.div, "current" );
 		tab.selected=false;
 	},
-    _doSizing: function()
-    {
-        // position the labels and the container node
-		var labelAlign=this.labelPosition.replace(/-h/,"");
-		var children = [
-			{domNode: this.dojoTabLabels, layoutAlign: labelAlign},
-			{domNode: this.containerNode, layoutAlign: "client"}
-		];
-		dojo.layout(this.domNode, children);
-    },
 
     createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
     {

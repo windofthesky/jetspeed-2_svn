@@ -57,11 +57,13 @@ jetspeed.id =
     COLUMNS: "jetspeedColumns",
     PORTLET_STYLE_CLASS: "portlet",
     PORTLET_WINDOW_STYLE_CLASS: "dojoFloatingPane",
+    PORTLET_WINDOW_GHOST_STYLE_CLASS: "ghostPane",
     PORTLET_WINDOW_ID_PREFIX: "portletWindow_",
 
     PORTLET_PROP_WIDGET_ID: "widgetId",
     PORTLET_PROP_CONTENT_RETRIEVER: "contentRetriever",
     PORTLET_PROP_WINDOW_POSITION_STATIC: "windowPositionStatic",
+    PORTLET_PROP_COLUMN_SPAN: "windowColumnSpan",
     PORTLET_PROP_WINDOW_THEME: "windowTheme",
     PORTLET_PROP_WINDOW_TITLE: "title",
     PORTLET_PROP_WINDOW_ICON: "windowIcon",
@@ -130,7 +132,7 @@ jetspeed.debugPortletWindowThemes = [ "blueocean" ];  /* , "tigris", "blueocean"
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
-jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "getportlets" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
 //jetspeed.debugContentDumpIds = [ "P-10aba.*" ];
 
 // ... load page /portlets
@@ -432,6 +434,36 @@ jetspeed.pageNavigate = function( navUrl, navTarget )
         window.location.href = navUrl;  // BOZO:NOW: popups
 };
 
+jetspeed.getPortlets = function()
+{
+    var contentListener = new jetspeed.om.PortletSelectorAjaxApiContentListener();
+    var queryString = "?action=getportlets";
+    var getPortletsUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
+    var mimeType = "text/xml";
+    var ajaxApiContext = new jetspeed.om.Id( "getportlets", { } );
+    jetspeed.url.retrieveContent( getPortletsUrl, contentListener, null, mimeType, ajaxApiContext, jetspeed.debugContentDumpIds );
+};
+
+jetspeed.loadPortletSelector = function()
+{
+    var windowParams = {};
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ] = false;
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_THEME ] = "tigris";
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = "Portlet Selector";
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = "text-x-script.png";
+    windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + "portlet-selector";
+    windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = "400";
+    windowParams[ jetspeed.id.PORTLET_PROP_HEIGHT ] = "600";
+    windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = "20";
+    windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = "10";
+    windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = false;
+    windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = new jetspeed.om.PortletSelectorContentRetriever();
+    var pwWidgetParams = jetspeed.ui.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
+    jetspeed.ui.createPortletWindow( pwWidgetParams, null, null );
+    var portletSelectorContentUrl = jetspeed.prefs.getDesktopThemeRootUrl() + "/portletselector.html"
+    pwWidgetParams.retrieveContent( new jetspeed.om.BasicContentListener(), portletSelectorContentUrl );
+};
+
 jetspeed.debugDumpForm = function( formNode )
 {
     if ( ! formNode ) return null ;
@@ -642,6 +674,37 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
     }
 };
 
+// ... jetspeed.om.PortletSelectorContentRetriever
+jetspeed.om.PortletSelectorContentRetriever = function()
+{
+};
+jetspeed.om.PortletSelectorContentRetriever.prototype =
+{
+    getContent: function( /* String */ requestUrl, contentListener, /* DOM Form */ formObject, /* String */ mimeType, domainModelObject, /* String[] */ debugContentDumpIds )
+    {
+        jetspeed.url.retrieveContent( requestUrl, contentListener, formObject, mimeType, domainModelObject, debugContentDumpIds );
+    }
+};
+
+// ... jetspeed.om.PortletSelectorContentListener
+jetspeed.om.PortletSelectorContentListener = function()
+{
+};
+jetspeed.om.PortletSelectorContentListener.prototype =
+{
+    notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        var windowWidget = this.getPortletWindow();
+        if ( windowWidget )
+        {
+            windowWidget.setPortletContent( portletContent, renderUrl );
+        }
+    },
+    notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        dojo.debug( "PortletSelectorContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+    }
+};
 
 // ... jetspeed.om.PageContentListenerCreateWidget
 jetspeed.om.PageContentListenerCreateWidget = function()
@@ -902,8 +965,12 @@ dojo.lang.extend( jetspeed.om.Page,
         var filteredPortletArray = [];
         for ( var i = 0 ; i < portletArray.length; i++ )
         {
-            if ( portletArray[i].getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ) )
+            var posStatic = portletArray[i].getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
+            var colSpan = portletArray[i].getProperty( jetspeed.id.PORTLET_PROP_COLUMN_SPAN );
+            if ( posStatic || colSpan != null )
+            {
                 filteredPortletArray.push( portletArray[i] );
+            }
         }
         filteredPortletArray.sort( this._portletColumnRowCompare );
 
@@ -1327,13 +1394,30 @@ dojo.lang.extend( jetspeed.om.Portlet,
         {
             this.putProperty( jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER, this.contentRetriever );
         }
-        var posStatic = this.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
-        if ( posStatic != null && posStatic && ! jetspeed.prefs.windowTiling )
-            posStatic = null;
-        if ( posStatic == null )
+        var colSpan = this.getProperty( jetspeed.id.PORTLET_PROP_COLUMN_SPAN );
+        if ( colSpan != null )
         {
-            this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC, ( jetspeed.prefs.windowTiling ? true : false ) );
+            if ( ! jetspeed.prefs.windowTiling || ! dojo.lang.isNumber( colSpan ) || colSpan <= 1 )
+            {
+                colSpan = null ;
+                this.putProperty( jetspeed.id.PORTLET_PROP_COLUMN_SPAN, null );
+            }
         }
+        var posStatic = this.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
+        if ( posStatic != null && posStatic && ( ! jetspeed.prefs.windowTiling || colSpan != null ) )
+        {
+            posStatic = false ;
+            this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC, false );
+        }
+        else if ( posStatic == null )
+        {
+            if ( jetspeed.prefs.windowTiling )
+                this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC, true );
+            else
+                this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC, false );
+        }
+
+        
 
         var windowtitle = this.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE );
         if ( ! windowtitle && this.name )
@@ -1798,6 +1882,39 @@ dojo.lang.extend( jetspeed.om.Portlet,
     }
 });
 
+
+// ... jetspeed.om.PortletDef
+jetspeed.om.PortletDef = function( /* String */ portletName, /* String */ portletDisplayName, /* String */ portletDescription )
+{
+    this.portletName = portletName;
+    this.portletDisplayName = portletDisplayName;
+    this.portletDescription = portletDescription;
+};
+dojo.inherits( jetspeed.om.PortletDef, jetspeed.om.Id);
+dojo.lang.extend( jetspeed.om.PortletDef,
+{
+    portletName: null,
+    portletDisplayName: null,
+    portletDescription: null,
+    getId: function()  // jetspeed.om.Id protocol
+    {
+        return this.portletName;
+    },
+    getPortletName: function()
+    {
+        return this.portletName;
+    },
+    getPortletDisplayName: function()
+    {
+        return this.portletDisplayName;
+    },
+    getPortletDescription: function()
+    {
+        return this.portletDescription;
+    }
+});
+
+
 // ... jetspeed.om.MenuOption
 jetspeed.om.MenuOption = function()
 {
@@ -2130,6 +2247,74 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiCallbackContentListener,
     }
 });
 
+
+// ... jetspeed.om.PortletSelectorAjaxApiContentListener
+jetspeed.om.PortletSelectorAjaxApiContentListener = function()
+{
+};
+dojo.lang.extend( jetspeed.om.PortletSelectorAjaxApiContentListener,
+{
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
+    {
+        var portletList = this.parsePortlets( data );
+        //domainModelObject.page.putMenu( menuObj );
+
+        if ( dojo.lang.isFunction( this.notifyFinished ) )
+        {
+            this.notifyFinished( domainModelObject, portletList );
+        }
+    },
+    notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, domainModelObject )
+    {
+        dojo.raise( "PortletSelectorAjaxApiContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + " error: " + error );
+    },
+
+    parsePortlets: function( /* XMLNode */ node )
+    {
+        var portletList = [];
+        var jsElements = node.getElementsByTagName( "js" );
+        if ( ! jsElements || jsElements.length > 1 )
+            dojo.raise( "unexpected zero or multiple <js> elements in portlet selector xml" );
+        var children = jsElements[0].childNodes;
+        
+        for ( var i = 0 ; i < children.length ; i++ )
+        {
+            var child = children[i];
+            if ( child.nodeType != dojo.dom.ELEMENT_NODE )
+                continue;
+            var childLName = child.nodeName;
+            if ( childLName == "portlets" )
+            {
+                var portletsNode = child ;
+                var portletChildren = portletsNode.childNodes ;
+                for ( var pI = 0 ; pI < portletChildren.length ; pI++ )
+                {
+                    var pChild = portletChildren[pI];
+                    if ( pChild.nodeType != dojo.dom.ELEMENT_NODE )
+                        continue;
+                    var pChildLName = pChild.nodeName;
+                    if ( pChildLName == "portlet" )
+                    {
+                        var portletDef = this.parsePortletElement( pChild );
+                        dojo.debug( "new portletDef  name=" + portletDef.getPortletName() + "  displayName=" + portletDef.getPortletDisplayName() + "  description=" + portletDef.getPortletDescription() ) ;
+                        portletList.push( portletDef ) ;
+                    }
+                }
+            }
+        }
+        return portletList ;
+    },
+    parsePortletElement: function( /* XMLNode */ node )
+    {
+        var portletName = node.getAttribute( "name" );
+        var portletDisplayName = node.getAttribute( "displayName" );
+        var portletDescription = node.getAttribute( "description" );
+        
+        return new jetspeed.om.PortletDef( portletName, portletDisplayName, portletDescription ) ;
+    }
+});
+
+
 // ... jetspeed.om.MoveAjaxApiContentListener
 jetspeed.om.MoveAjaxApiContentListener = function( changedState )
 {
@@ -2216,18 +2401,21 @@ jetspeed.ui.createColumn = function( columnContainer, columnIndex, columnTotal )
     columnContainer.appendChild(divElmt);
     //divElmt.appendChild( document.createTextNode( "LayoutColumn" + (columnIndex +1) ) );
 };
-jetspeed.ui.getPortletWindowChildren = function( /* DOM node */ parentNode, /* DOM node */ matchNodeIfFound )
+jetspeed.ui.getPortletWindowChildren = function( /* DOM node */ parentNode, /* DOM node */ matchNodeIfFound, /* boolean */ includeGhosts, /* boolean */ includeGhostsOnly )
 {
+    if ( includeGhosts || includeGhostsOnly )
+        includeGhosts = true;
+
     var nodesPW = null;
     var nodeMatchIndex = -1;
     if ( parentNode )
     {
-        var nodesPW = [];
+        nodesPW = [];
         var children = parentNode.childNodes;
         for ( var i = 0 ; i < children.length ; i++ )
         {
             var child = children[i];
-            if ( dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_STYLE_CLASS ) )
+            if ( ( ! includeGhostsOnly && dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_STYLE_CLASS ) ) || ( includeGhosts && dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_GHOST_STYLE_CLASS ) ) )
             {
                 nodesPW.push( child );
                 if ( matchNodeIfFound && child == matchNodeIfFound )
@@ -2254,7 +2442,7 @@ jetspeed.ui.getPortletWindowColumnRow = function( /* DOM node */ portletWindowNo
         for ( var colChildIndex = 0 ; colChildIndex < columnChildren.length ; colChildIndex++ )
         {
             var child = columnChildren[colChildIndex];
-            if ( dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_STYLE_CLASS ) )
+            if ( dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_STYLE_CLASS ) || dojo.html.hasClass( child, jetspeed.id.PORTLET_WINDOW_GHOST_STYLE_CLASS ) )
             {
                 cRow = ( cRow == null ? 0 : cRow + 1 );
                 if ( child == portletWindowNode )

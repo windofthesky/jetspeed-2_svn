@@ -77,6 +77,7 @@ limitations under the License.
     dojo.require("dojo.widget.AccordionPane");
     dojo.require("dojo.widget.Menu2");
     dojo.require("dojo.fx.html");
+	dojo.require('dojo.widget.SortableTable');
 
     dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
     dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');
@@ -154,7 +155,7 @@ html, body, .jetspeedDesktop
     </tr>
   </table>
 </div>
-<div widgetId="jetspeed-menu-pages" dojoType="PortalTabContainer" style="width: 100%; height: 30px; margin-top: 2px; margin-left: -1px; position: static"></div>
+<div widgetId="jetspeed-menu-pages" dojoType="PortalTabContainer" style="width: 100%; height: 30px; margin-top: 2px; margin-left: -1px"></div>
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main" style="position: static">  <!-- id="main"  has top: 170px and position: absolute -->
 <tr>
 <td valign="top" id="leftcol" >
