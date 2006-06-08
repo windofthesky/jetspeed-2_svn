@@ -164,6 +164,21 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
             headerInfoMap.put("type", "text/javascript");
             headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
         }
+        
+        if (!isJetspeedDesktop)
+        {
+            headerInfoText.setLength(0);
+            headerInfoText.append("\r\n");
+            headerInfoText.append("html, body\r\n");
+            headerInfoText.append("{\r\n");
+            headerInfoText.append("   width: 100%;\r\n");
+            headerInfoText.append("   height: 100%;\r\n");
+            headerInfoText.append("   margin: 0 0 0 0;\r\n");
+            headerInfoText.append("}\r\n");
+            headerInfoMap = new HashMap(8);
+            headerResource.addHeaderInfo("style", headerInfoMap, headerInfoText.toString());
+        }
+        
 
     }
     
