@@ -58,8 +58,8 @@ public class JetspeedServlet
 extends HttpServlet 
 implements JetspeedEngineConstants, HttpSessionListener
 {
-    private final static Log log = LogFactory.getLog(JetspeedServlet.class);
-    private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
+    private static Log log;
+    private static Log console;
 
     /**
      * In certain situations the init() method is called more than once,
@@ -98,6 +98,12 @@ implements JetspeedEngineConstants, HttpSessionListener
     {
         synchronized (this.getClass())
         {
+            if ( log == null )
+            {
+                log = LogFactory.getLog(JetspeedServlet.class);
+                console = LogFactory.getLog(CONSOLE_LOGGER);                
+            }
+            
             console.info(INIT_START_MSG);
 
             super.init(config);
@@ -324,7 +330,14 @@ implements JetspeedEngineConstants, HttpSessionListener
     {
         Subject subject = (Subject)se.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
         if (subject == null)
-            return;        
+            return;
+        if (firstInit)
+        {
+            // Servlet already destroyed, 
+            // Can't reliably access ComponentManager (Spring) anymore
+            // as for instance WAS 6.0.2 has a bug invoking this method with a wrong classLoader (not the one for the WebApp)
+            return;
+        }        
         Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
