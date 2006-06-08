@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.security.auth.Subject;
 
@@ -41,8 +42,10 @@ import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalPermissionImpl;
 import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
+import org.apache.ojb.broker.metadata.FieldHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
@@ -457,4 +460,22 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         }
         return true;         
     }
+    
+    public Iterator getPermissions()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(InternalPermissionImpl.class, new Criteria());
+        query.addOrderByAscending("classname");
+        query.addOrderByAscending("name");
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();        
+    }
+
+    public Iterator getPermissions(String classname, String resource)
+    {
+        Criteria filter = new Criteria();
+        filter.addEqualTo("classname", classname);
+        filter.addEqualTo("name", resource);
+        Query query = QueryFactory.newQuery(InternalPermissionImpl.class, filter);
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                
+    }    
+    
 }
