@@ -128,19 +128,10 @@
 
         <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade"
              sizeMin="20" sizeShare="20">
-            <div dojoType="TreeNode" title="Item 1">
-                <div dojoType="TreeNode" title="Item 1.1"><br/></div> 
-                <div dojoType="TreeNode" title="Item 1.2">
-                    <div dojoType="TreeNode" title="Item 1.2.1"></div>
-                    <div dojoType="TreeNode" title="Item 1.2.2"></div>
-                </div>
-                <div dojoType="TreeNode" title="Item 1.3">
-                    <div dojoType="TreeNode" title="Item 1.3.1"></div>
-                    <div dojoType="TreeNode" title="Item 1.3.2"></div>
-                </div>
-                <div dojoType="TreeNode" title="Item 1.4">
-                    <div dojoType="TreeNode" title="Item 1.4.1"></div>
-                </div>
+            <div dojoType="TreeNode" title="Roles">
+#foreach ($role in $roles)            
+                <div dojoType="TreeNode" title="$role.Principal.Name"><br/></div> 
+#end                
             </div>
         </div>
 

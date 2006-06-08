@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
@@ -48,6 +49,7 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
 {
     protected final Log logger = LogFactory.getLog(this.getClass());
     protected PermissionManager pm = null;
+    protected RoleManager rm = null;
     
     // TODO: move to prefs
     static final String CLASSNAMES[] = 
@@ -73,6 +75,11 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         if (pm == null)
                 throw new PortletException(
                         "Could not get instance of portal permission manager component");
+        rm = (RoleManager) context
+                .getAttribute(CommonPortletServices.CPS_ROLE_MANAGER_COMPONENT);
+        if (rm == null)
+            throw new PortletException(
+                "Could not get instance of portal role manager component");        
     }
 
     protected void includeDojoRequires(StringBuffer headerInfoText)
@@ -98,9 +105,11 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
 
     public void retrievePermissions(PortletSession session, Context context)
     {
+        // TODO: don't use session, since this is a client-side portlet
         Iterator folderPermissions = (Iterator)session.getAttribute("folderPermissions", PortletSession.PORTLET_SCOPE);
         Iterator pagePermissions = (Iterator)session.getAttribute("pagePermissions", PortletSession.PORTLET_SCOPE);
         Iterator portletPermissions = (Iterator)session.getAttribute("portletPermissions", PortletSession.PORTLET_SCOPE);
+        Iterator roles = (Iterator)session.getAttribute("roles", PortletSession.PORTLET_SCOPE);
         if (portletPermissions == null)
         {
             List folders = new LinkedList();
@@ -125,11 +134,20 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
             }
             folderPermissions = folders.iterator();
             pagePermissions = pages.iterator();
-            portletPermissions = portlets.iterator();            
+            portletPermissions = portlets.iterator();
+            try
+            {
+                roles = rm.getRoles("");
+            }
+            catch(Exception e)
+            {
+                logger.error(e);
+            }
         }        
         context.put("folderPermissions", folderPermissions);
         context.put("pagePermissions", pagePermissions);
         context.put("portletPermissions", portletPermissions);
+        context.put("roles", roles);
     }
     
     public void processAction(ActionRequest request,
