@@ -48,6 +48,10 @@ limitations under the License.
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
     </dependency>    
+    <dependency>
+      <id>velocity</id>
+      <version>1.4</version>
+    </dependency>
   </dependencies>
   
   <build>
