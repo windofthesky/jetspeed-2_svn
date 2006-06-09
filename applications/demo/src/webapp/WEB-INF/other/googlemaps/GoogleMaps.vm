@@ -1,6 +1,7 @@
 <script language="JavaScript" type="text/javascript">
+	loc = escape("$renderRequest.getPreferences().getValue('Location','')");
 	dojo.io.bind({
-		url: "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=$renderRequest.getPreferences().getValue('Location','')",
+		url: "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=" + loc,
 		mimetype: "text/xml",
 		error: function(type, error){
 			top.alert("error");
@@ -22,15 +23,5 @@
 	}
 </script>
 <div id="map" style="width: 500px; height: 300px"></div>
-
-
-
-
-
-
-
-
-
-
 
 

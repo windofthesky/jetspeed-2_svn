@@ -12,10 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.gems.googlemaps;
+package org.apache.jetspeed.portlets.googlemaps;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -52,6 +53,7 @@ public class YahooGeocodeProxyServlet extends HttpServlet
      protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, java.io.IOException {
 		String location = req.getParameter("location");
+		location = URLEncoder.encode(location,"UTF-8");
 		String url = YAHOO_REQUEST + location;
 		String content = "<error/>";
 		
@@ -85,14 +87,4 @@ public class YahooGeocodeProxyServlet extends HttpServlet
 		out.close();
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
