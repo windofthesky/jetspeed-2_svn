@@ -15,13 +15,12 @@ limitations under the License.
 */
 
 .dojoTabContainer {
-	position : static; /* relative; */
+	position : relative;
 }
 
 .dojoTabPaneWrapper {
-    position : relative;
-	border : 1px solid;
-    display: none;
+	position : relative;
+	border-top : 1px solid;
 }
 
 .dojoTabLabels-top {
@@ -38,20 +37,16 @@ limitations under the License.
 	float : left;
 	padding-left : 9px;
 	border-bottom : 1px solid;
-	background : no-repeat left top;
+	background : url(../images/tabs/tab_left.gif) no-repeat left top;
 	cursor: pointer;
-
-    background-image: url(../images/tabs/tab_left.gif);
 }
 
 .dojoTabPaneTab span {
 	display : block;
 	padding : 4px 15px 4px 6px;
-	background : no-repeat right top;
+	background : url(../images/tabs/tab_top_right.gif) no-repeat right top;
 	color : #333;
 	font-size : 90%;
-
-    background-image: url(../images/tabs/tab_top_right.gif);
 }
 
 .dojoTabPanePaneClose {
@@ -60,13 +55,11 @@ limitations under the License.
 	right : 6px;
 	height : 12px;
 	width : 12px;
-	background : no-repeat right top;
-
-    background-image: url(../images/tabs/tab_close.gif);
+	background : url(../images/tabs/tab_close.gif) no-repeat right top;
 }
 
 .dojoTabPanePaneCloseHover {
-    background-image: url(../images/tabs/tab_close_h.gif);
+	background-image : url(../images/tabs/tab_close_h.gif);
 }
 
 .dojoTabPaneTabClose {
@@ -75,14 +68,12 @@ limitations under the License.
 	width : 12px;
 	padding : 0 12px 0 0;
 	margin : 0 -10px 0 10px;
-	background : no-repeat right top;
+	background : url(../images/tabs/tab_close.gif) no-repeat right top;
 	cursor : default;
-
-    background-image: url(../images/tabs/tab_close.gif);
 }
 
 .dojoTabPaneTabCloseHover {
-    background-image: url(../images/tabs/tab_close_h.gif);
+	background-image : url(../images/tabs/tab_close_h.gif);
 }
 
 .dojoTabPaneTab.current {
@@ -111,31 +102,23 @@ limitations under the License.
 .dojoTabLabels-bottom .dojoTabPaneTab {
 	border-top :  1px solid;
 	border-bottom : 0;
-	background : no-repeat left bottom;
-
-    background-image: url(../images/tabs/tab_bot_left.gif);
+	background : url(../images/tabs/tab_bot_left.gif) no-repeat left bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab span {
-	background : no-repeat right bottom;
-
-    background-image: url(../images/tabs/tab_bot_right.gif);
+	background : url(../images/tabs/tab_bot_right.gif) no-repeat right bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current {
 	padding-top : 1px;
 	border-top : 0;
-	background : no-repeat left bottom;
-
-    background-image: url(../images/tabs/tab_bot_left_curr.gif);
+	background : url(../images/tabs/tab_bot_left_curr.gif) no-repeat left bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current span {
 	padding-top : 5px;
 	margin-top : -1px;
-	background : no-repeat right bottom;
-
-    background-image: url(../images/tabs/tab_bot_right_curr.gif);
+	background : url(../images/tabs/tab_bot_right_curr.gif) no-repeat right bottom;
 }
 
 /* right-h tabs */
@@ -152,10 +135,8 @@ limitations under the License.
 	padding-left : 0;
 	border-left :  1px solid;
 	border-bottom : 0;
-	background : no-repeat right bottom;
+	background : url(../images/tabs/tab_bot_right.gif) no-repeat right bottom;
 	float : none;
-
-    background-image: url(../images/tabs/tab_bot_right.gif);
 }
 
 .dojoTabLabels-right-h .dojoTabPaneTab span {
@@ -181,18 +162,14 @@ limitations under the License.
 	border-right :  1px solid;
 	border-bottom : 0;
 	float : none;
-	background : no-repeat left top;
-
-    background-image: url(../images/tabs/tab_top_left.gif);
+	background : url(../images/tabs/tab_top_left.gif) no-repeat left top;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab.current {
 	border-right : 0;
 	border-bottom :  1px solid;
 	padding-bottom : 0;
-	background : no-repeat 0 -150px;
-
-    background-image: url(../images/tabs/tab_top_left.gif);
+	background : url(../images/tabs/tab_top_left.gif) no-repeat 0 -150px;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab span {

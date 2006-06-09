@@ -37,6 +37,13 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
         this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getDesktopThemeRootUrl() + "/css/PortalTabContainer.css" ) ;
         jetspeed.ui.widget.PortalTabContainer.superclass.postMixInProperties.call( this, args, fragment, parentComp );
     },
+    // dojo.widget.Widget create protocol
+    postCreate: function( args, fragment, parentComp )
+    {
+        jetspeed.ui.widget.PortalTabContainer.superclass.postCreate.call( this, args, fragment, parentComp );
+        
+        this.contextMenuCreate();
+    },
     addTab: function( /* jetspeed.om.MenuOption */ menuOpt )
     {
         if ( ! menuOpt ) return;
@@ -55,12 +62,13 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
         }
         this.js_addingTab = false;
     },
-    selectTab: function( tab )
+    selectTab: function( tab, _noRefresh )
     {
         jetspeed.ui.widget.PortalTabContainer.superclass.selectTab.call( this, tab );
-        //dojo.debug( "PortalTabContainer.selectTab " + tab.label);
-        if ( ! this.js_addingTab )
+        if ( ! this.js_addingTab && ! _noRefresh )
+        {
             tab.menuOption.navigateTo();
+        }
 	},
     _showTab: function( tab )
     {
@@ -85,6 +93,27 @@ dojo.lang.extend( jetspeed.ui.widget.PortalTabContainer,
                 this.addTab( menuOption );
             }
         }
+    },
+    contextMenuCreate: function()
+    {
+        var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstc_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
+        //var resetLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item1", caption: "Reset Window Layout"} );
+        //var freeFormLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item2", caption: "Free Flowing Layout"} );
+        //var twoColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item3", caption: "Two Column Layout"} );
+        //var threeColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item4", caption: "Three Column Layout"} );
+        var openPortletSelectorMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item5", caption: "Portlet Selector"} );
+        
+        //dojo.event.connect( resetLayoutMenuItem, "onClick", function(e) { jetspeed.page.resetWindowLayout(); } );
+        //dojo.event.connect( freeFormLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = false; jetspeed.page.resetWindowLayout(); jetspeed.page.reload(); } );
+        //dojo.event.connect( twoColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 2; jetspeed.page.reload(); } );
+        //dojo.event.connect( threeColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 3; jetspeed.page.reload(); } );
+        dojo.event.connect( openPortletSelectorMenuItem, "onClick", function(e) { jetspeed.loadPortletSelector(); } );
+        //taskBarContextMenu.addChild( resetLayoutMenuItem );
+        //taskBarContextMenu.addChild( freeFormLayoutMenuItem );
+        //taskBarContextMenu.addChild( twoColummLayoutMenuItem );
+        //taskBarContextMenu.addChild( threeColummLayoutMenuItem );
+        taskBarContextMenu.addChild( openPortletSelectorMenuItem );
+        document.body.appendChild( taskBarContextMenu.domNode );
     }
 });
 

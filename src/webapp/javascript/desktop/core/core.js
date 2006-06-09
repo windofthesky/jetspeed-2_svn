@@ -55,6 +55,7 @@ jetspeed.id =
     DESKTOP: "jetspeedDesktop",
     TASKBAR: "jetspeedTaskbar",
     COLUMNS: "jetspeedColumns",
+    SELECTOR: "jetspeedSelector",
     PORTLET_STYLE_CLASS: "portlet",
     PORTLET_WINDOW_STYLE_CLASS: "dojoFloatingPane",
     PORTLET_WINDOW_GHOST_STYLE_CLASS: "ghostPane",
@@ -85,10 +86,13 @@ jetspeed.id =
 jetspeed.prefs = 
 {
     windowTiling: 2,     // number > 0 is interpreted as number of columns; 0 or false indicates no-columns, free-floating windows
-    windowTilingVariableWidth: false,   // only meaningful when windowTitling > 0
-    windowTilingVariableHeight: true,   // only meaningful when windowTitling > 0
+    windowTilingVariableWidth: false,   // only meaningful when windowTiling > 0
+    windowTilingVariableHeight: true,   // only meaningful when windowTiling > 0
     //portalTaskBarType: "blee"  // BOZO: need pref/s to handle this ( instead of html elements in the content )
     
+    defaultPortletWidth: "280",
+    defaultPortletHeight: "200",
+
     desktopTheme: null,
     desktopThemeRootUrl: null,
     getDesktopTheme: function()
@@ -102,7 +106,11 @@ jetspeed.prefs =
         if ( jetspeed.prefs.desktopThemeRootUrl == null )
             return djConfig.desktopThemeRootUrl;
         return jetspeed.prefs.desktopThemeRootUrl;
-    }        
+    },
+
+    portletSelectorWindowTitle: "Portlet Selector",
+    portletSelectorWindowIcon: "text-x-script.png",
+    portletSelectorBounds: { x: 20, y: 20, width: 400, height: 600 }
 };
 
 // ... jetspeed debug options
@@ -127,12 +135,12 @@ jetspeed.debugInPortletWindow = true;
 //portlets: [dp-3 LocaleSelector, dp-16 RoleSecurityTest, dp-17 UserInfoTest, dp-22 ForgottenPasswordPortlet, dp-18 BookmarkPortlet, dp-23 UserRegistrationPortlet, dp-7 PickANumberPortlet, dp-9 IFramePortlet, dp-12 LoginPortlet]
 //jetspeed.debugPortletEntityIdFilter = [ "dp-18" ];
 jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
-jetspeed.debugPortletWindowThemes = [ "blueocean" ];  /* , "tigris", "blueocean" ]; */
+jetspeed.debugPortletWindowThemes = [ "blueocean", "tigris" ];  /* , "tigris", "blueocean" ]; */
 //jetspeed.debugContentDumpIds = [ ".*" ];                        // dump all responses
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
-jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "getportlets" ]; // , "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "addportlet" ]; // , "getportlets", "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
 //jetspeed.debugContentDumpIds = [ "P-10aba.*" ];
 
 // ... load page /portlets
@@ -152,6 +160,16 @@ jetspeed.loadPage = function()
     jetspeed.page = new jetspeed.om.Page();
     jetspeed.page.retrievePsml();
 };
+jetspeed.updatePage = function()
+{
+    var previousPage = jetspeed.page;
+    if ( previousPage != null )
+    {
+        jetspeed.page = new jetspeed.om.Page();
+        jetspeed.page.retrievePsml( jetspeed.om.PageContentListenerUpdate( previousPage ) );
+    }
+};
+
 jetspeed.loadDebugWindow = function()
 {
     if ( djConfig.isDebug && jetspeed.debugInPortletWindow && dojo.byId( jetspeed.debug.debugContainerId ) == null )
@@ -425,7 +443,7 @@ jetspeed.pageNavigate = function( navUrl, navTarget )
         return ;
 
     navUrl = jetspeed.page.makePageUrl( navUrl );
-
+    
     if ( navTarget == "top" )
         top.location.href = navUrl;
     else if ( navTarget == "parent" )
@@ -434,7 +452,27 @@ jetspeed.pageNavigate = function( navUrl, navTarget )
         window.location.href = navUrl;  // BOZO:NOW: popups
 };
 
-jetspeed.getPortlets = function()
+jetspeed.loadPortletSelector = function()
+{
+    var windowParams = {};
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ] = false;
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_THEME ] = jetspeed.page.getWindowThemeDefault();
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = jetspeed.prefs.portletSelectorWindowTitle;
+    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = jetspeed.prefs.portletSelectorWindowIcon;
+    windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + jetspeed.id.SELECTOR;
+    windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = jetspeed.prefs.portletSelectorBounds.width;
+    windowParams[ jetspeed.id.PORTLET_PROP_HEIGHT ] = jetspeed.prefs.portletSelectorBounds.height;
+    windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = jetspeed.prefs.portletSelectorBounds.x;
+    windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = jetspeed.prefs.portletSelectorBounds.y;
+    windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = true;
+    windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = new jetspeed.om.PortletSelectorContentRetriever();
+    var pwWidgetParams = jetspeed.ui.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
+    jetspeed.ui.createPortletWindow( pwWidgetParams, null, null );
+    pwWidgetParams.retrieveContent( null, null );
+    jetspeed.getPortletDefinitions();
+};
+
+jetspeed.getPortletDefinitions = function()
 {
     var contentListener = new jetspeed.om.PortletSelectorAjaxApiContentListener();
     var queryString = "?action=getportlets";
@@ -444,24 +482,14 @@ jetspeed.getPortlets = function()
     jetspeed.url.retrieveContent( getPortletsUrl, contentListener, null, mimeType, ajaxApiContext, jetspeed.debugContentDumpIds );
 };
 
-jetspeed.loadPortletSelector = function()
+jetspeed.addPortletDefinition = function( /* jetspeed.om.PortletDef */ portletDef, windowWidgetId )
 {
-    var windowParams = {};
-    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ] = false;
-    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_THEME ] = "tigris";
-    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = "Portlet Selector";
-    windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = "text-x-script.png";
-    windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + "portlet-selector";
-    windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = "400";
-    windowParams[ jetspeed.id.PORTLET_PROP_HEIGHT ] = "600";
-    windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = "20";
-    windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = "10";
-    windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = false;
-    windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = new jetspeed.om.PortletSelectorContentRetriever();
-    var pwWidgetParams = jetspeed.ui.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
-    jetspeed.ui.createPortletWindow( pwWidgetParams, null, null );
-    var portletSelectorContentUrl = jetspeed.prefs.getDesktopThemeRootUrl() + "/portletselector.html"
-    pwWidgetParams.retrieveContent( new jetspeed.om.BasicContentListener(), portletSelectorContentUrl );
+    var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId );
+    var queryString = "?action=add&id=" + escape( portletDef.getPortletName() );
+    var addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;
+    var mimeType = "text/xml";
+    var ajaxApiContext = new jetspeed.om.Id( "addportlet", { } );
+    jetspeed.url.retrieveContent( addPortletUrl, contentListener, null, mimeType, ajaxApiContext, jetspeed.debugContentDumpIds );
 };
 
 jetspeed.debugDumpForm = function( formNode )
@@ -547,6 +575,10 @@ jetspeed.url.basePortalDesktopUrl = function()
     if ( ! jetspeed.url.path.initialized )
         jetspeed.url.pathInitialize();
     return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED ;
+};
+jetspeed.url.basePortalWindowThemeUrl = function( windowtheme )
+{
+    return jetspeed.url.basePortalDesktopUrl() + "/javascript/desktop/windowthemes/" + windowtheme;
 };
 jetspeed.url.validateUrlStartsWithHttp = function( url )
 {
@@ -682,7 +714,10 @@ jetspeed.om.PortletSelectorContentRetriever.prototype =
 {
     getContent: function( /* String */ requestUrl, contentListener, /* DOM Form */ formObject, /* String */ mimeType, domainModelObject, /* String[] */ debugContentDumpIds )
     {
-        jetspeed.url.retrieveContent( requestUrl, contentListener, formObject, mimeType, domainModelObject, debugContentDumpIds );
+        var content = '<div widgetId="' + jetspeed.id.SELECTOR + '" dojoType="PortletDefContainer"></div>';
+        if ( ! contentListener )
+            contentListener = new jetspeed.om.BasicContentListener();
+        contentListener.notifySuccess( content, requestUrl, domainModelObject ) ;
     }
 };
 
@@ -703,6 +738,32 @@ jetspeed.om.PortletSelectorContentListener.prototype =
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
         dojo.debug( "PortletSelectorContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+    }
+};
+
+// ... jetspeed.om.PageContentListenerCreateWidget
+jetspeed.om.PageContentListenerUpdate = function( /* jetspeed.om.Page */ previousPage )
+{
+    this.previousPage = previousPage;
+};
+jetspeed.om.PageContentListenerUpdate.prototype =
+{
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Page */ page )
+    {
+        page.getPortletsFromPSML( data );
+        var updatedPortlets = page.getPortlets();
+        for ( var i = 0 ; i < updatedPortlets.length ; i++ )
+        {
+            var prevPortlet = this.previousPage.getPortlet( updatedPortlets[i].entityId );
+            if ( prevPortlet == null )
+            {
+                dojo.debug( "PageContentListenerUpdate  new portlet definition in page: " + updatedPortlets[i].toString() ) ;
+            }
+        }
+    },
+    notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, /* Page */ page )
+    {
+        dojo.raise( "PageContentListenerUpdate notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
     }
 };
 
@@ -881,6 +942,16 @@ dojo.lang.extend( jetspeed.om.Page,
         }
     },
 
+    addPortlet: function( portletName, portletEntityId, windowWidgetId )
+    {
+        var portlet = new jetspeed.om.Portlet( portletName, portletEntityId ) ;
+        if ( windowWidgetId )
+            portlet.putProperty( jetspeed.id.PORTLET_PROP_WIDGET_ID, windowWidgetId );
+        portlet.initialize();
+        this.putPortlet( portlet ) ;
+        portlet.retrieveContent();
+    },
+
     _portletZIndexCompare: function( portletA, portletB )
     {   // uses saved state only - does not check with window widget
         var aZIndex = null;
@@ -944,6 +1015,17 @@ dojo.lang.extend( jetspeed.om.Page,
             }
         }
         return numberOfColumns;
+    },
+    getWindowThemeDefault: function()
+    {
+        var windowtheme = null;
+        if ( dojo.lang.indexOf( jetspeed.id.WINDOW_THEMES, this.getPortletDecorator() ) != -1 )
+            windowtheme = this.getPortletDecorator();
+        else if ( djConfig.isDebug && jetspeed.debugPortletWindowThemes != null )
+            windowtheme = jetspeed.debugPortletWindowThemes[ Math.floor( Math.random() * jetspeed.debugPortletWindowThemes.length ) ];
+        else if ( jetspeed.id.WINDOW_THEMES )
+            windowtheme = jetspeed.id.WINDOW_THEMES[0];
+        return windowtheme;
     },
     getPortletArrayByZIndex: function()
     {
@@ -1032,6 +1114,15 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         if (! portlet || ! this.portlets) return ;
         delete this.portlets[ portlet.entityId ] ;
+    },
+    removePortletFromPage: function( /* Portlet */ portlet )
+    {
+        var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId );
+        var queryString = "?action=remove&id=" + escape( portletDef.getPortletName() );
+        var addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;
+        var mimeType = "text/xml";
+        var ajaxApiContext = new jetspeed.om.Id( "removeportlet", { } );
+        jetspeed.url.retrieveContent( addPortletUrl, contentListener, null, mimeType, ajaxApiContext, jetspeed.debugContentDumpIds );
     },
     _destroyPortlets: function()
     {
@@ -1831,7 +1922,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
                 }
                 else if ( windowPositionStatic )
                 {
-                    // moveabi submission adjusts other portlets that have had their row changed because of portlet inserted or removed from higher row
+                    // moveapi submission adjusts other portlets that have had their row changed because of portlet inserted or removed from higher row
                 }
             }
         }
@@ -2248,6 +2339,48 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiCallbackContentListener,
 });
 
 
+// ... jetspeed.om.MenusAjaxApiCallbackContentListener
+jetspeed.om.PortletAddAjaxApiCallbackContentListener = function(  /* jetspeed.om.PortletDef */ portletDef, windowWidgetId )
+{
+    this.portletDef = portletDef;
+    this.windowWidgetId = windowWidgetId;
+};
+dojo.lang.extend( jetspeed.om.PortletAddAjaxApiCallbackContentListener,
+{
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
+    {
+        var entityId = this.parseAddPortletResponse( data );
+        if ( entityId )
+            jetspeed.page.addPortlet( this.portletDef.getPortletName(), entityId, this.windowWidgetId );
+    },
+    parseAddPortletResponse: function( /* XMLNode */ node )
+    {
+        var entityId = null;
+        var jsElements = node.getElementsByTagName( "js" );
+        if ( ! jsElements || jsElements.length > 1 )
+            dojo.raise( "unexpected zero or multiple <js> elements in portlet selector xml" );
+        var children = jsElements[0].childNodes;
+        
+        for ( var i = 0 ; i < children.length ; i++ )
+        {
+            var child = children[i];
+            if ( child.nodeType != dojo.dom.ELEMENT_NODE )
+                continue;
+            var childLName = child.nodeName;
+            if ( childLName == "entity" )
+            {
+                entityId = ( ( child && child.firstChild ) ? child.firstChild.nodeValue : null );
+                break;
+            }
+        }
+        return entityId;
+    },
+    notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, domainModelObject )
+    {
+        dojo.raise( "PortletAddAjaxApiCallbackContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + " error: " + error );
+    }
+});
+
 // ... jetspeed.om.PortletSelectorAjaxApiContentListener
 jetspeed.om.PortletSelectorAjaxApiContentListener = function()
 {
@@ -2257,7 +2390,15 @@ dojo.lang.extend( jetspeed.om.PortletSelectorAjaxApiContentListener,
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
         var portletList = this.parsePortlets( data );
-        //domainModelObject.page.putMenu( menuObj );
+
+        var portletSelector = dojo.widget.byId( jetspeed.id.SELECTOR ) ;
+        if ( portletSelector != null )
+        {
+            for ( var i = 0 ; i < portletList.length ; i++ )
+            {
+                portletSelector.addChild( portletList[i] );
+            }
+        }
 
         if ( dojo.lang.isFunction( this.notifyFinished ) )
         {
@@ -2296,7 +2437,7 @@ dojo.lang.extend( jetspeed.om.PortletSelectorAjaxApiContentListener,
                     if ( pChildLName == "portlet" )
                     {
                         var portletDef = this.parsePortletElement( pChild );
-                        dojo.debug( "new portletDef  name=" + portletDef.getPortletName() + "  displayName=" + portletDef.getPortletDisplayName() + "  description=" + portletDef.getPortletDescription() ) ;
+                        //dojo.debug( "parsePortlets  portletDef  name=" + portletDef.getPortletName() + "  displayName=" + portletDef.getPortletDisplayName() + "  description=" + portletDef.getPortletDescription() ) ;
                         portletList.push( portletDef ) ;
                     }
                 }

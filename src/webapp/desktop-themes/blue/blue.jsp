@@ -53,12 +53,14 @@ limitations under the License.
     var djConfig = {isDebug: true, debugAtAllCosts: true};
     //var djConfig = {isDebug: false, debugAtAllCosts: false};
     // needed for js debuggers (both venkman and visual studio)
-    djConfig.baseScriptUri = '<%= desktop.getPortalResourceUrl("/javascript/dojo/") %>' ;
-    {   // presence of ;jesessionid in dojo baseScriptUri is bad news
-        var tEnds = djConfig.baseScriptUri.indexOf(";jsessionid=");
-        if (tEnds > 0) djConfig.baseScriptUri = djConfig.baseScriptUri.substring(0, tEnds);
+    function de_jsessionid_url( url )
+    {   // presence of ;jsessionid in dojo baseScriptUri is bad news
+        var tEnds = url.indexOf(";jsessionid=");
+        if (tEnds > 0) url = url.substring(0, tEnds);
+        return url;
     }
-    djConfig.desktopThemeRootUrl = '<%= desktop.getDesktopThemeRootUrl() %>';
+    djConfig.baseScriptUri = de_jsessionid_url( '<%= desktop.getPortalResourceUrl("/javascript/dojo/") %>' );
+    djConfig.desktopThemeRootUrl = de_jsessionid_url( '<%= desktop.getDesktopThemeRootUrl() %>' );
 </script>
 <!-- 
   DOJO Script
@@ -97,6 +99,7 @@ limitations under the License.
     dojo.require("jetspeed.ui.widget.PortletWindow");
     dojo.require("jetspeed.ui.widget.PortalTabContainer");
     dojo.require("jetspeed.ui.widget.PortalAccordionContainer");
+    dojo.require("jetspeed.ui.widget.PortletDefContainer");
 </script>
 <script language="JavaScript" type="text/javascript">
     dojo.hostenv.writeIncludes();
@@ -111,7 +114,7 @@ limitations under the License.
 <script language="JavaScript" type="text/javascript">
     function init()
     {
-        jetspeed.initializeDesktop( '<%= desktop.getDesktopTheme() %>', '<%= desktop.getDesktopThemeRootUrl() %>' );
+        jetspeed.initializeDesktop( '<%= desktop.getDesktopTheme() %>', de_jsessionid_url( '<%= desktop.getDesktopThemeRootUrl() %>' ) );
     }
     function doRender( url, portletEntityId )
     {
@@ -134,7 +137,7 @@ limitations under the License.
 </script>
 <style>
 
-html, body, .jetspeedDesktop
+html, body, #jetspeedDesktop
 {	
     width: 100%;	/* make the body expand to fill the visible window */
     height: 100%;
