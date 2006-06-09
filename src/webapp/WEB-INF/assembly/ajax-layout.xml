@@ -324,6 +324,9 @@
 <bean id="AjaxVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
     <property name="velocityProperties">
         <props>
+           <!-- use webapp-logging CommonsLoggingLog4JLogSystem for logging through IsolatedLog4JLogger -->
+           <prop key="runtime.log.logsystem.class">org.apache.jetspeed.webapp.logging.velocity.CommonsLoggingLog4JLogSystem</prop>
+           <prop key="runtime.log.logsystem.log4j.category">velocity</prop>
             <!-- clear out default global VM_global_library.vm leading to ERROR logging because its not available -->
             <prop key="velocimacro.library"></prop>
             <prop key="resource.loader">class</prop>
@@ -332,6 +335,8 @@
             </prop>
         </props>
     </property>
+    <!--  use our own CommonsLoggingLog4JLogSystem specified above, not the default one provided by Spring -->
+    <property name="overrideLogging"><value>false</value></property>
   </bean>
   
 	<bean id="layoutValve"
