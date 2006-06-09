@@ -44,6 +44,8 @@ limitations under the License.
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-style-type" content="text/css" />
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAisHr-hr7f_yfo_m3teTC5RQXGaCFRGWXJQavRKQcb1Ew_fwkKRQ26QnpXVIkxSMwwTECWDV23ZDaLQ"
+        type="text/javascript"></script> 
 <!-- 
   DOJO Config Script ( djConfig )
   -->
