@@ -17,11 +17,11 @@
 <script language="JavaScript" type="text/javascript">
 	function mapit(la, ln) {
 		var map = new GMap2(document.getElementById("map"));
-		// map.addControl(new GSmallMapControl());
-		// map.addControl(new GMapTypeControl());
+map.addControl(new GSmallMapControl());
+		map.addControl(new GMapTypeControl());
 		map.setCenter(new GLatLng(la, ln), 13);
 	}
 </script>
-<div id="map" style="width: 500px; height: 300px"></div>
+<div id="map" style="width: 100%; height: 100%"></div>
 
 

@@ -222,6 +222,7 @@ limitations under the License.
 
 	<js:services>
 	    <js:service name='SSO'/>
+        <js:service name='HeaderResource'/>           
 	</js:services>
 	
 </portlet-app>
