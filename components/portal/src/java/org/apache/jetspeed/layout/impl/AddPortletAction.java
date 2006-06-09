@@ -130,7 +130,8 @@ public class AddPortletAction
             resultMap.put(NEWCOL, String.valueOf(coordinate
                     .getNewCol()));
             resultMap.put(NEWROW, String.valueOf(coordinate
-                    .getNewRow()));            
+                    .getNewRow()));
+            resultMap.put(PORTLETENTITY, fragment.getId());
         } 
         catch (Exception e)
         {
