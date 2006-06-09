@@ -49,8 +49,13 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
 
     public AJAXServiceImpl(Map serviceToBeans)
     {
-        this.serviceToBeans = serviceToBeans;
-        
+        this.serviceToBeans = serviceToBeans;        
+    }
+
+    public AJAXServiceImpl(Map serviceToBeans, VelocityEngine engine)
+    {
+        this.serviceToBeans = serviceToBeans; 
+        this.engine = engine;
     }
 
     public AJAXResponse processRequest(AJAXRequest request)
