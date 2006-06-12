@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -93,7 +94,8 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         appendHeaderText(headerInfoText, "dojo.widget.SplitContainer");
         appendHeaderText(headerInfoText, "dojo.widget.TabContainer");
         appendHeaderText(headerInfoText, "dojo.widget.Tree");
-        appendHeaderText(headerInfoText, "dojo.widget.SortableTable");        
+        appendHeaderText(headerInfoText, "dojo.widget.SortableTable");
+        appendHeaderText(headerInfoText, "dojo.widget.Checkbox");
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -147,7 +149,15 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         context.put("folderPermissions", folderPermissions);
         context.put("pagePermissions", pagePermissions);
         context.put("portletPermissions", portletPermissions);
-        context.put("roles", roles);
+        ArrayList rolesList = new ArrayList();
+        if ( roles != null )
+        {
+            while( roles.hasNext() )
+            {
+                rolesList.add( roles.next() );
+            }
+        }
+        context.put("roles", rolesList);
     }
     
     public void processAction(ActionRequest request,

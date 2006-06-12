@@ -61,9 +61,8 @@
 			padding: 2px;
 		}
 	</style>
-
 <div dojoType="LayoutContainer"
-    layoutChildPriority='top-bottom'
+    layoutChildPriority="left-right"
     style="width: 100%; height: 250px">
     <div dojoType="SplitContainer"
         orientation="horizontal"
@@ -125,25 +124,170 @@
 
 </div>
 
+<div dojoType="LayoutContainer"
+     layoutChildPriority='none'
+     style="width: 100%; height: 155px; border: 1px solid grey;"
+>
 
-        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade"
-             sizeMin="20" sizeShare="20">
-            <div dojoType="TreeNode" title="Roles">
-#foreach ($role in $roles)            
-                <div dojoType="TreeNode" title="$role.Principal.Name"><br/></div> 
-#end                
-            </div>
-        </div>
+
+<div dojoType="LayoutContainer"
+	widgetId="resourceNameContainer"
+	minHeight="20"
+    layoutAlign="top"
+	style="padding: 4px; border-bottom: thin inset grey; width: 100%; height: 55px"
+>
+<b>Resource</b><br/>
+<input name="resourceName" id="resourceName" type="text" size="50" >
+</div>
+
+<div dojoType="LayoutContainer"
+	widgetId="rolesContainer"
+	minHeight="20"
+    layoutAlign="left"
+	style="padding: 4px; border-right: thin inset grey; width: 50%; height: 100px; overflow-y: auto; overflow-x: hidden"
+>
+    <b>Roles</b><br/>
+#foreach ($role in $roles)
+    <input type="checkbox" name="role_$velocityCount" id="role_$velocityCount" dojoType="Checkbox" /> <label for="role_$velocityCount">$role.Principal.Name</label><br />
+#end
+</div>
+
+<div dojoType="LayoutContainer"
+	widgetId="actionsContainer"
+	minHeight="20"
+    layoutAlign="left"
+	style="padding: 4px; width: 50%; height: 100px; overflow-y: auto; overflow-x: hidden"
+>
+    <b>Actions</b><br/>
+    <input type="checkbox" name="actionview" id="actionview" dojoType="Checkbox" /> <label for="actionview">View</label><br />
+    <input type="checkbox" name="actionedit" id="actionedit" dojoType="Checkbox" /> <label for="actionedit">Edit</label><br />
+    <input type="checkbox" name="actionhelp" id="actionhelp" dojoType="Checkbox" /> <label for="actionhelp">Help</label><br />
+</div>
 
 </div>
 
+</div>
+
+<script language="JavaScript" type="text/javascript">
+    rolePrincipals = new Array();
+#foreach ($role in $roles)
+    rolePrincipals.push( "$role.Principal.Name" );
+#end
+</script>
 <script type="text/javascript">
 function processTableRowEvent(e, tableName)
 {
-    alert( tableName + ", " + e.currentTarget.cells.item(0).innerHTML ); 
-    alert( tableName + ", " + e.currentTarget.cells.item(1).innerHTML ); 
-    alert( tableName + ", " + e.currentTarget.cells.item(2).innerHTML ); 
+    var resourceName = e.currentTarget.cells.item(0).innerHTML;
+    var resourceTextBox = dojo.byId( "resourceName" );
+    resourceTextBox.value = resourceName;
+
+    var actions = e.currentTarget.cells.item(1).innerHTML;
+    var actionsList = actions.split( new RegExp( " *, *" ) );
+    dojo.byId( "actionview" ).checked = false;
+    dojo.widget.byId( "actionview" ).updateImgSrc();
+    dojo.byId( "actionedit" ).checked = false;
+    dojo.widget.byId( "actionedit" ).updateImgSrc();
+    dojo.byId( "actionhelp" ).checked = false;
+    dojo.widget.byId( "actionhelp" ).updateImgSrc();
+    if ( actionsList )
+    {
+        for ( var i = 0 ; i < actionsList.length ; i++ )
+        {
+            var checkboxNode = dojo.byId( "action" + actionsList[i] );
+            if ( checkboxNode != null )
+            {
+                checkboxNode.checked = true;
+                dojo.widget.byId( "action" + actionsList[i] ).updateImgSrc();
+            }
+        }
+    }
+    
+    var roles = e.currentTarget.cells.item(2).innerHTML;
+    var rolesList = roles.split( new RegExp( " *, *" ) );
+    for ( var i = 0 ; i < rolePrincipals.length; i++ )
+    {
+        var roleIndex = i + 1;
+        dojo.byId( "role_" + roleIndex ).checked = false;
+        dojo.widget.byId( "role_" + roleIndex ).updateImgSrc();
+    }
+    if ( rolesList )
+    {
+        for ( var i = 0 ; i < rolesList.length ; i++ )
+        {
+            var tRole = rolesList[i];
+            for ( var j = 0 ; j < rolePrincipals.length; j++ )
+            {
+                if ( tRole == rolePrincipals[j] )
+                {
+                    var roleIndex = j + 1;
+                    dojo.byId( "role_" + roleIndex ).checked = true;
+                    dojo.widget.byId( "role_" + roleIndex ).updateImgSrc();
+                }
+            }
+        }
+    }
+    
+    selectedResourceRow = e.currentTarget;
+    selectedResourceData = [ resourceName, actions, roles ];
+    
+    //alert( tableName + ", " + e.currentTarget.cells.item(0).innerHTML ); 
+    //alert( tableName + ", " + e.currentTarget.cells.item(1).innerHTML ); 
+    //alert( tableName + ", " + e.currentTarget.cells.item(2).innerHTML );
 }
+function updateSelectedRow()
+{   // update selected row without re-render - DOESN'T WORK YET
+    dojo.debug( "updateSelectedRow" );
+    if ( selectedResourceRow != null )
+    {   // SortableTable allows for way of updating with nice objects and then re-rendering - but it resorts and the selected row can change
+        // will revise when more time is available - this is a sick hack
+        currentTarget.cells.item(0).innerHTML = dojo.byId( "resourceName" ).value;
+        
+        var updatedActions = "";
+        if ( dojo.byId( "actionview" ).checked )
+        {
+            if ( updatedActions.length > 0 )
+                updatedActions += ", ";
+            updatedActions += "view";
+        }
+        if ( dojo.byId( "actionedit" ).checked )
+        {
+            if ( updatedActions.length > 0 )
+                updatedActions += ", ";
+            updatedActions += "edit";
+        }
+        if ( dojo.byId( "actionhelp" ).checked )
+        {
+            if ( updatedActions.length > 0 )
+                updatedActions += ", ";
+            updatedActions += "help";
+        }
+        for ( var i = 0 ; i < rolePrincipals.length; i++ )
+        {
+            var roleIndex = i + 1;
+            if ( dojo.byId( "role_" + roleIndex ).checked )
+            {
+                if ( i > 0 )
+                    updatedRoles += ",";
+                updatedRoles += rolePrincipals[i];
+            }
+        }
+        currentTarget.cells.item(2).innerHTML = updatedRoles;
+
+        var updatedRoles = "";
+        for ( var i = 0 ; i < rolePrincipals.length; i++ )
+        {
+            var roleIndex = i + 1;
+            if ( dojo.byId( "role_" + roleIndex ).checked )
+            {
+                if ( i > 0 )
+                    updatedRoles += ",";
+                updatedRoles += rolePrincipals[i];
+            }
+        }
+        currentTarget.cells.item(2).innerHTML = updatedRoles;
+    }
+}
+
 function addTableRowSelectListener()
 {
     dojo.event.connect(dojo.widget.byId("portletTable"), "onSelect", function(e) {
