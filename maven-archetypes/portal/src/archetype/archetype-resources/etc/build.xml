@@ -32,16 +32,16 @@ limitations under the License.
     <property name="ant.version" value=""/>
     <property name="hsqldb.version" value=""/>
 
-    <property name="org.apache.jetspeed.source.sql" value="${basedir}/sql"/>
+    <property name="org.apache.jetspeed.source.sql" value="\${basedir}/sql"/>
     <property name="org.apache.jetspeed.database.source.sql" value="${org.apache.jetspeed.source.sql}/${org.apache.jetspeed.database.default.name}"/>
-    <property name="org.apache.jetspeed.database.target.sql.root" value="${basedir}/target/sql"/>
+    <property name="org.apache.jetspeed.database.target.sql.root" value="\${basedir}/target/sql"/>
     <property name="org.apache.jetspeed.database.target.sql" value="${org.apache.jetspeed.database.target.sql.root}/${org.apache.jetspeed.database.default.name}"/>
 
     <property name="torque.contextProperties" value=""/>
     <property name="torque.runOnlyOnSchemaChange" value="true"/>
     <property name="torque.idTableXMLFile" value=""/>
     <property name="torque.project" value="phase1"/>
-    <property name="torque.schema.dir" value="${basedir}/schema"/>
+    <property name="torque.schema.dir" value="\${basedir}/schema"/>
     <property name="torque.schema.sql.excludes" value=""/>
     <property name="torque.schema.sql.includes" value="*-schema.xml"/>
     <property name="torque.template.sql" value="sql/base/Control.vm"/>
@@ -355,7 +355,7 @@ limitations under the License.
             the subsequent test database access in forked JVMs.
         -->
         <!-- write out temporary ant build file for forked execution -->
-        <echo file="${basedir}/derby-sql-build.xml">
+        <echo file="\${basedir}/derby-sql-build.xml">
             &lt;project name="etc-derby-sql-build"&gt;
                 &lt;target name="forked-sql-execute-derby"&gt;
                     &lt;sql url="${org.apache.jetspeed.database.url};create=true" driver="${org.apache.jetspeed.database.driver}" 
@@ -383,15 +383,15 @@ limitations under the License.
                         version="${ant.version}"/>
         </dependencies>
         <!-- fork and execute temporary ant build file -->
-        <java classname="org.apache.tools.ant.Main" fork="on" append="on" failonerror="on" dir="${basedir}">
+        <java classname="org.apache.tools.ant.Main" fork="on" append="on" failonerror="on" dir="\${basedir}">
             <classpath>
                 <fileset refid="ant.dependencies.id"/>
                 <fileset refid="derby.embedded.db.dependencies.id"/>
             </classpath>
-            <arg line="-f ${basedir}/derby-sql-build.xml forked-sql-execute-derby"/>
+            <arg line="-f \${basedir}/derby-sql-build.xml forked-sql-execute-derby"/>
         </java>
         <!-- cleanup temporary ant build file -->
-        <delete file="${basedir}/derby-sql-build.xml"/>
+        <delete file="\${basedir}/derby-sql-build.xml"/>
     </target>
 
     <target name="sql-execute-hsql" if="org.apache.jetspeed.database.is.hsql.embedded">

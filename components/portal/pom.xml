@@ -170,6 +170,11 @@ limitations under the License.
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-webapp-logging</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>jmock</groupId>
             <artifactId>jmock</artifactId>
             <scope>test</scope>

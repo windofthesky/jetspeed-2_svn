@@ -69,11 +69,6 @@ public class SearchEngineImpl implements SearchEngine
     {
         //assume it's full path for now
         rootIndexDir = new File(indexRoot);
-        if(!rootIndexDir.exists())
-        {
-            rootIndexDir.mkdirs();
-        }
-        
         this.analyzerClassName = analyzerClassName;
         this.optimizeAfterUpdate = optimzeAfterUpdate;
         this.handlerFactory = handlerFactory;
@@ -86,7 +81,10 @@ public class SearchEngineImpl implements SearchEngine
         }
         catch (Exception e)
         {
-            log.error("Failed to create Portal Registry indexes in "  + rootIndexDir.getPath(), e);
+            if (rootIndexDir.exists())
+            {
+                log.error("Failed to open Portal Registry indexes in " + rootIndexDir.getPath(), e);
+            }
             try
             {
                 rootIndexDir.delete();
@@ -100,7 +98,7 @@ public class SearchEngineImpl implements SearchEngine
             catch (Exception e1)
             {
                 String message = "Cannot RECREATE Portlet Registry indexes in "  + rootIndexDir.getPath();
-                log.error(message, e);
+                log.error(message, e1);
                 throw new Exception(message);
             }
         }

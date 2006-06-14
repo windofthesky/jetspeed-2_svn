@@ -157,9 +157,26 @@ limitations under the License.
                     <configuration>
                         <systemProperties>
 
-                            <!-- Runtime Database Properties -->
+                            <!-- Runtime and Test Database Properties -->
+                            <!--
+                                Bug: [MSUREFIRE-111] potentially empty properties, (here
+                                passwords), must be listed first as they may default
+                                incorrectly and pick up values from other properties.
+                            -->
+                            <property>
+                                <name>org.apache.jetspeed.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.password</name>
+                                <value>${org.apache.jetspeed.test.database.password}</value>
+                            </property>
                             <property>
                                 <name>org.apache.jetspeed.database.url</name>
+                                <value>${org.apache.jetspeed.test.database.url}</value>
+                            </property>
+                            <property>
+                                <name>org.apache.jetspeed.test.database.url</name>
                                 <value>${org.apache.jetspeed.test.database.url}</value>
                             </property>
                             <property>
@@ -167,30 +184,16 @@ limitations under the License.
                                 <value>${org.apache.jetspeed.test.database.driver}</value>
                             </property>
                             <property>
-                                <name>org.apache.jetspeed.database.user</name>
-                                <value>${org.apache.jetspeed.test.database.user}</value>
-                            </property>
-                            <property>
-                                <name>org.apache.jetspeed.database.password</name>
-                                <value>${org.apache.jetspeed.test.database.password}</value>
-                            </property>
-
-                            <!-- Test Database Properties -->
-                            <property>
-                                <name>org.apache.jetspeed.test.database.url</name>
-                                <value>${org.apache.jetspeed.test.database.url}</value>
-                            </property>
-                            <property>
                                 <name>org.apache.jetspeed.test.database.driver</name>
                                 <value>${org.apache.jetspeed.test.database.driver}</value>
                             </property>
                             <property>
-                                <name>org.apache.jetspeed.test.database.user</name>
+                                <name>org.apache.jetspeed.database.user</name>
                                 <value>${org.apache.jetspeed.test.database.user}</value>
                             </property>
                             <property>
-                                <name>org.apache.jetspeed.test.database.password</name>
-                                <value>${org.apache.jetspeed.test.database.password}</value>
+                                <name>org.apache.jetspeed.test.database.user</name>
+                                <value>${org.apache.jetspeed.test.database.user}</value>
                             </property>
 
                         </systemProperties>

@@ -133,6 +133,16 @@ limitations under the License.
             <artifactId>log4j</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
     </dependencies>
 

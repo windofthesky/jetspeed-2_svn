@@ -62,27 +62,27 @@ limitations under the License.
             new version of the archetype plugin is developed and released.
         -->
         <!-- Assemble required portal webapp resources -->        
-        <delete dir="${basedir}/target/webapp"/>
-        <mkdir dir="${basedir}/target/webapp"/>
+        <delete dir="\${basedir}/target/webapp"/>
+        <mkdir dir="\${basedir}/target/webapp"/>
         <dependencies filesetId="portal.resources.dependencies.id" useScope="runtime">
             <dependency groupId="${org.apache.jetspeed.groupid}"
                         artifactId="portal-archetype-resources"
                         version="${org.apache.jetspeed.version}"/>
         </dependencies>
-        <copy todir="${basedir}/target" flatten="on">
+        <copy todir="\${basedir}/target" flatten="on">
             <fileset refid="portal.resources.dependencies.id"/>
         </copy>
-        <unjar src="${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"
-               dest="${basedir}/target/webapp">
+        <unjar src="\${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"
+               dest="\${basedir}/target/webapp">
             <patternset>
                 <exclude name="META-INF/**"/>
             </patternset>
         </unjar>
-        <delete file="${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"/>
+        <delete file="\${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"/>
 
         <!-- Merge webapp resource overrides from src -->
-        <copy todir="${basedir}/target/webapp" overwrite="on">
-            <fileset dir="${basedir}/src/webapp">
+        <copy todir="\${basedir}/target/webapp" overwrite="on">
+            <fileset dir="\${basedir}/src/webapp">
                 <exclude name="WEB-INF/assembly/readme.txt"/>
                 <exclude name="WEB-INF/conf/readme.txt"/>
                 <exclude name="WEB-INF/pages/readme.txt"/>
@@ -93,36 +93,36 @@ limitations under the License.
         </copy>
 
         <!-- Merge webapp resource overrides from etc -->
-        <copy todir="${basedir}/target/webapp" overwrite="on">
-            <fileset dir="${basedir}/../etc/webapp">
+        <copy todir="\${basedir}/target/webapp" overwrite="on">
+            <fileset dir="\${basedir}/../etc/webapp">
                 <exclude name="WEB-INF/**"/>
                 <exclude name="decorations/**"/>
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
-        <copy todir="${basedir}/target/webapp/WEB-INF/assembly" overwrite="on">
-            <fileset dir="${basedir}/../etc/assembly">
+        <copy todir="\${basedir}/target/webapp/WEB-INF/assembly" overwrite="on">
+            <fileset dir="\${basedir}/../etc/assembly">
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
-        <copy todir="${basedir}/target/webapp/WEB-INF/pages" overwrite="on">
-            <fileset dir="${basedir}/../etc/pages">
+        <copy todir="\${basedir}/target/webapp/WEB-INF/pages" overwrite="on">
+            <fileset dir="\${basedir}/../etc/pages">
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
-        <copy todir="${basedir}/target/webapp/WEB-INF/templates" overwrite="on">
-            <fileset dir="${basedir}/../etc/templates">
+        <copy todir="\${basedir}/target/webapp/WEB-INF/templates" overwrite="on">
+            <fileset dir="\${basedir}/../etc/templates">
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
-        <copy todir="${basedir}/target/webapp/decorations" overwrite="on">
-            <fileset dir="${basedir}/../etc/decorations">
+        <copy todir="\${basedir}/target/webapp/decorations" overwrite="on">
+            <fileset dir="\${basedir}/../etc/decorations">
                 <exclude name="readme.txt"/>
             </fileset>
         </copy>
 
         <!-- Configure runtime portal properties resource -->
-        <replace file="${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
+        <replace file="\${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
             <replacefilter token="@AUTODEPLOYMENT_SERVER@"
                            value="${org.apache.jetspeed.services.autodeployment.server}"/>
             <replacefilter token="@AUTODEPLOYMENT_USER@"

@@ -94,6 +94,17 @@ limitations under the License.
         <ant.version>1.6.5</ant.version>
         <junit.version>3.8.1</junit.version>
         <org.apache.maven.artifact.ant.version>2.0.4</org.apache.maven.artifact.ant.version>
+        <!--
+            Bug: [MCOMPILER-36] using specific version of compiler
+            plugin to avoid compilation issues with j2sdk 1.4.2
+            involving compilation of sources on classpath.
+        -->
+        <org.apache.maven.plugins.maven-compiler-plugin.version>2.0</org.apache.maven.plugins.maven-compiler-plugin.version>
+        <!--
+            Bug: using specific version of surefire plugin
+            to ensure test isolation for spring test cases;
+            specifically connection datasource management.
+        -->
         <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.3</org.apache.maven.plugins.maven-surefire-plugin.version>
         <torque.version>3.2-rc3</torque.version>
 
@@ -143,14 +154,14 @@ limitations under the License.
 
     <repositories>
         <repository>
-            <id>central</id>
-            <name>Maven Repository Switchboard</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
             <id>com.bluesunrise.m2</id>
             <name>Maven2 BlueSunrise</name>
             <url>http://www.bluesunrise.com/maven2</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
         </repository>
         <repository>
             <id>com.bluesunrise.m1</id>
@@ -171,6 +182,18 @@ limitations under the License.
             <layout>legacy</layout>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>com.bluesunrise.m2</id>
+            <name>Maven2 BlueSunrise</name>
+            <url>http://www.bluesunrise.com/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <!-- Dependency Configuration -->
 
@@ -527,6 +550,7 @@ limitations under the License.
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.maven-compiler-plugin.version}</version>
                     <configuration>
                         <source>1.4</source>
                         <target>1.4</target>

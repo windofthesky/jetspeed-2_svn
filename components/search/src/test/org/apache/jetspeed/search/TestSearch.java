@@ -38,7 +38,7 @@ import junit.framework.TestSuite;
 public class TestSearch extends TestCase
 {
     
-    private final static String INDEX_DIRECTORY = "./search_index";
+    private final static String INDEX_DIRECTORY = "./target/search_index";
 
     private File indexRoot;
     SearchEngine searchEngine;

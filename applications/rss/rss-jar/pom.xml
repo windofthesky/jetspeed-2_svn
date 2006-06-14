@@ -97,8 +97,13 @@ limitations under the License.
 
         <!-- Runtime Dependencies -->
         <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
+            <artifactId>xercesImpl</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

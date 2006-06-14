@@ -82,8 +82,8 @@ limitations under the License.
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <ant target="clean-schema" antfile="build.xml" dir="${basedir}" inheritall="off"/>
-                                <ant target="schema" antfile="build.xml" dir="${basedir}" inheritall="off">
+                                <ant target="clean-schema" antfile="build.xml" dir="\${basedir}" inheritall="off"/>
+                                <ant target="schema" antfile="build.xml" dir="\${basedir}" inheritall="off">
                                     <property name="org.apache.jetspeed.database.default.name"
                                               value="${org.apache.jetspeed.production.database.default.name}"/>
                                 </ant>
@@ -100,7 +100,7 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate-db-userinfo" antfile="build.xml" dir="${basedir}" inheritRefs="on">
+                                <ant target="populate-db-userinfo" antfile="build.xml" dir="\${basedir}" inheritRefs="on">
                                     <property name="org.apache.jetspeed.database.enable"
                                               value="${org.apache.jetspeed.env.deploy.db}"/>
                                     <property name="org.apache.jetspeed.database.skip"
