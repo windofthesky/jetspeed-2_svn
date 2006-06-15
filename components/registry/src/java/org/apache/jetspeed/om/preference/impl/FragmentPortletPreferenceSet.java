@@ -43,11 +43,32 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
     
     public FragmentPortletPreferenceSet(PreferenceSetComposite preferenceSet, Fragment fragment)
     {
+        // save mutable preference set and read only fragment
         this.preferenceSet = preferenceSet;
         this.fragment = fragment;
+
+        // construct merged portlet definition prefs map;
+        // note that user specific preferences accessed via
+        // the portlet entity should override these defaults
+        int prefsSize = preferenceSet.size() + 1;
         if (fragment.getPreferences() != null)
         {
-            this.prefs = new HashMap(fragment.getPreferences().size());
+            prefsSize += fragment.getPreferences().size();
+        }
+        this.prefs = new HashMap(prefsSize);
+
+        // add global portlet definition defaults to prefs
+        Iterator iterator = preferenceSet.iterator();
+        while(iterator.hasNext())
+        {
+            Preference pref = (Preference) iterator.next();
+            prefs.put(pref.getName(), pref);
+        }        
+
+        // add/override global portlet definition defaults
+        // using more specific fragment preferences
+        if (fragment.getPreferences() != null)
+        {
             Iterator itr = fragment.getPreferences().iterator();        
             while(itr.hasNext())
             {
@@ -55,17 +76,6 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
                 prefs.put(pref.getName(), pref);
             }
         }
-        else
-        {
-            this.prefs = new HashMap();
-        }
-        
-        Iterator iterator = preferenceSet.iterator();
-        while(iterator.hasNext())
-        {
-            Preference pref = (Preference) iterator.next();
-            prefs.put(pref.getName(), pref);
-        }        
     }
 
     public Preference add(String arg0, List arg1)

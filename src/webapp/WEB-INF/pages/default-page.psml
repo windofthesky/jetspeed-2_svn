@@ -57,12 +57,19 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
+    <fragment id="dp-10" type="portlet" name="demo::IFramePortlet" decorator="gray-gradient-noborder">
       <property layout="TwoColumns" name="row" value="4" />
+      <property layout="TwoColumns" name="column" value="0" />
+      <preference name="SRC">
+        <value>http://www.apache.org</value>
+      </preference>
+    </fragment>
+    <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
+      <property layout="TwoColumns" name="row" value="5" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
     <fragment id="dp-18" type="portlet" name="demo::BookmarkPortlet">
-      <property layout="TwoColumns" name="row" value="5" />
+      <property layout="TwoColumns" name="row" value="6" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
