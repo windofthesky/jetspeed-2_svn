@@ -29,7 +29,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.security.FragmentPermission;
 
 /**

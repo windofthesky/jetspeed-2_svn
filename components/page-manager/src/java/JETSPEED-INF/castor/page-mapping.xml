@@ -123,7 +123,7 @@
     </field>
     
     <field name="preferences"
-           type="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl" collection="arraylist">
+           type="org.apache.jetspeed.om.page.psml.FragmentPreferenceImpl" collection="arraylist">
       <bind-xml name="preference"/>
     </field>
   </class>
@@ -493,7 +493,7 @@
   </class>
   
 
-  <class name="org.apache.jetspeed.om.preference.impl.FragmentPreferenceImpl">
+  <class name="org.apache.jetspeed.om.page.psml.FragmentPreferenceImpl">
     <map-to xml="preference"/>
 
     <field name="name" type="string">

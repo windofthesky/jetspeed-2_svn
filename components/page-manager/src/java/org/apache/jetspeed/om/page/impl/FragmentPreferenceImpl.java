@@ -16,17 +16,20 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.common.PreferenceCtrl;
 
 /**
- * FragmentPreference
+ * FragmentPreferenceImpl
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentPreferenceImpl implements FragmentPreference
+public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, FragmentPreference
 {
     private int id;
     private String name;
@@ -54,6 +57,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#getName()
+     * @see org.apache.pluto.om.common.Preference#getName()
      */
     public String getName()
     {
@@ -62,6 +66,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#setName(java.lang.String)
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setName(java.lang.String)
      */
     public void setName(String name)
     {
@@ -70,6 +75,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#isReadOnly()
+     * @see org.apache.pluto.om.common.Preference#isReadOnly()
      */
     public boolean isReadOnly()
     {
@@ -116,6 +122,38 @@ public class FragmentPreferenceImpl implements FragmentPreference
                 preferenceValues.addAll(values);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.pluto.om.common.Preference#getValues()
+     */
+    public Iterator getValues()
+    {
+        return getValueList().iterator();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.pluto.om.common.Preference#isValueSet()
+     */
+    public boolean isValueSet()
+    {
+        return !getValueList().isEmpty();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setValues(java.util.List)
+     */
+    public void setValues(List values)
+    {
+        setValueList(values);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setReadOnly(java.lang.String)
+     */
+    public void setReadOnly(String readOnly)
+    {
+        setReadOnly(new Boolean(readOnly).booleanValue());
     }
 
     /* (non-Javadoc)

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.jetspeed.om.preference.impl;
+package org.apache.jetspeed.om.page.psml;
 
 import java.util.Iterator;
 import java.util.List;
