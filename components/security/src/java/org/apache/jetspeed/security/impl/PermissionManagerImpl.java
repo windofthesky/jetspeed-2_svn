@@ -23,9 +23,9 @@ import java.security.PrivilegedAction;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.security.auth.Subject;
 
@@ -42,7 +42,6 @@ import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalPermissionImpl;
 import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.ojb.broker.metadata.FieldHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
@@ -78,25 +77,45 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implements PermissionManager 
 {
     private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
+    private static ThreadLocal permissionsCache = new ThreadLocal();
     
     /**
      * @see org.apache.jetspeed.security.PermissionManager#getPermissions(java.security.Principal)
      */
     public Permissions getPermissions(Principal principal)
-    {
+    {        
         String fullPath = SecurityHelper.getPreferencesFullPath(principal);
         ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" },
                 "removePermission(java.security.Principal)");
 
-        // Remove permissions on principal.
-        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
-        Collection internalPermissions = new ArrayList();
-        if (null != internalPrincipal)
+        HashMap permissionsMap = (HashMap)permissionsCache.get();
+        if ( permissionsMap == null )
         {
-            internalPermissions = internalPrincipal.getPermissions();
+            permissionsMap = new HashMap();
+            permissionsCache.set(permissionsMap);
         }
+        HashSet principalPermissions = (HashSet)permissionsMap.get(fullPath);
+        if ( principalPermissions == null )
+        {
+            InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+            if (null != internalPrincipal)
+            {
+                principalPermissions = getSecurityPermissions(internalPrincipal.getPermissions());
+            }
+            if ( principalPermissions == null)
+            {
+                principalPermissions = new HashSet();
+            }
+            permissionsMap.put(fullPath, principalPermissions);
+        }
+        
         Permissions permissions = new Permissions();
-        appendSecurityPermissions(internalPermissions, permissions);
+        Iterator iter =principalPermissions.iterator();
+        while (iter.hasNext())
+        {
+            permissions.add((Permission)iter.next());
+        }
+        
         return permissions;
     }
 
@@ -112,19 +131,53 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         Collection principalsFullPath = getPrincipalsFullPath(principals);
         if ((null != principalsFullPath) && principalsFullPath.size() > 0)
         {
-            Criteria filter = new Criteria();
-            filter.addIn("fullPath", principalsFullPath);
-            Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
-            Collection internalPrincipals = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-            Iterator internalPrincipalsIter = internalPrincipals.iterator();
-            while (internalPrincipalsIter.hasNext())
+            HashSet permissionsSet = new HashSet();
+            ArrayList newPrincipals = new ArrayList();
+            HashMap permissionsMap = (HashMap)permissionsCache.get();
+            if (permissionsMap == null)
             {
-                InternalPrincipal internalPrincipal = (InternalPrincipal) internalPrincipalsIter.next();
-                Collection internalPermissions = internalPrincipal.getPermissions();
-                if (null != internalPermissions)
+                permissionsMap = new HashMap();
+                permissionsCache.set(permissionsMap);
+            }
+            
+            Iterator iter = principalsFullPath.iterator();
+            HashSet principalPermissions;
+            while ( iter.hasNext())
+            {
+                principalPermissions = (HashSet)permissionsMap.get(iter.next());
+                if ( principalPermissions != null )
                 {
-                    permissions = appendSecurityPermissions(internalPermissions, permissions);
+                    iter.remove();
+                    permissionsSet.addAll(principalPermissions);
                 }
+            }
+            if ( principalsFullPath.size() > 0)
+            {
+                Criteria filter = new Criteria();
+                filter.addIn("fullPath", principalsFullPath);
+                Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
+                Collection internalPrincipals = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+                Iterator internalPrincipalsIter = internalPrincipals.iterator();
+                while (internalPrincipalsIter.hasNext())
+                {
+                    InternalPrincipal internalPrincipal = (InternalPrincipal) internalPrincipalsIter.next();
+                    Collection internalPermissions = internalPrincipal.getPermissions();
+                    if (null != internalPermissions)
+                    {
+                        principalPermissions = getSecurityPermissions(internalPermissions);
+                        permissionsSet.addAll(principalPermissions);
+                    }
+                    else
+                    {
+                        principalPermissions = new HashSet();
+                    }
+                    permissionsMap.put(internalPrincipal.getFullPath(),principalPermissions);
+                }
+            }
+            iter = permissionsSet.iterator();
+            while (iter.hasNext())
+            {
+                permissions.add((Permission)iter.next());
             }
         }
         return permissions;
@@ -161,10 +214,10 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      * </p>
      * 
      * @param omPermissions The collection of {@link InternalPermission}.
-     * @return The collection of {@link java.security.Permission}.
      */
-    private Permissions appendSecurityPermissions(Collection omPermissions, Permissions permissions)
+    private HashSet getSecurityPermissions(Collection omPermissions)
     {     
+        HashSet permissions = new HashSet();
         Iterator internalPermissionsIter = omPermissions.iterator();
         while (internalPermissionsIter.hasNext())
         {
@@ -177,19 +230,18 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                 Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
                 Object[] initArgs = { internalPermission.getName(), internalPermission.getActions() };
                 permission = (Permission) permissionConstructor.newInstance(initArgs);
-                if(!Collections.list(permissions.elements()).contains(permission))
+                if(permissions.add(permission))
                 {
                     if (log.isDebugEnabled())
                     {
-                        log.debug("Adding permimssion: [class, " + permission.getClass().getName() + "], " + "[name, "
+                        log.debug("Added permimssion: [class, " + permission.getClass().getName() + "], " + "[name, "
                                 + permission.getName() + "], " + "[actions, " + permission.getActions() + "]");
                     }                   
-                    permissions.add(permission);
                 }
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                log.error("Internal error", e);
             }
         }
         return permissions;
