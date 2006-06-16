@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
@@ -33,10 +33,9 @@ import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.PortalResourcePermission;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.JetspeedActions;
 
 /**
  * BaseElementImpl
@@ -501,8 +500,8 @@ public abstract class BaseElementImpl implements BaseElement
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseElement#setShortTitle(java.lang.String)
      */
-    public void setShortTitle(String title)
+    public void setShortTitle(String shortTitle)
     {
-        shortTitle = title;
+        this.shortTitle = shortTitle;
     }
 }
