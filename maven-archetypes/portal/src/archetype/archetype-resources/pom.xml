@@ -95,12 +95,6 @@ limitations under the License.
         <junit.version>3.8.1</junit.version>
         <org.apache.maven.artifact.ant.version>2.0.4</org.apache.maven.artifact.ant.version>
         <!--
-            Bug: [MCOMPILER-36] using specific version of compiler
-            plugin to avoid compilation issues with j2sdk 1.4.2
-            involving compilation of sources on classpath.
-        -->
-        <org.apache.maven.plugins.maven-compiler-plugin.version>2.0</org.apache.maven.plugins.maven-compiler-plugin.version>
-        <!--
             Bug: using specific version of surefire plugin
             to ensure test isolation for spring test cases;
             specifically connection datasource management.
@@ -525,6 +519,9 @@ limitations under the License.
         <resources>
             <resource>
                 <directory>src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
             </resource>
         </resources>
 
@@ -539,6 +536,9 @@ limitations under the License.
             </testResource>
             <testResource>
                 <directory>src/test</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
             </testResource>
         </testResources>
 
@@ -550,7 +550,6 @@ limitations under the License.
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${org.apache.maven.plugins.maven-compiler-plugin.version}</version>
                     <configuration>
                         <source>1.4</source>
                         <target>1.4</target>

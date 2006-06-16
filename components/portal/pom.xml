@@ -207,6 +207,9 @@ limitations under the License.
             </testResource>
             <testResource>
                 <directory>src/test</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
             </testResource>
             <testResource>
                 <directory>../../etc/log4j</directory>
