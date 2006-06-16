@@ -132,7 +132,6 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         if ((null != principalsFullPath) && principalsFullPath.size() > 0)
         {
             HashSet permissionsSet = new HashSet();
-            ArrayList newPrincipals = new ArrayList();
             HashMap permissionsMap = (HashMap)permissionsCache.get();
             if (permissionsMap == null)
             {
@@ -281,6 +280,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         InternalPermission internalPermission = getInternalPermission(permission);
         if (null != internalPermission)
         {
+            // clear the whole ThreadLocal permissions cache
+            permissionsCache.set(null);
             try
             {
                 // Remove permission.
@@ -314,6 +315,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             {
                 internalPermissions.clear();
             }
+            // clear the whole ThreadLocal permissions cache
+            permissionsCache.set(null);
             try
             {
                 internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
@@ -371,6 +374,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         {
             internalPermissions.add(internalPermission);
         }
+        // clear the whole ThreadLocal permissions cache
+        permissionsCache.set(null);
         try
         {
             internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
@@ -437,6 +442,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                 }
                 if (revokePermission)
                 {
+                    // clear the whole ThreadLocal permissions cache
+                    permissionsCache.set(null);
                     try
                     {
                         internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
