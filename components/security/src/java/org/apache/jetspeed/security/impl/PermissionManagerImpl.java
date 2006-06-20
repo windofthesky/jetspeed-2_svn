@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.security.auth.Subject;
 
@@ -520,21 +521,93 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         return true;         
     }
     
-    public Iterator getPermissions()
+    public Collection getPermissions()
     {
         QueryByCriteria query = QueryFactory.newQuery(InternalPermissionImpl.class, new Criteria());
         query.addOrderByAscending("classname");
         query.addOrderByAscending("name");
-        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();        
+        Collection internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        return internalPermissions;
     }
-
-    public Iterator getPermissions(String classname, String resource)
+    
+    public Permissions getPermissions(String classname, String resource)
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("classname", classname);
         filter.addEqualTo("name", resource);
         Query query = QueryFactory.newQuery(InternalPermissionImpl.class, filter);
-        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                
+        Collection internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);        
+        Permissions permissions = new Permissions();
+        Iterator iter = internalPermissions.iterator();
+        try
+        {
+            while (iter.hasNext())
+            {
+                InternalPermission internalPermission = (InternalPermission)iter.next();
+                Class permissionClass = Class.forName(internalPermission.getClassname());
+                Class[] parameterTypes = { String.class, String.class };
+                Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
+                Object[] initArgs = { internalPermission.getName(), internalPermission.getActions() };
+                Permission permission = (Permission) permissionConstructor.newInstance(initArgs);            
+                permissions.add(permission);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("Failed to retrieve permissions", e);            
+        }
+        return permissions;        
     }    
+    
+    public int updatePermission(Permission permission, Collection principals)
+    throws SecurityException
+    {
+        int count = 0;
+        InternalPermission internal = getInternalPermission(permission);
+        Iterator iter = principals.iterator();
+        Collection newPrincipals = new LinkedList();
+        while (iter.hasNext())
+        {
+            Principal principal = (Principal)iter.next();
+            String fullPath = SecurityHelper.getPreferencesFullPath(principal);
+            InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+            newPrincipals.add(internalPrincipal);            
+        }
+        internal.setPrincipals(newPrincipals);
+        internal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+        try
+        {            
+            getPersistenceBrokerTemplate().store(internal);            
+        }
+        catch (Exception e)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.updatePermission",
+                                                                   "store", e.getMessage());
+            logger.error(msg, e);            
+            throw new SecurityException(msg, e);
+        }
+
+        return count;
+    }
+    
+    public Collection getPrincipals(Permission permission)
+    {
+        Collection result = new LinkedList();        
+        InternalPermission internalPermission = this.getInternalPermission(permission);
+        if (internalPermission == null)
+        {
+            return result;
+        }
+        Iterator principals = internalPermission.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            InternalPrincipal internalPrincipal = (InternalPrincipal)principals.next();            
+            Principal principal = 
+                SecurityHelper.createPrincipalFromFullPath(internalPrincipal.getFullPath());
+            result.add(principal);
+        }
+        return  result;
+    }
+    
     
 }

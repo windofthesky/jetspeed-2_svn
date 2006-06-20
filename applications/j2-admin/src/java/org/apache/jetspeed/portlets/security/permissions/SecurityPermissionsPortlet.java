@@ -16,10 +16,10 @@
 package org.apache.jetspeed.portlets.security.permissions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -117,7 +117,7 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
             List folders = new LinkedList();
             List pages = new LinkedList();
             List portlets = new LinkedList();
-            Iterator all = pm.getPermissions();
+            Iterator all = pm.getPermissions().iterator();
             while (all.hasNext())
             {
                 InternalPermission permission = (InternalPermission)all.next();                

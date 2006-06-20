@@ -1,0 +1,73 @@
+
+ 0. Jetspeed Desktop                                                      
+      a. Portlet Selector                             
+      b. Windows States                               
+
+ 1. XML Serialization                                 
+      a. Replace SQL seed scripts with XML            
+
+ 2. Cluster Support                                                       
+       a. Registry
+       b. PSML
+
+ 3. Customizer - Redesign
+       a. DOJO based, build into desktop
+       b. access DOJO customizer from non-desktop  
+       c. Security Permissions Editor
+       d. Security Constraints Editor
+       e. integrate site manager with new customizer
+
+ 4. Improve Admin with DOJO or JSF...
+      a. Site Manager                        
+      b. Profiler (write docs)               
+      c. Roles, Groups               
+
+ 5. Major Bug/Featurs
+      a. JS2-499 Prefs per User     
+         Refactor Prefs, fix PrefsPreferenes mess                                  
+      b. JS2-517 Secure XML AJAX Requests       
+      c. Redeploy Failing on Tomcat      
+
+ 6. Graffito Integration
+
+ 7. Performance
+      a. Portlet Selector
+      b. Roles, Groups
+      c. Permission Checks
+
+ 8. App Server Support
+      a. Jetty Support
+      b. WAS
+      c. WAS CE
+
+ 9. Jetspeed Lite
+      a. replace OJB with Serialized
+      b. minimal security
+      c. internal portlet app, single WAR deployment
+      d. simpler security model
+  
+10. Build and Configurations
+      a. move to Maven-2, drop M1
+      b. various configurations, lite
+
+11. Demo Sites
+      a. improve JSF and Facelets support
+      b. Spring MVC Examples
+      c. redo demo site
+      d. google map portlet 
+
+12. Better Examples, get rid of old ones
+      * Google Map Portlet (JP)
+
+13. Eclipse Plugin
+
+14. Security 
+      * new schema
+      
+15. JPT
+$jetspeed.RenderEntity(entityId)
+
+or
+
+$jetspeed.RenderPortletEntity(entityId, portletId)
+      

@@ -18,6 +18,18 @@
     </constructor-arg>    	
 </bean>	
 
+<bean id="RolesSecurityBehavior"
+	  class="org.apache.jetspeed.layout.impl.RolesSecurityBehavior">
+       <!-- List of required roles (comma-separated) 
+            Only need to match one of the listed  roles to pass security requirements
+           -->
+        <constructor-arg>
+            <list>
+                <value>admin</value>
+            </list>
+        </constructor-arg>
+</bean>	
+    
 <bean id="AjaxMove"
     class="org.apache.jetspeed.layout.impl.MovePortletAction">
     <constructor-arg index="0">
@@ -269,6 +281,35 @@
     </constructor-arg>    	
 </bean>
 
+<bean id="AjaxSecurityPermissions"
+    class="org.apache.jetspeed.layout.impl.SecurityPermissionAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/permissions.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.security.PermissionManager"/>        
+    </constructor-arg>    
+    <constructor-arg index='3'>
+        <ref bean="RolesSecurityBehavior"/>        
+    </constructor-arg>    	
+    <constructor-arg index='4'>    
+        <map>
+            <entry key="portlet">
+                <value>org.apache.jetspeed.security.PortletPermission</value>
+            </entry>                        
+            <entry key="page">
+                <value>org.apache.jetspeed.security.PagePermission</value>
+            </entry>                                    
+            <entry key="folder">
+                <value>org.apache.jetspeed.security.FolderPermission</value>
+            </entry>                                    
+        </map>
+    </constructor-arg>
+</bean>
+    
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
@@ -314,6 +355,9 @@
             <entry key="getmenu">
                 <ref bean="AjaxGetMenu"/>
             </entry>			            
+            <entry key="permissions">
+                <ref bean="AjaxSecurityPermissions"/>
+            </entry>			                        
         </map>
     </constructor-arg>
     <constructor-arg index="1">

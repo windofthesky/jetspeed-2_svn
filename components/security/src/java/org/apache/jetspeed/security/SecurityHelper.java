@@ -262,4 +262,26 @@ public class SecurityHelper
             log.debug("No permissions to add...");
         }
     }
+    
+    public static Principal createPrincipalFromFullPath(String fullPath)
+    {
+        Principal principal = null;
+        if (fullPath.startsWith(BasePrincipal.PREFS_ROLE_ROOT))
+        {
+            String name = RolePrincipalImpl.getPrincipalNameFromFullPath(fullPath);            
+            principal = new RolePrincipalImpl(name);
+        }
+        else if (fullPath.startsWith(BasePrincipal.PREFS_USER_ROOT))
+        {
+            String name = UserPrincipalImpl.getPrincipalNameFromFullPath(fullPath);
+            principal = new UserPrincipalImpl(name);
+        }
+        else if (fullPath.startsWith(BasePrincipal.PREFS_GROUP_ROOT))
+        {
+            String name = GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPath);            
+            principal = new GroupPrincipalImpl(name);
+            
+        }
+        return principal;
+    }
 }

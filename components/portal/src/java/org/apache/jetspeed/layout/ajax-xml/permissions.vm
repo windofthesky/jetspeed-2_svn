@@ -1,0 +1,8 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <resource>$resource</resource> 
+    <type>$type</type> 
+    <actions>$actions</actions>
+    <actions>$roles</actions>    
+</js>

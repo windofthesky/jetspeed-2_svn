@@ -17,11 +17,14 @@ package org.apache.jetspeed.security;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.security.Permissions;
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.security.auth.Subject;
 
@@ -739,4 +742,80 @@ public class TestPermissionManager extends AbstractSecurityTestcase
             assertTrue("could not remove permissions. exception caught: " + sex, false);
         }
     }
+    
+    public void testUpdatePermission()
+    {
+        // Init test.
+        RolePrincipal role1 = new RolePrincipalImpl("role1");
+        RolePrincipal role2 = new RolePrincipalImpl("role2");
+        RolePrincipal role3 = new RolePrincipalImpl("role3");
+        RolePrincipal role4 = new RolePrincipalImpl("role4");
+        PortletPermission perm1 = new PortletPermission("testportlet", "view");
+        try
+        {
+            rms.addRole(role1.getName());
+            rms.addRole(role2.getName());
+            rms.addRole(role3.getName());
+            rms.addRole(role4.getName());            
+            pms.addPermission(perm1);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to init testUpdatePermission(), " + sex, false);
+        }
+
+        // Grant 1 and 2      
+        try
+        {
+            pms.grantPermission(role1, perm1);
+            pms.grantPermission(role2, perm1);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to grant on testUpdatePermission. caught exception, " + sex, false);
+        }
+
+        Collection principals = pms.getPrincipals(perm1);        
+        assertTrue("principal count should be 2 ", principals.size() == 2);        
+        Object [] array = (Object[])principals.toArray();
+        assertTrue("element is Principal ", array[0] instanceof Principal);
+        assertTrue("first element not found ", ((Principal)array[0]).getName().equals("role1"));
+        assertTrue("second element not found ", ((Principal)array[1]).getName().equals("role2"));
+        
+        
+        // Try to update collection
+        try
+        {
+            Collection roles = new Vector();
+            roles.add(role1);
+            roles.add(role3);
+            roles.add(role4);
+            pms.updatePermission(perm1, roles);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("principal does not exist. caught exception, " + sex, false);
+        }
+        principals = pms.getPrincipals(perm1);
+        assertTrue("principal count should be 3 ", principals.size() == 3);
+        array = (Object[])principals.toArray();
+        assertTrue("first element not found ", ((Principal)array[0]).getName().equals("role1"));
+        assertTrue("second element not found ", ((Principal)array[1]).getName().equals("role3"));
+        assertTrue("third element not found ", ((Principal)array[2]).getName().equals("role4"));
+        
+        // Cleanup test.
+        try
+        {
+            rms.removeRole(role1.getName());
+            rms.removeRole(role2.getName());
+            rms.removeRole(role3.getName());
+            rms.removeRole(role4.getName());
+            pms.removePermission(perm1);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("could not remove user and permission. exception caught: " + sex, false);
+        }
+    }
+    
 }

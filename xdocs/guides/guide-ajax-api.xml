@@ -571,6 +571,281 @@ http://localhost:8080/jetspeed/ajaxapi?action=getportlets
 	</tr>				
 </table>        
 </subsection>	
+    
+<subsection name='Permissions'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>permissions</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxSecurityPermissions</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Security Permissions Maintenance to add, update, and remove permissions from the Jetspeed security policy</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>permissions</td>				
+			</tr>			            
+			<tr>
+				<td>method</td>
+				<td>the method to execute: must be of value: add | update | delete</td>				
+			</tr>
+			<tr>
+				<td>type</td>
+				<td>the type of permission being manipulated: portlet | folder | page</td>				
+			</tr>			
+			<tr>
+				<td>resource</td>
+				<td>the name of the portal resource being manipulated</td>				
+			</tr>			            
+			<tr>
+				<td>roles</td>
+				<td>comma-separated list of roles, only valid for methods: add, update</td>				
+			</tr>			                        
+			<tr>
+				<td>actions</td>
+				<td>comma-separated list of actions, only valid for methods: add, update</td>				
+			</tr>			                        
+			<tr>
+				<td>oldactions</td>
+				<td>comma-separated list of previous actions, only valid for methods: update</td>				
+			</tr>			                                    
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi?action=permissions&method=add&type=portlet&resource=demo::*&roles=role1,role2,role3&actions=view,edit
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+    <status>success</status>
+    <action>permissions</action>
+    <resource>demo::*</resource> 
+    <type>portlet</type> 
+    <actions>view,edit</actions>
+    <actions>role1,role2,role3</actions>    
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>
+
+<subsection name='getmenus'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>getmenus</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxGetMenus</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Retrieves all menus for the current page (implied in URL)</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>getmenus</td>				
+			</tr>			            
+			<tr>
+				<td>page</td>
+				<td>(implied in URL)</td>				
+			</tr>
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi/default-page.psml?action=getmenus
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+    <status>success</status>
+    <action>getmenus</action>    
+    <menus>
+        <menu type="standard">navigations</menu>
+        <menu type="standard">back</menu>
+        <menu type="standard">pages</menu>
+        <menu type="standard">breadcrumbs</menu>
+        <menu type="custom">site-navigations</menu>
+        <menu type="custom">additional-links</menu>
+        <menu type="custom">page-navigations</menu>
+    </menus>
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>
+
+<subsection name='getmenu'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>getmenu</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxGetMenu</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Retrieves the menu definition for a given menu</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>getmenu</td>				
+			</tr>			            
+			<tr>
+				<td>menu</td>
+				<td>name of the menu to retrieve (menu definition may change per page)</td>				
+			</tr>
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi?action=getmenu&name=breadcrumbs
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+<status>success</status>
+<action>getmenu</action>
+<menu>
+  <name>breadcrumbs</name>
+  <title>You are here:</title>
+  <short-title>You are here:</short-title>
+  <skin>breadcrumbs</skin>
+  <url>/default-page.psml</url>
+  <hidden>false</hidden>
+  <selected>true</selected>
+  <option>
+    <type>folder</type>
+    <title>Root Folder</title>
+    <short-title>Root Folder</short-title>
+    <skin>breadcrumbs</skin>
+    <url>/</url>
+    <hidden>false</hidden>
+    <selected>true</selected>
+  </option>
+  <option>
+    <type>page</type>
+    <title>Welcome to Jetspeed 2</title>
+    <short-title>Welcome to Jetspeed 2</short-title>
+    <skin>blue</skin>
+    <url>/default-page.psml</url>
+    <hidden>false</hidden>
+    <selected>true</selected>
+  </option>
+</menu>
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>
+
+<subsection name='window'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>getmenus</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxChangeWindow</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Changes a portlet window's Window State or Portlet Mode</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>window</td>				
+			</tr>			            
+			<tr>
+				<td>id</td>
+				<td>window id of the portlet to be modified</td>				
+			</tr>
+			<tr>
+				<td>state</td>
+				<td>A portlet api valid window state or extended window state (normal | maximized | minimized)</td>				
+			</tr>            
+			<tr>
+				<td>mode</td>
+				<td>A portlet api valid portlet mode or extended portlet mode (view | edit | help | print)</td>				
+			</tr>                        
+			<tr>
+				<td>page</td>
+				<td>Implied in URL</td>				
+			</tr>                                    
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi?action=window&state=maximized&mode=edit&id=um-2
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+  <status>success</status>
+  <action>window</action>
+  <id>um-2</id>  
+  <state>maximized</state>
+  <mode>edit</mode>
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>        
 </section>
 
 <section name='Spring Assembly'>
@@ -583,6 +858,9 @@ of AJAX request. Here is the Spring Assembly. Each API is configured in the Ajax
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
+            <entry key="move">
+                <ref bean="AjaxMove"/>
+            </entry>            
             <entry key="moveabs">
                 <ref bean="AjaxMovePortletAbsolute"/>
             </entry>
@@ -610,6 +888,21 @@ of AJAX request. Here is the Spring Assembly. Each API is configured in the Ajax
             <entry key="getpage">
                 <ref bean="AjaxGetPage"/>
             </entry>
+            <entry key="getpages">
+                <ref bean="AjaxGetPages"/>
+            </entry>			
+            <entry key="window">
+                <ref bean="AjaxChangeWindow"/>
+            </entry>			            
+            <entry key="getmenus">
+                <ref bean="AjaxGetMenus"/>
+            </entry>			            
+            <entry key="getmenu">
+                <ref bean="AjaxGetMenu"/>
+            </entry>			            
+            <entry key="permissions">
+                <ref bean="AjaxSecurityPermissions"/>
+            </entry>			                        
         </map>
     </constructor-arg>
     <constructor-arg index="1">

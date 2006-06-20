@@ -32,18 +32,14 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Move Portlet portlet placement action
+ * Changes the window state or portlet mode for a given portlet window
  *
  * AJAX Parameters: 
  *    id = the fragment id of the portlet to move
  *    page = (implied in the URL)
- * Additional Absolute Parameters:  
- *    row = the new row to move to
- *    col = the new column to move to
- * Additional Relative Parameters: (move left, right, up, down)
- *    none
+ *    state = the new window state
+ *    mode = the new portlet mode
  *    
- * @author <a>David Gurney</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
