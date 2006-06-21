@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
+
 /**
  * Add Portlet portlet placement action
  * 
@@ -52,10 +53,11 @@ public class AddPortletAction
 {
     protected Log log = LogFactory.getLog(AddPortletAction.class);
     protected GetPortletsAction getPortletsAction = null;
+    protected boolean allowDuplicatePortlets = true;
 
     public AddPortletAction(String template, String errorTemplate, GetPortletsAction getPortletsAction)
     {
-        this(template, errorTemplate, null, null, getPortletsAction);
+        this(template, errorTemplate, null, null, getPortletsAction, true);
     }
 
     public AddPortletAction(String template, 
@@ -64,10 +66,21 @@ public class AddPortletAction
                             PortletActionSecurityBehavior securityBehavior,
                             GetPortletsAction getPortletsAction)
     {
+        this(template, errorTemplate, null, null, getPortletsAction, true);
+    }
+
+    public AddPortletAction(String template, 
+                            String errorTemplate, 
+                            PageManager pageManager,
+                            PortletActionSecurityBehavior securityBehavior,
+                            GetPortletsAction getPortletsAction,
+                            boolean allowDuplicatePortlets)
+    {
         super(template, errorTemplate, pageManager, securityBehavior); 
         this.getPortletsAction = getPortletsAction;
+        this.allowDuplicatePortlets = allowDuplicatePortlets;
     }
-    
+
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
     {
@@ -82,11 +95,17 @@ public class AddPortletAction
             { 
                 throw new RuntimeException("portlet id not provided"); 
             }
+            resultMap.put(PORTLETID, portletId);
+            
             // Verify that the specified portlet id is valid and accessible
             // If the portletid is not valid an exception will be thrown
             verifyPortletId(requestContext, portletId);
             
-            resultMap.put(PORTLETID, portletId);
+            if(allowDuplicatePortlets == false) {
+            	// Check to see if this portlet has already been added to the page
+            	checkForDuplicatePortlet(requestContext, resultMap, portletId);
+            }
+            
             if (false == checkAccess(requestContext, JetspeedActions.EDIT))
             {
                 if (!createNewPageOnEdit(requestContext))
@@ -130,8 +149,7 @@ public class AddPortletAction
             resultMap.put(NEWCOL, String.valueOf(coordinate
                     .getNewCol()));
             resultMap.put(NEWROW, String.valueOf(coordinate
-                    .getNewRow()));
-            resultMap.put(PORTLETENTITY, fragment.getId());
+                    .getNewRow()));            
         } 
         catch (Exception e)
         {
@@ -148,20 +166,59 @@ public class AddPortletAction
     
     protected void verifyPortletId(RequestContext requestContext, String portletId) throws Exception
     {
-        // Get the list of valid portlets from the getPortletAction
-        List portletList = getPortletsAction.retrievePortlets(requestContext, null);
-        if(portletList != null) {
-            for(int i = 0; i < portletList.size(); i++) {
-                PortletInfo portletInfo = (PortletInfo)portletList.get(i);
-                if(portletInfo != null) {
-                    if(portletInfo.getName().equalsIgnoreCase(portletId)) {
-                        // A match was found there is no need to continue
-                        return;
-                    }
-                }
-            }
-        }
-        // If we got here, then no match was found
-        throw new Exception(portletId + " is not a valid portlet or not allowed for this user");
+    	// Get the list of valid portlets from the getPortletAction
+    	List portletList = getPortletsAction.retrievePortlets(requestContext, null);
+    	if(portletList != null) {
+    		for(int i = 0; i < portletList.size(); i++) {
+    			PortletInfo portletInfo = (PortletInfo)portletList.get(i);
+    			if(portletInfo != null) {
+    				if(portletInfo.getName().equalsIgnoreCase(portletId)) {
+    					// A match was found there is no need to continue
+    					return;
+    				}
+    			}
+    		}
+    	}
+    	// If we got here, then no match was found
+    	throw new Exception(portletId + " is not a valid portlet or not allowed for this user");
+    }
+    
+    protected void checkForDuplicatePortlet(RequestContext requestContext, Map resultMap, String portletId)
+    throws AJAXException
+    {
+    	// Look at each portlet currently on the page
+    	Page page = requestContext.getPage();
+    	
+    	boolean duplicateFound = isDuplicateFragment(page.getRootFragment(), portletId);
+    	
+    	// Throw an exception if a duplicate is found
+    	if(duplicateFound == true) {
+    		throw new AJAXException(portletId + " is already on the page, duplicates are not allowed");
+    	}
+    }
+
+    protected boolean isDuplicateFragment(Fragment fragment, String portletId) {
+    	if(fragment != null) {
+	    	// Get the name of this fragment
+	    	String fragmentName = fragment.getName();
+	    	if(fragmentName.equals(portletId)) {
+	    		// Duplicate was found
+	    		return true;
+	    	} else {
+	    		// Process the child fragments if found
+	    		List childFragments = fragment.getFragments();
+	    		if(childFragments != null) {
+	    			for(int i = 0; i < childFragments.size(); i++) {
+	    				// Recursively call this method again to process the child fragments
+	    				if(isDuplicateFragment((Fragment)childFragments.get(i),portletId) == true) {
+	    					// No need to continue to loop if a duplicate was found
+	    					return true;
+	    				}
+	    			}
+	    		}
+	    	}
+    	}
+    	// We will only get here if no duplicates were found
+    	return false;
     }
 }
