@@ -66,7 +66,7 @@ public class AddPortletAction
                             PortletActionSecurityBehavior securityBehavior,
                             GetPortletsAction getPortletsAction)
     {
-        this(template, errorTemplate, null, null, getPortletsAction, true);
+        this(template, errorTemplate, pageManager, securityBehavior, getPortletsAction, true);
     }
 
     public AddPortletAction(String template, 
