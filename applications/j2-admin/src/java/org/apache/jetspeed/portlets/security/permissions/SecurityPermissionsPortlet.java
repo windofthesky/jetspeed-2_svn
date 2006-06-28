@@ -83,19 +83,40 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
                 "Could not get instance of portal role manager component");        
     }
 
+
+    /*              
+      
+        // detect jetspeed-desktop
+        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
+
+        boolean isJetspeedDesktop = ((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
+
+
+    */
+
     protected void includeDojoRequires(StringBuffer headerInfoText)
     {
         appendHeaderText(headerInfoText, "dojo.lang.*");
         appendHeaderText(headerInfoText, "dojo.event.*");
         appendHeaderText(headerInfoText, "dojo.io");
+    }
+    protected void includeDojoWidgetRequires(StringBuffer headerInfoText)
+    {
+        super.includeDojoWidgetRequires(headerInfoText);
+        appendHeaderText(headerInfoText, "dojo.widget.Manager");
         appendHeaderText(headerInfoText, "dojo.widget.LayoutContainer");
         appendHeaderText(headerInfoText, "dojo.widget.ContentPane");
-        appendHeaderText(headerInfoText, "dojo.widget.LinkPane");
         appendHeaderText(headerInfoText, "dojo.widget.SplitContainer");
         appendHeaderText(headerInfoText, "dojo.widget.TabContainer");
-        appendHeaderText(headerInfoText, "dojo.widget.Tree");
-        appendHeaderText(headerInfoText, "dojo.widget.SortableTable");
         appendHeaderText(headerInfoText, "dojo.widget.Checkbox");
+        appendHeaderText(headerInfoText, "dojo.widget.Dialog");
+        appendHeaderText(headerInfoText, "dojo.widget.Button");
+        appendHeaderText(headerInfoText, "dojo.widget.Menu2");
+    }
+    protected void includeDojoCustomWidgetRequires(StringBuffer headerInfoText)
+    {
+        super.includeDojoCustomWidgetRequires(headerInfoText);
+        appendHeaderText(headerInfoText, "jetspeed.ui.widget.EditorTable");
     }
     
     public void doView(RenderRequest request, RenderResponse response)

@@ -16,15 +16,16 @@
 package org.apache.portals.gems.file;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletPreferences;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.portals.bridges.common.GenericServletPortlet;
@@ -53,7 +54,13 @@ public class FilePortlet extends GenericServletPortlet
      */
     public static final String PARAM_SOURCE_FILE_PATH = "filepath";
 
-
+    /**
+     * Is the file stored in the webapp or outside of the webapp?
+     * valid values "webapp" and "filesystem", defaults to webapp
+     */
+    public static final String PARAM_LOCATION = "location";
+    private boolean webappLocation = true;
+    
     /**
      * Default URL for the source file
      */
@@ -70,6 +77,11 @@ public class FilePortlet extends GenericServletPortlet
         super.init(config);
         this.defaultSourceFile = config.getInitParameter(PARAM_SOURCE_FILE);
         this.defaultSourceBasePath = config.getInitParameter(PARAM_SOURCE_BASE_PATH);
+        String location = config.getInitParameter(PARAM_LOCATION);
+        if (location != null && location.equals("filesystem"))
+            webappLocation = false;
+        else
+            webappLocation = true;
     }
 
 
@@ -106,9 +118,11 @@ public class FilePortlet extends GenericServletPortlet
         else
         {
             // default to 'content' area
-            File temp = new File(path);             
-            path = "/WEB-INF/" + temp.getPath();            
-
+            File temp = new File(path);
+            if (webappLocation)
+            {
+                path = "/WEB-INF/" + temp.getPath();            
+            }
             setContentType(path, response);        
             renderFile(response, path);
         }        
@@ -146,7 +160,16 @@ public class FilePortlet extends GenericServletPortlet
     protected void renderFile(RenderResponse response, String fileName)
     throws PortletException, IOException
     {
-        InputStream is = this.getPortletContext().getResourceAsStream(fileName);
+        InputStream is = null;
+        
+        if (this.webappLocation)
+        {
+            is = this.getPortletContext().getResourceAsStream(fileName);
+        }
+        else
+        {
+            is = new FileInputStream(fileName);
+        }
         if (is == null)
         {
             byte [] bytes = ("File " + fileName + " not found.").getBytes();
