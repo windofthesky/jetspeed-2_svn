@@ -41,7 +41,18 @@ import org.apache.velocity.context.Context;
  */
 public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet 
 {
-    protected abstract void includeDojoRequires(StringBuffer headerInfo);    
+    protected void includeDojoRequires(StringBuffer headerInfoText)
+    {
+    }
+    protected void includeDojoWidgetRequires(StringBuffer headerInfoText)
+    {
+        appendHeaderText(headerInfoText, "dojo.widget.Manager");
+    }
+    protected void includeDojoCustomWidgetRequires(StringBuffer headerInfoText)
+    {
+        headerInfoText.append("dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');\r\n");
+        headerInfoText.append("dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');\r\n");
+    }
     
     /*
      * Class specific logger.
@@ -142,8 +153,9 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
             headerInfoText.setLength(0);
             headerInfoText.append("\r\n");
             includeDojoRequires(headerInfoText);
+            includeDojoWidgetRequires(headerInfoText);
+            includeDojoCustomWidgetRequires(headerInfoText);
             
-            headerInfoText.append("dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');\r\n");
             headerInfoText.append("dojo.require('jetspeed.desktop.compatibility');\r\n");
 
             headerInfoMap = new HashMap(8);
@@ -164,6 +176,18 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
             headerInfoMap.put("type", "text/javascript");
             headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
         }
+
+        // add jetspeed widget package if not already in use as desktop
+        if (!isJetspeedDesktop) 
+        {
+            headerInfoText.setLength(0);
+            headerInfoText.append("\r\n");
+            headerInfoText.append("dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');\r\n");
+            headerInfoMap = new HashMap(8);
+            headerInfoMap.put("language", "JavaScript");
+            headerInfoMap.put("type", "text/javascript");
+            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
+        }
         
         if (!isJetspeedDesktop)
         {
@@ -178,8 +202,6 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
             headerInfoMap = new HashMap(8);
             headerResource.addHeaderInfo("style", headerInfoMap, headerInfoText.toString());
         }
-        
-
     }
     
     protected void appendHeaderText(StringBuffer headerInfoText, String header)
