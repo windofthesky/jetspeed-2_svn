@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 
+
 /**
  * Portal Placement Context
  * 
@@ -90,7 +91,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	
     protected Page page;
     protected Fragment root;
-    
+        
 	public PortletPlacementContextImpl(RequestContext requestContext) 
     throws PortletPlacementException 
     {
@@ -367,7 +368,14 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 }
                 
             }
-            column.add(row, fragment);
+            // Make sure that the column has room to add the row
+            if(row < 0 || row > column.size()) {
+            	// Add to the end
+            	column.addElement(fragment);
+            	row = column.size()-1;
+            } else {
+            	column.add(row, fragment);
+            }
             Coordinate newCoord = new CoordinateImpl(col, row, col, row);
             this.fragmentCoordinateMap.put(fragment, newCoord);
             return newCoord;
