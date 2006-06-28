@@ -668,6 +668,28 @@ jetspeed.url.retrieveContent = function( requestUrl, contentListener, formObject
     });     
 };
 
+jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, reportError )
+{
+    var success = false;
+    var statusElmt = data.getElementsByTagName( "status" );
+    if ( statusElmt != null )
+    {
+        var successVal = statusElmt[0].firstChild.nodeValue;
+        if ( successVal == "success" )
+        {
+            success = true;
+        }
+    }
+    if ( ! success && reportError )
+    {
+        var textContent = dojo.dom.innerXML( data );
+        if ( ! textContent )
+            textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+        dojo.raise( "ajax-api failure url=" + requestUrl + "  xml-content=" + textContent );
+    }
+    return success;
+};
+
 // ... jetspeed.om.PortletContentRetriever
 jetspeed.om.PortletContentRetriever = function()
 {
@@ -2349,9 +2371,12 @@ dojo.lang.extend( jetspeed.om.PortletAddAjaxApiCallbackContentListener,
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        var entityId = this.parseAddPortletResponse( data );
-        if ( entityId )
-            jetspeed.page.addPortlet( this.portletDef.getPortletName(), entityId, this.windowWidgetId );
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true ) )
+        {
+            var entityId = this.parseAddPortletResponse( data );
+            if ( entityId )
+                jetspeed.page.addPortlet( this.portletDef.getPortletName(), entityId, this.windowWidgetId );
+        }
     },
     parseAddPortletResponse: function( /* XMLNode */ node )
     {

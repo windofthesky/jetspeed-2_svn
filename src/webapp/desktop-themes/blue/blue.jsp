@@ -80,6 +80,8 @@ limitations under the License.
     dojo.require("dojo.widget.TabContainer");
     dojo.require("dojo.widget.AccordionPane");
     dojo.require("dojo.widget.Menu2");
+    dojo.require('dojo.widget.Dialog');
+    dojo.require('dojo.widget.Button');
     dojo.require("dojo.fx.html");
 
     dojo.require('dojo.widget.LayoutContainer');
@@ -88,7 +90,6 @@ limitations under the License.
     dojo.require('dojo.widget.SplitContainer');
     dojo.require('dojo.widget.TabContainer');
     dojo.require('dojo.widget.Tree');
-	dojo.require('dojo.widget.SortableTable');
 
     dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
     dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');
@@ -100,6 +101,7 @@ limitations under the License.
     dojo.require("jetspeed.ui.widget.PortalTabContainer");
     dojo.require("jetspeed.ui.widget.PortalAccordionContainer");
     dojo.require("jetspeed.ui.widget.PortletDefContainer");
+    dojo.require("jetspeed.ui.widget.EditorTable");
 </script>
 <script language="JavaScript" type="text/javascript">
     dojo.hostenv.writeIncludes();

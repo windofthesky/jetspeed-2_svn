@@ -1,44 +1,21 @@
-dojo.zip contains copy of dojo nightly build form 2006-04-21
+dojo-release-0.3.0
 
-dojo-2006-04-21.tgz
+with these files take from dojo-release-0.3.1:
 
-see http://archive.dojotoolkit.org
+src/widget/html/Checkbox.js
+src/widget/html/SortableTable.js
+src/widget/Button.js
+src/widget/templates/check_hover_off.gif
+src/widget/templates/check_hover_on.gif
+src/widget/templates/check_disabled_on.gif
+src/widget/templates/check_disabled_off.gif
+src/widget/templates/HtmlCheckBox.html
 
+and this modification to src/html.js:
 
-diff modified-dojo/src/bootstrap1.js dojo/src/bootstrap1.js
-
-65c65
-<       return (!dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
+505c505
+<       dojo.deprecated("dojo.html.body", "use document.body instead");
 ---
->       return (obj && !dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined)); //return (!dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
+>       //dojo.deprecated("dojo.html.body", "use document.body instead");
 
 
-
-
-diff modified-dojo/src/widget/FloatingPane.js dojo/src/widget/FloatingPane.js
-
-78,82c78,82
-< 			//var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
-< 			//if (this.constrainToContainer) {
-< 			//	drag.constrainTo();
-< 			//}
-< 			//drag.setDragHandle(this.titleBar);
----
-> 			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
-> 			if (this.constrainToContainer) {
-> 				drag.constrainTo();
-> 			}
-> 			drag.setDragHandle(this.titleBar);
-85,90c85,89
-<         if ( ! this.resizable && this.resizeBar ) { this.resizeBar.style.display = "none"; }
-< 		//if(this.resizable){
-< 		//	this.resizeBar.style.display="";
-< 		//	var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-< 		//	this.resizeBar.appendChild(rh.domNode);
-< 		//}
----
-> 		if(this.resizable){
-> 			this.resizeBar.style.display="";
-> 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-> 			this.resizeBar.appendChild(rh.domNode);
-> 		}

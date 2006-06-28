@@ -16,8 +16,10 @@
 
 // jetspeed javascript to help support portlets in both /portal and /desktop
 
-
-dojo.provide("jetspeed.desktop.compatibility");
+if ( window.dojo )
+{
+    dojo.provide("jetspeed.desktop.compatibility");
+}
 
 // ... jetspeed base objects
 if ( ! window.jetspeed )
@@ -33,5 +35,44 @@ jetspeed.addOnLoad = function( adviceFnc )
     else
     {
         dojo.event.connect( dojo, "loaded", adviceFnc );
+    }
+};
+
+jetspeed.printobj = function( obj )
+{
+    var props = [];
+    for(var prop in obj){
+        try {
+            props.push(prop + ': ' + obj[prop]);
+        } catch(E) {
+            props.push(prop + ': ERROR - ' + E.message);
+        }
+    }
+    props.sort();
+    var buff = "" ;
+    for(var i = 0; i < props.length; i++) {
+        if ( buff.length > 0 )
+            buff += "\r\n" ;
+        buff += props[i] ;
+    }
+    return buff ;
+};
+
+jetspeed.println = function( line )
+{
+    try {
+        var console = document.getElementById("debug_container");
+        if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
+
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(line));
+        console.appendChild(div);
+    } catch (e) {
+        try{
+            // safari needs the output wrapped in an element for some reason
+            document.write("<div>" + line + "</div>");
+        }catch(e2){
+            window.status = line;
+        }
     }
 };

@@ -164,8 +164,6 @@ dojo.lang.extend( jetspeed.ui.widget.PortletDefDragSource, {
         windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = widgetId;
         windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = jetspeed.prefs.defaultPortletWidth;
         windowParams[ jetspeed.id.PORTLET_PROP_HEIGHT ] = jetspeed.prefs.defaultPortletHeight;
-        windowParams[ jetspeed.id.PORTLET_PROP_LEFT ] = "20";
-        windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = "10";
         windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = false;
         windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = null;
         var pwWidgetParams = jetspeed.ui.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
