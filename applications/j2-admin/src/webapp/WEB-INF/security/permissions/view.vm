@@ -1,80 +1,42 @@
-<style type="text/css">
-		table {
-			font-family:Lucida Grande, Verdana;
-			font-size:0.8em;
-			width:100%;
-			border:1px solid #ccc;
-			cursor:default;
-		}
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($req = $rc.Request)
 
-		* html div.tableContainer {	/* IE only hack */
-			width:95%;
-			border:1px solid #ccc;
-			height: 285px;
-			overflow-x:hidden;
-			overflow-y: auto;
-		}
 
-		table td,
-		table th{
-			border-right:1px solid #999;
-			padding:2px;
-			font-weight:normal;
-		}
-		table thead td, table thead th {
-			background:#94BEFF;
-		}
-		
-		* html div.tableContainer table thead tr td,
-		* html div.tableContainer table thead tr th{
-			/* IE Only hacks */
-			position:relative;
-			top:expression(dojo.html.getFirstAncestorByTag(this,'table').parentNode.scrollTop-2);
-		}
-		
-		html>body tbody.scrollContent {
-			height: 262px;
-			overflow-x:hidden;
-			overflow-y: auto;
-		}
 
-		tbody.scrollContent td, tbody.scrollContent tr td {
-			background: #FFF;
-			padding: 2px;
-		}
+<!--
+javascript: alert( dojo.widget.byId( "portletsTable" ).data[3].actions = "shit" )
+javascript: alert( dojo.widget.byId( "portletsTable" ).render(true) )
 
-		tbody.scrollContent tr.alternateRow td {
-			background: #e3edfa;
-			padding: 2px;
-		}
 
-		tbody.scrollContent tr.selected td {
-			background: yellow;
-			padding: 2px;
-		}
-		tbody.scrollContent tr:hover td {
-			background: #a6c2e7;
-			padding: 2px;
-		}
-		tbody.scrollContent tr.selected:hover td {
-			background: #ff3;
-			padding: 2px;
-		}
-	</style>
+var row=dojo.html.getParentByType(e.target,"tr");
+var body=dojo.html.getParentByType(row,"tbody");
+this.resetSelections(body);
+row.setAttribute("selected","true");
+this.setSelectionByRow(row);
+
+javascript: alert( dojo.widget.byId( "portletsTable").data[1].name )
+javascript: alert( updateSelectedRow() )
+
+javascript: alert( dojo.html.disableSelection(dojo.byId( "resourceName" )) )
+
+dojo.lang.shallowCopy(this.portlets) ;
+-->
+
 <div dojoType="LayoutContainer"
     layoutChildPriority="left-right"
-    style="width: 100%; height: 250px">
-    <div dojoType="SplitContainer"
-        orientation="horizontal"
-        sizerWidth="5"
-        activeSizing="0"
-        layoutAlign="client"
-    >
- 
-<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 100%" selectedTab="portlets">
+    style="width: 100%">
+
+<div id="mainTabContainer" dojoType="TabContainer" selectedTab="portlets" doLayout="false">
 
 <div id="portlets" dojoType="ContentPane" label="Portlets">
-<table dojoType="SortableTable" widgetId="portletTable" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+<div style="height:21px">&nbsp;</div>
+<div class="tableContainer">
+<table dojoType="EditorTable" widgetId="portletsTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+
+<col width="45%"></col>
+<col width="15%"></col>
+<col width="35%"></col>
+
 <thead>
 <tr>
     <th field="name" dataType="String">Resource</th>
@@ -83,14 +45,19 @@
 </tr>
 </thead>
 <tbody>
-#foreach($p in $portletPermissions)
-<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
-#end
 </tbody>
 </table>
+</div>
 </div>
 <div id="folders" dojoType="ContentPane" label="Folders">
-<table dojoType="SortableTable" widgetId="folderTable" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+<div style="height:21px">&nbsp;</div>
+<div class="tableContainer">
+<table dojoType="EditorTable" widgetId="foldersTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+
+<col width="45%"></col>
+<col width="15%"></col>
+<col width="35%"></col>
+
 <thead>
 <tr>
     <th field="name" dataType="String">Resource</th>
@@ -99,14 +66,19 @@
 </tr>
 </thead>
 <tbody>
-#foreach($p in $folderPermissions)
-<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
-#end
 </tbody>
 </table>
 </div>
+</div>
 <div id="pages" dojoType="ContentPane" label="Pages">
-<table dojoType="SortableTable" widgetId="pageTable" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+<div style="height:21px">&nbsp;</div>
+<div class="tableContainer">
+<table dojoType="EditorTable" widgetId="pagesTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+
+<col width="45%"></col>
+<col width="15%"></col>
+<col width="35%"></col>
+
 <thead>
 <tr>
     <th field="name" dataType="String">Resource</th>
@@ -115,29 +87,57 @@
 </tr>
 </thead>
 <tbody>
-#foreach($p in $pagePermissions)
-<tr><td>$p.Permission.Name</td><td>$p.Permission.Actions</td><td>$p.Roles</td></tr>
-#end
 </tbody>
 </table>
+</div>
 </div>
 
 </div>
 
 <div dojoType="LayoutContainer"
      layoutChildPriority='none'
-     style="width: 100%; height: 155px; border: 1px solid grey;"
+     style="width: 100%; height: 200px; border: 1px solid grey;"
 >
 
-
 <div dojoType="LayoutContainer"
-	widgetId="resourceNameContainer"
+	widgetId="editorTop"
 	minHeight="20"
     layoutAlign="top"
 	style="padding: 4px; border-bottom: thin inset grey; width: 100%; height: 55px"
 >
-<b>Resource</b><br/>
-<input name="resourceName" id="resourceName" type="text" size="50" >
+
+    <div dojoType="LayoutContainer"
+	    widgetId="resourceNameContainer"
+	    minHeight="20"
+        layoutAlign="left"
+	    style="padding: 4px; border-right: thin inset grey; width: 70%; height: 55px"
+    >
+    <b>Resource</b><br/>
+    <input name="resourceName" id="resourceName" type="text" size="50" onChange="updateSelectedRow()">
+    </div>
+
+    <div dojoType="LayoutContainer"
+	    widgetId="editorControls"
+	    minHeight="20"
+        layoutAlign="right"
+	    style="width: 20%; height: 55px"
+    >
+    <div class="buttonbox">
+        <button widgetId="newButton" dojoType="Button" onclick="newEntry()">
+            New
+        </button>
+        <button widgetId="saveButton" dojoType="Button" onclick="saveEntry()">
+            Save
+        </button>
+        <button widgetId="revertButton" dojoType="Button" onclick="revertEntry()">
+            Revert
+        </button>
+        <button widgetId="deleteButton" dojoType="Button" onclick="deleteEntry()">
+            Delete
+        </button>
+
+    </div>
+    </div>
 </div>
 
 <div dojoType="LayoutContainer"
@@ -148,10 +148,9 @@
 >
     <b>Roles</b><br/>
 #foreach ($role in $roles)
-    <input type="checkbox" name="role_$velocityCount" id="role_$velocityCount" dojoType="Checkbox" /> <label for="role_$velocityCount">$role.Principal.Name</label><br />
+    <input type="checkbox" name="role_$velocityCount" id="role_$velocityCount" dojoType="Checkbox"/> <label for="role_$velocityCount">$role.Principal.Name</label><br />
 #end
 </div>
-
 <div dojoType="LayoutContainer"
 	widgetId="actionsContainer"
 	minHeight="20"
@@ -163,53 +162,137 @@
     <input type="checkbox" name="actionedit" id="actionedit" dojoType="Checkbox" /> <label for="actionedit">Edit</label><br />
     <input type="checkbox" name="actionhelp" id="actionhelp" dojoType="Checkbox" /> <label for="actionhelp">Help</label><br />
 </div>
-
 </div>
 
+<div dojoType="dialog" id="SaveWarningDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
+	<form onsubmit="return false;">
+		<table>
+			<tr>
+                <td>Please Save or Revert changes to the selected permissions record before proceeding.</td>
+			<tr>
+				<td colspan="2" align="right" class="buttonboxright">
+                    <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide();" >Cancel</button>
+					<button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); revertEntry();">Revert</button>
+                    <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); saveEntry();">Save</button>
+                </td>
+			</tr>
+		</table>
+	</form>
 </div>
+
 
 <script language="JavaScript" type="text/javascript">
     rolePrincipals = new Array();
 #foreach ($role in $roles)
     rolePrincipals.push( "$role.Principal.Name" );
 #end
+    actionNames = new Array();
+    actionNames.push( "view" );
+    actionNames.push( "edit" );
+    actionNames.push( "help" );
 </script>
 <script type="text/javascript">
+
+
 function processTableRowEvent(e, tableName)
 {
-    var resourceName = e.currentTarget.cells.item(0).innerHTML;
-    var resourceTextBox = dojo.byId( "resourceName" );
-    resourceTextBox.value = resourceName;
+    dojo.widget.byId( tableName ).processTableRowEvent( e );
+}
 
-    var actions = e.currentTarget.cells.item(1).innerHTML;
-    var actionsList = actions.split( new RegExp( " *, *" ) );
-    dojo.byId( "actionview" ).checked = false;
-    dojo.widget.byId( "actionview" ).updateImgSrc();
-    dojo.byId( "actionedit" ).checked = false;
-    dojo.widget.byId( "actionedit" ).updateImgSrc();
-    dojo.byId( "actionhelp" ).checked = false;
-    dojo.widget.byId( "actionhelp" ).updateImgSrc();
+function clearAndDisableEditor()
+{
+    var resourceTextBox = dojo.byId( "resourceName" );
+    if ( resourceTextBox )
+    {
+        resourceTextBox.value = "";
+        resourceTextBox.disabled = true;
+    }
+    for ( var i = 0 ; i < actionNames.length; i++ )
+    {
+        var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
+        if ( actionCheckbox )
+        {
+            actionCheckbox.checked = false;
+            actionCheckbox.disabled = true;
+            actionCheckbox._updateImgSrc();
+        }
+    }
+    for ( var i = 0 ; i < rolePrincipals.length; i++ )
+    {
+        var roleIndex = i + 1;
+        var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
+        if ( roleCheckbox )
+        {
+            roleCheckbox.checked = false;
+            roleCheckbox.disabled = true;
+            roleCheckbox._updateImgSrc();
+        }
+    }
+
+    var buttonWidget = dojo.widget.byId( "newButton" );
+    if ( buttonWidget )
+        buttonWidget.setDisabled(false);
+
+    buttonWidget = dojo.widget.byId( "saveButton" );
+    if ( buttonWidget )
+        buttonWidget.setDisabled(true);
+
+    buttonWidget = dojo.widget.byId( "revertButton" );
+    if ( buttonWidget )
+        buttonWidget.setDisabled(true);
+
+    buttonWidget = dojo.widget.byId( "deleteButton" );
+    if ( buttonWidget )
+        buttonWidget.setDisabled(true);
+}
+
+function updateEditor( rowData )
+{
+    var resourceTextBox = dojo.byId( "resourceName" );
+    if ( rowData.isNew )
+    {
+        resourceTextBox.disabled = false;
+    }
+    else
+    {
+        resourceTextBox.disabled = true;
+    }
+    resourceTextBox.value = rowData.name;
+
+    for ( var i = 0 ; i < actionNames.length; i++ )
+    {
+        var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
+        if ( actionCheckbox )
+        {
+            actionCheckbox.disabled = "enabled";
+            actionCheckbox.checked = false;
+            actionCheckbox._updateImgSrc();
+        }
+    }
+
+    var actionsList = rowData.actions.split( new RegExp( " *, *" ) );
     if ( actionsList )
     {
         for ( var i = 0 ; i < actionsList.length ; i++ )
         {
-            var checkboxNode = dojo.byId( "action" + actionsList[i] );
-            if ( checkboxNode != null )
+            var actionCheckbox = dojo.widget.byId( "action" + actionsList[i] );
+            if ( actionCheckbox )
             {
-                checkboxNode.checked = true;
-                dojo.widget.byId( "action" + actionsList[i] ).updateImgSrc();
+                actionCheckbox.checked = true;
+                actionCheckbox._updateImgSrc();
             }
         }
     }
-    
-    var roles = e.currentTarget.cells.item(2).innerHTML;
-    var rolesList = roles.split( new RegExp( " *, *" ) );
+
     for ( var i = 0 ; i < rolePrincipals.length; i++ )
     {
         var roleIndex = i + 1;
-        dojo.byId( "role_" + roleIndex ).checked = false;
-        dojo.widget.byId( "role_" + roleIndex ).updateImgSrc();
+        var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
+        roleCheckbox.disabled = "enabled";
+        roleCheckbox.checked = false;
+        roleCheckbox._updateImgSrc();
     }
+    var rolesList = rowData.roles.split( new RegExp( " *, *" ) );
     if ( rolesList )
     {
         for ( var i = 0 ; i < rolesList.length ; i++ )
@@ -220,88 +303,351 @@ function processTableRowEvent(e, tableName)
                 if ( tRole == rolePrincipals[j] )
                 {
                     var roleIndex = j + 1;
-                    dojo.byId( "role_" + roleIndex ).checked = true;
-                    dojo.widget.byId( "role_" + roleIndex ).updateImgSrc();
+                    var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
+                    if ( roleCheckbox )
+                    {
+                        roleCheckbox.checked = true;
+                        roleCheckbox._updateImgSrc();
+                    }
                 }
             }
         }
     }
-    
-    selectedResourceRow = e.currentTarget;
-    selectedResourceData = [ resourceName, actions, roles ];
-    
-    //alert( tableName + ", " + e.currentTarget.cells.item(0).innerHTML ); 
-    //alert( tableName + ", " + e.currentTarget.cells.item(1).innerHTML ); 
-    //alert( tableName + ", " + e.currentTarget.cells.item(2).innerHTML );
+
+    updateEditorControls();
+}
+function getTableWidget()
+{
+    var tTabWidget = dojo.widget.byId( "mainTabContainer" ).selectedTabWidget;
+    return dojo.widget.byId( tTabWidget.widgetId + "Table" );
+}
+function checkForChanges()
+{
+    var tTableWidget = getTableWidget();
+    return tTableWidget.checkForChanges();
 }
 function updateSelectedRow()
-{   // update selected row without re-render - DOESN'T WORK YET
-    dojo.debug( "updateSelectedRow" );
-    if ( selectedResourceRow != null )
-    {   // SortableTable allows for way of updating with nice objects and then re-rendering - but it resorts and the selected row can change
-        // will revise when more time is available - this is a sick hack
-        currentTarget.cells.item(0).innerHTML = dojo.byId( "resourceName" ).value;
-        
+{
+    var tTableWidget = getTableWidget();
+    var selectedRowData = tTableWidget.getSelectedRow() ;
+    if ( selectedRowData != null )
+    {
+        selectedRowData.name = dojo.byId( "resourceName" ).value;
+
         var updatedActions = "";
-        if ( dojo.byId( "actionview" ).checked )
+        for ( var i = 0 ; i < actionNames.length; i++ )
         {
-            if ( updatedActions.length > 0 )
-                updatedActions += ", ";
-            updatedActions += "view";
-        }
-        if ( dojo.byId( "actionedit" ).checked )
-        {
-            if ( updatedActions.length > 0 )
-                updatedActions += ", ";
-            updatedActions += "edit";
-        }
-        if ( dojo.byId( "actionhelp" ).checked )
-        {
-            if ( updatedActions.length > 0 )
-                updatedActions += ", ";
-            updatedActions += "help";
-        }
-        for ( var i = 0 ; i < rolePrincipals.length; i++ )
-        {
-            var roleIndex = i + 1;
-            if ( dojo.byId( "role_" + roleIndex ).checked )
+            var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
+            if ( actionCheckbox && actionCheckbox.checked )
             {
-                if ( i > 0 )
-                    updatedRoles += ",";
-                updatedRoles += rolePrincipals[i];
+                if ( updatedActions.length > 0 )
+                    updatedActions += ", ";
+                updatedActions += actionNames[i];
             }
         }
-        currentTarget.cells.item(2).innerHTML = updatedRoles;
+        selectedRowData.actions = updatedActions;
 
         var updatedRoles = "";
         for ( var i = 0 ; i < rolePrincipals.length; i++ )
         {
             var roleIndex = i + 1;
-            if ( dojo.byId( "role_" + roleIndex ).checked )
+            var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
+            if ( roleCheckbox && roleCheckbox.checked )
             {
-                if ( i > 0 )
+                if ( updatedRoles.length > 0 )
                     updatedRoles += ",";
                 updatedRoles += rolePrincipals[i];
             }
         }
-        currentTarget.cells.item(2).innerHTML = updatedRoles;
+        selectedRowData.roles = updatedRoles;
+        
+        tTableWidget.updateClonedData( selectedRowData, tTableWidget.selected[0] );
+
+        tTableWidget.render(true);
+        tTableWidget.showSelections();
+
+        updateEditorControls();
     }
 }
 
-function addTableRowSelectListener()
+function updateEditorControls()
 {
-    dojo.event.connect(dojo.widget.byId("portletTable"), "onSelect", function(e) {
-        //dojo.debugShallow( e.currentTarget );
-        processTableRowEvent(e, "portletTable");
-    });
-    dojo.event.connect(dojo.widget.byId("folderTable"), "onSelect", function(e) {
-        //dojo.debugShallow( e.currentTarget );
-        processTableRowEvent(e, "folderTable");
-    });
-    dojo.event.connect(dojo.widget.byId("pageTable"), "onSelect", function(e) {
-        //dojo.debugShallow( e.currentTarget );
-        processTableRowEvent(e, "pageTable");
-    });
+    var hasChanged = checkForChanges();
+    if ( hasChanged )
+    {
+        var buttonWidget = dojo.widget.byId( "saveButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(false);
+
+        buttonWidget = dojo.widget.byId( "revertButton" );
+        if ( buttonWidget )
+        {
+            if ( hasChanged == "modified" )
+            {
+                buttonWidget.setDisabled(false);
+            }
+            else
+            {
+                buttonWidget.setDisabled(true);
+            }
+        }
+
+        buttonWidget = dojo.widget.byId( "newButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(true);
+
+        buttonWidget = dojo.widget.byId( "deleteButton" );
+        if ( buttonWidget )
+        {
+            if ( hasChanged == "modified" )
+            {
+                buttonWidget.setDisabled(true);
+            }
+            else
+            {
+                buttonWidget.setDisabled(false);
+            }
+        }
+    }
+    else
+    {
+        var buttonWidget = dojo.widget.byId( "saveButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(true);
+
+        buttonWidget = dojo.widget.byId( "revertButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(true);
+
+        buttonWidget = dojo.widget.byId( "newButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(false);
+
+        buttonWidget = dojo.widget.byId( "deleteButton" );
+        if ( buttonWidget )
+            buttonWidget.setDisabled(false);
+    }
 }
-dojo.addOnLoad( window.addTableRowSelectListener );
+
+
+
+// http://localhost:8080/jetspeed/ajaxapi?action=permissions&method=add&type=portlet&resource=demo::*&roles=role1,role2,role3&actions=view,edit
+// http://localhost:8080/jetspeed/ajaxapi?action=permissions&method=update&type=portlet&resource=jsf-demo%3A%3A*&roles=admin%2Cuser%2Csubsite2&actions=view%2C%20edit&oldactions=view%2C%20edit xml-content=<js><status>failure</status><action>unknown</action></js>
+
+
+function saveEntrySubmit( removeEntry )
+{
+    var tTableWidget = getTableWidget();
+    var selectedRowData = tTableWidget.getSelectedRow();
+
+    if ( ! selectedRowData ) { dojo.raise( "saveEntrySubmit can't find selectedRowData" ) ; return; }
+
+    var masterData = tTableWidget.getData( tTableWidget.js_masterdata, selectedRowData.Id );
+    if ( ! masterData ) { dojo.raise( "saveEntrySubmit can't find masterdata" ) ; return; } 
+
+    var contextPath = document.location.protocol + "/" + "/" + document.location.host + "$req.ContextPath";
+    var requestUrl = contextPath + "/ajaxapi?action=permissions" ;
+
+    if ( removeEntry )
+    {
+        requestUrl += "&method=remove";
+    }
+    else if ( selectedRowData.isNew )
+    {
+        requestUrl += "&method=add";
+    }
+    else
+    {
+        requestUrl += "&method=update";
+    }
+    requestUrl += "&type=" + tTableWidget.js_type;
+    
+    requestUrl += "&resource=" + escape( selectedRowData.name );
+    requestUrl += "&roles=" + escape( selectedRowData.roles );
+    requestUrl += "&actions=" + escape( selectedRowData.actions );
+    requestUrl += "&oldactions=" + escape( masterData.actions );
+
+    var mimeType = "text/xml";
+    dojo.io.bind({
+
+        url: requestUrl,
+
+        mimetype: mimeType,
+
+        load: function( type, data, evt )
+        {
+            var success = false;
+            var statusElmt = data.getElementsByTagName( "status" );
+            if ( statusElmt != null )
+            {
+                var successVal = statusElmt[0].firstChild.nodeValue;
+                if ( successVal == "success" )
+                    success = true;
+            }
+            if ( ! success )
+            {
+                var textContent = dojo.dom.innerXML( data );
+                if ( ! textContent )
+                    textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+                dojo.raise( "saveEntrySubmit failure url=" + requestUrl + "  xml-content=" + textContent );
+            }
+        },
+
+        error: function( type, error )
+        {
+            dojo.raise( "saveEntrySubmit failure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        }
+    });     
+};
+
+function newEntry()
+{
+    var tTableWidget = getTableWidget();
+    tTableWidget.newEntry();
+}
+function getNewEntryPrototype()
+{
+    return { name: "", actions: "", roles: "" };
+}
+
+function deleteEntry()
+{
+    var tTableWidget = getTableWidget();
+    tTableWidget.deleteEntry();
+}
+function saveEntry()
+{
+    var tTableWidget = getTableWidget();
+    tTableWidget.saveEntry();
+}
+
+function revertEntry()
+{
+    var tTableWidget = getTableWidget();
+    tTableWidget.revertEntry();
+}
+
+function listSelectionChangeOk(invocation)
+{
+    var tTableWidget = getTableWidget();
+    return tTableWidget.listSelectionChangeOk(invocation);
+}
+
+function addListeners()
+{
+    var tabContainer = dojo.widget.byId("mainTabContainer");
+    dojo.event.connect("around", tabContainer, "selectTab", function(invocation) {
+        if ( checkForChanges() )
+        {
+            dojo.widget.byId( "SaveWarningDialog" ).show();
+            return;
+        }
+        invocation.proceed();
+        var tab = invocation.args[0];
+        var tTableWidget = dojo.widget.byId( tab.widgetId + "Table" ) ;
+        var selectedRowData = tTableWidget.getSelectedRow();
+    
+        if ( ! selectedRowData )
+        {
+            clearAndDisableEditor();
+        }
+        else
+        {
+            tTableWidget.showSelections();
+            updateEditor( selectedRowData );
+        }
+    });
+
+    var portletsTable = dojo.widget.byId("portletsTable");
+    dojo.event.connect( "around", portletsTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect(portletsTable, "onSelect", function(e) {
+        processTableRowEvent(e, "portletsTable");
+    });
+    dojo.event.connect(portletsTable, "updateEditor", updateEditor );
+    dojo.event.connect(portletsTable, "saveEntrySubmit", saveEntrySubmit );
+    dojo.event.connect(portletsTable, "clearAndDisableEditor", clearAndDisableEditor );
+    portletsTable.getNewEntryPrototype = getNewEntryPrototype;
+    var data = [] ;
+#foreach($p in $portletPermissions)
+    data.push( { name: "$p.Permission.Name", actions: "$p.Permission.Actions", roles: "$p.Roles", Id: $velocityCount } );
+#end
+    portletsTable.js_masterdata = data;
+    portletsTable.js_type = "portlet";
+    portletsTable.saveWarningDialogWidgetId = "SaveWarningDialog";
+    portletsTable.parseData( portletsTable.js_masterdata );
+    portletsTable.render( true );
+    
+    
+    var foldersTable = dojo.widget.byId("foldersTable");
+    dojo.event.connect( "around", foldersTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect(foldersTable, "onSelect", function(e) {
+        //dojo.debugShallow( e.currentTarget );
+        processTableRowEvent(e, "foldersTable");
+    });
+    dojo.event.connect(foldersTable, "updateEditor", updateEditor );
+    dojo.event.connect(foldersTable, "saveEntrySubmit", saveEntrySubmit );
+    dojo.event.connect(foldersTable, "clearAndDisableEditor", clearAndDisableEditor );
+    foldersTable.getNewEntryPrototype = getNewEntryPrototype;
+    
+    data = [] ;
+#foreach($p in $folderPermissions)
+    data.push( { name: "$p.Permission.Name", actions: "$p.Permission.Actions", roles: "$p.Roles", Id: $velocityCount } );
+#end
+    foldersTable.js_masterdata = data;
+    foldersTable.js_type = "folder";
+    foldersTable.saveWarningDialogWidgetId = "SaveWarningDialog";
+    foldersTable.parseData( data );
+    foldersTable.render( true );
+
+    var pagesTable = dojo.widget.byId("pagesTable");
+    dojo.event.connect( "around", pagesTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect(pagesTable, "onSelect", function(e) {
+        //dojo.debugShallow( e.currentTarget );
+        processTableRowEvent(e, "pagesTable");
+    });
+    dojo.event.connect(pagesTable, "updateEditor", updateEditor );
+    dojo.event.connect(pagesTable, "saveEntrySubmit", saveEntrySubmit );
+    dojo.event.connect(pagesTable, "clearAndDisableEditor", clearAndDisableEditor );
+    pagesTable.getNewEntryPrototype = getNewEntryPrototype;
+    data = [] ;
+#foreach($p in $pagePermissions)
+    data.push( { name: "$p.Permission.Name", actions: "$p.Permission.Actions", roles: "$p.Roles", Id: $velocityCount } );
+#end
+    pagesTable.js_masterdata = data;
+    pagesTable.js_type = "page";
+    pagesTable.saveWarningDialogWidgetId = "SaveWarningDialog";
+    pagesTable.parseData( data );
+    pagesTable.render( true );
+
+    for ( var i = 0 ; i < actionNames.length; i++ )
+    {
+        var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
+        if ( actionCheckbox )
+        {
+            dojo.event.connect(actionCheckbox, "onMouseUp", function() {
+                if(actionCheckbox.disabled == "enabled"){
+                    updateSelectedRow();
+                }
+            });
+        }
+    }
+    for ( var i = 0 ; i < rolePrincipals.length; i++ )
+    {
+        var roleIndex = i + 1;
+        var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
+        if ( roleCheckbox )
+        {
+            dojo.event.connect(roleCheckbox, "onMouseUp", function() {
+                if(roleCheckbox.disabled == "enabled"){
+                    updateSelectedRow();
+                }
+            });
+        }
+    }
+
+    clearAndDisableEditor();
+}
+
+
+dojo.addOnLoad( window.addListeners );
 </script>
