@@ -596,7 +596,7 @@ http://localhost:8080/jetspeed/ajaxapi?action=getportlets
 			</tr>			            
 			<tr>
 				<td>method</td>
-				<td>the method to execute: must be of value: add | update | delete</td>				
+				<td>the method to execute: must be of value: add | update | remove</td>				
 			</tr>
 			<tr>
 				<td>type</td>
