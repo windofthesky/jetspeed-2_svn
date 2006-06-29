@@ -35,6 +35,18 @@ limitations under the License.
        <constructor-arg index="1"><ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"/></constructor-arg>       
   </bean>       
 
+  <!-- A Two-way encoding password service which also implements CredentialPasswordEncoder
+         this Service can be used instead of for example the default provided MessageDigestCredentialPasswordEncoder
+  <bean id="org.apache.jetspeed.security.PasswordEncodingService"
+        name="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"
+        class="org.apache.jetspeed.security.spi.impl.PBEPasswordService">
+    <constructor-arg index="0">
+      <!- secret PBE key password ->
+      <value>********</value>
+    </constructor-arg>       
+  </bean>       
+-->
+
   <!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler --> 
   <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
        class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">

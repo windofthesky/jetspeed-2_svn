@@ -95,6 +95,11 @@ limitations under the License.
           <entry key="PreferencesProvider">
             <ref bean="org.apache.jetspeed.prefs.PreferencesProvider"/>
           </entry>
+<!-- first uncomment the below service bean in security-spi-atn.xml
+         <entry key="PasswordEncodingService">
+           <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />
+         </entry>
+-->          
   	   	</map>
   	   </constructor-arg>
   </bean>
