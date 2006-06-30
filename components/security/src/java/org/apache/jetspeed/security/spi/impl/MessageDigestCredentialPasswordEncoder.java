@@ -31,16 +31,29 @@ import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
  */
 public class MessageDigestCredentialPasswordEncoder implements CredentialPasswordEncoder
 {
+    // Allow copying of encoded passwords or salt the digest with the userName preventing that
+    boolean simpleEncryption = false;
     MessageDigest digester;
     
     public MessageDigestCredentialPasswordEncoder() throws NoSuchAlgorithmException
     {
-        this("SHA-1");
+        this("SHA-1", false);
+    }
+    
+    public MessageDigestCredentialPasswordEncoder(boolean simpleEncryption) throws NoSuchAlgorithmException
+    {
+        this("SHA-1", simpleEncryption);
     }
     
     public MessageDigestCredentialPasswordEncoder(String algorithm) throws NoSuchAlgorithmException
     {
+        this(algorithm, false);
+    }
+    
+    public MessageDigestCredentialPasswordEncoder(String algorithm, boolean simpleEncryption) throws NoSuchAlgorithmException
+    {
         this.digester = MessageDigest.getInstance(algorithm);
+        this.simpleEncryption = simpleEncryption;
     }
     
     public String getAlgorithm()
@@ -58,9 +71,12 @@ public class MessageDigestCredentialPasswordEncoder implements CredentialPasswor
         synchronized(digester)
         {
             digester.reset();
-            value = digester.digest(clearTextPassword.getBytes());            
-            // don't allow copying of encoded passwords
-            digester.update(userName.getBytes());
+            value = digester.digest(clearTextPassword.getBytes());
+            if (!simpleEncryption)
+            {
+                // don't allow copying of encoded passwords
+                digester.update(userName.getBytes());
+            }
             value = digester.digest(value);
         }
         return new String(Base64.encodeBase64(value));
