@@ -19,8 +19,10 @@ import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +46,14 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestPermissionManager extends AbstractSecurityTestcase
 {
+    private static final Comparator principalComparator = new Comparator()
+    {
+
+        public int compare(Object arg0, Object arg1)
+        {
+            return ((Principal)arg0).getName().compareTo(((Principal)arg1).getName());
+        }
+    };
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -778,6 +788,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         Collection principals = pms.getPrincipals(perm1);        
         assertTrue("principal count should be 2 ", principals.size() == 2);        
         Object [] array = (Object[])principals.toArray();
+        Arrays.sort(array, principalComparator);
         assertTrue("element is Principal ", array[0] instanceof Principal);
         assertTrue("first element not found ", ((Principal)array[0]).getName().equals("role1"));
         assertTrue("second element not found ", ((Principal)array[1]).getName().equals("role2"));
@@ -799,7 +810,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         principals = pms.getPrincipals(perm1);
         assertTrue("principal count should be 3 ", principals.size() == 3);
         array = (Object[])principals.toArray();
-        assertTrue("first element not found ", ((Principal)array[0]).getName().equals("role1"));
+        Arrays.sort(array, principalComparator);
+        assertTrue("first element should be [role1] but found ["+((Principal)array[0]).getName()+"]", ((Principal)array[0]).getName().equals("role1"));
         assertTrue("second element not found ", ((Principal)array[1]).getName().equals("role3"));
         assertTrue("third element not found ", ((Principal)array[2]).getName().equals("role4"));
         
