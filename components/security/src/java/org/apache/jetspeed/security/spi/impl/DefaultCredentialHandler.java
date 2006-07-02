@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
 import org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor;
 import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
 import org.apache.jetspeed.security.spi.SecurityAccess;
@@ -157,7 +158,14 @@ public class DefaultCredentialHandler implements CredentialHandler
                     credential.isEncoded() && 
                     pcProvider.getEncoder() != null )
             {
-                oldPassword = pcProvider.getEncoder().encode(userName, oldPassword);
+                if ( pcProvider.getEncoder() instanceof AlgorithmUpgradeCredentialPasswordEncoder )
+                {
+                    oldPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)pcProvider.getEncoder()).encode(userName,oldPassword, credential);
+                }
+                else
+                {
+                    oldPassword = pcProvider.getEncoder().encode(userName,oldPassword);
+                }
             }
         }
         
@@ -219,6 +227,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 ipcInterceptor.beforeSetPassword(internalUser, credentials, userName, credential, newPassword, oldPassword != null );
             }
         }
+        
         if (!create)
         {
             credential.setValue(newPassword);
@@ -226,7 +235,27 @@ public class DefaultCredentialHandler implements CredentialHandler
             credential.setUpdateRequired(false);
         }
                 
-        internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
+        long time = new Date().getTime();
+        
+        if ( oldPassword == null )
+        {
+            // non-user (admin) modified the password
+            
+            // set current time in previous auth date, and clear last authentication date
+            // !!! While this might be a bit strange logic, it is *required* for the AlgorithmUpgradePBEPasswordEncodingService
+            // to be able to distinguise password changes from other changes
+            credential.setPreviousAuthenticationDate(new Timestamp(new Date().getTime()));
+            credential.setLastAuthenticationDate(null);
+        }
+        else
+        {
+            // authenticated password change (by user itself)
+            credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
+            credential.setLastAuthenticationDate(new Timestamp(time));
+        }
+        
+        credential.setModifiedDate(new Timestamp(time));
+        internalUser.setModifiedDate(new Timestamp(time));
         internalUser.setCredentials(credentials);
         // Set the user with the new credentials.
         securityAccess.setInternalUserPrincipal(internalUser, false);
@@ -244,9 +273,11 @@ public class DefaultCredentialHandler implements CredentialHandler
             InternalCredential credential = getPasswordCredential(internalUser, userName );
             if ( credential != null && !credential.isExpired() && credential.isEnabled() != enabled )
             {
+                long time = new Date().getTime();
                 credential.setEnabled(enabled);
                 credential.setAuthenticationFailures(0);
-                internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
+                credential.setModifiedDate(new Timestamp(time));
+                internalUser.setModifiedDate(new Timestamp(time));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
         }
@@ -280,6 +311,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 // The current InternalPasswordCredentialStateHandlingInterceptor.afterLoad()
                 // logic will only set it (back) to true if both prev and last auth. date is null
                 credential.setPreviousAuthenticationDate(new Timestamp(time));
+                credential.setModifiedDate(new Timestamp(time));
                 internalUser.setModifiedDate(new Timestamp(time));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
@@ -335,12 +367,20 @@ public class DefaultCredentialHandler implements CredentialHandler
             InternalCredential credential = getPasswordCredential(internalUser, userName );
             if ( credential != null && credential.isEnabled() && !credential.isExpired())
             {
+                String encodedPassword = password;
                 if ( pcProvider.getEncoder() != null && credential.isEncoded())
                 {
-                    password = pcProvider.getEncoder().encode(userName,password);
+                    if ( pcProvider.getEncoder() instanceof AlgorithmUpgradeCredentialPasswordEncoder )
+                    {
+                        encodedPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)pcProvider.getEncoder()).encode(userName,password, credential);
+                    }
+                    else
+                    {
+                        encodedPassword = pcProvider.getEncoder().encode(userName,password);
+                    }
                 }
 
-                authenticated = credential.getValue().equals(password);
+                authenticated = credential.getValue().equals(encodedPassword);
                 boolean update = false;
 
                 if ( ipcInterceptor != null )
@@ -351,17 +391,26 @@ public class DefaultCredentialHandler implements CredentialHandler
                         authenticated = false;
                     }
                 }
+                long time = new Date().getTime();
+                
                 if ( authenticated )
                 {
                     credential.setAuthenticationFailures(0);
+
+                    if ( pcProvider.getEncoder() != null && pcProvider.getEncoder() instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+                    {
+                        ((AlgorithmUpgradeCredentialPasswordEncoder)pcProvider.getEncoder()).recodeIfNeeded(userName,password,credential);
+                    }
+                    
                     credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
-                    credential.setLastAuthenticationDate(new Timestamp(System.currentTimeMillis()));
+                    credential.setLastAuthenticationDate(new Timestamp(time));
                     update = true;
                 }
                 
                 if ( update )
                 {
-                    internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                    credential.setModifiedDate(new Timestamp(time));
+                    internalUser.setModifiedDate(new Timestamp(time));
                     securityAccess.setInternalUserPrincipal(internalUser, false);
                 }
             }
