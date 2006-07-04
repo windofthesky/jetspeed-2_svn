@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
 import org.apache.jetspeed.security.InvalidNewPasswordException;
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.PasswordAlreadyUsedException;
@@ -241,11 +242,14 @@ public class DefaultCredentialHandler implements CredentialHandler
         {
             // non-user (admin) modified the password
             
-            // set current time in previous auth date, and clear last authentication date
-            // !!! While this might be a bit strange logic, it is *required* for the AlgorithmUpgradePBEPasswordEncodingService
-            // to be able to distinguise password changes from other changes
-            credential.setPreviousAuthenticationDate(new Timestamp(new Date().getTime()));
-            credential.setLastAuthenticationDate(null);
+            if ( encoded && pcProvider.getEncoder() instanceof AlgorithmUpgradePasswordEncodingService )
+            {
+                // set current time in previous auth date, and clear last authentication date
+                // !!! While this might be a bit strange logic, it is *required* for the AlgorithmUpgradePBEPasswordEncodingService
+                // to be able to distinguise password changes from other changes
+                credential.setPreviousAuthenticationDate(new Timestamp(new Date().getTime()));
+                credential.setLastAuthenticationDate(null);
+            }
         }
         else
         {

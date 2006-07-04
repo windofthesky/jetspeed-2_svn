@@ -14,6 +14,10 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
+import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
@@ -43,6 +47,17 @@ public class EncodePasswordOnFirstLoadInterceptor extends AbstractInternalPasswo
         {
             credential.setValue(pcProvider.getEncoder().encode(userName,credential.getValue()));
             credential.setEncoded(true);
+            
+            if ( pcProvider.getEncoder() instanceof AlgorithmUpgradePasswordEncodingService)
+            {
+                // For the AlgorithmUpgradePBEPasswordService to be able to distinguise between
+                // old and new encoded passwords, it evaluates the last and previous authentication timestamps.
+                // With an automatic encoding (using the new encoding schema) the last authentication must be
+                // set to null (as the user hasn't been authenticated yet again, which leaves the previous
+                // authentication timestamp for indicating when the (new) encoding took place.
+                credential.setPreviousAuthenticationDate(new Timestamp(new Date().getTime()));
+                credential.setLastAuthenticationDate(null);
+            }
             updated = true;
         }
         return updated;
