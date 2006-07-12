@@ -40,6 +40,8 @@
     <copy todir="${basedir}/target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
       <fileset dir="${basedir}/../src/webapp"/>
     </copy>
+
+    <unzip src="${basedir}/../src/javascript/dojo/dojo.zip" dest="${basedir}/target/classes/plugin-resources/webapp/javascript/dojo/"/>
         
     <copy file="${basedir}/../core-build.xml" todir="${basedir}/target/classes/plugin-resources/" overwrite="true" failonerror="true"/>
     <copy file="${basedir}/../jetspeed-components.xml" todir="${basedir}/target/classes/plugin-resources/" overwrite="true" failonerror="true"/>
