@@ -18,60 +18,128 @@
 
 if ( window.dojo )
 {
-    dojo.provide("jetspeed.desktop.compatibility");
+    dojo.provide( "jetspeed.desktop.compatibility" );
 }
 
-// ... jetspeed base objects
+// ... jetspeed base object
 if ( ! window.jetspeed )
-    jetspeed = {} ;
+    jetspeed = {};
 
 
-jetspeed.addOnLoad = function( adviceFnc )
+if ( ! window.dojo )
 {
-    if ( dojo.hostenv.post_load_ )
+    jetspeed.no_dojo_load_notifying = false;
+    jetspeed.no_dojo_post_load = false;
+    jetspeed.pageLoadedListeners = [];
+
+    window.onload = function()
     {
-        adviceFnc.call( this );
+        if ( ! window.dojo )
+        {
+            jetspeed.no_dojo_load_notifying = true;
+            jetspeed.no_dojo_post_load = true;
+            var pll = jetspeed.pageLoadedListeners;
+	        for( var x=0; x < pll.length; x++ )
+            {
+		        pll[x]();
+	        }
+            jetspeed.pageLoadedListeners = [];
+        }
+    };
+};
+
+/*
+Call styles:
+	jetspeed.addOnLoad( functionPointer )
+	jetspeed.addOnLoad( object, "functionName" )
+*/
+jetspeed.addOnLoad = function( obj, fcnName )
+{
+    if ( window.dojo )
+    {
+        if ( arguments.length == 1 )
+            dojo.addOnLoad( obj );
+        else
+            dojo.addOnLoad( obj, fcnName );
     }
     else
     {
-        dojo.event.connect( dojo, "loaded", adviceFnc );
+	    if ( arguments.length == 1 )
+        {
+		    jetspeed.pageLoadedListeners.push(obj);
+	    }
+        else if( arguments.length > 1 )
+        {
+		    jetspeed.pageLoadedListeners.push( function()
+            {
+			    obj[fcnName]();
+		    } );
+	    }
+        if ( jetspeed.no_dojo_post_load && ! jetspeed.no_dojo_load_notifying )
+        {
+		    jetspeed.callPageLoaded();
+	    }
     }
+};
+
+jetspeed.callPageLoaded = function()
+{
+	if( typeof setTimeout == "object" )  // IE
+    {
+		setTimeout( "jetspeed.pageLoaded();", 0 );
+	}
+    else
+    {
+		jetspeed.pageLoaded();
+	}
 };
 
 jetspeed.printobj = function( obj )
 {
     var props = [];
-    for(var prop in obj){
-        try {
-            props.push(prop + ': ' + obj[prop]);
-        } catch(E) {
-            props.push(prop + ': ERROR - ' + E.message);
+    for( var prop in obj )
+    {
+        try
+        {
+            props.push( prop + ': ' + obj[prop] );
+        }
+        catch(E)
+        {
+            props.push( prop + ': ERROR - ' + E.message );
         }
     }
     props.sort();
-    var buff = "" ;
-    for(var i = 0; i < props.length; i++) {
+    var buff = "";
+    for( var i = 0; i < props.length; i++ )
+    {
         if ( buff.length > 0 )
-            buff += "\r\n" ;
-        buff += props[i] ;
+            buff += "\r\n";
+        buff += props[i];
     }
-    return buff ;
+    return buff;
 };
 
 jetspeed.println = function( line )
 {
-    try {
-        var console = document.getElementById("debug_container");
-        if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
-
-        var div = document.createElement("div");
-        div.appendChild(document.createTextNode(line));
-        console.appendChild(div);
-    } catch (e) {
-        try{
-            // safari needs the output wrapped in an element for some reason
+    try
+    {
+        var console = document.getElementById( "debug_container" );
+        if( !console )
+        {
+            console = document.getElementsByTagName( "body" )[0] || document.body;
+        }
+        var div = document.createElement( "div" );
+        div.appendChild( document.createTextNode( line ) );
+        console.appendChild( div );
+    }
+    catch (e)
+    {
+        try
+        {   // safari needs the output wrapped in an element for some reason
             document.write("<div>" + line + "</div>");
-        }catch(e2){
+        }
+        catch(e2)
+        {
             window.status = line;
         }
     }
