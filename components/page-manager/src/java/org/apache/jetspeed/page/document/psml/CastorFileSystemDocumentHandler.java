@@ -472,28 +472,34 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         catch (IOException e)
         {
+        	log.error("Could not load the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not load the file " + f.getAbsolutePath(), e);
         }
         catch (MarshalException e)
         {
+        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
         }
         catch (MappingException e)
         {
+        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
         }
         catch (ValidationException e)
         {
+        	log.error("Document " + f.getAbsolutePath() + " is not valid", e);
             throw new DocumentNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
         }
         catch (SAXException e)
-            {
+        {
+        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            }
+        }
         catch (ParserConfigurationException e)
-            {
+        {
+        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            }
+        }
         
 
         if (document == null)
