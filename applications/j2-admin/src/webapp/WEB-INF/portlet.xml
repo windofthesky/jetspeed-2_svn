@@ -1201,6 +1201,26 @@ limitations under the License.
             <short-title>Permissions</short-title>
         </portlet-info>
     </portlet>
-     
+
+  <portlet id="DateTimePortlet">
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/view/datetime.jsp</value>
+    </init-param>
+    <portlet-name>DateTimePortlet</portlet-name>
+    <display-name>Date Time Portlet</display-name>
+    <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Date Time</title>
+      <short-title>Time</short-title>
+    </portlet-info>
+  </portlet>
+         
 </portlet-app>
 
