@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
+import org.apache.jetspeed.aggregator.impl.PortletRendererImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
@@ -50,6 +55,8 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
@@ -128,8 +135,10 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
     private DynamicTitleService titleService;
     
     private BasePortalURL baseUrlAccess;
+    
+    private PortletRenderer renderer;
 
-    public JetspeedPowerToolImpl(RequestContext requestContext, DynamicTitleService titleService) throws Exception
+    public JetspeedPowerToolImpl(RequestContext requestContext, DynamicTitleService titleService,PortletRenderer renderer) throws Exception
     {
         HttpServletRequest request = requestContext.getRequest();
         this.requestContext = requestContext;
@@ -165,6 +174,8 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         decorationLocatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
         decorationLocatorDescriptor.setCountry(locale.getCountry());
         decorationLocatorDescriptor.setLanguage(locale.getLanguage());
+        
+        this.renderer = renderer;
     }
 
     /**
@@ -843,6 +854,22 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         {
             velocityContext.put(name, object);
         }
+    }
+    
+    public String renderPortletEntity(String entityId, String portletId)
+    {
+
+        RequestContext context = getRequestContext();
+
+        PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(
+                entityId);
+        fragment.setType(Fragment.PORTLET);
+        fragment.setName(portletId);
+        ContentFragment contentFragment = new ContentFragmentImpl(fragment,
+                new HashMap());
+        //renderer.renderNow(contentFragment, context);
+        renderer.render(contentFragment, context);
+        return contentFragment.getRenderedContent();
     }
 
 }

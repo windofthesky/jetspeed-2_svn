@@ -255,4 +255,7 @@ public interface JetspeedPowerTool
      * @param velocityContext
      */
     void setVelocityContext(Context velocityContext);
+    
+    
+    String renderPortletEntity(String entityId, String portletId);
 }

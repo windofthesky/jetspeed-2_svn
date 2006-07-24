@@ -19,6 +19,7 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 
@@ -32,23 +33,30 @@ public class JetspeedPowerToolFactory
 
     private DynamicTitleService titleService;
     
-    public JetspeedPowerToolFactory(String jptClassName, DynamicTitleService titleService)
+    /* Allows us to render portlets and other fragments */
+    private PortletRenderer renderer;
+    
+    public JetspeedPowerToolFactory(String jptClassName, DynamicTitleService titleService, PortletRenderer renderer)
     throws ClassNotFoundException, NoSuchMethodException
     {
         this.jptClassName = jptClassName;
         jptClass = Thread.currentThread().getContextClassLoader().loadClass(jptClassName);
         constructor =
             jptClass.getConstructor(
-                new Class[] {RequestContext.class, DynamicTitleService.class});        
+                new Class[] {RequestContext.class, DynamicTitleService.class, PortletRenderer.class});        
         this.titleService = titleService;
+        this.renderer = renderer;
     }
+    
+    
+    
     
     public JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext)
     throws PortletException
     {
         try
         {
-            Object[] initArgs = { requestContext, this.titleService };
+        	Object [] initArgs = { requestContext, this.titleService, this.renderer };
             return (JetspeedPowerTool)constructor.newInstance(initArgs);
         }
         catch (Exception e)
