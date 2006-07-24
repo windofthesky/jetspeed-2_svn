@@ -206,7 +206,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
         {
             Attribute attr = (Attribute) ae.next();
 
-            if (attr.getID().equals(attributeName))
+            if (attr.getID().equalsIgnoreCase(attributeName))
             {
                 return attr;
             }
