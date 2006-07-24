@@ -39,6 +39,8 @@ public class LoginProxyServlet extends HttpServlet
     {
         String parameter;
 
+        request.setCharacterEncoding( "UTF-8" );
+        
         HttpSession session = request.getSession(true);
 
         parameter = request.getParameter(LoginConstants.DESTINATION);

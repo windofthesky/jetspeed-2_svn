@@ -29,4 +29,6 @@ limitations under the License.
             driverClassName="@DRIVER@" url="@URL@"
             maxActive="100" maxIdle="30" maxWait="10000"/> 
 
+	<Valve className="org.apache.catalina.authenticator.FormAuthenticator" characterEncoding="UTF-8"/>
+
 </Context>
