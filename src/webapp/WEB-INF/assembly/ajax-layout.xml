@@ -217,7 +217,10 @@
     </constructor-arg>
     <constructor-arg index='3'>
         <ref bean="PortletActionSecurityBehavior"/>        
-    </constructor-arg>    		        
+    </constructor-arg>
+    <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>              
 </bean>
 
 <bean id="AjaxGetPages"
