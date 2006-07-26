@@ -16,16 +16,24 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.common.Parameter;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format
@@ -42,12 +50,16 @@ public class GetPageAction
 {
     protected Log log = LogFactory.getLog(GetPageAction.class);
     
+    private PortletRegistry registry;
+    
     public GetPageAction(String template, 
             String errorTemplate, 
             PageManager pageManager,
-            PortletActionSecurityBehavior securityBehavior)
+            PortletActionSecurityBehavior securityBehavior,
+            PortletRegistry registry)
     {
         super(template, errorTemplate, pageManager, securityBehavior);
+        this.registry = registry;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -67,6 +79,9 @@ public class GetPageAction
             Page page = requestContext.getPage();            
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
+            Map fragSizes = new HashMap();
+            retrieveLayoutFragmentSizes( page.getRootFragment(), fragSizes );
+            resultMap.put( SIZES, fragSizes );
         } 
         catch (Exception e)
         {
@@ -80,5 +95,67 @@ public class GetPageAction
         return success;
 	}
     
-        
+    protected void retrieveLayoutFragmentSizes( Fragment frag, Map fragSizes )
+    {
+    	if ( frag != null && "layout".equals( frag.getType() ) )
+    	{
+    		String sizesVal = frag.getProperty( "sizes" );
+    		if ( sizesVal == null || sizesVal.length() == 0 )
+    		{
+    			String layoutName = frag.getName();
+    			if ( layoutName != null && layoutName.length() > 0 )
+    			{
+    				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
+    				PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(frag.getName());
+    				ParameterSet paramSet = portletDef.getInitParameterSet();
+    				Parameter sizesParam = paramSet.get( "sizes" );
+    				String sizesParamVal = ( sizesParam == null ) ? null : sizesParam.getValue();
+    				if ( sizesParamVal != null && sizesParamVal.length() > 0 )
+    				{
+    					fragSizes.put( frag.getId(), sizesParamVal );
+    					//log.info( "GetPageAction settings sizes for " + frag.getId() + " to " + sizesParamVal);
+    				}
+    				else
+    				{
+    					Parameter colsParam = paramSet.get( "columns" );
+    					String colsParamVal = ( colsParam == null ) ? null : colsParam.getValue();
+    					if ( colsParamVal != null && colsParamVal.length() > 0 )
+    					{
+    						int cols = 0;
+    						try
+    						{
+    							cols = Integer.parseInt( colsParamVal );
+    						}
+    						catch ( NumberFormatException ex )
+    						{
+    						}
+    						if ( cols < 1 )
+    						{
+    							cols = 2;
+    						}
+    						switch (cols)
+    			            {
+    			            	case 1: sizesParamVal = "100%"; break;
+    			            	case 2: sizesParamVal = "50%,50%"; break;
+    			            	case 3: sizesParamVal = "34%,33%,33%"; break;
+    			            	default: sizesParamVal = "50%,50%"; break;
+    			            }
+    						fragSizes.put( frag.getId(), sizesParamVal );
+    						//log.info( "GetPageAction defaulting sizes for " + frag.getId() + " to " + sizesParamVal);
+    					}
+    				}
+    			}
+    		}
+    		List childFragments = frag.getFragments();
+    		if ( childFragments != null )
+    		{
+    			Iterator childFragIter = childFragments.iterator();
+    			while ( childFragIter.hasNext() )
+    			{
+    				Fragment childFrag = (Fragment)childFragIter.next();
+    				retrieveLayoutFragmentSizes( childFrag, fragSizes );
+    			}
+    		}
+    	}
+    }   
 }

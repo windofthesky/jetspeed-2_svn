@@ -1,8 +1,15 @@
 #macro (traverseFragments $f)
     <fragment id="$f.Id" type="$f.Type" name="$f.Name" decorator="$!f.Decorator">
+    #set($hasSizesProperty=false)
     #foreach ($prop in $f.getProperties().entrySet())
       <property name="$prop.Key" value="$prop.Value" />
+       #if($prop.Key == "sizes")
+          #set($hasSizesProperty=true)
+       #end
 	#end
+    #if($f.Type == "layout" && ! $hasSizesProperty && $sizes.get($f.Id))
+       <property name="sizes" value="$sizes.get($f.Id)" />
+    #end
 	#foreach ($pref in $f.Preferences)
 		<preference name="$pref.Name" readOnly='$pref.isReadOnly()'>		
 		  #foreach ($value in $pref.ValueList)

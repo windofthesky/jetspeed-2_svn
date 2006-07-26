@@ -55,6 +55,7 @@ public interface Constants
     public static final String PAGES = "pages";
     public static final String PAGE = "page";
     public static final String FOLDER = "folder";
+    public static final String SIZES = "sizes";
 
     public static final String STANDARD_MENUS = "standardMenus";
     public static final String CUSTOM_MENUS = "customMenus";
