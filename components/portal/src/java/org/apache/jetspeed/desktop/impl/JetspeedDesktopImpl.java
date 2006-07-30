@@ -41,6 +41,12 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 {
+    private static final String TEMPLATE_EXTENSION_ATTR = "template.extension";
+
+    private static final String ID_ATTR = "id";
+    
+    private static final String RESOURCE_FILE_ATTR =  "resource.file";
+
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
     /** the webapp relative root of all themes */
@@ -86,7 +92,9 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         try
         {
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(path);                
-            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(request, this.baseUrlAccess, theme, getThemeRootPath( theme ) );
+            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(
+                    request, this.baseUrlAccess, theme,
+                    getThemeRootPath(theme), getResourceName(theme));
             request.getRequest().setAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
             dispatcher.include(request.getRequest(), request.getResponse());
         }
@@ -121,6 +129,16 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         return this.themesRoot + "/" +  theme + "/" + JetspeedDesktop.CONFIG_FILE_NAME;
     }
     
+    protected String getResourceName(String theme)
+    {
+        Properties themeConfiguration = (Properties)themesProperties.get(theme);
+        if (themeConfiguration == null)
+        {
+            themeConfiguration = getConfiguration(theme);
+        }
+        return themeConfiguration.getProperty(RESOURCE_FILE_ATTR);
+    }
+    
     protected String getThemePath(String theme)
     {
         Properties themeConfiguration = (Properties)themesProperties.get(theme);
@@ -128,10 +146,10 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         {
             themeConfiguration = getConfiguration(theme);
         }
-        String id = themeConfiguration.getProperty("id");
+        String id = themeConfiguration.getProperty(ID_ATTR);
         if (id == null)
             id = theme;
-        String ext = themeConfiguration.getProperty("template.extension");
+        String ext = themeConfiguration.getProperty(TEMPLATE_EXTENSION_ATTR);
         if (ext == null)
             ext = this.defaultExtension;
         return getThemeRootPath(theme) + "/" + id + ext;
@@ -167,14 +185,14 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                 log.warn("Could not locate the theme.properties configuration file for theme \""
                         + theme +
                      "\".  This theme may not exist.");
-                props.setProperty("id", theme);
+                props.setProperty(ID_ATTR, theme);
                 props.setProperty("extension", this.defaultExtension);
             }                
         }
         catch (Exception e)
         {
             log.warn("Failed to load theme configuration.", e);
-            props.setProperty("id", theme);
+            props.setProperty(ID_ATTR, theme);
         }
         finally
         {

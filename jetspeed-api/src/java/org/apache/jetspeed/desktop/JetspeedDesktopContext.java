@@ -15,6 +15,9 @@
  */
 package org.apache.jetspeed.desktop;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /**
  * Jetspeed Desktop 
  *
@@ -24,6 +27,8 @@ package org.apache.jetspeed.desktop;
 public interface JetspeedDesktopContext
 {
     String DESKTOP_ATTRIBUTE = "jetspeedDesktop";
+    
+    String RESOURCES_DIRECTORY_NAME = "resources";
     
     /**
      * Get an absolute portal from a relative URL.
@@ -64,4 +69,5 @@ public interface JetspeedDesktopContext
      */
     String getDesktopThemeResourceUrl(String relativePath);
     
+    public ResourceBundle getResourceBundle(Locale locale);
 }

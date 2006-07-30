@@ -15,9 +15,6 @@
  */
 package org.apache.jetspeed.desktop;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -29,7 +26,7 @@ import org.apache.jetspeed.request.RequestContext;
 public interface JetspeedDesktop 
 {
     String CONFIG_FILE_NAME = "theme.properties";
-    
+
     /**
      * Render a desktop theme.
      * 

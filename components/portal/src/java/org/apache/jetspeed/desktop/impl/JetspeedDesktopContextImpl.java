@@ -15,6 +15,14 @@
  */
 package org.apache.jetspeed.desktop.impl;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,13 +45,15 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     private BasePortalURL baseUrlAccess = null;
     private String themeRootPath = null;
     private String theme = null;
+    private String resourceName = null;
         
-    public JetspeedDesktopContextImpl(RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath )
+    public JetspeedDesktopContextImpl(RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath, String resourceName)
     {
         this.context = context;
         this.baseUrlAccess = baseUrlAccess;
         this.theme = theme;
         this.themeRootPath = themeRootPath;
+        this.resourceName = resourceName;
     }
     
     public String getPortalResourceUrl(String relativePath)
@@ -104,17 +114,58 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     
     public String getDesktopThemeResourceUrl(String relativePath)
     {
-        if ( relativePath.startsWith( "/" ) )
-            return getPortalResourceUrl(themeRootPath + relativePath);
-        else
-            return getPortalResourceUrl(themeRootPath + "/" + relativePath);
+        return getPortalResourceUrl(getDesktopThemeResource(relativePath));
     }
+
+    public String getDesktopThemeResource(String relativePath)
+    {
+        if (relativePath.startsWith("/"))
+        {
+            return themeRootPath + relativePath;
+        }
+        else
+        {
+            return themeRootPath + "/" + relativePath;
+        }
+    }
+
     public String getDesktopThemeRootUrl()
     {
         return getPortalResourceUrl(themeRootPath);
     }
+    
     public String getDesktopTheme()
     {
         return theme;
+    }
+    
+    public ResourceBundle getResourceBundle(Locale locale)
+    {
+        String resourceDirName = context.getConfig().getServletContext()
+                .getRealPath(getDesktopThemeResource(RESOURCES_DIRECTORY_NAME));
+        File resourceDir = new File(resourceDirName);
+        if (resourceName == null)
+        {
+            throw new NullPointerException("The resource file is null.");
+        }
+        if (!resourceDir.isDirectory())
+        {
+            throw new MissingResourceException(
+                    "Can't find the resource directory: " + resourceDirName,
+                    resourceName + "_" + locale, "");
+        }
+        URL[] urls = new URL[1];
+        try
+        {
+            urls[0] = resourceDir.toURL();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new MissingResourceException(
+                    "The resource directory cannot be parsed as a URL: "
+                            + resourceDirName, resourceName + "_" + locale, "");
+        }
+        return ResourceBundle.getBundle(resourceName, locale,
+                new URLClassLoader(urls));
     }
 }
