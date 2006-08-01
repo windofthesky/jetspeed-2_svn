@@ -63,7 +63,7 @@ String email = (userInfo!=null) ? (String)userInfo.get("user.home-info.online.em
         Concrete User attributes are stored using User Preferences for which Jetspeed-2 provides its own database
         back end for storage (which is customizable by the way like almost any component of Jetspeed-2).  The user
         attributes implementation leverages Jetspeed's 
-        <a href="multiproject/jetspeed-prefs/index.html">java.util.prefs.Preferences</a> implementation.<br/>
+        <a href="../multiproject/jetspeed-prefs/index.html">java.util.prefs.Preferences</a> implementation.<br/>
         The concrete User attributes are stored under a specific node in the User preferences and can contain
         any named attribute at will.<br/>
         These concrete User attributes can be mapped to the defined User Attributes in the portlet.xml in two ways:

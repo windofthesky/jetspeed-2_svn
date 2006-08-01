@@ -59,7 +59,7 @@ sub project documentation.
 <p>
 An example of the Velocity Bridge usage within Jetspeed 2 is:
 <ul>
-    <li>The Jetspeed 2 <a href="multiproject/j2-admin/index.html">Administration and Security</a> application</li>
+    <li>The Jetspeed 2 <a href="../multiproject/j2-admin/index.html">Administration and Security</a> application</li>
 </ul>
 </p>
 </section>
