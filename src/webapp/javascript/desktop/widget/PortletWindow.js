@@ -68,16 +68,16 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
                                 if ( ! propertyName ) return;
                                 this.jsAltInitParams[ propertyName ] = propertyValue;
                             },
-                            retrieveContent: function( contentListener, requestUrl, formObject, mimeType )
+                            retrieveContent: function( contentListener, bindArgs )
                             {
                                 var contentRetriever = this.getProperty( jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER );
                                 if ( contentRetriever )
                                 {
-                                    contentRetriever.getContent( requestUrl, contentListener, formObject, mimeType, this, jetspeed.debugPortletDumpRawContent );
+                                    contentRetriever.getContent( bindArgs, contentListener, this, jetspeed.debugPortletDumpRawContent );
                                 }
                                 else
                                 {
-                                    jetspeed.url.retrieveContent( requestUrl, contentListener, formObject, mimeType, this, jetspeed.debugPortletDumpRawContent );
+                                    jetspeed.url.retrieveContent( bindArgs, contentListener, this, jetspeed.debugPortletDumpRawContent );
                                 }
                             }
                        };
@@ -1212,8 +1212,11 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
                 //dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + i + "] columnsX=" + this.columnsX[i] + " this.domNode.offsetWidth/2=" + (this.domNode.offsetWidth/2) + " x=" + x );
                 if ( ( x + ( this.domNode.offsetWidth / 2 ) ) >= this.columnsX[ i ] )
                 {
-                    colIndex = i;
-                    break;
+                    if ( y + ( this.domNode.offsetHeight / 2 ) >=  dojo.style.getAbsoluteY( jetspeed.columns[i], true ) )
+                    {
+                        colIndex = i;
+                        break;
+                    }
                 }
             }
             var col = ( colIndex >= 0 ? jetspeed.columns[ colIndex ] : null );
