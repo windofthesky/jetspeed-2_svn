@@ -35,8 +35,7 @@ public class RequestSessionResolver extends StandardResolver implements RuleCrit
         String value = context.getRequestParameter(criterion.getName());
         if (value == null)
         {
-            String key = this.getClass() + "." + criterion.getName();
-            value = (String)context.getSessionAttribute(key);
+            value = (String)context.getSessionAttribute(criterion.getName());
             if (value == null)
             {
                 value = criterion.getValue();
