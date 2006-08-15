@@ -53,6 +53,9 @@
           <entry key="request">
             <ref bean="StandardResolver" />
           </entry>
+          <entry key="session">
+            <ref bean="SessionResolver" />
+          </entry>            
           <entry key="request.session">
             <ref bean="RequestSessionResolver" />
           </entry>
@@ -103,6 +106,7 @@
     </bean>
     
     <bean id='StandardResolver' class='org.apache.jetspeed.profiler.rules.impl.StandardResolver'></bean>
+    <bean id='SessionResolver' class='org.apache.jetspeed.profiler.rules.impl.SessionResolver'></bean>    
     <bean id='RequestSessionResolver' class='org.apache.jetspeed.profiler.rules.impl.RequestSessionResolver'></bean>
     <bean id='PathResolver' class='org.apache.jetspeed.profiler.rules.impl.PathResolver'></bean>
     <bean id='PathSessionResolver' class='org.apache.jetspeed.profiler.rules.impl.PathSessionResolver'></bean>
