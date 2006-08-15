@@ -92,13 +92,13 @@ limitations under the License.
     {
         jetspeed.initializeDesktop( "$jetspeedDesktop.getDesktopTheme()", de_jsessionid_url( "$jetspeedDesktop.getDesktopThemeRootUrl()" ) );
     }
-    function doRender(url,portletEntityId)
+    function doRender( bindArgs, portletEntityId )
     {
-        jetspeed.doRender(url,portletEntityId);
+        jetspeed.doRender( bindArgs, portletEntityId );
     }
-    function doAction(url, portletEntityId, currentForm)
+    function doAction( bindArgs, portletEntityId )
     {
-        jetspeed.doAction(url,portletEntityId, currentForm);
+        jetspeed.doAction( bindArgs, portletEntityId );
     }
     dojo.event.connect(dojo, "loaded", "init");
 </script>
