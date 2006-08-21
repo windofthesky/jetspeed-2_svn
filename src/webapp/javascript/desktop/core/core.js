@@ -1527,8 +1527,8 @@ dojo.lang.extend( jetspeed.om.Portlet,
 
     lastSavedWindowState: null,
 
-    JAVASCRIPT_ACTION_PREFIX: "javascript:doAction(",
-    JAVASCRIPT_RENDER_PREFIX: "javascript:doRender(",
+    JAVASCRIPT_ACTION_PREFIX: "javascript:doAction",
+    JAVASCRIPT_RENDER_PREFIX: "javascript:doRender",
     JAVASCRIPT_ARG_QUOTE: "&" + "quot;",
     PORTLET_REQUEST_ACTION: "action",
     PORTLET_REQUEST_RENDER: "render",
