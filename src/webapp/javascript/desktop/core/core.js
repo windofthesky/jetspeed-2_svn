@@ -2019,6 +2019,44 @@ jetspeed.om.ActionRenderFormBind = function( /* HtmlForm */ form, /* String */ u
 dojo.inherits( jetspeed.om.ActionRenderFormBind, dojo.io.FormBind );
 dojo.lang.extend( jetspeed.om.ActionRenderFormBind,
 {
+
+    init: function(args) {
+        var form = dojo.byId(args.formNode);
+
+        if(!form || !form.tagName || form.tagName.toLowerCase() != "form") {
+            throw new Error("FormBind: Couldn't apply, invalid form");
+        } else if(this.form == form) {
+            return;
+        } else if(this.form) {
+            throw new Error("FormBind: Already applied to a form");
+        }
+
+        dojo.lang.mixin(this.bindArgs, args);
+        this.form = form;
+
+        this.connect(form, "onsubmit", "submit");
+
+        for(var i = 0; i < form.elements.length; i++) {
+            var node = form.elements[i];
+            if(node && node.type && dojo.lang.inArray(["submit", "button"], node.type.toLowerCase())) {
+                this.connect(node, "onclick", "click");
+            }
+        }
+
+        var inputs = form.getElementsByTagName("input");
+        for(var i = 0; i < inputs.length; i++) {
+            var input = inputs[i];
+            if(input.type.toLowerCase() == "image" && input.form == form) {
+                this.connect(input, "onclick", "click");
+            }
+        }
+
+        var as = form.getElementsByTagName("a");
+        for(var i = 0; i < as.length; i++) {
+            dojo.event.connectBefore(as[i], "onclick", this, "click");
+        }
+    },
+
     onSubmit: function( cForm )
     {
         var proceed = true;
