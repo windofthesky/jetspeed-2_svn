@@ -31,10 +31,10 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
     public void setDynamicTitle(PortletWindow window,
             HttpServletRequest request, String titleArg)
     {
-        String title = getTitleFromPreference(window, request);
-
-        if (title == null || title.length() < 0)
-        {
+        //String title = getTitleFromPreference(window, request);
+        String title = null;
+//        if (title == null || title.length() < 0)
+//        {
             if (titleArg == null || titleArg.length() == 0)
             {
                 title = getTitleFromPortletDefinition(window, request);
@@ -44,7 +44,7 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
                 title = titleArg;
             }
 
-        }
+//        }
 
         request.setAttribute(
                 PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
