@@ -127,6 +127,9 @@
                 <resource>
                     <directory>${basedir}/../../src/webapp/WEB-INF/assembly</directory>
                 </resource>
+                <resource>
+                    <directory>etc/assembly</directory>
+                </resource>
             </resources>
         </unitTest>
 

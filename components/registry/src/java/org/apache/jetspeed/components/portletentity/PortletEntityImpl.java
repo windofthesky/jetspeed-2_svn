@@ -421,6 +421,10 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public Principal getPrincipal()
     {
+        if (rcc == null)
+        {
+            return new PortletEntityUserPrincipal(NO_PRINCIPAL);
+        }            
         RequestContext rc = rcc.getRequestContext();
         Principal principal = rc.getUserPrincipal();
         if (principal == null)
