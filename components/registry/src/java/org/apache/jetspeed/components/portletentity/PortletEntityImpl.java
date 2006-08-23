@@ -20,9 +20,11 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -36,12 +38,13 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.ObjectID;
@@ -68,13 +71,12 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected static PortletEntityAccessComponent pac;
     
     protected static PortletRegistry registry;
-
+    protected static RequestContextComponent rcc;
+    
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
     protected List originalPreferences;
 
-    // protected PrefsPreferenceSetImpl preferenceSet;
-    // protected ThreadLocal preferenceSetRef = new ThreadLocal();
     protected Map perPrincipalPrefs = new HashMap();
 
     protected Map originalValues;
@@ -104,9 +106,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         super();
     }
-
-    // protected Principal principal;
-    protected ThreadLocal principalRef = new ThreadLocal();
 
     public static final String NO_PRINCIPAL = "no-principal";
     public static final String ENTITY_DEFAULT_PRINCIPAL = "entity-default";
@@ -148,21 +147,15 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         {
             if (preferenceSet == null || !dirty)
             {
-                //TODO: need to be setting this from PortletEntityAccessComponent until then it will always be null.                
                 String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() +"/"+ principal.getName() +"/"
                         + PrefsPreference.PORTLET_PREFERENCES_ROOT;
-                Preferences prefNode = Preferences.userRoot().node(prefNodePath);
-                
-                // NO_PRINCIPAL is actually the defa
-                if(principal.getName().equals(ENTITY_DEFAULT_PRINCIPAL))
-                {
-                    preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-                }
-                else
-                {
-                    preferenceSet = new PrefsPreferenceSetImpl(prefNode, (PreferenceSetComposite) getPreferenceSet(new PortletEntityUserPrincipal(ENTITY_DEFAULT_PRINCIPAL)) );
-                }
+                Preferences prefNode = Preferences.userRoot().node(prefNodePath);               
+                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
                 perPrincipalPrefs.put(principal, preferenceSet);
+                if (pac.isMergeSharedPreferences())
+                {
+                    mergePreferencesSet(preferenceSet);
+                }
                 backupValues(preferenceSet);
                 dirty = true;
             }
@@ -175,6 +168,33 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             throw ise;
         }
         return preferenceSet;
+    }
+    
+    private void mergePreferencesSet(PrefsPreferenceSetImpl userPrefSet)
+    throws BackingStoreException
+    {
+        String sharedNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + 
+                                getId() +"/"+ NO_PRINCIPAL +"/" +
+                                PrefsPreference.PORTLET_PREFERENCES_ROOT;                
+        Preferences sharedNode = Preferences.userRoot().node(sharedNodePath);     
+        if (sharedNode == null)
+            return;
+        PrefsPreferenceSetImpl sharedSet = new PrefsPreferenceSetImpl(sharedNode);
+        if (sharedSet.size() == 0)
+            return;
+        Set names = userPrefSet.getNames();
+        Iterator sharedPrefs = sharedSet.iterator();
+        int index = 0;
+        while (sharedPrefs.hasNext())
+        {
+            PrefsPreference sharedPref = (PrefsPreference) sharedPrefs.next();
+            if (names.contains(sharedPref.getName()))
+            {
+                List prefs = Arrays.asList(sharedPref.getValueArray());
+                userPrefSet.add(sharedPref.getName(), prefs);
+            }
+            index++;
+        }        
     }
 
     /**
@@ -401,22 +421,13 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public Principal getPrincipal()
     {
-        Principal principal = (Principal) principalRef.get();
+        RequestContext rc = rcc.getRequestContext();
+        Principal principal = rc.getUserPrincipal();
         if (principal == null)
         {
             principal = new PortletEntityUserPrincipal(NO_PRINCIPAL);
         }
-        
         return principal;
-    }
-
-    /**
-     * @param principal
-     *            The principal to set.
-     */
-    protected void setPrincipal( Principal principal )
-    {
-        principalRef.set(principal);
     }
 
     class PortletEntityUserPrincipal implements Principal

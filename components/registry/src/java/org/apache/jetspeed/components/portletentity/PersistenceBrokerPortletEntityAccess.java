@@ -28,6 +28,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -56,7 +57,15 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
             PortletEntityAccessComponent
 {
     private PortletRegistry registry;
-
+    private RequestContextComponent rcc;
+    
+    // 2006-08-22: by default, do not merge preferences from the shared preferences area 
+    // up until this point, all preferences were shared. With JS2-449, preferences are now
+    // stored 'per user'. The username is stored in the preferences FULL_PATH
+    // To turn on mergeSharedPreferences configure this property to true 
+    // in your Spring configuration
+    boolean mergeSharedPreferences = false;
+    
     /**
      * 
      * @param registry
@@ -68,6 +77,25 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         PortletEntityImpl.registry = registry;
     }
 
+    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc)
+    {
+        super();
+        this.registry = registry;        
+        this.rcc = rcc;
+        PortletEntityImpl.registry = registry;
+        PortletEntityImpl.rcc = rcc;
+    }
+
+    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, boolean mergeSharedPreferences)
+    {
+        super();
+        this.registry = registry;        
+        this.rcc = rcc;
+        PortletEntityImpl.registry = registry;
+        PortletEntityImpl.rcc = rcc;
+        this.mergeSharedPreferences = mergeSharedPreferences;
+    }
+    
     public void setEntityAccessProxy(PortletEntityAccessComponent proxy)
     {
         PortletEntityImpl.pac = proxy;
@@ -403,4 +431,14 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         String portletName = pd.getName();
         return appName+"::"+portletName+"::"+new UID().toString();
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#isMergeSharedPreferences()
+     */
+    public boolean isMergeSharedPreferences()
+    {
+        return this.mergeSharedPreferences;
+    }
+
+    
 }

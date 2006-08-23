@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.request;
 
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,8 @@ import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
@@ -361,6 +364,11 @@ public class JetspeedRequestContext implements RequestContext
         return this.subject;
     }
 
+    public Principal getUserPrincipal()
+    {
+        return SecurityHelper.getBestPrincipal(getSubject(), UserPrincipal.class);
+    }
+    
     /**
      * @see org.apache.jetspeed.request.RequestContext#setSubject(javax.security.auth.Subject)
      */
