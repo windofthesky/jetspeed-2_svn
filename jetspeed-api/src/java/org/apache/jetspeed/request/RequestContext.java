@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.request;
 
-import java.util.List;
+import java.security.Principal;
 import java.util.Locale;
 import java.util.Map;
 
@@ -402,6 +402,13 @@ public interface RequestContext
      * @param pipeline
      */
     void setPipeline(Pipeline pipeline);
+
+    /**
+     * Gets the Jetspeed primary user principal associated with the authorized entity.
+     *
+     * @return The primary principal on this request.
+     */
+    Principal getUserPrincipal();
     
 }
 

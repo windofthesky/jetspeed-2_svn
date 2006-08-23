@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.mockobjects.request;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -277,6 +278,12 @@ public class MockRequestContext implements RequestContext
     public Subject getSubject()
     {
         return subject;
+    }
+    
+    public Principal getUserPrincipal()
+    {
+        // TODO: implement
+        return null;
     }
 
     /*

@@ -197,4 +197,12 @@ public interface PortletEntityAccessComponent
 	
 	void storePreferenceSet(PreferenceSet prefSet, PortletEntity entity) throws IOException;
 
+    /** 
+     *  All preferences were shared. With JS2-449, preferences are now
+     *  stored 'per user'. The username is stored in the preferences FULL_PATH
+     *  To turn on mergeSharedPreferences configure this property to true 
+     *  in your Spring configuration. This will NOT turn off per user prefs, 
+     *  but instead merge with them, where user prefs override.
+     */   
+    boolean isMergeSharedPreferences();
 }
