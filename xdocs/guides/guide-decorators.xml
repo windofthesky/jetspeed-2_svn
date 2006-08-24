@@ -50,7 +50,7 @@ approaches described here can be applied to writing decroations in other scripti
 <section name="Decoration File Structure">
 <p>
     All decorations are stored in a directory directly off of the web applications
-    root called <code>decrorations</code>.  The two primary directories under the 
+    root called <code>decorations</code>.  The two primary directories under the 
     here are <code>layout</code> for layout decorations and <code>portlet</code>
     for portlet decorations.  Individual decoartions are housed in their own directories
     underneath these two directories.  The name of the directory you create for under either
@@ -173,7 +173,7 @@ approaches described here can be applied to writing decroations in other scripti
             <code>$someObject.foo</code>.  As for this <code>$JS2RequestContext</code> this is actually
             an instance of the <code>org.apache.jetspeed.RequestContext</code> that has been availble to Velocity
             by Jetspeed itself.  So, by looking the javadoc for <code>org.apache.jetspeed.RequestContext</code> we see
-            <code>$JS2RequestContext.locale</code> will give us an instance of <code>java.util.Locale</code> that reperesnts
+            <code>$JS2RequestContext.locale</code> will give us an instance of <code>java.util.Locale</code> that represents
             the locale of the current user.  Couldn't be much simpler than that could it?
                <br/><br/>
             Next up we have this line <code>#set($rootFragment = $jetspeed.currentFragment)</code> another set()
