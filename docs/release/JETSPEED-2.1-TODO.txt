@@ -1,73 +1,100 @@
+Feature                         Cat     Hours  Assigned  Due    Issue
+----------------------------------------------------------------------
+01. Profiler Docs               Docs     04      DST    Aug 18   573  DONE
 
- 0. Jetspeed Desktop                                                      
-      a. Portlet Selector                             
-      b. Windows States                               
+02. Spring MVC + doHeader       Portlets 08      SM     Aug 18   570  DONE
 
- 1. XML Serialization                                 
-      a. Replace SQL seed scripts with XML            
+03. Prefs per User              Portal   08      DST    Aug 22   499  DONE
 
- 2. Cluster Support                                                       
-       a. Registry
-       b. PSML
+04. Rewrite Site Manager        Custom   24      DST    Aug 28   306  IN PROG
 
- 3. Customizer - Redesign
-       a. DOJO based, build into desktop
-       b. access DOJO customizer from non-desktop  
-       c. Security Permissions Editor
-       d. Security Constraints Editor
-       e. integrate site manager with new customizer
+05. XML Serialization           Light    08      DST    Aug 30   461
 
- 4. Improve Admin with DOJO or JSF...
-      a. Site Manager                        
-      b. Profiler (write docs)               
-      c. Roles, Groups               
+06. Persist layout row/col in   DT-java  06      SM     Aug 28   ... IN PROG
+      correct fragment          
 
- 5. Major Bug/Featurs
-      a. JS2-499 Prefs per User     
-         Refactor Prefs, fix PrefsPreferenes mess                                  
-      b. JS2-517 Secure XML AJAX Requests       
-      c. Redeploy Failing on Tomcat      
+07. PSML Security Editor        Custom   24      SM     Sep 01   574
 
- 6. Graffito Integration
 
- 7. Performance
-      a. Portlet Selector
-      b. Roles, Groups
-      c. Permission Checks
+08. Complete desktop for column DT-brow  03      SM     .....   ...
+      sizes and layout chg api
 
- 8. App Server Support
-      a. Jetty Support
-      b. WAS
-      c. WAS CE
+09. Change desktop form         DT-brow  02      SM     .....   ...
+      content annotation to 
+      get rid of javascript:
+      form action
 
- 9. Jetspeed Lite
-      a. replace OJB with Serialized
-      b. minimal security
-      c. internal portlet app, single WAR deployment
-      d. simpler security model
-  
-10. Build and Configurations
-      a. move to Maven-2, drop M1
-      b. various configurations, lite
+10. New Example Portlets       Portlets 08      -ALL-   .....   ...
+     map, weather, domtree                     
+     fix Google Portlet on /portal
 
-11. Demo Sites
-      a. improve JSF and Facelets support
-      b. Spring MVC Examples
-      c. redo demo site
-      d. google map portlet 
+11. Maven-2 Archetypes          Build    24      ???    Sep 15   ...
+    Jetspeed Lite 
+    Jetspeed Enterprise
 
-12. Better Examples, get rid of old ones
-      * Google Map Portlet (JP)
+12. Rework Demo Site            Demo     16      -ALL-   Sep 22   ...
+    more users, custom 
 
-13. Eclipse Plugin
 
-14. Security 
-      * new schema
-      
-15. JPT
-$jetspeed.RenderEntity(entityId)
+--------------------------------------------------------------------------
 
-or
+19. Desktop Customizer features Custom   16      SM     ------   ...
+     from /portal
 
-$jetspeed.RenderPortletEntity(entityId, portletId)
-      
+20. Page Manager Resources      PSML     32      --     ------   ...
+21. Dynamic Menuing             PSML     80      --     ------   ...
+    Logical Navigations
+
+22. JSR-168 Caching             Portal   16      ---    ------   361
+23. Parallel Render             Portal   80      DST    Sep 29   226
+     Spring Task Executor 
+
+24. Normalize Security DB       Portal   32      HB     Sep 22   560
+    Federated Model
+
+25. Graffito Portlets           Graffito 32      ---    Sep 29   ...
+     rewrite in DOJO/Spring 
+26. Release Graffito                             ---    -----    ...
+
+
+30. MyFaces Upgrade             Bridge   04      ---    ------   538
+31. Mulitle User Attributes     Portal   04      ---    ------   301
+32. Create User Page fr Roles   PSML     04      ---    ------   476
+33. Engine State                Portal   04      ---    ------   341
+34. Statistic Cleanup           Stats    04      ---    ------   480
+35. Secure AJAX Requests        Ajax     08      SM     Sep 15   517
+36. Desktop Block on Action     Desktop  08      SM     Sep 01   ...
+37. Decorator Factory, refactor Portal   08      ---    ------   ...
+    optimize fallback
+    dont check file everytime
+38. Improve Portlet Selector    Custom   08      ---    ------   ...
+
+44. Jetty Support               Portal   08      ---    ------   ...
+    Jetspeed Lite + Jetty
+    Jetspeed Ent + Jetty
+45. Official WAS Support        Portal   08      ---    ------   ...
+
+
+60. Portlet modes in desktop    DT-brow  04      SM     ------
+61. Detect from psml portlet    DT-brow  03      SM     ------
+      row/col vs. x/y;
+      UI to toggle between    
+62. Persist desktop vertical    DT-java  ?       SM     ------
+      expand to fit;
+      UI to toggle between
+63. doHeader support to replace DT-java  ?       SM    -------
+      <head> in desktop-theme
+64. Portlet selector desktop    DT-brow  ?       SM    -------
+      changes for doHeader (63)
+65. Security permissions        j2-admin 02      SM    -------
+      broken in desktop 
+
+70. Test Tapestry Support       Portlets 08      ---    ------  566
+    - example
+    - document
+
+80. Installer, Rewrite          Install  32      HB     Sep 29  448
+81. Derby SQL is not generated  DB       08      HB     Sep 29  ...
+82. Bug fixes in JIRA(DST)      Bugs     16      DST    Sep 28  ...
+
+
