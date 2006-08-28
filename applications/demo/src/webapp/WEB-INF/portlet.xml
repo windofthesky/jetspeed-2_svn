@@ -445,11 +445,11 @@ limitations under the License.
 <!-- Don't specify a HEIGHT if you want a normal filled out layout
      because percentage values result in the content not to be displayed on IE6.
      Specific values are ok though. 
-      <preference>
+    -->        
+            <preference>
 				<name>HEIGHT</name>
 				<value>300</value>
 			</preference>
--->        
 			<preference>
 				<name>WIDTH</name>
 				<value>100%</value>
