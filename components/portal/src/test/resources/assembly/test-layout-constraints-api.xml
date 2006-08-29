@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+<!-- AJAX Actions 
+    
+    == Constructor Arguments ==
+    index 0 = render response VM template, generates XML NORMAL response
+    index 1 = render response VM template, generates XML ERROR response
+    index 1 = action name from AJAX Request
+    
+    -->
+
+<!--bean id="PortletActionSecurityBehavior"
+	  class="org.apache.jetspeed.layout.impl.PortletActionSecurityPathBehavior">
+    <constructor-arg index='0'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    	
+</bean-->
+
+<bean id="AjaxSecurityConstraints"
+    class="org.apache.jetspeed.layout.impl.SecurityConstraintsAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+</bean>
+
+
+
+<bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
+    <constructor-arg index="0">
+        <map>
+            <entry key="constraints">
+                <ref bean="AjaxSecurityConstraints"/>
+            </entry>			                                                
+        </map>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <ref bean="AjaxVelocityEngine"/>
+    </constructor-arg>
+</bean>
+
+<bean id="AjaxVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <property name="velocityProperties">
+        <props>
+            <prop key="resource.loader">class</prop>
+            <prop key="class.resource.loader.class">
+                org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </prop>
+        </props>
+    </property>
+  </bean>
+  
+	<bean id="layoutValve"
+		class="org.apache.jetspeed.layout.impl.LayoutValve"
+		init-method="initialize">
+		<constructor-arg index="0">
+			<ref bean="AjaxRequestService"/>
+		</constructor-arg>
+	</bean>
+  
+    
+</beans>

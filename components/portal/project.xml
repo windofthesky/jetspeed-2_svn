@@ -73,8 +73,10 @@
                 <resource>
                     <directory>${basedir}/../../src/webapp/WEB-INF/assembly</directory>
                 </resource>
+                <resource>
+                    <directory>${basedir}/test/testdata/pages</directory>
+                </resource>                
             </resources>
-
         </unitTest>
 
         <resources>
