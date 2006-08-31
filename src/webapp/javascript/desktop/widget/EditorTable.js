@@ -48,7 +48,14 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
     },
     
     /* base class protocol */
-    buildRendering: function(args, frag){
+    render: function(bDontPreserve)
+    {
+        bDontPreserve = true;    // for EditorTable, all calls to render should not reset data (i.e. call SortableTable.parseDataFromTable())
+        jetspeed.ui.widget.EditorTable.superclass.render.call( this, bDontPreserve );
+    },
+
+    buildRendering: function(args, frag)
+    {
         jetspeed.ui.widget.EditorTable.superclass.buildRendering.call( this, args, frag );
         if ( args.templateCssPath )
         {
@@ -63,7 +70,7 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
         if ( ! rowData ) return false;
         var tId = rowData.Id;
         var masterData = this.getData( this.js_masterdata, tId );
-        var changed = rowData.isNew ? true : false;
+        var changed = ( rowData.__isNew || rowData.__isModified ) ? true : false;
         if ( ! changed )
         {
             for ( var slotKey in masterData )
@@ -77,6 +84,16 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
             }
         }
         return changed;
+    },
+    entryIsNew: function( rowData )
+    {
+        if ( ! rowData ) return false;
+        return rowData.__isNew ;
+    },
+    setModified: function( rowData )
+    {
+        if ( ! rowData ) return;
+        rowData.__isModified = true;
     },
     getSelectedRow: function()
     {
@@ -116,7 +133,7 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
     {
         var row = dojo.html.getParentByType( e.target, "tr" );
         var rowData = this.getObjectFromRow( row );
-        updateEditor( rowData );
+        this.updateEditor( rowData );
     },
 
     checkForChanges: function()
@@ -125,7 +142,7 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
     
         if ( ! selectedRowData ) return false;
         var hasChanged = this.hasRowChanged( selectedRowData );
-        return ( ! hasChanged ? false : ( selectedRowData.isNew ? "new" : "modified" ) );
+        return ( ! hasChanged ? false : ( selectedRowData.__isNew ? "new" : "modified" ) );
     },
 
     updateClonedData: function( fromData, toData )
@@ -164,9 +181,9 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
                 tId = this.js_masterdata[i].Id + 1;
         }
         newEntry.Id = tId;
-        newEntry.isNew = true;
-        this.js_masterdata.push( newEntry );
-        this.data.push( dojo.lang.shallowCopy( newEntry ) );
+        this.js_masterdata.push( dojo.lang.shallowCopy( newEntry ) );
+        newEntry.__isNew = true;
+        this.data.push( newEntry );
         this.selected = [ dojo.lang.shallowCopy( newEntry ) ];
 
         this.render(true);
@@ -182,7 +199,7 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
         if ( ! selectedRowData ) return;
         var tId = selectedRowData.Id;
     
-        if ( ! selectedRowData.isNew  )
+        if ( ! selectedRowData.__isNew  )
             this.saveEntrySubmit( selectedRowData, true );
 
         var tIndex = this.getDataIndex( this.js_masterdata, tId );
@@ -209,7 +226,10 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
 
         this.saveEntrySubmit( selectedRowData );
 
-        selectedRowData.isNew = false;
+        //delete masterData.__isNew;
+        //delete masterData.__isModified;
+        delete selectedRowData.__isNew;
+        delete selectedRowData.__isModified;
         this.updateClonedData( selectedRowData, masterData );
         this.updateClonedData( selectedRowData, this.selected[0] );
         this.updateEditor( selectedRowData );
@@ -221,12 +241,13 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
     
         if ( ! selectedRowData ) return;
 
-        if ( selectedRowData.isNew )
+        if ( selectedRowData.__isNew )
         {
             deleteEntry();
         }
         else
         {
+            delete selectedRowData.__isModified;
             var masterData = this.getData( this.js_masterdata, selectedRowData.Id );
             if ( ! masterData ) return;
             this.updateClonedData( masterData, selectedRowData );
@@ -237,17 +258,23 @@ dojo.lang.extend( jetspeed.ui.widget.EditorTable, {
         }
     },
 
-    listSelectionChangeOk: function(invocation)
+    okToChangeSelectionOrExit: function( invocation )   // listSelectionChangeOk
     {
-        if ( this.saveWarningDialogWidgetId )
+        if ( this.checkForChanges() )
         {
-            if ( this.checkForChanges() )
+            if ( this.saveWarningDialogWidgetId )
             {
                 dojo.widget.byId( this.saveWarningDialogWidgetId ).show();
                 return false;
             }
+            else
+            {
+                this.saveEntry();
+            }
         }
-        return invocation.proceed();
+        if ( invocation != null )
+            invocation.proceed();
+        return true;
     }
 });
 dojo.widget.tags.addParseTreeHandler("dojo:editortable");
