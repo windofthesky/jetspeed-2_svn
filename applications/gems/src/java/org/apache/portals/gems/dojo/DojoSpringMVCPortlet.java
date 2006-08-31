@@ -101,7 +101,7 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
     protected void includeDojoRegisterWidgetPackage(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
         throws PortletException, java.io.IOException
     {
-    	
+        headerInfoText.append( "dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');" ).append( CRLF );
     }
     
     protected boolean addJavascriptBlock(HeaderResource headerResource, StringBuffer javascriptText)
