@@ -24,7 +24,7 @@ the root of your decortaion.  This will be used instead of the default.
 #set($decoration = $f.decoration)
 #set($actions = $decoration.actions)
 
-<!-- Begin: Fragment: ${f.id} Decoration: ${decoratorId} -->
+<!-- Begin: Fragment: ${f.id} Decoration: ${decoration.Name} -->
 
 <div id="${f.id}" class="portlet ${decoration.baseCSSClass}">
   #set($solo = $jetspeed.MappedWindowState.toString()=="solo")
@@ -53,6 +53,6 @@ the root of your decortaion.  This will be used instead of the default.
   #end
 </div>
 
-<!-- END: Fragment: ${f.id} Decoration: ${decoratorId} -->
+<!-- END: Fragment: ${f.id} Decoration: ${decoration.Name} -->
 
 
