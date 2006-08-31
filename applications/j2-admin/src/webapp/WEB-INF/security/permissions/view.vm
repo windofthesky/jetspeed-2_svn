@@ -168,7 +168,8 @@ dojo.lang.shallowCopy(this.portlets) ;
 	<form onsubmit="return false;">
 		<table>
 			<tr>
-                <td>Please Save or Revert changes to the selected permissions record before proceeding.</td>
+                <td>Please Save or Revert changes to the selected permissions record before proceeding.</td><td>&nbsp;</td>
+            </tr>
 			<tr>
 				<td colspan="2" align="right" class="buttonboxright">
                     <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide();" >Cancel</button>
@@ -249,7 +250,7 @@ function clearAndDisableEditor()
 function updateEditor( rowData )
 {
     var resourceTextBox = dojo.byId( "resourceName" );
-    if ( rowData.isNew )
+    if ( rowData.__isNew )
     {
         resourceTextBox.disabled = false;
     }
@@ -316,10 +317,11 @@ function updateEditor( rowData )
 
     updateEditorControls();
 }
-function getTableWidget()
+function getTableWidget( containedInTab )
 {
-    var tTabWidget = dojo.widget.byId( "mainTabContainer" ).selectedTabWidget;
-    return dojo.widget.byId( tTabWidget.widgetId + "Table" );
+    if ( ! containedInTab )
+        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedTabWidget;
+    return dojo.widget.byId( containedInTab.widgetId + "Table" );
 }
 function checkForChanges()
 {
@@ -452,7 +454,7 @@ function saveEntrySubmit( removeEntry )
     {
         requestUrl += "&method=remove";
     }
-    else if ( selectedRowData.isNew )
+    else if ( tTableWidget.entryIsNew( selectedRowData ) )
     {
         requestUrl += "&method=add";
     }
@@ -527,10 +529,10 @@ function revertEntry()
     tTableWidget.revertEntry();
 }
 
-function listSelectionChangeOk(invocation)
+function okToChangeSelectionOrExit(invocation)
 {
     var tTableWidget = getTableWidget();
-    return tTableWidget.listSelectionChangeOk(invocation);
+    return tTableWidget.okToChangeSelectionOrExit(invocation);
 }
 
 function addListeners()
@@ -544,7 +546,7 @@ function addListeners()
         }
         invocation.proceed();
         var tab = invocation.args[0];
-        var tTableWidget = dojo.widget.byId( tab.widgetId + "Table" ) ;
+        var tTableWidget = getTableWidget( tab );
         var selectedRowData = tTableWidget.getSelectedRow();
     
         if ( ! selectedRowData )
@@ -559,7 +561,7 @@ function addListeners()
     });
 
     var portletsTable = dojo.widget.byId("portletsTable");
-    dojo.event.connect( "around", portletsTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect( "around", portletsTable, "onUISelect", "okToChangeSelectionOrExit" );
     dojo.event.connect(portletsTable, "onSelect", function(e) {
         processTableRowEvent(e, "portletsTable");
     });
@@ -579,7 +581,7 @@ function addListeners()
     
     
     var foldersTable = dojo.widget.byId("foldersTable");
-    dojo.event.connect( "around", foldersTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect( "around", foldersTable, "onUISelect", "okToChangeSelectionOrExit" );
     dojo.event.connect(foldersTable, "onSelect", function(e) {
         //dojo.debugShallow( e.currentTarget );
         processTableRowEvent(e, "foldersTable");
@@ -600,7 +602,7 @@ function addListeners()
     foldersTable.render( true );
 
     var pagesTable = dojo.widget.byId("pagesTable");
-    dojo.event.connect( "around", pagesTable, "onUISelect", "listSelectionChangeOk" );
+    dojo.event.connect( "around", pagesTable, "onUISelect", "okToChangeSelectionOrExit" );
     dojo.event.connect(pagesTable, "onSelect", function(e) {
         //dojo.debugShallow( e.currentTarget );
         processTableRowEvent(e, "pagesTable");
