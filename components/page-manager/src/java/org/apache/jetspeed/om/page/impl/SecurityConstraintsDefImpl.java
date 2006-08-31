@@ -30,7 +30,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
 {
     private int id;
     private String name;
-    private List constraintDefs;
+    private List constraintDefs = new ArrayList(4);
 
     private SecurityConstraintDefList securityConstraintDefs;
 

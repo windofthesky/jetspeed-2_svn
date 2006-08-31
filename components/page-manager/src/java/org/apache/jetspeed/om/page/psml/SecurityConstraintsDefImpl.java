@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
@@ -34,7 +35,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
 {
     private String name;
 
-    private List constraints;
+    private List constraints = new ArrayList(4);
 
     /**
      * <p>
