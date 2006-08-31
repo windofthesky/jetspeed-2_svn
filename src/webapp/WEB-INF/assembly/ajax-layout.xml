@@ -312,7 +312,20 @@
         </map>
     </constructor-arg>
 </bean>
-    
+
+<bean id="AjaxSecurityConstraints"
+    class="org.apache.jetspeed.layout.impl.SecurityConstraintsAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+</bean>
+        
 <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
     <constructor-arg index="0">
         <map>
@@ -361,6 +374,9 @@
             <entry key="permissions">
                 <ref bean="AjaxSecurityPermissions"/>
             </entry>			                        
+            <entry key="constraints">
+                <ref bean="AjaxSecurityConstraints"/>
+            </entry>			                                    
         </map>
     </constructor-arg>
     <constructor-arg index="1">
@@ -393,5 +409,5 @@
 			<ref bean="AjaxRequestService"/>
 		</constructor-arg>
 	</bean>
-  
+      
 </beans>
