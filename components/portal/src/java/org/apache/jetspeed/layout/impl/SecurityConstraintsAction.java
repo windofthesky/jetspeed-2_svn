@@ -41,7 +41,7 @@ import org.jdom.input.SAXBuilder;
  * 
  * AJAX Parameters: 
  *    action = constraints
- *    method = add-def | update-def | remove-def | add-global | remove-global 
+ *    method = add-def | update-def | remove-def | add-global | remove-global   
  *    name = name of constraint definition or global definition
  *    xml = the constraints payload, same format as PSML constraint defs
  *    
@@ -118,7 +118,7 @@ public class SecurityConstraintsAction
         }
         return success;
     }
-
+    
     protected int removeConstraintDefinition(RequestContext requestContext, Map resultMap)
     throws AJAXException
     {
@@ -150,6 +150,7 @@ public class SecurityConstraintsAction
     throws AJAXException
     {
         int count = 0;
+        boolean added = false;
         String xml = requestContext.getRequestParameter("xml");
         if (xml == null)
             throw new AJAXException("Missing 'xml' parameter");
@@ -163,15 +164,25 @@ public class SecurityConstraintsAction
             System.out.println("name = " + name);
             PageSecurity pageSecurity = pm.getPageSecurity();
             SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(name);
+            int defsSize = 0;
             if (def == null)
             {
-                def = pm.newSecurityConstraintsDef();                
+                def = pm.newSecurityConstraintsDef();
+                def.setName(name);
+                added = true;
             }
-            int xmlSize = root.getChildren().size();
-            int defsSize = def.getSecurityConstraints().size();
+            int xmlSize = root.getChildren("security-constraint").size();
+            if (added == false)
+            {
+                defsSize = def.getSecurityConstraints().size();
+            }
             int min = (xmlSize < defsSize) ? xmlSize : defsSize;
-            List xmlConstraints = root.getChildren();
+            List xmlConstraints = root.getChildren("security-constraint");
             List constraints = def.getSecurityConstraints();
+            Element owner = root.getChild("owner");
+            if (owner != null)
+            {
+            }
             for (int ix = 0; ix < min; ix++)
             {
                 Element xmlConstraint = (Element)xmlConstraints.get(ix);
@@ -201,9 +212,14 @@ public class SecurityConstraintsAction
                     Element xmlConstraint = (Element)xmlConstraints.get(ix);
                     SecurityConstraint constraint =  pm.newPageSecuritySecurityConstraint();                    
                     updateConstraintValues(xmlConstraint, constraint);
-                    constraints.add(constraint);
+                    constraints.add(constraint);                    
                     count++;
                 }                
+            }
+            if (added)
+            {                
+                pageSecurity.getSecurityConstraintsDefs().add(def);
+                pageSecurity.setSecurityConstraintsDefs(pageSecurity.getSecurityConstraintsDefs());
             }
             pm.updatePageSecurity(pageSecurity);
         }
@@ -256,7 +272,7 @@ public class SecurityConstraintsAction
         {
             PageSecurity pageSecurity = pm.getPageSecurity();        
             List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
-            if (globals.contains(name))
+            if (!globals.contains(name))
             {
                 return 0;
             }
@@ -285,7 +301,6 @@ public class SecurityConstraintsAction
         {
             PageSecurity pageSecurity = pm.getPageSecurity();        
             List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
-            ;
             if (pageSecurity.getSecurityConstraintsDef(name) == null)
             {
                 throw new AJAXException("global name doesnt exist in definitions");

@@ -125,6 +125,24 @@ public class TestConstraintsAction extends TestCase
         assertEquals("update failed for constraints " + constraint.getPermissions().toString(), constraint.getPermissions().toString(), "[view, edit]");
     }
 
+    public void testAdd()
+    throws Exception
+    {
+        String method = "add-def";
+        String defName = "newone";
+        String xml =
+            "<security-constraints-def name=\"" + 
+                  defName + 
+                  "\"><security-constraint><roles>user, manager</roles><permissions>view,edit</permissions></security-constraint></security-constraints-def>";
+        runTest(xml, defName, method);
+        PageSecurity pageSecurity = pageManager.getPageSecurity();
+        SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(defName);
+        assertNotNull("definition " + defName + " not found ", def);
+        SecurityConstraint constraint =  (SecurityConstraint)def.getSecurityConstraints().get(0);
+        assertNotNull("first constraint for " + defName + " not found ", def);
+        assertEquals("update failed for constraints " + constraint.getPermissions().toString(), constraint.getPermissions().toString(), "[view, edit]");
+    }
+    
     public void testAdds()
     throws Exception
     {
@@ -205,10 +223,25 @@ public class TestConstraintsAction extends TestCase
         String xml = "";
         runTest(xml, defName, method);
         PageSecurity pageSecurity = pageManager.getPageSecurity();
-        SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(defName);
         List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
         assertTrue("should have found new global " + defName,  globals.contains(defName));
         assertTrue("should have found old global " + defName,  globals.contains("admin"));
+    }
+
+    public void testDeleteGlobal()
+    throws Exception
+    {
+        PageSecurity pageSecurity = pageManager.getPageSecurity();        
+        String method = "add-global";        
+        String defName = "public-edit";
+        String xml = "";        
+        runTest(xml, defName, method);
+        List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
+        assertTrue("should have found new global " + defName,  globals.contains(defName));
+        method = "remove-global";        
+        runTest(xml, defName, method);
+        globals = pageSecurity.getGlobalSecurityConstraintsRefs();
+        assertFalse("should have not found new global " + defName,  globals.contains(defName));
     }
     
     public void runTest(String xml, String defName, String method)
