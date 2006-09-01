@@ -1202,6 +1202,31 @@ limitations under the License.
         </portlet-info>
     </portlet>
 
+
+    <portlet id="SecurityConstraintsPortlet">
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/springmvc/context/portlet/constraints.xml</value>
+		</init-param>
+		<init-param>
+			<name>HeaderPage</name>
+			<value>/WEB-INF/view/security/constraints/constraints-view-header.vm</value>
+		</init-param>
+        <portlet-name>SecurityConstraintsPortlet</portlet-name>
+    	<display-name>Security Constraints</display-name>        
+        <portlet-class>org.apache.portals.gems.dojo.DojoSpringMVCPortlet</portlet-class>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>org.apache.jetspeed.portlets.security.resources.Constraints</resource-bundle>
+        <portlet-info>
+            <title>Security Constraints</title>
+            <short-title>Constraints</short-title>
+        </portlet-info>
+    </portlet>
+
   <portlet id="DateTimePortlet">
     <init-param>
       <name>ViewPage</name>

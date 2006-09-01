@@ -1,0 +1,58 @@
+#macro (traverseAllFolders $f)
+<div dojoType="TreeNode" title="$f.Name" id="$f.Path">
+    #foreach($subf in $f.Folders.iterator())
+    #traverseAllFolders($subf)
+    #end
+</div>
+#end
+#macro (traverseFolders $f)
+<div dojoType="TreeNode" title="$f.Name" id="$f.Path">
+    #foreach($subf in $f.Folders.iterator())
+    #traverseFolders($subf)
+    #end
+</div>
+#end
+<div dojoType="LayoutPane"
+    layoutChildPriority='top-bottom'
+    style="border: 2px solid black; width: 100%; height: 100%;">
+    <div dojoType="LayoutPane" layoutAlign="top" style="background-color: #274383; color: white;">
+        <b>Jetspeed Site Customizer</b>
+    </div>
+    <div dojoType="LayoutPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
+        Status:
+    </div>
+    <div dojoType="LayoutPane" layoutAlign="client">
+        <div dojoType="SplitPane"
+            orientation="horizontal"
+            sizerWidth="5"
+            activeSizing="0"
+            style="width: 100%; height: 100%;"
+        >
+<!-- Folders -------------------------------------------------------------------- -->        
+    <div dojoType="SplitPanePanel" sizeMin="20" sizeShare="20">
+     <b>Site</b>
+                <div id="leftTabSet" dojoType="TabSet" style="width: 100%; height: 20em;" selectedTab="tab2" >
+                    <div id='foldersTab' dojoType="Tab" label="Folders">
+                        <h1>Folders</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="folderTree" id="folderTree">                                                
+#traverseAllFolders($rootFolder)              
+                        </div>
+                    </div>
+                    <div id='usersTab' dojoType="Tab" label="Users">
+                        <h1>Users</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="userTree">        
+#traverseFolders($rootFolder.getFolder("_user"))
+                        </div>
+                    </div>
+                    <div id='rolesTab' dojoType="Tab" label="Roles">
+                        <h1>Roles</h1>
+                        <div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="roleTree">                                                
+#traverseFolders($rootFolder.getFolder("_role"))
+                        </div>
+                    </div>                    
+                </div>                    
+            </div>
+        </div>
+    </div>
+</div>
+            

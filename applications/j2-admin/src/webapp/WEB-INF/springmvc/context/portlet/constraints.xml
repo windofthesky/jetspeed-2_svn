@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Property Configurer  -->
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/springmvc/constraints.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Services -->
+	
+
+	<!-- Controllers -->
+
+	<bean id="SiteViewController" class="org.apache.jetspeed.portlets.security.constraints.ConstraintsViewController">
+<!--		<property name="test" value="Property Test" /> -->
+	</bean>
+		
+
+	<!-- Handler Mapping 
+	
+	<bean id="parameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
+	
+	<bean id="portletModeParameterHandlerMapping" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping">
+        <property name="order" value="10"/>
+		<property name="interceptors">
+			<list>
+				<ref bean="parameterMappingInterceptor"/>
+			</list>
+		</property>
+		<property name="portletModeParameterMap">
+			<map>
+				<entry key="edit">
+					<map>
+						<entry key="editDomTree"><ref bean="domtreePrefsController"/></entry>
+						<entry key="newDomTree"><ref bean="domtreePrefsController"/></entry>
+						<entry key="deleteDomTree"><ref bean="domtreeDeleteController"/></entry>
+						<entry key="list"><ref bean="domtreePrefsListController"/></entry>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+ -->        
+	
+	<bean id="portletModeHandlerMapping" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping">
+		<property name="order" value="10"/>
+		<property name="portletModeMap">
+        	<map>
+            	<entry key="view"><ref bean="SiteViewController"/></entry>
+<!--                <entry key="edit"><ref bean="domtreePrefsListController"/></entry> -->
+            </map>
+        </property>
+    </bean>
+		
+
+	<!-- Exceptions Handler -->
+
+	<bean id="defaultExceptionHandler" parent="defaultExceptionHandlerTemplate"/>
+
+</beans>

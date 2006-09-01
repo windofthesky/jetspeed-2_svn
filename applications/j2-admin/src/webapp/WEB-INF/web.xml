@@ -73,6 +73,21 @@ limitations under the License.
         </description>
     </context-param>
   
+    <context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>org.apache.portals.applications.j2-admin</param-value>
+	</context-param>
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/classes/log4j.properties</param-value>
+    </context-param>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/springmvc/context/applicationContext.xml</param-value>
+	</context-param>
+
     <listener>
       <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
     </listener>
@@ -81,6 +96,18 @@ limitations under the License.
   	<listener>
     	<listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
   	</listener>
+
+    <listener>
+		<listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+	</listener>
+
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
   
   	<!-- Faces Servlet -->
   	<servlet>
@@ -103,12 +130,25 @@ limitations under the License.
 		</init-param>
 		<load-on-startup>10</load-on-startup>
 	</servlet>
+
+    <!-- Define Spring MVC View Servlet -->
+	<servlet>
+		<servlet-name>ViewRendererServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
   
   	<!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
 		<servlet-name>velocity</servlet-name>
 		<url-pattern>*.vm</url-pattern>
 	</servlet-mapping>	
+
+    <!-- Map Spring MVC Servlet -->
+	<servlet-mapping>
+		<servlet-name>ViewRendererServlet</servlet-name>
+		<url-pattern>/WEB-INF/servlet/view</url-pattern>
+	</servlet-mapping>
 
   	<!-- extension mapping -->
   	<servlet-mapping>
