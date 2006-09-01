@@ -191,8 +191,7 @@ limitations under the License.
         <regexp.version>1.2</regexp.version>
         <rome.version>0.4</rome.version>
         <saxpath.version>1.0-FCS</saxpath.version>
-        <spring-portlet.version>2.0-m4</spring-portlet.version>
-        <spring-beans.version>2.0-m4</spring-beans.version>
+        <spring2.version>2.0-m4</spring2.version>
         <taglibs-random.version>1.0.2</taglibs-random.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.0.6</taglibs-standard.version>
@@ -537,12 +536,37 @@ limitations under the License.
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-portlet</artifactId>
-                <version>${spring-portlet.version}</version>
+                <version>${spring2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
-                <version>${spring-beans.version}</version>
+                <version>${spring2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-mock</artifactId>
+                <version>${spring2.version}</version>
             </dependency>
 
             <!-- Jakarta -->
