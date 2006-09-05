@@ -6,15 +6,14 @@ Feature                         Cat     Hours  Assigned  Due    Issue
 
 03. Prefs per User              Portal   08      DST    Aug 22   499  DONE
 
-04. Rewrite Site Manager        Custom   24      DST    Aug 28   306  IN PROG
+04. Rewrite Site Manager        Custom   24      DST    Sep 08 306  IN PROG
 
-05. XML Serialization           Light    08      DST    Aug 30   461
+05. XML Serialization           Light    08      DST    Aug 08   461 IN PROG
 
-06. Persist layout row/col in   DT-java  06      SM     Aug 28   ... IN PROG
+06. Persist layout row/col in   DT-java  06      SM     Sep 08   ... IN PROG
       correct fragment          
 
-07. PSML Security Editor        Custom   24      SM     Sep 01   574
-
+07. PSML Security Editor        Custom   24      SM     Sep 01   574   DONE
 
 08. Complete desktop for column DT-brow  03      SM     .....   ...
       sizes and layout chg api
@@ -96,5 +95,5 @@ Feature                         Cat     Hours  Assigned  Due    Issue
 80. Installer, Rewrite          Install  32      HB     Sep 29  448
 81. Derby SQL is not generated  DB       08      HB     Sep 29  ...
 82. Bug fixes in JIRA(DST)      Bugs     16      DST    Sep 28  ...
-
+83. Profile by IP               Profile  10      PMD     Sept 15th  490 
 
