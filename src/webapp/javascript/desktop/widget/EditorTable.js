@@ -22,6 +22,8 @@ jetspeed.ui.widget.EditorTable = function()
 {
     dojo.widget.html.SortableTable.call(this);
     this.widgetType = "EditorTable";
+    this.headerSortUpClass="selectedUp";
+	this.headerSortDownClass="selectedDown";
 };
 
 dojo.inherits( jetspeed.ui.widget.EditorTable, dojo.widget.html.SortableTable);
