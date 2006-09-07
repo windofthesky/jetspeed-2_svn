@@ -54,11 +54,20 @@
 			font-weight: normal;
             font-size: small;
 		}
+		
 		.permissions thead td, .permissions thead th {
-			background:#94BEFF;
-            font-size: small;
+			background-image:url(/j2-admin/images/st-head.gif);
+			background-repeat:no-repeat;
+			background-position:top right;
+			font-size: small;
             font-weight: bold;
             text-align: left;
+		}
+		.permissions thead td.selectedUp, .permissions thead th.selectedUp {
+			background-image:url(/j2-admin/images/st-headup.gif);
+		}
+		.permissions thead td.selectedDown, .permissions thead th.selectedDown {
+			background-image:url(/j2-admin/images/st-headdown.gif);
 		}
 		
 		* html div.tableContainer table thead tr td,

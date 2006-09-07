@@ -54,11 +54,20 @@
 			font-weight: normal;
             font-size: small;
 		}
+		
 		.constraints thead td, .constraints thead th {
-			background:#94BEFF;
-            font-size: small;
+			background-image:url(/j2-admin/images/st-head.gif);
+			background-repeat:no-repeat;
+			background-position:top right;
+			font-size: small;
             font-weight: bold;
             text-align: left;
+		}
+		.constraints thead td.selectedUp, .constraints thead th.selectedUp {
+			background-image:url(/j2-admin/images/st-headup.gif);
+		}
+		.constraints thead td.selectedDown, .constraints thead th.selectedDown {
+			background-image:url(/j2-admin/images/st-headdown.gif);
 		}
 		
 		* html div.tableContainer table thead tr td,
