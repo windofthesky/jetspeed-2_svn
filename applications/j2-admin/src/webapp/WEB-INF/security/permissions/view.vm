@@ -4,7 +4,7 @@
 
 
 <!--
-javascript: alert( dojo.widget.byId( "portletsTable" ).data[3].actions = "shit" )
+javascript: alert( dojo.widget.byId( "portletsTable" ).data[3].actions = "none" )
 javascript: alert( dojo.widget.byId( "portletsTable" ).render(true) )
 
 
