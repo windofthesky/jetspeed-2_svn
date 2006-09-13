@@ -578,5 +578,43 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityFourColumns">
+    <portlet-name>VelocityFourColumns</portlet-name>
+    <display-name>Four Layout Using Velocity</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>4</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>20%,30%,30%,20%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>FourColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>VelocityFourColumns</title>
+      <short-title>FourColumns</short-title>
+    </portlet-info>
+</portlet>
+    
 </portlet-app>
 
