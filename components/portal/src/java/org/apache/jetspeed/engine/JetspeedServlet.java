@@ -39,6 +39,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
+import org.apache.jetspeed.container.session.PortalSessionsManager;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
@@ -46,6 +47,8 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.services.JetspeedPortletServices;
+import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.statistics.PortalStatistics;
 
 /**
@@ -324,6 +327,15 @@ implements JetspeedEngineConstants, HttpSessionListener
     
     public void sessionCreated(HttpSessionEvent se)
     {
+        PortletServices services = JetspeedPortletServices.getSingleton();
+        if (services != null)
+        {
+            PortalSessionsManager psm = (PortalSessionsManager)services.getService(PortalSessionsManager.SERVICE_NAME);
+            if (psm != null)
+            {
+                psm.portalSessionCreated(se.getSession());
+            }
+        }
     }
     
     public void sessionDestroyed(HttpSessionEvent se)

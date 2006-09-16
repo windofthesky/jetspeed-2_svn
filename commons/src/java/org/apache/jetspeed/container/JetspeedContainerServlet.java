@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.container.session.PortalSessionsManager;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
@@ -54,6 +56,7 @@ public class JetspeedContainerServlet extends HttpServlet
     private String  contextName;
     private boolean started = false;
     private Timer   startTimer = null;
+    private PortalSessionsManager psm;
 
     // -------------------------------------------------------------------
     // I N I T I A L I Z A T I O N
@@ -167,6 +170,8 @@ public class JetspeedContainerServlet extends HttpServlet
                     DirectoryHelper paDirHelper = new DirectoryHelper(new File(paDir));
                     pam.startPortletApplication(contextPath, paDirHelper, paClassLoader);
                     started = true;
+                    psm = (PortalSessionsManager)services.getService(PortalSessionsManager.SERVICE_NAME);
+
                     context.log(STARTED_MSG + contextPath);
                     return true;
                 }
@@ -309,6 +314,11 @@ public class JetspeedContainerServlet extends HttpServlet
                     // never mind, it won't be used anymore.                 
                 }
             }
+            if (psm != null)
+            {
+                RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
+                psm.checkMonitorSession(contextName,rc.getRequest().getSession(),request.getSession(false));
+            }
         }
     }
 
@@ -382,6 +392,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 }
             }
             contextName = null;
+            psm = null;
             }
         }
         }
