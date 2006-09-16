@@ -719,6 +719,10 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     
     public DisplayNameSet getDisplayNameSet()
     {
+        if ( displayNames != null )
+        {
+            DNListWrapper.setInnerCollection(displayNames);
+        }
         return DNListWrapper;
     }
 
