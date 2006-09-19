@@ -132,8 +132,25 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
             if (psr == null)
             {
-                psr = new PortalSessionRegistry();
-                portalSessionsRegistry.put(portalSession.getId(), psr);
+                // yet unexplained condition: the HttpSessionListener on the portal application *should* have registered the session!!!
+                // Alas, it has been reported to happen...
+                // Now trying to do some recovering here
+                PortalSessionMonitor psm = (PortalSessionMonitor)portalSession.getAttribute(PortalSessionMonitor.SESSION_KEY);
+                // the psm better be null here, otherwise something really is corrupt or not playing by the listeners contracts
+                if ( psm == null )
+                {
+                    portalSessionCreated(portalSession);
+                }
+                else
+                {
+                    // Now we have discovered a really strange situation here
+                    // Only explanation I can see is that a passivation of the portalSession occurred, 
+                    // but that the activation again didn't trigger the sessionDidActivate event handler???
+                   // Lets just try to accomodate this situation for now:
+                    portalSessionDidActivate(psm);
+                }
+                // now retrieve the just created psr again
+                psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
             }
             PortletApplicationSessionMonitor pasm = (PortletApplicationSessionMonitor)psr.sessionMonitors.get(contextPath);
             if ( pasm != null )
