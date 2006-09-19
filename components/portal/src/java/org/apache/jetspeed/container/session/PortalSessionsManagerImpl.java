@@ -130,6 +130,11 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
         if ( portalSession != null && paSession != null )
         {
             PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
+            if (psr == null)
+            {
+                psr = new PortalSessionRegistry();
+                portalSessionsRegistry.put(portalSession.getId(), psr);
+            }
             PortletApplicationSessionMonitor pasm = (PortletApplicationSessionMonitor)psr.sessionMonitors.get(contextPath);
             if ( pasm != null )
             {
