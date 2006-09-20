@@ -20,7 +20,8 @@ limitations under the License.
 
 .dojoTabPaneWrapper {
 	position : relative;
-	border-top : 1px solid;
+	border-top : 1px solid #6290d2;
+    clear: both;
 }
 
 .dojoTabLabels-top {
@@ -30,13 +31,20 @@ limitations under the License.
 	overflow : visible;
 	margin-bottom : -1px;
 	width : 100%;
+    z-index: 2;	/* so the bottom of the tab label will cover up the border of dojoTabPaneWrapper */
+}
+.dojoTabLabels-top-noLayout {
+	overflow : visible;
+	margin-bottom : -1px;
+	width : 100%;
+	z-index: 2;
 }
 
 .dojoTabPaneTab {
 	position : relative;
 	float : left;
 	padding-left : 9px;
-	border-bottom : 1px solid;
+	border-bottom : 1px solid #6290d2;
 	background : url(../images/tabs/tab_left.gif) no-repeat left top;
 	cursor: pointer;
 }
@@ -97,10 +105,11 @@ limitations under the License.
 	overflow : visible;
 	margin-top : -1px;
 	width : 100%;
+    z-index: 2;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab {
-	border-top :  1px solid;
+	border-top :  1px solid #6290d2;
 	border-bottom : 0;
 	background : url(../images/tabs/tab_bot_left.gif) no-repeat left bottom;
 }
@@ -129,11 +138,12 @@ limitations under the License.
 	right : 0px;
 	overflow : visible;
 	margin-left : -1px;
+    z-index: 2;
 }
 
 .dojoTabLabels-right-h .dojoTabPaneTab {
 	padding-left : 0;
-	border-left :  1px solid;
+	border-left :  1px solid #6290d2;
 	border-bottom : 0;
 	background : url(../images/tabs/tab_bot_right.gif) no-repeat right bottom;
 	float : none;
@@ -145,7 +155,7 @@ limitations under the License.
 
 .dojoTabLabels-right-h .dojoTabPaneTab.current {
 	border-left :  0;
-	border-bottom :  1px solid;
+	border-bottom :  1px solid #6290d2;
 }
 
 /* left-h tabs */
@@ -156,10 +166,11 @@ limitations under the License.
 	left : 0px;
 	overflow : visible;
 	margin-right : -1px;
+	z-index: 2;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab {
-	border-right :  1px solid;
+	border-right :  1px solid #6290d2;
 	border-bottom : 0;
 	float : none;
 	background : url(../images/tabs/tab_top_left.gif) no-repeat left top;
@@ -167,11 +178,12 @@ limitations under the License.
 
 .dojoTabLabels-left-h .dojoTabPaneTab.current {
 	border-right : 0;
-	border-bottom :  1px solid;
+	border-bottom :  1px solid #6290d2;
 	padding-bottom : 0;
 	background : url(../images/tabs/tab_top_left.gif) no-repeat 0 -150px;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab span {
 	background : 0;
+	border-bottom :  1px solid #6290d2;
 }

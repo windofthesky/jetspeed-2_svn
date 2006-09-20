@@ -80,9 +80,10 @@ limitations under the License.
     dojo.require("dojo.widget.TabContainer");
     dojo.require("dojo.widget.AccordionPane");
     dojo.require("dojo.widget.Menu2");
+    dojo.require('dojo.widget.Checkbox');
     dojo.require('dojo.widget.Dialog');
     dojo.require('dojo.widget.Button');
-    dojo.require("dojo.fx.html");
+    dojo.require("dojo.lfx.html");
 
     dojo.require('dojo.widget.LayoutContainer');
     dojo.require('dojo.widget.ContentPane');
@@ -114,7 +115,7 @@ limitations under the License.
 <link rel="stylesheet" type="text/css" media="screen, projection" href='<%= desktop.getDesktopThemeResourceUrl("css/styles.css") %>'/>
 
 <script language="JavaScript" type="text/javascript">
-    function init()
+    function jsDesktopInit()
     {
         jetspeed.initializeDesktop( '<%= desktop.getDesktopTheme() %>', de_jsessionid_url( '<%= desktop.getDesktopThemeRootUrl() %>' ) );
     }
@@ -126,7 +127,7 @@ limitations under the License.
     {
         jetspeed.doAction( bindArgs, portletEntityId );
     }
-    dojo.event.connect( dojo, "loaded", "init" );
+    dojo.addOnLoad( window.jsDesktopInit );
 </script>
 
 
