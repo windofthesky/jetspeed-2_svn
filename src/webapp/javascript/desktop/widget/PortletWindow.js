@@ -18,17 +18,17 @@ dojo.provide("jetspeed.ui.widget.PortletWindow");
 
 dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
-dojo.require("jetspeed.ui.widget.BaseFloatingPane");
+dojo.provide("dojo.widget.html.FloatingPane");
 
 jetspeed.ui.widget.PortletWindow = function()
 {
-    jetspeed.ui.widget.BaseFloatingPane.call( this );
+    dojo.widget.html.FloatingPane.call( this );
     this.widgetType = "PortletWindow";
+    this.resizable = true;
     this.portletInitialized = false;
 };
 
-dojo.inherits( jetspeed.ui.widget.PortletWindow, jetspeed.ui.widget.BaseFloatingPane);
-
+dojo.inherits( jetspeed.ui.widget.PortletWindow, dojo.widget.html.FloatingPane );
 dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
     title: "Unknown Portlet",
     contentWrapper: "layout",
@@ -304,7 +304,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         return jetspeed.ui.widget.PortletWindow.prototype.nextIndex;
     },
 
-    portletFillInTemplate: function()
+    portletInitDragHandle: function()
     {
         var isResizable = this.resizable;
         if ( isResizable )
@@ -329,16 +329,81 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
     },
 
     // dojo.widget.Widget create->buildRendering protocol
-    fillInTemplate: function( args, frag )
+	fillInTemplate: function(args, frag)   /* copied from FloatingPane.js 0.3.1 with changes as noted */
     {
-        this.portletFillInTemplate();
+        //dojo.debug( "fillInTemplate-begin [" + this.widgetId + "] containerNode-outerwidth: " + dojo.style.getOuterWidth( this.containerNode ) + " containerNode-contentwidth: " + dojo.style.getContentWidth( this.containerNode ) + " domNode-outerwidth: " + dojo.style.getOuterWidth( this.domNode ) );
 
-        //dojo.debug( "fillInTemplate-a [" + this.widgetId + "] containerNode-outerwidth: " + dojo.style.getOuterWidth( this.containerNode ) + " containerNode-contentwidth: " + dojo.style.getContentWidth( this.containerNode ) + " domNode-outerwidth: " + dojo.style.getOuterWidth( this.domNode ) );
-        jetspeed.ui.widget.PortletWindow.superclass.fillInTemplate.call( this, args, frag );
-        //dojo.debug( "fillInTemplate-b [" + this.widgetId + "] containerNode-outerwidth: " + dojo.style.getOuterWidth( this.containerNode ) + " containerNode-contentwidth: " + dojo.style.getContentWidth( this.containerNode ) + " domNode-outerwidth: " + dojo.style.getOuterWidth( this.domNode ) );
-    },
+		// Copy style info from input node to output node
+		var source = this.getFragNodeRef(frag);
+		dojo.html.copyStyle(this.domNode, source);
 
-    portletPostCreate: function()
+		// necessary for safari, khtml (for computing width/height)
+		document.body.appendChild(this.domNode);
+
+		// if display:none then state=minimized, otherwise state=normal
+		if(!this.isShowing()){
+			this.windowState="minimized";
+		}
+
+		// <img src=""> can hang IE!  better get rid of it
+		if(this.iconSrc==""){
+			dojo.dom.removeNode(this.titleBarIcon);
+		}else{
+			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
+		}
+
+		if(this.titleBarDisplay!="none"){	
+			this.titleBar.style.display="";
+			dojo.html.disableSelection(this.titleBar);
+
+			this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
+
+			this.minimizeAction.style.display = (this.displayMinimizeAction ? "" : "none");
+			this.maximizeAction.style.display= 
+				(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
+			this.restoreAction.style.display= 
+				(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
+			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
+
+            // j2o - deletion - initialization of HtmlDragMoveSource and call to setDragHandle
+            //                  equivalent is done is postCreate with PortletWindowDragMoveSource
+
+            // j2o - deletion - dojo.event.topic.publish floatingPaneMove for dragMove event
+		}
+
+        // j2o - deletion - creation of ResizeHandle - done by portletInitDragHandle()
+
+        this.portletInitDragHandle();    // j2o addition
+
+		// add a drop shadow
+		if(this.hasShadow){
+			this.shadow=new dojo.html.shadow(this.domNode);
+		}
+
+		// Prevent IE bleed-through problem
+		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
+
+		if( this.taskBarId ){
+			this.taskBarSetup();
+		}
+
+        this.resetLostHeightWidth();    // j2o addition
+
+		if (dojo.hostenv.post_load_) {
+			this.setInitialWindowState();
+		} else {
+			dojo.addOnLoad(this, "setInitialWindowState");
+		}
+
+		// counteract body.appendChild above
+		document.body.removeChild(this.domNode);
+
+        // j2o - deletion - call to super fillInTemplate (we've replaced FloatingPane version, and no other superclass defines an implementation)
+
+        //dojo.debug( "fillInTemplate-end [" + this.widgetId + "] containerNode-outerwidth: " + dojo.style.getOuterWidth( this.containerNode ) + " containerNode-contentwidth: " + dojo.style.getContentWidth( this.containerNode ) + " domNode-outerwidth: " + dojo.style.getOuterWidth( this.domNode ) );
+	},
+
+    portletInitDimensions: function()
     {
         if ( this.windowPositionStatic )
         {            
@@ -395,41 +460,42 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
             if ( this.windowPositionStatic && ! jetspeed.prefs.windowTilingVariableWidth )
             {
                 //this.containerNode.style.width = "";   // commented-out with change to ie width 100% in resizeTo
-                //dojo.debug( "portletPostCreate containerNode-width: " + dojo.style.getOuterWidth( this.containerNode ) + " domNode-width: " + this.domNode.style.width );
+                //dojo.debug( "portletInitDimensions containerNode-width: " + dojo.style.getOuterWidth( this.containerNode ) + " domNode-width: " + this.domNode.style.width );
             }
         }
 
-        //dojo.debug( "PortletWindow.portletPostCreate [" + this.portlet.entityId + "] setting domNode.className=" + this.domNode.className + " containerNode.className=" + this.containerNode.className );
+        //dojo.debug( "PortletWindow.portletInitDimensions [" + this.portlet.entityId + "] setting domNode.className=" + this.domNode.className + " containerNode.className=" + this.containerNode.className );
         this.width = dojo.style.getOuterWidth( this.domNode );
         this.height = dojo.style.getOuterHeight( this.domNode );
         this.resetLostHeightWidth();
         
+        this.resizeTo( this.width, this.height );
+
         this.titleDim( true );
     },
 
-    resetWindow: function( /* Portlet */ portlet )
+    //     resetWindow: function( /* Portlet */ portlet )
+    resetWindow: function( portlet )
     {
         this.portlet = portlet;
         this.portletMixinProperties();
-        this.portletFillInTemplate();
-        this.portletPostCreate();
+        this.portletInitDragHandle();
+        this.portletInitDimensions();
     },
 
     // dojo.widget.Widget create protocol
     postCreate: function( args, fragment, parentComp )
-    {
-        jetspeed.ui.widget.PortletWindow.superclass.postCreate.call( this );
-
-        this.dragSource = new jetspeed.ui.widget.PortletWindowDragMoveSource( this );
+    {   // FloatingPane 0.3.1 essentially calls resizeTo - this is done in portletInitDimensions()
+        this.drag = new jetspeed.ui.widget.PortletWindowDragMoveSource( this );
         if ( this.constrainToContainer )
         {
-            this.dragSource.constrainTo();
+            this.drag.constrainTo();
         }
-        this.dragSource.setDragHandle( this.titleBar );
+        this.drag.setDragHandle( this.titleBar );
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
         
-        this.portletPostCreate();
+        this.portletInitDimensions();
 
         this.createTitleBarContextMenu();
         
@@ -554,22 +620,24 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
 
     resizeTo: function(w, h, force)
     {
-        //dojo.debug( "resizeTo [" + this.widgetId + "]" );
+        //dojo.debug( "resizeTo [" + this.widgetId + "] begin w=" + w + " h=" + h + " container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
+
 		if(w==this.width && h == this.height && ! force){
 			return;
 		}
 		this.width=w;
 		this.height=h;
 
-        //dojo.debug( "resizeTo [" + this.widgetId + "] begin w=" + w + " h=" + h + " container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
-
 		// IE won't let you decrease the width of the domnode unless you decrease the
 		// width of the inner nodes first (???)
+
 		dojo.lang.forEach(
 			[this.titleBar, this.resizeBar, this.containerNode],
 			function(node){ dojo.style.setOuterWidth(node, w - this.lostWidth); }, this
 		);
+
         //dojo.debug( "resizeTo [" + this.widgetId + "] before-adjust w=" + w + " h=" + h + " container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
+
         if ( this.windowPositionStatic && ! jetspeed.prefs.windowTilingVariableWidth )
         {
             this.domNode.style.width = "";
@@ -591,18 +659,39 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
 		    dojo.style.setOuterWidth(this.domNode, w);
         }
 
+        this.resetLostHeightWidth();
+
         if ( h < ( this.lostHeight + 60 ) )
             h = ( this.lostHeight + 60 );
 
 		dojo.style.setOuterHeight(this.domNode, h);
 		dojo.style.setOuterHeight(this.containerNode, h-this.lostHeight);
 
-        //dojo.debug( "resizeTo [" + this.widgetId + "] w=" + w + " h=" + h + " container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
-
-        this.resetLostHeightWidth();
-
 		this.onResized();
+
+        //dojo.debug( "resizeTo [" + this.widgetId + "] end w=" + w + " h=" + h + " container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + " desired-h=" + (h-this.lostHeight) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
 	},
+
+    _setPreviousDimensions: function() {
+        this.previous={
+			width: this.width,
+			height: this.height,
+			left: this.domNode.style.left,
+			top: this.domNode.style.top,
+			bottom: this.domNode.style.bottom,
+			right: this.domNode.style.right
+        };
+    },
+    resetLostHeightWidth: function()
+    {
+        // figure out how much space is used for padding/borders etc.
+		this.lostHeight=
+			(dojo.style.getOuterHeight(this.domNode)-dojo.style.getContentHeight(this.domNode))
+			+dojo.style.getOuterHeight(this.titleBar)
+			+dojo.style.getOuterHeight(this.resizeBar);
+		this.lostWidth=
+			dojo.style.getOuterWidth(this.domNode)-dojo.style.getContentWidth(this.domNode);
+    },
  
     closeWindow: function()
     {
@@ -1087,14 +1176,14 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowResizeHandle, {
 		// minimum size check
 		if (this.minSize) {
 			if (newW < this.minSize.w) {
-				newW = dojo.style.getOuterWidth(this.targetElm.domNode);
+				newW = dojo.style.getOuterWidth(this.targetWidget.domNode);
 			}
 			if (newH < this.minSize.h) {
-				newH = dojo.style.getOuterHeight(this.targetElm.domNode);
+				newH = dojo.style.getOuterHeight(this.targetWidget.domNode);
 			}
 		}
 		
-		this.targetElm.resizeTo(newW, newH);
+		this.targetWidget.resizeTo(newW, newH);
 		
 		e.preventDefault();
 	}

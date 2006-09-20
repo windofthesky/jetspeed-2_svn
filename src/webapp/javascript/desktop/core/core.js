@@ -139,7 +139,7 @@ jetspeed.debugPortletWindowThemes = [ "blueocean", "tigris" ];  /* , "tigris", "
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
-jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "addportlet" ]; // , "getportlets", "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar"
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "addportlet" ]; // , "getportlets", "dp-7", "jsfGuessNumber1", "jsfCalendar" ];    // "um-4", "dp-7", "jsfGuessNumber1", "jsfCalendar", "m-security-constraints-2", "m-security-policy-2"
 //jetspeed.debugContentDumpIds = [ "P-10aba.*" ];
 
 // ... load page /portlets
@@ -2896,10 +2896,10 @@ jetspeed.ui.fadeOut = function(nodes, duration, nodesToChgDisplayNone)
 jetspeed.ui.fade = function(nodes, duration, visibilityStyleValue, startOpac, endOpac, nodesToChgDisplayNone)
 {
     if ( nodes.length > 0 )
-    {   // mimick dojo.fx.html.fade, but for all objects together
+    {   // mimick dojo.lfx.html.fade, but for all objects together
         for ( var i = 0 ; i < nodes.length ; i++ )
         {
-            dojo.fx.html._makeFadeable(nodes[i]);
+            dojo.lfx.html._makeFadeable(nodes[i]);
             if (visibilityStyleValue != "none")
                 nodes[i].style.visibility = visibilityStyleValue ;
         }
