@@ -8,7 +8,6 @@
     <div id="mainTabContainer" dojoType="TabContainer" selectedTab="portlets" doLayout="false">
 
         <div id="defs" dojoType="ContentPane" label="Definitions">
-            <div style="height:21px">&nbsp;</div>
             <div class="tableContainer">
                 <table dojoType="EditorTable" widgetId="defsTable" class="constraints" 
                        headClass="fixedHeader" tbodyClass="scrollContent" 
@@ -33,7 +32,6 @@
         </div> <!-- defs -->
 
         <div id="globals" dojoType="ContentPane" label="Globals">
-            <div style="height:21px">&nbsp;</div>
             <div class="tableContainer">
                 <table dojoType="EditorTable" widgetId="globalsTable" class="constraints" 
                        headClass="fixedHeader" tbodyClass="scrollContent" 
