@@ -101,6 +101,9 @@
           <entry key="user.agent">
             <ref bean="UserAgentCriterionResolver" />
           </entry>          
+          <entry key="ip">
+            <ref bean="IPCriterionResolver" />
+          </entry>          
         </map>
         </constructor-arg>                  
     </bean>
@@ -122,5 +125,6 @@
     <bean id='UserAttributeResolver' class='org.apache.jetspeed.profiler.rules.impl.UserAttributeResolver'></bean>
     <bean id='NavigationCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.NavigationCriterionResolver'></bean>
     <bean id='UserAgentCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.UserAgentCriterionResolver'></bean>
+    <bean id='IPCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.IPCriterionResolver'></bean>
     
 </beans>
