@@ -425,6 +425,10 @@ insert into PROFILING_RULE values ('subsite2-role-fallback-home',
 insert into RULE_CRITERION values ('53', 'subsite2-role-fallback-home', 0, 'navigation', 'navigation', 'subsite-root', 2);
 insert into RULE_CRITERION values ('54', 'subsite2-role-fallback-home', 1, 'role', 'role', null, 2);
 insert into RULE_CRITERION values ('55', 'subsite2-role-fallback-home', 2, 'path', 'path', 'subsite2-default-page', 0);
+insert into PROFILING_RULE values ('ip-address', 
+   'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
+   'Resolves pages based on the clients remote IP address.');
+insert into RULE_CRITERION values ('60', 'ip-address', 0, 'ip', 'ip', null, 0);
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j2' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
@@ -434,6 +438,8 @@ insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'menu', 'role-group' );
 
 insert into PRINCIPAL_RULE_ASSOC values ('subsite', 'page', 'subsite-role-fallback-home');
 insert into PRINCIPAL_RULE_ASSOC values ('subsite2', 'page', 'subsite2-role-fallback-home');
+
+insert into PRINCIPAL_RULE_ASSOC values ('geo', 'page', 'ip-address');
 
 -- test data for db browser
 insert into CLUBS values ('AC Milan', 'Italy', 'Milan', 'San Siro', 85700, 1926, '105x68m', '');

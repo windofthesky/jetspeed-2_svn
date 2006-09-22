@@ -97,3 +97,7 @@ INSERT INTO PRINCIPAL_PERMISSION VALUES(53,51);
 INSERT INTO SECURITY_PERMISSION VALUES(100,'org.apache.jetspeed.security.PortletPermission','j2-admin::*','view, edit','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO PRINCIPAL_PERMISSION VALUES(6,100);
 
+-- Test User for Mapping IP addresses to geographic locations
+-- And ip-address Profile rule
+INSERT INTO SECURITY_PRINCIPAL VALUES(60,'org.apache.jetspeed.security.JetspeedUserPrincipalImpl',0,1,'/user/geo','2006-09-03 12:07:25.234','2006-09-03 12:07:25.234');
+INSERT INTO SECURITY_CREDENTIAL VALUES(60,60,'geo',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2006-09-03 12:07:25.234','2006-09-03 12:07:25.234',null,null,null);
