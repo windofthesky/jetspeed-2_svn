@@ -64,6 +64,7 @@
 			<li><a href="guide-simple-velocity-portlet.html">Guide to a very simple velocity portlet with Jetspeed-2</a></li>
 			<li><a href="guide-simple-jsf-portlet.html">Guide to a very simple jsf portlet with Jetspeed-2</a></li>
 			<li><a href="guide-portlet-bridges.html">Guide to portlet bridges</a></li>				
+			<li><a href="guide-profiling-ip.html">Guide to Profiling IP Addresses</a></li>			
 		</ul>
 		</subsection>
 		<subsection name="Jetspeed-2 Development Guide">
