@@ -111,7 +111,7 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
         PortalSessionsManager manager = getManager();
         if (manager != null)
         {
-            manager.portalSessionDestroyed(this);
+            manager.portalSessionDidActivate(this);
         }
     }
 
