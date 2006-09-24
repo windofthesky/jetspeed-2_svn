@@ -33,6 +33,7 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
     private static final long serialVersionUID = 1239564779524373742L;
 
     private long sessionKey;
+    private transient String sessionId;
     private transient HttpSession session;
     
     public PortalSessionMonitorImpl(long sessionKey)
@@ -45,8 +46,7 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
      */
     public String getSessionId()
     {
-        HttpSession thisSession = session;
-        return thisSession != null ? thisSession.getId() : null;
+        return sessionId;
     }
 
     /* (non-Javadoc)
@@ -84,6 +84,7 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
     public void valueBound(HttpSessionBindingEvent event)
     {
         this.session = event.getSession();
+        this.sessionId = session.getId();
     }
 
     /* (non-Javadoc)
@@ -107,7 +108,8 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
      */
     public void sessionDidActivate(HttpSessionEvent event)
     {
-        this.session = event.getSession();
+        session = event.getSession();
+        sessionId = session.getId();
         PortalSessionsManager manager = getManager();
         if (manager != null)
         {
