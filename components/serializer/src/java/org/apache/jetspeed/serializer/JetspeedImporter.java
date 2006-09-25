@@ -15,23 +15,27 @@
  */
 package org.apache.jetspeed.serializer;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.serializer.objects.JSCriterion;
-import org.apache.jetspeed.serializer.objects.JSPermission;
-import org.apache.jetspeed.serializer.objects.JSProfilingRule;
-import org.apache.jetspeed.serializer.objects.JSUser;
-import org.apache.jetspeed.serializer.objects.JSNameValuePair;
-
 import java.io.FileInputStream;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.Client;
+import org.apache.jetspeed.capabilities.MimeType;
+import org.apache.jetspeed.capabilities.MediaType;
+import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.components.SpringComponentManager;
+import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.apache.jetspeed.serializer.objects.JSCriterion;
+import org.apache.jetspeed.serializer.objects.JSNameValuePair;
+import org.apache.jetspeed.serializer.objects.JSPermission;
+import org.apache.jetspeed.serializer.objects.JSProfilingRule;
+import org.apache.jetspeed.serializer.objects.JSUser;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -56,28 +60,11 @@ public class JetspeedImporter
         String fileName = System.getProperty("org.apache.jetspeed.xml.importer.configuration", "xml-import.properties");
         PropertiesConfiguration configuration = new PropertiesConfiguration();
         try
-        {
-//            configuration.load(fileName);        
-//            String [] bootAssemblies = configuration.getStringArray("boot.assemblies");
-//            String [] assemblies = configuration.getStringArray("assemblies");
-//            ClassPathXmlApplicationContext ctx;            
-//            
-//            if (bootAssemblies != null)
-//            {
-//                ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootAssemblies, true);
-//                ctx = new ClassPathXmlApplicationContext(assemblies, true, bootContext);
-//            }
-//            else
-//            {
-//                ctx = new ClassPathXmlApplicationContext(assemblies, true);
-//            }
-//            
-//            String rootFolder = configuration.getString("root.folder", "/");
-        
-        
+        {                
             JetspeedImporter importer = new JetspeedImporter();
-            JSImportData data = importer.importData("jetspeed-import.xml");
-            data.debug(System.out);
+//            JSImportData data = importer.importData("jetspeed-import.xml");            
+//            data.debug(System.out);
+            importer.exportData("");
         }
         catch (Exception e)
         {
@@ -87,6 +74,62 @@ public class JetspeedImporter
         
     }
 
+    public JSImportData exportData(String exportFileName)
+    {
+        JSImportData importData = null;
+        try
+        {
+            XStream xstream = new XStream(new DomDriver());
+            setupAliases(xstream);            
+            String applicationRoot = "./";
+            Configuration properties = (Configuration) new PropertiesConfiguration();
+            properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
+            ComponentManager cm = initializeComponentManager(applicationRoot);            
+            exportCapabilities(cm, xstream);
+            cm.stop();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return importData;
+    }
+    
+    public void exportCapabilities(ComponentManager cm, XStream xstream)
+    {
+        Capabilities caps = (Capabilities)cm.getComponent("capabilities");
+//        Iterator clients = caps.getClients();
+//        while (clients.hasNext())
+//        {
+//            Client client = (Client)clients.next();
+//            System.out.println(client.getName());            
+//        }
+//        Iterator mimeTypes = caps.getMimeTypes();
+//        while (mimeTypes.hasNext())
+//        {
+//            MimeType mimeType = (MimeType)mimeTypes.next();
+//            System.out.println(mimeType.getName());
+//        }
+        Iterator mediaTypes = caps.getMediaTypes();
+        while (mediaTypes.hasNext())
+        {
+            MediaType mediaType = (MediaType)mediaTypes.next();
+            //System.out.println(mediaType.getName());
+            String xml = xstream.toXML(mediaType);
+            System.out.println(xml);
+        }        
+    }
+    
+    
+    protected ComponentManager initializeComponentManager(String appRoot) throws IOException
+    {
+        String[] bootConfigs = new String[] {"test/assembly/boot/*.xml"};
+        String[] appConfigs =  new String[] {"test/assembly/*.xml"};
+        SpringComponentManager cm = new SpringComponentManager(bootConfigs, appConfigs, appRoot);
+        cm.start();
+        return cm;        
+    }
+    
     public JSImportData importData(String importFileName)
     {
         JSImportData importData = null;
