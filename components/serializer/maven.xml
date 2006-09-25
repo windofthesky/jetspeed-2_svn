@@ -20,6 +20,11 @@
     <property name='testcase' value='org.apache.jetspeed.idgenerator.TestIdGenerator' />
 
     <goal name='importer'>
+        <copy todir='${maven.build.dir}/classes'
+          file="../../etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'>
+          <fileset dir="../../etc/db-ojb/"/>
+        </copy>                      
         <java classname="org.apache.jetspeed.serializer.JetspeedImporter" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
