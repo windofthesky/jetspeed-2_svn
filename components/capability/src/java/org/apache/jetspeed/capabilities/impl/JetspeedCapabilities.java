@@ -399,5 +399,38 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
             return null;
         }
     }
+
+    /**
+     * Obtain an iterator of all existing capabilities.
+     * @return Returns an iterator for all existing Capabilities of type <code>Capability</code>
+     */
+    public Iterator getCapabilities()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(capabilityClass, new Criteria());
+        query.addOrderByAscending("name");
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();        
+    }
+    
+    /**
+     * Obtain an iterator of all existing mime types.
+     * @return Returns an iterator for all existing Mime Types of type <code>MimeType</code>
+     */
+    public Iterator getMimeTypes()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(mimeTypeClass, new Criteria());
+        query.addOrderByAscending("name");
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                
+    }
+    
+    /**
+     * Obtain an iterator of all existing media types.
+     * @return Returns an iterator for all existing media types of type <code>MediaType</code>
+     */
+    public Iterator getMediaTypes()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, new Criteria());
+        query.addOrderByAscending("name");
+        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                        
+    }
     
 }
