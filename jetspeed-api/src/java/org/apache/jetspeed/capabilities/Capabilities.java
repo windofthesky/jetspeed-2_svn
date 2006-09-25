@@ -79,5 +79,22 @@ public interface Capabilities
      */
     public MediaType getMediaTypeForMimeType(String mimeTypeName);
 
+    /**
+     * Obtain an iterator of all existing capabilities.
+     * @return Returns an iterator for all existing Capabilities of type <code>Capability</code>
+     */
+    Iterator getCapabilities();
     
+    /**
+     * Obtain an iterator of all existing mime types.
+     * @return Returns an iterator for all existing Mime Types of type <code>MimeType</code>
+     */
+    Iterator getMimeTypes();
+    
+    /**
+     * Obtain an iterator of all existing media types.
+     * @return Returns an iterator for all existing media types of type <code>MediaType</code>
+     */
+    Iterator getMediaTypes();
+          
 }
