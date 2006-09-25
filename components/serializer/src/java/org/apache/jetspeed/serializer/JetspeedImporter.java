@@ -25,12 +25,12 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.capabilities.Capabilities;
-import org.apache.jetspeed.capabilities.Client;
-import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.serializer.objects.JSCriterion;
 import org.apache.jetspeed.serializer.objects.JSNameValuePair;
 import org.apache.jetspeed.serializer.objects.JSPermission;
@@ -50,7 +50,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class JetspeedImporter 
 {
     //private final static Log log = LogFactory.getLog(JetspeedImporter.class);
-
+    ComponentManager cm = null;
+    
     public JetspeedImporter()
     {
     }
@@ -62,9 +63,9 @@ public class JetspeedImporter
         try
         {                
             JetspeedImporter importer = new JetspeedImporter();
-//            JSImportData data = importer.importData("jetspeed-import.xml");            
-//            data.debug(System.out);
-            importer.exportData("");
+            JSImportData data = importer.importData("jetspeed-import.xml");            
+            data.debug(System.out);
+//            importer.exportData("");
         }
         catch (Exception e)
         {
@@ -84,7 +85,8 @@ public class JetspeedImporter
             String applicationRoot = "./";
             Configuration properties = (Configuration) new PropertiesConfiguration();
             properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
-            ComponentManager cm = initializeComponentManager(applicationRoot);            
+            ComponentManager cm = initializeComponentManager(applicationRoot);
+            this.cm = cm;
             exportCapabilities(cm, xstream);
             cm.stop();
         }
@@ -178,11 +180,24 @@ public class JetspeedImporter
 
     public void addRoles(List roles)
     {
+        RoleManager roleManager = (RoleManager)cm.getComponent("org.apache.jetspeed.security.RoleManager");
+        if (roleManager == null)
+        {
+            System.err.println("Error!!! Role Manager not available");
+            return;
+        }
         Iterator list = roles.iterator();
         while (list.hasNext())
         {
             String role = (String)list.next();
-            
+            try
+            {
+                roleManager.addRole("/role/" + role);
+            }
+            catch (SecurityException e)
+            {
+                // do whatever
+            }
         }
         
     }
