@@ -80,7 +80,6 @@ limitations under the License.
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-api</artifactId>
-            <scope>runtime</scope>            
         </dependency>
     </dependencies>
 
