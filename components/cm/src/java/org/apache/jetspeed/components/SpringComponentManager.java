@@ -21,12 +21,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -90,6 +93,34 @@ public class SpringComponentManager implements ComponentManager
         this.preconfiguredBeans = preconfiguredBeans;
     }
 
+    
+    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, String appRoot)
+    {        
+        File appRootDir = new File(appRoot);
+        PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+        Properties p = new Properties();
+        //p.setProperty(APPLICATION_ROOT_KEY,appRootDir.getAbsolutePath());
+        ppc.setProperties(p);
+        
+        if (bootConfigs != null && bootConfigs.length > 0)
+        {
+            bootCtx = new FileSystemXmlApplicationContext(bootConfigs, false);
+            bootCtx.addBeanFactoryPostProcessor(ppc);
+            bootCtx.refresh();
+        }
+        else
+        {
+            bootCtx = new GenericApplicationContext();
+        }
+
+        appContext = new FileSystemXmlApplicationContext(appConfigs, false, bootCtx);
+        appContext.addBeanFactoryPostProcessor(ppc);
+        appContext.refresh();
+        factories = new ArrayList();
+        factories.add(appContext);
+        
+    }
+    
     /**
      * <p>
      * getComponent
