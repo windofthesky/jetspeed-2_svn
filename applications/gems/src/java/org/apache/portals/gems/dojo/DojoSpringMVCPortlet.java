@@ -62,7 +62,7 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
 		throws PortletException, java.io.IOException
 	{	
     	headerInfoText.append( "var djConfig = { " );
-    	headerInfoText.append( "isDebug: false, debugAtAllCosts: false" );
+    	headerInfoText.append( "isDebug: true, debugAtAllCosts: false" );
     	headerInfoText.append( ", baseScriptUri: '" );
     	headerInfoText.append( portalContextPath ).append( "/javascript/dojo/" );
     	headerInfoText.append( "'" );

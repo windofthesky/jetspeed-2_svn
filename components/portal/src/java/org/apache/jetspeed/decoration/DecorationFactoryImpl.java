@@ -52,6 +52,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     private static final Log log = LogFactory.getLog(DecorationFactoryImpl.class);
 
     private final Path decorationsPath;
+    private final Path desktopThemesPath;
     private final ResourceValidator validator;
     private final String defaultLayoutDecorator;
     private final String defaultPortletDecorator;
@@ -61,33 +62,45 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     
     private Set layoutDecorationsDir = Collections.EMPTY_SET;
     private Set portletDecorationsDir = Collections.EMPTY_SET;
+    private Set desktopThemesDir = Collections.EMPTY_SET;
     
     private Set layoutDecorationsList = Collections.EMPTY_SET;
     private Set portletDecorationsList = Collections.EMPTY_SET;
+    private Set desktopThemesList = Collections.EMPTY_SET;
     
     private Map portletDecoratorProperties = new HashMap();
     private Map layoutDecoratorProperties = new HashMap();
 
-    public DecorationFactoryImpl(String decorationsPath, ResourceValidator validator, String defaultLayoutDecorator, String defaultPortletDecorator)
+    public DecorationFactoryImpl(String decorationsPath, 
+                                 ResourceValidator validator, 
+                                 String defaultLayoutDecorator, 
+                                 String defaultPortletDecorator)
     {
-        this.registry = null;
+        this(null, decorationsPath, validator, defaultLayoutDecorator, defaultPortletDecorator, "/desktop-themes");
+    }
+
+    public DecorationFactoryImpl(PortletRegistry registry,
+                                 String decorationsPath, 
+                                 ResourceValidator validator, 
+                                 String defaultLayoutDecorator, 
+                                 String defaultPortletDecorator, 
+                                 String desktopThemesPath)
+    {
+        this.registry =  registry;
         this.decorationsPath = new Path(decorationsPath);
         this.validator = validator;
         this.defaultLayoutDecorator = defaultLayoutDecorator;
-        this.defaultPortletDecorator = defaultPortletDecorator;
+        this.defaultPortletDecorator = defaultPortletDecorator;        
+        this.desktopThemesPath = new Path(desktopThemesPath); 
     }
-
+    
     public DecorationFactoryImpl(PortletRegistry registry,
                                  String decorationsPath,
                                  ResourceValidator validator,
                                  String defaultLayoutDecorator,
                                  String defaultPortletDecorator)
     {
-        this.registry =  registry;
-        this.decorationsPath = new Path(decorationsPath);
-        this.validator = validator;
-        this.defaultLayoutDecorator = defaultLayoutDecorator;
-        this.defaultPortletDecorator = defaultPortletDecorator;
+        this(registry, decorationsPath, validator, defaultLayoutDecorator, defaultPortletDecorator, "/desktop-themes");
     }
 
     public Theme getTheme(Page page, RequestContext requestContext)
@@ -305,7 +318,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         Set decorations = servletContext.getResourcePaths(decorationsPath.toString()+"/layout");
         if(!layoutDecorationsDir.equals(decorations))
         {
-            layoutDecorationsList = getListing(decorations);
+            layoutDecorationsList = getListing(decorations, "decorator.properties");
             layoutDecorationsDir = decorations;
             
         }
@@ -322,13 +335,31 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         Set decorations = servletContext.getResourcePaths(decorationsPath.toString()+"/portlet");
         if(!portletDecorationsDir.equals(decorations))
         {
-            portletDecorationsList = getListing(decorations);
+            portletDecorationsList = getListing(decorations, "decorator.properties");
             portletDecorationsDir = decorations;
             
         }
         return portletDecorationsList;
     }
 
+    /**
+     * Get the portal-wide list of available desktop skins.
+     * 
+     * @return A list of desktop skins of type <code>String</code>
+     */        
+    public Set getDesktopThemes(RequestContext request)
+    {
+        Set desktopThemes = servletContext.getResourcePaths(desktopThemesPath.toString());
+        if(!desktopThemesDir.equals(desktopThemes))
+        {
+            desktopThemesList = getListing(desktopThemes, "theme.properties");
+            desktopThemesDir = desktopThemes;
+            
+        }
+        return desktopThemesList;
+        
+    }
+    
     /**
      * Get the portal-wide list of available layouts.
      *
@@ -357,14 +388,14 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return list;
     }
     
-    protected Set getListing(Set rawList)
+    protected Set getListing(Set rawList, String propsFile)
     {
         Iterator itr = rawList.iterator();
         Set filteredList = new HashSet();
         while(itr.hasNext())
         {
             Path path = new Path((String) itr.next());
-            if(path.getFileName() == null && validator.resourceExists(path.toString()+"decorator.properties"))
+            if(path.getFileName() == null && validator.resourceExists(path.toString() + propsFile))
             {
                 int offset = path.length() - 1;
                 filteredList.add(path.getSegment(offset));
@@ -373,4 +404,5 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         return filteredList;
     }
 
+    
 }

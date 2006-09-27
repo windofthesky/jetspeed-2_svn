@@ -1,0 +1,52 @@
+#if ($format == "json")
+#if ($type == "portletDecorations")
+[
+#foreach($p in $portletDecorations)    
+ ["$p", "$p"],
+#end        
+]
+#elseif ($type == "pageDecorations")
+[
+#foreach($p in $pageDecorations)    
+ ["$p", "$p"],
+#end        
+]
+#elseif ($type == "desktopThemes")
+[
+#foreach($dt in $desktopThemes)    
+ ["$dt", "$dt"],
+#end 
+]
+#elseif ($type == "layouts")
+[
+#foreach($l in $layouts)    
+ ["$l.DisplayName", "$l.Name"],
+#end        
+]
+#end
+#else    
+<js>
+    <status>$status</status>
+    <action>$action</action>    
+    <layouts>    
+#foreach($l in $layouts)    
+    <layout>$l.DisplayName</layout>    
+#end        
+    </layouts>
+    <page-decorations>
+#foreach($p in $pageDecorations)    
+    <page-decoration>$p</page-decoration>    
+#end    
+    </page-decorations>
+    <portlet-decorations>
+#foreach($p in $portletDecorations)    
+    <portlet-decoration>$p</portlet-decoration>    
+#end    
+    </portlet-decorations>
+    <desktop-themes>
+#foreach($dt in $desktopThemes)    
+    <desktop-theme>$dt</desktop-theme>    
+#end 
+    </desktop-themes>
+</js>
+#end   

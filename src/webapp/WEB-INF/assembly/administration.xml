@@ -20,6 +20,11 @@
     <property name="host"><value>localhost</value></property>
     <property name="username"><value></value></property>
     <property name="password"><value></value></property>
+      <property name="javaMailProperties">
+          <props>
+              <prop key="mail.smtp.auth">false</prop>
+          </props>
+      </property>
   </bean>
   
 <bean id="adminVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">

@@ -27,6 +27,7 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.page.PageManager;
@@ -75,10 +76,32 @@ public class GetPageAction
                 success = false;
                 return success;
             }            
-            //String filter = requestContext.getRequestParameter(FILTER);                                   
-            Page page = requestContext.getPage();            
+            //String filter = requestContext.getRequestParameter(FILTER);
+            Page page = requestContext.getPage();
+            String pageName = requestContext.getRequestParameter(PAGE);
+            if (pageName != null)
+            {
+                page = retrievePage(requestContext, pageName);
+            }
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
+            String fragments = requestContext.getRequestParameter(FRAGMENTS);
+            if (fragments == null)
+            {
+                resultMap.put(FRAGMENTS, "true");
+            }
+            else
+            {
+                if (fragments.equalsIgnoreCase("true"))
+                {
+                    resultMap.put(FRAGMENTS, "true");
+                }
+                else
+                {
+                    resultMap.put(FRAGMENTS, "false");
+                    return success;
+                }
+            }
             Map fragSizes = new HashMap();
             retrieveLayoutFragmentSizes( page.getRootFragment(), fragSizes );
             resultMap.put( SIZES, fragSizes );
@@ -94,6 +117,18 @@ public class GetPageAction
 
         return success;
 	}
+    
+    protected Page retrievePage(RequestContext requestContext, String pageName)
+    throws Exception
+    {        
+        if (pageName == null)
+        {
+            pageName = "/";
+        }
+        Page page = pageManager.getPage(pageName);
+        return page;
+    }        
+    
     
     protected void retrieveLayoutFragmentSizes( Fragment frag, Map fragSizes )
     {

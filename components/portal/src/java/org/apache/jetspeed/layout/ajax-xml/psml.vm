@@ -42,8 +42,10 @@
   #foreach ($meta in $page.Metadata.Fields)
 	<metadata name="$meta.Name" xml:lang="$meta.Locale.Language">$meta.Value</metadata>
   #end
-    
+
+#if ($fragments == "true")    
   #traverseFragments($page.RootFragment)
+#end
   
 </page>    
 

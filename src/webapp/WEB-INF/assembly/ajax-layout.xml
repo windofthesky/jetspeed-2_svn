@@ -239,6 +239,54 @@
     </constructor-arg>    		        
 </bean>
 
+<bean id="AjaxGetFolder"
+    class="org.apache.jetspeed.layout.impl.GetFolderAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getfolder.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
+</bean>
+
+<bean id="AjaxGetLink"
+    class="org.apache.jetspeed.layout.impl.GetLinkAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getlink.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
+</bean>
+    
+<bean id="AjaxGetThemes"
+    class="org.apache.jetspeed.layout.impl.GetThemesAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getthemes.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="DecorationFactory"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
+</bean>
+        
 <bean id="AjaxChangeWindow"
     class="org.apache.jetspeed.layout.impl.ChangePortletAction">
     <constructor-arg index="0">
@@ -362,6 +410,15 @@
             <entry key="getpages">
                 <ref bean="AjaxGetPages"/>
             </entry>			
+            <entry key="getfolder">
+                <ref bean="AjaxGetFolder"/>
+            </entry>			            
+            <entry key="getlink">
+                <ref bean="AjaxGetLink"/>
+            </entry>			                        
+            <entry key="getthemes">
+                <ref bean="AjaxGetThemes"/>
+            </entry>			                        
             <entry key="window">
                 <ref bean="AjaxChangeWindow"/>
             </entry>			            

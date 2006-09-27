@@ -1,0 +1,9 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>    
+    <link>
+      <path>$link.Path</path>
+		      <title>$link.Title</title>
+		      <shortTitle>$link.ShortTitle</shortTitle>		      
+    </link>    
+</js>

@@ -1,0 +1,17 @@
+<js>
+    <status>$!status</status>
+    <action>$!action</action>    
+    <folder>
+      <path>$!folder.Path</path>
+      <name>$!folder.Name</name>
+      <url>$!folder.Url</url>
+      <hidden>$!folder.isHidden()</hidden>
+      <reserved>$!folder.isReserved()</reserved>
+		      <title>$!folder.Title</title>
+		      <shortTitle>$!folder.ShortTitle</shortTitle>		      
+		      <pageDecorator>$!folder.getDefaultDecorator("layout")</pageDecorator>
+		      <portletDecorator>$!folder.getDefaultDecorator("portlet")</portletDecorator>		      
+		      <defaultPage>$!folder.DefaultPage</defaultPage>
+		      <desktopTheme>$!folder.Skin</desktopTheme>
+    </folder>    
+</js>

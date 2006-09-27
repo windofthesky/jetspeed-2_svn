@@ -52,7 +52,7 @@ public class SecurityConstraintsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(SecurityPermissionAction.class);
+    protected Log log = LogFactory.getLog(SecurityConstraintsAction.class);
     protected PageManager pm = null;
 
     public SecurityConstraintsAction(String template, 

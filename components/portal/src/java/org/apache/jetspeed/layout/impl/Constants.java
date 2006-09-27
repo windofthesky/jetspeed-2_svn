@@ -64,6 +64,15 @@ public interface Constants
     public static final String MENU_CONTEXT = "menuContext";
     public static final String MENU_LOCALE = "menuLocale";
 
+    public static final String PAGE_DECORATIONS = "pageDecorations";
+    public static final String PORTLET_DECORATIONS = "portletDecorations";
+    public static final String LAYOUTS = "layouts";
+    public static final String DESKTOP_THEMES = "desktopThemes";
+    public static final String LINK = "link";
+    public static final String FRAGMENTS = "fragments";
+    public static final String TYPE = "type";
+    public static final String FORMAT = "format";
+    
 	// Move types
 	public static final int ABS = 1;
 	public static final int UP = 2;
