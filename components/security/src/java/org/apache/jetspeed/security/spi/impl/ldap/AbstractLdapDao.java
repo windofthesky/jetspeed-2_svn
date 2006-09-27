@@ -167,7 +167,7 @@ public abstract class AbstractLdapDao
     protected SearchControls setSearchControls()
     {
         SearchControls controls = new SearchControls();
-
+        controls.setReturningAttributes(new String[] {"cn","sn","o","uid","ou","objectClass","nsroledn","userPassword","member","uniqueMember"});
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         controls.setReturningObjFlag(true);
 
@@ -261,12 +261,12 @@ public abstract class AbstractLdapDao
         while ((null != searchResults) && searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
-
-            if (searchResult.getObject() instanceof DirContext)
-            {
-                DirContext userEntry = (DirContext) searchResult.getObject();
-                userDn = userEntry.getNameInNamespace();
-            }
+            userDn = searchResult.getNameInNamespace();
+//            if (searchResult.getObject() instanceof DirContext)
+//            {
+//                DirContext userEntry = (DirContext) searchResult.getObject();
+//                userDn = userEntry.getNameInNamespace();
+//            }
         }
         return userDn;
     }
@@ -299,9 +299,15 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
-                + getObjectClass() + "))";
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
+    	// usa a template method to use users/groups/roles
+        String searchFilter = "";
+        if (getSearchSuffix()==null || getSearchSuffix().equals("")) {
+        	searchFilter = "(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+        } else {
+        	searchFilter = "(&(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
+        }
+        
+        NamingEnumeration searchResults = ((DirContext) ctx).search(getSearchDomain(), searchFilter, cons);
 
         return searchResults;
     }
@@ -318,8 +324,14 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchGroupByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
-                + "jetspeed-2-group" + "))";
+    	// usa a template method to use users/groups/roles
+        String searchFilter = "";
+        if (getSearchSuffix()==null || getSearchSuffix().equals("")) {
+        	searchFilter = "(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+        } else {
+        	searchFilter = "(&(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getGroupFilter() + ")";
+        }        
+        
         NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
 
         return searchResults;
@@ -337,8 +349,13 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchRoleByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="
-                + "jetspeed-2-role" + "))";
+        //String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="+ "jetspeed-2-role" + "))";
+        String searchFilter = "";
+        if (getRoleFilter()==null || getRoleFilter().equals("")) {
+        	searchFilter = "(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+        } else {
+        	searchFilter = "(&(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getRoleFilter() + ")";
+        }      	
         NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
 
         return searchResults;
@@ -346,51 +363,91 @@ public abstract class AbstractLdapDao
 
     /**
      * <p>
-     * Returns the default suffix dn.
+     * Returns the default Group suffix dn.
      * </p>
      * 
      * @return The defaultDnSuffix.
      */
-    protected String getDefaultDnSuffix()
+    protected String getGroupFilterBase()
     {
-        return this.ldapBindingConfig.getDefaultDnSuffix();
-    }
-
-    /**
-     * <p>
-     * Returns the groups organization unit.
-     * </p>
-     * 
-     * @return The groupsOu.
-     */
-    protected String getGroupsOu()
-    {
-        return this.ldapBindingConfig.getGroupsOu();
+        return this.ldapBindingConfig.getGroupFilterBase();
     }
     
     /**
      * <p>
-     * Returns the roles .
+     * Returns the default Group suffix dn.
      * </p>
      * 
-     * @return The rolesOu.
+     * @return The defaultDnSuffix.
      */
-    protected String getRolesOu()
+    protected String[] getGroupObjectClasses()
     {
-        return this.ldapBindingConfig.getRolesOu();
+        return this.ldapBindingConfig.getGroupObjectClasses();
     }    
+    
 
     /**
      * <p>
-     * Returns the users organization unit.
+     * Returns the default Group suffix dn.
      * </p>
      * 
-     * @return The usersOu.
+     * @return The defaultDnSuffix.
      */
-    protected String getUsersOu()
+    protected String getRoleFilterBase()
     {
-        return this.ldapBindingConfig.getUsersOu();
+        return this.ldapBindingConfig.getRoleFilterBase();
     }
+    
+    /**
+     * <p>
+     * Returns the default Group suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String[] getRoleObjectClasses()
+    {
+        return this.ldapBindingConfig.getRoleObjectClasses();
+    }    
+    
+    /**
+     * <p>
+     * Returns the default Group suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String getUserFilterBase()
+    {
+        return this.ldapBindingConfig.getUserFilterBase();
+    }    
+    
+    /**
+     * <p>
+     * Returns the default Group suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String getGroupFilter()
+    {
+        return this.ldapBindingConfig.getGroupFilter();
+    }     
+    
+    
+    /**
+     * <p>
+     * Returns the default Group suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String getRoleFilter()
+    {
+        return this.ldapBindingConfig.getRoleFilter();
+    }     
+        
+    
 
     /**
      * <p>
@@ -403,16 +460,6 @@ public abstract class AbstractLdapDao
     {
         return this.ldapBindingConfig.getRootContext();
     }
-
-    /**
-     * <p>
-     * A template method that returns the LDAP object class of the concrete DAO.
-     * </p>
-     * 
-     * @return a String containing the LDAP object class name.
-     */
-    protected abstract String getObjectClass();
-    
     
     /**
      * <p>
@@ -425,4 +472,91 @@ public abstract class AbstractLdapDao
      */    
     protected abstract String getEntryPrefix();
     
+    /**
+     * <p>
+     * A template method that returns the LDAP entry prefix of the concrete DAO.
+     * </p>
+     * 
+     * TODO : this should be in spring config
+     * 
+     * @return a String containing the LDAP entry prefix name.
+     */    
+    protected abstract String getSearchSuffix();
+    
+    /**
+     * <p>
+     * The domain in wich to perform a search
+     * </p>
+     * 
+     * TODO : this should be in spring config
+     * 
+     * @return a String containing the LDAP entry prefix name.
+     */    
+    protected abstract String getSearchDomain();    
+        
+    protected  String getUserFilter()
+    {
+        return this.ldapBindingConfig.getUserFilter();
+    }
+    
+    /**
+     * <p>
+     * Returns the default Group suffix dn.
+     * </p>
+     * 
+     * @return The defaultDnSuffix.
+     */
+    protected String[] getUserObjectClasses()
+    {
+        return this.ldapBindingConfig.getUserObjectClasses();
+    }    
+
+    protected  String getGroupMembershipAttribute()
+    {
+        return this.ldapBindingConfig.getGroupMembershipAttributes();
+    }   
+    
+    protected  String getUserGroupMembershipAttribute()
+    {
+        return this.ldapBindingConfig.getUserGroupMembershipAttributes();
+    }  
+     
+    
+    protected  String getGroupMembershipForRoleAttribute()
+    {
+        return this.ldapBindingConfig.getGroupMembershipForRoleAttributes();
+    }   
+    
+    protected  String getRoleGroupMembershipForRoleAttribute()
+    {
+        return this.ldapBindingConfig.getRoleGroupMembershipForRoleAttributes();
+    }    
+        
+    protected  String getRoleMembershipAttribute()
+    {
+        return this.ldapBindingConfig.getRoleMembershipAttributes();
+    }
+    
+    protected  String getUserRoleMembershipAttribute()
+    {
+        return this.ldapBindingConfig.getUserRoleMembershipAttributes();
+    }
+
+    protected  String getRoleIdAttribute()
+    {
+        return this.ldapBindingConfig.getRoleIdAttribute();
+    }    
+
+    protected  String getGroupIdAttribute()
+    {
+        return this.ldapBindingConfig.getGroupIdAttribute();
+    }    
+
+    protected  String getUserIdAttribute()
+    {
+        return this.ldapBindingConfig.getUserIdAttribute();
+    }    
+
+	protected abstract String[] getObjectClasses();
+	
 }

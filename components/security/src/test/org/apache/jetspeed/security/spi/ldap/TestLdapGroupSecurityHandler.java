@@ -51,7 +51,11 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
     public void testGetGroupPrincipal() throws Exception
     {
         String fullPath = (new GroupPrincipalImpl(gpUid1)).getFullPath();
-        assertNotNull("Group was not found.", grHandler.getGroupPrincipal(fullPath));
+        //GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(fullPath);
+        GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(gpUid1);
+        assertNotNull("Group was not found.", groupPrincipal);
+        assertEquals(gpUid1,groupPrincipal.getName());
+        assertEquals(fullPath,groupPrincipal.getFullPath());
     }
 
     /**
@@ -60,6 +64,17 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
     public void testAddDuplicateGroupPrincipal() throws Exception
     {
         grHandler.setGroupPrincipal(new GroupPrincipalImpl(gpUid1));
+        List groups = grHandler.getGroupPrincipals("");
+        assertEquals(1,groups.size());
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testGetNonExistingGroupPrincipal() throws Exception
+    {
+        GroupPrincipal group = grHandler.getGroupPrincipal(gpUid1 + "FAKE");
+        assertNull(group);
     }
 
     /**
@@ -69,7 +84,10 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
     {
         GroupPrincipal gp = new GroupPrincipalImpl(gpUid1);
         grHandler.removeGroupPrincipal(gp);
-        assertNull("Group was found and should have been removed.", grHandler.getGroupPrincipal(gp.getFullPath()));
+        GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(gp.getFullPath());
+        assertNull("Group was found and should have been removed.", groupPrincipal);
+        List groups = grHandler.getGroupPrincipals("");
+        assertEquals(0,groups.size());        
     }
 
     /**
@@ -79,8 +97,9 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
     {
         String localUid = Integer.toString(rand.nextInt()).toString();
         GroupPrincipal localPrin = new GroupPrincipalImpl(localUid);
-
         grHandler.removeGroupPrincipal(localPrin);
+        List groups = grHandler.getGroupPrincipals("");
+        assertEquals(1,groups.size());
     }
 
     /**

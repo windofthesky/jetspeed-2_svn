@@ -16,6 +16,8 @@
 package org.apache.jetspeed.security.spi.ldap;
 
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.GroupPrincipal;
@@ -23,6 +25,7 @@ import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 
 /**
@@ -79,6 +82,8 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         LdapDataHelper.removeGroupData(gpUid2);
         LdapDataHelper.removeUserData(uid1);
         LdapDataHelper.removeUserData(uid2);
+        LdapDataHelper.removeRoleData(roleUid1);
+        LdapDataHelper.removeRoleData(roleUid2);
     }
 
     /**
@@ -90,12 +95,18 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
     {
         secHandler.setUserPrincipalInGroup(uid1, gp1.getName());
         secHandler.setUserPrincipalInGroup(uid2, gp1.getName());
-
         String fullPathName = new GroupPrincipalImpl(gpUid1).getName();
         logger.debug("Group full path name from testGetUserPrincipalsInGroup()[" + fullPathName + "]");
-        assertEquals("The user should have been in two groups.", 2, secHandler.getUserPrincipalsInGroup(fullPathName)
-                .size());
+        Set userPrincipals = secHandler.getUserPrincipalsInGroup(fullPathName);
+        //assertTrue(userPrincipals.contains(new UserPrincipalImpl("uid=" + uid1 + ",ou=People,ou=OrgUnit1")));
+        //assertTrue(userPrincipals.contains(new UserPrincipalImpl("uid=" + uid2 + ",ou=People,ou=OrgUnit1")));
+        assertTrue(userPrincipals.contains(new UserPrincipalImpl(uid1)));
+        assertTrue(userPrincipals.contains(new UserPrincipalImpl(uid2)));
+        
+        assertEquals("The user should have been in two groups.", 2, userPrincipals.size());
     }
+    
+
 
     /**
      * Adds 1 user to 2 groups, and checks its presence in both groups
@@ -109,6 +120,19 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         assertEquals("The user should have been in two groups.", 2, secHandler.getGroupPrincipals(uid1).size());
         
     }
+    
+
+    /**
+     * Adds 1 user to 2 groups, and checks its presence in both groups
+     * @throws Exception
+     */
+    public void testGetUserPrincipalInGroup() throws Exception
+    {
+        secHandler.setUserPrincipalInGroup(uid1, gp1.getName());
+        secHandler.setUserPrincipalInGroup(uid1, gp2.getName());
+        secHandler.setUserPrincipalInRole(uid1, ro1.getName());
+        assertEquals(2, secHandler.getGroupPrincipals(uid1).size());
+    }    
 
     /**
      * @throws Exception
@@ -175,9 +199,49 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
 
         String fullPathName = new RolePrincipalImpl(roleUid1).getName();
         logger.debug("Role full path name from testGetUserPrincipalsInRole()[" + fullPathName + "]");
-        assertEquals("The user should have been in two roles.", 2, secHandler.getUserPrincipalsInRole(fullPathName)
-                .size());
+        Set userPrincipals = secHandler.getUserPrincipalsInRole(fullPathName);
+        assertTrue(userPrincipals.contains(new UserPrincipalImpl(uid1)));
+        assertTrue(userPrincipals.contains(new UserPrincipalImpl(uid2)));
+        assertEquals("The user should have been in two roles.", 2, userPrincipals.size());
     }
+    
+    /**
+     * Adds 2 users to a group and checks their presence in the group
+     * 
+     * @throws Exception
+     */
+    public void testGetRolePrincipalInGroup() throws Exception
+    {
+        secHandler.setRolePrincipalInGroup(gpUid1, ro1.getName());
+        secHandler.setRolePrincipalInGroup(gpUid1, ro2.getName());
+        secHandler.setRolePrincipalInGroup(gpUid2, ro1.getName());
+
+
+        String fullPathName = new RolePrincipalImpl(roleUid1).getName();
+        logger.debug("Role full path name from testGetUserPrincipalsInRole()[" + fullPathName + "]");
+        assertEquals("The group should have 2 roles.", 2, secHandler.getRolePrincipalsInGroup(gpUid1).size());
+        assertEquals("The group should have 1 role.", 1, secHandler.getRolePrincipalsInGroup(gpUid2).size());
+    } 
+    
+    /**
+     * Adds 2 users to a group and checks their presence in the group
+     * 
+     * @throws Exception
+     */
+    public void testGetRolePrincipalInGroup2() throws Exception
+    {
+        secHandler.setRolePrincipalInGroup(gpUid1, ro1.getName());
+        secHandler.setRolePrincipalInGroup(gpUid2, ro1.getName());
+        secHandler.setUserPrincipalInRole(uid1, ro1.getName());
+        secHandler.setUserPrincipalInRole(uid1, ro2.getName());
+        String fullPathName = new RolePrincipalImpl(gpUid1).getName();
+        logger.debug("Role full path name from testGetUserPrincipalsInRole()[" + fullPathName + "]");
+        assertEquals("The group should have contained 1 role.", 1, secHandler.getRolePrincipalsInGroup(gpUid1)
+                .size());
+        assertEquals("The group should have contained 1 role.", 1, secHandler.getRolePrincipalsInGroup(gpUid1)
+                .size());
+        
+    }     
 
     /**
      * Adds 1 user to 2 roles, and checks its presence in both roles
@@ -187,10 +251,28 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
     {
         secHandler.setUserPrincipalInRole(uid1, ro1.getName());
         secHandler.setUserPrincipalInRole(uid1, ro2.getName());
-
-        assertEquals("The user should have been in two roles.", 2, secHandler.getRolePrincipals(uid1).size());
+        Set rolePrinciples = secHandler.getRolePrincipals(uid1);
+        assertEquals("The user should have been in two roles.", 2, rolePrinciples.size());
+        assertTrue(rolePrinciples.contains(ro1));
+        assertTrue(rolePrinciples.contains(ro2));
         
     }
+    
+    /**
+     * Adds 1 user to 2 roles & 1 group, and checks its presence in both roles
+     * @throws Exception
+     */
+    public void testSetUserPrincipalInRole2() throws Exception
+    {
+        secHandler.setUserPrincipalInRole(uid1, ro1.getName());
+        secHandler.setUserPrincipalInRole(uid1, ro2.getName());
+        secHandler.setUserPrincipalInGroup(uid1, gp1.getName());
+        Set rolePrinciples = secHandler.getRolePrincipals(uid1);
+        assertEquals("The user should have been in two roles.", 2, rolePrinciples.size());
+        assertTrue(rolePrinciples.contains(ro1));
+        assertTrue(rolePrinciples.contains(ro2));
+        
+    }    
 
     /**
      * @throws Exception
@@ -208,6 +290,8 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
         secHandler.removeUserPrincipalInRole(uid1, ro2.getName());
         assertEquals("The user should have been in two roles.", 0, secHandler.getRolePrincipals(uid1).size());
     }
+    
+   
 
     /**
      * @throws Exception

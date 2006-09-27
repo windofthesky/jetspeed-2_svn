@@ -34,13 +34,45 @@ limitations under the License.
       <constructor-arg index="5"><value>uid=admin,ou=system</value></constructor-arg>
       <!-- The LDAP server root password. -->
       <constructor-arg index="6"><value>secret</value></constructor-arg>
-      <!-- The users org unit. -->
-      <constructor-arg index="7"><value>users</value></constructor-arg>
-      <!-- The groups org unit. -->
-      <constructor-arg index="8"><value>groups</value></constructor-arg>
-      <!-- The roles org unit. -->
-      <constructor-arg index="9"><value>roles</value></constructor-arg>
-      
+      <!-- The roles filter. -->
+      <constructor-arg index="7"><value>(objectclass=groupOfUniqueNames))</value></constructor-arg>
+      <!-- The groups filter. -->
+      <constructor-arg index="8"><value>(objectClass=organization)</value></constructor-arg>
+      <!-- The user filter. -->
+      <constructor-arg index="9"><value>(objectclass=inetorgperson)</value></constructor-arg>
+      <!-- The userAuthenticationFiler. -->
+      <constructor-arg index="10"><value>(&amp;(uid=%u)(objectclass=inetorgperson))</value></constructor-arg>
+      <!-- The roleMembershipAttributes. -->
+      <constructor-arg index="11"><value>uniqueMember</value></constructor-arg>
+      <!-- The userRoleMembershipAttributes. -->
+      <constructor-arg index="12"><value></value></constructor-arg>
+      <!-- The groupMembershipAttributes. -->
+      <constructor-arg index="13"><value>uniqueMember</value></constructor-arg>
+      <!-- The userGroupMembershipAttributes. -->
+      <constructor-arg index="14"><value></value></constructor-arg>
+      <!-- The groupMembershipForRoleAttributes. -->
+      <constructor-arg index="15"><value>uniqueMember</value></constructor-arg>
+      <!-- The roleGroupMembershipForRoleAttributes. -->
+      <constructor-arg index="16"><value></value></constructor-arg>      
+      <!-- The defaultSearchBase. -->
+      <constructor-arg index="17"><value>o=sevenSeas</value></constructor-arg>
+      <!-- The roleFilterBase. -->
+      <constructor-arg index="18"><value>ou=Roles,ou=OrgUnit1</value></constructor-arg>
+      <!-- The groupFilterBase. -->
+      <constructor-arg index="19"><value>ou=Groups,ou=OrgUnit1</value></constructor-arg>
+      <!-- The userFilterBase. -->
+      <constructor-arg index="20"><value>ou=People,ou=OrgUnit1</value></constructor-arg>
+      <!-- The roleObjectClasses. -->
+      <constructor-arg index="21"><value>top,groupOfUniqueNames</value></constructor-arg>
+      <!-- The groupObjectClasses. -->
+      <constructor-arg index="22"><value>top,organization</value></constructor-arg>
+      <!-- The userObjectClasses. -->
+      <constructor-arg index="23"><value>top,person,organizationalPerson,inetorgperson</value></constructor-arg>
+      <!-- The roleIdAttribute. -->
+      <constructor-arg index="24"><value>cn</value></constructor-arg>
+      <!-- The groupIdAttribute. -->
+      <constructor-arg index="25"><value>cn</value></constructor-arg>
+	  <!-- The userIdAttribute. -->
+      <constructor-arg index="26"><value>uid</value></constructor-arg>
   </bean>
-
 </beans>

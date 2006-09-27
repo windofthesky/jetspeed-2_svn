@@ -215,7 +215,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      */
     public Set getGroupPrincipals(String userPrincipalUid)
     {
-        Set groupPrincipals = new HashSet();
+    	Set groupPrincipals = new HashSet();
 
         String[] groups;
         try
@@ -276,13 +276,9 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     	//TODO: Check that this is correct
     	String[] fullPaths = {groupFullPathName};
 
-//        Preferences preferences = Preferences.userRoot().node(
-//                GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
-//        String[] fullPaths = groupHierarchyResolver.resolve(preferences);
-//        
         try
         {
-            getUserPrincipalsInGroup(userPrincipals, fullPaths);
+           getUserPrincipalsInGroup(userPrincipals, fullPaths);
         }
         catch (SecurityException e)
         {

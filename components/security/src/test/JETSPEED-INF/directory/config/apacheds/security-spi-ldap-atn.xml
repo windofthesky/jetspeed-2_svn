@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<beans>
+
+  <!-- ************** Security SPI Handlers ************** -->
+  <!-- Security SPI: LdapUserCredentialDao -->
+  <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao" 
+       class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl"
+  >       
+       <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"/></constructor-arg>       
+  </bean>
+  
+  <!-- Security SPI: LdapPrincipalDao -->
+  <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao" 
+       class="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl"
+  >       
+       <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"/></constructor-arg>       
+  </bean>
+  
+  <!-- Security SPI: CredentialHandler -->
+  <bean id="org.apache.jetspeed.security.spi.CredentialHandler" 
+       class="org.apache.jetspeed.security.spi.impl.LdapCredentialHandler"
+  >       
+       <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao"/></constructor-arg>    
+  </bean>
+  
+  <!-- Security SPI: UserSecurityHandler -->
+  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" 
+  	   class="org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao"/></constructor-arg> 	   
+  </bean>
+
+</beans>

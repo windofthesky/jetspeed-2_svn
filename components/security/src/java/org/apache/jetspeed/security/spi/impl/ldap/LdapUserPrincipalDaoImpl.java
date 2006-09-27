@@ -15,14 +15,12 @@
  */
 package org.apache.jetspeed.security.spi.impl.ldap;
 
-import java.util.List;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
@@ -30,12 +28,9 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
@@ -47,11 +42,7 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
     /** The logger. */
     private static final Log logger = LogFactory.getLog(LdapUserPrincipalDaoImpl.class);
 
-    /** The group attribute name. */
-    private static final String GROUP_ATTR_NAME = "j2-group";
-
-    /** The role attribute name. */    
-    private static final String ROLE_ATTR_NAME = "j2-role";
+    private LdapMembershipDao membership;
 
     /**
      * <p>
@@ -62,7 +53,8 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public LdapUserPrincipalDaoImpl() throws SecurityException
     {
-        super();
+    	super();
+    	membership=new LdapMemberShipDaoImpl();
     }
 
     /**
@@ -75,7 +67,8 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public LdapUserPrincipalDaoImpl(LdapBindingConfig ldapConfig) throws SecurityException
     {
-        super(ldapConfig);
+    	super(ldapConfig);
+    	membership=new LdapMemberShipDaoImpl(ldapConfig);
     }
 
     /**
@@ -84,7 +77,11 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public void addGroup(String userPrincipalUid, String groupPrincipalUid) throws SecurityException
     {
-        modifyUserGroup(userPrincipalUid, groupPrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	if (getUserGroupMembershipAttribute()!=null && !getUserGroupMembershipAttribute().equals(""))	
+    		modifyUserGroupByUser(userPrincipalUid, groupPrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	else
+    		modifyUserGroupByGroup(userPrincipalUid, groupPrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	
     }
 
     /**
@@ -97,18 +94,25 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      * @param operationType whether to replace or remove the specified user group from the user
      * @throws SecurityException A {@link SecurityException}.
      */
-    private void modifyUserGroup(String userPrincipalUid, String groupPrincipalUid, int operationType)
+    private void modifyUserGroupByGroup(String userPrincipalUid, String groupPrincipalUid, int operationType)
             throws SecurityException
     {
         validateUid(userPrincipalUid);
         validateUid(groupPrincipalUid);
-        String userDn = lookupByUid(userPrincipalUid);
+        
+        String userDn = "uid=" + userPrincipalUid + "," + getUserFilterBase();
+        userDn+="," + getRootContext();
         try
         {
-            String rdn = getSubcontextName(userDn);
+        	groupPrincipalUid = getGroupIdAttribute() + "=" + groupPrincipalUid; 
+        	
+        	if (getGroupFilterBase()!=null && !getGroupFilterBase().equals(""))
+        		groupPrincipalUid+="," + getGroupFilterBase();
+        	groupPrincipalUid+="," + getRootContext();
+        	
+            String rdn = getSubcontextName(groupPrincipalUid);
             Attributes attrs = new BasicAttributes(false);
-
-            attrs.put("j2-group", groupPrincipalUid);
+            attrs.put(getGroupMembershipAttribute(), userDn);
             ctx.modifyAttributes(rdn, operationType, attrs);
         }
         catch (NamingException e)
@@ -116,6 +120,44 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
             throw new SecurityException(e);
         }
     }
+    
+    /**
+     * <p>
+     * Replace or delete the user group attribute.
+     * </p>
+     * 
+     * @param userPrincipalUid
+     * @param groupPrincipalUid
+     * @param operationType whether to replace or remove the specified user group from the user
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    private void modifyUserGroupByUser(String userPrincipalUid, String groupPrincipalUid, int operationType)
+            throws SecurityException
+    {
+        validateUid(userPrincipalUid);
+        validateUid(groupPrincipalUid);
+        
+        String userDn = "uid=" + userPrincipalUid + "," + getUserFilterBase();
+        try
+        {
+        	groupPrincipalUid = getGroupIdAttribute() + "=" + groupPrincipalUid; 
+        	
+        	if (getGroupFilterBase()!=null && !getGroupFilterBase().equals(""))
+        		groupPrincipalUid+="," + getGroupFilterBase();
+        	groupPrincipalUid+="," + getRootContext();
+            String rdn = getSubcontextName(userDn);
+            Attributes attrs = new BasicAttributes(false);
+
+            attrs.put(getUserGroupMembershipAttribute(), groupPrincipalUid);
+            logger.debug("modifying attrs on " + rdn + " with : " + attrs);
+            ctx.modifyAttributes(rdn, operationType, attrs);
+            
+        }
+        catch (NamingException e)
+        {
+            throw new SecurityException(e);
+        }
+    }    
 
     /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#removeGroup(java.lang.String,
@@ -123,7 +165,11 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public void removeGroup(String userPrincipalUid, String groupPrincipalUid) throws SecurityException
     {
-        modifyUserGroup(userPrincipalUid, groupPrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	if (getUserGroupMembershipAttribute()!=null && !getUserGroupMembershipAttribute().equals(""))
+    		modifyUserGroupByUser(userPrincipalUid, groupPrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	else
+    		modifyUserGroupByGroup(userPrincipalUid, groupPrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	
     }
     
     /**
@@ -132,12 +178,16 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public void addRole(String userPrincipalUid, String rolePrincipalUid) throws SecurityException
     {
-        modifyUserRole(userPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	if (getUserRoleMembershipAttribute()!=null && !getUserRoleMembershipAttribute().equals(""))
+    		modifyUserRoleByUser(userPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	else
+    		modifyUserRoleByRole(userPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
     }
 
     /**
      * <p>
      * Replace or delete the role attribute.
+     * 
      * </p>
      * 
      * @param userPrincipalUid
@@ -145,7 +195,7 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      * @param operationType whether to replace or remove the specified user group from the user
      * @throws SecurityException A {@link SecurityException}.
      */
-    private void modifyUserRole(String userPrincipalUid, String rolePrincipalUid, int operationType)
+    private void modifyUserRoleByUser(String userPrincipalUid, String rolePrincipalUid, int operationType)
             throws SecurityException
     {
         validateUid(userPrincipalUid);
@@ -154,10 +204,15 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
         
         try
         {
+        	rolePrincipalUid = getRoleIdAttribute() + "=" + rolePrincipalUid; 
+        	
+        	if (getRoleFilterBase()!=null && !getRoleFilterBase().equals(""))
+        		rolePrincipalUid+="," + getRoleFilterBase();
+        	rolePrincipalUid+="," + getRootContext();
             String rdn = getSubcontextName(userDn);
             Attributes attrs = new BasicAttributes(false);
 
-            attrs.put("j2-role", rolePrincipalUid);
+            attrs.put(getUserRoleMembershipAttribute(), rolePrincipalUid);
             ctx.modifyAttributes(rdn, operationType, attrs);
         }
         catch (NamingException e)
@@ -167,12 +222,51 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
     }
 
     /**
+     * <p>
+     * Replace or delete the role attribute.
+     * 
+     * </p>
+     * 
+     * @param userPrincipalUid
+     * @param rolePrincipalUid
+     * @param operationType whether to replace or remove the specified user group from the user
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    private void modifyUserRoleByRole(String userPrincipalUid, String rolePrincipalUid, int operationType)
+            throws SecurityException
+    {
+        validateUid(userPrincipalUid);
+        validateUid(rolePrincipalUid);
+        String userDn = "uid=" + userPrincipalUid + "," + getUserFilterBase() + "," + getRootContext();
+        
+        try
+        {
+        	rolePrincipalUid = getRoleIdAttribute() + "=" + rolePrincipalUid; 
+        	
+        	if (getRoleFilterBase()!=null && !getRoleFilterBase().equals(""))
+        		rolePrincipalUid+="," + getRoleFilterBase();
+        	
+            String rdn = getSubcontextName(rolePrincipalUid);
+            Attributes attrs = new BasicAttributes(false);
+
+            attrs.put(getRoleMembershipAttribute(), userDn);
+            ctx.modifyAttributes(rdn, operationType, attrs);
+        }
+        catch (NamingException e)
+        {
+            throw new SecurityException(e);
+        }
+    }    
+    /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#removeGroup(java.lang.String,
      *      java.lang.String)
      */
     public void removeRole(String userPrincipalUid, String rolePrincipalUid) throws SecurityException
     {
-        modifyUserRole(userPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	if (getUserRoleMembershipAttribute()!=null && !getUserRoleMembershipAttribute().equals(""))
+    		modifyUserRoleByUser(userPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	else
+    		modifyUserRoleByRole(userPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
     }    
 
     /**
@@ -188,18 +282,12 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
         Attributes attrs = new BasicAttributes(true);
         BasicAttribute classes = new BasicAttribute("objectclass");
 
-        classes.add("top");
-        classes.add("person");
-        classes.add("uidObject");
-        classes.add("organizationalPerson");
-        classes.add("inetorgperson");
-        classes.add("jetspeed-2-user");
+        for (int i=0;i<getObjectClasses().length;i++)
+        	classes.add(getObjectClasses()[i]);
         attrs.put(classes);
         attrs.put("cn", principalUid);
-        attrs.put("uid", principalUid);
         attrs.put("sn", principalUid);
-        attrs.put("ou", getUsersOu());
-
+        attrs.put(getEntryPrefix(), principalUid);
         return attrs;
     }
 
@@ -208,16 +296,8 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     protected String getDnSuffix()
     {
-        String suffix = "";
-        if (!StringUtils.isEmpty(getUsersOu()))
-        {
-            suffix += ",ou=" + getUsersOu();
-        }
-        if (!StringUtils.isEmpty(getDefaultDnSuffix()))
-        {
-            suffix += getDefaultDnSuffix();
-        }
-        return suffix;
+
+        return this.getUserFilterBase();
     }
 
     /**
@@ -234,90 +314,16 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
     }
 
     /**
-     * <p>
-     * A template method that returns the LDAP object class of the concrete DAO.
-     * </p>
-     * 
-     * @return a String containing the LDAP object class name.
-     */
-    protected String getObjectClass()
-    {
-        return "jetspeed-2-user";
-    }
-
-    /**
-     * <p>
-     * Return an array of the user principal UIDS that belong to a group.
-     * </p>
-     * 
-     * @param groupPrincipalUid The group principal uid.
-     * @return The array of user uids asociated with this group
-     * @throws SecurityException A {@link SecurityException}.
-     */
-    public String[] getUserUidsForGroup(String groupPrincipalUid) throws SecurityException
-    {
-        validateUid(groupPrincipalUid);
-        SearchControls cons = setSearchControls();
-        NamingEnumeration results;
-        try
-        {
-            List userPrincipalUids = new ArrayList();
-            results = searchUserByGroup(groupPrincipalUid, cons);
-            while (results.hasMore())
-            {
-                SearchResult result = (SearchResult) results.next();
-                Attributes answer = result.getAttributes();
-
-                userPrincipalUids.addAll(getAttributes(getAttribute(UID_ATTR_NAME, answer)));
-            }
-            return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-    
-    /**
-     * <p>
-     * Return an array of the roles that belong to a group.
-     * </p>
-     * 
-     * @param groupPrincipalUid The group principal uid.
-     * @return The array of user uids asociated with this group
-     * @throws SecurityException A {@link SecurityException}.
-     */
-    public String[] getRolesForGroup(String groupPrincipalUid) throws SecurityException
-    {
-        validateUid(groupPrincipalUid);
-        SearchControls cons = setSearchControls();
-        NamingEnumeration results;
-        try
-        {
-            List userPrincipalUids = new ArrayList();
-            results = searchRolesByGroup(groupPrincipalUid, cons);
-            while (results.hasMore())
-            {
-                SearchResult result = (SearchResult) results.next();
-                Attributes answer = result.getAttributes();
-
-                userPrincipalUids.addAll(getAttributes(getAttribute(ROLE_ATTR_NAME, answer)));
-            }
-            return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-    
-    /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#addGroup(java.lang.String,
      *      java.lang.String)
      */
     public void addRoleToGroup(String groupPrincipalUid, String rolePrincipalUid) throws SecurityException
     {
-        modifyGroupRole(groupPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	if (getRoleGroupMembershipForRoleAttribute()!=null && !getRoleGroupMembershipForRoleAttribute().equals(""))
+    		modifyRoleGroupByRole(groupPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
+    	else
+    		modifyRoleGroupByGroup(groupPrincipalUid, rolePrincipalUid, DirContext.ADD_ATTRIBUTE);
+        
     }
 
     /**
@@ -330,7 +336,7 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      * @param operationType whether to replace or remove the specified user group from the user
      * @throws SecurityException A {@link SecurityException}.
      */
-    private void modifyGroupRole(String groupPrincipalUid, String rolePrincipalUid, int operationType)
+    private void modifyRoleGroupByRole(String groupPrincipalUid, String rolePrincipalUid, int operationType)
             throws SecurityException
     {
         validateUid(groupPrincipalUid);
@@ -338,10 +344,15 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
         String userDn = lookupGroupByUid(groupPrincipalUid);
         try
         {
+        	groupPrincipalUid = getGroupIdAttribute() + "=" + groupPrincipalUid; 
+        	
+        	if (getRoleFilterBase()!=null && !getRoleFilterBase().equals(""))
+        		rolePrincipalUid+="," + getRoleFilterBase();
+        	
             String rdn = getSubcontextName(userDn);
             Attributes attrs = new BasicAttributes(false);
 
-            attrs.put("j2-role", rolePrincipalUid);
+            attrs.put(getRoleGroupMembershipForRoleAttribute(), rolePrincipalUid);
             ctx.modifyAttributes(rdn, operationType, attrs);
         }
         catch (NamingException e)
@@ -349,6 +360,41 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
             throw new SecurityException(e);
         }
     }
+    
+    /**
+     * <p>
+     * Replace or delete the user group attribute.
+     * </p>
+     * 
+     * @param userPrincipalUid
+     * @param groupPrincipalUid
+     * @param operationType whether to replace or remove the specified user group from the user
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    private void modifyRoleGroupByGroup(String groupPrincipalUid, String rolePrincipalUid, int operationType)
+            throws SecurityException
+    {
+        validateUid(groupPrincipalUid);
+        validateUid(rolePrincipalUid);
+        String userDn = lookupGroupByUid(groupPrincipalUid);
+        try
+        {
+        	rolePrincipalUid = getRoleIdAttribute() + "=" + rolePrincipalUid; 
+        	
+        	if (getRoleFilterBase()!=null && !getRoleFilterBase().equals(""))
+        		rolePrincipalUid+="," + getRoleFilterBase();
+        	
+            String rdn = getSubcontextName(userDn);
+            Attributes attrs = new BasicAttributes(false);
+
+            attrs.put(getGroupMembershipForRoleAttribute(), rolePrincipalUid);
+            ctx.modifyAttributes(rdn, operationType, attrs);
+        }
+        catch (NamingException e)
+        {
+            throw new SecurityException(e);
+        }
+    }    
 
     /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDao#removeGroup(java.lang.String,
@@ -356,240 +402,160 @@ public class LdapUserPrincipalDaoImpl extends LdapPrincipalDaoImpl implements Ld
      */
     public void removeRoleFromGroup(String groupPrincipalUid, String rolePrincipalUid) throws SecurityException
     {
-        modifyGroupRole(groupPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+        
+    	if (getRoleGroupMembershipForRoleAttribute()!=null && !getRoleGroupMembershipForRoleAttribute().equals(""))
+    		modifyRoleGroupByRole(groupPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+    	else
+    		modifyRoleGroupByGroup(groupPrincipalUid, rolePrincipalUid, DirContext.REMOVE_ATTRIBUTE);
+        
     }        
     
 
-    /**
-     * <p>
-     * Search user by group.
-     * </p>
-     * 
-     * @param groupPrincipalUid
-     * @param cons
-     * @return
-     * @throws NamingException A {@link NamingException}.
-     */
-    private NamingEnumeration searchUserByGroup(final String groupPrincipalUid, SearchControls cons)
-            throws NamingException
-    {
-        String query = "(&(" + GROUP_ATTR_NAME + "=" + (groupPrincipalUid) + ") (objectclass=" + getObjectClass() + "))";
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("query[" + query + "]");
-        }
-        NamingEnumeration searchResults = ((DirContext) ctx).search("",query , cons);
-
-        return searchResults;
-    }
-
-    /**
-     * <p>
-     * Search user by group.
-     * </p>
-     * 
-     * @param groupPrincipalUid
-     * @param cons
-     * @return
-     * @throws NamingException A {@link NamingException}.
-     */
-    private NamingEnumeration searchRolesByGroup(final String rolePrincipalUid, SearchControls cons)
-            throws NamingException
-    {
-        String query = "(&(" + UID_ATTR_NAME + "=" + (rolePrincipalUid) + ") (objectclass=" + "jetspeed-2-group" + "))";
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("query[" + query + "]");
-        }
-        NamingEnumeration searchResults = ((DirContext) ctx).search("",query , cons);
-
-        return searchResults;
-    }
-    
-
-    
-    
-    /**
-     * <p>
-     * Return an array of the user principal UIDS that belong to a group.
-     * </p>
-     * 
-     * @param groupPrincipalUid The group principal uid.
-     * @return The array of user uids asociated with this group
-     * @throws SecurityException A {@link SecurityException}.
-     */
-    public String[] getUserUidsForRole(String rolePrincipalUid) throws SecurityException
-    {
-        validateUid(rolePrincipalUid);
-        SearchControls cons = setSearchControls();
-        NamingEnumeration results;
-        try
-        {
-            List userPrincipalUids = new ArrayList();
-            results = searchUserByRole(rolePrincipalUid, cons);
-            while (results.hasMore())
-            {
-                SearchResult result = (SearchResult) results.next();
-                Attributes answer = result.getAttributes();
-
-                userPrincipalUids.addAll(getAttributes(getAttribute(UID_ATTR_NAME, answer)));
-            }
-            return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Search user by group.
-     * </p>
-     * 
-     * @param groupPrincipalUid
-     * @param cons
-     * @return
-     * @throws NamingException A {@link NamingException}.
-     */
-    private NamingEnumeration searchUserByRole(final String rolePrincipalUid, SearchControls cons)
-            throws NamingException
-    {
-
-        String query = "(&(" + ROLE_ATTR_NAME + "=" + (rolePrincipalUid) + ") (objectclass=" + getObjectClass()
-                + "))";
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("query[" + query + "]");
-        }
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", query, cons);
-
-        return searchResults;
-    }
-    
-    
-    /**
-     * @param userPrincipalUid
-     * @return the array of group uids asociated with this user
-     * @throws SecurityException
-     */
-    public String[] getGroupUidsForUser(String userPrincipalUid) throws SecurityException
-    {
-        validateUid(userPrincipalUid);
-        SearchControls cons = setSearchControls();
-        NamingEnumeration results;
-        try
-        {
-            results = searchByWildcardedUid(userPrincipalUid, cons);
-            return getGroups(results, userPrincipalUid);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Get the groups.
-     * </p>
-     * 
-     * @param results
-     * @param uid
-     * @return
-     * @throws NamingException
-     */
-    private String[] getGroups(final NamingEnumeration results, final String uid) throws NamingException
-    {
-        if (!results.hasMore())
-        {
-            throw new NamingException("Could not find any user with uid[" + uid + "]");
-        }
-
-        Attributes userAttributes = getFirstUser(results);
-
-        List uids = getAttributes(getAttribute(GROUP_ATTR_NAME, userAttributes));
-        return (String[]) uids.toArray(new String[uids.size()]);
-    }
-
-    
-    /**
-     * @param userPrincipalUid
-     * @return the array of group uids asociated with this user
-     * @throws SecurityException
-     */
-    public String[] getRoleUidsForUser(String userPrincipalUid) throws SecurityException
-    {
-        validateUid(userPrincipalUid);
-        SearchControls cons = setSearchControls();
-        NamingEnumeration results;
-        try
-        {
-            results = searchByWildcardedUid(userPrincipalUid, cons);
-            return getRoles(results, userPrincipalUid);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-
-    /**
-     * <p>
-     * Get the groups.
-     * </p>
-     * 
-     * @param results
-     * @param uid
-     * @return
-     * @throws NamingException
-     */
-    private String[] getRoles(final NamingEnumeration results, final String uid) throws NamingException
-    {
-        if (!results.hasMore())
-        {
-            throw new NamingException("Could not find any user with uid[" + uid + "]");
-        }
-
-        Attributes userAttributes = getFirstUser(results);
-
-        List uids = getAttributes(getAttribute(ROLE_ATTR_NAME, userAttributes));
-        return (String[]) uids.toArray(new String[uids.size()]);
-    }    
-    
-    /**
-     * @param results
-     * @return
-     * @throws NamingException
-     */
-    private Attributes getFirstUser(NamingEnumeration results) throws NamingException
-    {
-        SearchResult result = (SearchResult) results.next();
-        Attributes answer = result.getAttributes();
-
-        return answer;
-    }
-
-    /**
-     * @param attr
-     * @return
-     * @throws NamingException
-     */
-    private List getAttributes(Attribute attr) throws NamingException
-    {
-        List uids = new ArrayList();
-        if (attr != null)
-        {
-            Enumeration groupUidEnum = attr.getAll();
-            while (groupUidEnum.hasMoreElements())
-            {
-                uids.add(groupUidEnum.nextElement());
-            }
-        }
-        return uids;
-    }
-    
 	protected String getEntryPrefix() {
-		return "uid";
+		return this.getUserIdAttribute();
 	}
+
+	protected String getSearchSuffix() {
+		return this.getUserFilter();
+	}
+
+	    /**
+	     * 
+	     * Return the list of group IDs for a particular user
+	     * 
+	     * @param userPrincipalUid
+	     * @return the array of group uids asociated with this user
+	     * @throws SecurityException
+	     */
+	    public String[] getGroupUidsForUser(String userPrincipalUid) throws SecurityException
+	    {
+	        validateUid(userPrincipalUid);
+	        SearchControls cons = setSearchControls();
+	        try
+	        {
+	        	if (getUserGroupMembershipAttribute()!=null && !getUserGroupMembershipAttribute().equals("")) { 
+	        		return membership.searchGroupMemberShipByUser(userPrincipalUid,cons);
+	        	}
+	        	return membership.searchGroupMemberShipByGroup(userPrincipalUid,cons);
+	        	
+	        	
+	        }
+	        catch (NamingException e)
+	        {
+	            throw new SecurityException(e);
+	        }
+	    }
+
+	/**
+	 * <p>
+	 * Return an array of the roles that belong to a group.
+	 * </p>
+	 * 
+	 * @param groupPrincipalUid The group principal uid.
+	 * @return The array of user uids asociated with this group
+	 * @throws SecurityException A {@link SecurityException}.
+	 */
+	public String[] getRolesForGroup(String groupPrincipalUid) throws SecurityException
+	{
+	    {
+	        validateUid(groupPrincipalUid);
+	        SearchControls cons = setSearchControls();
+	        try
+	        {
+	        	if (getRoleGroupMembershipForRoleAttribute()!=null && !getRoleGroupMembershipForRoleAttribute().equals("")) { 
+	            	return membership.searchRolesFromGroupByRole(groupPrincipalUid,cons);
+	        	}
+	        	return membership.searchRolesFromGroupByGroup(groupPrincipalUid,cons);
+	        }
+	        catch (NamingException e)
+	        {
+	            throw new SecurityException(e);
+	        }
+	    }	    
+	}
+
+	    
+	    /**
+	     * 
+	     * Returns the role IDs for a particular user
+	     * 
+	     * Looks up the user, and extracts the rolemembership attr (ex : uniquemember)
+	     * 
+	     * @param userPrincipalUid
+	     * @return the array of group uids asociated with this user
+	     * @throws SecurityException
+	     */
+	    public String[] getRoleUidsForUser(String userPrincipalUid) throws SecurityException
+	    {
+	        validateUid(userPrincipalUid);
+	        SearchControls cons = setSearchControls();
+	        try
+	        {
+	        	if (getUserRoleMembershipAttribute()!=null && !getUserRoleMembershipAttribute().equals("")) { 
+	            	return membership.searchRoleMemberShipByUser(userPrincipalUid,cons);
+	        	}
+	        	return membership.searchRoleMemberShipByRole(userPrincipalUid,cons);
+	        }
+	        catch (NamingException e)
+	        {
+	            throw new SecurityException(e);
+	        }
+	    }
+
+	/**
+	 * <p>
+	 * Return an array of the user principal UIDS that belong to a group.
+	 * </p>
+	 * 
+	 * @param groupPrincipalUid The group principal uid.
+	 * @return The array of user uids asociated with this group
+	 * @throws SecurityException A {@link SecurityException}.
+	 */
+	public String[] getUserUidsForGroup(String groupPrincipalUid) throws SecurityException
+	{
+		
+	    validateUid(groupPrincipalUid);
+	    SearchControls cons = setSearchControls();
+	    try
+	    {
+	    	if (getUserGroupMembershipAttribute()!=null && !getUserGroupMembershipAttribute().equals("")) { 
+	        	return membership.searchUsersFromGroupByUser(groupPrincipalUid,cons);
+	    	}
+	    	return membership.searchUsersFromGroupByGroup(groupPrincipalUid,cons);
+	    }
+	    catch (NamingException e)
+	    {
+	        throw new SecurityException(e);
+	    }
+	}
+
+	/**
+	 * <p>
+	 * Return an array of the user principal UIDS that belong to a group.
+	 * </p>
+	 * 
+	 * @param groupPrincipalUid The group principal uid.
+	 * @return The array of user uids asociated with this group
+	 * @throws SecurityException A {@link SecurityException}.
+	 */
+	public String[] getUserUidsForRole(String rolePrincipalUid) throws SecurityException
+	{
+	    validateUid(rolePrincipalUid);
+	    SearchControls cons = setSearchControls();
+	    try
+	    {
+	    	if (getUserRoleMembershipAttribute()!=null && !getUserRoleMembershipAttribute().equals("")) { 
+	            return membership.searchUsersFromRoleByUser(rolePrincipalUid,cons);
+	    	}
+	    	return membership.searchUsersFromRoleByRole(rolePrincipalUid,cons);
+	    }
+	    catch (NamingException e)
+	    {
+	        throw new SecurityException(e);
+	    }
+	}
+	
+	protected String[] getObjectClasses() {
+		return this.getUserObjectClasses();
+	}	
 }

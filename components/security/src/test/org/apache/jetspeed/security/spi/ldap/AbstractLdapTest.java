@@ -30,6 +30,8 @@ import org.apache.jetspeed.security.spi.impl.LdapSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapMemberShipDaoImpl;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapMembershipDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapRoleDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao;
@@ -73,27 +75,29 @@ public abstract class AbstractLdapTest extends TestCase
     
     /** The {@link LdapGroupDao}. */
     LdapPrincipalDao ldapRoleDao;    
+    
+    LdapMembershipDao ldapMembershipDao;
 
     /** Random seed. */
     Random rand = new Random(System.currentTimeMillis());
 
     /** Group uid. */
-    protected String gpUid1;
+    protected String gpUid1 = "group1";
 
     /** Group uid. */
-    protected String gpUid2;
+    protected String gpUid2 = "group2";
     
     /** Role uid. */
-    protected String roleUid1;
+    protected String roleUid1 = "role1";
 
     /** Role uid. */
-    protected String roleUid2;    
+    protected String roleUid2 = "role2";    
 
     /** User uid. */
-    protected String uid1;
+    protected String uid1 = "user1";
 
     /** User uid. */
-    protected String uid2;
+    protected String uid2 = "user2";
 
     /** The test password. */
     protected String password = "fred";
@@ -104,7 +108,7 @@ public abstract class AbstractLdapTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        LdapBindingConfig ldapConfig = new LdapBindingConfig();
+        LdapBindingConfig ldapConfig = new LdapBindingConfig("apacheds");
         ldapCredDao = new LdapUserCredentialDaoImpl(ldapConfig);
         ldapPrincipalDao = new LdapUserPrincipalDaoImpl(ldapConfig);
 
@@ -112,20 +116,21 @@ public abstract class AbstractLdapTest extends TestCase
         crHandler = new LdapCredentialHandler(ldapCredDao);
         LdapDataHelper.setUserSecurityHandler(userHandler);
         LdapDataHelper.setCredentialHandler(crHandler);
-        uid1 = Integer.toString(rand.nextInt());
-        uid2 = Integer.toString(rand.nextInt());
+//        uid1 = Integer.toString(rand.nextInt());
+//        uid2 = Integer.toString(rand.nextInt());
         
         ldapGroupDao = new LdapGroupDaoImpl(ldapConfig);
         ldapRoleDao = new LdapRoleDaoImpl(ldapConfig);
+        ldapMembershipDao = new LdapMemberShipDaoImpl(ldapConfig);
         grHandler = new LdapGroupSecurityHandler(ldapGroupDao);
         roleHandler = new LdapRoleSecurityHandler(ldapRoleDao);
         LdapDataHelper.setGroupSecurityHandler(grHandler);
         LdapDataHelper.setRoleSecurityHandler(roleHandler);
-        gpUid1 = Integer.toString(rand.nextInt());
-        gpUid2 = Integer.toString(rand.nextInt());
-        
-        roleUid1 = Integer.toString(rand.nextInt());
-        roleUid2 = Integer.toString(rand.nextInt());        
+//        gpUid1 = Integer.toString(rand.nextInt());
+//        gpUid2 = Integer.toString(rand.nextInt());
+//        
+//        roleUid1 = Integer.toString(rand.nextInt());
+//        roleUid2 = Integer.toString(rand.nextInt());        
         
         secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao, ldapRoleDao);
     }

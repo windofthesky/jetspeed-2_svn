@@ -829,7 +829,7 @@
       <arg value="-silent"/>
       <arg value="true"/>
       <arg value="-trace"/>
-      <arg value="false"/>
+      <arg value="true"/>
     </java>
   </goal>
     
@@ -923,7 +923,6 @@
     <echo file="target/apacheds/logs/apacheds.log">${maven.start.ldap.message}</echo>
     <java classname="org.apache.ldap.server.ServerMain" fork="yes">
       <classpath>
-        <pathelement path="${maven.repo.local}/${plugin.groupId}/jars/jetspeed-security-schema-${jetspeed.version}.jar"/>
         <pathelement path="${plugin.getDependencyPath('directory:apacheds-main')}"/>
       </classpath>
       <arg value="${org.apache.jetspeed.plugin.ldap.conf}"/>

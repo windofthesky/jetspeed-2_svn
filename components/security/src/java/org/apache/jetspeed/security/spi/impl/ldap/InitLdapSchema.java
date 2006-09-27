@@ -66,9 +66,13 @@ public class InitLdapSchema extends AbstractLdapDao
      */
     public void init() throws SecurityException
     {
-        initOu(getUsersOu());
-        initOu(getGroupsOu());
-        initOu(getRolesOu());
+    	initOu("OrgUnit1");
+    	initOu("People","ou=OrgUnit1");
+    	initOu("Groups","ou=OrgUnit1");
+    	initOu("Roles","ou=OrgUnit1");
+//        initOu(getUsersOu());
+//        initOu(getGroupsOu());
+//        initOu(getRolesOu());
     }
 
     /**
@@ -86,7 +90,7 @@ public class InitLdapSchema extends AbstractLdapDao
             Attributes attrs = defineLdapAttributes(ou);
             try
             {
-                String dn = "ou=" + ou;
+                String dn = "ou=" + ou; // + "," + getDefaultSearchBase();
                 ctx.createSubcontext(dn, attrs);
             }
             catch (NamingException e)
@@ -95,6 +99,22 @@ public class InitLdapSchema extends AbstractLdapDao
             }
         }
     }
+    
+    public void initOu(String ou,String folder) throws SecurityException
+    {
+        if (!StringUtils.isEmpty(ou))
+        {
+            Attributes attrs = defineLdapAttributes(ou);
+            try
+            {
+                ctx.createSubcontext("ou=" + ou + "," + folder, attrs);
+            }
+            catch (NamingException e)
+            {
+                throw new SecurityException(e);
+            }
+        }
+    }    
 
     /**
      * <p>
@@ -121,5 +141,18 @@ public class InitLdapSchema extends AbstractLdapDao
 	{
 		return null;
 	}
+	
+	protected String getSearchSuffix() {
+		return null;
+	}
+
+	protected String getSearchDomain() {
+		return null;
+	}
+
+	protected String[] getObjectClasses() {
+		return null;
+	}
+
 
 }

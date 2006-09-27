@@ -21,7 +21,6 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 
@@ -35,8 +34,6 @@ import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
 {
 
-	protected String UID_ATTR_NAME = "cn";
-	
     /**
      * <p>
      * Default constructor.
@@ -75,13 +72,10 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
         Attributes attrs = new BasicAttributes(true);
         BasicAttribute classes = new BasicAttribute("objectclass");
 
-        classes.add("top");
-        classes.add("uidObject");
-        classes.add("jetspeed-2-role");
+        for (int i=0;i<getObjectClasses().length;i++)
+        	classes.add(getObjectClasses()[i]);
         attrs.put(classes);
-        attrs.put("uid", principalUid);
-        attrs.put("cn", principalUid);
-        attrs.put("ou", getRolesOu());
+        attrs.put(getEntryPrefix(), principalUid);
         return attrs;
     }
 
@@ -90,16 +84,7 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
      */
     protected String getDnSuffix()
     {
-        String suffix = "";
-        if (!StringUtils.isEmpty(getRolesOu()))
-        {
-            suffix += ",ou=" + getRolesOu();
-        }
-        if (!StringUtils.isEmpty(getDefaultDnSuffix()))
-        {
-            suffix += getDefaultDnSuffix();
-        }
-        return suffix;
+        return this.getRoleFilterBase();
     }
 
     /**
@@ -115,19 +100,21 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
         return new RolePrincipalImpl(principalUid);
     }
 
-    /**
-     * <p>
-     * A template method that returns the LDAP object class of the concrete DAO.
-     * </p>
-     * 
-     * @return A String containing the LDAP object class name.
-     */
-    protected String getObjectClass()
-    {
-        return "jetspeed-2-role";
-    }
-
 	protected String getEntryPrefix() {
-		return "cn";
+		return this.getRoleIdAttribute();
 	}
+	
+	protected String getSearchSuffix() {
+		return this.getRoleFilter();
+	}
+
+	protected String getSearchDomain() {
+		return this.getRoleFilterBase();
+	}	
+
+	protected String[] getObjectClasses() {
+		return this.getRoleObjectClasses();
+	}
+	
+	
 }

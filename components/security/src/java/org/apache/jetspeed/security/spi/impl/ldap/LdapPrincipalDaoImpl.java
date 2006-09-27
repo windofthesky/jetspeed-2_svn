@@ -46,9 +46,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     /** The logger. */
     private static final Log logger = LogFactory.getLog(LdapPrincipalDaoImpl.class);
 
-    /** The uid attribute name. */
-    protected String UID_ATTR_NAME = "uid";
-
+    
     /**
      * <p>
      * Default constructor.
@@ -102,7 +100,9 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         Attributes attrs = defineLdapAttributes(principalUid);
         try
         {
-            String userDn = getEntryPrefix() + "=" + principalUid + getDnSuffix();
+            String userDn = getEntryPrefix() + "=" + principalUid;
+            if (getDnSuffix()!=null && !getDnSuffix().equals("")) userDn+="," + getDnSuffix();// + ',' + getDefaultSearchBase();
+            
             ctx.createSubcontext(userDn, attrs);
             if (logger.isDebugEnabled())
             {
@@ -261,7 +261,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         {
             Attributes atts = searchResult.getAttributes();
 
-            String uid = (String) getAttribute(UID_ATTR_NAME, atts).getAll().next();
+            String uid = (String) getAttribute(getEntryPrefix(), atts).getAll().next();
             Principal principal = makePrincipal(uid);
 
             principals.add(principal);
@@ -288,5 +288,9 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         }
         return null;
     }
+    
+	protected String getSearchDomain() {
+		return this.getUserFilterBase();
+	}    
 
 }

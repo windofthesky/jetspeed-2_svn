@@ -113,7 +113,7 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 			String savedPassword = String.valueOf(getPassword(uid));
 			String oldCredential = (String)env.get(Context.SECURITY_CREDENTIALS);
 			String oldUsername = (String)env.get(Context.SECURITY_PRINCIPAL);
-			env.put(Context.SECURITY_PRINCIPAL,"uid=" + uid + ",ou=" + getUsersOu() + "," +  getRootContext());
+			env.put(Context.SECURITY_PRINCIPAL,"uid=" + uid + "," + getUserFilterBase() + "," + getRootContext());
 			env.put(Context.SECURITY_CREDENTIALS,password);
 			InitialContext ctx = new InitialContext(env);
 			env.put(Context.SECURITY_PRINCIPAL,oldUsername);
@@ -279,4 +279,17 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 	protected String getEntryPrefix() {
 		return "uid";
 	}
+	
+	protected String getSearchSuffix() {
+		return this.getUserFilter();
+	}
+
+	protected String getSearchDomain() {
+		return this.getUserFilterBase();
+	}	
+	
+	protected String[] getObjectClasses() {
+		return this.getUserObjectClasses();
+	}
+	
 }

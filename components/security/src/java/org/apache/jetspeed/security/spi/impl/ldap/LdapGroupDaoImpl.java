@@ -17,13 +17,10 @@ package org.apache.jetspeed.security.spi.impl.ldap;
 
 import java.security.Principal;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.DirContext;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 
@@ -76,13 +73,10 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         Attributes attrs = new BasicAttributes(true);
         BasicAttribute classes = new BasicAttribute("objectclass");
 
-        classes.add("top");
-        classes.add("uidObject");
-        classes.add("jetspeed-2-group");
+        for (int i=0 ; i<getObjectClasses().length ; i++) 
+        	classes.add(getObjectClasses()[i]);
         attrs.put(classes);
-        attrs.put("uid", principalUid);
-        attrs.put("cn", principalUid);
-        attrs.put("ou", getGroupsOu());
+        attrs.put(getEntryPrefix(), principalUid);
         return attrs;
     }
 
@@ -91,16 +85,7 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
      */
     protected String getDnSuffix()
     {
-        String suffix = "";
-        if (!StringUtils.isEmpty(getGroupsOu()))
-        {
-            suffix += ",ou=" + getGroupsOu();
-        }
-        if (!StringUtils.isEmpty(getDefaultDnSuffix()))
-        {
-            suffix += getDefaultDnSuffix();
-        }
-        return suffix;
+       return getGroupFilterBase();
     }
 
     /**
@@ -116,20 +101,21 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         return new GroupPrincipalImpl(principalUid);
     }
 
-    /**
-     * <p>
-     * A template method that returns the LDAP object class of the concrete DAO.
-     * </p>
-     * 
-     * @return A String containing the LDAP object class name.
-     */
-    protected String getObjectClass()
-    {
-        return "jetspeed-2-group";
-    }
 
 	protected String getEntryPrefix() {
-		return "cn";
+		return this.getGroupIdAttribute();
+	}
+	
+	protected String getSearchSuffix() {
+		return this.getGroupFilter();
+	}
+
+	protected String getSearchDomain() {
+		return this.getGroupFilterBase();
+	}
+
+	protected String[] getObjectClasses() {
+		return this.getGroupObjectClasses();
 	}
 	
  	
