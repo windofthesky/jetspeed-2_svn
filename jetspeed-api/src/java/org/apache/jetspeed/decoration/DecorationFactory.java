@@ -136,4 +136,12 @@ public interface DecorationFactory
      * @return A list of layout portlets of type <code>LayoutInfo</code>
      */    
     List getLayouts(RequestContext request);
+    
+    /**
+     * Get the portal-wide list of available desktop skins.
+     * 
+     * @return A list of desktop skins of type <code>String</code>
+     */    
+    Set getDesktopThemes(RequestContext request);
+    
 }
