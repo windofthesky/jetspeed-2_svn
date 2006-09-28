@@ -178,7 +178,7 @@ limitations under the License.
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
         <org.apache.portals.bridges.common.version>1.0.1-dev</org.apache.portals.bridges.common.version>
-        <org.apache.portals.bridges.frameworks.version>1.0</org.apache.portals.bridges.frameworks.version>
+        <org.apache.portals.bridges.frameworks.version>1.0.1-dev</org.apache.portals.bridges.frameworks.version>
         <org.apache.portals.bridges.jpetstore.version>1.0</org.apache.portals.bridges.jpetstore.version>
         <org.apache.portals.bridges.jsf-demo.version>1.0</org.apache.portals.bridges.jsf-demo.version>
         <org.apache.portals.bridges.jsf.version>1.0</org.apache.portals.bridges.jsf.version>
