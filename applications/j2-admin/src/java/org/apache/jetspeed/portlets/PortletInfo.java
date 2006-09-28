@@ -15,13 +15,15 @@
 
 package org.apache.jetspeed.portlets;
 
+import java.io.Serializable;
+
 /**
  * Portlet Info
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class PortletInfo 
+public class PortletInfo implements Serializable 
 {
     /**
      * 
