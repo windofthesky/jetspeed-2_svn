@@ -15,9 +15,11 @@
  */
 package org.apache.jetspeed.container.window.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -234,15 +236,20 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         return portletWindow;
     }
     
+
     public void removeWindows(PortletEntity portletEntity)
     {
-        Iterator entityWindows = portletEntity.getPortletWindowList().iterator();
-        while(entityWindows.hasNext())
+        List tmpWindows = new ArrayList(windows.entrySet());
+        for(int i = 0; i < tmpWindows.size(); i++)
         {
-            Object obj = entityWindows.next();
-            PortletWindow window = (PortletWindow) obj;
-            removeWindow(window);
-        }
+            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+            
+
+            if(portletEntity.getId().equals(window.getPortletEntity().getId()))
+            {
+                removeWindow(window);
+            }
+        }        
     }
     
     public void removeWindow(PortletWindow window)
