@@ -60,6 +60,7 @@ limitations under the License.
 </p>
   <p>
   #includeTabsNavigation($site.siblingPages)
+  <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>  
   #PageActionBar()
   </p>
 </p>

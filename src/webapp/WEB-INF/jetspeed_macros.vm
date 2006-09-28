@@ -97,7 +97,6 @@
 #macro (PageActionBar)
  #set($_actions = $layoutDecoration.actions)
   <div id="portal-page-actions" >        
-    $jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")
     #if($_actions.size() >0)
     #foreach ($_action in $_actions)   
      <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="${_action.Link}" alt="${_action.Alt}" border="0" /></a>

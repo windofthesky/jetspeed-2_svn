@@ -115,6 +115,7 @@ DEALINGS IN THE SOFTWARE.
       <div id="breadcrumbs">
 #if(!$breadcrumbsStandardMenu.empty)
 #includeLinksNavigation($breadcrumbsStandardMenu $LEFT_TO_RIGHT "" $BREADCRUMBS_STYLE "")
+<span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>
 #PageActionBar()
 #else
         &nbsp;

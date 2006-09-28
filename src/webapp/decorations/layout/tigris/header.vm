@@ -90,6 +90,7 @@ limitations under the License.
         &nbsp;
 #end
      <!-- Page Action Bar -->
+    <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>    
      #PageActionBar()
 
    </div>

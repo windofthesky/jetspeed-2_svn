@@ -82,6 +82,7 @@ This original design comes from Open Source Web Design.
         &nbsp;
 #end
      <!-- Page Action Bar -->
+    <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>     
      #PageActionBar()
 
 </div>
