@@ -434,10 +434,9 @@ function updateEditorControls()
 // http://localhost:8080/jetspeed/ajaxapi?action=permissions&method=update&type=portlet&resource=jsf-demo%3A%3A*&roles=admin%2Cuser%2Csubsite2&actions=view%2C%20edit&oldactions=view%2C%20edit xml-content=<js><status>failure</status><action>unknown</action></js>
 
 
-function saveEntrySubmit( removeEntry )
+function saveEntrySubmit( selectedRowData, removeEntry )
 {
     var tTableWidget = getTableWidget();
-    var selectedRowData = tTableWidget.getSelectedRow();
 
     if ( ! selectedRowData ) { dojo.raise( "saveEntrySubmit can't find selectedRowData" ) ; return; }
 
