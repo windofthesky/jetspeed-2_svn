@@ -22,6 +22,7 @@ limitations under the License.
 #set($layoutDecoration = $theme.getDecoration($rootFragment))
 #set($f = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
 #set($decorator = $myPage.getDefaultDecorator($f.getType()))
+#set($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
 
 <html>
   <head>

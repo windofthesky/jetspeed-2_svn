@@ -17,6 +17,7 @@ limitations under the License.
 #set($myPage = $jetspeed.page)
 #set($f = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
 #set($rootFragment = $myPage.rootFragment)
+#set($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
 
 #if ($rootFragment.decoration.header)
    #parse($rootFragment.decoration.header)
