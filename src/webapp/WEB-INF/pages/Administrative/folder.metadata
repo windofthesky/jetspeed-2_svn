@@ -2,10 +2,10 @@
 <folder>
   <title >Jetspeed Administrative Portlets</title>  
   <metadata name="title" xml:lang="fr">Jetspeed Portlets Administratif</metadata>
-  <metadata name="title" xml:lang="ja">Jetspeed 管�?��?ートレット</metadata>
+  <metadata name="title" xml:lang="ja">Jetspeed 管理ポートレット</metadata>
   <metadata name="title" xml:lang="es">Administración de Jetspeed</metadata>
-  <metadata name="title" xml:lang="zh">Jetspeed 管�?�Portlets</metadata>
- 
+  <metadata name="title" xml:lang="zh">Jetspeed 管理Portlets</metadata>
+
   <document-order>user-mgt.psml</document-order>
   <document-order>role-mgt.psml</document-order>
   <document-order>group-mgt.psml</document-order>
@@ -19,10 +19,10 @@
   <menu name="page-navigations">
     <separator>
       <text>Users Admin Pages</text>
-      <metadata name="text" xml:lang="ja">ユーザー管�?�ページ</metadata>
+      <metadata name="text" xml:lang="ja">ユーザー管理ページ</metadata>
       <metadata name="text" xml:lang="es">Administración de usuarios</metadata>
-      <metadata name="text" xml:lang="zh">用户管�?�页</metadata>
-      <metadata name="text" xml:lang="zh-TW">用戶管�?��?</metadata>
+      <metadata name="text" xml:lang="zh">用户管理页</metadata>
+      <metadata name="text" xml:lang="zh-TW">用戶管理頁</metadata>
     </separator>
     <options>/Administrative/user-mgt.psml</options>
     <options>/Administrative/users-jsf.psml</options>
@@ -31,15 +31,15 @@
       <metadata name="text" xml:lang="ja">プロファイルページ</metadata>
       <metadata name="text" xml:lang="es">Su perfil...</metadata>
       <metadata name="text" xml:lang="zh">Profiled页</metadata>
-      <metadata name="text" xml:lang="zh-TW">Profiled�?</metadata>
+      <metadata name="text" xml:lang="zh-TW">Profiled頁</metadata>
     </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
     <separator>
       <text>Non Java Pages</text>
       <metadata name="text" xml:lang="ja">Non-Javaページ</metadata>
       <metadata name="text" xml:lang="es">Páginas sin java</metadata>
-      <metadata name="text" xml:lang="zh">�?�Java Portlets页</metadata>
-      <metadata name="text" xml:lang="zh-TW">�?�Java Portlets�?</metadata>
+      <metadata name="text" xml:lang="zh">非Java Portlets页</metadata>
+      <metadata name="text" xml:lang="zh-TW">非Java Portlets頁</metadata>
     </separator>
     <options>/non-java</options>
   </menu>
