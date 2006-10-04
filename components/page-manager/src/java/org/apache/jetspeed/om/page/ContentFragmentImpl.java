@@ -578,7 +578,8 @@ public class ContentFragmentImpl implements ContentFragment
          */
         public void add(int index, Object element)
         {
-            
+            if (element instanceof ContentFragmentImpl)
+                element = ((ContentFragmentImpl)element).fragment;
             baseList.add(index, element);
         }
 
@@ -587,7 +588,8 @@ public class ContentFragmentImpl implements ContentFragment
          */
         public boolean add(Object o)
         {
-            
+            if (o instanceof ContentFragmentImpl)
+                o = ((ContentFragmentImpl)o).fragment;            
             return baseList.add(o);
         }
 
