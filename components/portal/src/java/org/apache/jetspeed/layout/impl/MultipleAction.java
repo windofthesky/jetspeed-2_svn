@@ -1,3 +1,18 @@
+/*
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.jetspeed.layout.impl;
 
 import java.io.InputStream;
@@ -13,9 +28,8 @@ import java.util.StringTokenizer;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.ajax.AjaxRequestService;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.layout.impl.BasePortletAction;
-import org.apache.jetspeed.layout.impl.Constants;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -62,14 +76,14 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
 
     protected VelocityEngine m_oVelocityEngine = null;
 
-    public MultipleAction(Map p_sActionMap, String p_sTemplate,
+    public MultipleAction(AjaxRequestService requestService, String p_sTemplate,
             String p_sErrorTemplate, PageManager p_oPageManager,
             PortletActionSecurityBehavior p_oSecurityBehavior,
             VelocityEngine p_oVelocityEngine)
     {
         super(p_sTemplate, p_sErrorTemplate, p_oPageManager,
                 p_oSecurityBehavior);
-        m_sActionMap = p_sActionMap;
+        m_sActionMap = requestService.getActionMap();
         m_oVelocityEngine = p_oVelocityEngine;
     }
 
