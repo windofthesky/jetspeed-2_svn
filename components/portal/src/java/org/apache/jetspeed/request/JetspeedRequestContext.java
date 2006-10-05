@@ -137,7 +137,7 @@ public class JetspeedRequestContext implements RequestContext
     {
         return request;
     }
-
+    
     public HttpServletResponse getResponse()
     {
         return response;
@@ -410,6 +410,11 @@ public class JetspeedRequestContext implements RequestContext
     public String getRequestParameter( String key )
     {
         return request.getParameter(key);
+    }
+    
+    public void setRequestParameter(String key, String value)
+    {
+        request.getParameterMap().put(key, value);
     }
 
     /**

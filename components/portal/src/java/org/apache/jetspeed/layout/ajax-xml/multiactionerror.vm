@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <reason>$reason</reason>
+</js>

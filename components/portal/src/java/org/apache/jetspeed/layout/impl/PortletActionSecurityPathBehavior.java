@@ -23,6 +23,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -73,6 +74,7 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
                                                 + Folder.PATH_SEPARATOR 
                                                 + Folder.FALLBACK_DEFAULT_PAGE);                 
                 context.setPage(new ContentPageImpl(page));
+                context.getRequest().getSession().removeAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);                
             }            
         }
         catch (Exception e)
