@@ -99,8 +99,21 @@ limitations under the License.
        the folder), is always selected
    -->
    <constructor-arg index="4"><value>true</value></constructor-arg>    
-  </bean> 
-  
+  </bean>
+     
+  <!-- 
+      To create a new page when a user first logs in from their roles,
+      add this valve after each profilerValve entry in the pipeline configs 
+      below
+   -->  
+  <bean id="createPageValve"
+        class="org.apache.jetspeed.profiler.impl.CreatePageValveImpl"
+  >
+   <constructor-arg index="0">
+       <ref bean="PortletActionSecurityBehavior" />
+   </constructor-arg>
+  </bean>
+
   <bean id="containerValve"
         class="org.apache.jetspeed.container.ContainerValve"
         init-method="initialize"
