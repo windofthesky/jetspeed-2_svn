@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.ajax;
 
+import java.util.Map;
+
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -27,4 +29,5 @@ import org.apache.jetspeed.request.RequestContext;
 public interface AjaxRequestService 
 {
     public void process(RequestContext requestContext) throws AJAXException;
+    public Map getActionMap();
 }

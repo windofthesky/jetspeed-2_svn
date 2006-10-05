@@ -249,5 +249,13 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
             log.error("exception while trying to build an error message", e);
         }
     }
+    
+    /**
+     * @return Returns the objects.
+     */
+    public Map getActionMap()
+    {
+        return objects;
+    }
 
 }
