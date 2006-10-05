@@ -16,6 +16,8 @@
 package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -263,11 +265,12 @@ public class MultiColumnPortlet extends LayoutPortlet
                             String path = parent.getPath();
                             if (path.endsWith(Folder.PATH_SEPARATOR))
                             {
-                                path = path + jsPageName;
+                                path = path + getEscapedPageName(jsPageName);
                             }
                             else
                             {
-                                path = path + Folder.PATH_SEPARATOR + jsPageName;
+                                path = path + Folder.PATH_SEPARATOR
+                                        + getEscapedPageName(jsPageName);
                             }
                             Page page = pageManager.newPage(path);
                             if ( layout == null || layout.length() == 0 )
@@ -491,5 +494,18 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
         }
         return -1;
+    }
+
+    protected String getEscapedPageName(String pageName)
+    {
+        try
+        {
+            return URLEncoder.encode(pageName, "UTF-8").replace("%", "_");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            log.warn("Unsupported Encoding Exception.", e);
+            return pageName;
+        }
     }
 }
