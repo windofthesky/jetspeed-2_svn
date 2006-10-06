@@ -389,7 +389,7 @@
     </constructor-arg>    
 </bean>
         
-<bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
+<bean id="AjaxActionMap" class="java.util.HashMap">
     <constructor-arg index="0">
         <map>
             <entry key="move">
@@ -449,11 +449,14 @@
             <entry key="constraints">
                 <ref bean="AjaxSecurityConstraints"/>
             </entry>			                                    
-            <entry key="multiple">
-                <ref bean="AjaxMultipleAction"/>
-            </entry>
         </map>
-    </constructor-arg>
+    </constructor-arg>    
+</bean>    
+
+<bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
+    <constructor-arg index="0">
+        <ref bean="AjaxActionMap"/>
+    </constructor-arg>   
     <constructor-arg index="1">
         <ref bean="AjaxVelocityEngine"/>
     </constructor-arg>

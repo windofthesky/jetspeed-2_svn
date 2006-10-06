@@ -36,6 +36,9 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
  * 
@@ -55,7 +58,7 @@ import org.apache.velocity.context.Context;
  * 
  */
 public class MultipleAction extends BasePortletAction implements AjaxAction,
-        AjaxBuilder
+        AjaxBuilder, BeanFactoryAware
 {
 
     protected static final String ALL_RESULTS = "results";
@@ -72,7 +75,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
 
     protected static final String VALUE_TOKEN = ",";
 
-    protected Map m_sActionMap = null;
+    protected Map actionMap = null;
 
     protected VelocityEngine m_oVelocityEngine = null;
 
@@ -83,10 +86,17 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
     {
         super(p_sTemplate, p_sErrorTemplate, p_oPageManager,
                 p_oSecurityBehavior);
-        m_sActionMap = requestService.getActionMap();
+        actionMap = requestService.getActionMap();
         m_oVelocityEngine = p_oVelocityEngine;
     }
 
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException
+    {
+        // get the proxied object for this, and put it in the map to avoid circular dep
+        Object proxy = beanFactory.getBean("AjaxMultipleAction");
+        actionMap.put("multiple", proxy);        
+    }
+    
     public boolean run(RequestContext p_oRequestContext, Map p_oResultMap)
             throws AJAXException
     {
@@ -136,7 +146,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
             String a_sAction = a_oParamTok.nextToken();
 
             // Lookup the action from the action map
-            Object a_oActionObject = m_sActionMap.get(a_sAction);
+            Object a_oActionObject = actionMap.get(a_sAction);
             if (a_oActionObject == null
                     && !(a_oActionObject instanceof AjaxAction))
             {
