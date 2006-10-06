@@ -41,7 +41,6 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
     nextIndex: 1,
 
     windowPositionStatic: false,
-    windowColumnSpan: null,
     windowIsColumnBound: false,
     titleMouseIn: 0,
     titleLit: false,
@@ -181,7 +180,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
     {
         this.windowPositionStatic = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
         this.windowColumnSpan = this.getInitProperty( jetspeed.id.PORTLET_PROP_COLUMN_SPAN );
-        if ( this.windowColumnSpan != null || this.windowPositionStatic )
+        if ( this.windowPositionStatic )
             this.windowIsColumnBound = true;
 
         this.constrainToContainer = 0;
@@ -189,12 +188,12 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         var portletWidth = null, portletHeight = null, portletLeft = null, portletTop = null;
         if ( this.portlet )
         {
-            var portletWindowState = this.portlet.getLastSavedWindowState();
-        	portletWidth = portletWindowState.width;
-            portletHeight = portletWindowState.height;
-            portletLeft = portletWindowState.left;
-            portletTop = portletWindowState.top;
-            // NOTE: portletWindowState.zIndex;  - should be dealt with in the creation order
+            var portletWindowDimensions = this.portlet.getInitialWindowDimensions();
+        	portletWidth = portletWindowDimensions.width;
+            portletHeight = portletWindowDimensions.height;
+            portletLeft = portletWindowDimensions.left;
+            portletTop = portletWindowDimensions.top;
+            // NOTE: portletWindowDimensions.zIndex;  - should be dealt with in the creation order
         }
         else
         {
@@ -224,7 +223,6 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
                 dimensionsCss += "; left: " + portletLeft + "; top: " + portletTop + ";";
         
             source.style.cssText = dimensionsCss;
-            //dojo.debug( "PortletWindow.setWindowDimensions: " + dimensionsCss );
         }
         else
         {   // update dimensions
@@ -541,13 +539,13 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         //dojo.debug( "restore [" + this.widgetId + "] begin container[w=" + dojo.style.getOuterWidth( this.containerNode ) + " h=" + dojo.style.getOuterHeight( this.containerNode ) + "] domNode[w=" + dojo.style.getOuterWidth( this.domNode ) + " h=" + dojo.style.getOuterHeight( this.domNode ) + "]" );
         if ( this.previous.columnIndex != null )
         {
-            var columnElmt = jetspeed.columns[ this.previous.columnIndex ];
+            var columnElmt = jetspeed.page.columns[ this.previous.columnIndex ];
             if ( this.previous.previousSibling )
                 dojo.dom.insertAfter( this.domNode, this.previous.previousSibling );
             else if ( this.previous.nextSibling )
                 dojo.dom.insertBefore( this.domNode, this.previous.nextSibling );
             else
-                columnElmt.appendChild( this.domNode );
+                columnElmt.domNode.appendChild( this.domNode );
 
             this.domNode.style.position = "static";
         }
@@ -588,7 +586,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
                     this.previous.nextSibling = sibling;
             }
             
-            this.previous.columnIndex = this.getWindowColumnIndex();
+            this.previous.columnIndex = this.getPageColumnIndex();
             
             this.domNode.style.position = "absolute";
             jetspeedDesktop.appendChild( this.domNode );
@@ -711,149 +709,6 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         dojo.debug( "window-position [" + this.widgetId + "] x=" + winAbsPos.x + " y=" + winAbsPos.y + " width=" + winWidth + " height=" + winHeight + " cNode-width=" + winContainerNodeWidth + " cNode-height=" + winContainerNodeHeight + " document-width=" + dojo.style.getOuterWidth( document[ "body" ] ) + " document-height=" + dojo.style.getOuterHeight( document[ "body" ] ) ) ;
     },
 
-    /* makeSpaning - new layout management (not yet used) */
-    makeSpaning: function( span )
-    {
-        var currentColumn = this.getWindowColumnIndex();
-        if ( currentColumn != null && span > 1 )
-        {
-            if ( ( currentColumn + span - 1 ) >= jetspeed.columns )
-                return;
-            // anchor to current abs x,y and then across columns
-            
-        }
-    },
-
-    /* _makeSpaningGhosts - new layout management (not yet used) */
-    _makeSpaningGhosts: function( startColumn, span )
-    {
-        var winAbsPos = dojo.style.getAbsolutePosition( this.domNode, true );
-        var winMarginTop = dojo.style.getPixelValue( this.domNode, "margin-top", true );
-        var winMarginLeft = dojo.style.getPixelValue( this.domNode, "margin-left", true );
-
-        var winHeight = dojo.style.getOuterHeight( this.domNode );
-        var x = winAbsPos.x;  //  - winMarginTop;
-		var y = winAbsPos.y;  //  - winMarginLeft;
-    
-        var inCol = startColumn;
-        var spacerInstance = 1;
-        var firstSpacerChildIndex = -1;
-        var firstSpacerYPos = null;
-        var spacerWindows = jetspeed.ui.getSpacerWindows( this.widgetId, span );
-        var columnTopWindowYPos = null;
-        
-        var spacerWindow, portletWindowsResult, portletWindowsInCol, colChildNodeIndex, colAdjusted;
-        var tNode, tNodeAbsPos, insertbefore, append, spacerHeight, deferHeightAfter;
-        while ( inCol <= startColumn + ( span - 1 ) )
-        {
-            spacerWin = spacerWindows[ inCol - startColumn ];
-            portletWindowsResult = jetspeed.ui.getPortletWindowChildren( inCol, null, true );
-            portletWindowsInCol = portletWindowsResult.portletWindowNodes;
-            colChildNodeIndex = 0;
-            colAdjustedNode = null;
-            while ( colChildNodeIndex < portletWindowsInCol.length || ( portletWindowsInCol.length == 0 && colChildNodeIndex == 0 ) )
-            {
-                if ( colAdjustedNode != null )
-                {
-                    tNode = portletWindowsInCol[ colChildNodeIndex ];
-                    if ( tNode != colAdjustedNode )
-                    {
-                        if ( dojo.html.hasClass( tNode, jetspeed.id.PORTLET_WINDOW_GHOST_STYLE_CLASS ) )
-                        {
-                            var tSpWin = jetspeed.ui.getSpacerWindowFromNode( tNode );
-                            if ( tSpWin == null )
-                            {
-                                // BOZO: what is this supposed to be?
-                                // error or ignore?
-                            }
-                            else if ( tSpWin.domNodeIdPrefix == spacerWin.domNodeIdPrefix )
-                            {
-                                dojo.dom.removeNode( tNode );   // node is associated with 'this' PortletWindow, it should not be in already adj'd col
-                            }
-                            else if ( tSpWin.instanceNumber == 1 )
-                            {
-                                // the spanning PortletWindow position likely needs to be adjusted
-                                // if the spacerWin is the left-most (first) for the associated PortletWindow
-                                // call this method and take over for next
-                                
-                                break;   // done with column
-                            }
-                            else
-                            {
-                                
-                            }
-                        }
-                    }
-                    continue;
-                }
-                if ( portletWindowsInCol.length == 0 )
-                {
-                    append = true ;
-                    insertbefore = false;
-                    tNode = null;
-                    tNodeAbsPos = null;
-                }
-                else
-                {
-                    tNode = portletWindowsInCol[ colChildNodeIndex ];
-                    tNodeAbsPos = dojo.style.getAbsolutePosition( this.domNode, true );
-                    if ( columnTopWindowYPos == null && colChildNodeIndex == 0 )
-                        columnTopWindowYPos = tNodeAbsPos.y;
-                    insertbefore = ( y <= tNodeAbsPos.y );
-                    append = ( ! insertbefore && ( (colChildNodeIndex+1) >= portletWindowsInCol.length ) );
-                }
-                if ( insertbefore || append )
-                {
-                    deferHeightAfter = false;
-                    spacerHeight = winHeight;
-                    if ( spacerInstance > 1 )
-                    {   // height must extend up to the closest child that does not extend to y
-                        if ( firstSpacerYPos != null && tNodeAbsPos != null && tNodeAbsPos.y == firstSpacerYPos )
-                        {
-                            // do nothing - keep winHeight as is
-                        }
-                        else if ( colChildNodeIndex == 0 )
-                        {   // this does not mean that we are flush with top - check
-                            if ( firstSpacerChildIndex > 0 )
-                            {
-                                if ( columnTopWindowYPos != null )
-                                {
-                                    winHeight = winHeight + ( firstSpacerYPos - columnTopWindowYPos );
-                                }
-                                else
-                                {
-                                    deferHeightAfter = true;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            winHeight = winHeight + ( firstSpacerYPos - tNodeAbsPos.y );
-                        }
-                    }
-                    else
-                    {
-                        firstSpacerChildIndex = colChildNodeIndex;
-                        firstSpacerYPos = ( (tNodeAbsPos == null) ? null : tNodeAbsPos.y );
-                    } 
-                    spacerWindow.sizeDomNode( spacerHeight );
-                    if ( insertbefore )
-                        dojo.dom.insertBefore( spacerWindow.domNode, tNode, true );
-                    else
-                        jetspeed.columns[ inCol ].appendChild( spacerWindow.domNode );
-                    colAdjustedNode = spacerWindow.domNode;
-                    if ( deferHeightAfter )
-                    {
-                        tNodeAbsPos = dojo.style.getAbsolutePosition( spacerWindow.domNode, true );
-                        spacerHeight = winHeight + ( firstSpacerYPos - tNodeAbsPos.y );
-                        spacerWindow.sizeDomNode( spacerHeight );
-                    }
-                }
-                colChildNodeIndex++;
-            }
-        }
-    },
-
     makeFreeFloating: function( positioningNode )
     {
         if ( ! positioningNode )
@@ -882,30 +737,27 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         var titleBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", targetNodeIds: [ this.titleBar.id ], contextMenuForWindow: false }, null );
         var dumpPosMenuItem = dojo.widget.createWidget( "MenuItem2", { caption: "Dump Position"} );
         var makeFreeFloating = dojo.widget.createWidget( "MenuItem2", { caption: "Make Free Floating"} );
-        //var twoColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item3", caption: "Two Column Layout"} );
-        //var threeColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstb_menu_item4", caption: "Three Column Layout"} );
         
         dojo.event.connect( dumpPosMenuItem, "onClick", function(e) { portletWindow.dumpPostionInfo(); } );
         dojo.event.connect( makeFreeFloating, "onClick", function(e) { portletWindow.makeFreeFloating(); } );
-        //dojo.event.connect( freeFormLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = false; jetspeed.page.resetWindowLayout(); jetspeed.page.reload(); } );
-        //dojo.event.connect( twoColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 2; jetspeed.page.reload(); } );
-        //dojo.event.connect( threeColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 3; jetspeed.page.reload(); } );
+
         titleBarContextMenu.addChild( dumpPosMenuItem );
         titleBarContextMenu.addChild( makeFreeFloating );
-        //titleBarContextMenu.addChild( twoColummLayoutMenuItem );
-        //titleBarContextMenu.addChild( threeColummLayoutMenuItem );
+
         document.body.appendChild( titleBarContextMenu.domNode );
     },
     
-    getWindowColumnIndex: function()
+    getPageColumnIndex: function()
     {
         var inColIndex = null;
-        if ( ! jetspeed.columns ) return inColIndex;
-        for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+        if ( ! jetspeed.page.columns ) return inColIndex;
+        for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
         {
-            var columnElmt = jetspeed.columns[i];
-            if ( dojo.dom.isDescendantOf( this.domNode, columnElmt, true ) )
+            if ( jetspeed.page.columns[i].containsNode( this.domNode ) )
+            {
                 inColIndex = i;
+                break;
+            }
         }
         return inColIndex;
     },
@@ -1069,11 +921,17 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindow, {
         }
         else
         {
-            var columnRowResult = jetspeed.ui.getPortletWindowColumnRow( this.domNode );
+            var columnRowResult = jetspeed.page.getPortletCurrentColumnRow( this.domNode );
             if ( columnRowResult != null )
             {
                 cWinState.column = columnRowResult.column;
                 cWinState.row = columnRowResult.row;
+                cWinState.layout = columnRowResult.layout;
+            }
+            else
+            {
+                dojo.raise( "PortletWindow.getCurrentWindowState cannot not find row/column/layout of window: " + this.widgetId ) ;
+                // BOZO:NOW: test this with maximize/minimize
             }
         }
         return cWinState;
@@ -1255,15 +1113,15 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
             // domNode removal from column - add to desktop for visual freeform drag
             document.getElementById( jetspeed.id.DESKTOP ).appendChild( portletWindowNode );
 
-            var inColIndex = this.portletWindow.getWindowColumnIndex();
+            var inColIndex = this.portletWindow.getPageColumnIndex();
 
-            this.columnsX = new Array( jetspeed.columns.length );
-            for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+            this.columnsX = new Array( jetspeed.page.columns.length );
+            for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
             {
-                this.columnsX[ i ] = dojo.style.getAbsoluteX( jetspeed.columns[i], true );
+                this.columnsX[ i ] = dojo.style.getAbsoluteX( jetspeed.page.columns[i].domNode, true );
             }
             
-            var inCol = ( inColIndex >= 0 ? jetspeed.columns[ inColIndex ] : null );
+            var inCol = ( inColIndex >= 0 ? jetspeed.page.columns[ inColIndex ] : null );
             pwGhost.col = inCol;
         }
 
@@ -1296,19 +1154,19 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
         if ( this.windowPositionStatic )
         {
             var colIndex = -1;
-            for ( var i = jetspeed.columns.length-1 ; i >= 0  ; i-- )
+            for ( var i = jetspeed.page.columns.length-1 ; i >= 0  ; i-- )
             {
                 //dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + i + "] columnsX=" + this.columnsX[i] + " this.domNode.offsetWidth/2=" + (this.domNode.offsetWidth/2) + " x=" + x );
                 if ( ( x + ( this.domNode.offsetWidth / 2 ) ) >= this.columnsX[ i ] )
                 {
-                    if ( y + ( this.domNode.offsetHeight / 2 ) >=  dojo.style.getAbsoluteY( jetspeed.columns[i], true ) )
+                    if ( y + ( this.domNode.offsetHeight / 2 ) >=  dojo.style.getAbsoluteY( jetspeed.page.columns[i].domNode, true ) )
                     {
                         colIndex = i;
                         break;
                     }
                 }
             }
-            var col = ( colIndex >= 0 ? jetspeed.columns[ colIndex ] : null );
+            var col = ( colIndex >= 0 ? jetspeed.page.columns[ colIndex ] : null );
             //if ( col != null )
             //    dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + colIndex + "] columnsX=" + this.columnsX[colIndex] + " this.domNode.offsetWidth=" + this.domNode.offsetWidth + " x=" + x );
             //else
@@ -1318,10 +1176,10 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
             {
                 dojo.dom.removeNode( pwGhost );
 				pwGhost.col = col;
-				col.appendChild(pwGhost);
+				col.domNode.appendChild(pwGhost);
 			}
             
-            var portletWindowsResult = jetspeed.ui.getPortletWindowChildren( col, pwGhost );
+            var portletWindowsResult = jetspeed.ui.getPortletWindowChildren( col.domNode, pwGhost );
             var portletWindowsInCol = portletWindowsResult.portletWindowNodes;
             
             if ( portletWindowsInCol )
@@ -1350,7 +1208,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletWindowDragMoveObject, {
                         if ( ghostIndex + 2 < portletWindowsInCol.length )
                             dojo.dom.insertBefore( pwGhost, portletWindowsInCol[ ghostIndex +2 ], true );
                         else
-                            col.appendChild( pwGhost );
+                            col.domNode.appendChild( pwGhost );
                     }
                     else
                     {
@@ -1479,12 +1337,12 @@ dojo.lang.extend( jetspeed.ui.SpacerWindow, {
     },
     _getGroupSiblings: function( /* boolean */ includeSelf )
     {
-        if ( ! jetspeed.columns ) return null;
+        if ( ! jetspeed.page.columns ) return null;
         var siblings = [];
-        for ( var i = 0 ; i < jetspeed.columns.length ; i++ )
+        for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
         {
-            var columnElmt = jetspeed.columns[i];
-            var spacerChildren = jetspeed.ui.getPortletWindowChildren( columnElmt, null, true, true );
+            var columnElmt = jetspeed.page.columns[i];
+            var spacerChildren = jetspeed.ui.getPortletWindowChildren( columnElmt.domNode, null, true, true );
             if ( spacerChildren == null ) continue;
             for ( var j = 0 ; j < spacerChildren.length ; j++ )
             {

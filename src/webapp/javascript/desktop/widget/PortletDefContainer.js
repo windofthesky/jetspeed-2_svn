@@ -138,7 +138,7 @@ dojo.lang.extend( jetspeed.ui.widget.PortletDefDragSource, {
 
         var dragObj = new jetspeed.ui.widget.PortletWindowDragMoveObject( this.windowWidget, this.windowWidget.domNode, this.type );
 
-        jetspeed.addPortletDefinition( this.portletDef, this.windowWidget.widgetId );
+        jetspeed.addNewPortletDefinition( this.portletDef, this.windowWidget.widgetId );
 
 		return dragObj;
 	},
