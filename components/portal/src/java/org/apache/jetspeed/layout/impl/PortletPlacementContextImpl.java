@@ -60,6 +60,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 {
     private static final String COLUMN = "column";
     private static final String ROW = "row";
+    
+    private static final int NO_DEPTH_LIMIT = -1;
 
     /** Logger */
     private Log log = LogFactory.getLog(PortletPlacementContextImpl.class);
@@ -90,24 +92,34 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	protected int numberOfColumns = -1;
 	
     protected Page page;
-    protected Fragment root;
+    protected Fragment containerFragment;
         
 	public PortletPlacementContextImpl(RequestContext requestContext) 
     throws PortletPlacementException 
     {
-		init(requestContext);
+		init(requestContext, null, NO_DEPTH_LIMIT);
 	}
+    
+    public PortletPlacementContextImpl(RequestContext requestContext, Fragment container, int maxdepth) 
+    throws PortletPlacementException 
+    {
+        init(requestContext, container, maxdepth);
+    }
 	
 	// Initialize the data structures by getting the fragments
 	// from the page manager
-	protected void init(RequestContext requestContext) 
+	protected void init(RequestContext requestContext, Fragment container, int maxdepth) 
     throws PortletPlacementException 
     {
         this.page = requestContext.getPage();
-        this.root = page.getRootFragment();
+        if ( container == null )
+        {
+            container = page.getRootFragment();
+        }
+        this.containerFragment = container;
         
         // Recursively process each fragment
-        processFragment(root);
+        processFragment(container, maxdepth);
 
         // The final step is to populate the array with the fragments
 		populateArray();
@@ -119,7 +131,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	 * Evaluate each portlet fragment and populate the internal data
 	 * structures
 	 */
-	protected void processFragment(Fragment fragment) 
+	protected void processFragment(Fragment fragment, int remainingDepth) 
     throws PortletPlacementException 
     {
         int rowCount = 0;
@@ -142,16 +154,19 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 rowCount++;
 			}
 			
-			// Process the children
-			List children = fragment.getFragments();
-			for(int ix = 0; ix < children.size(); ix++) 
+            if ( remainingDepth == NO_DEPTH_LIMIT || remainingDepth > 0 )
             {
-				Fragment childFrag = (Fragment)children.get(ix);
-				
-				if(childFrag != null) 
+                // Process the children
+                List children = fragment.getFragments();
+                for(int ix = 0; ix < children.size(); ix++) 
                 {
-					processFragment(childFrag);
-				}
+                    Fragment childFrag = (Fragment)children.get(ix);
+				
+                    if(childFrag != null) 
+                    {
+                        processFragment(childFrag, ((remainingDepth == NO_DEPTH_LIMIT) ? NO_DEPTH_LIMIT : remainingDepth-1) );
+                    }
+                }
 			}
 		}		
 	}
@@ -175,7 +190,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 //root.getFragments().add(fragment);
             }
         }
-        return root;
+        return containerFragment;
     }
 
     /**
@@ -328,6 +343,32 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return column;
 	}
 	
+    public int addColumns( int col )
+        throws PortletPlacementException 
+    {
+        if ( col > this.numberOfColumns )
+        {            
+            if ( col < 100 ) // arbitrary limit of columns
+            {
+                // expand
+                int prevNumberOfColumns = this.numberOfColumns;
+                this.numberOfColumns = col + 1;
+                
+                Vector [] temp = new Vector[this.numberOfColumns];
+                for (int ix = 0; ix < prevNumberOfColumns; ix++)
+                    temp[ix] = this.columnsList[ix];
+                for (int ix = prevNumberOfColumns; ix < temp.length; ix++)
+                    temp[ix] = new Vector();
+                this.columnsList = temp;
+            }
+            else
+            {
+                throw new PortletPlacementException( "cannot add column - " + col + " is above the limit of columns that this api supports" );
+            }
+        }
+        return col;
+    }
+
 	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException 
     {
         int col = coordinate.getNewCol();
@@ -340,15 +381,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
             col = 0;
         }        
         if (col > this.numberOfColumns)
-        {            
-            // expand
-            this.numberOfColumns++;
-            col = this.numberOfColumns - 1;
-            Vector [] temp = new Vector[this.numberOfColumns];
-            for (int ix = 0; ix < this.numberOfColumns - 1; ix++)
-                temp[ix] = this.columnsList[ix];
-            temp[col] = new Vector();
-            this.columnsList = temp;
+        {    
+            col = addColumns( col );
         }
         
         Vector column = this.columnsList[col];
@@ -504,6 +538,11 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		// The next two lines must occur after the remove above.  This is
 		// because the new and old columns might be the same and the remove
 		// will change the number of rows
+        if (newCol > this.numberOfColumns)
+        {    
+            newCol = addColumns( newCol );
+        }
+
 		List newRowList = this.columnsList[newCol];
 		int numRowsNewColumn = newRowList.size();
 		

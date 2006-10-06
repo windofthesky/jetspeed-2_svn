@@ -29,6 +29,7 @@ public interface Constants
     public static final String REASON = "reason";
 	public static final String PORTLETID = "id";
     public static final String PORTLETENTITY = "entity";
+    public static final String LAYOUTID = "layoutid";
     public static final String WINDOW_STATE = "state";
     public static final String PORTLET_MODE = "mode";
     public static final String OLD_WINDOW_STATE = "oldState";
