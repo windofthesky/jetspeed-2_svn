@@ -500,7 +500,7 @@ public class MultiColumnPortlet extends LayoutPortlet
     {
         try
         {
-            return URLEncoder.encode(pageName, "UTF-8").replace("%", "_");
+            return URLEncoder.encode(pageName, "UTF-8").replace('%', '_');
         }
         catch (UnsupportedEncodingException e)
         {
