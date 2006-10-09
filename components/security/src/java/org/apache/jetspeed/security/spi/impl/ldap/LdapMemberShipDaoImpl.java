@@ -16,7 +16,9 @@ import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
 import javax.naming.ldap.LdapName;
+*/
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,10 +50,13 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    {
 	        logger.debug("query[" + query + "]");
 	    }
-	    Name name = new LdapName(getGroupFilterBase());
+
+/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
+        Name name = new LdapName(getGroupFilterBase());
 	    NamingEnumeration searchResults = ((DirContext) ctx).search(name,query , cons);
-	
+*/
 	   List groupPrincipalUids = new ArrayList();
+/*       
 	    while (searchResults.hasMore())
 	    {
 	        SearchResult result = (SearchResult) searchResults.next();
@@ -59,6 +64,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	
 	        groupPrincipalUids.addAll(getAttributes(getAttribute(getGroupIdAttribute(), answer)));
 	    }
+*/        
 	    return (String[]) groupPrincipalUids.toArray(new String[groupPrincipalUids.size()]);
 	
 	}
@@ -90,11 +96,13 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    {
 	        logger.debug("query[" + query + "]");
 	    }
-	    
+
+/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
 	    Name name = new LdapName(getRoleFilterBase()) ;
 	    NamingEnumeration searchResults = ((DirContext) ctx).search(name,query , cons);
-	
+*/	
 	    List rolePrincipalUids = new ArrayList();
+/*        
 	     while (searchResults.hasMore())
 	     {
 	    	 
@@ -103,6 +111,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	
 	         rolePrincipalUids.addAll(getAttributes(getAttribute(getRoleIdAttribute(), answer)));
 	     }
+*/         
 	     return (String[]) rolePrincipalUids.toArray(new String[rolePrincipalUids.size()]);
 	}
 

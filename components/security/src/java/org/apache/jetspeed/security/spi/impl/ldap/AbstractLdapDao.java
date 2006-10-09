@@ -261,7 +261,10 @@ public abstract class AbstractLdapDao
         while ((null != searchResults) && searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
+            
+/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
             userDn = searchResult.getNameInNamespace();
+*/            
 //            if (searchResult.getObject() instanceof DirContext)
 //            {
 //                DirContext userEntry = (DirContext) searchResult.getObject();
