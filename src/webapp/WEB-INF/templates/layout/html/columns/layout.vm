@@ -58,9 +58,11 @@ limitations under the License.
     #if($isRoot)
       #getBoolProperty($allowChangePageTheme $rootDecorator "allow.change.page.theme" true)
       #getBoolProperty($allowAddPage $rootDecorator "allow.add.page" true)
+      #getBoolProperty($allowDeletePage $rootDecorator "allow.delete.page" true)
     #else
       #set($allowChangePageTheme=false)
       #set($allowAddPage=false)
+      #set($allowDeletePage=false)
     #end
 
     #getIntProperty($maxLayoutNesting $rootDecorator "max.layout.nesting" 2)
@@ -80,21 +82,29 @@ limitations under the License.
       #set($submit = ".submit()")
 
       <form name="$form" action="$formAction" method='post'>
+        #if($allowAddLayout||$allowChangeLayout)
+          <div class="layout-title">Layout Configuration</div>
+          <div class="layout-content">
+        #end
         #if ($allowChangePageTheme)
-          <label>$messages.getString("portal.page.editing.theme")</label>
+          <div>
+          <label for="theme">$messages.getString("portal.page.editing.theme")</label>
           <select id='theme' name='theme' onChange="$form$submit">
             #foreach($td in $decorationFactory.getPageDecorations($rc))
               <option value='$td' #if($rootDecorator.Name == $td) SELECTED #end>$td
             #end
           </select>   
+          </div>
         #end
         #if($allowAddLayout||$allowChangeLayout)
-          <label>$messages.getString("portal.page.editing.layout")</label>
+          <div>
+          <label for="layout">$messages.getString("portal.page.editing.layout")</label>
           <select id='layout' name='layout'>
             #foreach($ld in $decorationFactory.getLayouts($rc))     
               <option value='$ld.Name' #if($myFragment.Name == $ld.Name) SELECTED #end>$ld.DisplayName
             #end
           </select>
+          </div>
         #end
         #if ($allowChangeLayout)
           <input type="submit" name="jsChangeLayout" value="$messages.getString("portal.page.editing.changelayout")" />
@@ -102,10 +112,29 @@ limitations under the License.
         #if($allowAddLayout)
           <input type="submit" name="jsAddLayout" value="$messages.getString("portal.page.editing.addlayout")" />
         #end    
+        #if($allowAddLayout||$allowChangeLayout)
+          </div>
+        #end
+
+        #if($allowAddPage||$allowDeletePage)
+          <div class="page-title">Page Configuration</div>
+          <div class="page-content">
+        #end
         #if($allowAddPage)
-          <label>$messages.getString("portal.page.editing.page")</label>
+          <div>
+          <label for="newpage">$messages.getString("portal.page.editing.page")</label>
           <input id='newpage' name='jsPageName'/>
           <input type="submit" name="jsSubmitPage" value="$messages.getString("portal.page.editing.addpage")"/>
+          </div>
+        #end
+        #if($allowDeletePage)
+          <div>
+          <label for="deletepage">Delete this page:</label>
+          <input id="deletepage" type="submit" name="jsDeletePage" value="Delete" onclick="if(window.confirm('Do you want to delete this page?')){return true;}return false;"/>
+          </div>
+        #end
+        #if($allowAddPage||$allowDeletePage)
+          </div>
         #end
       </form>
     </div>    

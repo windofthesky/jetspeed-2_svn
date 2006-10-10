@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -291,6 +291,20 @@ public class MultiColumnPortlet extends LayoutPortlet
                 }
                 return;
             }
+
+            if ( request.getParameter("jsDeletePage" ) != null )
+            {
+                try
+                {
+                    pageManager.removePage(requestPage);
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException("Unable to access page for removing: "+e.getMessage(), e);
+                }
+                return;
+            }
+
             
             String theme = request.getParameter("theme");
             if ( theme != null && theme.length() > 0 && !theme.equals(requestPage.getDefaultDecorator(Fragment.LAYOUT)) )
