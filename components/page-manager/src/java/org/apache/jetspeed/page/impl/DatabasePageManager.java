@@ -940,7 +940,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             page = (Page)ProxyHelper.getRealObject(page);
 
             // look up and set parent folder if necessary
-            if (page.getParent() == null)
+            FolderImpl parent = (FolderImpl)page.getParent();
+            if (parent == null)
             {
                 // access folder by path
                 String pagePath = page.getPath();
@@ -949,7 +950,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     parentPath = Folder.PATH_SEPARATOR;
                 }
-                FolderImpl parent = null;
                 try
                 {
                     parent = (FolderImpl)getFolder(parentPath);                    
@@ -969,7 +969,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(page.getPath(), TransactionedOperation.ADD_OPERATION));
 
                 // reset parent folder pages cache
-                parent.resetPages(false);
+                if (parent != null)
+                {
+                    parent.resetPages(false);
+                }
 
                 // notify page manager listeners
                 delegator.notifyNewNode(page);
@@ -983,6 +986,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().store(page);
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(page.getPath(), TransactionedOperation.UPDATE_OPERATION));
                 
+                // reset parent folder pages cache in case
+                // parent is holding an out of date copy of
+                // this page that was removed from the cache
+                // before this one was accessed
+                if (parent != null)
+                {
+                    parent.resetPages(false);
+                }
+
                 // notify page manager listeners
                 delegator.notifyUpdatedNode(page);
             }
@@ -1027,7 +1039,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(page);
                 
                 // reset parent folder pages cache
-                parent.resetPages(false);
+                if (parent != null)
+                {
+                    parent.resetPages(false);
+                }
             }
             else
             {
@@ -1068,7 +1083,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folder = (Folder)ProxyHelper.getRealObject(folder);
 
             // look up and set parent folder if required
-            if ((folder.getParent() == null) && !folder.getPath().equals(Folder.PATH_SEPARATOR))
+            FolderImpl parent = (FolderImpl)folder.getParent();
+            if ((parent == null) && !folder.getPath().equals(Folder.PATH_SEPARATOR))
             {
                 // access folder by path
                 String folderPath = folder.getPath();
@@ -1077,7 +1093,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     parentPath = Folder.PATH_SEPARATOR;
                 }
-                FolderImpl parent = null;
                 try
                 {
                     parent = (FolderImpl)getFolder(parentPath);
@@ -1097,7 +1112,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(folder.getPath(), TransactionedOperation.ADD_OPERATION));
 
                 // reset parent folder folders cache
-                parent.resetFolders(false);
+                if (parent != null)
+                {
+                    parent.resetFolders(false);
+                }
 
                 // notify page manager listeners
                 delegator.notifyNewNode(folder);
@@ -1124,6 +1142,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 else
                 {
                     DatabasePageManagerCache.addTransaction(new TransactionedOperation(folder.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                }
+
+                // reset parent folder folders cache in case
+                // parent is holding an out of date copy of
+                // this folder that was removed from the cache
+                // before this one was accessed
+                if (parent != null)
+                {
+                    parent.resetFolders(false);
                 }
 
                 // notify page manager listeners
@@ -1258,7 +1285,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(folder);
 
                 // reset parent folder folders cache
-                parent.resetPages(false);
+                if (parent != null)
+                {
+                    parent.resetFolders(false);
+                }
             }
             else
             {
@@ -1362,7 +1392,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             link = (Link)ProxyHelper.getRealObject(link);
 
             // look up and set parent folder if necessary
-            if (link.getParent() == null)
+            FolderImpl parent = (FolderImpl)link.getParent();
+            if (parent == null)
             {
                 // access folder by path
                 String linkPath = link.getPath();
@@ -1371,7 +1402,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     parentPath = Folder.PATH_SEPARATOR;
                 }
-                FolderImpl parent = null;
                 try
                 {
                     parent = (FolderImpl)getFolder(parentPath);
@@ -1391,7 +1421,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(link.getPath(), TransactionedOperation.ADD_OPERATION));
 
                 // reset parent folder links cache
-                parent.resetLinks(false);
+                if (parent != null)
+                {
+                    parent.resetLinks(false);
+                }
 
                 // notify page manager listeners
                 delegator.notifyNewNode(link);
@@ -1404,6 +1437,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update link and mark cache transaction
                 getPersistenceBrokerTemplate().store(link);
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(link.getPath(), TransactionedOperation.UPDATE_OPERATION));
+
+                // reset parent folder links cache in case
+                // parent is holding an out of date copy of
+                // this link that was removed from the cache
+                // before this one was accessed
+                if (parent != null)
+                {
+                    parent.resetLinks(false);
+                }
 
                 // notify page manager listeners
                 delegator.notifyUpdatedNode(link);
@@ -1445,7 +1487,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(link);
 
                 // reset parent folder links cache
-                parent.resetLinks(false);
+                if (parent != null)
+                {                
+                    parent.resetLinks(false);
+                }
             }
             else
             {
@@ -1477,7 +1522,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
             // look up and set parent folder if necessary
-            if (pageSecurity.getParent() == null)
+            FolderImpl parent = (FolderImpl)pageSecurity.getParent();
+            if (parent == null)
             {
                 // access folder by path
                 String pageSecurityPath = pageSecurity.getPath();
@@ -1486,7 +1532,6 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     parentPath = Folder.PATH_SEPARATOR;
                 }
-                FolderImpl parent = null;
                 try
                 {
                     parent = (FolderImpl)getFolder(parentPath);
@@ -1514,7 +1559,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     DatabasePageManagerCache.addTransaction(new TransactionedOperation(pageSecurity.getPath(), TransactionedOperation.ADD_OPERATION));
 
                     // reset parent folder page security cache
-                    parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
+                    if (parent != null)
+                    {                    
+                        parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1532,6 +1580,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update document and mark cache transaction
                 getPersistenceBrokerTemplate().store(pageSecurity);
                 DatabasePageManagerCache.addTransaction(new TransactionedOperation(pageSecurity.getPath(), TransactionedOperation.UPDATE_OPERATION));
+
+                // reset parent folder page security cache in case
+                // parent is holding an out of date copy of this
+                // page security that was removed from the cache
+                // before this one was accessed
+                if (parent != null)
+                {                
+                    parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
+                }
 
                 // notify page manager listeners
                 delegator.notifyUpdatedNode(pageSecurity);
@@ -1576,7 +1633,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(pageSecurity);
 
                 // reset parent folder page security cache
-                parent.resetPageSecurity(null, true);
+                if (parent != null)
+                {                
+                    parent.resetPageSecurity(null, true);
+                }
             }
             else
             {
