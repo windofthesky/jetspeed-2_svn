@@ -560,6 +560,12 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 String p = period.substring(0, period.length() - 1);
                 int ret = Integer.parseInt(p);
                 gcEnd.add(Calendar.MONTH, (ret * -1));
+            } else if (period.endsWith("d"))
+            {
+                // days
+                String p = period.substring(0, period.length() - 1);
+                int ret = Integer.parseInt(p);
+                gcEnd.add(Calendar.HOUR, (ret * 24 * -1));
             } else if (period.endsWith("h"))
             {
                 // hours
