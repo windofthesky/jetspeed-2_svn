@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
 /**
@@ -66,7 +66,7 @@ public class PageImpl extends DocumentImpl implements Page
         // create initial collection if necessary
         if (menus == null)
         {
-            menus = new ArrayList(2);
+            menus = DatabasePageManagerUtils.createList();;
         }
         return menus;
     }
@@ -201,7 +201,7 @@ public class PageImpl extends DocumentImpl implements Page
             // root fragment and save for reuse
             if (this.fragment == null)
             {
-                this.fragment = new ArrayList(1);
+                this.fragment = DatabasePageManagerUtils.createList();
             }
             else if (!this.fragment.isEmpty())
             {

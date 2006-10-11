@@ -16,8 +16,9 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * PageSecurityConstraintsDefList
@@ -83,7 +84,7 @@ class PageSecurityConstraintsDefList extends AbstractList
     {
         if (removedConstraintsDefs == null)
         {
-            removedConstraintsDefs = new ArrayList(pageSecurity.accessConstraintsDefs().size());
+            removedConstraintsDefs = DatabasePageManagerUtils.createList();
         }
         return removedConstraintsDefs;
     }

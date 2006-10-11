@@ -15,16 +15,14 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * SecurityConstraintsImpl
@@ -55,7 +53,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // create initial collection if necessary
         if (constraintsRefs == null)
         {
-            constraintsRefs = new ArrayList(4);
+            constraintsRefs = DatabasePageManagerUtils.createList();
         }
         return constraintsRefs;
     }
@@ -72,7 +70,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // create initial collection if necessary
         if (constraints == null)
         {
-            constraints = new ArrayList(4);
+            constraints = DatabasePageManagerUtils.createList();
         }
         return constraints;
     }
@@ -214,7 +212,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // construct new ordered security constraints list
-        allConstraints = new ArrayList(8);
+        allConstraints = DatabasePageManagerUtils.createList();
 
         // add any defined security constraints
         if ((getSecurityConstraints() != null) && !getSecurityConstraints().isEmpty())
@@ -280,7 +278,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
                 {
                     if (constraints == null)
                     {
-                        constraints = new ArrayList(constraintsRefs.size());
+                        constraints = DatabasePageManagerUtils.createList();
                     }
                     constraints.addAll(securityConstraintsDef.getSecurityConstraints());
                 }

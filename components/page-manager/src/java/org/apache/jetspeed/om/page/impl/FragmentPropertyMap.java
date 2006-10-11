@@ -17,13 +17,12 @@ package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * FragmentPropertyMap
@@ -85,7 +84,7 @@ class FragmentPropertyMap extends AbstractMap
 
     private class FragmentPropertiesEntrySet extends AbstractSet
     {
-        private Collection entries = new ArrayList(5);
+        private Collection entries = DatabasePageManagerUtils.createCollection();
 
         /* (non-Javadoc)
          * @see java.util.Set#add(java.lang.Object)

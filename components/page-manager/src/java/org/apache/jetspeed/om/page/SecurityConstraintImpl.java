@@ -15,13 +15,13 @@
  */
 package org.apache.jetspeed.om.page;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 
 /**
@@ -350,7 +350,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
     {
         if (csv != null)
         {
-            List csvList = new ArrayList(4);
+            List csvList = DatabasePageManagerUtils.createList();
             if (csv.indexOf(',') != -1)
             {
                 StringTokenizer csvTokens = new StringTokenizer(csv, ",");

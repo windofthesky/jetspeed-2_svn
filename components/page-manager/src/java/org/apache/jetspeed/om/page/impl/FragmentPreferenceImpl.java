@@ -15,11 +15,11 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceCtrl;
 
@@ -50,7 +50,7 @@ public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, Fragm
         // create initial collection if necessary
         if (values == null)
         {
-            values = new ArrayList(4);
+            values = DatabasePageManagerUtils.createList();
         }
         return values;
     }

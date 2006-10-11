@@ -17,7 +17,6 @@ package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.PagePermission;
@@ -345,7 +345,7 @@ public abstract class BaseElementImpl implements BaseElement
             viewActionList = null;
             if (otherActionsList.remove(JetspeedActions.VIEW))
             {
-                viewActionList = new ArrayList(1);
+                viewActionList = DatabasePageManagerUtils.createList();
                 viewActionList.add(JetspeedActions.VIEW);
             }
         }

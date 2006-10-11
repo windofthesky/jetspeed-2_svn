@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -881,7 +880,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         try
         {
             // query for all nodes
-            List all = new ArrayList(16);
+            List all = DatabasePageManagerUtils.createList();
             Criteria filter = new Criteria();
             filter.addEqualTo("parent", folderImpl.getId());
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);

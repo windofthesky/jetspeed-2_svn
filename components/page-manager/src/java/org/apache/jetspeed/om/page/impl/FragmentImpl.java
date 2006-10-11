@@ -16,19 +16,15 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.FragmentPermission;
 
 /**
@@ -81,7 +77,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // create initial collection if necessary
         if (fragments == null)
         {
-            fragments = new ArrayList(4);
+            fragments = DatabasePageManagerUtils.createList();
         }
         return fragments;
     }
@@ -98,7 +94,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         // create initial collection if necessary
         if (preferences == null)
         {
-            preferences = new ArrayList(4);
+            preferences = DatabasePageManagerUtils.createList();
         }
         return preferences;
     }
@@ -223,7 +219,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         {
             if (matchedFragments == null)
             {
-                matchedFragments = new ArrayList(1);
+                matchedFragments = DatabasePageManagerUtils.createList();
             }
             matchedFragments.add(this);
         }
@@ -259,7 +255,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
      */
     List getPropertyMemberKeys()
     {
-        List keys = new ArrayList(5);
+        List keys = DatabasePageManagerUtils.createList();
         if (layoutRowProperty >= 0)
         {
             keys.add(ROW_PROPERTY_NAME);
@@ -1011,7 +1007,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
                     {
                         // not permitted, copy previously permitted fragments
                         // to new filteredFragments node set with same comparator
-                        filteredFragments = new ArrayList(fragments.size());
+                        filteredFragments = DatabasePageManagerUtils.createList();
                         Iterator copyIter = fragments.iterator();
                         while (copyIter.hasNext())
                         {

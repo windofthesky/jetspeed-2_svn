@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * SecurityConstraintsDefImpl
@@ -30,7 +30,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
 {
     private int id;
     private String name;
-    private List constraintDefs = new ArrayList(4);
+    private List constraintDefs = DatabasePageManagerUtils.createList();
 
     private SecurityConstraintDefList securityConstraintDefs;
 
@@ -46,7 +46,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
         // create initial collection if necessary
         if (constraintDefs == null)
         {
-            constraintDefs = new ArrayList(4);
+            constraintDefs = DatabasePageManagerUtils.createList();
         }
         return constraintDefs;
     }

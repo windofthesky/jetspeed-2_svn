@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.security.AccessController;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -48,6 +47,7 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.jetspeed.page.document.impl.NodeSetImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
@@ -103,7 +103,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (orders == null)
         {
-            orders = new ArrayList();
+            orders = DatabasePageManagerUtils.createList();
         }
         return orders;
     }
@@ -120,7 +120,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (menus == null)
         {
-            menus = new ArrayList(2);
+            menus = DatabasePageManagerUtils.createList();
         }
         return menus;
     }
@@ -149,7 +149,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (folders == null)
         {
-            folders = new ArrayList();
+            folders = DatabasePageManagerUtils.createList();
         }
         return folders;
     }
@@ -191,7 +191,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (pages == null)
         {
-            pages = new ArrayList();
+            pages = DatabasePageManagerUtils.createList();
         }
         return pages;
     }
@@ -233,7 +233,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (links == null)
         {
-            links = new ArrayList();
+            links = DatabasePageManagerUtils.createList();
         }
         return links;
     }
@@ -309,7 +309,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // create initial collection if necessary
         if (all == null)
         {
-            all = new ArrayList();
+            all = DatabasePageManagerUtils.createList();
         }
         return all;
     }

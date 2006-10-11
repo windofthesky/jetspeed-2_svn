@@ -15,18 +15,16 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * PageSecurityImpl
@@ -60,7 +58,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         // create initial collection if necessary
         if (constraintsDefs == null)
         {
-            constraintsDefs = new ArrayList(4);
+            constraintsDefs = DatabasePageManagerUtils.createList();
         }
         return constraintsDefs;
     }
@@ -77,7 +75,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         // create initial collection if necessary
         if (globalConstraintsRefs == null)
         {
-            globalConstraintsRefs = new ArrayList(4);
+            globalConstraintsRefs = DatabasePageManagerUtils.createList();
         }
         return globalConstraintsRefs;
     }

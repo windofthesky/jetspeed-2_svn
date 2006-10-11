@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +27,7 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
 /**
@@ -112,7 +112,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
         {
             if (metadataFields == null)
             {
-                metadataFields = new ArrayList(1);
+                metadataFields = DatabasePageManagerUtils.createList();
             }
             pageMetadata = newPageMetadata(metadataFields);
         }

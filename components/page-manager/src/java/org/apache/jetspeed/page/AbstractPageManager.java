@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,12 +41,9 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * AbstractPageManagerService
@@ -814,7 +810,7 @@ public abstract class AbstractPageManager
         }    
         
         // copy document orders
-        folder.setDocumentOrder(new ArrayList());
+        folder.setDocumentOrder(DatabasePageManagerUtils.createList());
         Iterator documentOrders = source.getDocumentOrder().iterator();
         while (documentOrders.hasNext())
         {
@@ -902,7 +898,7 @@ public abstract class AbstractPageManager
         }
                   
         // copy preferences
-        copy.setPreferences(new ArrayList());
+        copy.setPreferences(DatabasePageManagerUtils.createList());
         Iterator prefs = source.getPreferences().iterator();
         while (prefs.hasNext())
         {
@@ -910,7 +906,7 @@ public abstract class AbstractPageManager
             FragmentPreference newPref = this.newFragmentPreference();
             newPref.setName(pref.getName());
             newPref.setReadOnly(pref.isReadOnly());
-            newPref.setValueList(new ArrayList());
+            newPref.setValueList(DatabasePageManagerUtils.createList());
             Iterator values = pref.getValueList().iterator();            
             while (values.hasNext())
             {
@@ -967,14 +963,14 @@ public abstract class AbstractPageManager
         copy.setVersion(source.getVersion());        
 
         // copy security constraint defintions
-        copy.setSecurityConstraintsDefs(new ArrayList());                
+        copy.setSecurityConstraintsDefs(DatabasePageManagerUtils.createList());                
         Iterator defs = source.getSecurityConstraintsDefs().iterator();
         while (defs.hasNext())
         {
             SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
             SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
             defCopy.setName(def.getName());
-            List copiedConstraints = new ArrayList();
+            List copiedConstraints = DatabasePageManagerUtils.createList();
             Iterator constraints = def.getSecurityConstraints().iterator();
             while (constraints.hasNext())
             {
@@ -988,7 +984,7 @@ public abstract class AbstractPageManager
         }
         
         // copy global security constraint references
-        copy.setGlobalSecurityConstraintsRefs(new ArrayList());
+        copy.setGlobalSecurityConstraintsRefs(DatabasePageManagerUtils.createList());
         Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
         while (globals.hasNext())
         {
@@ -1001,7 +997,7 @@ public abstract class AbstractPageManager
 
     protected List copyMenuDefinitions(String type, List srcMenus)
     {
-        List copiedMenus = new ArrayList(4); 
+        List copiedMenus = DatabasePageManagerUtils.createList(); 
         Iterator menus = srcMenus.iterator();
         while (menus.hasNext())
         {
@@ -1048,7 +1044,7 @@ public abstract class AbstractPageManager
             List elements = source.getMenuElements();
             if (elements != null)
             {
-                List copiedElements = new ArrayList(4); 
+                List copiedElements = DatabasePageManagerUtils.createList(); 
                 Iterator elementsIter = elements.iterator();
                 while (elementsIter.hasNext())
                 {
@@ -1161,7 +1157,7 @@ public abstract class AbstractPageManager
         }
         if (source.getSecurityConstraints() != null)
         {
-            List copiedConstraints = new ArrayList(8);
+            List copiedConstraints = DatabasePageManagerUtils.createList();
             Iterator constraints = source.getSecurityConstraints().iterator();
             while (constraints.hasNext())
             {
@@ -1190,7 +1186,7 @@ public abstract class AbstractPageManager
         }
         if (source.getSecurityConstraintsRefs() != null)
         {
-            List copiedRefs = new ArrayList(8);
+            List copiedRefs = DatabasePageManagerUtils.createList();
             Iterator refs = source.getSecurityConstraintsRefs().iterator();
             while (refs.hasNext())
             {                

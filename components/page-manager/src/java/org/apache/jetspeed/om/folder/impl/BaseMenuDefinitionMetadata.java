@@ -15,12 +15,12 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * BaseMenuDefinitionMetadata
@@ -57,7 +57,7 @@ public abstract class BaseMenuDefinitionMetadata extends BaseMenuDefinitionEleme
         {
             if (metadataFields == null)
             {
-                metadataFields = new ArrayList(1);
+                metadataFields = DatabasePageManagerUtils.createCollection();
             }
             pageMetadata = newPageMetadata(metadataFields);
         }

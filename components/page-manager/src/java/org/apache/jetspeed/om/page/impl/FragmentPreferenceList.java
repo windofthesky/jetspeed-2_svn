@@ -16,8 +16,8 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * FragmentPreferenceList
@@ -84,7 +84,7 @@ class FragmentPreferenceList extends AbstractList
     {
         if (removedPreferences == null)
         {
-            removedPreferences = new ArrayList(fragment.accessPreferences().size());
+            removedPreferences = DatabasePageManagerUtils.createList();
         }
         return removedPreferences;
     }

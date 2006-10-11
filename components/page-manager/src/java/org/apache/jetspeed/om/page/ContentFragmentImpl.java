@@ -1,7 +1,6 @@
 package org.apache.jetspeed.om.page;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 public class ContentFragmentImpl implements ContentFragment
 {
@@ -798,7 +798,7 @@ public class ContentFragmentImpl implements ContentFragment
         
         private List duplicateList()
         {            
-            List rFragList = new ArrayList(baseList.size());
+            List rFragList = DatabasePageManagerUtils.createList();
             for(int i=0; i < baseList.size(); i++)
             {                
                 Fragment f = (Fragment)baseList.get(i);

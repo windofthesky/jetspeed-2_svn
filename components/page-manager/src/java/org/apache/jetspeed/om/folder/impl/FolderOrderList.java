@@ -16,8 +16,9 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * FolderOrderList
@@ -83,7 +84,7 @@ class FolderOrderList extends AbstractList
     {
         if (removedFolderOrders == null)
         {
-            removedFolderOrders = new ArrayList(folder.accessFolderOrders().size());
+            removedFolderOrders = DatabasePageManagerUtils.createList();
         }
         return removedFolderOrders;
     }

@@ -16,10 +16,10 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
 
 /**
  * PageMenuDefinitionList
@@ -106,7 +106,7 @@ class PageMenuDefinitionList extends AbstractList
     {
         if (removedMenuDefinitions == null)
         {
-            removedMenuDefinitions = new ArrayList(page.accessMenus().size());
+            removedMenuDefinitions = DatabasePageManagerUtils.createList();
         }
         return removedMenuDefinitions;
     }

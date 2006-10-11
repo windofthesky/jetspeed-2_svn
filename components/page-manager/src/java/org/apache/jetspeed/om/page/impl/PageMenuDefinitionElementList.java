@@ -16,14 +16,6 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
-import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
-import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
-import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 
 /**
  * PageMenuDefinitionElementList

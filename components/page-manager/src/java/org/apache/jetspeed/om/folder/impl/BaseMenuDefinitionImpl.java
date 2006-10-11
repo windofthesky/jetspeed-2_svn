@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * BaseMenuDefinitionImpl
@@ -52,7 +52,7 @@ public abstract class BaseMenuDefinitionImpl extends BaseMenuDefinitionMetadata 
         // create initial collection if necessary
         if (elements == null)
         {
-            elements = new ArrayList(4);
+            elements = DatabasePageManagerUtils.createList();
         }
         return elements;
     }
