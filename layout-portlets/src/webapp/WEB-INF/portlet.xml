@@ -581,6 +581,8 @@ limitations under the License.
 <portlet id="VelocityFourColumns">
     <portlet-name>VelocityFourColumns</portlet-name>
     <display-name>Four Layout Using Velocity</display-name>
+    <display-name xml:lang="zh">基于Velocity表格的4列布局</display-name>
+    <display-name xml:lang="zh-TW">基於Velocity表格的4列佈局</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
