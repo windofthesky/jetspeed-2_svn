@@ -52,34 +52,34 @@ public class DefaultLoginModule implements LoginModule
 {
 
     /** <p>LoginModule debug mode is turned off by default.</p> */
-    private boolean debug;
+    protected boolean debug;
 
     /** <p>The authentication status.</p> */
-    private boolean success;
+    protected boolean success;
 
     /** <p>The commit status.</p> */
-    private boolean commitSuccess;
+    protected boolean commitSuccess;
 
     /** <p>The Subject to be authenticated.</p> */
-    private Subject subject;
+    protected Subject subject;
 
     /** <p>A CallbackHandler for communicating with the end user (prompting for usernames and passwords, for example).</p> */
-    private CallbackHandler callbackHandler;
+    protected CallbackHandler callbackHandler;
 
     /** <p>State shared with other configured LoginModules.</p> */
-    private Map sharedState;
+    protected Map sharedState;
 
     /** <p>Options specified in the login Configuration for this particular LoginModule.</p> */
-    private Map options;
+    protected Map options;
 
     /** <p>InternalUserPrincipal manager service.</p> */
-    private UserManager ums;
+    protected UserManager ums;
 
     /** The portal user role. */
-    private String portalUserRole;
+    protected String portalUserRole;
 
     /** <p>The user name.</p> */
-    private String username;
+    protected String username;
 
     
     /**
