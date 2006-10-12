@@ -72,7 +72,7 @@ public class SecurityConstraintsAction
         {
             resultMap.put(ACTION, "constraints");
             // Get the necessary parameters off of the request
-            String method = requestContext.getRequestParameter("method");
+            String method = getActionParameter(requestContext, "method");
             if (method == null) 
             { 
                 throw new RuntimeException("Method not provided"); 
@@ -122,7 +122,7 @@ public class SecurityConstraintsAction
     protected int removeConstraintDefinition(RequestContext requestContext, Map resultMap)
     throws AJAXException
     {
-        String name = requestContext.getRequestParameter("name");
+        String name = getActionParameter(requestContext, "name");
         if (name == null)
             throw new AJAXException("Missing 'name' parameter");
         
@@ -151,7 +151,7 @@ public class SecurityConstraintsAction
     {
         int count = 0;
         boolean added = false;
-        String xml = requestContext.getRequestParameter("xml");
+        String xml = getActionParameter(requestContext, "xml");
         if (xml == null)
             throw new AJAXException("Missing 'xml' parameter");
         try
@@ -264,7 +264,7 @@ public class SecurityConstraintsAction
     throws AJAXException
     {
         int count = 0;
-        String name = requestContext.getRequestParameter("name");
+        String name = getActionParameter(requestContext, "name");
         if (name == null)
             throw new AJAXException("Missing 'name' parameter");
         
@@ -293,7 +293,7 @@ public class SecurityConstraintsAction
     {
         int count = 0;
         boolean found = false;
-        String name = requestContext.getRequestParameter("name");
+        String name = getActionParameter(requestContext, "name");
         if (name == null)
             throw new AJAXException("Missing 'name' parameter");
         

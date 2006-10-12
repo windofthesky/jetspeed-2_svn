@@ -93,7 +93,7 @@ public class GetPagesAction
     {        
         List list = new ArrayList();
  
-        String folderName = requestContext.getRequestParameter(FOLDER);
+        String folderName = getActionParameter(requestContext, FOLDER);
         if (folderName == null)
         {
             return list;

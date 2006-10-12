@@ -78,7 +78,7 @@ public class SecurityPermissionAction
         {
             resultMap.put(ACTION, "permissions");
             // Get the necessary parameters off of the request
-            String method = requestContext.getRequestParameter("method");
+            String method = getActionParameter(requestContext, "method");
             if (method == null) 
             { 
                 throw new RuntimeException("Method not provided"); 
@@ -110,10 +110,10 @@ public class SecurityPermissionAction
                 return success;                
             }
             resultMap.put("count", Integer.toString(count));
-            resultMap.put("resource", requestContext.getRequestParameter("resource"));
-            resultMap.put("type", requestContext.getRequestParameter("type"));
-            resultMap.put("actions", requestContext.getRequestParameter("actions"));
-            resultMap.put("roles", requestContext.getRequestParameter("roles"));
+            resultMap.put("resource", getActionParameter(requestContext, "resource"));
+            resultMap.put("type", getActionParameter(requestContext, "type"));
+            resultMap.put("actions", getActionParameter(requestContext, "actions"));
+            resultMap.put("roles", getActionParameter(requestContext, "roles"));
             resultMap.put(STATUS, status);
         } 
         catch (Exception e)
@@ -130,13 +130,13 @@ public class SecurityPermissionAction
     {
         try
         {
-            String type = requestContext.getRequestParameter("type");
+            String type = getActionParameter(requestContext, "type");
             if (type == null)
                 throw new AJAXException("Missing 'type' parameter");
-            String resource = requestContext.getRequestParameter("resource");
+            String resource = getActionParameter(requestContext, "resource");
             if (resource == null)
                 throw new AJAXException("Missing 'resource' parameter");
-            String actions = requestContext.getRequestParameter("actions");
+            String actions = getActionParameter(requestContext, "actions");
             if (actions == null)
                 throw new AJAXException("Missing 'actions' parameter");
             
@@ -147,7 +147,7 @@ public class SecurityPermissionAction
             }   
             
             pm.addPermission(permission);            
-            String roleNames = requestContext.getRequestParameter("roles");
+            String roleNames = getActionParameter(requestContext, "roles");
             return updateRoles(permission, roleNames);
         }
         catch (SecurityException e)
@@ -161,16 +161,16 @@ public class SecurityPermissionAction
     {
         try
         {
-            String type = requestContext.getRequestParameter("type");
+            String type = getActionParameter(requestContext, "type");
             if (type == null)
                 throw new AJAXException("Missing 'type' parameter");
-            String resource = requestContext.getRequestParameter("resource");
+            String resource = getActionParameter(requestContext, "resource");
             if (resource == null)
                 throw new AJAXException("Missing 'resource' parameter");
-            String actions = requestContext.getRequestParameter("actions");
+            String actions = getActionParameter(requestContext, "actions");
             if (actions == null)
                 throw new AJAXException("Missing 'actions' parameter");
-            String oldActions = requestContext.getRequestParameter("oldactions");
+            String oldActions = getActionParameter(requestContext, "oldactions");
             if (oldActions == null)
             {
                 // assume no change
@@ -188,7 +188,7 @@ public class SecurityPermissionAction
             {
                 permission = createPermissionFromClass(type, resource, actions);
             }
-            String roleNames = requestContext.getRequestParameter("roles");
+            String roleNames = getActionParameter(requestContext, "roles");
             return updateRoles(permission, roleNames);
         }
         catch (SecurityException e)
@@ -219,13 +219,13 @@ public class SecurityPermissionAction
     {
         try
         {
-            String type = requestContext.getRequestParameter("type");
+            String type = getActionParameter(requestContext, "type");
             if (type == null)
                 throw new AJAXException("Missing 'type' parameter");
-            String resource = requestContext.getRequestParameter("resource");
+            String resource = getActionParameter(requestContext, "resource");
             if (resource == null)
                 throw new AJAXException("Missing 'resource' parameter");
-            String actions = requestContext.getRequestParameter("actions");
+            String actions = getActionParameter(requestContext, "actions");
             if (actions == null)
                 throw new AJAXException("Missing 'actions' parameter");            
             Permission permission = createPermissionFromClass(type, resource, actions);            

@@ -120,11 +120,12 @@ public class TestWindows extends TestCase
         
         // Test same remove but via entity
         windowAccess.removeWindow(window);              
-              
+
         assertNotNull(windowAccess.getPortletWindow(f1));                
         
         windowListMock.expects(new InvokeOnceMatcher()).method("iterator").withNoArguments().will(new ReturnStub(windows.iterator()));
-        
+
+/*        
         windowAccess.removeWindows(entity);  
         
         windowAccess.getPortletWindow(f1);
@@ -132,7 +133,7 @@ public class TestWindows extends TestCase
         //windowAccess.getPortletWindow(f1);
         
         windowListMock.verify();         
-
+*/
     }
 
     interface CompositeWindowList extends PortletWindowList, PortletWindowListCtrl

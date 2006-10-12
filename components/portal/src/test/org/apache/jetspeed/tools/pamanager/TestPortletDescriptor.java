@@ -27,7 +27,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
+import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -62,7 +62,7 @@ import org.xml.sax.SAXException;
  *
  * @version $Id$
  */
-public class TestPortletDescriptor extends RegistrySupportedTestCase
+public class TestPortletDescriptor extends AbstractRequestContextTestCase
 {
     /**
      * Start the tests.

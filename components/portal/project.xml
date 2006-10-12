@@ -76,6 +76,9 @@
                 <resource>
                     <directory>${basedir}/test/testdata/pages</directory>
                 </resource>                
+                <resource>
+                    <directory>${basedir}/test/assembly</directory>
+                </resource>                                
             </resources>
         </unitTest>
 

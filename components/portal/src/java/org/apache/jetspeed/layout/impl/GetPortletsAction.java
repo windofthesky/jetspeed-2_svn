@@ -95,7 +95,7 @@ public class GetPortletsAction
 //                }
 //                status = "refresh";
             }            
-            String filter = requestContext.getRequestParameter(FILTER);                                    
+            String filter = getActionParameter(requestContext, FILTER);                                    
             List portlets = retrievePortlets(requestContext, filter);            
             resultMap.put(STATUS, status);
             resultMap.put(PORTLETS, portlets);

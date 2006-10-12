@@ -220,6 +220,9 @@ limitations under the License.
             <testResource>
                 <directory>../../src/webapp/WEB-INF/assembly</directory>
             </testResource>
+            <testResource>
+                <directory>test/assembly</directory>
+            </testResource>                                            
         </testResources>
 
         <plugins>

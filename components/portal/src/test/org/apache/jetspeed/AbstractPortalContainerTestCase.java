@@ -25,7 +25,7 @@ import org.apache.pluto.PortletContainer;
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public class AbstractPortalContainerTestCase extends RegistrySupportedTestCase
+public class AbstractPortalContainerTestCase extends AbstractRequestContextTestCase
 {
     protected PortletWindowAccessor windowAccessor;
     protected PortletContainer portletContainer;

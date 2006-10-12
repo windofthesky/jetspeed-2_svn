@@ -76,16 +76,16 @@ public class GetPageAction
                 success = false;
                 return success;
             }            
-            //String filter = requestContext.getRequestParameter(FILTER);
+            //String filter = getActionParameter(requestContext, FILTER);
             Page page = requestContext.getPage();
-            String pageName = requestContext.getRequestParameter(PAGE);
+            String pageName = getActionParameter(requestContext, PAGE);
             if (pageName != null)
             {
                 page = retrievePage(requestContext, pageName);
             }
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
-            String fragments = requestContext.getRequestParameter(FRAGMENTS);
+            String fragments = getActionParameter(requestContext, FRAGMENTS);
             if (fragments == null)
             {
                 resultMap.put(FRAGMENTS, "true");

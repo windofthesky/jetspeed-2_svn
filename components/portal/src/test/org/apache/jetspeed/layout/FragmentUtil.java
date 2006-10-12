@@ -147,5 +147,12 @@ public class FragmentUtil
         a_oFrag.setId(p_sId);
         return a_oFrag;
     }
+    
+    public static void debugContentOutput(RequestContext rc)
+    {
+        MockHttpServletResponse mr = (MockHttpServletResponse) rc.getResponse();        
+        String content = mr.getOutputStreamContent();
+        System.out.println("content = " + content);
+    }
 
 }

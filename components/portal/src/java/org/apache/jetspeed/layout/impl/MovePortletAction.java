@@ -111,7 +111,18 @@ public class MovePortletAction
         }
     }
 
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    {
+        return runAction(requestContext, resultMap, true);
+    }    
+    
     public boolean run(RequestContext requestContext, Map resultMap)
+            throws AJAXException
+    {
+        return runAction(requestContext, resultMap, false);
+    }
+    
+    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
     {
         boolean success = true;
         String status = "success";
@@ -119,8 +130,8 @@ public class MovePortletAction
         {
             resultMap.put(ACTION, sMoveType);
             // Get the necessary parameters off of the request
-            String portletId = requestContext.getRequestParameter(PORTLETID);
-            String layoutId = requestContext.getRequestParameter(LAYOUTID);
+            String portletId = getActionParameter(requestContext, PORTLETID);
+            String layoutId = getActionParameter(requestContext, LAYOUTID);
             if (portletId == null) 
             { 
                 throw new Exception("portlet id not provided"); 
@@ -254,8 +265,8 @@ public class MovePortletAction
                 placement.remove(fragment);
                 Page page = placement.syncPageFragments();
                 page.removeFragmentById(fragment.getId());
-                if (pageManager != null)
-                    pageManager.updatePage(page);
+//                if (pageManager != null)
+//                    pageManager.updatePage(page);
                 
                 // add fragment
                 placement = new PortletPlacementContextImpl(requestContext, moveToLayoutFragment, 1);
@@ -263,9 +274,10 @@ public class MovePortletAction
                 page = placement.syncPageFragments();
 
                 moveToLayoutFragment.getFragments().add(fragment);
-                if (pageManager != null)
+                if (pageManager != null && !batch)
+                {
                     pageManager.updatePage(page);
-                
+                }
                 // Need to determine what the old col and row were
                 resultMap.put(OLDCOL, String.valueOf(returnCoordinate
                         .getOldCol()));
@@ -321,11 +333,11 @@ public class MovePortletAction
                 }
                 else if (iMoveType == CARTESIAN)
                 {
-                    String sx = requestContext.getRequestParameter(X);
-                    String sy = requestContext.getRequestParameter(Y);
-                    String sz = requestContext.getRequestParameter(Z);
-                    String sWidth = requestContext.getRequestParameter(WIDTH);
-                    String sHeight = requestContext.getRequestParameter(HEIGHT);
+                    String sx = getActionParameter(requestContext, X);
+                    String sy = getActionParameter(requestContext, Y);
+                    String sz = getActionParameter(requestContext, Z);
+                    String sWidth = getActionParameter(requestContext, WIDTH);
+                    String sHeight = getActionParameter(requestContext, HEIGHT);
                     if (sx != null)
                     {
                         oldX = fragment.getLayoutX();
@@ -361,7 +373,7 @@ public class MovePortletAction
                 // synchronize back to the page layout root fragment
                 Page page = placement.syncPageFragments();
             
-                if (pageManager != null)
+                if (pageManager != null && !batch)
                 {
                     pageManager.updatePage(page);
                 }
@@ -405,8 +417,8 @@ public class MovePortletAction
     
     protected Coordinate getCoordinateFromParams(RequestContext requestContext)
     {
-        String a_sCol = requestContext.getRequestParameter(COL);
-        String a_sRow = requestContext.getRequestParameter(ROW);
+        String a_sCol = getActionParameter(requestContext, COL);
+        String a_sRow = getActionParameter(requestContext, ROW);
 
         // Convert the col and row into integers
         int a_iCol = Integer.parseInt(a_sCol);

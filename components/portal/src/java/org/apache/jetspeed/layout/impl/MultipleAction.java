@@ -175,8 +175,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
                 String a_sValue = a_oParamTok.nextToken();
 
                 // Put the parameters on the request context
-                a_oJetspeedRequestContext
-                        .setRequestParameter(a_sName, a_sValue);
+                a_oJetspeedRequestContext.setAttribute(a_sName, a_sValue);
             }
 
             // Invoke the action
@@ -185,7 +184,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
 
             try
             {
-                a_bSuccess = a_oAction.run(a_oJetspeedRequestContext,
+                a_bSuccess = a_oAction.runBatch(a_oJetspeedRequestContext,
                         a_oResultMap);
             } catch (Exception e)
             {

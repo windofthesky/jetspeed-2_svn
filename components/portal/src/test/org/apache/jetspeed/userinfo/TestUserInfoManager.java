@@ -247,6 +247,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
         confList.add("registry.xml");
+        confList.add("rc3.xml");
         confList.add("JETSPEED-INF/spring/user-info.xml");
         return (String[]) confList.toArray(new String[1]);
     }

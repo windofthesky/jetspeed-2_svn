@@ -82,7 +82,7 @@ public class GetFolderAction
     protected Folder retrieveFolder(RequestContext requestContext)
     throws Exception
     {        
-        String folderName = requestContext.getRequestParameter(FOLDER);
+        String folderName = getActionParameter(requestContext, FOLDER);
         if (folderName == null)
         {
             folderName = "/";

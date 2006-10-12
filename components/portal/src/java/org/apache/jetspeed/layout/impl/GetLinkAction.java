@@ -83,7 +83,7 @@ public class GetLinkAction
     protected Link retrieveLink(RequestContext requestContext)
     throws Exception
     {        
-        String linkName = requestContext.getRequestParameter(LINK);
+        String linkName = getActionParameter(requestContext, LINK);
         if (linkName == null)
         {
             linkName = "/";

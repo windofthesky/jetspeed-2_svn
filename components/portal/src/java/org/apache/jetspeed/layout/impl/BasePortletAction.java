@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -126,5 +127,25 @@ public abstract class BasePortletAction
             }
         }
         return null;
+    }
+    
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    {
+        return run(requestContext, resultMap);
+    }
+    
+    public String getActionParameter(RequestContext requestContext, String name)
+    {
+        String parameter = requestContext.getRequestParameter(name);
+        if (parameter == null)
+        {
+            Object o = requestContext.getAttribute(name);
+            if (o != null)
+            {
+                if (o instanceof String)
+                    return (String)o;
+            }
+        }
+        return parameter;
     }
 }

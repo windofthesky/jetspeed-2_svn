@@ -81,8 +81,18 @@ public class AddPortletAction
         this.allowDuplicatePortlets = allowDuplicatePortlets;
     }
 
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    {
+        return runAction(requestContext, resultMap, true);
+    }    
+    
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
+    {
+        return runAction(requestContext, resultMap, false);
+    }
+    
+    protected boolean runAction(RequestContext requestContext, Map resultMap, boolean batch) throws AJAXException
     {
         boolean success = true;
         String status = "success";
@@ -90,7 +100,7 @@ public class AddPortletAction
         {
             resultMap.put(ACTION, "add");
             // Get the necessary parameters off of the request
-            String portletId = requestContext.getRequestParameter(PORTLETID);
+            String portletId = getActionParameter(requestContext, PORTLETID);
             if (portletId == null) 
             { 
                 throw new RuntimeException("portlet id not provided"); 
@@ -117,8 +127,8 @@ public class AddPortletAction
                 status = "refresh";
             }           
             // These are optional parameters
-            String col = requestContext.getRequestParameter(COL);
-            String row = requestContext.getRequestParameter(ROW);
+            String col = getActionParameter(requestContext, COL);
+            String row = getActionParameter(requestContext, ROW);
             // Convert the col and row into integers
             int iCol = 0;
             int iRow = 0;
@@ -143,8 +153,11 @@ public class AddPortletAction
             Page page = placement.syncPageFragments();                                                            
             // TODO: this does not handle nested layouts            
             Fragment root = requestContext.getPage().getRootFragment();
-            root.getFragments().add(fragment);            
-            pageManager.updatePage(page);
+            root.getFragments().add(fragment);    
+            if (!batch)
+            {
+                pageManager.updatePage(page);
+            }
             resultMap.put(STATUS, status);
             resultMap.put(NEWCOL, String.valueOf(coordinate
                     .getNewCol()));

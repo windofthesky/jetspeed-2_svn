@@ -65,8 +65,8 @@ public class GetThemesAction
                     resultMap.put(REASON, "Insufficient access to get themes");
                     return success;
             }                     
-            String type = requestContext.getRequestParameter(TYPE);
-            String format = requestContext.getRequestParameter(FORMAT);
+            String type = getActionParameter(requestContext, TYPE);
+            String format = getActionParameter(requestContext, FORMAT);
             if (format == null)
                 format = "xml";
             if (type == null || type.equals(PAGE_DECORATIONS))

@@ -69,7 +69,7 @@ public class GetMenuAction extends BasePortletAction
             }
 
             // get action parameter
-            String menuName = requestContext.getRequestParameter(MENU_NAME);
+            String menuName = getActionParameter(requestContext, MENU_NAME);
             if (menuName == null)
             {
                 success = false;

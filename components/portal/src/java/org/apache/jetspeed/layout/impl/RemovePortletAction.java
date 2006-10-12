@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -63,7 +64,18 @@ public class RemovePortletAction
         super(template, errorTemplate, pageManager, securityBehavior);
     }
     
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    {
+        return runAction(requestContext, resultMap, true);
+    }    
+    
     public boolean run(RequestContext requestContext, Map resultMap)
+            throws AJAXException
+    {
+        return runAction(requestContext, resultMap, false);
+    }
+    
+    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
     {
         boolean success = true;
         String status = "success";
@@ -71,7 +83,7 @@ public class RemovePortletAction
         {
             resultMap.put(ACTION, "remove");
             // Get the necessary parameters off of the request
-            String portletId = requestContext.getRequestParameter(PORTLETID);
+            String portletId = getActionParameter(requestContext, PORTLETID);
             if (portletId == null) 
             { 
                 success = false;
@@ -120,8 +132,11 @@ public class RemovePortletAction
             }
             placement.remove(fragment);
             Page page = placement.syncPageFragments();
-            page.removeFragmentById(fragment.getId());            
-            pageManager.updatePage(page);            
+            page.removeFragmentById(fragment.getId());
+            if (!batch)
+            {
+                pageManager.updatePage(page);
+            }
             // Build the results for the response
             resultMap.put(PORTLETID, portletId);            
             resultMap.put(STATUS, status);

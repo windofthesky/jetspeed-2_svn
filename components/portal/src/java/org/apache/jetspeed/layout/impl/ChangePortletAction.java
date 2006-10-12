@@ -97,7 +97,18 @@ public class ChangePortletAction
         }        
     }
 
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    {
+        return runAction(requestContext, resultMap, true);
+    }    
+    
     public boolean run(RequestContext requestContext, Map resultMap)
+            throws AJAXException
+    {
+        return runAction(requestContext, resultMap, false);
+    }
+    
+    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
     {
         boolean success = true;
         String status = "success";
@@ -105,15 +116,15 @@ public class ChangePortletAction
         {
             resultMap.put(ACTION, action);
             // Get the necessary parameters off of the request
-            String portletId = requestContext.getRequestParameter(PORTLETID);
+            String portletId = getActionParameter(requestContext, PORTLETID);
             if (portletId == null) 
             { 
                 throw new Exception("portlet id not provided"); 
             }            
             resultMap.put(PORTLETID, portletId);
             
-            String windowState = requestContext.getRequestParameter(WINDOW_STATE);
-            String portletMode = requestContext.getRequestParameter(PORTLET_MODE);
+            String windowState = getActionParameter(requestContext, WINDOW_STATE);
+            String portletMode = getActionParameter(requestContext, PORTLET_MODE);
             if (windowState == null && portletMode == null) 
             { 
                 throw new Exception("portlet window state or mode not provided"); 
@@ -165,9 +176,10 @@ public class ChangePortletAction
             if (portletMode != null)
                 fragment.setMode(portletMode);
             
-            if (pageManager != null)
+            if (pageManager != null && !batch)
+            {
                 pageManager.updatePage(page);
-            
+            }
             resultMap.put(STATUS, status);
             
             if (windowState != null)

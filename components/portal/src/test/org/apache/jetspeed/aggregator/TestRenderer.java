@@ -21,7 +21,6 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.AbstractPortalContainerTestCase;
 import org.apache.jetspeed.aggregator.impl.PortletRendererImpl;
 import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
-import org.apache.jetspeed.statistics.impl.PortalStatisticsImpl;
 
 /**
  * TestPortletRenderer
