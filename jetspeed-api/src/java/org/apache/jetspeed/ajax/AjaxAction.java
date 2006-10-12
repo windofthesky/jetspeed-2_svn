@@ -40,6 +40,18 @@ public interface AjaxAction
      * @throws Exception
      */
     public boolean run(RequestContext requestContext, Map resultMap) throws AJAXException;
+
+    /**
+     * Same as run method, but runs in batch mode, as a hint to the action
+     * that it is running a multiple action and can delay its update
+     * runBatch currently supports pageManager.updatePage
+     *  
+     * @param requestContext The Jetspeed Request Context
+     * @param resultMap map of action parameters passed to the builder context
+     * @return success is true, failure is false
+     * @throws Exception
+     */    
+    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException;
     
     /**
      * Checks to see if the current subject has access to to execute this action.
