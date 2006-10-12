@@ -96,6 +96,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                     request, this.baseUrlAccess, theme,
                     getThemeRootPath(theme), getResourceName(theme));
             request.getRequest().setAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
+            request.getRequest().setAttribute("JS2RequestContext", request);
             dispatcher.include(request.getRequest(), request.getResponse());
         }
         catch (Exception e)
