@@ -15,23 +15,18 @@
  */
 package org.apache.portals.gems.dojo;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.portlet.PortletHeaderRequest;
+import org.apache.jetspeed.portlet.PortletHeaderResponse;
+import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
-import org.apache.velocity.context.Context;
 
 /**
  * Abstract DOJO portlet for inserting in cross context dojo widget includes
@@ -39,7 +34,7 @@ import org.apache.velocity.context.Context;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet 
+public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet implements SupportsHeaderPhase 
 {
     protected void includeDojoRequires(StringBuffer headerInfoText)
     {
@@ -60,11 +55,6 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
     private final static Log log = LogFactory.getLog(AbstractDojoVelocityPortlet.class);
 
     /*
-     * Jetspeed header resource component
-     */
-    protected HeaderResourceFactory headerResourceFactoryComponent;
-
-    /*
      * Portlet constructor.
      */
     public AbstractDojoVelocityPortlet() 
@@ -73,65 +63,23 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
     }
 
     /*
-     * Portlet lifecycle method.
-     */
-    public void init() throws PortletException 
-    {
-        super.init();
-
-        // access jetspeed heaader resource component
-        synchronized (this) 
-        {
-            if (headerResourceFactoryComponent == null) 
-            {
-                headerResourceFactoryComponent = (HeaderResourceFactory) 
-                    getPortletContext().getAttribute(CommonPortletServices.CPS_HEADER_RESOURCE_FACTORY);
-            }
-            if (headerResourceFactoryComponent == null) 
-            {
-                throw new PortletException("Failed to find the HeaderResourceFactoryComponent instance.");
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.GenericPortlet#doDispatch(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
-     */
-    protected void doDispatch(RenderRequest request, RenderResponse response) throws PortletException, IOException 
-    {
-        // include header content
-        includeHeaderContent(request,response);
-
-        // dispatch normally
-        super.doDispatch(request, response);
-    }
-
-    /*
      * Include Dojo and Turbo header content using header resource component.
      *
      * @param request render request
      * @param response render response
-     */
-    protected void includeHeaderContent(RenderRequest request, RenderResponse response) 
+     */    
+    public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)
+    throws PortletException
     {
-        // get portal context path
-        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        String portalContextPath = requestContext.getRequest().getContextPath();
+        String portalContextPath = request.getPortalContextPath();
 
         // use header resource component to ensure header logic is included only once
-        HeaderResource headerResource = headerResourceFactoryComponent.getHeaderResouce(request);
+        HeaderResource headerResource = response.getHeaderResource();
         StringBuffer headerInfoText = new StringBuffer();
         Map headerInfoMap = null;
 
-        // detect jetspeed-desktop
-        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
-
-        boolean isJetspeedDesktop = ((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
-        Context velocityContext = getContext(request);
-        velocityContext.put("isJetspeedDesktop", new Boolean( isJetspeedDesktop ) );
-
         // add dojo if not already in use as desktop
-        if (!isJetspeedDesktop) 
+        if (!request.isDesktopEncoder()) 
         {
             // dojo configuration
             headerInfoText.setLength(0);
@@ -165,7 +113,7 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
         }
         
         // close DOJO if not already in use as desktop
-        if (!isJetspeedDesktop) 
+        if (!request.isDesktopEncoder()) 
         {
             // complete DoJo includes
             headerInfoText.setLength(0);
@@ -178,7 +126,7 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
         }
 
         // add jetspeed widget package if not already in use as desktop
-        if (!isJetspeedDesktop) 
+        if (!request.isDesktopEncoder()) 
         {
             headerInfoText.setLength(0);
             headerInfoText.append("\r\n");
@@ -189,7 +137,7 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
             headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
         }
         
-        if (!isJetspeedDesktop)
+        if (!request.isDesktopEncoder()) 
         {
             headerInfoText.setLength(0);
             headerInfoText.append("\r\n");

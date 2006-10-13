@@ -16,7 +16,6 @@
 package org.apache.jetspeed;
 
 
-import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.pluto.PortletContainer;

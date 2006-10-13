@@ -22,12 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl;
-import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl;
-import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl;
 import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
-import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.pluto.om.window.PortletWindow;
 

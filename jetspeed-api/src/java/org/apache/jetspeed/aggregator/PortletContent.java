@@ -6,6 +6,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.io.PrintWriter;
+
 /**
  * <p>
  * PortletContent
@@ -24,4 +26,6 @@ public interface PortletContent
     boolean isComplete();
     
     void complete();
+    
+    PrintWriter getWriter();
 }

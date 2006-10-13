@@ -16,7 +16,6 @@
 package org.apache.portals.gems.dojo;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,11 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.portlet.PortletHeaderRequest;
+import org.apache.jetspeed.portlet.PortletHeaderResponse;
+import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.pluto.core.impl.RenderRequestImpl;
 import org.apache.pluto.core.impl.RenderResponseImpl;
 import org.apache.portals.gems.util.HttpBufferedResponse;
@@ -54,12 +52,27 @@ import org.springframework.web.portlet.DispatcherPortlet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a> 
  * @version $Id: $
  */
-public class DojoSpringMVCPortlet extends DispatcherPortlet
+public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsHeaderPhase
 {
 	protected static final String CRLF = "\r\n";
-	
-    protected void includeDojoConfig(RenderRequest request, RenderResponse response, String portalContextPath, StringBuffer headerInfoText)
-		throws PortletException, java.io.IOException
+
+    /*
+     * Class specific logger.
+     */
+    private final static Log log = LogFactory.getLog(DojoSpringMVCPortlet.class);
+
+    protected String headerPage;
+    
+    /*
+     * Portlet constructor.
+     */
+    public DojoSpringMVCPortlet() 
+    {
+        super();
+    }
+    
+    protected void includeDojoConfig(PortletHeaderRequest request, PortletHeaderResponse response, String portalContextPath, StringBuffer headerInfoText)
+		throws PortletException
 	{	
     	headerInfoText.append( "var djConfig = { " );
     	headerInfoText.append( "isDebug: true, debugAtAllCosts: false" );
@@ -74,32 +87,32 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
     	return portalContextPath + "/javascript/dojo/dojo.js";
     }
 	
-    protected void includeDojoRequires(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
-    	throws PortletException, java.io.IOException
+    protected void includeDojoRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
+    	throws PortletException
     {
     	if ( this.headerPage != null )
     	{
     		include( request, response, this.headerPage, headerInfoText );
     	}
     }
-    protected void includeDojoWidgetRequires(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
-        throws PortletException, java.io.IOException
+    protected void includeDojoWidgetRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
+        throws PortletException
     {
 
     }
-    protected void includeDojoCustomWidgetRequires(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
-        throws PortletException, java.io.IOException
+    protected void includeDojoCustomWidgetRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
+        throws PortletException
     {
         
     }
     
-    protected void includeDojoWriteIncludes(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
-        throws PortletException, java.io.IOException
+    protected void includeDojoWriteIncludes(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
+        throws PortletException
     {
     	headerInfoText.append( "dojo.hostenv.writeIncludes();" ).append( CRLF );
     }
-    protected void includeDojoRegisterWidgetPackage(RenderRequest request, RenderResponse response, StringBuffer headerInfoText)
-        throws PortletException, java.io.IOException
+    protected void includeDojoRegisterWidgetPackage(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
+        throws PortletException
     {
         headerInfoText.append( "dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');" ).append( CRLF );
     }
@@ -134,25 +147,6 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
     }
     
     
-    /*
-     * Class specific logger.
-     */
-    private final static Log log = LogFactory.getLog(DojoSpringMVCPortlet.class);
-
-    /*
-     * Jetspeed header resource component
-     */
-    protected HeaderResourceFactory headerResourceFactoryComponent;
-
-    protected String headerPage;
-    
-    /*
-     * Portlet constructor.
-     */
-    public DojoSpringMVCPortlet() 
-    {
-        super();
-    }
 
     /*
      * Portlet lifecycle method.
@@ -164,15 +158,6 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
         // access jetspeed heaader resource component
         synchronized (this) 
         {
-            if (headerResourceFactoryComponent == null) 
-            {
-                headerResourceFactoryComponent = (HeaderResourceFactory) 
-                    getPortletContext().getAttribute(CommonPortletServices.CPS_HEADER_RESOURCE_FACTORY);
-            }
-            if (headerResourceFactoryComponent == null) 
-            {
-                throw new PortletException("Failed to find the HeaderResourceFactoryComponent instance.");
-            }
             this.headerPage = this.getInitParameter("HeaderPage");
         }
     }
@@ -182,9 +167,6 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
      */
     protected void doRenderService(RenderRequest request, RenderResponse response) throws Exception
     {
-        // include header content
-        doHeader(request,response);
-
         // dispatch normally
         super.doRenderService(request, response);
     }
@@ -195,24 +177,19 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
      * @param request render request
      * @param response render response
      */    
-    protected void doHeader(RenderRequest request, RenderResponse response)
-    throws PortletException, java.io.IOException
+    public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)    
+    throws PortletException
     {
-        // get portal context path
-        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        String portalContextPath = requestContext.getRequest().getContextPath();
+        String portalContextPath = request.getPortalContextPath();
 
         // use header resource component to ensure header logic is included only once
-        HeaderResource headerResource = headerResourceFactoryComponent.getHeaderResouce(request);
+        HeaderResource headerResource = response.getHeaderResource();
         StringBuffer headerInfoText = new StringBuffer();
         Map headerInfoMap = null;
-
-        // detect jetspeed-desktop
-        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
-
-        boolean isJetspeedDesktop = ((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
-
+        boolean isJetspeedDesktop = request.isDesktopEncoder();
         boolean addedDojoRequires = false;
+        
+        
         // add dojo if not already in use as desktop
         if (!isJetspeedDesktop) 
         {
@@ -279,55 +256,10 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet
     }
     
     
-    public void include(RenderRequest request, RenderResponse response, String headerPagePath, StringBuffer headerText) throws PortletException, java.io.IOException
+    public void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerPagePath, StringBuffer headerText) throws PortletException
     {
-        HttpServletRequest servletRequest = null;
-        HttpServletResponse servletResponse = null;
-        try
-        {
-            servletRequest = (HttpServletRequest) ((RenderRequestImpl) request).getRequest();
-            servletResponse = (HttpServletResponse) ((RenderResponseImpl) response).getResponse();
-
-            PortletContentImpl content = new PortletContentImpl();
-            content.init();
-            HttpBufferedResponse bufferedResponse = 
-                new HttpBufferedResponse(servletResponse, content.getWriter());
-            
-            RequestDispatcher dispatcher = servletRequest.getRequestDispatcher(headerPagePath);
-            System.out.println("dispatcher:" + dispatcher);
-            if (dispatcher != null)
-                dispatcher.include(servletRequest, bufferedResponse);
-            
-            bufferedResponse.flushBuffer();
-            BufferedReader reader = new BufferedReader(new StringReader(content.getContent()));
-            String buffer;
-            while ((buffer = reader.readLine()) != null)
-            {
-            	headerText.append( buffer ).append( "\r\n" );
-            }
-            //System.out.println("dispatched:" + content.getContent());
-        }
-        catch (RuntimeException re)
-        {
-            throw re;
-        }
-        catch (IOException ioe)
-        {
-            throw ioe;
-        }
-        catch (Exception e)
-        {
-            Throwable rootCause = null;
-            if ( e instanceof ServletException)
-            {
-                rootCause = ((ServletException)e).getRootCause();
-            }
-            else
-            {
-                rootCause = e.getCause();
-            }
-            throw new PortletException(rootCause != null ? rootCause : e);
-        }
+        response.include(request, response, headerPagePath);
+        headerText.append(response.getContent());
     }
 
 

@@ -106,4 +106,13 @@ public class JetspeedPortletInstance implements PortletInstance
   {
       return portlet.toString();
   }
+
+
+/**
+ * @return Returns the portlet.
+ */
+public Portlet getRealPortlet()
+{
+    return portlet;
+}
 }

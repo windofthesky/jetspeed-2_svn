@@ -71,11 +71,6 @@
         </constructor-arg>        
     </bean>
 
-    <!-- Header Resource Factory TODO: do we really need the factory? -->
-    <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory" 
-          class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl">
-    </bean>
-    
     <bean id="org.apache.jetspeed.aggregator.ContentServerAdapter" 
           class="org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl">
         <constructor-arg index="0">
@@ -113,5 +108,17 @@
         </constructor-arg>          
           
     </bean>
-        
+
+    <bean id="org.apache.jetspeed.aggregator.HeaderAggregator" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+        <constructor-arg index="0">
+            <ref bean="portletFactory" />
+        </constructor-arg>
+        <constructor-arg index='1'>
+            <ref bean="PortletWindowAccessor"/>
+        </constructor-arg>
+        <constructor-arg index="2">
+            <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
+        </constructor-arg>                  
+    </bean>
+            
 </beans>

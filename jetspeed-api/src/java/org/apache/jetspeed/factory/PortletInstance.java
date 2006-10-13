@@ -28,4 +28,5 @@ import javax.portlet.PortletConfig;
 public interface PortletInstance extends Portlet
 {
     PortletConfig getConfig();
+    Portlet getRealPortlet();
 }

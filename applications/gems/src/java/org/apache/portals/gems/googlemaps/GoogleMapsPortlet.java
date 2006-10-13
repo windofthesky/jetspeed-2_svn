@@ -24,16 +24,10 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.portlet.PortletHeaderRequest;
+import org.apache.jetspeed.portlet.PortletHeaderResponse;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
-import org.apache.velocity.context.Context;
 /**
  * This is a simple class used to override processAction
  * to save location form submission value to location preference
@@ -66,52 +60,31 @@ public class GoogleMapsPortlet extends AbstractDojoVelocityPortlet
 	preferences.store();
     }
     
-    protected void doDispatch(RenderRequest request, RenderResponse response) throws PortletException, IOException 
+    public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)
+    throws PortletException
     {
-        // include header content
-        includeHeaderContent(request,response);
-
-        // dispatch normally
-        super.doDispatch(request, response);
-    }
-
-    protected void includeHeaderContent(RenderRequest request, RenderResponse response) 
-    {
-        // get portal context path
-        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        String portalContextPath = requestContext.getRequest().getContextPath();
-
-        // use header resource component to ensure header logic is included only once
-        HeaderResource headerResource = headerResourceFactoryComponent.getHeaderResouce(request);
         StringBuffer headerInfoText = new StringBuffer();
         Map headerInfoMap = null;
-
-        // detect jetspeed-desktop
-        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
-
-        boolean isJetspeedDesktop = ((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
-        Context velocityContext = getContext(request);
-        velocityContext.put("isJetspeedDesktop", new Boolean( isJetspeedDesktop ) );
         
         // close DOJO if not already in use as desktop
-        if (!isJetspeedDesktop) 
+        if (!request.isDesktopEncoder()) 
         {
             // complete DoJo includes
             headerInfoText.setLength(0);
             headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");
+            headerInfoMap.put("language", "JavaScript");            
             headerInfoMap.put("src", "http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAisHr-hr7f_yfo_m3teTC5RQXGaCFRGWXJQavRKQcb1Ew_fwkKRQ26QnpXVIkxSMwwTECWDV23ZDaLQ");
             headerInfoMap.put("type", "text/javascript");
-            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
+            response.getHeaderResource().addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
         }
-        super.includeHeaderContent(request, response);
+        super.doHeader(request, response);
     }
     
     protected void includeDojoRequires(StringBuffer headerInfoText)
     {
         appendHeaderText(headerInfoText, "dojo.lang.*");
         appendHeaderText(headerInfoText, "dojo.event.*");
-        appendHeaderText(headerInfoText, "dojo.io");             
+        appendHeaderText(headerInfoText, "dojo.io.*");             
     }    
         
 }
