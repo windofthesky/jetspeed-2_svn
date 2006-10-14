@@ -19,17 +19,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * Changes the window state or portlet mode for a given portlet window
@@ -51,24 +58,28 @@ public class ChangePortletAction
     protected String action;
     protected Map validWindowStates = new HashMap();
     protected Map validPortletModes = new HashMap();
+    protected PortletWindowAccessor windowAccessor;
     
     public ChangePortletAction(String template, 
             String errorTemplate, 
-            String action)
+            String action,
+            PortletWindowAccessor windowAccessor)            
     throws AJAXException    
     {
-        this(template, errorTemplate, action, null, null);
+        this(template, errorTemplate, action, null, windowAccessor, null);
     }
     
     public ChangePortletAction(String template, 
                              String errorTemplate, 
                              String action,
                              PageManager pageManager,
+                             PortletWindowAccessor windowAccessor,                             
                              PortletActionSecurityBehavior securityBehavior)
     throws AJAXException
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.action = action;
+        this.windowAccessor = windowAccessor;
         
         // Build the maps of allowed (internal) modes and states
         Iterator modes = JetspeedActions.getStandardPortletModes().iterator();        
@@ -140,8 +151,8 @@ public class ChangePortletAction
                         
             if (false == checkAccess(requestContext, JetspeedActions.EDIT))
             {
-                Page page = requestContext.getPage();
-                Fragment fragment = page.getFragmentById(portletId);
+                ContentPage page = requestContext.getPage();
+                ContentFragment fragment = page.getContentFragmentById(portletId);
                 if (fragment == null)
                 {
                     success = false;
@@ -167,8 +178,8 @@ public class ChangePortletAction
                 }                
                 portletId = newFragment.getId();
             }            
-            Page page = requestContext.getPage();            
-            Fragment fragment = page.getFragmentById(portletId);
+            ContentPage page = requestContext.getPage();            
+            ContentFragment fragment = page.getContentFragmentById(portletId);
             String oldState = fragment.getState();
             String oldMode = fragment.getMode();
             if (windowState != null)
@@ -180,6 +191,26 @@ public class ChangePortletAction
             {
                 pageManager.updatePage(page);
             }
+            
+            // Now Change the transient navigational state
+            MutableNavigationalState navState = (MutableNavigationalState)requestContext.getPortalURL().getNavigationalState();
+            PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
+            if (portletWindow != null)
+            {
+                oldState = navState.getState(portletWindow).toString();
+                oldMode =  navState.getMode(portletWindow).toString();
+                if (windowState != null)
+                {
+                    navState.setState(portletWindow, new WindowState(windowState));
+                }
+                if (portletMode != null)
+                {
+                    navState.setMode(portletWindow, new PortletMode(portletMode));
+                }
+                navState.sync(requestContext);                                
+            }
+            
+            //requestContext.getPortalURL().getNavigationalState().
             resultMap.put(STATUS, status);
             
             if (windowState != null)
@@ -210,7 +241,7 @@ public class ChangePortletAction
     // TODO: The validWindowStates and validPortletModes maps only contain 
     //       internal (portal level) valid modes and states.
     //       *if* a pa defines a custom mode/state with a different name but
-    //       mapped onto a interal (portal) mode/state 
+    //       mapped onto a internal (portal) mode/state 
     //       *then* first the real internal mode/state needs to be retrieved from the 
     //       targetted portlet its application:
     //       o.a.j.om.common.portlet.PortletApplication.getMappedMode(customMode) and

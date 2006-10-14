@@ -79,6 +79,10 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 requestStates.addPortletWindowNavigationalState(windowId, state);
                 state.setWindowState(windowState);
             }
+            if (windowState.equals(WindowState.MAXIMIZED))
+            {
+                requestStates.setMaximizedWindow(window);
+            }
         }
     }
 
