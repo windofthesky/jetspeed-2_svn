@@ -122,6 +122,9 @@ public class HeaderAggregatorImpl implements PageAggregator
     {
         try
         {
+            if (fragment.getType().equals(ContentFragment.LAYOUT))
+                return;
+            
             PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
             PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
             //portletWindow.getPortletEntity().getPreferenceSet().get
