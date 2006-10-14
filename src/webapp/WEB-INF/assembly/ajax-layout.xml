@@ -317,6 +317,9 @@
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
     <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/>        
+    </constructor-arg>        
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    	
 </bean>
