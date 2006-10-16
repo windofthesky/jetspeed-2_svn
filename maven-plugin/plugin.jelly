@@ -719,6 +719,10 @@
         <j:set var="org.apache.jetspeed.target.rdbms.name" value="derby"/>
         <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
       </j:when>
+      <j:when test="${dbase == 'db2'}">
+        <j:set var="org.apache.jetspeed.target.rdbms.name" value="db2"/>
+        <j:set var="org.apache.jetspeed.target.rdbms.dropdrops" value="true"/>
+      </j:when>      
       <j:otherwise>
         <fail message="unsupported target database: ${org.apache.jetspeed.target.rdbms}"/>
       </j:otherwise>
@@ -995,6 +999,12 @@
      <copy todir="installer2/temp-portal-sql" >
         <fileset dir="${portal.sql.target.dir}"/>
      </copy>
+     <!-- HJB  10/13/06 Added support for DB2 -->
+     <j:set var="org.apache.jetspeed.production.database.default.name" value="db2"/>
+     <attainGoal name="j2:portal.conf.sql"/>
+     <copy todir="installer2/temp-portal-sql" >
+        <fileset dir="${portal.sql.target.dir}"/>
+     </copy>    
      <copy todir="${portal.sql.target.dir}" >
         <fileset dir="installer2/temp-portal-sql"/>
      </copy>
