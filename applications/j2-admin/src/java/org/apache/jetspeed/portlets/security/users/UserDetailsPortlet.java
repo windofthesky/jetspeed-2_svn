@@ -1051,17 +1051,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     roleManager.addRoleToUser(userName, role);
                 }
                 
-                // create user's home page and folder                                
-                Folder folder = pageManager.newFolder(Folder.USER_FOLDER + userName);
-                setSecurityConstraints(folder, userName);                
-                pageManager.updateFolder(folder);
-                
                 String templateFolder = actionRequest.getPreferences().getValue("newUserTemplateDirectory", "/_user/template/");
 
-                // TODO: copy the entire dir tree, not just the default-page.psml                 
-                Page template = pageManager.getPage(templateFolder + "default-page.psml");                
-                Page copy = pageManager.copyPage(template, Folder.USER_FOLDER + userName + "/default-page.psml");
-                pageManager.updatePage(copy);
+                // copy the entire dir tree from the template folder
+                Folder source = pageManager.getFolder(templateFolder);                
+                pageManager.deepCopyFolder(source, Folder.USER_FOLDER + userName, userName);
                 
                 // TODO: send message that site tree portlet invalidated
                 
