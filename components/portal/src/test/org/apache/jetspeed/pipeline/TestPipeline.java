@@ -56,7 +56,7 @@ public class TestPipeline extends TestCase
         assertEquals("ContainerValve", valves[7].toString());
         assertEquals("ActionValveImpl", valves[8].toString());
         assertEquals("DecorationValve", valves[9].toString());
-        assertEquals("headerAggregatorValve", valves[10].toString());
+        assertEquals("HeaderAggregatorValve", valves[10].toString());
         assertEquals("AggregatorValve", valves[11].toString());
         assertEquals("CleanupValveImpl", valves[12].toString());
         
