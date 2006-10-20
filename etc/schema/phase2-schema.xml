@@ -150,10 +150,10 @@ limitations under the License.
         <index name="IX_FOLDER_MENU_1">
             <index-column name="PARENT_ID"/>
         </index>        
-        <unique name="UN_FOLDER_MENU_1">
-            <unique-column name="FOLDER_ID"/>
-            <unique-column name="NAME"/>
-        </unique>
+        <index name="UN_FOLDER_MENU_1">
+            <index-column name="FOLDER_ID"/>
+            <index-column name="NAME"/>
+        </index>
     </table>
 
     <table name="FOLDER_MENU_METADATA">
@@ -292,10 +292,10 @@ limitations under the License.
         <index name="IX_PAGE_MENU_1">
             <index-column name="PARENT_ID"/>
         </index>        
-        <unique name="UN_PAGE_MENU_1">
-            <unique-column name="PAGE_ID"/>
-            <unique-column name="NAME"/>
-        </unique>
+        <index name="UN_PAGE_MENU_1">
+            <index-column name="PAGE_ID"/>
+            <index-column name="NAME"/>
+        </index>
     </table>
 
     <table name="PAGE_MENU_METADATA">
@@ -356,9 +356,9 @@ limitations under the License.
         <index name="IX_FRAGMENT_1">
             <index-column name="PARENT_ID"/>
         </index>        
-        <unique name="UN_FRAGMENT_1">
-            <unique-column name="PAGE_ID"/>
-        </unique>
+        <index name="UN_FRAGMENT_1">
+            <index-column name="PAGE_ID"/>
+        </index>
     </table>
 
     <table name="FRAGMENT_CONSTRAINT">
