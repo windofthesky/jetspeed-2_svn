@@ -269,7 +269,7 @@ limitations under the License.
         <repository>
             <id>org.apache</id>
             <name>Maven1 Apache</name>
-            <url>http://cvs.apache.org/repository</url>
+            <url>http://www.ibiblio.org/maven2</url>
             <layout>legacy</layout>
         </repository>
     </repositories>
