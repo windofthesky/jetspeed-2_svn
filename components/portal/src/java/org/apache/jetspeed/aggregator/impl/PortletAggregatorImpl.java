@@ -20,17 +20,14 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -75,9 +72,13 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             return;
         }
-        PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(entity);
-        fragment.setType(Fragment.PORTLET);
-        fragment.setName(name);
+        Fragment fragment = context.getPage().getFragmentById(entity);
+        if (fragment == null) 
+        {        
+            fragment = new PortletAggregatorFragmentImpl(entity);        
+            fragment.setType(Fragment.PORTLET);
+            fragment.setName(name);
+        }
         //String decorator = fragment.getDecorator();
         ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
         ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
