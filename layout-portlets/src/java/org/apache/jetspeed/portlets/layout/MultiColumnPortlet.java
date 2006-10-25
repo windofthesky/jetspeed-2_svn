@@ -282,6 +282,18 @@ public class MultiColumnPortlet extends LayoutPortlet
                             page.setDefaultDecorator(requestPage.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
                             page.setTitle(jsPageName);
                             pageManager.updatePage(page);
+
+                            List orderList = parent.getDocumentOrder();
+                            if (orderList != null)
+                            {
+                                String name = page.getName();
+                                if (orderList.indexOf(name) < 0)
+                                {
+                                    orderList.add(name);
+                                    parent.setDocumentOrder(orderList);
+                                    pageManager.updateFolder(parent);
+                                }
+                            }
                         }
                     }
                     catch (Exception e)
@@ -296,6 +308,22 @@ public class MultiColumnPortlet extends LayoutPortlet
             {
                 try
                 {
+                    Folder parent = (Folder)requestPage.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        if (orderList != null)
+                        {
+                            String name = requestPage.getName();
+                            if (orderList.indexOf(name) > -1)
+                            {
+                                orderList.remove(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+                    }
+
                     pageManager.removePage(requestPage);
                 }
                 catch (Exception e)
