@@ -58,10 +58,12 @@ limitations under the License.
     #if($isRoot)
       #getBoolProperty($allowChangePageTheme $rootDecorator "allow.change.page.theme" true)
       #getBoolProperty($allowAddPage $rootDecorator "allow.add.page" true)
+      #getBoolProperty($allowNavigatePage $rootDecorator "allow.navigate.page" true)
       #getBoolProperty($allowDeletePage $rootDecorator "allow.delete.page" true)
     #else
       #set($allowChangePageTheme=false)
       #set($allowAddPage=false)
+      #set($allowNavigatePage=false)
       #set($allowDeletePage=false)
     #end
 
@@ -125,6 +127,13 @@ limitations under the License.
           <label for="newpage">$messages.getString("portal.page.editing.page")</label>
           <input id='newpage' name='jsPageName'/>
           <input type="submit" name="jsSubmitPage" value="$messages.getString("portal.page.editing.addpage")"/>
+          </div>
+        #end
+        #if($allowNavigatePage)
+          <div>
+          <label>$messages.getString("portal.page.editing.pagenavigation")</label>
+          <input id="move-page-left" type="submit" name="jsMovePageLeft" value="$messages.getString("portal.page.editing.movePageLeft")" />
+          <input id="move-page-right" type="submit" name="jsMovePageRight" value="$messages.getString("portal.page.editing.movePageRight")" />
           </div>
         #end
         #if($allowDeletePage)

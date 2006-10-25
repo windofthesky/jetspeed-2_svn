@@ -333,6 +333,115 @@ public class MultiColumnPortlet extends LayoutPortlet
                 return;
             }
 
+            if (request.getParameter("jsMovePageLeft") != null)
+            {
+                try
+                {
+                    Folder parent = (Folder) requestPage.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        String name = requestPage.getName();
+                        if (orderList != null)
+                        {
+                            int index = orderList.indexOf(name);
+                            if (index > -1)
+                            {
+                                String type = requestPage.getType();
+                                int i = index - 1;
+                                while (i >= 0)
+                                {
+                                    String value = (String) orderList.get(i);
+                                    if (value.endsWith(type))
+                                    {
+                                        orderList.remove(index);
+                                        orderList.add(i, name);
+                                        parent.setDocumentOrder(orderList);
+                                        pageManager.updateFolder(parent);
+                                        break;
+                                    }
+                                    i--;
+                                }
+                            }
+                            else
+                            {
+                                orderList.add(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+                        else
+                        {
+                            orderList = new ArrayList(4);
+                            orderList.add(name);
+                            parent.setDocumentOrder(orderList);
+                            pageManager.updateFolder(parent);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access page for changing the document order: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }
+
+            if (request.getParameter("jsMovePageRight") != null)
+            {
+                try
+                {
+                    Folder parent = (Folder) requestPage.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        String name = requestPage.getName();
+                        if (orderList != null)
+                        {
+                            int index = orderList.indexOf(name);
+                            if (index > -1)
+                            {
+                                String type = requestPage.getType();
+                                int i = index + 1;
+                                while (i < orderList.size())
+                                {
+                                    String value = (String) orderList.get(i);
+                                    if (value.endsWith(type))
+                                    {
+                                        orderList.remove(index);
+                                        orderList.add(i, name);
+                                        parent.setDocumentOrder(orderList);
+                                        pageManager.updateFolder(parent);
+                                        break;
+                                    }
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                orderList.add(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+                        else
+                        {
+                            orderList = new ArrayList(4);
+                            orderList.add(name);
+                            parent.setDocumentOrder(orderList);
+                            pageManager.updateFolder(parent);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access page for changing the document order: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }            
             
             String theme = request.getParameter("theme");
             if ( theme != null && theme.length() > 0 && !theme.equals(requestPage.getDefaultDecorator(Fragment.LAYOUT)) )
