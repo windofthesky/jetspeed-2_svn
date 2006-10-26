@@ -142,7 +142,7 @@ limitations under the License.
     </target>
 
     <target name="invoke-deploy" unless="org.apache.jetspeed.unsupported">
-        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="deploy" inheritall="off">
+        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="\${basedir}" target="deploy" inheritall="off">
             <property name="org.apache.jetspeed.server.home"
                       value="${org.apache.jetspeed.server.home}"/>
             <property name="org.apache.jetspeed.catalina.version.major"
@@ -181,7 +181,7 @@ limitations under the License.
     </target>
 
     <target name="invoke-hot-deploy" unless="org.apache.jetspeed.unsupported">
-        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy" inheritall="off">
+        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="\${basedir}" target="hot-deploy" inheritall="off">
             <property name="org.apache.jetspeed.server.home"
                       value="${org.apache.jetspeed.server.home}"/>
             <property name="org.apache.jetspeed.groupid"
@@ -202,7 +202,7 @@ limitations under the License.
     </target>
 
     <target name="invoke-hot-deploy-shared-jar" unless="org.apache.jetspeed.unsupported">
-        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy-shared-jar" inheritall="off">
+        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="\${basedir}" target="hot-deploy-shared-jar" inheritall="off">
             <property name="org.apache.jetspeed.deploy.groupid"
                       value="${org.apache.jetspeed.deploy.groupid}"/>
             <property name="org.apache.jetspeed.deploy.artifactid"
@@ -213,7 +213,7 @@ limitations under the License.
     </target>
 
     <target name="invoke-hot-deploy-jar" unless="org.apache.jetspeed.unsupported">
-        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy-jar" inheritall="off">
+        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="\${basedir}" target="hot-deploy-jar" inheritall="off">
             <property name="org.apache.jetspeed.deploy.groupid"
                       value="${org.apache.jetspeed.deploy.groupid}"/>
             <property name="org.apache.jetspeed.deploy.artifactid"
@@ -224,7 +224,7 @@ limitations under the License.
     </target>
 
     <target name="invoke-hot-deploy-war" unless="org.apache.jetspeed.unsupported">
-        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="${basedir}" target="hot-deploy-war" inheritall="off">
+        <ant antfile="\${basedir}/${org.apache.jetspeed.deploy.target}-build.xml" dir="\${basedir}" target="hot-deploy-war" inheritall="off">
             <property name="org.apache.jetspeed.deploy.groupid"
                       value="${org.apache.jetspeed.deploy.groupid}"/>
             <property name="org.apache.jetspeed.deploy.artifactid"
