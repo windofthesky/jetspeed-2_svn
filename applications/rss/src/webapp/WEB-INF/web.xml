@@ -24,7 +24,15 @@ limitations under the License.
     <listener-class>org.apache.jetspeed.webapp.logging.Log4JConfigurator</listener-class>
   </listener>
   
-  	<!-- Define Velocity Servlet -->
+  <servlet>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <display-name>Jetspeed Container</display-name>
+    <description>MVC Servlet for Jetspeed Portlet Applications</description>
+    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
+    <load-on-startup>100</load-on-startup>      
+  </servlet>
+    
+    <!-- Define Velocity Servlet -->
 	<servlet>
 		<servlet-name>velocity</servlet-name>
 		<servlet-class>org.apache.portals.bridges.velocity.BridgesVelocityViewServlet</servlet-class>
@@ -56,5 +64,14 @@ limitations under the License.
 		<url-pattern>*.vm</url-pattern>
 	</servlet-mapping>	
 
+  <servlet-mapping>
+     <servlet-name>
+        JetspeedContainer
+     </servlet-name>
+     <url-pattern>
+       /container/*
+     </url-pattern>
+  </servlet-mapping>
+    
 
 </web-app>

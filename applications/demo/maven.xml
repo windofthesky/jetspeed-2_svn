@@ -27,9 +27,9 @@
   </preGoal>
 
   <goal name="hotdeploywar">
-    <echo message="Hot Deploying war for ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/deploy"/>
+    <echo message="Hot Deploying war for ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}"/>
 
-    <copy todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/deploy" 
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}" 
 		file="${maven.build.dir}/${maven.war.final.name}">
       
     </copy>

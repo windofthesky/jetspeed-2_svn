@@ -138,6 +138,23 @@ limitations under the License.
 		<load-on-startup>1</load-on-startup>
 	</servlet>
   
+   <servlet>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <display-name>Jetspeed Container</display-name>
+    <description>MVC Servlet for Jetspeed Portlet Applications</description>
+    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
+    <init-param>
+      <param-name>contextName</param-name>
+      <param-value>j2-admin</param-value>
+    </init-param>
+    <load-on-startup>100</load-on-startup>
+   </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <url-pattern>/container/*</url-pattern>
+  </servlet-mapping>
+      
   	<!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
 		<servlet-name>velocity</servlet-name>

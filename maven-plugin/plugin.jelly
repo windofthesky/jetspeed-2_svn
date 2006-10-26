@@ -379,7 +379,7 @@
       <attainGoal name="j2:_check.dep"/>
     </j:if>
     <copy file="${maven.repo.local}/${depGroup}/${depType}/${depName}"
-          tofile="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"
+          tofile="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}.war" 
           overwrite="true"
           failonerror="true"/>
   </goal>
