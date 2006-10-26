@@ -142,6 +142,9 @@ limitations under the License.
         <!-- Portal Application Server Deployment -->
         <module>app-servers</module>
 
+        <!-- Build Enterprise APP -->
+        <!-- <module>enterprise</module> -->
+        
     </modules>
 
     <!-- Repositories -->

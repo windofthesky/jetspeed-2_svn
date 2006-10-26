@@ -239,6 +239,9 @@ limitations under the License.
         <module>app-servers</module>
         <module>maven-archetypes</module>
 
+        <!-- Optionally (not sure how to optionally with Maven-2...) Build Enterprise APP -->
+        <!-- <module>enterprise</module> -->
+        
     </modules>
 
     <!-- Repositories -->
