@@ -824,6 +824,51 @@ limitations under the License.
       </preference>
     </portlet-preferences>
   </portlet>         
-    
+
+  	<portlet id="weather">
+		<description>Weather Underground Portlet</description>
+		<portlet-name>WeatherPortlet</portlet-name>
+		<display-name>Weather</display-name>
+		<portlet-class>org.apache.portals.applications.desktop.WeatherPortlet</portlet-class>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/view/weather.vm</value>
+        </init-param>		        
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/view/edit-prefs.vm</value>
+        </init-param>			
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>VIEW</portlet-mode>
+		    <portlet-mode>EDIT</portlet-mode>	  
+		</supports>
+		<supported-locale>en</supported-locale>        
+        <portlet-info>
+           <title>Weather</title>
+           <short-title>Weather</short-title>
+           <keywords>weather</keywords>
+        </portlet-info>        
+        <portlet-preferences>
+		<preference>
+			<name>weather_state</name>
+			<value>CA</value>
+		</preference>
+		<preference>
+			<name>weather_city</name>
+			<value>Oakland</value>
+		</preference>
+		<preference>
+			<name>weather_station</name>
+			<value></value>
+		</preference>
+		<preference>
+			<name>weather_style</name>
+			<value>infobox</value>
+		</preference>
+		</portlet-preferences>
+	</portlet>         
+        
 </portlet-app>
 
