@@ -65,6 +65,10 @@ limitations under the License.
     <servlet>
     <servlet-name>YahooGeocodeProxyServlet</servlet-name>
     <servlet-class>org.apache.portals.gems.googlemaps.YahooGeocodeProxyServlet</servlet-class>
+    <init-param>
+      <param-name>contextName</param-name>
+      <param-value>demo</param-value>
+    </init-param>                            
     <load-on-startup>1</load-on-startup>
     </servlet>
     <!-- jdp Map /yahoogecode files to YahooGeocodeProxy  -->
