@@ -350,6 +350,14 @@
   <goal name="j2:deploy">
       <j:set var="j2.war.groupId" value="${plugin.groupId}"/>
       <j:set var="j2.war.version" value="${jetspeed.version}"/>
+      <j:set var="isLocalWarDeploy" value="false"/>            
+      <attainGoal name="j2:warDeploy"/>
+  </goal>
+
+  <goal name="j2:localdeploy">
+      <j:set var="j2.war.groupId" value="${plugin.groupId}"/>
+      <j:set var="j2.war.version" value="${jetspeed.version}"/>
+      <j:set var="isLocalWarDeploy" value="true"/>
       <attainGoal name="j2:warDeploy"/>
   </goal>
   
@@ -378,8 +386,12 @@
     <j:if test="${online}">
       <attainGoal name="j2:_check.dep"/>
     </j:if>
+    <j:set var="warDeployDest" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}.war"/>
+    <j:if test='${isLocalWarDeploy == "true"}'>
+      <j:set var="warDeployDest" value="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"/>
+    </j:if>    
     <copy file="${maven.repo.local}/${depGroup}/${depType}/${depName}"
-          tofile="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}.war" 
+          tofile="${warDeployDest}" 
           overwrite="true"
           failonerror="true"/>
   </goal>
@@ -387,7 +399,7 @@
 
   <goal name="j2:pam.layoutdeploy">
     <j:set var="maven.war.final.name" value="jetspeed-layouts"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:localdeploy"/>
   </goal>
 
   <goal name="j2:pam.demodeploy">
