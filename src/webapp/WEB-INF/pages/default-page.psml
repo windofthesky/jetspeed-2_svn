@@ -44,7 +44,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
-    <fragment type="portlet" name="demo::WeatherPortlet">
+    <fragment id="dp-24" type="portlet" name="demo::WeatherPortlet">
         <property name="row" value="4"/>
         <property name="column" value="1"/>
     </fragment>
