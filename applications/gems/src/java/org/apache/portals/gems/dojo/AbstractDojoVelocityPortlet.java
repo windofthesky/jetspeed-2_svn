@@ -35,20 +35,7 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  * @version $Id: $
  */
 public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet implements SupportsHeaderPhase 
-{
-    protected void includeDojoRequires(StringBuffer headerInfoText)
-    {
-    }
-    protected void includeDojoWidgetRequires(StringBuffer headerInfoText)
-    {
-        appendHeaderText(headerInfoText, "dojo.widget.Manager");
-    }
-    protected void includeDojoCustomWidgetRequires(StringBuffer headerInfoText)
-    {
-        headerInfoText.append("dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');\r\n");
-        headerInfoText.append("dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');\r\n");
-    }
-    
+{    
     /*
      * Class specific logger.
      */
@@ -68,88 +55,19 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
      * @param request render request
      * @param response render response
      */    
-    public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)
+    public void doHeader( PortletHeaderRequest request, PortletHeaderResponse response )
     throws PortletException
     {
-        String portalContextPath = request.getPortalContextPath();
-
         // use header resource component to ensure header logic is included only once
         HeaderResource headerResource = response.getHeaderResource();
-        StringBuffer headerInfoText = new StringBuffer();
-        Map headerInfoMap = null;
 
-        // add dojo if not already in use as desktop
-        if (!request.isDesktopEncoder()) 
-        {
-            // dojo configuration
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            headerInfoText.append("var djConfig = {isDebug: true, debugAtAllCosts: true, baseScriptUri: '" + portalContextPath + "/javascript/dojo/'};\r\n");
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("type", "text/javascript");
-            headerInfoMap.put("language", "JavaScript");
-            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
+        headerResource.dojoEnable();
+        includeHeaderContent( headerResource );
+    }
     
-            // dojo script
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");
-            headerInfoMap.put("type", "text/javascript");
-            headerInfoMap.put("src", portalContextPath + "/javascript/dojo/dojo.js");
-            headerResource.addHeaderInfo("script", headerInfoMap, "");
-            
-            // dojo includes
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            includeDojoRequires(headerInfoText);
-            includeDojoWidgetRequires(headerInfoText);
-            includeDojoCustomWidgetRequires(headerInfoText);
-            
-            headerInfoText.append("dojo.require('jetspeed.desktop.compatibility');\r\n");
-
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");
-            headerInfoMap.put("type", "text/javascript");
-            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
-        }
-        
-        // close DOJO if not already in use as desktop
-        if (!request.isDesktopEncoder()) 
-        {
-            // complete DoJo includes
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            headerInfoText.append("dojo.hostenv.writeIncludes();\r\n");
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");
-            headerInfoMap.put("type", "text/javascript");
-            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
-        }
-
-        // add jetspeed widget package if not already in use as desktop
-        if (!request.isDesktopEncoder()) 
-        {
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            headerInfoText.append("dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');\r\n");
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");
-            headerInfoMap.put("type", "text/javascript");
-            headerResource.addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
-        }
-        
-        if (!request.isDesktopEncoder()) 
-        {
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            headerInfoText.append("html, body\r\n");
-            headerInfoText.append("{\r\n");
-            headerInfoText.append("   width: 100%;\r\n");
-            headerInfoText.append("   height: 100%;\r\n");
-            headerInfoText.append("   margin: 0 0 0 0;\r\n");
-            headerInfoText.append("}\r\n");
-            headerInfoMap = new HashMap(8);
-            headerResource.addHeaderInfo("style", headerInfoMap, headerInfoText.toString());
-        }
+    protected void includeHeaderContent( HeaderResource headerResource )
+    {
+        // do nothing - intended for derived classes
     }
     
     protected void appendHeaderText(StringBuffer headerInfoText, String header)

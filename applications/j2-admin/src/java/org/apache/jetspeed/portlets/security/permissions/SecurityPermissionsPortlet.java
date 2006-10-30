@@ -33,6 +33,7 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.om.InternalPermission;
@@ -94,29 +95,21 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
 
     */
 
-    protected void includeDojoRequires(StringBuffer headerInfoText)
+    protected void includeHeaderContent( HeaderResource headerResource )
     {
-        appendHeaderText(headerInfoText, "dojo.lang.*");
-        appendHeaderText(headerInfoText, "dojo.event.*");
-        appendHeaderText(headerInfoText, "dojo.io");
-    }
-    protected void includeDojoWidgetRequires(StringBuffer headerInfoText)
-    {
-        super.includeDojoWidgetRequires(headerInfoText);
-        appendHeaderText(headerInfoText, "dojo.widget.Manager");
-        appendHeaderText(headerInfoText, "dojo.widget.LayoutContainer");
-        appendHeaderText(headerInfoText, "dojo.widget.ContentPane");
-        appendHeaderText(headerInfoText, "dojo.widget.SplitContainer");
-        appendHeaderText(headerInfoText, "dojo.widget.TabContainer");
-        appendHeaderText(headerInfoText, "dojo.widget.Checkbox");
-        appendHeaderText(headerInfoText, "dojo.widget.Dialog");
-        appendHeaderText(headerInfoText, "dojo.widget.Button");
-        appendHeaderText(headerInfoText, "dojo.widget.Menu2");
-    }
-    protected void includeDojoCustomWidgetRequires(StringBuffer headerInfoText)
-    {
-        super.includeDojoCustomWidgetRequires(headerInfoText);
-        appendHeaderText(headerInfoText, "jetspeed.ui.widget.EditorTable");
+        headerResource.dojoAddCoreLibraryRequire( "dojo.lang.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.event.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.io.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.LayoutContainer" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.ContentPane" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.SplitContainer" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.TabContainer" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Checkbox" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Dialog" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Button" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Menu2" );
+        headerResource.dojoAddModuleLibraryRequire( "jetspeed.ui.widget.EditorTable" );
     }
     
     public void doView(RenderRequest request, RenderResponse response)

@@ -20,6 +20,8 @@ import javax.portlet.PortletPreferences;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.core.impl.PortletPreferencesImpl;
+import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.window.PortletWindow;
 
 
@@ -28,8 +30,9 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     private RequestContext requestContext;
     private String portletApplicationContextPath;
     private PortletWindow portletWindow;
+    private ParameterSet initParamSet;
     
-    public PortletHeaderRequestImpl(RequestContext requestContext, PortletWindow portletWindow, String portletApplicationContextPath)
+    public PortletHeaderRequestImpl( RequestContext requestContext, PortletWindow portletWindow, String portletApplicationContextPath )
     {
         this.requestContext = requestContext;
         this.portletApplicationContextPath = portletApplicationContextPath;
@@ -39,20 +42,31 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     public String getPortalContextPath()
     {
         return requestContext.getRequest().getContextPath();
-    }
-    
-    public boolean isDesktopEncoder()
-    {
-        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
-        return((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
-    }
-    
+    }    
     
     public PortletPreferences getPreferences()
     {
         return new PortletPreferencesImpl(org.apache.pluto.Constants.METHOD_NOOP, this.portletWindow.getPortletEntity());
     }
-
+    
+    public String getInitParameter( String name )
+    {
+        ParameterSet iParamSet = this.initParamSet;
+        if ( iParamSet == null )
+        {
+            iParamSet = this.portletWindow.getPortletEntity().getPortletDefinition().getInitParameterSet();
+            this.initParamSet = iParamSet;
+        }
+        if ( iParamSet != null )
+        {
+            Parameter initParam = iParamSet.get( name );
+            if ( initParam != null )
+            {
+                return initParam.getValue();
+            }
+        }
+        return null;
+    }
     
     /**
      * @return Returns the portletApplicationContextPath.

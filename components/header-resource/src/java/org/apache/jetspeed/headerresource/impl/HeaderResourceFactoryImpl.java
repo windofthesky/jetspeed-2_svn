@@ -15,9 +15,12 @@
  */
 package org.apache.jetspeed.headerresource.impl;
 
+import java.util.Map;
+
 import javax.portlet.PortletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.request.RequestContext;
@@ -36,6 +39,10 @@ public class HeaderResourceFactoryImpl implements HeaderResourceFactory
     public HeaderResource getHeaderResouce(RequestContext requestContext)
     {
         return new HeaderResourceImpl(requestContext);
+    }
+    public HeaderResource getHeaderResource(RequestContext requestContext, BasePortalURL baseUrlAccess, boolean isDesktop, Map headerConfiguration )
+    {
+        return new HeaderResourceImpl(requestContext, baseUrlAccess, isDesktop, headerConfiguration );
     }
 
     /* (non-Javadoc)

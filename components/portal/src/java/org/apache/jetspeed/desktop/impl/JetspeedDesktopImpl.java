@@ -26,9 +26,12 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
+import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.springframework.web.context.ServletContextAware;
@@ -40,13 +43,17 @@ import org.springframework.web.context.ServletContextAware;
  * @version $Id: $
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
-{
+{    
     private static final String TEMPLATE_EXTENSION_ATTR = "template.extension";
 
     private static final String ID_ATTR = "id";
     
     private static final String RESOURCE_FILE_ATTR =  "resource.file";
 
+    private final static String EOL = "\r\n";   // html eol    
+    private final static String INIT_FUNCTION_NAME = "jetspeed.initializeDesktop";
+    private final static String DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME = "djConfig.desktopThemeRootUrl";
+    
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
     /** the webapp relative root of all themes */
@@ -64,19 +71,23 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     /** spring-fed servlet context property */
     private ServletContext servletContext;
     
+    /** tool for directing output to html &lt;head&gt; */
+    private HeaderResourceFactory headerResourceFactory;
+    
     /** base portal URL to override default URL server info from servlet */
     private BasePortalURL baseUrlAccess = null;
     
-    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension)
+    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension, HeaderResourceFactory headerResourceFactory )
+    {
+        this( themesRoot, defaultTheme, defaultExtension, headerResourceFactory, null );
+    }
+
+    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension, HeaderResourceFactory headerResourceFactory, BasePortalURL baseUrlAccess)
     {
         this.themesRoot = themesRoot;
         this.defaultTheme = defaultTheme;
         this.defaultExtension = defaultExtension;
-    }
-
-    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension, BasePortalURL baseUrlAccess)
-    {
-        this(themesRoot, defaultTheme, defaultExtension);
+        this.headerResourceFactory = headerResourceFactory;
         this.baseUrlAccess = baseUrlAccess;
     }
     
@@ -91,13 +102,42 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         String path = getThemePath(theme);               
         try
         {
-            RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(path);                
+            RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(path);
+            
+            HeaderResource hr = getHeaderResourceFactory().getHeaderResouce( request );
+            
             JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(
-                    request, this.baseUrlAccess, theme,
-                    getThemeRootPath(theme), getResourceName(theme));
-            request.getRequest().setAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
-            request.getRequest().setAttribute("JS2RequestContext", request);
-            dispatcher.include(request.getRequest(), request.getResponse());
+                    request, this.baseUrlAccess, theme, getThemeRootPath( theme ), getResourceName( theme ), hr );
+            request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext );
+            request.getRequest().setAttribute( "JS2RequestContext", request );
+            request.getRequest().setAttribute( "JS2ComponentManager", Jetspeed.getComponentManager() );
+            
+            StringBuffer dojoConfigAddOn = new StringBuffer();
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "\";" );
+            hr.addHeaderSectionFragment( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
+            
+            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME ) )
+            {
+                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, HeaderResource.HEADER_TYPE_LINK_TAG );
+                StringBuffer desktopThemeStyleLink = new StringBuffer();
+                desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "/css/styles.css\"/>" );
+                hr.addHeaderSectionFragment( "desktop.style.desktoptheme", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, desktopThemeStyleLink.toString() );
+            }
+            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_INIT ) )
+            {
+                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_INIT, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START );
+                StringBuffer desktopInitScript = new StringBuffer();
+                desktopInitScript.append( "    function jsDesktopInit() {" );
+                desktopInitScript.append( INIT_FUNCTION_NAME ).append( "(\"" );
+                desktopInitScript.append( desktopContext.getDesktopTheme() );
+                desktopInitScript.append( "\", \"");
+                desktopInitScript.append( desktopContext.getDesktopThemeRootUrl() );
+                desktopInitScript.append( "\"); }" ).append( EOL );
+                desktopInitScript.append( "    dojo.addOnLoad( window.jsDesktopInit );" );
+                hr.addHeaderSectionFragment( "desktop.init", HeaderResource.HEADER_SECTION_DESKTOP_INIT, desktopInitScript.toString() );
+            }
+            
+            dispatcher.include( request.getRequest(), request.getResponse() );
         }
         catch (Exception e)
         {
@@ -120,7 +160,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     }
 
     
-    public void setDefaultTheme(String defaultTheme)
+    protected void setDefaultTheme(String defaultTheme)
     {
         this.defaultTheme = defaultTheme;
     }
@@ -225,5 +265,9 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         this.servletContext = servletContext;
     }
     
+    public HeaderResourceFactory getHeaderResourceFactory()
+    {
+        return this.headerResourceFactory;
+    }
 }
     

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.desktop;
 
+import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -40,5 +41,12 @@ public interface JetspeedDesktop
      * @return default theme for portal
      */
     String getDefaultTheme();
+    
+    /**
+     * Retrieve the header resource factory
+     * 
+     * @return header resource factory
+     */
+    HeaderResourceFactory getHeaderResourceFactory();
             
 }

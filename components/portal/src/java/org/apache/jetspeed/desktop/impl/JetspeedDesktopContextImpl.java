@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
+import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.headerresource.HeaderResourceLib;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -38,88 +40,140 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
 {
-    /** Jetspeed Request Context */
+    // Jetspeed Request Context
     RequestContext context;
     
-    /** base portal URL to override default URL server info from servlet */
+    // base portal url to override default url server info from servlet
     private BasePortalURL baseUrlAccess = null;
+    
     private String themeRootPath = null;
     private String theme = null;
     private String resourceName = null;
-        
-    public JetspeedDesktopContextImpl(RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath, String resourceName)
+    
+    // ... save generated portal urls to avoid duplicate effort
+    private String portalBaseUrl;
+    private String portalUrl;
+    
+    private HeaderResource headerResource;
+    
+    public JetspeedDesktopContextImpl( RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath, String resourceName, HeaderResource headerResource )
     {
         this.context = context;
         this.baseUrlAccess = baseUrlAccess;
         this.theme = theme;
         this.themeRootPath = themeRootPath;
         this.resourceName = resourceName;
+        this.headerResource = headerResource;
     }
     
-    public String getPortalResourceUrl(String relativePath)
-    {        
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
+    
+    // get portal urls - each of these methods is copied from HeaderResourceImpl.java
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl()
+    {
+        if ( this.portalBaseUrl == null )
+        {
+            this.portalBaseUrl = HeaderResourceLib.getPortalBaseUrl( context, this.baseUrlAccess );
+        }
+        return this.portalBaseUrl;
+    }
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( boolean encode )
+    {
+        String baseurl = getPortalBaseUrl();
+        if ( ! encode )
+        {
+            return baseurl;
+        }
+        else
+        {
+            return context.getResponse().encodeURL( baseurl );
+        }
+    }
         
-        // only rewrite a non-absolute url
-        if (relativePath != null && relativePath.indexOf("://") == -1 && relativePath.indexOf("mailto:") == -1)            
-        {
-            StringBuffer path = new StringBuffer();
-            if (this.baseUrlAccess == null)
-            {
-                return response.encodeURL(path.append(request.getScheme()).append("://").append(
-                request.getServerName()).append(":").append(request.getServerPort()).append(
-                request.getContextPath()).append(relativePath).toString());                
-            }
-            else
-            {
-                return response.encodeURL(path.append(baseUrlAccess.getServerScheme()).append("://").append(
-                        baseUrlAccess.getServerName()).append(":").append(baseUrlAccess.getServerPort()).append(
-                        request.getContextPath()).append(relativePath).toString());                                
-            }
-        }
-        else
-        {
-            return relativePath;
-        }
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath )
+    {
+        return getPortalResourceUrl( relativePath, false );
     }
     
-    public String getPortalUrl(String relativePath)
-    {        
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
-
-        // only rewrite a non-absolute url
-        if (relativePath != null && relativePath.indexOf("://") == -1 && relativePath.indexOf("mailto:") == -1)            
-        {
-            StringBuffer path = new StringBuffer();
-            if (this.baseUrlAccess == null)
-            {
-                return response.encodeURL(path.append(request.getScheme()).append("://").append(
-                request.getServerName()).append(":").append(request.getServerPort()).append(
-                request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                
-            }
-            else
-            {
-                return response.encodeURL(path.append(baseUrlAccess.getServerScheme()).append("://").append(
-                        baseUrlAccess.getServerName()).append(":").append(baseUrlAccess.getServerPort()).append(
-                        request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                                
-            }
-        }
-        else
-        {
-            return relativePath;
-        }
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath, boolean encode )
+    {
+        return HeaderResourceLib.getPortalResourceUrl( relativePath, getPortalBaseUrl(), encode, context );
     }
     
-    public String getDesktopThemeResourceUrl(String relativePath)
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl()
     {
-        return getPortalResourceUrl(getDesktopThemeResource(relativePath));
+        if ( this.portalUrl == null )
+        {
+            this.portalUrl = HeaderResourceLib.getPortalUrl( getPortalBaseUrl(), context );
+        }
+        return this.portalUrl;
+    }
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( boolean encode )
+    {
+        return getPortalUrl( null, encode );
+    }
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath )
+    {
+        return getPortalUrl( relativePath, false );
+    }
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath, boolean encode )
+    {
+        return HeaderResourceLib.getPortalResourceUrl( relativePath, getPortalUrl(), encode, context );
+    }
+    
+    
+    public String getDesktopThemeResourceUrl( String relativePath )
+    {
+        return getPortalResourceUrl( getDesktopThemeResource( relativePath ), false );
     }
 
-    public String getDesktopThemeResource(String relativePath)
+    public String getDesktopThemeResource( String relativePath )
     {
-        if (relativePath.startsWith("/"))
+        if ( relativePath.startsWith( "/" ) )
         {
             return themeRootPath + relativePath;
         }
@@ -131,7 +185,7 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
 
     public String getDesktopThemeRootUrl()
     {
-        return getPortalResourceUrl(themeRootPath);
+        return getPortalResourceUrl( themeRootPath, false );
     }
     
     public String getDesktopTheme()
@@ -142,13 +196,13 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     public ResourceBundle getResourceBundle(Locale locale)
     {
         String resourceDirName = context.getConfig().getServletContext()
-                .getRealPath(getDesktopThemeResource(RESOURCES_DIRECTORY_NAME));
+                .getRealPath( getDesktopThemeResource( RESOURCES_DIRECTORY_NAME ) );
         File resourceDir = new File(resourceDirName);
         if (resourceName == null)
         {
-            throw new NullPointerException("The resource file is null.");
+            throw new NullPointerException( "The resource file is null." );
         }
-        if (!resourceDir.isDirectory())
+        if ( !resourceDir.isDirectory() )
         {
             throw new MissingResourceException(
                     "Can't find the resource directory: " + resourceDirName,
@@ -167,5 +221,10 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
         }
         return ResourceBundle.getBundle(resourceName, locale,
                 new URLClassLoader(urls));
+    }
+    
+    public HeaderResource getHeaderResource()
+    {
+        return this.headerResource;
     }
 }

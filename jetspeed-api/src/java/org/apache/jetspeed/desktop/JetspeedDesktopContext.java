@@ -18,6 +18,8 @@ package org.apache.jetspeed.desktop;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.jetspeed.headerresource.HeaderResource;
+
 /**
  * Jetspeed Desktop 
  *
@@ -31,21 +33,60 @@ public interface JetspeedDesktopContext
     String RESOURCES_DIRECTORY_NAME = "resources";
     
     /**
-     * Get an absolute portal from a relative URL.
-     * This request adds in the servlet path such as "/desktop"
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
      * 
-     * @param relativePath
-     * @return The full portal URL from a relative path
-     */     
-    String getPortalUrl(String relativePath);
+     * @return portal base url
+     */
+    public String getPortalBaseUrl();
     
     /**
-     * Gets an absolute resource URL to a portal resource, minus the servlet path
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
      * 
-     * @param relativePath
-     * @return
+     * @return portal base url
      */
-    String getPortalResourceUrl(String relativePath);
+    public String getPortalBaseUrl( boolean encode );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath, boolean encode );
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl();
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( boolean encode );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath, boolean encode );
 
     /**
      * Gets the desktop-theme name
@@ -55,19 +96,29 @@ public interface JetspeedDesktopContext
     public String getDesktopTheme();
 
     /**
-     * Gets an absolute resource URL to the desktop-theme directory
+     * Gets an absolute resource url to the desktop-theme directory
      * 
      * @return
      */
     public String getDesktopThemeRootUrl();
 
     /**
-     * Gets an absolute resource URL to a desktop-theme resource
+     * Gets an absolute resource url to a desktop-theme resource
      * 
      * @param relativePath
      * @return
      */
-    String getDesktopThemeResourceUrl(String relativePath);
+    public String getDesktopThemeResourceUrl( String relativePath );
+    
+    /**
+     * Gets an relative resource url to a desktop-theme resource
+     * 
+     * @param relativePath
+     * @return
+     */
+    public String getDesktopThemeResource( String relativePath );
     
     public ResourceBundle getResourceBundle(Locale locale);
+    
+    public HeaderResource getHeaderResource();
 }

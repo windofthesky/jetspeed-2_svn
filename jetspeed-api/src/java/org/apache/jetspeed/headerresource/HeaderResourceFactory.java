@@ -15,8 +15,11 @@
  */
 package org.apache.jetspeed.headerresource;
 
+import java.util.Map;
+
 import javax.portlet.PortletRequest;
 
+import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -40,6 +43,14 @@ public interface HeaderResourceFactory
      * @return
      */
     public abstract HeaderResource getHeaderResouce(RequestContext requestContext);
+    
+    /**
+     * Provides HeaderResource instance from RequestContext.
+     * 
+     * @param requestContext
+     * @return
+     */
+    public abstract HeaderResource getHeaderResource( RequestContext requestContext, BasePortalURL baseUrlAccess, boolean isDesktop, Map headerConfiguration );
 
     /**
      * Provides HeaderResource instance from PortletRequest.

@@ -38,9 +38,7 @@ public interface PortletHeaderRequest
     PortletPreferences getPreferences();
     
     /**
-     * Determine if its a /desktop encoder
-     * @return true if its a /desktop encoder, false if /portal encoder
+     * Get the init parameter by name
      */
-    boolean isDesktopEncoder();
-    
+    String getInitParameter( String name );
 }

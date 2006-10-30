@@ -109,16 +109,45 @@
           
     </bean>
 
-    <bean id="org.apache.jetspeed.aggregator.HeaderAggregator" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+    <bean id="HeaderAggregatorPortal" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
         <constructor-arg index="0">
             <ref bean="portletFactory" />
         </constructor-arg>
-        <constructor-arg index='1'>
+        <constructor-arg index="1">
             <ref bean="PortletWindowAccessor"/>
         </constructor-arg>
         <constructor-arg index="2">
             <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
-        </constructor-arg>                  
+        </constructor-arg>
+        <constructor-arg index="3" type="boolean">
+            <value>false</value>   <!-- isDesktop == false -->
+        </constructor-arg>
+        <constructor-arg index="4">
+            <ref bean="HeaderResourceConfigurationPortal"/>
+        </constructor-arg>
+        <constructor-arg index="5">
+            <ref bean="HeaderResourceRegistry"/>
+        </constructor-arg>
     </bean>
-            
+           
+    <bean id="HeaderAggregatorDesktop" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+        <constructor-arg index="0">
+            <ref bean="portletFactory" />
+        </constructor-arg>
+        <constructor-arg index="1">
+            <ref bean="PortletWindowAccessor"/>
+        </constructor-arg>
+        <constructor-arg index="2">
+            <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
+        </constructor-arg>
+        <constructor-arg index="3" type="boolean">
+            <value>true</value>   <!-- isDesktop == true -->
+        </constructor-arg>
+        <constructor-arg index="4">
+            <ref bean="HeaderResourceConfigurationDesktop"/>
+        </constructor-arg>
+        <constructor-arg index="5">
+            <ref bean="HeaderResourceRegistry"/>
+        </constructor-arg>
+    </bean>
 </beans>

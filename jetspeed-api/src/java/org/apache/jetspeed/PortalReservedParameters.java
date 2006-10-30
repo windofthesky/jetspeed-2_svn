@@ -48,6 +48,10 @@ public interface PortalReservedParameters
     public static final String CONTENT_DISPATCHER_ATTRIBUTE = "org.apache.jetspeed.ContentDispatcher";
     public static final String OVERRIDE_PORTLET_TITLE_ATTR = "org.apache.jetspeed.portlet.title";
     public static final String HEADER_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headerresource";
+    public static final String HEADER_CONFIGURATION_ATTRIBUTE = "org.apache.jetspeed.headerconfiguration";
+    public static final String HEADER_NAMED_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headernamedresource";
+    public static final String HEADER_NAMED_RESOURCE_ADDED_FRAGMENTS_ATTRIBUTE = "org.apache.jetspeed.headernamedresourceaddedfragments";
+    public static final String HEADER_NAMED_RESOURCE_REGISTRY_ATTRIBUTE = "org.apache.jetspeed.headernamedresourceregistry";
     public static final String PATH_ATTRIBUTE = "org.apache.jetspeed.Path";
     public static final String PARAMETER_ALREADY_DECODED_ATTRIBUTE = "org.apache.jetspeed.parameterAlreadyDecoded";
     public static final String RESOVLER_CACHE_ATTR = "org.apache.jetspeed.resovler.cache";

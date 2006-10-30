@@ -40,6 +40,29 @@ limitations under the License.
         Jetspeed Header Resource Management
     </description>
 
+
+    <!-- Dependencies -->
+
+    <dependencies>
+
+        <!-- Build Dependencies -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+
+    </dependencies>
+
+
     <!-- Build Configuration -->
 
     <build>

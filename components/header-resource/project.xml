@@ -43,7 +43,15 @@ limitations under the License.
     <dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-api</id>
       <version>${jetspeed.version}</version>
-    </dependency>  
+    </dependency>
+    <dependency>
+        <id>commons-lang</id>
+        <groupId>commons-lang</groupId>
+        <version>2.0</version>
+        <properties>
+            <war.bundle>true</war.bundle>
+        </properties>
+    </dependency>
   </dependencies>
 
 </project>

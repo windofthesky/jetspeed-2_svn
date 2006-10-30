@@ -55,7 +55,13 @@ import org.springframework.web.portlet.DispatcherPortlet;
 public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsHeaderPhase
 {
 	protected static final String CRLF = "\r\n";
-
+    
+    protected static final String DOJO_REQUIRES_CORE_INIT_PARAM = "dojo.requires.core";
+    protected static final String DOJO_REQUIRES_MODULES_INIT_PARAM = "dojo.requires.modules";
+    
+    private String dojoRequiresCoreList = null;
+    private String dojoRequiresAddOnList = null;
+    
     /*
      * Class specific logger.
      */
@@ -69,52 +75,6 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsH
     public DojoSpringMVCPortlet() 
     {
         super();
-    }
-    
-    protected void includeDojoConfig(PortletHeaderRequest request, PortletHeaderResponse response, String portalContextPath, StringBuffer headerInfoText)
-		throws PortletException
-	{	
-    	headerInfoText.append( "var djConfig = { " );
-    	headerInfoText.append( "isDebug: true, debugAtAllCosts: false" );
-    	headerInfoText.append( ", baseScriptUri: '" );
-    	headerInfoText.append( portalContextPath ).append( "/javascript/dojo/" );
-    	headerInfoText.append( "'" );
-    	headerInfoText.append( " };" ).append( CRLF );
-	}
-    
-    protected String getDojoJSPath( String portalContextPath )
-    {
-    	return portalContextPath + "/javascript/dojo/dojo.js";
-    }
-	
-    protected void includeDojoRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
-    	throws PortletException
-    {
-    	if ( this.headerPage != null )
-    	{
-    		include( request, response, this.headerPage, headerInfoText );
-    	}
-    }
-    protected void includeDojoWidgetRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
-        throws PortletException
-    {
-
-    }
-    protected void includeDojoCustomWidgetRequires(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
-        throws PortletException
-    {
-        
-    }
-    
-    protected void includeDojoWriteIncludes(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
-        throws PortletException
-    {
-    	headerInfoText.append( "dojo.hostenv.writeIncludes();" ).append( CRLF );
-    }
-    protected void includeDojoRegisterWidgetPackage(PortletHeaderRequest request, PortletHeaderResponse response, StringBuffer headerInfoText)
-        throws PortletException
-    {
-        headerInfoText.append( "dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');" ).append( CRLF );
     }
     
     protected boolean addJavascriptBlock(HeaderResource headerResource, StringBuffer javascriptText)
@@ -159,6 +119,8 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsH
         synchronized (this) 
         {
             this.headerPage = this.getInitParameter("HeaderPage");
+            this.dojoRequiresCoreList = this.getInitParameter( DOJO_REQUIRES_CORE_INIT_PARAM );
+            this.dojoRequiresAddOnList = this.getInitParameter( DOJO_REQUIRES_MODULES_INIT_PARAM );
         }
     }
 
@@ -180,81 +142,30 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsH
     public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)    
     throws PortletException
     {
-        String portalContextPath = request.getPortalContextPath();
-
         // use header resource component to ensure header logic is included only once
         HeaderResource headerResource = response.getHeaderResource();
-        StringBuffer headerInfoText = new StringBuffer();
-        Map headerInfoMap = null;
-        boolean isJetspeedDesktop = request.isDesktopEncoder();
-        boolean addedDojoRequires = false;
         
+        headerResource.dojoEnable();
+        includeHeaderContent( headerResource );
         
-        // add dojo if not already in use as desktop
-        if (!isJetspeedDesktop) 
+        /*if ( this.headerPage != null )
         {
-            // dojo configuration
-            headerInfoText.setLength(0);
-            includeDojoConfig( request, response, portalContextPath, headerInfoText );
-            addJavascriptBlock( headerResource, headerInfoText );
-            
-            // dojo script
-            addJavascriptInclude( headerResource, getDojoJSPath( portalContextPath ) );
-            
-            // dojo includes
-            headerInfoText.setLength(0);
-            includeDojoRequires( request, response, headerInfoText );
-            if ( addJavascriptBlock( headerResource, headerInfoText ) )
-            {
-            	addedDojoRequires = true;
-            }
-            	
-            headerInfoText.setLength(0);
-            includeDojoWidgetRequires( request, response, headerInfoText );
-            if ( addJavascriptBlock( headerResource, headerInfoText ) )
-            {
-            	addedDojoRequires = true;
-            }
-            
-            headerInfoText.setLength(0);
-            includeDojoCustomWidgetRequires( request, response, headerInfoText );
-            if ( addJavascriptBlock( headerResource, headerInfoText ) )
-            {
-            	addedDojoRequires = true;
-            }
-        }
-        
-        // close DOJO if not already in use as desktop
-        if (!isJetspeedDesktop) 
-        {
-            // complete dojo includes
-        	if ( addedDojoRequires )
-        	{
-        		headerInfoText.setLength(0);
-        		includeDojoWriteIncludes( request, response, headerInfoText );
-        		addJavascriptBlock( headerResource, headerInfoText );
-        	}
-        
-            headerInfoText.setLength(0);
-            includeDojoRegisterWidgetPackage( request, response, headerInfoText );
-            addJavascriptBlock( headerResource, headerInfoText );        
-        }
-        
-        if (!isJetspeedDesktop)
-        {
-            headerInfoText.setLength(0);
-            headerInfoText.append("\r\n");
-            headerInfoText.append("html, body\r\n");
-            headerInfoText.append("{\r\n");
-            headerInfoText.append("   width: 100%;\r\n");
-            headerInfoText.append("   height: 100%;\r\n");
-            headerInfoText.append("   margin: 0 0 0 0;\r\n");
-            headerInfoText.append("}\r\n");
-            headerInfoMap = new HashMap(8);
-            headerResource.addHeaderInfo("style", headerInfoMap, headerInfoText.toString());
-        }
+                include( request, response, this.headerPage, headerInfoText );
+        }*/
     }
     
+    protected void includeHeaderContent( HeaderResource headerResource )
+    {
+        // do nothing - intended for derived classes
+        if ( this.dojoRequiresCoreList != null )
+        {
+            headerResource.dojoAddCoreLibraryRequires( this.dojoRequiresCoreList );
+        }
+        if ( this.dojoRequiresAddOnList != null )
+        {
+            headerResource.dojoAddModuleLibraryRequires( this.dojoRequiresAddOnList );
+        }
+    }    
     
     public void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerPagePath, StringBuffer headerText) throws PortletException
     {

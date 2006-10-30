@@ -1273,8 +1273,12 @@ limitations under the License.
 			<value>/WEB-INF/springmvc/context/portlet/constraints.xml</value>
 		</init-param>
 		<init-param>
-			<name>HeaderPage</name>
-			<value>/WEB-INF/view/security/constraints/constraints-view-header.vm</value>
+			<name>dojo.requires.core</name>
+			<value>dojo.lang.*;dojo.event.*;dojo.io.*;dojo.widget.*;dojo.widget.Tree;dojo.widget.Button;dojo.widget.Checkbox;dojo.widget.Dialog;dojo.widget.TabContainer;dojo.widget.ContentPane;dojo.widget.LayoutContainer</value>
+		</init-param>
+		<init-param>
+			<name>dojo.requires.modules</name>
+			<value>jetspeed.ui.widget.EditorTable;jetspeed.desktop.compatibility</value>
 		</init-param>
         <portlet-name>SecurityConstraintsPortlet</portlet-name>
     	<display-name>Security Constraints</display-name>        

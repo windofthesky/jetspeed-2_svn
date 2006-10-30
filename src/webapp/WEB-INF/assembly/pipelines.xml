@@ -179,12 +179,21 @@ limitations under the License.
    </constructor-arg>
   </bean> 
 
-  <bean id="headerAggregatorValve"
+  <bean id="headerAggregatorValvePortal"
         class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
         init-method="initialize"
   >
    <constructor-arg>
-       <ref bean="org.apache.jetspeed.aggregator.HeaderAggregator"/>
+       <ref bean="HeaderAggregatorPortal"/>
+   </constructor-arg>
+  </bean> 
+
+  <bean id="headerAggregatorValveDesktop"
+        class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="HeaderAggregatorDesktop"/>
    </constructor-arg>
   </bean> 
       
@@ -250,7 +259,7 @@ limitations under the License.
       <ref bean="containerValve"/>
       <ref bean="actionValve"/>
       <ref bean="DecorationValve" />
-      <ref bean="headerAggregatorValve"/>  
+      <ref bean="headerAggregatorValvePortal"/>  
       <ref bean="aggregatorValve"/>
       <ref bean="cleanUpValve"/>
     </list>
@@ -386,7 +395,7 @@ limitations under the License.
         <ref bean="securityValve"/>                
         <ref bean="localizationValve"/>
         <ref bean="profilerValve"/>                        
-        <ref bean="headerAggregatorValve"/>          
+        <ref bean="headerAggregatorValveDesktop"/>          
         <ref bean="desktopValve"/>
     </list>
     </constructor-arg>
@@ -411,7 +420,7 @@ limitations under the License.
             <entry key='/fileserver'>
                 <value>fileserver-pipeline</value>
             </entry>                        
-            <entry key='/desktop'>
+            <entry key='/desktop'>   <!-- the key "/desktop" cannot be changed without editing core.js (at least) -->
                 <value>desktop-pipeline</value>
             </entry>                                    
             <entry key='/action'>

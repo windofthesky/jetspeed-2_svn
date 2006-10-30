@@ -31,12 +31,15 @@ limitations under the License.
         <!-- Default Theme  (if not specified in page) -->
         <constructor-arg index="1">
             <value>blue</value>
-        </constructor-arg>       
-        <!-- Default Theme file extension --> 
+        </constructor-arg>
+        <!-- Default Theme file extension -->
         <constructor-arg index="2">
             <value>.jsp</value>
-        </constructor-arg>        
+        </constructor-arg>
+        <constructor-arg index="3">
+            <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
+        </constructor-arg>
  	    <!-- Uncomment this to HARD CODE your portal URL -->
-        <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->        
+        <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
      </bean>    
 </beans>

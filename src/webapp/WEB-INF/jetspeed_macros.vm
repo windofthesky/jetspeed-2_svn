@@ -64,12 +64,39 @@
  #end
 #end
 
-#* Adds additional style sheets and java script from portlet *#
+#* Adds additional style sheets and java script from portlets *#
 #macro (includeHeaderResource)
  #set($resourceHeaderFactory = $jetspeed.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
- #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
- $resourceHeader
+ #if ( $resourceHeader )
+$resourceHeader.getContent()
+ #else
+     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
+$resourceHeader.getContent()
+ #end
 #end
+
+#* Adds additional style sheets and java script from portlets - desktop version *#
+#macro (desktopIncludeDojoHeaderContent)
+ #set($resourceHeaderFactory = $JS2ComponentManager.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+ #if ( $resourceHeader )
+$resourceHeader.getNamedContentForPrefix( "header.dojo" )
+ #else
+     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
+$resourceHeader.getNamedContentForPrefix( "header.dojo" )
+ #end
+#end
+
+#* Adds additional style sheets and java script from portlets - desktop version *#
+#macro (desktopIncludeHeaderContent)
+ #set($resourceHeaderFactory = $JS2ComponentManager.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+ #if ( $resourceHeader )
+$resourceHeader.getContent()
+ #else
+     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
+$resourceHeader.getContent()
+ #end
+#end
+
 
 #*
 * Returns the base CSS class to use in top level tags

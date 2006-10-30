@@ -25,14 +25,276 @@ import java.util.Map;
  */
 public interface HeaderResource
 {
+    // header section types
+    public final static String HEADER_TYPE_SCRIPT_BLOCK_START = "script-start";
+    public final static int HEADER_TYPE_ID_SCRIPT_BLOCK_START = 1;
+    
+    public final static String HEADER_TYPE_SCRIPT_BLOCK = "script";
+    public final static int HEADER_TYPE_ID_SCRIPT_BLOCK = 2;
+    
+    public final static String HEADER_TYPE_SCRIPT_BLOCK_END = "script-end";
+    public final static int HEADER_TYPE_ID_SCRIPT_BLOCK_END = 3;
+    
+    public final static String HEADER_TYPE_SCRIPT_TAG = "script-tag";
+    public final static int HEADER_TYPE_ID_SCRIPT_TAG = 4;
+    
+    public final static String HEADER_TYPE_STYLE_BLOCK = "style";
+    public final static int HEADER_TYPE_ID_STYLE_BLOCK = 5;
+    
+    public final static String HEADER_TYPE_LINK_TAG = "link-tag";
+    public final static int HEADER_TYPE_ID_LINK_TAG = 6;
+    
+    public final static String HEADER_TYPE_BASE_TAG = "base-tag";
+    public final static int HEADER_TYPE_ID_BASE_TAG = 7;
+    
+    // header section configuration
+    public final static String HEADER_CONFIG_ORDER = "header.order";
+    public final static String HEADER_CONFIG_TYPES = "header.types";
+    public final static String HEADER_CONFIG_REQUIREDFLAG = "header.requiredflag";
+    public final static String HEADER_CONFIG_DOJO = "dojo";
+    
+    public final static String HEADER_INTERNAL_INCLUDED_NAMES = "header.internal.names";  // not a configuration entry name
+    
+    
+    // header section predefined names
+    public final static String HEADER_SECTION_BASE_TAG = "header.basetag";
+    public final static String HEADER_SECTION_NAME_PREFIX_DOJO = "header.dojo.";
+    public final static String HEADER_SECTION_DOJO_PARAMETERS = "header.dojo.parameters";
+    public final static String HEADER_SECTION_DOJO_PREINIT = "header.dojo.preinit";
+    public final static String HEADER_SECTION_DOJO_CONFIG = "header.dojo.config";
+    public final static String HEADER_SECTION_DOJO_INIT = "header.dojo.init";
+    public final static String HEADER_SECTION_DOJO_REQUIRES_CORE = "header.dojo.requires.core";
+    public final static String HEADER_SECTION_DOJO_MODULES_PATH = "header.dojo.modules.path";
+    public final static String HEADER_SECTION_DOJO_REQUIRES_MODULES = "header.dojo.requires.modules";
+    public final static String HEADER_SECTION_DOJO_WRITEINCLUDES = "header.dojo.writeincludes";
+    public final static String HEADER_SECTION_DOJO_MODULES_NAMESPACE = "header.dojo.modules.namespace";
+    public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND = "header.dojo.style.bodyexpand";
+    public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND_NOSCROLL = "header.dojo.style.bodyexpand.noscroll";
+    public final static String HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME = "header.desktop.style.desktoptheme";
+    public final static String HEADER_SECTION_DESKTOP_INIT = "header.desktop.init";
+    
+    /**
+     * Output all content (that has not already been output)
+     * 
+     * @return content string for inclusion in html &lt;head&gt;
+     */
+    public String toString();
 
     /**
-     * Returns tags to put them into &lt;head&gt; tag.
+     * Output all content (that has not already been output)
      * 
-     * @return
+     * @return content string for inclusion in html &lt;head&gt;
      */
-    public abstract String toString();
+    public String getContent();
+    
+    /**
+     * Output all unnamed content (that has not already been output)
+     * 
+     * @return content string for inclusion in html &lt;head&gt;
+     */
+    public String getUnnamedContent();
+    
+    /**
+     * Output all getHeaderSections() content (that has not already been output)
+     * 
+     * @return content string for inclusion in html &lt;head&gt;
+     */
+    public String getNamedContent();
+    
+    /**
+     * Output the one getHeaderSections() content entry with a key that matches headerName (if it has not already been output)
+     * 
+     * @return content string for inclusion in html &lt;head&gt;
+     */
+    public String getNamedContent( String headerName );
+    
+    /**
+     * Output getHeaderSections() content entries with key prefixes that match headerNamePrefix (if it has not already been output)
+     * 
+     * @return content string for inclusion in html &lt;head&gt;
+     */
+    public String getNamedContentForPrefix( String headerNamePrefix );
+        
+    /**
+     * Add text argument to the getHeaderSections() content entry with a key that matches addToHeaderName argument
+     * 
+     */
+    public void addHeaderSectionFragment( String addToHeaderName, String text );
+    
+    /**
+     * If no previous call using value of headerFragmentName argument has been added to any getHeaderSections() content entry,
+     * add text argument to the getHeaderSections() content entry with a key that matches addToHeaderName argument
+     * 
+     */
+    public void addHeaderSectionFragment( String headerFragmentName, String addToHeaderName, String text );
+    
+    /**
+     * Indicate whether value of headerFragmentName argument has been used to add to any getHeaderSections() content entry
+     * 
+     * @return true if headerFragmentName argument has been used to add to any getHeaderSections() content entry
+     */
+    public boolean hasHeaderSectionFragment( String headerFragmentName );
+        
+    /**
+     * Indicate whether value of headerName is an included header section
+     * 
+     * @return true if headerName argument is an included header section
+     */
+    public boolean isHeaderSectionIncluded( String headerName );
 
+    /**
+     * Get the type of the getHeaderSections() content entry with a key that matches headerName argument
+     * 
+     * @return type of header section
+     */
+    public String getHeaderSectionType( String headerName );
+    
+    /**
+     * Set the type of the getHeaderSections() content entry with a key that matches headerName argument
+     * to the value of the headerType argument
+     */
+    public void setHeaderSectionType( String headerName, String headerType  );
+    
+    /**
+     * Get the requiredflag of the getHeaderSections() content entry with a key that matches headerName argument
+     * 
+     * @return requiredflag for header section
+     */
+    public String getHeaderSectionRequiredFlag( String headerName );
+    
+    
+    /**
+     * Set the requiredflag of the getHeaderSections() content entry with a key that matches headerName argument
+     * to the value of the headerReqFlag argument
+     */
+    public void setHeaderSectionRequiredFlag( String headerName, String headerReqFlag );
+    
+    /**
+     * Access modifiable header configuration settings
+     * 
+     * @return Map containing modifiable header configuration settings 
+     */
+    public Map getHeaderDynamicConfiguration();
+    
+    /**
+     * Access complete header configuration settings
+     * 
+     * @return unmodifiable Map containing complete header configuration settings
+     */
+    public Map getHeaderConfiguration();
+    
+    /**
+     * Is request for /desktop rather than /portal
+     * 
+     * @return true if request is for /desktop, false if request is for /portal
+     */
+    public boolean isDesktop();
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl();
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( boolean encode );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( String relativePath, boolean encode );
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl();
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( boolean encode );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( String relativePath, boolean encode );
+    
+    
+    
+    //  dojo - special convenience methods
+    
+    /**
+     * If no previous call using value of dojoRequire argument has been added to any getHeaderSections() content entry,
+     * add text argument to getHeaderSections() content entry for dojo core require statements
+     * 
+     */
+    public void dojoAddCoreLibraryRequire( String dojoRequire );
+    
+    /**
+     * Split dojoRequires argument using ';' delimiter and for each resulting dojoRequire value, if no previous call
+     * using dojoRequire value has been added to any getHeaderSections() content entry,
+     * add text argument to getHeaderSections() content entry for dojo core require statements
+     * 
+     */
+    public void dojoAddCoreLibraryRequires( String dojoRequires );
+    
+    /**
+     * If no previous call using value of dojoRequire argument has been added to any getHeaderSections() content entry,
+     * add text argument to getHeaderSections() content entry for dojo library module require statements
+     * 
+     */
+    public void dojoAddModuleLibraryRequire( String dojoRequire );
+    
+    /**
+     * Split dojoRequires argument using ';' delimiter and for each resulting dojoRequire value, if no previous call
+     * using dojoRequire value has been added to any getHeaderSections() content entry,
+     * add text argument to getHeaderSections() content entry for dojo library module require statements
+     * 
+     */
+    public void dojoAddModuleLibraryRequires( String dojoRequires );
+    
+    /**
+     * Assure that header section name for dojo body expand style is included
+     * 
+     */
+    public void dojoAddBodyExpandStyle( boolean omitWindowScrollbars );
+    
+    /**
+     * Enable dojo by setting appropriate modifiable header configuration setting
+     * 
+     */
+    public void dojoEnable();
+    
+    
+    
+    
     /**
      * Add tag information to this instance.
      * 
@@ -51,7 +313,7 @@ public interface HeaderResource
      * @param attributes Tag's attributes
      * @param text Tag's content
      */
-    public abstract void addHeaderInfo(String elementName, Map attributes, String text);
+    public void addHeaderInfo(String elementName, Map attributes, String text);
 
     /**
      * Convenient method to add &lt;script&gt; tag with defer option.
@@ -59,20 +321,19 @@ public interface HeaderResource
      * @param path Javascript file path
      * @param defer defer attributes for &lt;script&gt; tag.
      */
-    public abstract void addJavaScript(String path, boolean defer);
+    public void addJavaScript(String path, boolean defer);
 
     /**
      * Convenient method to add &lt;script&gt; tag.
      * 
      * @param path Javascript file path
      */
-    public abstract void addJavaScript(String path);
+    public void addJavaScript(String path);
 
     /**
      * Convenient method to add &lt;link&gt; tag.
      * 
      * @param path CSS file path
      */
-    public abstract void addStyleSheet(String path);
-
+    public void addStyleSheet(String path);
 }

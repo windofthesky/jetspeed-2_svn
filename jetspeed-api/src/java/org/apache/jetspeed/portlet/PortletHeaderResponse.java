@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.portlet;
 
-import java.io.Writer;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -26,9 +26,32 @@ public interface PortletHeaderResponse
 {    
     /**
      * Retrieves the header resource for this request
+     * 
      * @return a per request HeaderResource
      */
     HeaderResource getHeaderResource();
+    
+    /**
+     * Is request for /desktop rather than /portal
+     * 
+     * @return true if request is for /desktop, false if request is for /portal
+     */
+    boolean isDesktop();
+    
+    
+    /**
+     * Configuration data for use by HeaderResource
+     * 
+     * @return an immutable Map
+     */
+    Map getHeaderConfiguration();
+    
+    /**
+     * Map containing overrides of content for header statements
+     * 
+     * @return an immutable Map
+     */
+    Map getHeaderResourceRegistry();
     
     /**
      * Temporary solution: get the content after calling include
@@ -36,6 +59,7 @@ public interface PortletHeaderResponse
      * 
      */
     String getContent();
+
     
     /**
      * Dispatch to a servlet or resource to generate and include the header content

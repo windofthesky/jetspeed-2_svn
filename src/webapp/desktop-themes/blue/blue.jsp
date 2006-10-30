@@ -44,92 +44,10 @@ limitations under the License.
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-style-type" content="text/css" />
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAisHr-hr7f_yfo_m3teTC5RQXGaCFRGWXJQavRKQcb1Ew_fwkKRQ26QnpXVIkxSMwwTECWDV23ZDaLQ"
-        type="text/javascript"></script> 
-<!-- 
-  DOJO Config Script ( djConfig )
-  -->
-<script type="text/javascript">
-    var djConfig = {isDebug: true, debugAtAllCosts: true};
-    //var djConfig = {isDebug: false, debugAtAllCosts: false};
-    // needed for js debuggers (both venkman and visual studio)
-    function de_jsessionid_url( url )
-    {   // presence of ;jsessionid in dojo baseScriptUri is bad news
-        var tEnds = url.indexOf(";jsessionid=");
-        if (tEnds > 0) url = url.substring(0, tEnds);
-        return url;
-    }
-    djConfig.baseScriptUri = de_jsessionid_url( '<%= desktop.getPortalResourceUrl("/javascript/dojo/") %>' );
-    djConfig.desktopThemeRootUrl = de_jsessionid_url( '<%= desktop.getDesktopThemeRootUrl() %>' );
-</script>
-<!-- 
-  DOJO Script
-  -->
-<script type="text/javascript" src="<%= desktop.getPortalResourceUrl("/javascript/dojo/dojo.js") %>"></script>
-<script language="JavaScript" type="text/javascript">
-    dojo.require("dojo.lang.*");
-    dojo.require("dojo.dnd.HtmlDragMove");
-    dojo.require("dojo.dnd.HtmlDragSource");
-    dojo.require("dojo.event.*");    
-    dojo.require("dojo.io");
-    dojo.require("dojo.collections.ArrayList");
-    dojo.require("dojo.collections.Set");
-    dojo.require("dojo.widget.Manager");
-    dojo.require("dojo.widget.TaskBar");
-    dojo.require("dojo.widget.FloatingPane");
-    dojo.require("dojo.widget.TabContainer");
-    dojo.require("dojo.widget.AccordionPane");
-    dojo.require("dojo.widget.Menu2");
-    dojo.require('dojo.widget.Checkbox');
-    dojo.require('dojo.widget.Dialog');
-    dojo.require('dojo.widget.Button');
-    dojo.require("dojo.lfx.html");
 
-    dojo.require('dojo.widget.LayoutContainer');
-    dojo.require('dojo.widget.ContentPane');
-    dojo.require('dojo.widget.LinkPane');
-    dojo.require('dojo.widget.SplitContainer');
-    dojo.require('dojo.widget.TabContainer');
-    dojo.require('dojo.widget.Tree');
+<%= desktop.getHeaderResource().getNamedContentForPrefix( "header.dojo" )%>
 
-    dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');
-    dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');
-
-    dojo.require("jetspeed.desktop.core");
-
-    dojo.require("jetspeed.ui.widget.PortalTaskBar");
-    dojo.require("jetspeed.ui.widget.PortletWindow");
-    dojo.require("jetspeed.ui.widget.PortalTabContainer");
-    dojo.require("jetspeed.ui.widget.PortalAccordionContainer");
-    dojo.require("jetspeed.ui.widget.PortletDefContainer");
-    dojo.require("jetspeed.ui.widget.EditorTable");
-</script>
-<script language="JavaScript" type="text/javascript">
-    dojo.hostenv.writeIncludes();
-</script>
-<script language="JavaScript" type="text/javascript">
-    dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');
-</script>
-<base id="basetag" href="<%= desktop.getPortalResourceUrl("/") %>">  <!-- http://localhost:8080/jetspeed/ --> 
-     <!-- <base> tag must appear after dojo load in IE6 ( see http://trac.dojotoolkit.org/ticket/557 ) -->
-<link rel="stylesheet" type="text/css" media="screen, projection" href='<%= desktop.getDesktopThemeResourceUrl("css/styles.css") %>'/>
-
-<script language="JavaScript" type="text/javascript">
-    function jsDesktopInit()
-    {
-        jetspeed.initializeDesktop( '<%= desktop.getDesktopTheme() %>', de_jsessionid_url( '<%= desktop.getDesktopThemeRootUrl() %>' ) );
-    }
-    function doRender( bindArgs, portletEntityId )
-    {
-        jetspeed.doRender( bindArgs, portletEntityId );
-    }
-    function doAction( bindArgs, portletEntityId )
-    {
-        jetspeed.doAction( bindArgs, portletEntityId );
-    }
-    dojo.addOnLoad( window.jsDesktopInit );
-</script>
-
+<%= desktop.getHeaderResource().getContent()%>
 
 <script language="JavaScript" type="text/javascript">
     function notifyRetrieveAllMenusFinished()
@@ -138,17 +56,6 @@ limitations under the License.
     }
     dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
 </script>
-<style>
-
-html, body, #jetspeedDesktop
-{	
-    width: 100%;	/* make the body expand to fill the visible window */
-    height: 100%;
-    margin: 0 0 0 0;
-}
-
-</style>
-
 </head>
 
 <body class="<%= desktopThemeStyleClass %>">

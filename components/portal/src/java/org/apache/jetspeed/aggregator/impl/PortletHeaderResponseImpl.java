@@ -17,6 +17,7 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 import javax.servlet.RequestDispatcher;
@@ -37,22 +38,21 @@ public class PortletHeaderResponseImpl implements PortletHeaderResponse
     private HeaderResource hr;
     private String tempContent;
     
-    public PortletHeaderResponseImpl(RequestContext requestContext, HeaderResource hr)
+    private boolean isDesktop;
+    
+    private Map headerConfiguration;
+    private Map headerResourceRegistry;
+    
+    public PortletHeaderResponseImpl( RequestContext requestContext, HeaderResource hr, boolean isDesktop, Map headerConfiguration, Map headerResourceRegistry )
     {
         this.requestContext = requestContext;
         this.hr = hr;
-    }
+        this.isDesktop = isDesktop;
+        
+        this.headerConfiguration = headerConfiguration;
+        this.headerResourceRegistry = headerResourceRegistry;
+    }    
 
-    public HeaderResource getHeaderResource()
-    {
-        return this.hr;
-    }
-    
-    public String getContent()
-    {
-        return tempContent; 
-    }
-    
     public void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerResource)
     throws PortletException
     {
@@ -81,5 +81,35 @@ public class PortletHeaderResponseImpl implements PortletHeaderResponse
         {
             throw new PortletException(e);
         }
+    }
+    
+    protected RequestContext getRequestContext()
+    {
+        return this.requestContext;
+    }
+    
+    public HeaderResource getHeaderResource()
+    {
+        return this.hr;
+    }
+    
+    public boolean isDesktop()
+    {
+        return this.isDesktop;
+    }
+    
+    public Map getHeaderConfiguration()
+    {
+        return this.headerConfiguration;
+    }
+    
+    public Map getHeaderResourceRegistry()
+    {
+        return this.headerResourceRegistry;
+    }
+    
+    public String getContent()
+    {
+        return tempContent; 
     }
 }
