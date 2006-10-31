@@ -1,8 +1,18 @@
 <div id="EditGoogleMaps"  class="portlet-section-text"> 
 	<form name="googlemapsform" action="$renderResponse.createActionURL()" method="post" >
-
-		Enter Location:<input type="text" name="location" value="$renderRequest.getPreferences().getValue('Location','')" />
-		<input type="submit" value="submit"  name="LocationSubmit" />
+        <table border="0" cellspacing="3" cellpadding="3">
+            <tr>
+                <td>Location</td><td><input type="text" name="location" value="$renderRequest.getPreferences().getValue('Location','')" /></td>
+            </tr>
+            <tr>
+                <td>Map Height</td><td><input type="text" name="mapheight" value="$renderRequest.getPreferences().getValue('MapHeight','')" /></td>
+            </tr>
+            <tr>
+                <td>Google Maps API Key</td><td><input type="text" name="apikey" size="40" value="$renderRequest.getPreferences().getValue('APIKey','')" /><div style="padding-top: 6px; font-size: x-small;"><a target="_new" href="http://www.google.com/apis/maps/">Sign up for a Google Maps API key</a></div></td>
+            </tr>
+            <tr><td></td><td><div style="padding-top: 10px"><button dojoType="Button" onClick="document.forms['googlemapsform'].submit()" >Submit Changes</button></div></td>
+            </tr>
+        </table>
 	</form>
 </div>
 

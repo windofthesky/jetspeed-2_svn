@@ -1,18 +1,43 @@
+
 <script language="JavaScript" type="text/javascript">
-	loc = escape("$renderRequest.getPreferences().getValue('Location','')");
-	dojo.io.bind({
-		url: "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=" + loc,
-		mimetype: "text/xml",
-		error: function(type, error){
-			top.alert("error");
-		},
-		load: function(type, data, event) {
-			lat = data.getElementsByTagName("Latitude").item(0).firstChild.nodeValue;
-			lng = data.getElementsByTagName("Longitude").item(0).firstChild.nodeValue;
-			//alert ("ll: " + lat + "," + lng);
-			mapit(lat,lng);
-		}
-	});
+    function portletGoogleMapsLoadMap()
+    {
+        var loc = escape("$renderRequest.getPreferences().getValue('Location','')");
+        var getLatitudeLongitudeUrl = "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=" + loc ;
+        dojo.io.bind({
+		    url: getLatitudeLongitudeUrl,
+		    mimetype: "text/xml",
+		    error: function(type, error){
+			    dojo.raise( "request failed for yahoo latitude-longitude  type=" + type + " error=" + error );
+            },
+            load: function( type, data, evt )
+            {
+			    lat = data.getElementsByTagName("Latitude").item(0).firstChild.nodeValue;
+			    lng = data.getElementsByTagName("Longitude").item(0).firstChild.nodeValue;
+			    //alert ("ll: " + lat + "," + lng);
+			    mapit(lat,lng);
+		    }
+	    });
+    }
+    function portletGoogleMapsLoadApi()
+    {
+        var googleMapsApiJSUrl = "http://maps.google.com/maps?file=api&v=2&key=$renderRequest.getPreferences().getValue('APIKey','')" ; 
+        dojo.io.bind({
+		    url: googleMapsApiJSUrl,
+            mimetype: "text/javascript",
+            transport: "ScriptSrcTransport",
+		    error: function(type, error){
+			    alert( "here-error" );
+                dojo.raise( "request failed for google maps api  type=" + type + " error=" + error );
+            },
+            load: function( type, data, evt )
+            {
+                alert( "here-success" );
+                portletGoogleMapsLoadMap();
+		    }
+	    });
+    }
+    dojo.addOnLoad( portletGoogleMapsLoadMap ) ;
 </script>
 <script language="JavaScript" type="text/javascript">
 	function mapit(la, ln) {
@@ -22,6 +47,5 @@ map.addControl(new GSmallMapControl());
 		map.setCenter(new GLatLng(la, ln), 13);
 	}
 </script>
-<div id="map" style="width: 100%; height: 100%"></div>
-
+<div id="map" style="width: 100%; height: $renderRequest.getPreferences().getValue('MapHeight','400px')"></div>
 

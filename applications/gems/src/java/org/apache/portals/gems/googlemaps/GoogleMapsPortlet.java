@@ -25,6 +25,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 
+import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.portlet.PortletHeaderResponse;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
@@ -54,10 +55,17 @@ public class GoogleMapsPortlet extends AbstractDojoVelocityPortlet
     public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
-	String location = request.getParameter("location");
-	PortletPreferences preferences = request.getPreferences();
-	preferences.setValue("Location",location);
-	preferences.store();
+        String location = request.getParameter( "location" );
+        String mapHeight = request.getParameter( "mapheight" );
+        String apiKey = request.getParameter( "apikey" );
+        PortletPreferences preferences = request.getPreferences();
+        if ( location != null )
+            preferences.setValue( "Location", location );
+        if ( mapHeight != null )
+            preferences.setValue( "MapHeight", mapHeight );
+        if ( apiKey != null )
+            preferences.setValue( "APIKey", apiKey );
+        preferences.store();
     }
     
     public void doHeader(PortletHeaderRequest request, PortletHeaderResponse response)
@@ -66,27 +74,25 @@ public class GoogleMapsPortlet extends AbstractDojoVelocityPortlet
         StringBuffer headerInfoText = new StringBuffer();
         Map headerInfoMap = null;
         
-        // close DOJO if not already in use as desktop
-        if (!request.isDesktopEncoder()) 
-        {
-            // complete DoJo includes
-            headerInfoText.setLength(0);
-            headerInfoMap = new HashMap(8);
-            headerInfoMap.put("language", "JavaScript");            
-            headerInfoMap.put("src", "http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAisHr-hr7f_yfo_m3teTC5RQXGaCFRGWXJQavRKQcb1Ew_fwkKRQ26QnpXVIkxSMwwTECWDV23ZDaLQ");
-            headerInfoMap.put("type", "text/javascript");
-            response.getHeaderResource().addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
-        }
+        // add google maps api script tag
+        headerInfoText.setLength(0);
+        headerInfoMap = new HashMap(8);
+        headerInfoMap.put("language", "JavaScript");
+        headerInfoMap.put("src", "http://maps.google.com/maps?file=api&v=2&key=" + request.getPreferences().getValue("APIKey","") );
+        headerInfoMap.put("type", "text/javascript");
+        response.getHeaderResource().addHeaderInfo("script", headerInfoMap, headerInfoText.toString());
+
         super.doHeader(request, response);
     }
     
-    protected void includeDojoRequires(StringBuffer headerInfoText)
+    protected void includeHeaderContent( HeaderResource headerResource )
     {
-        appendHeaderText(headerInfoText, "dojo.lang.*");
-        appendHeaderText(headerInfoText, "dojo.event.*");
-        appendHeaderText(headerInfoText, "dojo.io.*");             
-    }    
-        
+        headerResource.dojoAddCoreLibraryRequire( "dojo.lang.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.event.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.io.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.*" );
+        headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Button" );
+    }
 }
 
 
