@@ -29,10 +29,7 @@
 		<section name="Default Database">
 			<p>
 				The default database distributed with Jetspeed-2 is the
-				Hypersonic SQL Java Database (HSQL). HSQL runs in its
-				own process outside of Jetspeed-2. It is not a
-				production-ready database, however it allows you to get
-				up and running quickly. To move on to a more robust
+				Apache Derby database. To move on to a more robust
 				database, follow the instructions in the next section.
 			</p>
 		</section>
