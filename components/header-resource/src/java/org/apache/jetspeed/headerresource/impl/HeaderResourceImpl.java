@@ -1123,30 +1123,6 @@ public class HeaderResourceImpl implements HeaderResource
         addHeaderInfo("link", attrs, null);
     }
     
-    private void dumpNameValue( Map m  )
-    {
-        if ( m == null )
-        {
-            log.info( "   <null>" );
-            return;
-        }
-        if ( m.size() == 0 )
-        {
-            log.info( "   <empty>" );
-            return;
-        }
-        Iterator entryIter = m.entrySet().iterator();
-        while ( entryIter.hasNext() )
-        {
-            Map.Entry e = (Map.Entry)entryIter.next();
-            Object eKey = e.getKey();
-            Object eVal = e.getValue();
-            String eKeyDesc = ( eKey instanceof String ) ? (String)eKey : (( eKey == null ) ? "null" : eKey.getClass().getSimpleName() );
-            String eValDesc = ( eVal instanceof String ) ? (String)eVal : (( eVal == null ) ? "null" : eVal.getClass().getSimpleName() );
-            log.info( "   key=" + eKeyDesc + " value=" + eValDesc);
-        }
-    }
-    
     /**
      * This class represents tag information for HeaderResouce component
      * 
