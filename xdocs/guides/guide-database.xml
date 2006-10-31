@@ -36,6 +36,56 @@
 				database, follow the instructions in the next section.
 			</p>
 		</section>
+        <section name='Supported Databases'> 
+        <p>List of supported databases:</p>
+        <table>
+            <tr>
+                <th>Database Name</th>
+                <th>Build Constant</th>                
+                <th>Tested Versions</th>
+            </tr>
+            <tr>
+                <td>IBM DB2</td>
+                <td>db2</td>                
+                <td>9.1</td>
+            </tr>
+            <tr>
+                <td>Apache Derby, IBM Cloudscape</td>
+                <td>derby</td>
+                <td>10.1</td>
+            </tr>
+            <tr>
+                <td>Hypersonic SQL (HSQL)</td>
+                <td>hsql</td>
+                <td>1.8</td>
+            </tr>
+            <tr>
+                <td>Microsoft SQL Server</td>
+                <td>mssql</td>
+                <td>2000, 2005</td>
+            </tr>
+            <tr>
+                <td>MySQL</td>
+                <td>mysql</td>
+                <td>4.*, 5.*</td>
+            </tr>
+            <tr>
+                <td>Oracle</td>
+                <td>oracle</td>
+                <td>9i, 10g</td>
+            </tr>
+            <tr>
+                <td>PostgreSQL</td>
+                <td>postgres</td>
+                <td>8.*</td>
+            </tr>                            
+            <tr>
+                <td>SAP DB, MaxDB</td>
+                <td>sapdb</td>
+                <td>7.5</td>
+            </tr>
+        </table>            
+        </section>
 		<section name="MySQL">
 			<p>
 				To run with My SQL, add the following properties to your
@@ -81,7 +131,7 @@ org.apache.jetspeed.production.database.password = whatever
 			</subsection>
 
 		</section>
-
+        
 		<section name="Oracle">
 			<p>
 				To run with Oracle, add the following properties to your
