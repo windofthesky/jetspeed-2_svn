@@ -19,24 +19,6 @@
 		    }
 	    });
     }
-    function portletGoogleMapsLoadApi()
-    {
-        var googleMapsApiJSUrl = "http://maps.google.com/maps?file=api&v=2&key=$renderRequest.getPreferences().getValue('APIKey','')" ; 
-        dojo.io.bind({
-		    url: googleMapsApiJSUrl,
-            mimetype: "text/javascript",
-            transport: "ScriptSrcTransport",
-		    error: function(type, error){
-			    alert( "here-error" );
-                dojo.raise( "request failed for google maps api  type=" + type + " error=" + error );
-            },
-            load: function( type, data, evt )
-            {
-                alert( "here-success" );
-                portletGoogleMapsLoadMap();
-		    }
-	    });
-    }
     dojo.addOnLoad( portletGoogleMapsLoadMap ) ;
 </script>
 <script language="JavaScript" type="text/javascript">
