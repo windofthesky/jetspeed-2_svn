@@ -133,6 +133,10 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                 desktopInitScript.append( "\", \"");
                 desktopInitScript.append( desktopContext.getDesktopThemeRootUrl() );
                 desktopInitScript.append( "\"); }" ).append( EOL );
+                desktopInitScript.append( "    function doRender(bindArgs,portletEntityId) { " );
+                desktopInitScript.append( "jetspeed.doRender(bindArgs,portletEntityId); }" ).append( EOL );
+                desktopInitScript.append( "    function doAction(bindArgs,portletEntityId) { " );
+                desktopInitScript.append( "jetspeed.doAction(bindArgs,portletEntityId); }" ).append( EOL );
                 desktopInitScript.append( "    dojo.addOnLoad( window.jsDesktopInit );" );
                 hr.addHeaderSectionFragment( "desktop.init", HeaderResource.HEADER_SECTION_DESKTOP_INIT, desktopInitScript.toString() );
             }
