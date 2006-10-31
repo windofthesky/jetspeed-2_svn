@@ -1,0 +1,7 @@
+<center>
+    <object width="$!WIDTH" height="$!HEIGHT">
+        <param name="movie" value="$!SRC"/>
+        <embed src="$!SRC" width="$!WIDTH" height="$!HEIGHT"/>
+    </object>
+</center>
+

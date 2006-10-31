@@ -869,6 +869,58 @@ limitations under the License.
 		</preference>
 		</portlet-preferences>
 	</portlet>         
-        
+
+  	<portlet id="flash">
+		<description>Flash and Flex generic portlet</description>
+		<portlet-name>FlashPortlet</portlet-name>
+		<display-name>Flash and Flex</display-name>
+		<portlet-class>org.apache.portals.applications.desktop.FlashPortlet</portlet-class>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/view/flash-demo.vm</value>
+        </init-param>		        
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/view/edit-prefs.vm</value>
+        </init-param>			
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>VIEW</portlet-mode>
+		    <portlet-mode>EDIT</portlet-mode>	  
+		</supports>
+		<supported-locale>en</supported-locale>        
+        <portlet-info>
+           <title>Flash Demo</title>
+           <short-title>Flash</short-title>
+           <keywords>flash,flex,SWF,FLA</keywords>
+        </portlet-info>        
+        <portlet-preferences>
+         <preference>
+            <name>SRC</name>
+            <value>/demo/WEB-INF/SWF/Clock.swf</value>
+         </preference>
+         <preference>
+            <name>HEIGHT</name>
+            <value>305</value>
+         </preference>
+         <preference>
+            <name>WIDTH</name>
+            <value>303</value>
+         </preference>
+         <preference>
+            <name>MAX-SRC</name>
+            <value>/demo/WEB-INF/SWF/Paycheck_calculator.swf</value>
+         </preference>            
+         <preference>
+            <name>MAX-HEIGHT</name>
+            <value>400</value>
+         </preference>
+         <preference>
+            <name>MAX-WIDTH</name>
+            <value>502</value>
+         </preference>          
+      </portlet-preferences>            
+	</portlet>                     
 </portlet-app>
 
