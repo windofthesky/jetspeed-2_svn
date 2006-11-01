@@ -134,4 +134,31 @@ public interface PortalURL
     void setRequest(HttpServletRequest request);
     
     void setCharacterEncoding(String characterEncoding);
+    
+    /**
+     * Creates the navigational encoding for a given window
+     * Similiar to createPortletURL above
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param action indicates if an actionURL or renderURL is created
+     * @param secure indicates if a secure url is required 
+     * @return a new navigational state as String
+     */
+    String createNavigationalEncoding(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action);
+    
+    /**
+     * Creates the navigational encoding for a given window
+     * Similiar to createPortletURL above
+     * 
+     * @param window the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param secure
+     * @param secure indicates if a secure url is required 
+     * @return a new renderURL as String
+     */    
+    String createNavigationalEncoding(PortletWindow window, PortletMode mode, WindowState state);
 }
