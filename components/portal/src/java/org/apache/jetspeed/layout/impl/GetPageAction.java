@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,15 +26,15 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.decoration.DecorationValve;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.common.Parameter;
+import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format
@@ -52,15 +52,18 @@ public class GetPageAction
     protected Log log = LogFactory.getLog(GetPageAction.class);
     
     private PortletRegistry registry;
+    private DecorationValve decorationValve;
     
     public GetPageAction(String template, 
             String errorTemplate, 
             PageManager pageManager,
             PortletActionSecurityBehavior securityBehavior,
-            PortletRegistry registry)
+            PortletRegistry registry,
+            DecorationValve decorationValve)
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.registry = registry;
+        this.decorationValve = decorationValve;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -76,7 +79,11 @@ public class GetPageAction
                 success = false;
                 return success;
             }            
-            //String filter = getActionParameter(requestContext, FILTER);
+            
+            // Run the Decoration valve to get actions
+            decorationValve.invoke(requestContext, null);
+            
+            //String filter = getActionParameter(requestContext, FILTER);            
             Page page = requestContext.getPage();
             String pageName = getActionParameter(requestContext, PAGE);
             if (pageName != null)

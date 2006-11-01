@@ -92,6 +92,32 @@ public abstract class AbstractPortalURL implements PortalURL
         return navStateParameter;
     }
     
+    public String createNavigationalEncoding(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
+    {
+        try
+        {
+            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, parameters, mode, state, action);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            return "";            
+        }    
+    }
+    
+    public String createNavigationalEncoding(PortletWindow window, PortletMode mode, WindowState state)
+    {
+        try
+        {
+            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, mode, state);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            return "";            
+        }                
+    }
+    
     protected void decodeBaseURL(HttpServletRequest request)
     {
         if (base == null)

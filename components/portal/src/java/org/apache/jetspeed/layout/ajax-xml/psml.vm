@@ -6,21 +6,26 @@
        #if($prop.Key == "sizes")
           #set($hasSizesProperty=true)
        #end
-	#end
+	    #end
     #if($f.Type == "layout" && ! $hasSizesProperty && $sizes.get($f.Id))
        <property name="sizes" value="$sizes.get($f.Id)" />
     #end
-	#foreach ($pref in $f.Preferences)
+#foreach ($pref in $f.Preferences)
 		<preference name="$pref.Name" readOnly='$pref.isReadOnly()'>		
 		  #foreach ($value in $pref.ValueList)
 		    <value>$value</value>
 		  #end
 		</preference>
 	#end
-    #if($f.Type == "layout")
+#if($f.Type == "layout")
 		#foreach($subf in $f.Fragments)
         #traverseFragments($subf)
 		#end
+	#end
+	#if($f.Type == "portlet")
+	#foreach ($action in $f.decoration.actions)
+     <action name="${action.Name}"  url="${action.Action}"/>    
+#end
 	#end
     </fragment>                                		
 #end
@@ -39,9 +44,9 @@
   <title>$page.Title</title>
   <short-title>$page.ShortTitle</short-title>
   
-  #foreach ($meta in $page.Metadata.Fields)
+#foreach ($meta in $page.Metadata.Fields)
 	<metadata name="$meta.Name" xml:lang="$meta.Locale.Language">$meta.Value</metadata>
-  #end
+#end
 
 #if ($fragments == "true")    
   #traverseFragments($page.RootFragment)

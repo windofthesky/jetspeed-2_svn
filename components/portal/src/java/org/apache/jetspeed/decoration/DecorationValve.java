@@ -61,6 +61,7 @@ import org.apache.pluto.om.window.PortletWindow;
 public class DecorationValve extends AbstractValve implements Valve
 {
     public static final String ACTION_IMAGE_EXTENSION_ATTR = "actionImageExtension";
+    public static final String IS_AJAX_DECORATION_REQUEST = "org.apache.jetspeed.decoration.ajax";
     
     protected final static Log log = LogFactory.getLog(DecorationValve.class);
     
@@ -82,6 +83,12 @@ public class DecorationValve extends AbstractValve implements Valve
 
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
     {
+        boolean isAjaxRequest = (context == null);
+        if (isAjaxRequest)
+        {
+            requestContext.setAttribute(IS_AJAX_DECORATION_REQUEST, new Boolean(true));
+        }
+        
         if (requestContext.getRequest().getParameter("clearThemeCache") != null)
         {
             decorationFactory.clearCache(requestContext);
@@ -105,9 +112,12 @@ public class DecorationValve extends AbstractValve implements Valve
         
         ContentFragment rootFragment = page.getRootContentFragment();
         
-        initFragment(requestContext, theme, rootFragment, pageActionAccess); 
+        initFragment(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest); 
         
-        context.invokeNext(requestContext);
+        if (!isAjaxRequest)
+        {
+            context.invokeNext(requestContext);
+        }
     }
 
     public String toString()
@@ -156,7 +166,12 @@ public class DecorationValve extends AbstractValve implements Valve
      * @throws PortletEntityNotStoredException 
      * @throws FailedToRetrievePortletWindow 
      */
-    protected void initActionsForFragment(RequestContext requestContext, ContentFragment fragment, PageActionAccess pageActionAccess, Decoration decoration) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
+    protected void initActionsForFragment(
+                        RequestContext requestContext, 
+                        ContentFragment fragment, 
+                        PageActionAccess pageActionAccess, 
+                        Decoration decoration,
+                        boolean isAjaxRequest) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
     {
         PortletWindow window = windowAccessor.getPortletWindow(fragment); 
         PortletDefinitionComposite portlet = (PortletDefinitionComposite) window.getPortletEntity().getPortletDefinition();
@@ -167,14 +182,14 @@ public class DecorationValve extends AbstractValve implements Valve
         }
 
         List actions = Collections.EMPTY_LIST;
-
+        
         PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode(window);
         WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState(window);
         ContentTypeSet content = portlet.getContentTypeSet();
         
         if ( fragment.equals(requestContext.getPage().getRootFragment()) )
         {
-            actions = getPageModes(requestContext, window, content, currentMode, currentState, pageActionAccess, decoration);
+            actions = getPageModes(requestContext, window, content, currentMode, currentState, pageActionAccess, decoration, isAjaxRequest);
         }
         else if ( !Fragment.LAYOUT.equals(fragment.getType()) )
         {
@@ -250,7 +265,8 @@ public class DecorationValve extends AbstractValve implements Valve
      * @throws PortletEntityNotStoredException 
      */
     protected List getPageModes(RequestContext requestContext, PortletWindow window, ContentTypeSet content, 
-                    PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration)
+                    PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration,
+                    boolean isAjaxRequest)
     {
         List pageModes = new ArrayList();
         
@@ -261,7 +277,9 @@ public class DecorationValve extends AbstractValve implements Valve
             {
                 // switch back to VIEW mode and NORMAL state.
                 PortalURL portalURL = requestContext.getPortalURL();
-                String action = portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString();
+                String action = (isAjaxRequest)
+                  ? portalURL.createNavigationalEncoding(window, PortletMode.VIEW, WindowState.NORMAL)                          
+                  : portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString();
                 String actionName = PortletMode.VIEW.toString();
                 pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action));
             }
@@ -274,7 +292,9 @@ public class DecorationValve extends AbstractValve implements Valve
                 parameters.put("pageMode",paramValues);
 
                 // Use an ActionURL to set the oposite pageMode and always set VIEW mode and state NORMAL 
-                String action = portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString();
+                String action = (isAjaxRequest)
+                    ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true)                                              
+                    : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString();
                 pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action));
                 
                 if (content.supportsPortletMode(PortletMode.HELP))
@@ -283,12 +303,16 @@ public class DecorationValve extends AbstractValve implements Valve
                     {
                         // force it back to VIEW mode first with an ActionURL, as well as setting HELP mode and MAXIMIZED state
                         paramValues[0] = PortletMode.VIEW.toString();
-                        action = portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString();
+                        action = (isAjaxRequest)
+                            ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true)                                                  
+                            : portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString();
                     }
                     else
                     {
                         // switch to mode HELP and state MAXIMIZED
-                        action = portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString();
+                        action = (isAjaxRequest)
+                            ? portalURL.createNavigationalEncoding(window, PortletMode.HELP, WindowState.MAXIMIZED)                        
+                            : portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString();
                     }
                     String actionName = PortletMode.HELP.toString();
                     pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action));
@@ -314,7 +338,11 @@ public class DecorationValve extends AbstractValve implements Valve
      * @param fragment
      * @param pageActionAccess
      */
-    protected void initFragment(RequestContext requestContext, Theme theme, ContentFragment fragment, PageActionAccess pageActionAccess) 
+    protected void initFragment(RequestContext requestContext, 
+                                Theme theme, 
+                                ContentFragment fragment, 
+                                PageActionAccess pageActionAccess,
+                                boolean isAjaxRequest)
     {
         final List contentFragments = fragment.getContentFragments();
         
@@ -324,14 +352,14 @@ public class DecorationValve extends AbstractValve implements Valve
             while(itr.hasNext())
             {
                 ContentFragment aFragment = (ContentFragment) itr.next();
-                initFragment(requestContext, theme, aFragment, pageActionAccess);
+                initFragment(requestContext, theme, aFragment, pageActionAccess, isAjaxRequest);
             }
         }
         
         try
         {
             fragment.setDecoration(theme.getDecoration(fragment));
-            initActionsForFragment(requestContext, fragment, pageActionAccess, theme.getDecoration(fragment));
+            initActionsForFragment(requestContext, fragment, pageActionAccess, theme.getDecoration(fragment), isAjaxRequest);
         }
         catch (Exception e)
         {
@@ -340,4 +368,5 @@ public class DecorationValve extends AbstractValve implements Valve
        
     }   
 
+    
 }

@@ -38,8 +38,12 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         String actionName = template.getAction();
 
         PortalURL portalURL = rc.getPortalURL();
-        String actionURL = portalURL.createPortletURL(pw, template.getCustomMode(), template.getCustomState(),
-                        portalURL.isSecure()).toString();
+        Boolean isAjaxRequest = (Boolean)rc.getAttribute(DecorationValve.IS_AJAX_DECORATION_REQUEST);
+        
+        String actionURL = (isAjaxRequest == null) 
+            ? portalURL.createPortletURL(pw, template.getCustomMode(), template.getCustomState(),
+                        portalURL.isSecure()).toString()
+            :  portalURL.createNavigationalEncoding(pw, template.getCustomMode(), template.getCustomState());
 
         String linkURL = decoration.getResource("images/" + actionName + ".gif");
 
@@ -48,4 +52,5 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
 
         return new DecoratorAction(actionName, rc.getLocale(), linkURL, actionURL, customAction);
     }
+        
 }
