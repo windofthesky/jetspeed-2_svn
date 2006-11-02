@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,9 +39,9 @@ import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 
 /**
  * TestProfiler
@@ -86,6 +87,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         { TestProfiler.class.getName() });
     }
 
+    
     protected void setUp() throws Exception
     {
         super.setUp();
@@ -128,7 +130,17 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         "rolecombo",
         "path.session"
     };
+
     
+    
+    private static final String URCF_CRITERIA_TEST [] =
+    {
+        "user-test",
+        "navigation",
+        "role",
+        "path.session"
+    };
+
     public void testUserRoleFallback() 
     throws Exception
     {
@@ -267,7 +279,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
             }
             else
             {
-                // assertTrue("Unknown rule encountered: " + rule.getId(), false);
+                // assertTrue("Unknown rule encountered: " + rule.getId(),
+                // false);
             }
 
         }
@@ -320,6 +333,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
             count++;
         }
     }
+    
+
 
     private void checkFallbackCriteria(ProfilingRule rule)
     {
@@ -418,7 +433,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         }
         assertTrue("fallback count = 4, " + count, count == 4);
 
-        // create a simple locator
+        // create a Simple locator
         RequestContext request2 = new MockRequestContext("/test");
         ProfileLocator locator2 = profiler.createLocator(request2);
         locator2.add("page", "test");
@@ -524,4 +539,190 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         return new String[]{"profiler.xml", "transaction.xml"};
     }
 
+    
+    
+    protected RuleCriterion addRuleCriterion(ProfilingRule rule,  
+                                   String criterionName, String criterionType, String criterionValue,int fallbackOrder, int fallbackType)
+    throws Exception
+    {
+        assertTrue("ProfilingRule is not null", (rule != null));
+
+        
+        RuleCriterion c = profiler.createRuleCriterion();
+        assertTrue("RuleCriterion is not null", (c != null));
+        c.setFallbackOrder(fallbackOrder);
+        c.setFallbackType(fallbackType);
+        c.setName(criterionName);
+        c.setType(criterionType);
+        c.setValue(criterionValue);
+        c.setRuleId(rule.getId());
+        rule.getRuleCriteria().add(c);
+        return c;
+    }
+    
+    
+ 
+    private void createStandardCriteria(ProfilingRule rule) throws Exception
+    {
+        RuleCriterion criterion;
+        assertNotNull("ProfilingRule is null", rule);
+
+        for (int count = 0; count < 5; count++)
+        {
+            switch (count)
+            {
+            case 0:
+                
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_PAGE, "type-" + count, DEFAULT_PAGE, count, RuleCriterion.FALLBACK_STOP);
+                assertTrue("criteria name " + criterion.getName(), criterion.getName().equals(
+                        ProfilingRule.STANDARD_PAGE));
+                assertNotNull("criteria value", criterion.getValue());
+                assertTrue("criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                break;
+            case 1:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_USER, "type-" + count, null, count, RuleCriterion.FALLBACK_STOP);
+                assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_USER));
+                assertNull("criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                break;
+            case 2:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_MEDIATYPE, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
+                assertNull("criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            case 3:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_LANGUAGE, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
+                assertNull("criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            case 4:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_COUNTRY, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
+                assertNull("criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            }
+
+        }
+    }
+
+
+
+    
+    private void createFallbackCriteria(ProfilingRule rule) throws Exception
+    {
+        RuleCriterion criterion;
+        assertNotNull("ProfilingRule is null", rule);
+
+        for (int count = 0; count < 5; count++)
+        {
+
+            switch (count)
+            {
+            case 0:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_ROLE, "type-" + count, null, count, RuleCriterion.FALLBACK_LOOP);
+                assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_ROLE));
+                assertNull("fallback criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_LOOP);
+                break;
+            case 1:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_PAGE, "type-" + count, DEFAULT_PAGE, count, RuleCriterion.FALLBACK_STOP);
+                assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
+                assertNotNull("fallback criteria value", criterion.getValue());
+                assertTrue("fallback criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                break;
+            case 2:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_MEDIATYPE, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
+                assertNull("fallback criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            case 3:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_LANGUAGE, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
+                assertNull("fallback criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            case 4:
+                criterion = this.addRuleCriterion(rule,ProfilingRule.STANDARD_COUNTRY, "type-" + count, null, count, RuleCriterion.FALLBACK_CONTINUE);
+                assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
+                assertNull("fallback criteria value", criterion.getValue());
+                assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                break;
+            }
+        }
+    }
+    
+    /**
+     * Tests
+     * 
+     * @throws Exception
+     */
+    public void testNewRules() throws Exception
+    {
+        assertNotNull("profiler service is null", profiler);
+        String ruleId1 = "j1-test";
+        String ruleId2 = "j2-test";
+        
+        
+        // create org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule
+        ProfilingRule rule = profiler.createProfilingRule(true);
+        assertNotNull("rule is null ", rule);
+        rule.setId(ruleId1);
+        rule.setTitle("Test Rule 1");
+        this.createStandardCriteria(rule);
+        
+        profiler.storeProfilingRule(rule);
+        //Check
+        ProfilingRule rule2 = profiler.getRule(ruleId1);
+        assertNotNull("default rule couldnt be added", rule2);
+        assertTrue("default rule id bad", rule.getId().equals(rule2.getId()));
+        
+        rule = profiler.createProfilingRule(false);
+        assertNotNull("rule is null ", rule);
+        rule.setId(ruleId2);
+        rule.setTitle("Test Rule 2");
+        
+        this.createFallbackCriteria(rule);
+
+        profiler.storeProfilingRule(rule);
+        //Check
+        rule2 = profiler.getRule(ruleId2);
+        assertNotNull("fallback rule couldnt be added", rule2);
+        assertTrue("fallback rule id bad", rule.getId().equals(rule2.getId()));
+
+        // Test Retrieving All Rules
+        int standardCount = 0;
+        int fallbackCount = 0;
+        Iterator rules = profiler.getRules().iterator();
+        while (rules.hasNext())
+        {
+            rule = (ProfilingRule) rules.next();
+            if (rule.getId().equals(ruleId1))
+            {
+                assertTrue("standard rule class not mapped", rule instanceof StandardProfilingRule);
+                checkStandardCriteria(rule);
+                standardCount++;
+            }
+            else if (rule.getId().equals(ruleId2))
+            {
+                assertTrue("role fallback rule class not mapped", rule instanceof RoleFallbackProfilingRule);
+                checkFallbackCriteria(rule);
+                fallbackCount++;
+            }
+            else
+            {
+                // assertTrue("Unknown rule encountered: " + rule.getId(),
+                // false);
+            }
+
+        }
+        assertTrue("didnt find expected number of standard rules, expected = " + EXPECTED_STANDARD, standardCount == 1);
+        assertTrue("didnt find expected number of fallback rules, expected = " + EXPECTED_FALLBACK, fallbackCount == 1);
+    }
+    
 }

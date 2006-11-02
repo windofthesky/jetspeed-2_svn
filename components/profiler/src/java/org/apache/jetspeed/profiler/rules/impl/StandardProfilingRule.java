@@ -43,11 +43,13 @@ public class StandardProfilingRule
             
     public StandardProfilingRule()
     {        
+        this.setClassname(this.getClass().getName());
     }
     
     public StandardProfilingRule(ProfileResolvers resolvers) 
     {
         super(resolvers);
+        this.setClassname(this.getClass().getName());
     }
     
     /* (non-Javadoc)

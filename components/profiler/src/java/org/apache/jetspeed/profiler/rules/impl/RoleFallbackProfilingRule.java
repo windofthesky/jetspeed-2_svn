@@ -42,12 +42,15 @@ public class RoleFallbackProfilingRule
     private final static long serialVersionUID = 1L;
     
     public RoleFallbackProfilingRule()
-    {        
+    {     
+        this.setClassname(this.getClass().getName());
+
     }
     
     public RoleFallbackProfilingRule(ProfileResolvers resolvers) 
     {
         super(resolvers);
+        this.setClassname(this.getClass().getName());
     }
     
     

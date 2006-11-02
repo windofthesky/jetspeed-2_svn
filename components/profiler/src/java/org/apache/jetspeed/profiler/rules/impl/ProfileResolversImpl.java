@@ -39,4 +39,12 @@ public class ProfileResolversImpl implements ProfileResolvers
     {
         return (RuleCriterionResolver)resolvers.get(resolverName);
     }
+    
+    /**
+     * return the map of resolver
+     */
+    public Map getResolvers()
+    {
+    	return resolvers;
+    }
 }
