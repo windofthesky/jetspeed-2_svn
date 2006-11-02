@@ -58,8 +58,9 @@ limitations under the License.
             <artifactId>commons-configuration</artifactId>
         </dependency>
         <dependency>
-            <groupId>xstream</groupId>
-            <artifactId>xstream</artifactId>
+            <groupId>javolution</groupId>
+            <artifactId>javolution</artifactId>
+            <version>4.0.2</version>
         </dependency>
 
         <!-- Runtime Dependencies -->

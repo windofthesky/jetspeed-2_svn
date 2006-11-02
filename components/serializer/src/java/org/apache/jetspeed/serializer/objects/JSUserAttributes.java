@@ -13,47 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.jetspeed.serializer.objects;
 
 /**
  * Serialized Name Value Pairs
  * <info>
  *   <name>user.first.name</name>
- *   <value>David</value>
+ *   <value>Paul</value>
  * </info>
  * 
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:hajo@bluesunrsie.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-public class JSNameValuePair
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.*;
+
+public class JSUserAttributes extends JSNameValuePairs
 {
-    private String name;
-    private String value;
-    
-    public JSNameValuePair()
-    {        
-    }
-    
-    public String getName()
-    {
-        return name;
-    }
 
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    
-    public String getValue()
-    {
-        return value;
-    }
 
-    
-    public void setValue(String value)
+	/**
+	 * @param preferences
+	 */
+	public JSUserAttributes(Preferences preferences)
+	{
+		super(preferences);
+	}
+    public JSUserAttributes()
     {
-        this.value = value;
+        super();
     }
-
 }
