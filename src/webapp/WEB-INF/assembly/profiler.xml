@@ -27,6 +27,28 @@
         <constructor-arg index="2">
             <ref bean="ProfileResolvers" />            
         </constructor-arg>                   
+ 		<!--  pass reference to profiling rule implementations -->
+		<constructor-arg index="3">
+			<map>
+				<entry key="locator">
+					<value>ProfileLocator</value>
+				</entry>
+				<entry key="principal">
+					<value>PrincipalRule</value>
+				</entry>
+	
+				<entry key="standard">
+					<value>StandardProfilingRule</value>
+				</entry>
+				<entry key="fallback">
+					<value>RoleFallbackProfilingRule</value>
+				</entry>
+			</map>
+		</constructor-arg>
+		<!--  pass reference to rule criterion -->
+		<constructor-arg index="4">
+			<value>RuleCriterion</value>
+		</constructor-arg>
     </bean>
 
     <bean id="org.apache.jetspeed.profiler.Profiler" name="profiler" parent="baseTransactionProxy">
@@ -126,5 +148,23 @@
     <bean id='NavigationCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.NavigationCriterionResolver'></bean>
     <bean id='UserAgentCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.UserAgentCriterionResolver'></bean>
     <bean id='IPCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.IPCriterionResolver'></bean>
+
+	<!-- Profiling Rules -->
+
+	<!-- Standard Profiler -->
+	<bean id="StandardProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule" singleton="false"></bean>
+
+	<!-- Fallback Profiler -->
+	<bean id="RoleFallbackProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule" singleton="false"></bean>
+
+	<!-- Locator -->
+	<bean id="ProfileLocator" class="org.apache.jetspeed.profiler.impl.JetspeedProfileLocator" singleton="false"></bean>
+
+	<!-- Principal Rule -->
+	<bean id="PrincipalRule" class="org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl" singleton="false"></bean>
+
+
+	<!-- Rule Criterion -->
+	<bean id="RuleCriterion" class="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" singleton="false"></bean>
     
 </beans>
