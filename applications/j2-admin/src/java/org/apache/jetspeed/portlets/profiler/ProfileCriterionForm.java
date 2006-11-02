@@ -112,8 +112,13 @@ public class ProfileCriterionForm implements Serializable
                     isNew = true;
                     try
                     {
-                        Class defaultClass = profiler.getClass().getClassLoader().loadClass("org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl");
-                        this.criterion = (RuleCriterion)defaultClass.newInstance();
+                        // 103006 HJB, replace loadClass with bean factory
+                        // method
+                        // Class defaultClass =
+                        // profiler.getClass().getClassLoader().loadClass("org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl");
+                        // this.criterion =
+                        // (RuleCriterion)defaultClass.newInstance();
+                        this.criterion = profiler.createRuleCriterion();
                     }
                     catch (Exception e)
                     {
