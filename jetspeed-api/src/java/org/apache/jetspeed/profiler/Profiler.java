@@ -1,17 +1,17 @@
 /*
  * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.jetspeed.profiler;
 
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -97,19 +98,23 @@ public interface Profiler
      * For a given principal, associate a profiling rule to that principal name.
      * TODO: this API should be secured and require admin role
      * 
-     * @param principal Lookup the profiling rule based on this principal.
-     * @param locatorName the unique name of a locator for this principal/rule/locator 
-     * @param The rule used to find profiles for this user
+     * @param principal
+     *            Lookup the profiling rule based on this principal.
+     * @param locatorName
+     *            the unique name of a locator for this principal/rule/locator
+     * @param The
+     *            rule used to find profiles for this user
      */
-    void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName);
-    
+    void setRuleForPrincipal(Principal principal, ProfilingRule rule,
+            String locatorName);
+
     /**
      * Lookup the portal's default profiling rule.
      * 
      * @return The portal's default profiling rule.
      */
     ProfilingRule getDefaultRule();
-              
+
     /**
      * @return
      */
@@ -122,74 +127,110 @@ public interface Profiler
      * @return the rule
      */
     ProfilingRule getRule(String id);
-    
+
     /**
-     * For a given principal, find all supported locators and return a string array of 
-     * locator names.
+     * For a given principal, find all supported locators and return a string
+     * array of locator names.
      * 
-     * @param principal The given principal.
+     * @param principal
+     *            The given principal.
      * @return array of String locator names
      */
     String[] getLocatorNamesForPrincipal(Principal principal);
 
     /**
-     * For a given principal, find all supported locators and return a 
+     * For a given principal, find all supported locators and return a
      * collection of principal rules.
      * 
-     * @param principal The given principal.
+     * @param principal
+     *            The given principal.
      * @return collection of PrincipalRules
      */
     Collection getRulesForPrincipal(Principal principal);
-    
+
     /**
      * Gets all supported locators for a principal.
-     *  
+     * 
      * @param context
      * @param principal
      * @return
      * @throws ProfilerException
      */
     Map getProfileLocators(RequestContext context, Principal principal)
-    throws ProfilerException;
-    
+            throws ProfilerException;
+
     /**
      * 
      * <p>
      * getDefaultProfileLocators
      * </p>
      * Gets all the supported locators for the DEFAULT_RULE_PRINCIPAL
+     * 
      * @param context
      * @return
      * @throws ProfilerException
      */
-    Map getDefaultProfileLocators( RequestContext context) throws ProfilerException;
-    
+    Map getDefaultProfileLocators(RequestContext context)
+            throws ProfilerException;
+
     /*
      * Persist a profiling rule to the persistent store.
      * 
      */
-    void storeProfilingRule(ProfilingRule rule)
-    throws ProfilerException;
-    
+    void storeProfilingRule(ProfilingRule rule) throws ProfilerException;
+
     /*
      * Deletes a profiling rule from the persistent store.
      * 
-     */    
-    void deleteProfilingRule(ProfilingRule rule)
-    throws ProfilerException;
+     */
+    void deleteProfilingRule(ProfilingRule rule) throws ProfilerException;
 
     /*
      * Persist a principal rule to the persistent store.
      * 
      */
-    void storePrincipalRule(PrincipalRule rule)
-    throws ProfilerException;
-    
+    void storePrincipalRule(PrincipalRule rule) throws ProfilerException;
+
     /*
      * Deletes a principal rule from the persistent store.
      * 
-     */    
-    void deletePrincipalRule(PrincipalRule rule)
-    throws ProfilerException;
-    
+     */
+    void deletePrincipalRule(PrincipalRule rule) throws ProfilerException;
+
+    /**
+     * Factory for Profiling Rule. The boolean argument specifies whether to
+     * obtain a new instance of a standard profiling rule or of a fallback rule.
+     * 
+     * @param standard
+     *            true if standard rule is requested, false if fallback
+     * @return New instance of a (standard or fallback) Profiling Rule
+     * @throws ClassNotFoundException
+     *             if the beanfactory couldn't instantiate the bean
+     */
+    public ProfilingRule createProfilingRule(boolean standard)
+            throws ClassNotFoundException;
+
+    /**
+     * Factory for PrincipalRule, the container to connect profiling rule and
+     * (user) prinicpal
+     * <p>
+     * Replaces the previous Class.forName and .instantiate logic with the
+     * Spring based factory.
+     * 
+     * @return New instance of a principal rule
+     * @throws ClassNotFoundException
+     *             if the beanfactory couldn't instantiate the bean
+     */
+    public PrincipalRule createPrincipalRule() throws ClassNotFoundException;
+
+    /**
+     * Factory for Rule Criterion
+     * <p>
+     * 
+     * @return New instance of a rule criterion
+     * @throws ClassNotFoundException
+     *             if the beanfactory couldn't instantiate the bean
+     */
+    public RuleCriterion createRuleCriterion() throws ClassNotFoundException;
+
 }

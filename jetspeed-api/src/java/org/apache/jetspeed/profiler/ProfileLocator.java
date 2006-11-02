@@ -74,7 +74,7 @@ public interface ProfileLocator
     void add(RuleCriterion criterion, boolean isControl, boolean isNavigation, String value);
 
     /**
-     * Add a property based on a simple name and value.
+     * Add a property based on a Simple name and value.
      * 
      * @param name The name of the property.
      * @param isControl The control classification for property.
@@ -84,7 +84,7 @@ public interface ProfileLocator
     void add(String name, boolean isControl, boolean isNavigation, String value);
     
     /**
-     * Add a property based on a simple name and value assumed
+     * Add a property based on a Simple name and value assumed
      * to be control property.
      * 
      * @param name The name of the property.

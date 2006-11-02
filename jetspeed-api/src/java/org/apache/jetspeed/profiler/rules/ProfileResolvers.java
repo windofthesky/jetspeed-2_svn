@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.util.Map;
+
 /**
  * Spring component to hold criterion resolvers for building profiling rules.
  *
@@ -24,4 +26,8 @@ package org.apache.jetspeed.profiler.rules;
 public interface ProfileResolvers 
 {
     RuleCriterionResolver get(String resolverName);
+    /**
+     * return the map of resolver
+     */
+    Map getResolvers();
 }
