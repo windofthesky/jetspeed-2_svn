@@ -441,6 +441,8 @@ insert into PRINCIPAL_RULE_ASSOC values ('subsite2', 'page', 'subsite2-role-fall
 
 insert into PRINCIPAL_RULE_ASSOC values ('geo', 'page', 'ip-address');
 
+INSERT INTO OJB_HL_SEQ VALUES ('SEQ_RULE_CRITERION','deprecatedColumn', 200, 20, 1);
+
 -- test data for db browser
 insert into CLUBS values ('AC Milan', 'Italy', 'Milan', 'San Siro', 85700, 1926, '105x68m', '');
 insert into CLUBS values ('Arsenal', 'England', 'London', 'Highbury', 38500, 1913, '101x65', 'Gunners');
