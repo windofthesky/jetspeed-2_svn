@@ -47,7 +47,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
     protected static final Log           log = LogFactory.getLog("deployment");
     private String                       webAppDir;
+    private int                           localPAPrefixLength;
     private String                       localAppDir;
+    private String                       localAppStagingDir;
     private boolean                      stripLoggers;
     private PortletApplicationManagement pam;
     private PortletRegistry              registry;
@@ -56,15 +58,31 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      * @param pam
      * @param webAppDir
      * @param localAppDir
+     * @param stripLoggers
      * @throws FileNotFoundException the <code>webAppDir</code> or <code>localAppDir</code> directory does not
      *                               exist.
      */
     public DeployPortletAppEventListener(PortletApplicationManagement pam, PortletRegistry registry, String webAppDir,
                                          String localAppDir, boolean stripLoggers) throws FileNotFoundException
     {
+        this(pam,registry,webAppDir,localAppDir,null,stripLoggers);
+    }
+    /**
+     * @param pam
+     * @param webAppDir
+     * @param localAppDir
+     * @param localAppStagingDir
+     * @param stripLoggers
+     * @throws FileNotFoundException the <code>webAppDir</code> or <code>localAppDir</code> directory does not
+     *                               exist.
+     */
+    public DeployPortletAppEventListener(PortletApplicationManagement pam, PortletRegistry registry, String webAppDir,
+                                         String localAppDir, String localAppStagingDir, boolean stripLoggers) throws FileNotFoundException
+    {
         this.pam = pam;
         this.registry = registry;
         this.stripLoggers = stripLoggers;
+        localPAPrefixLength = PortletApplicationManagement.LOCAL_PA_PREFIX.length();
 
         File webAppDirFile = new File(webAppDir);
 
@@ -97,6 +115,24 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             this.localAppDir = localAppDirFile.getCanonicalPath();
         }
         catch (IOException e) {}
+        if ( localAppStagingDir != null )
+        {
+            File localAppStagingDirFile = new File(localAppStagingDir);
+            if ( !localAppStagingDirFile.exists() )
+            {
+                localAppStagingDirFile.mkdirs();
+            }
+            else if (!localAppStagingDirFile.isDirectory())
+            {
+                throw new FileNotFoundException("Invalid staging directory for local portlet applications: \""
+                        + localAppStagingDirFile.getAbsolutePath());
+            }
+            try
+            {
+                this.localAppStagingDir = localAppStagingDirFile.getCanonicalPath();
+            }
+            catch (IOException e) {}
+        }
     }
 
     public void initialize()
@@ -133,6 +169,18 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             }
         }
     }
+    
+    private String getEventParentPath(DeploymentEvent event)
+    {
+        try
+        {
+            return event.getDeploymentObject().getFile().getParentFile().getCanonicalPath();
+        }
+        catch (IOException io)
+        {
+            return null;
+        }
+    }
 
     /**
      * <p>
@@ -147,9 +195,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         String fileName = event.getName();
         if (fileName.endsWith(".war"))
         {
-            int prefixLength = PortletApplicationManagement.LOCAL_PA_PREFIX.length();
-            if (fileName.length() > prefixLength
-                && fileName.substring(0, prefixLength).equalsIgnoreCase(PortletApplicationManagement.LOCAL_PA_PREFIX))
+            if ((localAppStagingDir != null && getEventParentPath(event).equals(localAppStagingDir))
+                    || (fileName.length() > localPAPrefixLength && fileName.substring(0, localPAPrefixLength)
+                            .equalsIgnoreCase(PortletApplicationManagement.LOCAL_PA_PREFIX)))
             {
                 deployLocalPortletApplication(event);
             }

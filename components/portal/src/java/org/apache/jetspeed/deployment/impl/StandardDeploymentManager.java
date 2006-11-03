@@ -190,7 +190,7 @@ public class StandardDeploymentManager implements DeploymentManager
         {
             // check for new deployment
             File aFile = stagedFiles[i];
-            if (!ignoreFile(aFile))
+            if (aFile.isFile() && !ignoreFile(aFile))
             {
                 boolean failed = false;
                 boolean unknown = false;

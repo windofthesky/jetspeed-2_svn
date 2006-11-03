@@ -158,7 +158,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        checkValidContextName(contextName, true);
         startPA(contextName, warStruct, paClassLoader, true);
 	}
 
@@ -171,7 +170,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            checkValidContextName(contextName, false);
             startPA(contextName, warStruct, paClassLoader, false);
         }
         finally
@@ -183,8 +181,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
 	{
-		checkValidContextName(contextName, true);
-		stopPA(contextName);
+		stopPA(contextName, true);
 	}
 
 	public void stopPortletApplication(String contextName)
@@ -194,8 +191,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            checkValidContextName(contextName, false);
-            stopPA(contextName);
+            stopPA(contextName, false);
         }
         finally
         {
@@ -236,6 +232,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
 	}
+    
+    protected int getApplicationType(boolean local)
+    {
+        return local ?  MutablePortletApplication.LOCAL : MutablePortletApplication.WEBAPP;
+    }
 
 	protected void checkValidContextName(String contextName, boolean local)
 		throws RegistryException
@@ -432,6 +433,17 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
             if (pa != null)
             {
+                if ( pa.getApplicationType() != getApplicationType(local) )
+                {
+                    if ( local )
+                    {
+                        throw new RegistryException("Cannot start local portlet application "+contextName+": it is not a local application");
+                    }
+                    else
+                    {
+                        throw new RegistryException("Cannot start portlet application "+contextName+": it is a local application");
+                    }                    
+                }
                 DescriptorChangeMonitor changeMonitor = this.monitor;
                 if (!monitored && changeMonitor != null)
                 {
@@ -478,7 +490,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected void stopPA(String contextName)
+	protected void stopPA(String contextName, boolean local)
 		throws RegistryException
 	{
 		MutablePortletApplication pa = null;
@@ -490,6 +502,17 @@ public class PortletApplicationManager implements PortletApplicationManagement
         catch (Exception e)
         {
             // ignore errors during portal shutdown
+        }
+        if  (pa != null && pa.getApplicationType() != getApplicationType(local) )
+        {
+            if ( local )
+            {
+                throw new RegistryException("Cannot stop local portlet application "+contextName+": it is not a local application");
+            }
+            else
+            {
+                throw new RegistryException("Cannot stop portlet application "+contextName+": it is a local application");
+            }
         }
         DescriptorChangeMonitor monitor = this.monitor;
         if ( monitor != null )
