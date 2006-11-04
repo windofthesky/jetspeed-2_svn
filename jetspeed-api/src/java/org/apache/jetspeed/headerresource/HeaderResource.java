@@ -52,9 +52,9 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_TYPES = "header.types";
     public final static String HEADER_CONFIG_REQUIREDFLAG = "header.requiredflag";
     public final static String HEADER_CONFIG_DOJO = "dojo";
+    public final static String HEADER_CONFIG_DESKTOP = "desktop";
     
-    public final static String HEADER_INTERNAL_INCLUDED_NAMES = "header.internal.names";  // not a configuration entry name
-    
+    public final static String HEADER_INTERNAL_INCLUDED_NAMES = "header.internal.names";  // internal use - not a configuration entry name
     
     // header section predefined names
     public final static String HEADER_SECTION_BASE_TAG = "header.basetag";
@@ -72,6 +72,10 @@ public interface HeaderResource
     public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND_NOSCROLL = "header.dojo.style.bodyexpand.noscroll";
     public final static String HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME = "header.desktop.style.desktoptheme";
     public final static String HEADER_SECTION_DESKTOP_INIT = "header.desktop.init";
+    
+    public final static String HEADER_INTERNAL_JETSPEED_VAR_NAME = "jetspeed";
+    public final static String HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME = "djConfig." + HEADER_INTERNAL_JETSPEED_VAR_NAME;  // internal use - not a configuration entry name
+    
     
     /**
      * Output all content (that has not already been output)
@@ -315,6 +319,13 @@ public interface HeaderResource
      */
     public void addHeaderInfo(String elementName, Map attributes, String text);
 
+    /**
+     * Add text as-is to this instance.
+     * 
+     * @param text content
+     */
+    public void addHeaderInfo(String text);
+    
     /**
      * Convenient method to add &lt;script&gt; tag with defer option.
      * 

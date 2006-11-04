@@ -1048,8 +1048,23 @@ public class HeaderResourceImpl implements HeaderResource
     /*
      * (non-Javadoc)
      * 
+     * @see org.apache.jetspeed.headerresource.impl.HeaderResource#addHeaderInfo(java.lang.String)
+     */
+    public void addHeaderInfo(String text)
+    {
+        HeaderInfo headerInfo = new HeaderInfo(null, null, text);
+        if (!containsHeaderInfo(headerInfo))
+        {
+            Set headerInfoSet = getHeaderInfoSet();
+            headerInfoSet.add(headerInfo);
+        }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.headerresource.impl.HeaderResource#addHeaderInfo(java.lang.String,
-     *      java.util.Map)
+     *      java.util.Map,java.lang.String)
      */
     public void addHeaderInfo(String elementName, Map attributes, String text)
     {
@@ -1170,29 +1185,43 @@ public class HeaderResourceImpl implements HeaderResource
         public String toString()
         {
             StringBuffer buf = new StringBuffer();
-            buf.append("<");
-            buf.append(getElementName());
-            buf.append(" ");
-
-            Set keySet = getAttributes().keySet();
-            for (Iterator ite = keySet.iterator(); ite.hasNext();)
+            
+            String elmtName = getElementName();
+            if ( elmtName != null && elmtName.length() > 0 )
             {
-                String key = (String) ite.next();
-                buf.append(key);
-                buf.append("=\"");
-                buf.append((String) getAttributes().get(key));
-                buf.append("\" ");
-            }
+                buf.append("<");
+                buf.append(getElementName());
+                buf.append(" ");
 
-            if (getText() != null)
-            {
-                buf.append(">" + getText() + "</" + getElementName() + ">");
+                Map attrMap = getAttributes();
+                if ( attrMap != null )
+                {
+                    Set keySet = attrMap.keySet();
+                    for (Iterator ite = keySet.iterator(); ite.hasNext();)
+                    {
+                        String key = (String) ite.next();
+                        buf.append(key);
+                        buf.append("=\"");
+                        buf.append((String) attrMap.get(key));
+                        buf.append("\" ");
+                    }
+                }
+                if (getText() != null)
+                {
+                    buf.append(">" + getText() + "</" + getElementName() + ">");
+                }
+                else
+                {
+                    buf.append("/>");
+                }
             }
             else
             {
-                buf.append("/>");
+                if (getText() != null)
+                {
+                    buf.append( getText() );
+                }
             }
-
             return buf.toString();
         }
 
@@ -1201,9 +1230,9 @@ public class HeaderResourceImpl implements HeaderResource
             if (o instanceof HeaderInfo)
             {
                 HeaderInfo headerInfo = (HeaderInfo) o;
-                if (headerInfo.getElementName().equalsIgnoreCase(getElementName())
+                if (compareString(headerInfo.getElementName(), getElementName())
                         && compareString(headerInfo.getText(), getText())
-                        && headerInfo.getAttributes().equals(getAttributes()))
+                        && compareAttributes(headerInfo.getAttributes(), getAttributes()))
                 {
                     return true;
                 }
@@ -1221,9 +1250,28 @@ public class HeaderResourceImpl implements HeaderResource
                 }
 
             }
-            else
+            else if ( str1 != null )
             {
                 if (str0.equals(str1))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        private boolean compareAttributes(Map attr0, Map attr1)
+        {
+            if (attr0 == null)
+            {
+                if (attr1 == null)
+                {
+                    return true;
+                }
+            }
+            else if ( attr1 != null )
+            {
+                if (attr0.equals(attr1))
                 {
                     return true;
                 }
