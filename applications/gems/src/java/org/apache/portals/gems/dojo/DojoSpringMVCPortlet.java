@@ -148,15 +148,14 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsH
         headerResource.dojoEnable();
         includeHeaderContent( headerResource );
         
-        /*if ( this.headerPage != null )
+        if ( this.headerPage != null )
         {
-                include( request, response, this.headerPage, headerInfoText );
-        }*/
+            include( request, response, this.headerPage );
+        }
     }
     
     protected void includeHeaderContent( HeaderResource headerResource )
     {
-        // do nothing - intended for derived classes
         if ( this.dojoRequiresCoreList != null )
         {
             headerResource.dojoAddCoreLibraryRequires( this.dojoRequiresCoreList );
@@ -171,6 +170,12 @@ public class DojoSpringMVCPortlet extends DispatcherPortlet implements SupportsH
     {
         response.include(request, response, headerPagePath);
         headerText.append(response.getContent());
+    }
+    
+    public void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerPagePath) throws PortletException
+    {
+        response.include(request, response, headerPagePath);
+        response.getHeaderResource().addHeaderInfo(response.getContent());
     }
 
 
