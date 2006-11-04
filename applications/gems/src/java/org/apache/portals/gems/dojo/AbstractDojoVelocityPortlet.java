@@ -18,6 +18,7 @@ package org.apache.portals.gems.dojo;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +41,8 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
      * Class specific logger.
      */
     private final static Log log = LogFactory.getLog(AbstractDojoVelocityPortlet.class);
+    
+    protected String headerPage;
 
     /*
      * Portlet constructor.
@@ -49,6 +52,12 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
         super();
     }
 
+    public void init(PortletConfig config) throws PortletException
+    {
+        super.init(config);
+        this.headerPage = this.getInitParameter("HeaderPage");
+    }
+    
     /*
      * Include Dojo and Turbo header content using header resource component.
      *
@@ -63,6 +72,11 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
 
         headerResource.dojoEnable();
         includeHeaderContent( headerResource );
+        
+        if ( this.headerPage != null )
+        {
+            include( request, response, this.headerPage );
+        }
     }
     
     protected void includeHeaderContent( HeaderResource headerResource )
@@ -70,8 +84,15 @@ public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet
         // do nothing - intended for derived classes
     }
     
-    protected void appendHeaderText(StringBuffer headerInfoText, String header)
+    protected void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerPagePath, StringBuffer headerText) throws PortletException
     {
-        headerInfoText.append("dojo.require('" + header + "');\r\n");
+        response.include(request, response, headerPagePath);
+        headerText.append(response.getContent());
+    }
+    
+    protected void include(PortletHeaderRequest request, PortletHeaderResponse response, String headerPagePath) throws PortletException
+    {
+        response.include(request, response, headerPagePath);
+        response.getHeaderResource().addHeaderInfo(response.getContent());
     }
 }
