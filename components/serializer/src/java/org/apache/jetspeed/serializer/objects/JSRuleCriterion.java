@@ -68,8 +68,8 @@ public class JSRuleCriterion
 				xml.setAttribute("name", g.name);
 				xml.add( g.type, "type",String.class);
 				xml.add(g.value,"value", String.class);
-				xml.add(Integer.valueOf(g.fallBackOrder), "fallBackOrder", Integer.class);
-				xml.add(Integer.valueOf(g.fallBackType), "fallBackType", Integer.class);
+				xml.add(new Integer(g.fallBackOrder), "fallBackOrder", Integer.class);
+				xml.add(new Integer(g.fallBackType), "fallBackType", Integer.class);
 
 				// xml.add(g.groupString);
 
