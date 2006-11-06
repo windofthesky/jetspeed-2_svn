@@ -15,83 +15,16 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.prefs.Preferences;
 
-import javax.security.auth.Subject;
-
-import javolution.xml.XMLBinding;
-import javolution.xml.XMLObjectWriter;
-
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.capabilities.Capabilities;
-import org.apache.jetspeed.capabilities.Capability;
-import org.apache.jetspeed.capabilities.Client;
-import org.apache.jetspeed.capabilities.MediaType;
-import org.apache.jetspeed.capabilities.MimeType;
-import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.profiler.rules.PrincipalRule;
-import org.apache.jetspeed.profiler.rules.ProfilingRule;
-import org.apache.jetspeed.profiler.rules.RuleCriterion;
-import org.apache.jetspeed.security.BasePrincipal;
-import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.om.InternalPermission;
-import org.apache.jetspeed.security.om.InternalPrincipal;
-import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
-import org.apache.jetspeed.serializer.objects.JSCapabilities;
-import org.apache.jetspeed.serializer.objects.JSCapability;
-import org.apache.jetspeed.serializer.objects.JSClient;
-import org.apache.jetspeed.serializer.objects.JSClientCapabilities;
-import org.apache.jetspeed.serializer.objects.JSClientMimeTypes;
-import org.apache.jetspeed.serializer.objects.JSClients;
-import org.apache.jetspeed.serializer.objects.JSGroup;
-import org.apache.jetspeed.serializer.objects.JSGroups;
-import org.apache.jetspeed.serializer.objects.JSMediaType;
-import org.apache.jetspeed.serializer.objects.JSMediaTypes;
-import org.apache.jetspeed.serializer.objects.JSMimeType;
-import org.apache.jetspeed.serializer.objects.JSMimeTypes;
-import org.apache.jetspeed.serializer.objects.JSNameValuePairs;
-import org.apache.jetspeed.serializer.objects.JSPermission;
-import org.apache.jetspeed.serializer.objects.JSPermissions;
-import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
-import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
-import org.apache.jetspeed.serializer.objects.JSProfilingRule;
-import org.apache.jetspeed.serializer.objects.JSProfilingRules;
-import org.apache.jetspeed.serializer.objects.JSRole;
-import org.apache.jetspeed.serializer.objects.JSRoles;
-import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
-import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
-import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.jetspeed.serializer.objects.JSUser;
-import org.apache.jetspeed.serializer.objects.JSUserAttributes;
-import org.apache.jetspeed.serializer.objects.JSUserGroups;
-import org.apache.jetspeed.serializer.objects.JSUserRoles;
-import org.apache.jetspeed.serializer.objects.JSUserUsers;
-import org.apache.jetspeed.serializer.objects.JSUsers;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
+import org.apache.jetspeed.components.jndi.JNDIComponent;
+import org.apache.jetspeed.components.jndi.TyrexJNDIComponent;
 
 /**
  * Jetspeed Serializer Application
@@ -102,8 +35,8 @@ import org.apache.jetspeed.serializer.objects.JSUsers;
  * invoke with (optional) parameters as
  * <p>-p propertyFilename : overwrite the default filename defined in System.getProperty JetSpeed.Serializer.Configuration 
  * <p>-a ApplicationPath : overwrite the default ./ or ApplicationPath property in properties file)
- * <p>-b bootPath : one or more file filer statements (seperated by , ) overwrite the default assembly/boot/*.xml or bootPath  property in properties file)  
- * <p>-c configPath : one or more file filer statements (seperated by , ) overwrite the default assembly/*.xml or configPath property in properties file)
+ * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)  
+ * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)
  * 
  * <p>-o optionstring : overwrite defrault "ALL,REPLACE"
  * <p>optionstring: 
@@ -126,7 +59,7 @@ import org.apache.jetspeed.serializer.objects.JSUsers;
  */
 public class JetspeedSerializerApplication
 {
-    
+    public static final String JNDI_DS_NAME = "jetspeed";    
     
     public static void main(String[] args)
     {
@@ -164,7 +97,7 @@ public class JetspeedSerializerApplication
           else if (args[n].equals("-I")) { doImport = true; fileName = args[++n];}
           else if (args[n].equals("-N")) name = args[++n];
           else if (args[n].equals("-O")) options = args[++n];
-          else throw new IllegalArgumentException("Unknown argument.");
+          else throw new IllegalArgumentException("Unknown argument: " + args[n]);
         }
 
         
@@ -213,8 +146,28 @@ public class JetspeedSerializerApplication
         if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/*.xml";
         if (configFiles == null) configFiles = "assembly/*.xml";
 
-        
+        bootConfigFiles = bootConfigFiles + "*.xml";
+        configFiles = configFiles + "*.xml";
+     
         // ok - we are ready to rumble....
+        try
+        {
+            BoundDBCPDatasourceComponent datasourceComponent;        
+            JNDIComponent jndi = new TyrexJNDIComponent();
+            
+            String url = System.getProperty("org.apache.jetspeed.database.url");
+            String driver = System.getProperty("org.apache.jetspeed.database.driver");
+            String user = System.getProperty("org.apache.jetspeed.database.user");
+            String password = System.getProperty("org.apache.jetspeed.database.password");
+            datasourceComponent = new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000,
+                    GenericObjectPool.WHEN_EXHAUSTED_GROW, true, JNDI_DS_NAME, jndi);
+            datasourceComponent.start();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
         
         /** create the instruction map */
         
