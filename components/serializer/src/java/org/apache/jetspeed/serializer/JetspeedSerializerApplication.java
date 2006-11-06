@@ -21,10 +21,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.apache.jetspeed.components.jndi.TyrexJNDIComponent;
 
 /**
  * Jetspeed Serializer Application
@@ -150,24 +146,6 @@ public class JetspeedSerializerApplication
         configFiles = configFiles + "*.xml";
      
         // ok - we are ready to rumble....
-        try
-        {
-            BoundDBCPDatasourceComponent datasourceComponent;        
-            JNDIComponent jndi = new TyrexJNDIComponent();
-            
-            String url = System.getProperty("org.apache.jetspeed.database.url");
-            String driver = System.getProperty("org.apache.jetspeed.database.driver");
-            String user = System.getProperty("org.apache.jetspeed.database.user");
-            String password = System.getProperty("org.apache.jetspeed.database.password");
-            datasourceComponent = new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000,
-                    GenericObjectPool.WHEN_EXHAUSTED_GROW, true, JNDI_DS_NAME, jndi);
-            datasourceComponent.start();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
         
         /** create the instruction map */
         
