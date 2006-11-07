@@ -30,7 +30,7 @@ dojo.lang.shallowCopy(this.portlets) ;
 
 <div id="portlets" dojoType="ContentPane" label="Portlets">
 <div class="tableContainer">
-<table dojoType="EditorTable" widgetId="portletsTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+<table dojoType="jetspeed:EditorTable" widgetId="portletsTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
 
 <col width="45%"></col>
 <col width="15%"></col>
@@ -50,7 +50,7 @@ dojo.lang.shallowCopy(this.portlets) ;
 </div>
 <div id="folders" dojoType="ContentPane" label="Folders">
 <div class="tableContainer">
-<table dojoType="EditorTable" widgetId="foldersTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+<table dojoType="jetspeed:EditorTable" widgetId="foldersTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
 
 <col width="45%"></col>
 <col width="15%"></col>
@@ -70,7 +70,7 @@ dojo.lang.shallowCopy(this.portlets) ;
 </div>
 <div id="pages" dojoType="ContentPane" label="Pages">
 <div class="tableContainer">
-<table dojoType="EditorTable" widgetId="pagesTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+<table dojoType="jetspeed:EditorTable" widgetId="pagesTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
 
 <col width="45%"></col>
 <col width="15%"></col>

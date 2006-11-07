@@ -84,17 +84,6 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
                 "Could not get instance of portal role manager component");        
     }
 
-
-    /*              
-      
-        // detect jetspeed-desktop
-        String requestEncoder = (String)requestContext.getRequest().getParameter("encoder");
-
-        boolean isJetspeedDesktop = ((requestEncoder == null) || !requestEncoder.equals("desktop")) ? false : true;
-
-
-    */
-
     protected void includeHeaderContent( HeaderResource headerResource )
     {
         headerResource.dojoAddCoreLibraryRequire( "dojo.lang.*" );

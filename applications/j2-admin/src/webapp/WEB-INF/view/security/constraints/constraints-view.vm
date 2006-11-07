@@ -9,7 +9,7 @@
 
         <div id="defs" dojoType="ContentPane" label="Definitions">
             <div class="tableContainer">
-                <table dojoType="EditorTable" widgetId="defsTable" class="constraints" 
+                <table dojoType="jetspeed:EditorTable" widgetId="defsTable" class="constraints" 
                        headClass="fixedHeader" tbodyClass="scrollContent" 
                        enableMultipleSelect="true" enableAlternateRows="true" 
                        rowAlternateClass="alternateRow" 
@@ -33,7 +33,7 @@
 
         <div id="globals" dojoType="ContentPane" label="Globals">
             <div class="tableContainer">
-                <table dojoType="EditorTable" widgetId="globalsTable" class="constraints" 
+                <table dojoType="jetspeed:EditorTable" widgetId="globalsTable" class="constraints" 
                        headClass="fixedHeader" tbodyClass="scrollContent" 
                        enableMultipleSelect="true" enableAlternateRows="true" 
                        rowAlternateClass="alternateRow" 
@@ -122,7 +122,7 @@
         <div id="constraintsEditorPane" dojoType="ContentPane" label="Constraints" class="constraints">
             <div style="height:21px; padding: 2px"><b>Constraints for Definition Name:&nbsp;</b><span id="constraintsEditorDefName"></span></div>
             <div class="constraintsTableDiv">
-                <table dojoType="EditorTable" widgetId="constraintsTable" class="constraints"
+                <table dojoType="jetspeed:EditorTable" widgetId="constraintsTable" class="constraints"
                        headClass="fixedHeader" tbodyClass="scrollContent" 
                        enableMultipleSelect="true" enableAlternateRows="true" 
                        rowAlternateClass="alternateRow" 
