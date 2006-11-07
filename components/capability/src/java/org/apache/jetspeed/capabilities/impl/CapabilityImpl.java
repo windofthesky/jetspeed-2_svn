@@ -17,6 +17,7 @@
 package org.apache.jetspeed.capabilities.impl;
 
 import org.apache.jetspeed.capabilities.Capability;
+import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Capability implementation class.
@@ -60,6 +61,48 @@ public class CapabilityImpl implements Capability
     public String getName()
     {
         return this.name;
+    }
+    
+    
+    /**
+     * Implements the hashCode calculation so two different objects with the content return the same hashcode....
+     */
+    public int hashCode()
+    {
+    	int h = (name != null?capabilityId*31^(name.length()):capabilityId);
+    	return name.hashCode(); //ignore id + h;
+    }
+
+    /**
+     * Implements the equals operation so that 2 elements are equal if
+     * all their member values are equal.
+     *
+     *      
+     * @param object to compare this one with
+     * @return true if both objects represent the same (logical) content
+     */
+    public boolean equals(Object object)
+    {
+    	if (!(object instanceof Capability))
+    	{
+    		return false;
+    	}
+    	if (this == object)
+    		return true;
+//    	 Don't check the ID - id is only set through OJB so this would not recognize equality correctly 
+    	/*     	if (this.capabilityId != ((Capability)object).getCapabilityId())
+    		return false;
+    	 */
+    	String oName = ((Capability)object).getName();
+    	if (
+    			(oName == null) && (name == null)
+    			||
+    			(oName == name)
+    			||
+    			((oName != null) && (oName.equals(name)))
+    		)
+    		return true;
+    	return false;	
     }
 
 }

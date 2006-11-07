@@ -16,12 +16,17 @@
 
 package org.apache.jetspeed.capabilities;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+
+import tyrex.util.ArraySet;
 
 /**
  * Test Capability Service
@@ -175,6 +180,339 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         }
     }
 
+    private HashMap getCapabilities(int howMany)
+    {
+       	Capability capability = null;
+    	Iterator _it = capabilities.getCapabilities();
+    	HashMap _hash = new HashMap();
+    	int count = 0;
+    	while (_it.hasNext())
+    	{
+    		capability = (Capability)_it.next();
+    		_hash.put(capability.getName(), capability);
+    		count++;
+    		if (howMany > 0)
+    			if (count >= howMany)
+    				return _hash;
+    	}
+    	return _hash;
+    }
+    
+    private HashMap getMimeTypes(int howMany)
+    {
+       	MimeType mimeType = null;
+    	Iterator _it = capabilities.getMimeTypes();
+    	HashMap _hash = new HashMap();
+    	int count = 0;
+    	while (_it.hasNext())
+    	{
+    		mimeType = (MimeType)_it.next();
+    		_hash.put(mimeType.getName(), mimeType);
+    		count++;
+    		if (howMany > 0)
+    			if (count >= howMany)
+    				return _hash;
+    	}
+    	return _hash;
+    }
+    
+    public void testNewMimeType() throws Exception
+    {
+    	MimeType mimeType = null;
+    	Iterator _it = null;
+    	HashMap _hash = getMimeTypes(0);
+    	int count = _hash.size();
+        assertTrue("MimeTypes do not exist", (count > 0));
+
+    	_it = _hash.keySet().iterator();
+    	
+    	int pos = count/2;
+    	
+    	for (int i = 0; i < pos; i++)
+    		_it.next();
+    	
+    	String existingKey = (String)_it.next();
+    	MimeType existingObject = (MimeType)_hash.get(existingKey);
+        assertNotNull("Couldn't identify existing mime object to run test",existingObject);
+
+    	
+    	// "create" existing one
+        mimeType = capabilities.createMimeType(existingKey);
+        assertNotNull("creating 'existing' mimetype returns null", mimeType);
+        assertTrue("creating 'existing' mimetype didn't return existing object", (mimeType.equals(existingObject)));
+        
+        // create a new one:
+        mimeType = capabilities.createMimeType("TEST MIME TYPE");
+        assertNotNull("creating new mimetype returns null", mimeType);
+        
+        // ensure it doesn't exist in the capabilities
+        Set existing = _hash.entrySet();
+        assertTrue("creating new mimetype already in existing list", (!(existing.contains(mimeType))));
+        
+    	existingObject = capabilities.getMimeType("TEST MIME TYPE");
+        assertNull("creating new mimetype already in existing capabilities",existingObject);
+        
+        capabilities.storeMimeType(mimeType);
+    	existingObject = capabilities.getMimeType("TEST MIME TYPE");
+        assertNotNull("creating and saving new mimetype didn't store object",existingObject);
+        
+        
+        capabilities.deleteMimeType(mimeType);
+    	existingObject = capabilities.getMimeType("TEST MIME TYPE");
+        assertNull("creating new mimetype delete from storage didn't work",existingObject);
+        
+    }
+
+
+    
+    
+    
+    public void testNewCapability() throws Exception
+    {
+    	Capability capability = null;
+    	Iterator _it = null;
+       	HashMap _hash = getCapabilities(0);
+    	int count = _hash.size();
+        assertTrue("Capabilitys do not exist", (count > 0));
+
+    	_it = _hash.keySet().iterator();
+    	
+    	int pos = count/2;
+    	
+    	for (int i = 0; i < pos; i++)
+    		_it.next();
+    	
+    	String existingKey = (String)_it.next();
+    	Capability existingObject = (Capability)_hash.get(existingKey);
+        assertNotNull("Couldn't identify existing mime object to run test",existingObject);
+
+    	
+    	// "create" existing one
+        capability = capabilities.createCapability(existingKey);
+        assertNotNull("creating 'existing' capability returns null", capability);
+        assertTrue("creating 'existing' capability didn't return existing object", (capability.equals(existingObject)));
+        
+        // create a new one:
+        capability = capabilities.createCapability("TEST CAPABILITY TYPE");
+        assertNotNull("creating new capability returns null", capability);
+        
+        // ensure it doesn't exist in the capabilities
+        Set existing = _hash.entrySet();
+        assertTrue("creating new capability already in existing list", (!(existing.contains(capability))));
+        
+    	existingObject = capabilities.getCapability("TEST CAPABILITY TYPE");
+        assertNull("creating new capability already in existing capabilities",existingObject);
+        
+        capabilities.storeCapability(capability);
+    	existingObject = capabilities.getCapability("TEST CAPABILITY TYPE");
+        assertNotNull("creating and saving new capability didn't store object",existingObject);
+        
+        
+        capabilities.deleteCapability(capability);
+    	existingObject = capabilities.getCapability("TEST CAPABILITY TYPE");
+        assertNull("creating new capability delete from storage didn't work",existingObject);
+        
+    }
+
+    
+    
+    public void testNewMediaType() throws Exception
+    {
+    	MediaType mediaType = null;
+    	Iterator _it = capabilities.getMediaTypes();
+    	HashMap _hash = new HashMap();
+    	int count = 0;
+    	while (_it.hasNext())
+    	{
+    		mediaType = (MediaType)_it.next();
+    		_hash.put(mediaType.getName(), mediaType);
+    		count++;
+    	}
+        assertTrue("Mediatypes do not exist", (count > 0));
+
+    	_it = _hash.keySet().iterator();
+    	
+    	int pos = count/2;
+    	
+    	for (int i = 0; i < pos; i++)
+    		_it.next();
+    	
+    	String existingKey = (String)_it.next();
+    	MediaType existingObject = (MediaType)_hash.get(existingKey);
+        assertNotNull("Couldn't identify existing object to run test",existingObject);
+
+    	
+    	// "create" existing one
+    	mediaType = capabilities.createMediaType(existingKey);
+        assertNotNull("creating 'existing' mediatype returns null", mediaType);
+        assertTrue("creating 'existing' mediatype didn't return existing object", (mediaType.equals(existingObject)));
+
+        
+        // setting fields
+        String name = "TEST MEDIA TYPE";
+        String utf = "UTF-8";
+        String title = "TEST MEDIA TYPE - Title";
+        String description = "TEST MEDIA TYPE - Description";
+        
+        int numCapabilities = 2;
+        int numMimeTypes = 3;
+        
+        HashMap someCapabilities  = getCapabilities(numCapabilities);
+        HashMap someMimeTypes  = getMimeTypes(numMimeTypes);
+        
+        
+        
+        // create a new one:
+        mediaType = capabilities.createMediaType(name);
+        assertNotNull("creating new mediatype returns null", mediaType);
+        
+        // ensure it doesn't exist in the capabilities
+        Set existing = _hash.entrySet();
+        assertTrue("creating new mediaType already in existing list", (!(existing.contains(mediaType))));
+        
+    	existingObject = capabilities.getMediaType(name);
+        assertNull("creating new mediaType already in existing capabilities",existingObject);
+        
+        
+// set object fields               
+        mediaType.setCharacterSet(utf);
+        mediaType.setTitle(title);
+        mediaType.setDescription(description);
+        
+        _it = someMimeTypes.values().iterator();
+        int added = 0;
+        while (_it.hasNext())
+        {
+        	mediaType.addMimetype((MimeType)_it.next());
+        	added++;
+        }
+        assertTrue("number of Mimetypes added (" + added + ") not the same as expected ("+numMimeTypes+")",(added==numMimeTypes));
+        
+        // setting links:
+        
+        
+        ArraySet set = new ArraySet(someCapabilities.values());
+        mediaType.setCapabilities(set);
+        assertTrue("number of Capabilities added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numCapabilities));
+        
+        capabilities.storeMediaType(mediaType);
+    	existingObject = capabilities.getMediaType(name);
+        assertNotNull("creating and saving new mediaType didn't store object",existingObject);
+        
+        capabilities.deleteMediaType(mediaType);
+    	existingObject = capabilities.getMediaType(name);
+        assertNull("creating new mediaType delete from storage didn't work",existingObject);
+ 
+        
+        
+        
+        
+    }
+
+    
+    
+    public void testNewClient() throws Exception
+    {
+    	Client client = null;
+    	Iterator _it = capabilities.getClients();
+    	HashMap _hash = new HashMap();
+    	int count = 0;
+    	while (_it.hasNext())
+    	{
+    		client = (Client)_it.next();
+    		_hash.put(client.getName(), client);
+    		count++;
+    	}
+        assertTrue("Clients do not exist", (count > 0));
+
+    	_it = _hash.keySet().iterator();
+    	
+    	int pos = count/2;
+    	
+    	for (int i = 0; i < pos; i++)
+    		_it.next();
+    	
+    	String existingKey = (String)_it.next();
+    	Client existingObject = (Client)_hash.get(existingKey);
+        assertNotNull("Couldn't identify existing object to run test",existingObject);
+
+    	
+    	// "create" existing one
+    	client = capabilities.createClient(existingKey);
+        assertNotNull("creating 'existing' client returns null", client);
+        assertTrue("creating 'existing' client didn't return existing object", (client.equals(existingObject)));
+
+        
+        // setting fields
+        
+        String name  = "TEST CLIENT";
+        int preferredMimeTypeId = 2;
+
+        int evalOrder = 0;
+        
+        int numCapabilities = 3;
+        int numMimeTypes = 4;
+        
+        HashMap someCapabilities  = getCapabilities(numCapabilities);
+        HashMap someMimeTypes  = getMimeTypes(numMimeTypes);
+
+        // create a new one:
+        client = capabilities.createClient(name);
+        assertNotNull("creating new client returns null", client);
+        
+        // ensure it doesn't exist in the capabilities
+        Set existing = _hash.entrySet();
+        assertTrue("creating new client already in existing list", (!(existing.contains(client))));
+        
+    	existingObject = capabilities.getClient(name);
+        assertNull("creating new client already in existing capabilities",existingObject);
+        
+        String userAgentPattern = "TEST.*|TESTBROWSER.*";
+        String manufacturer = "Test Manufacturer";
+        String model = "XYZ";
+        String version = "1.0";
+        
+// set object fields               
+        client.setUserAgentPattern(userAgentPattern);
+        client.setManufacturer(manufacturer);
+        client.setModel(model);
+
+        ArraySet set = new ArraySet(someCapabilities.values());
+        client.setCapabilities(set);
+        assertTrue("number of Capabilities added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numCapabilities));
+        
+        set = new ArraySet(someMimeTypes.values());
+        client.setCapabilities(set);
+        assertTrue("number of MimeTypes added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numMimeTypes));
+
+        
+        // setting links:
+        
+        
+        
+        capabilities.storeClient(client);
+    	existingObject = capabilities.getClient(name);
+        assertNotNull("creating and saving new client didn't store object",existingObject);
+        
+        capabilities.deleteClient(client);
+    	existingObject = capabilities.getClient(name);
+        assertNull("creating new client delete from storage didn't work",existingObject);
+ 
+        
+        
+        
+        
+    }
+
+    
+    
+    public void testCapabilityRepeat() throws Exception
+    {
+    	capabilities.deleteCapabilityMapCache();
+        testCapability();
+    }
+
+    
     protected String[] getConfigurations()
     {
         return new String[]

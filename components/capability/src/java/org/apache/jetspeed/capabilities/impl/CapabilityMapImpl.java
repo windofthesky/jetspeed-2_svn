@@ -68,8 +68,9 @@ class CapabilityMapImpl implements CapabilityMap
         Add capability to the CapabilityMap
     */
     public void addCapability(Capability capability)
-    {
-        this.capabilityMap.put(capability.getName(), capability);
+    {	
+    	if (capability != null) // avoid null due to duplicates in database 
+    		this.capabilityMap.put(capability.getName(), capability);
     }
 
     /**
@@ -77,6 +78,7 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public void addMimetype(MimeType mimetype)
     {
+    	if (mimetype != null) // avoid null due to duplicates in database
         this.mimeTypeMap.put(mimetype.getName(), mimetype);
     }
 
@@ -85,6 +87,7 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public void addMediaType(MediaType mediatype)
     {
+    	if (mediatype != null) // avoid null due to duplicates in database
         this.mediaTypeMap.put(mediatype.getName(), mediatype);
     }
 

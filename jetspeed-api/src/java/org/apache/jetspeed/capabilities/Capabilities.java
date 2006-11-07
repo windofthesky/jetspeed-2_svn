@@ -80,6 +80,29 @@ public interface Capabilities
     public MediaType getMediaTypeForMimeType(String mimeTypeName);
 
     /**
+     * Given a capability string, look up the corresponding capability object.
+     * 
+     * @param capability The string representation of a capability.
+     * @return The found capability object or if not found, null.
+     */
+    Capability getCapability(String capability);
+
+    /**
+     * Given a mime type string, look up the corresponding mime type object.
+     * 
+     * @param mimeType The string representation of a mime type.
+     * @return The found mime type object or if not found, null.
+     */
+    MimeType getMimeType(String mimeType);
+    /**
+     * Given a client name, look up the corresponding client object.
+     * 
+     * @param clientName The name of the client.
+     * @return The found client object or if not found, null.
+     */
+    Client getClient(String clientName);
+
+    /**
      * Obtain an iterator of all existing capabilities.
      * @return Returns an iterator for all existing Capabilities of type <code>Capability</code>
      */
@@ -96,5 +119,152 @@ public interface Capabilities
      * @return Returns an iterator for all existing media types of type <code>MediaType</code>
      */
     Iterator getMediaTypes();
-          
+
+    
+    /**
+     * Obtain the name of the CapabilityBean reference 
+     * @return ref-id of the capability bean
+     */
+	public String getCapabilityBeanName();
+
+    /**
+     * Set the name of the CapabilityBean reference - used exclusively in IoC 
+     * @param capabilityBeanName The ref-id of the capability bean.
+     */
+	public void setCapabilityBeanName(String capabilityBeanName);
+
+
+    /**
+     * Obtain the name of the ClientBean reference 
+     * @return ref-id of the client bean
+     */
+	public String getClientBeanName();
+
+    /**
+     * Set the name of the ClientBean reference - used exclusively in IoC 
+     * @param clientBeanName The ref-id of the client bean.
+     */
+	public void setClientBeanName(String clientBeanName);
+
+    /**
+     * Obtain the name of the Media Type reference 
+     * @return ref-id of the media type bean
+     */
+	public String getMediaTypeBeanName();
+
+	   /**
+     * Set the name of the MediaType bean reference - used exclusively in IoC 
+     * @param mediaTypeBeanName The ref-id of the mediaType bean.
+     */
+	public void setMediaTypeBeanName(String mediaTypeBeanName);
+
+	  /**
+     * Obtain the name of the Mime Type reference 
+     * @return ref-id of the mime type bean
+     */
+	public String getMimeTypeBeanName();
+
+	/**
+     * Set the name of the MimeType bean reference - used exclusively in IoC 
+     * @param mimeTypeBeanName The ref-id of the mimeType bean.
+     */
+	public void setMimeTypeBeanName(String mimeTypeBeanName);
+		
+	
+	/**
+     * Create a new capability in the system or return the existing one if already exists
+     * @param capabilityName The string describing the capability
+     * @return A new (or existing) capability
+    */
+	public Capability createCapability(String capabilityName) throws ClassNotFoundException;
+    
+
+	/**
+     * Create a new mimetype in the system or return the existing one if already exists
+     * @param mimeTypeName The string describing the mimeType
+     * @return A new (or existing) MimeType
+    */
+	public MimeType createMimeType(String mimeTypeName)throws ClassNotFoundException;
+
+	/**
+     * Create a new mediaType in the system or return the existing one if already exists
+     * @param mediaTypeName The string describing the mediaType
+     * @return A new (or existing) MediaType
+    */
+	public MediaType createMediaType(String mediaTypeName)throws ClassNotFoundException;
+
+	/**
+     * Create a new client in the system or return the existing one if already exists
+     * @param clientName The string describing the client
+     * @return A new (or existing) client
+    */
+	public Client createClient(String clientName)throws ClassNotFoundException;
+
+
+	
+	/**
+     * Save media type to backend storage
+     * 
+     * @param mediaType valid mediatype object
+     */
+    public void storeMediaType(MediaType mediaType) throws Exception;
+    	//TODO: change exception to better indicate cause
+ 
+	/**
+     * delete existing media type from backend storage
+     * 
+     * @param mediaType valid mediatype object
+     */
+    public void deleteMediaType(MediaType mediaType)
+            throws Exception;
+
+	
+	/**
+     * Save capability to backend storage
+     * 
+     * @param capability valid capability object
+     */
+    public void storeCapability(Capability capability) throws Exception;
+
+    /**
+     * delete existing capability from backend storage
+     * 
+     * @param capability valid capability object
+     */
+    public void deleteCapability(Capability capability)
+            throws Exception;
+
+	/**
+     * Save mime type to backend storage
+     * 
+     * @param mimeType valid mimetype object
+     */
+    public void storeMimeType(MimeType mimeType) throws Exception;
+    	//TODO: change exception to better indicate cause
+ 
+	/**
+     * delete existing mime type from backend storage
+     * 
+     * @param mimeType valid mimetype object
+     */
+    public void deleteMimeType(MimeType mimeType)
+            throws Exception;
+
+
+	
+	/**
+     * Save client to backend storage
+     * 
+     * @param client valid Client object
+     */
+    public void storeClient(Client client) throws Exception;
+
+    /**
+     * delete existing client from backend storage
+     * 
+     * @param client valid client object
+     */
+    public void deleteClient(Client client)
+            throws Exception;
+
 }

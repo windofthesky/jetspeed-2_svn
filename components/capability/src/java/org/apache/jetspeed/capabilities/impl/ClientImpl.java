@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.capabilities.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.capabilities.Client;
 
 import java.util.ArrayList;
@@ -53,13 +54,30 @@ public class ClientImpl implements Client, java.io.Serializable
      */
     public boolean equals(Object object)
     {
+        if (object == this)
+        	return true;
+
         if (object == null)
         {
             return false;
         }
-
+        
         ClientImpl obj = (ClientImpl) object;
 
+        if (name != null)
+        {
+            if (!name.equals(obj.name))
+            {
+                return false;
+            }
+        } else
+        {
+            if (obj.name != null)
+            {
+                return false;
+            }
+        }
+     
         if (userAgentPattern != null)
         {
             if (!userAgentPattern.equals(obj.userAgentPattern))
@@ -115,18 +133,34 @@ public class ClientImpl implements Client, java.io.Serializable
                 return false;
             }
         }
-
-        if (!mimetypes.contains(obj.mimetypes))
+        if (mimetypes != null)
         {
-            return false;
+        	if (!CollectionUtils.isEqualCollection(mimetypes, obj.mimetypes))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (obj.mimetypes != null)
+            {
+                return false;
+            }
         }
 
-        if (!capabilities.contains(obj.capabilities))
+         if (capabilities != null)
         {
-            return false;
+	       if (!(CollectionUtils.isEqualCollection(capabilities,obj.capabilities )))
+	            return false;
+	    }
+        else
+        {
+            if (obj.capabilities != null)
+            {
+                return false;
+            }
         }
-
-        return super.equals(object);
+        return true;
     }
 
     public String getUserAgentPattern()

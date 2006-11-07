@@ -53,15 +53,15 @@ public interface MediaType
      * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
      * order.
      *
-     * @return a vector of capabilities
+     * @return a collection of capabilities
      */
-    public Vector getCapabilities();
+    public Collection getCapabilities();
 
     /**
      * Set the capabilities
      * @param vector of capabilities
      */
-    public void setCapabilities(Vector capabilities);
+    public void setCapabilities(Collection capabilities);
 
     /**
     * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
@@ -89,9 +89,24 @@ public interface MediaType
     /**
      * Add MimeType to the MimeType map 
      * @param name
-     */
+    
     public void addMimetype(String name);
-
+ */
+    /**
+     * Add MimeType to the MimeType map 
+     * @param mimeType mimetype object to add
+      */
+    public void addMimetype(MimeType mimeType);
+    
+    
+    /**
+     * Add Capability to the Capability collection 
+     * @param capability capability object to add
+      */
+    public void addCapability(Capability capability);
+    
+    
+    
     /**
      * Set Name of MediaType
      * @param name Name of MediaType

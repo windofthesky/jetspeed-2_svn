@@ -19,9 +19,21 @@
 
     <!-- Capabilities DAO-->
     <bean id="capabilitiesImpl" class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities" init-method="init">
-        <constructor-arg>
+        <constructor-arg index="0">
             <value>JETSPEED-INF/ojb/capabilities_repository.xml</value>
         </constructor-arg>
+         <constructor-arg index="1">
+            <value>Client</value>
+        </constructor-arg>                
+         <constructor-arg index="2">
+            <value>MediaType</value>
+        </constructor-arg>                
+         <constructor-arg index="3">
+            <value>MimeType</value>
+        </constructor-arg>                
+         <constructor-arg index="4">
+            <value>Capability</value>
+        </constructor-arg>                
     </bean>
 
     <!-- Capabilities -->
@@ -39,4 +51,19 @@
         </property>
     </bean>
 
+
+	<!-- Capability related content -->
+
+	<!-- Client -->
+	<bean id="Client" class="org.apache.jetspeed.capabilities.impl.ClientImpl" singleton="false"></bean>
+
+	<!-- MediaType -->
+	<bean id="MediaType" class="org.apache.jetspeed.capabilities.impl.MediaTypeImpl" singleton="false"></bean>
+
+	<!-- MimeType -->
+	<bean id="MimeType" class="org.apache.jetspeed.capabilities.impl.MimeTypeImpl" singleton="false"></bean>
+
+	<!-- Capability -->
+	<bean id="Capability" class="org.apache.jetspeed.capabilities.impl.CapabilityImpl" singleton="false"></bean>
+ 
 </beans>

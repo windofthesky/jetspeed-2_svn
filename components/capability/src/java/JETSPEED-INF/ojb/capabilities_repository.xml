@@ -63,9 +63,10 @@ limitations under the License.
           name="capabilities"
           element-class-ref="org.apache.jetspeed.capabilities.impl.CapabilityImpl"
           auto-retrieve="true"
-          indirection-table="CLIENT_TO_CAPABILITY"
+          auto-update = "object"
+          indirection-table="MEDIATYPE_TO_CAPABILITY"
        >
-          <fk-pointing-to-this-class column="CLIENT_ID"/>
+          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
           <fk-pointing-to-element-class column="CAPABILITY_ID"/>
        </collection-descriptor>
        
@@ -73,6 +74,7 @@ limitations under the License.
           name="mimetypes"
           element-class-ref="org.apache.jetspeed.capabilities.impl.MimeTypeImpl"
           auto-retrieve="true"
+          auto-update = "object"
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
           <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
@@ -141,6 +143,8 @@ limitations under the License.
       <collection-descriptor
           name="capabilities"
           element-class-ref="org.apache.jetspeed.capabilities.impl.CapabilityImpl"
+          auto-retrieve="true"
+          auto-update = "object"
  
           indirection-table="CLIENT_TO_CAPABILITY"
        >
@@ -151,8 +155,9 @@ limitations under the License.
        <collection-descriptor
           name="mimetypes"
           element-class-ref="org.apache.jetspeed.capabilities.impl.MimeTypeImpl"
-          auto-retrieve="true"
-          indirection-table="CLIENT_TO_MIMETYPE"
+           auto-retrieve="true"
+          auto-update = "object"
+         indirection-table="CLIENT_TO_MIMETYPE"
        >
           <fk-pointing-to-this-class column="CLIENT_ID"/>
           <fk-pointing-to-element-class column="MIMETYPE_ID"/>

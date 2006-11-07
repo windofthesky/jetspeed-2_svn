@@ -34,6 +34,9 @@ import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
  * Jetspeed Capabilities
@@ -42,7 +45,7 @@ import org.apache.ojb.broker.query.QueryFactory;
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport implements Capabilities 
+public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport implements Capabilities ,BeanFactoryAware 
 {
     private String originalAlias;
 
@@ -58,15 +61,31 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
 
     private Collection clients = null;
 
-    private Class clientClass = ClientImpl.class;
-    private Class capabilityClass = CapabilityImpl.class;
-    private Class mimeTypeClass = MimeTypeImpl.class;
-    private Class mediaTypeClass = MediaTypeImpl.class;
+    /**
+     * added support for bean factory to create profile rules
+     */
+    private BeanFactory beanFactory;
 
-    public JetspeedCapabilities(String repositoryPath)
+    /** named bean references */
+    private String clientBeanName; 
+    private String capabilityBeanName; 
+    private String mimeTypeBeanName; 
+    private String mediaTypeBeanName; 
+
+	   private Class clientClass;
+	    private Class capabilityClass;
+	    private Class mimeTypeClass;
+	    private Class mediaTypeClass;
+    
+    
+    public JetspeedCapabilities(String repositoryPath, String clientBeanName, String mediaTypeBeanName, String mimeTypeBeanName, String capabilityBeanName)
     {
         super(repositoryPath);
-    }
+        this.clientBeanName =  clientBeanName;
+        this.capabilityBeanName =  capabilityBeanName;
+        this.mimeTypeBeanName =  mimeTypeBeanName;
+        this.mediaTypeBeanName =  mediaTypeBeanName;
+   }
     
     /**
      * Create a JetspeedProfiler with properties. Expected properties are:
@@ -80,41 +99,59 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      *      
      * @param persistenceStore  The persistence persistenceStore 
      * @param properties  Properties for this component described above
+     * @deprecated As of release 2.1, property-based class references replaced
+     *             by container managed bean factory
      */
     public JetspeedCapabilities(String repositoryPath, Properties properties)
 	{
         super(repositoryPath);
-        initModelClasses(properties);
     }
-    
-    private void initModelClasses(Properties properties)
-	{
-        String modelName = "";
-        try
-        {
-	        if ((modelName = properties.getProperty("client.impl")) != null)
-	        {
-	            clientClass = Class.forName(modelName);
-	        }
-	        if ((modelName = properties.getProperty("capability.impl")) != null)
-	        {
-	            capabilityClass = Class.forName(modelName);
-	        }
-	        if ((modelName = properties.getProperty("mimetype.impl")) != null)
-	        {
-	            mimeTypeClass = Class.forName(modelName);
-	        }
-	        if ((modelName = properties.getProperty("mediatype.impl")) != null)
-	        {
-	            mediaTypeClass = Class.forName(modelName);
-	        }	        	        
-	        
-        }
-        catch (ClassNotFoundException e)
-        {
-            log.error("Model class not found: " + modelName);
-        }
+    /*
+     * Method called automatically by Spring container upon initialization
+     * 
+     * @param beanFactory automatically provided by framework @throws
+     * BeansException
+     */
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException
+    {
+        this.beanFactory = beanFactory;
     }
+
+
+	    private Class getClientClass() throws ClassNotFoundException
+	    {
+	    	if (clientClass == null)
+	    	{
+	    		clientClass = createClient(null).getClass();
+	    	}
+	    	return clientClass;
+	    }
+	 
+	    private Class getMimeTypeClass() throws ClassNotFoundException
+	    {
+	    	if (mimeTypeClass == null)
+	    	{
+	    		mimeTypeClass = this.createMimeType(null).getClass();
+	    	}
+	    	return mimeTypeClass;
+	    }
+	    private Class getCapabilityClass()throws ClassNotFoundException
+	    {
+	    	if (capabilityClass == null)
+	    	{
+	    		capabilityClass = this.createCapability(null).getClass();
+	    	}
+	    	return capabilityClass;
+	    }
+
+	    private Class getMediaTypeClass()throws ClassNotFoundException
+	    {
+	    	if (mediaTypeClass == null)
+	    	{
+	    		mediaTypeClass = this.createMediaType(null).getClass();
+	    	}
+	    	return mediaTypeClass;
+	    }
     
 
     /**
@@ -307,9 +344,19 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     {
         if (null == clients)
         {
-            QueryByCriteria query = QueryFactory.newQuery(clientClass, new Criteria());
-            query.addOrderByAscending("evalOrder");
-            this.clients = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+			try
+			{
+				QueryByCriteria query = QueryFactory.newQuery(getClientClass(), new Criteria());
+	            query.addOrderByAscending("evalOrder");
+	            this.clients = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+	    	}
+	    	catch (Exception e)
+	    	{
+	            String message =
+	                "CapabilityServiceImpl: getClients query used invalid class ";
+	            log.error(message, e);
+	            return null;
+	    	}
         }
 
         return this.clients.iterator();
@@ -340,11 +387,20 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
         Collection co = null;
         if (temp.size() > 0)
         {
-            filter.addIn("mimetypes.name", temp);
-            QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
-            co = getPersistenceBrokerTemplate().getCollectionByQuery(query);            
+			try
+			{
+				filter.addIn("mimetypes.name", temp);
+			            QueryByCriteria query = QueryFactory.newQuery(getMediaTypeClass(), filter);
+			            co = getPersistenceBrokerTemplate().getCollectionByQuery(query);            
+			}
+			catch (Exception e)
+			{
+			    String message =
+			        "CapabilityServiceImpl: getMediaTypesForMimeTypes -> getMediaTypeClass query used invalid class ";
+			    log.error(message, e);
+ 
+			}
         }
-
         if (co == null || co.isEmpty())
         {
             MediaType mt = getMediaType("html");
@@ -369,10 +425,20 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      */
     public MediaType getMediaType(String mediaType)
     {        
-        Criteria filter = new Criteria();        
-        filter.addEqualTo("name", mediaType);
-        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
-        return (MediaType) getPersistenceBrokerTemplate().getObjectByQuery(query);                   
+    	try
+    	{
+	        Criteria filter = new Criteria();        
+	        filter.addEqualTo("name", mediaType);
+	        QueryByCriteria query = QueryFactory.newQuery(getMediaTypeClass(), filter);
+	        return (MediaType) getPersistenceBrokerTemplate().getObjectByQuery(query);                   
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "CapabilityServiceImpl: getMediaType query used invalid class ";
+	        log.error(message, e);
+	        return null;
+		}
     }
 
     /**
@@ -383,12 +449,22 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     public MediaType getMediaTypeForMimeType(String mimeTypeName)
     {               
         //Find the MediaType by matching the Mimetype
-                
-        Criteria filter = new Criteria();       
-        filter.addEqualTo("mimetypes.name", mimeTypeName);
-        
-        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
-        Collection mediaTypeCollection = getPersistenceBrokerTemplate().getCollectionByQuery(query);                    
+    	Collection mediaTypeCollection = null;
+		try
+		{
+	        Criteria filter = new Criteria();       
+	        filter.addEqualTo("mimetypes.name", mimeTypeName);
+	        
+	        QueryByCriteria query = QueryFactory.newQuery(getMediaTypeClass(), filter);
+	        mediaTypeCollection = getPersistenceBrokerTemplate().getCollectionByQuery(query);                    
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "CapabilityServiceImpl: getMediaTypeForMimeType query used invalid class ";
+	        log.error(message, e);
+	        return null;
+		}
         
         Iterator mtIterator = mediaTypeCollection.iterator();
         if (mtIterator.hasNext())
@@ -406,7 +482,18 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      */
     public Iterator getCapabilities()
     {
-        QueryByCriteria query = QueryFactory.newQuery(capabilityClass, new Criteria());
+    	QueryByCriteria query = null;
+		try
+		{
+			query = QueryFactory.newQuery(getCapabilityClass(), new Criteria());
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "CapabilityServiceImpl: getCapabilities query used invalid class ";
+	        log.error(message, e);
+	        return null;
+		}
         query.addOrderByAscending("name");
         return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();        
     }
@@ -417,9 +504,19 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      */
     public Iterator getMimeTypes()
     {
-        QueryByCriteria query = QueryFactory.newQuery(mimeTypeClass, new Criteria());
-        query.addOrderByAscending("name");
-        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                
+		try
+		{
+			QueryByCriteria query = QueryFactory.newQuery(getMimeTypeClass(), new Criteria());
+	        query.addOrderByAscending("name");
+	        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "CapabilityServiceImpl: getMimeTypes query used invalid class ";
+	        log.error(message, e);
+	        return null;
+		}
     }
     
     /**
@@ -428,9 +525,359 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      */
     public Iterator getMediaTypes()
     {
-        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, new Criteria());
-        query.addOrderByAscending("name");
-        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                        
+		try
+		{
+			QueryByCriteria query = QueryFactory.newQuery(getMediaTypeClass(), new Criteria());
+	        query.addOrderByAscending("name");
+	        return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();                        
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "CapabilityServiceImpl: getMediaTypes query used invalid class ";
+	        log.error(message, e);
+	        return null;
+		}
+    }
+    /* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#getMimeTypeBeanName()
+     */
+	public String getMimeTypeBeanName() {
+		return mimeTypeBeanName;
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#setMimeTypeBeanName(String)
+     */
+	public void setMimeTypeBeanName(String mimeTypeBeanName) {
+		this.mimeTypeBeanName = mimeTypeBeanName;
+	}
+
+	   /* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#getClientBeanName()
+     */
+	public String getClientBeanName() {
+		return clientBeanName;
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#setClientBeanName(String)
+     */
+	public void setClientBeanName(String clientBeanName) {
+		this.clientBeanName = clientBeanName;
+	}
+
+	   /* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#getMediaTypeBeanName()
+     */
+	public String getMediaTypeBeanName() {
+		return mediaTypeBeanName;
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#setMediaTypeBeanName(String)
+     */
+	public void setMediaTypeBeanName(String mediaTypeBeanName) {
+		this.mediaTypeBeanName = mediaTypeBeanName;
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#getCapabilityBeanName()
+     */
+	public String getCapabilityBeanName() {
+		return capabilityBeanName;
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#setCapabilityBeanName(String)
+     */
+	public void setCapabilityBeanName(String capabilityBeanName) {
+		this.capabilityBeanName = capabilityBeanName;
+	}
+    
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#createMimeType(String)
+     */
+	public MimeType createMimeType(String mimeType)
+	 throws ClassNotFoundException
+	    {
+		MimeType mimeTypeobj = null;
+		if (mimeType != null)
+		{
+			//try to find it in space
+			mimeTypeobj = this.getMimeType(mimeType);
+			if (mimeTypeobj != null)
+				return mimeTypeobj;
+		}
+        try
+        {
+        	mimeTypeobj = (MimeType) beanFactory.getBean(
+                    this.mimeTypeBeanName, MimeType.class);
+        	mimeTypeobj.setName(mimeType);
+            return mimeTypeobj;
+        } catch (Exception e)
+        {
+            log.error("Failed to create capability instance for " + this.mimeTypeBeanName 
+                    + " error : " + e.getLocalizedMessage());
+            throw new ClassNotFoundException("Spring failed to create the " + this.mimeTypeBeanName
+                    + " mimeType bean.", e);
+        }
+	}
+    
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#createCapability(String)
+     */
+	public Capability createCapability(String capabilityName)	 throws ClassNotFoundException
+	    {
+		Capability capability = null;
+		if (capabilityName != null)
+		{
+			//try to find it in space
+			capability = this.getCapability(capabilityName);
+			if (capability != null)
+				return capability;
+		}
+        try
+        {
+        	capability = (Capability) beanFactory.getBean(
+                    this.capabilityBeanName, Capability.class);
+        	capability.setName(capabilityName);
+            return capability;
+        } catch (Exception e)
+        {
+            log.error("Failed to create capability instance for " + this.capabilityBeanName
+                    + " error : " + e.getLocalizedMessage());
+            throw new ClassNotFoundException("Spring failed to create the "
+                    + " capability bean.", e);
+        }
+	}
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#createMediaType(String)
+     */
+	public MediaType createMediaType(String mediaTypeName)	 throws ClassNotFoundException
+	    {
+		MediaType mediaType = null;
+		if (mediaTypeName != null)
+		{
+			//try to find it in space
+			mediaType = this.getMediaType(mediaTypeName);
+			if (mediaType != null)
+				return mediaType;
+		}
+        try
+        {
+        	mediaType = (MediaType) beanFactory.getBean(
+                    this.mediaTypeBeanName, MediaType.class);
+        	mediaType.setName(mediaTypeName);
+            return mediaType;
+        } catch (Exception e)
+        {
+            log.error("Failed to create mediaType instance for " + this.mediaTypeBeanName
+                    + " error : " + e.getLocalizedMessage());
+            throw new ClassNotFoundException("Spring failed to create the "
+                    + " mediaType bean.", e);
+        }
+	}
+
+
+	/* 
+     * @see org.apache.jetspeed.capabilities.Capabilities#createClient(String)
+     */
+	public Client createClient(String clientName) throws ClassNotFoundException
+	    {
+		Client client = null;
+		if (clientName != null)
+		{
+			//try to find it in space
+			client = this.getClient(clientName);
+			if (client != null)
+				return client;
+		}
+        try
+        {
+        	client = (Client) beanFactory.getBean(
+                    this.clientBeanName, Client.class);
+        	client.setName(clientName);
+            return client;
+        } catch (Exception e)
+        {
+            log.error("Failed to create client instance for " + this.clientBeanName
+                    + " error : " + e.getLocalizedMessage());
+            throw new ClassNotFoundException("Spring failed to create the "
+                    + " client bean.", e);
+        }
+	}
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.capabilities.MimeTypeservice#getCapability(java.lang.String)
+     */
+    public MimeType getMimeType(String mimeType)
+    {
+    	try
+    	{
+	        Criteria filter = new Criteria();        
+	        filter.addEqualTo("name", mimeType);
+	        QueryByCriteria query = QueryFactory.newQuery(getMimeTypeClass(), filter);
+	        return (MimeType) getPersistenceBrokerTemplate().getObjectByQuery(query);
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "MimeTypeserviceImpl: getCapability - query for getCapabilityClass failed ";
+	        log.error(message, e);
+	        return null;
+	
+		}
+
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.capabilities.MimeTypeservice#getClientjava.lang.String)
+     */
+    public Client getClient(String clientName)
+    {     
+    	try
+    	{
+	        Criteria filter = new Criteria();        
+	        filter.addEqualTo("name", clientName);
+	        QueryByCriteria query = QueryFactory.newQuery(getClientClass(), filter);
+	        return (Client) getPersistenceBrokerTemplate().getObjectByQuery(query);                   
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "MimeTypeserviceImpl: getClient - query for getClientClass failed ";
+	        log.error(message, e);
+	        return null;
+	
+		}
+   }
+  
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.capabilities.MimeTypeservice#getCapability(java.lang.String)
+     */
+    public Capability getCapability(String capability)
+    {      
+    	try
+    	{
+    	
+	        Criteria filter = new Criteria();        
+	        filter.addEqualTo("name", capability);
+	        QueryByCriteria query = QueryFactory.newQuery(getCapabilityClass(), filter);
+	        return (Capability) getPersistenceBrokerTemplate().getObjectByQuery(query);                   
+		}
+		catch (Exception e)
+		{
+	        String message =
+	            "MimeTypeserviceImpl: getCapability - query for getCapabilityClass failed ";
+	        log.error(message, e);
+	        return null;
+	
+		}
+    }
+
+    
+	/* 
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#storeMediaType(MediaType)
+     */
+    public void storeMediaType(MediaType mediaType) throws Exception
+    {
+
+    	//TODO: change exception to better indicate cause
+    	getPersistenceBrokerTemplate().store(mediaType);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#deleteMediaType(MediaType)
+     */
+    public void deleteMediaType(MediaType mediaType)
+            throws Exception
+    {
+    	//TODO: change exception to better indicate cause
+        getPersistenceBrokerTemplate().delete(mediaType);
+    }
+
+	
+	/* 
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#storeCapability(MediaType)
+     */
+    public void storeCapability(Capability capability) throws Exception
+    {
+
+    	//TODO: change exception to better indicate cause
+    	getPersistenceBrokerTemplate().store(capability);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#deleteCapability(Capability)
+     */
+    public void deleteCapability(Capability capability)
+            throws Exception
+    {
+    	//TODO: change exception to better indicate cause
+        getPersistenceBrokerTemplate().delete(capability);
+    }
+
+	/* 
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#storeMimeType(MimeType)
+     */
+    public void storeMimeType(MimeType mimeType) throws Exception
+    {
+
+    	//TODO: change exception to better indicate cause
+    	getPersistenceBrokerTemplate().store(mimeType);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#deleteMimeType(MimeType)
+     */
+    public void deleteMimeType(MimeType mimeType)
+            throws Exception
+    {
+    	//TODO: change exception to better indicate cause
+        getPersistenceBrokerTemplate().delete(mimeType);
+    }
+
+
+
+	
+	/* 
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#storeClient(MediaType)
+     */
+    public void storeClient(Client client) throws Exception
+    {
+
+    	//TODO: change exception to better indicate cause
+    	getPersistenceBrokerTemplate().store(client);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.capabilities.Capabilities#deleteClient(Client)
+     */
+    public void deleteClient(Client client)
+            throws Exception
+    {
+    	//TODO: change exception to better indicate cause
+        getPersistenceBrokerTemplate().delete(client);
     }
     
 }

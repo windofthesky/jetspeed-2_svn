@@ -15,9 +15,14 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.jetspeed.capabilities.MediaType;
-import java.util.Vector;
 import java.util.Collection;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.jetspeed.capabilities.Capability;
+import org.apache.jetspeed.capabilities.MediaType;
+import org.apache.jetspeed.capabilities.MimeType;
+
+import tyrex.util.ArraySet;
 
 /**
  * Default bean like implementation of MediaTypeEntry interface
@@ -30,7 +35,7 @@ public class MediaTypeImpl
     implements MediaType
 {
     protected String characterSet;
-    private Vector capabilities;
+    private Collection capabilities;
     private Collection mimetypes;
     private int mediatypeId;
     private String title;
@@ -59,23 +64,39 @@ public class MediaTypeImpl
      */
     public boolean equals(Object object)
     {
+        if (this == object)
+        	return true;
         if (object==null)
-        {
             return false;
-        }
-
+        
         MediaTypeImpl obj = (MediaTypeImpl)object;
 
-        if (mimetypes.isEmpty()!= true)
+
+        if (this.name!=null)
         {
-            if ( !mimetypes.contains(obj.getMimetypes().iterator().next()) )
+            if (!name.equals(obj.name))
             {
                 return false;
             }
         }
         else
         {
-            if (obj.getMimetypes().isEmpty() == false)
+            if (obj.name!=null)
+            {
+                return false;
+            }
+        }
+
+        if (this.description!=null)
+        {
+            if (!description.equals(obj.description))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (obj.description!=null)
             {
                 return false;
             }
@@ -96,13 +117,53 @@ public class MediaTypeImpl
             }
         }
 
-        if (!capabilities.equals(obj.capabilities))
+
+        if (this.title!=null)
         {
-            return false;
+            if (!title.equals(obj.title))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (obj.title!=null)
+            {
+                return false;
+            }
         }
 
-        return super.equals(object);
-    }
+
+        if (mimetypes != null)
+        {
+        	if (!CollectionUtils.isEqualCollection(mimetypes, obj.mimetypes))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (obj.mimetypes != null)
+            {
+                return false;
+            }
+        }
+
+         if (capabilities != null)
+        {
+	       if (!(CollectionUtils.isEqualCollection(capabilities,obj.capabilities )))
+	            return false;
+	    }
+        else
+        {
+            if (obj.capabilities != null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+}
     
  
     /** @return the character set associated with this MediaType */
@@ -118,15 +179,16 @@ public class MediaTypeImpl
     }
 
     
-    public Vector getCapabilities()
+    public Collection getCapabilities()
     {
         return this.capabilities;
     }
 
-    public void setCapabilities(Vector capabilities)
+    public void setCapabilities(Collection capabilities)
     {
         this.capabilities = capabilities;
     }
+    
     
     public Collection getMimetypes()
     {
@@ -137,12 +199,25 @@ public class MediaTypeImpl
     {
         this.mimetypes = mimetypes;
     }
-    
-    public void addMimetype(String name)
+
+    public void addMimetype(MimeType mimeType)
     {
-        if (!mimetypes.contains(name))
+    	if (mimetypes == null)
+    		mimetypes = new ArraySet();
+        if (!mimetypes.contains(mimeType.getName()))
         {
-            mimetypes.add(name);
+            mimetypes.add(mimeType);
+        }
+    }
+
+
+    public void addCapability(Capability capability)
+    {
+    	if (capabilities == null)
+    		capabilities = new ArraySet();
+        if (!capabilities.contains(capability.getName()))
+        {
+        	capabilities.add(capability);
         }
     }
 
