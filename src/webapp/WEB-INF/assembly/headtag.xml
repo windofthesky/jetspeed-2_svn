@@ -27,6 +27,9 @@
                 <entry key="dojo">
                     <ref bean="DojoConfigurationDesktop" />
                 </entry>
+                <entry key="desktop">
+                    <ref bean="DesktopConfiguration" />
+                </entry>
                 <entry key="header.order">
                     <list>
                         <value>header.dojo.parameters</value>            <!-- djConfig definition -->
@@ -34,10 +37,10 @@
                         <value>header.dojo.config</value>                <!-- for adding statements prior to dojo.js load -->
                         <value>header.dojo.init</value>                  <!-- <script src=".../dojo.js"> -->
                         <value>header.dojo.requires.core</value>         <!-- dojo.require statements for dojo core modules -->
-                        <value>header.dojo.modules.path</value>           <!-- dojo.hostenv.setModulePrefix statements    dojo.registerModulePath   -->   
+                        <value>header.dojo.modules.path</value>          <!-- dojo.registerModulePath statements -->
                         <value>header.dojo.requires.modules</value>      <!-- dojo.require statements for dojo add-on modules -->
                         <value>header.dojo.writeincludes</value>         <!-- generated dojo.hostenv.writeIncludes() statement -->
-                        <value>header.dojo.modules.namespace</value>      <!-- dojo.widget.manager.registerWidgetPackage statements    dojo.registerNamespace  -->
+                        <value>header.dojo.modules.namespace</value>     <!-- dojo.registerNamespace statements -->
                         <value>header.dojo.style.bodyexpand</value>      <!-- css for body 100% height/width (for some dojo widgets) -->
                         <value>header.basetag</value>                    <!-- generated <base href=".../jetspeed/"> -->
                         <value>header.desktop.style.desktoptheme</value> <!-- generated <link href=".../styles.css"> for desktop-theme -->
@@ -46,6 +49,71 @@
                 </entry>
                 <entry key="header.types">
                     <ref bean="HeaderTypes" />
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="DesktopConfiguration" class="java.util.HashMap">
+        <constructor-arg index="0">
+            <map>
+                <entry key="desktop.window.tiling">
+                    <!-- enable window tiling mode - default is true -->
+                    <value>true</value>
+                </entry>
+                <entry key="desktop.window.heightexpand">
+                    <!-- default tiled windows to expand in height to fit content - default is false -->
+                    <value>true</value>
+                </entry>
+                <entry key="desktop.window.height">
+                    <!-- default window height -->
+                    <value>200</value>
+                </entry>
+                <entry key="desktop.window.width">
+                    <!-- default window width -->
+                    <value>280</value>
+                </entry>
+                <entry key="desktop.window.action.button.order">
+                    <!-- order, left to right, that action buttons should be rendered -->
+                    <!-- all listed actions are expected to have associated images at derived path {windowtheme}/images/{action}.gif -->
+                    <!-- no image mapping is offered because if it is to be supported, it should be a DecoratorAction level -->
+                    <!-- any listed action not supported by portlet is omitted -->
+                    <!-- some actions, such as "menu" and "restore" have special behaviors (e.g. restore replaces minimize when window is minimized) -->
+                    <list>
+                        <value>menu</value>
+                        <value>edit</value>
+                        <value>view</value>
+                        <value>print</value>
+                        <value>help</value>
+                        <value>minimize</value>
+                        <value>maximize</value>
+                        <value>restore</value>
+                    </list>
+                </entry>
+                <entry key="desktop.window.action.button.maximum">
+                    <value>10</value>
+                </entry>
+                <entry key="desktop.window.action.button.hide">
+                    <value>false</value>
+                </entry>
+                <entry key="desktop.window.action.noimage">
+                    <!-- list of actions that do no have images -->
+                    <list>
+                        <value>tile</value>
+                        <value>untile</value>
+                        <value>heightexpand</value>
+                        <value>heightnormal</value>
+                    </list>
+                </entry>
+                <entry key="desktop.window.action.menu.order">
+                    <!-- order, top to bottom, the actions should appear in action menu -->
+                    <!--    -->
+                    <list>
+                        <value>tile</value>
+                        <value>untile</value>
+                        <value>heightexpand</value>
+                        <value>heightnormal</value>
+                    </list>
                 </entry>
             </map>
         </constructor-arg>
@@ -86,11 +154,13 @@
                     <!-- header section: header.dojo.requires.core -->
                     <ref bean="DojoRequiresDesktop" />
                 </entry>
-                <entry key="dojo.modules">
-                    <!-- list of statements intended to be dojo.hostenv.setModulePrefix calls -->
+                <entry key="dojo.modules.path">
+                    <!-- list of statements intended to be dojo.registerModulePath calls -->
                     <!-- template: none -->
                     <!-- values can reference entries in HeaderResourceRegistry -->
-                    <!-- header section: header.dojo.modules -->
+                    <!-- header section: header.dojo.modules.path -->
+                    <!-- note: each entry below refers to a HeaderResourceRegistry entry which is currently an -->
+                    <!--       empty value due to dojo 0.4.0 improvements which make this step unnecessary for these modules -->
                     <list>
                         <value>dojo.module.jetspeed.ui.widget</value>
                         <value>dojo.module.jetspeed.desktop</value>
@@ -102,11 +172,13 @@
                     <!-- header section: header.dojo.requires.modules -->
                     <ref bean="DojoRequiresModulesDesktop" />
                 </entry>
-                <entry key="dojo.modules.widget">
-                    <!-- list of statements intended to be dojo.widget.manager.registerWidgetPackage calls -->
+                <entry key="dojo.modules.namespace">
+                    <!-- list of statements intended to be dojo.registerNamespace calls -->
                     <!-- template: none -->
                     <!-- values can reference entries in HeaderResourceRegistry -->
-                    <!-- header section: header.dojo.modules.widget -->
+                    <!-- header section: header.dojo.modules.namespace -->
+                    <!-- note: the entry below refers to a HeaderResourceRegistry entry which is currently an -->
+                    <!--       empty value due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
                     <list>
                         <value>dojo.module.widget.jetspeed.ui.widget</value>
                     </list>
@@ -127,7 +199,7 @@
                 <value>dojo.widget.TaskBar</value>
                 <value>dojo.widget.FloatingPane</value>
                 <value>dojo.widget.TabContainer</value>
-                <value>dojo.widget.AccordionPane</value>
+                <value>dojo.widget.AccordionContainer</value>
                 <value>dojo.widget.Menu2</value>
                 <value>dojo.widget.Checkbox</value>
                 <value>dojo.widget.Dialog</value>
@@ -139,7 +211,7 @@
                 <value>dojo.widget.Tree</value>
                 <value>dojo.lfx.html</value>
                 <value>dojo.dnd.HtmlDragMove</value>
-                <value>dojo.dnd.HtmlDragSource</value>
+                <value>dojo.dnd.HtmlDragAndDrop</value>
             </list>
         </constructor-arg>
     </bean>
@@ -148,11 +220,11 @@
         <constructor-arg index="0">
             <list>
                 <value>jetspeed.desktop.core</value>
-                <value>jetspeed.ui.widget.PortalTaskBar</value>
-                <value>jetspeed.ui.widget.PortletWindow</value>
-                <value>jetspeed.ui.widget.PortalTabContainer</value>
-                <value>jetspeed.ui.widget.PortalAccordionContainer</value>
-                <value>jetspeed.ui.widget.PortletDefContainer</value>
+                <value>jetspeed.widget.PortalTaskBar</value>
+                <value>jetspeed.widget.PortletWindow</value>
+                <value>jetspeed.widget.PortalTabContainer</value>
+                <value>jetspeed.widget.PortalAccordionContainer</value>
+                <value>jetspeed.widget.PortletDefContainer</value>
             </list>
         </constructor-arg>
     </bean>
@@ -174,10 +246,10 @@
                         <value>header.dojo.config</value>                <!-- for adding statements prior to dojo.js load -->
                         <value>header.dojo.init</value>                  <!-- <script src=".../dojo.js"> -->
                         <value>header.dojo.requires.core</value>         <!-- dojo.require statements for dojo core modules -->
-                        <value>header.dojo.modules.path</value>           <!-- dojo.hostenv.setModulePrefix statements -->
+                        <value>header.dojo.modules.path</value>          <!-- dojo.registerModulePath statements -->
                         <value>header.dojo.requires.modules</value>      <!-- dojo.require statements for dojo add-on modules -->
                         <value>header.dojo.writeincludes</value>         <!-- generated dojo.hostenv.writeIncludes() statement -->
-                        <value>header.dojo.modules.namespace</value>      <!-- dojo.widget.manager.registerWidgetPackage statements -->
+                        <value>header.dojo.modules.namespace</value>     <!-- dojo.registerNamespace statements -->
                         <value>header.dojo.style.bodyexpand</value>      <!-- css for body 100% height/width (for some dojo widgets) -->
                     </list>
                 </entry>
@@ -227,11 +299,13 @@
                         <value>dojo.widget.*</value>
                     </list>
                 </entry>
-                <entry key="dojo.modules">
-                    <!-- list of statements intended to be dojo.hostenv.setModulePrefix calls -->
+                <entry key="dojo.modules.path">
+                    <!-- list of statements intended to be dojo.registerModulePath calls -->
                     <!-- template: none -->
                     <!-- values can reference entries in HeaderResourceRegistry -->
-                    <!-- header section: header.dojo.modules -->
+                    <!-- header section: header.dojo.modules.path -->
+                    <!-- note: each entry below refers to a HeaderResourceRegistry entry which is currently an -->
+                    <!--       empty value due to dojo 0.4.0 improvements which make this step unnecessary for these modules -->
                     <list>
                         <value>dojo.module.jetspeed.ui.widget</value>
                         <value>dojo.module.jetspeed.desktop</value>
@@ -245,11 +319,13 @@
                         <value>jetspeed.desktop.compatibility</value>
                     </list>
                 </entry>
-                <entry key="dojo.modules.widget">
-                    <!-- list of statements intended to be dojo.widget.manager.registerWidgetPackage calls -->
+                <entry key="dojo.modules.namespace">
+                    <!-- list of statements intended to be dojo.registerNamespace calls -->
                     <!-- template: none -->
                     <!-- values can reference entries in HeaderResourceRegistry -->
-                    <!-- header section: header.dojo.modules.widget -->
+                    <!-- header section: header.dojo.modules.namespace -->
+                    <!-- note: the entry below refers to a HeaderResourceRegistry entry which is currently an -->
+                    <!--       empty value due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
                     <list>
                         <value>dojo.module.widget.jetspeed.ui.widget</value>
                     </list>
@@ -271,13 +347,22 @@
                 <!--    and it has empty content, then an entry here matching the header section name will -->
                 <!--    be used for content -->
                 <entry key="dojo.module.jetspeed.ui.widget">
-                    <value>dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');</value>
+                    <!-- <value>dojo.hostenv.setModulePrefix('jetspeed.ui.widget', '../desktop/widget');</value> --> <!-- dojo 0.3.1 -->
+                    <!-- <value>dojo.registerModulePath("jetspeed.widget", "../desktop/widget");</value> --> <!-- dojo 0.4.0 -->
+                    <!-- note: current value is empty due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
+                    <value></value>
                 </entry>
                 <entry key="dojo.module.jetspeed.desktop">
-                    <value>dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');</value>
+                    <!-- <value>dojo.hostenv.setModulePrefix('jetspeed.desktop', '../desktop/core');</value> --> <!-- dojo 0.3.1 -->
+                    <!-- <value>dojo.registerModulePath("jetspeed.desktop", "../desktop/core");</value> --> <!-- dojo 0.4.0 -->
+                    <!-- note: current value is empty due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
+                    <value></value>
                 </entry>
                 <entry key="dojo.module.widget.jetspeed.ui.widget">
-                    <value>dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');</value>
+                    <!-- <value>dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget');</value> --> <!-- dojo 0.3.1 -->
+                    <!-- <value>dojo.registerNamespace("jetspeed", 'jetspeed.widget', function(name){ return "jetspeed.widget."+dojo.string.capitalize(name);});</value> -->  <!-- dojo 0.4.0 -->
+                    <!-- note: current value is empty due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
+                    <value></value>
                 </entry>
                 <entry key="header.dojo.style.bodyexpand">   <!-- dojo.style.bodyexpand.noscroll -->
                     <!-- make the body expand to fill the visible window -->
