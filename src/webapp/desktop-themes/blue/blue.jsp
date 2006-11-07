@@ -26,19 +26,6 @@ limitations under the License.
     RequestContext requestContext = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
 
     String desktopThemeStyleClass = "layout-" + desktop.getDesktopTheme();
-
-    //Enumeration iter = request.getAttributeNames();
-    //String debugout = "";
-    //while ( iter.hasMoreElements() )
-    //{
-    //    debugout += iter.nextElement().toString() + ", " ;
-    //}
-    //System.out.println( "request.getAttributeNames() : " + debugout );
-
-    //Fragment rootFragment = (Fragment)requestContext.getPage().getRootContentFragment();
-
-    //String testThemeResourceUrl = desktop.getDesktopThemeResourceUrl("images/logo.gif");
-    ///System.out.println( "t h e m e : " + testThemeResourceUrl );
 %>
 <html> <!-- .jsp --> <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
@@ -77,13 +64,13 @@ limitations under the License.
     </tr>
   </table>
 </div>
-<div widgetId="jetspeed-menu-pages" dojoType="PortalTabContainer" style="width: 100%; height: 30px; margin-top: 2px; margin-left: -1px"></div>
-<table cellpadding="0" cellspacing="0" border="0" width="100%" id="main" style="position: static">  <!-- id="main"  has top: 170px and position: absolute -->
+<div widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer" style="width: 100%; margin-top: 2px; margin-left: -1px"></div>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>
-<td valign="top" id="leftcol" >
-<div widgetId="jetspeed-menu-navigations" dojoType="PortalAccordionContainer" style=""></div>
+<td id="leftcol">
+<div widgetId="jetspeed-menu-navigations" dojoType="jetspeed:PortalAccordionContainer"></div>
 </td>
-<td style="vertical-align: top">   <!-- hack of "vertical-align: top" needed by IE once the leftnav was added  -->
+<td id="jetspeedDesktopCell">
 <!-- Start Jetspeed Desktop -->
 <div class="<%= desktopThemeStyleClass %>" id="jetspeedDesktop"></div>
 <!-- End Jetspeed Desktop -->
@@ -91,10 +78,8 @@ limitations under the License.
 </tr>
 </table>
 <!-- Start Taskbar -->
-<!-- the presence of the PortalTaskBar here is hiding a style load problem (at least in ff - sure to be worse in IE) -->
-<!-- for now we need to keep this here until this can be fixed -->
 <!-- (when we don't want a taskbar - set windowState to "minimized", otherwise omit windowState) -->
-<div dojoType="PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 98%; bottom: 5px; height: 110px" windowState="minimized" resizable="false"></div>
+<!-- <div dojoType="jetspeed:PortalTaskBar" id="jetspeedTaskbar" style="background-color: #666; width: 98%; bottom: 5px; height: 110px" windowState="minimized" resizable="false"></div> -->
 <!-- End Taskbar -->
 </div>
 <!-- End Jetspeed Page -->

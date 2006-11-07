@@ -217,6 +217,7 @@ body.layout-tigris
 
 .layout-tigris #main {
     border-top: 1px solid #999;
+    width:100%;
 }
 
 .layout-tigris #leftcol 
@@ -225,6 +226,7 @@ body.layout-tigris
     voice-family: "\"}\"";
     voice-family: inherit;
     font-size: x-small;
+    vertical-align: top;
 }
 
 .layout-tigris #leftcol a {
