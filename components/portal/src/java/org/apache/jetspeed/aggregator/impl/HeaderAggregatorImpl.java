@@ -38,6 +38,7 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.HeaderResourceLib;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
@@ -869,25 +870,27 @@ public class HeaderAggregatorImpl implements PageAggregator
     {
         try
         {
-            if ( fragment.getType().equals( ContentFragment.LAYOUT ) )
+            if ( !fragment.getType().equals( ContentFragment.LAYOUT ) )
             {
-                return false;
+                PortletWindow portletWindow = getPortletWindowAccessor().getPortletWindow( fragment );
+                PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
+                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getPortletApplicationDefinition() ) )
+                {
+                    String portletApplicationContextPath = pd.getPortletApplicationDefinition().getWebApplicationDefinition().getContextRoot();
+                    Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
+                    if ( portlet != null && portlet instanceof SupportsHeaderPhase )
+                    {
+                        log.debug( "renderHeaderFragment: " + pd.getName() + " supports header phase" );
+                        
+                        HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
+                        PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );
+                        PortletHeaderResponse headerResponse = new PortletHeaderResponseImpl( context, hr, isDesktop(), getHeaderConfiguration(), getHeaderResourceRegistry() );
+                        ((SupportsHeaderPhase)portlet).doHeader( headerRequest, headerResponse );
+                        return true;
+                    }
+                }
             }
-            
-            PortletWindow portletWindow = getPortletWindowAccessor().getPortletWindow( fragment );
-            PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
-            String portletApplicationContextPath = pd.getPortletApplicationDefinition().getWebApplicationDefinition().getContextRoot();
-            Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
-            if ( portlet instanceof SupportsHeaderPhase )
-            {
-                log.debug( "renderHeaderFragment: " + pd.getName() + " supports header phase" );
-                
-                HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
-                PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );
-                PortletHeaderResponse headerResponse = new PortletHeaderResponseImpl( context, hr, isDesktop(), getHeaderConfiguration(), getHeaderResourceRegistry() );
-                ((SupportsHeaderPhase)portlet).doHeader( headerRequest, headerResponse );
-                return true;
-            }
+            return false;
         }
         catch ( Exception e )
         {
