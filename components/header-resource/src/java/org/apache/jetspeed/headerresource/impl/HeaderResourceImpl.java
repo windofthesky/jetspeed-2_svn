@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * Default implementation for HeaderResource
  * 
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
- * @version $Id: PortalReservedParameters.java 188569 2005-05-13 13:35:18Z weaver $
+ * @version $Id: HeaderResourceImpl.java 188569 2005-05-13 13:35:18Z weaver $
  */
 public class HeaderResourceImpl implements HeaderResource
 {
@@ -954,16 +954,16 @@ public class HeaderResourceImpl implements HeaderResource
      */
     public void dojoEnable()
     {
-        getHeaderDynamicConfiguration().put( "dojo.enable", "true" );
+        getHeaderDynamicConfiguration().put( HEADER_CONFIG_DOJO_ENABLE, "true" );
     }
     
     protected void dojoDisable()
     {
-        getHeaderDynamicConfiguration().put( "dojo.enable", "false" );
+        getHeaderDynamicConfiguration().put( HEADER_CONFIG_DOJO_ENABLE, "false" );
     }
     protected String dojoGetPath()
     {
-        return (String)getHeaderDynamicConfiguration().get( "dojo.path" );
+        return (String)getHeaderDynamicConfiguration().get( HEADER_CONFIG_DOJO_PATH );
     }
     protected void dojoAddRequire( String dojoRequire, String addToHeaderName )
     {

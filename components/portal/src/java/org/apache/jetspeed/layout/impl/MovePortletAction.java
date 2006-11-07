@@ -262,11 +262,25 @@ public class MovePortletAction
                     resultMap.put(REASON, "Failed to find fragment to move to another layout for portlet id: " + portletId );
                     return success;                
                 }
+                
+                String posExtended = getActionParameter(requestContext, DESKTOP_EXTENDED);
+                if ( posExtended != null )
+                {
+                    Map fragmentProperties = fragment.getProperties();
+                    if ( fragmentProperties == null )
+                    {
+                        success = false;
+                        resultMap.put(REASON, "Failed to acquire fragment properties map for portlet id: " + portletId );
+                        return success;
+                    }
+                    String oldDeskExt = (String)fragmentProperties.get( DESKTOP_EXTENDED );
+                    resultMap.put( OLD_DESKTOP_EXTENDED, ( (oldDeskExt != null) ? oldDeskExt : "" ) );
+                    fragmentProperties.put( DESKTOP_EXTENDED, posExtended );
+                }
+                
                 placement.remove(fragment);
                 Page page = placement.syncPageFragments();
                 page.removeFragmentById(fragment.getId());
-//                if (pageManager != null)
-//                    pageManager.updatePage(page);
                 
                 // add fragment
                 placement = new PortletPlacementContextImpl(requestContext, moveToLayoutFragment, 1);
@@ -303,11 +317,26 @@ public class MovePortletAction
                 {
                     success = false;
                     resultMap.put(REASON, "Failed to find fragment for portlet id: " + portletId );
-                    return success;                
+                    return success;
                 }
                 Coordinate returnCoordinate = null;
                 float oldX = 0f, oldY = 0f, oldZ = 0f, oldWidth = 0f, oldHeight = 0f;
                 float x = -1f, y = -1f, z = -1f, width = -1f, height = -1f;
+                
+                String posExtended = getActionParameter(requestContext, DESKTOP_EXTENDED);
+                if ( posExtended != null )
+                {
+                    Map fragmentProperties = fragment.getProperties();
+                    if ( fragmentProperties == null )
+                    {
+                        success = false;
+                        resultMap.put(REASON, "Failed to acquire fragment properties map for portlet id: " + portletId );
+                        return success;
+                    }
+                    String oldDeskExt = (String)fragmentProperties.get( DESKTOP_EXTENDED );
+                    resultMap.put( OLD_DESKTOP_EXTENDED, ( (oldDeskExt != null) ? oldDeskExt : "" ) );
+                    fragmentProperties.put( DESKTOP_EXTENDED, posExtended );
+                }
                 
                 // Only required for moveabs
                 if (iMoveType == ABS)
@@ -368,7 +397,6 @@ public class MovePortletAction
                         height = Float.parseFloat(sHeight); 
                         fragment.setLayoutHeight(height);
                     }
-                    
                 }
                 // synchronize back to the page layout root fragment
                 Page page = placement.syncPageFragments();

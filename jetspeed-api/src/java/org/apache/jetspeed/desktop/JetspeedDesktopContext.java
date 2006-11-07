@@ -24,7 +24,7 @@ import org.apache.jetspeed.headerresource.HeaderResource;
  * Jetspeed Desktop 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id: JetspeedDesktopContext.java $
  */
 public interface JetspeedDesktopContext
 {

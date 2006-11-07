@@ -36,7 +36,7 @@ import org.apache.jetspeed.request.RequestContext;
  * Jetspeed Desktop 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id: JetspeedDesktopContextImpl.java $
  */
 public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
 {

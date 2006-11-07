@@ -54,7 +54,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * 
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
- * @version $Id: PageAggregatorImpl.java 359125 2005-12-26 23:16:39Z rwatler $
+ * @version $Id: HeaderAggregatorImpl.java 359125 2005-12-26 23:16:39Z rwatler $
  */
 public class HeaderAggregatorImpl implements PageAggregator
 {
@@ -185,6 +185,7 @@ public class HeaderAggregatorImpl implements PageAggregator
      *    "header.types"         - HeaderResource.HEADER_CONFIG_TYPES
      *    "header.requiredflag"  - HeaderResource.HEADER_CONFIG_REQUIREDFLAG
      *    "dojo"                 - HeaderResource.HEADER_CONFIG_DOJO
+     *    "desktop"              - HeaderResource.HEADER_CONFIG_DESKTOP
      */
     protected Map initializeHeaderConfigurationDefaults( HashMap namedResourcesDefault, HashMap namedResourcesAddedFragmentsDefault )
     {
@@ -223,6 +224,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                 }
             }
         }
+        initializeMissingHeaderConfigurationEntryDefaults( namedResourcesDefault, namedResourcesAddedFragmentsDefault, headerDynamicConfigurationDefault );
         
         postinitializeHeaderOrderConfigurationDefaults( headerDynamicConfigurationDefault );
         
@@ -366,7 +368,27 @@ public class HeaderAggregatorImpl implements PageAggregator
             initializeDojoHeaderConfigurationDefaults( (Map)headerConfigValue, namedResourcesDefault, namedResourcesAddedFragmentsDefault, headerDynamicConfigurationDefault );
             return true;
         }
+        else if ( headerConfigKey.equals( HeaderResource.HEADER_CONFIG_DESKTOP ) )
+        {
+            initializeDesktopHeaderConfigurationDefaults( (Map)headerConfigValue, namedResourcesDefault, namedResourcesAddedFragmentsDefault, headerDynamicConfigurationDefault );
+            return true;
+        }
         return false;
+    }
+    
+    protected void initializeMissingHeaderConfigurationEntryDefaults( HashMap namedResourcesDefault, HashMap namedResourcesAddedFragmentsDefault, HashMap headerDynamicConfigurationDefault )
+    {
+        if ( isDesktop() )
+        {
+            if ( this.headerConfiguration.get( HeaderResource.HEADER_CONFIG_DOJO ) == null )
+            {
+                initializeDojoHeaderConfigurationDefaults( null, namedResourcesDefault, namedResourcesAddedFragmentsDefault, headerDynamicConfigurationDefault );
+            }
+            if ( this.headerConfiguration.get( HeaderResource.HEADER_CONFIG_DESKTOP ) == null )
+            {
+                initializeDesktopHeaderConfigurationDefaults( null, namedResourcesDefault, namedResourcesAddedFragmentsDefault, headerDynamicConfigurationDefault );
+            }
+        }
     }
     
     protected void registerAndOrderNamedHeaderResource( String headerName, String headerType, String headerReqFlag, Map headerDynamicConfigurationDefault )
@@ -444,15 +466,21 @@ public class HeaderAggregatorImpl implements PageAggregator
         if ( headerFragmentName != null && ! namedResourcesAddedFragmentsDefault.containsKey( headerFragmentName ) )
         {
             namedResourcesAddedFragmentsDefault.put( headerFragmentName, Boolean.TRUE );
-            String registryContentVal = (String)this.headerResourceRegistry.get( headerFragmentName );
-            registryContent[0] = registryContentVal;
-            if ( registryContentVal != null )
+            if ( registryContent != null )
             {
-                this.headerResourceRegistry.remove( headerFragmentName );
+                String registryContentVal = (String)this.headerResourceRegistry.get( headerFragmentName );
+                registryContent[0] = registryContentVal;
+                if ( registryContentVal != null )
+                {
+                    this.headerResourceRegistry.remove( headerFragmentName );
+                }
             }
             return true;
         }
-        registryContent[0] = null;
+        if ( registryContent != null )
+        {
+            registryContent[0] = null;
+        }
         return false;
     }
     
@@ -481,251 +509,433 @@ public class HeaderAggregatorImpl implements PageAggregator
         }
         return statementOut.toString();
     }
+    protected String makeJSONStringArray( List stringList )
+    {
+        return makeJSONStringArray( stringList, null );
+    }
+    protected String makeJSONStringArray( List stringList, List compiledUniqueValues )
+    {
+        if ( stringList != null && stringList.size() > 0 )
+        {
+            StringBuffer stringListContent = new StringBuffer();
+            Iterator stringListIter = stringList.iterator();
+            while ( stringListIter.hasNext() )
+            {
+                String value = (String)stringListIter.next();
+                if ( value != null && value.length() > 0 )
+                {
+                    if ( stringListContent.length() > 0 )
+                    {
+                        stringListContent.append( ", " );
+                    }
+                    else
+                    {
+                        stringListContent.append( "[ " );
+                    }
+                    stringListContent.append( "\"" ).append( value ).append( "\"" );
+                    if ( compiledUniqueValues != null )
+                    {
+                        if ( ! compiledUniqueValues.contains( value ) )
+                        {
+                            compiledUniqueValues.add( value );
+                        }
+                    }
+                }
+            }
+            if ( stringListContent.length() > 0 )
+            {
+                stringListContent.append( " ]" );
+                return stringListContent.toString();
+            }
+        }
+        return null;
+    }
+    protected String makeJSONInteger( Object source, boolean quote )
+    {
+        String sourceStr = ( ( source == null ) ? (String)null : source.toString() );
+        if ( sourceStr != null )
+        {
+            try
+            {
+                Integer.parseInt( sourceStr );
+                if ( quote )
+                {
+                    sourceStr = "\"" + sourceStr + "\"";
+                }
+            }
+            catch ( NumberFormatException nex )
+            {
+                sourceStr = null;
+            }
+        }
+        return sourceStr;
+    }
     
+    protected String makeJSONBoolean( Object source )
+    {
+        String boolStr = ( ( source == null ) ? (String)null : source.toString() );
+        if ( boolStr != null && ( ! boolStr.equals( "false" ) ) && ( ! boolStr.equals( "true" ) ) )
+        {
+            boolStr = null;
+        }
+        return boolStr;
+    }
+    
+    protected void initializeDesktopHeaderConfigurationDefaults( Map desktopConfigMap, HashMap namedResourcesDefault, HashMap namedResourcesAddedFragmentsDefault, HashMap headerDynamicConfigurationDefault )
+    {
+        if ( desktopConfigMap == null )
+        {
+            desktopConfigMap = new HashMap();
+        }
+        
+        StringBuffer desktopDojoConfigContent = new StringBuffer();
+        
+        String desktopWindowTilingName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_TILING;
+        String desktopWindowTiling = makeJSONBoolean( desktopConfigMap.get( desktopWindowTilingName ) );
+        if ( desktopWindowTiling != null && canAddHeaderNamedResourceFragment( desktopWindowTilingName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowTiling = " ).append( desktopWindowTiling ).append( ";" ).append( EOL );
+        }
+        
+        String desktopWindowHeightExpandName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND;
+        String desktopWindowHeightExpand = makeJSONBoolean( desktopConfigMap.get( desktopWindowHeightExpandName ) );
+        if ( desktopWindowHeightExpand != null && canAddHeaderNamedResourceFragment( desktopWindowHeightExpandName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowHeightExpand = " ).append( desktopWindowHeightExpand ).append( ";" ).append( EOL );
+        }
+
+        String desktopWindowHeightName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT;
+        String desktopWindowHeight = makeJSONInteger( desktopConfigMap.get( desktopWindowHeightName ), true );
+        if ( desktopWindowHeight != null && canAddHeaderNamedResourceFragment( desktopWindowHeightName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowHeight = " ).append( desktopWindowHeight ).append( ";" ).append( EOL );
+        }
+        
+        String desktopWindowWidthName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_WIDTH;
+        String desktopWindowWidth = makeJSONInteger( desktopConfigMap.get( desktopWindowWidthName ), true );
+        if ( desktopWindowWidth != null && canAddHeaderNamedResourceFragment( desktopWindowWidthName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowWidth = " ).append( desktopWindowWidth ).append( ";" ).append( EOL );
+        }
+        
+        List actionList = new ArrayList();
+        
+        String windowActionButtonOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER;
+        String actionButtonOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionButtonOrderName ), actionList );
+        if ( actionButtonOrderContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowActionButtonOrderName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonOrder = " ).append( actionButtonOrderContent ).append( ";" ).append( EOL );
+            }
+        }
+        
+        String windowActionNoImageName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE;
+        String actionNoImageContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionNoImageName ), actionList );
+        if ( actionNoImageContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowActionNoImageName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionNoImage = " ).append( actionNoImageContent ).append( ";" ).append( EOL );
+            }
+        }
+        
+        String windowActionMenuOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER;
+        String actionMenuOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionMenuOrderName ), actionList );
+        if ( actionMenuOrderContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowActionMenuOrderName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionMenuOrder = " ).append( actionMenuOrderContent ).append( ";" ).append( EOL );
+            }
+        }
+
+        headerDynamicConfigurationDefault.put( HeaderResource.HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION, actionList );
+
+
+        String windowActionButtonHideName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE;
+        String windowActionButtonHide = makeJSONBoolean( desktopConfigMap.get( windowActionButtonHideName ) );
+        if ( windowActionButtonHide != null && canAddHeaderNamedResourceFragment( windowActionButtonHideName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonHide = " ).append( windowActionButtonHide ).append( ";" ).append( EOL );
+        }
+
+        // windowActionButtonMax - desktop.window.action.button.maximum
+        String windowActionButtonMaxName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
+        String windowActionButtonMax = makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
+        if ( windowActionButtonMax != null && canAddHeaderNamedResourceFragment( windowActionButtonMaxName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
+        }
+
+        if ( desktopDojoConfigContent.length() > 0 )
+        {
+            namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_CONFIG, desktopDojoConfigContent.toString() );
+        }
+        
+        StringBuffer desktopInitScript = new StringBuffer();
+        desktopInitScript.append( "    function doRender(bindArgs,portletEntityId) { " );
+        desktopInitScript.append( "jetspeed.doRender(bindArgs,portletEntityId); }" ).append( EOL );
+        desktopInitScript.append( "    function doAction(bindArgs,portletEntityId) { " );
+        desktopInitScript.append( "jetspeed.doAction(bindArgs,portletEntityId); }" ).append( EOL );
+        desktopInitScript.append( "    dojo.addOnLoad( jetspeed.initializeDesktop );" ).append( EOL );
+        if ( canAddHeaderNamedResourceFragment( "desktop.init", namedResourcesAddedFragmentsDefault, null ) )
+        {
+            namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DESKTOP_INIT, desktopInitScript.toString() );
+            setNamedHeaderResourceProperties( HeaderResource.HEADER_SECTION_DESKTOP_INIT, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, null, headerDynamicConfigurationDefault );
+        }
+    }
     
     /**
      * Read dojo header configuration settings and compile dojo header resource defaults
      */
     protected void initializeDojoHeaderConfigurationDefaults( Map dojoConfigMap, HashMap namedResourcesDefault, HashMap namedResourcesAddedFragmentsDefault, HashMap headerDynamicConfigurationDefault )
     {
-        if ( dojoConfigMap != null && dojoConfigMap.size() > 0 )
+        if ( dojoConfigMap == null )
         {
-            String[] registryContent = new String[] { null };
-            
-            // add dojo.enable and dojo.path to dynamic configuration
-            String dojoEnableName = "dojo.enable";
-            Object dojoEnableObj = dojoConfigMap.get( dojoEnableName );
-            String dojoEnable = ( ( dojoEnableObj == null ) ? (String)null : dojoEnableObj.toString() );
-            if ( dojoEnable == null || ! dojoEnable.equals( "true" ) )
+            dojoConfigMap = new HashMap();
+        }
+        String[] registryContent = new String[] { null };
+        
+        // add dojo.enable and dojo.path to dynamic configuration
+        String dojoEnableName = HeaderResource.HEADER_CONFIG_DOJO_ENABLE;
+        Object dojoEnableObj = dojoConfigMap.get( dojoEnableName );
+        String dojoEnable = ( ( dojoEnableObj == null ) ? (String)null : dojoEnableObj.toString() );
+        if ( dojoEnable == null || ! dojoEnable.equals( "true" ) )
+        {
+            dojoEnable = "false";
+        }
+        headerDynamicConfigurationDefault.put( dojoEnableName, dojoEnable );
+        String dojoPath = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PATH );
+        if ( dojoPath == null || dojoPath.length() == 0 )
+        {
+            dojoPath = "/javascript/dojo/";
+        }
+        headerDynamicConfigurationDefault.put( HeaderResource.HEADER_CONFIG_DOJO_PATH, dojoPath );
+        
+        // dojo parameters - djConfig parameters
+        String dojoParamDebug = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_ISDEBUG );
+        String dojoParamDebugAtAllCosts = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS );
+        String dojoParams = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAMS );
+        if ( dojoParamDebug != null || dojoParamDebugAtAllCosts != null || dojoParams != null )
+        {
+            StringBuffer dojoConfigContent = new StringBuffer();
+            boolean addedMembers = false;
+            if ( dojoParams != null && dojoParams.length() > 0 )
             {
-                dojoEnable = "false";
+                dojoConfigContent.append( dojoParams );
+                addedMembers = true;
             }
-            headerDynamicConfigurationDefault.put( dojoEnableName, dojoEnable );
-            String dojoPath = (String)dojoConfigMap.get( "dojo.path" );
-            if ( dojoPath == null || dojoPath.length() == 0 )
+            if ( dojoParamDebug != null && dojoParamDebug.length() > 0 )
             {
-                dojoPath = "/javascript/dojo/";
+                if ( addedMembers )
+                {
+                    dojoConfigContent.append( ", " );
+                }
+                dojoConfigContent.append( "isDebug: " ).append( dojoParamDebug ) ;
+                addedMembers = true;
             }
-            headerDynamicConfigurationDefault.put( "dojo.path", dojoPath );
-            
-            // dojo parameters - djConfig parameters
-            String dojoParamDebug = (String)dojoConfigMap.get( "dojo.parameter.isDebug" );
-            String dojoParamDebugAtAllCosts = (String)dojoConfigMap.get( "dojo.parameter.debugAtAllCosts" );
-            String dojoParams = (String)dojoConfigMap.get( "dojo.parameters" );
-            if ( dojoParamDebug != null || dojoParamDebugAtAllCosts != null || dojoParams != null )
+            if ( dojoParamDebugAtAllCosts != null && dojoParamDebugAtAllCosts.length() > 0 )
             {
-                StringBuffer dojoConfigContent = new StringBuffer();
-                boolean addedMembers = false;
-                if ( dojoParams != null && dojoParams.length() > 0 )
+                if ( addedMembers )
                 {
-                    dojoConfigContent.append( dojoParams );
-                    addedMembers = true;
+                    dojoConfigContent.append( ", " );
                 }
-                if ( dojoParamDebug != null && dojoParamDebug.length() > 0 )
-                {
-                    if ( addedMembers )
-                    {
-                        dojoConfigContent.append( ", " );
-                    }
-                    dojoConfigContent.append( "isDebug: " ).append( dojoParamDebug ) ;
-                    addedMembers = true;
-                }
-                if ( dojoParamDebugAtAllCosts != null && dojoParamDebugAtAllCosts.length() > 0 )
-                {
-                    if ( addedMembers )
-                    {
-                        dojoConfigContent.append( ", " );
-                    }
-                    dojoConfigContent.append( "debugAtAllCosts: " ).append( dojoParamDebugAtAllCosts ) ;
-                    addedMembers = true;
-                }
-                if ( canAddHeaderNamedResourceFragment( "dojo.parameters", namedResourcesAddedFragmentsDefault, registryContent ) )
-                {
-                    String dojoParamContent = dojoConfigContent.toString();
-                    if ( registryContent[0] != null )
-                    {
-                        dojoParamContent = registryContent[0];
-                    }
-                    if ( dojoParamContent.length() > 0 )
-                    {
-                        namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_PARAMETERS, ( "    var djConfig = {" + dojoParamContent + "};" + EOL ) );
-                    }
-                }
-                registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_PARAMETERS, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
+                dojoConfigContent.append( "debugAtAllCosts: " ).append( dojoParamDebugAtAllCosts ) ;
+                addedMembers = true;
             }
-            
-            // dojo preinit - for automatically added members to djConfig (eg. djConfig.baseScriptUri="...")
-            //    - adding to order only at this point
-            //    - if header contains content, generated content will not be added
-            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_PREINIT, null, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo config - for adding members to djConfig (eg. djConfig.parseWidgets=false)
-            //    - adding to order only at this point
-            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_CONFIG, null, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo init - script tag for dojo.js
-            //    - adding to order only at this point
-            //    - if header contains content, generated content will not be added
-            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_INIT, HeaderResource.HEADER_TYPE_SCRIPT_TAG, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo requires - core libraries
-            List dojoRequiresCore = (List)dojoConfigMap.get( "dojo.requires.core" );
-            if ( dojoRequiresCore != null && dojoRequiresCore.size() > 0 )
+            if ( addedMembers )
             {
-                StringBuffer dojoRequiresContent = new StringBuffer();
-                Iterator dojoRequiresCoreIter = dojoRequiresCore.iterator();
-                while ( dojoRequiresCoreIter.hasNext() )
+                dojoConfigContent.append( ", " );
+            }
+            dojoConfigContent.append( HeaderResource.HEADER_INTERNAL_JETSPEED_VAR_NAME ).append( ": {}" ) ;
+            addedMembers = true;
+            
+            if ( canAddHeaderNamedResourceFragment( HeaderResource.HEADER_CONFIG_DOJO_PARAMS, namedResourcesAddedFragmentsDefault, registryContent ) )
+            {
+                String dojoParamContent = dojoConfigContent.toString();
+                if ( registryContent[0] != null )
                 {
-                    String dojoReq = (String)dojoRequiresCoreIter.next();
-                    if ( dojoReq != null && dojoReq.length() > 0 )
+                    dojoParamContent = registryContent[0];
+                }
+                if ( dojoParamContent.length() > 0 )
+                {
+                    namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_PARAMETERS, ( "    var djConfig = {" + dojoParamContent + "};" + EOL ) );
+                }
+            }
+            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_PARAMETERS, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
+        }
+        
+        // dojo preinit - for automatically added members to djConfig (eg. djConfig.baseScriptUri="...")
+        //    - adding to order only at this point
+        //    - if header contains content, generated content will not be added
+        registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_PREINIT, null, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo config - for adding members to djConfig (eg. djConfig.parseWidgets=false)
+        //    - adding to order only at this point
+        registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_CONFIG, null, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo init - script tag for dojo.js
+        //    - adding to order only at this point
+        //    - if header contains content, generated content will not be added
+        registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_INIT, HeaderResource.HEADER_TYPE_SCRIPT_TAG, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo requires - core libraries
+        List dojoRequiresCore = (List)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_REQUIRES_CORE );
+        if ( dojoRequiresCore != null && dojoRequiresCore.size() > 0 )
+        {
+            StringBuffer dojoRequiresContent = new StringBuffer();
+            Iterator dojoRequiresCoreIter = dojoRequiresCore.iterator();
+            while ( dojoRequiresCoreIter.hasNext() )
+            {
+                String dojoReq = (String)dojoRequiresCoreIter.next();
+                if ( dojoReq != null && dojoReq.length() > 0 )
+                {
+                    if ( canAddHeaderNamedResourceFragment( dojoReq, namedResourcesAddedFragmentsDefault, registryContent ) )
                     {
-                        if ( canAddHeaderNamedResourceFragment( dojoReq, namedResourcesAddedFragmentsDefault, registryContent ) )
+                        if ( registryContent[0] != null )
                         {
-                            if ( registryContent[0] != null )
+                            String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
+                            if ( dojoReqFromRegistry.length() > 0 )
                             {
-                                String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
-                                if ( dojoReqFromRegistry.length() > 0 )
-                                {
-                                    dojoRequiresContent.append( registryContent[0] );
-                                }
+                                dojoRequiresContent.append( registryContent[0] );
                             }
-                            else
-                            {
-                                dojoRequiresContent.append( "    dojo.require(\"").append( dojoReq ).append( "\");" ).append( EOL );
-                            }
+                        }
+                        else
+                        {
+                            dojoRequiresContent.append( "    dojo.require(\"").append( dojoReq ).append( "\");" ).append( EOL );
                         }
                     }
                 }
-                namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_CORE, dojoRequiresContent.toString() );
-                registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_CORE, null, dojoEnableName, headerDynamicConfigurationDefault );
             }
-            
-            // dojo module definition
-            List dojoModules = (List)dojoConfigMap.get( "dojo.modules" );
-            if ( dojoModules != null && dojoModules.size() > 0 )
+            namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_CORE, dojoRequiresContent.toString() );
+            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_CORE, null, dojoEnableName, headerDynamicConfigurationDefault );
+        }
+        
+        // dojo modules path definition
+        List dojoModulesPath = (List)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_MODULES_PATH );
+        if ( dojoModulesPath != null && dojoModulesPath.size() > 0 )
+        {
+            StringBuffer dojoModulesPathContent = new StringBuffer();
+            boolean addedContent = false;
+            Iterator dojoModulesPathIter = dojoModulesPath.iterator();
+            while ( dojoModulesPathIter.hasNext() )
             {
-                StringBuffer dojoModulesContent = new StringBuffer();
-                boolean addedContent = false;
-                Iterator dojoModulesIter = dojoModules.iterator();
-                while ( dojoModulesIter.hasNext() )
+                String dojoModule = (String)dojoModulesPathIter.next();
+                if ( dojoModule != null && dojoModule.length() > 0 )
                 {
-                    String dojoModule = (String)dojoModulesIter.next();
-                    if ( dojoModule != null && dojoModule.length() > 0 )
+                    if ( canAddHeaderNamedResourceFragment( dojoModule, namedResourcesAddedFragmentsDefault, registryContent ) )
                     {
-                        if ( canAddHeaderNamedResourceFragment( dojoModule, namedResourcesAddedFragmentsDefault, registryContent ) )
+                        String dojoModuleContent = null;
+                        if ( registryContent[0] != null )
                         {
-                            String dojoModuleContent = null;
-                            if ( registryContent[0] != null )
-                            {
-                                dojoModuleContent = registryContent[0];
-                            }
-                            else
-                            {
-                                dojoModuleContent = dojoModule;
-                            }
-                            dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
-                            if ( dojoModuleContent.length() > 0 )
-                            {
-                                dojoModulesContent.append( dojoModuleContent );
-                                addedContent = true;
-                            }
+                            dojoModuleContent = registryContent[0];
+                        }
+                        else
+                        {
+                            dojoModuleContent = dojoModule;
+                        }
+                        dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
+                        if ( dojoModuleContent.length() > 0 )
+                        {
+                            dojoModulesPathContent.append( dojoModuleContent );
+                            addedContent = true;
                         }
                     }
                 }
-                if ( addedContent )
-                {
-                    namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_MODULES_PATH, dojoModulesContent.toString() );
-                    registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_MODULES_PATH, null, dojoEnableName, headerDynamicConfigurationDefault );
-                }
             }
-            
-            // dojo widget module definition
-            List dojoModulesWidget = (List)dojoConfigMap.get( "dojo.modules.widget" );
-            if ( dojoModulesWidget != null && dojoModulesWidget.size() > 0 )
+            if ( addedContent )
             {
-                StringBuffer dojoModulesWidgetContent = new StringBuffer();
-                boolean addedContent = false;
-                Iterator dojoModulesWidgetIter = dojoModulesWidget.iterator();
-                while ( dojoModulesWidgetIter.hasNext() )
+                namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_MODULES_PATH, dojoModulesPathContent.toString() );
+                registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_MODULES_PATH, null, dojoEnableName, headerDynamicConfigurationDefault );
+            }
+        }
+        
+        // dojo modules namespace definition
+        List dojoModulesNamespace = (List)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_MODULES_NAMESPACE );
+        if ( dojoModulesNamespace != null && dojoModulesNamespace.size() > 0 )
+        {
+            StringBuffer dojoModulesNamespaceContent = new StringBuffer();
+            boolean addedContent = false;
+            Iterator dojoModulesNamespaceIter = dojoModulesNamespace.iterator();
+            while ( dojoModulesNamespaceIter.hasNext() )
+            {
+                String dojoModuleWidget = (String)dojoModulesNamespaceIter.next();
+                if ( dojoModuleWidget != null && dojoModuleWidget.length() > 0 )
                 {
-                    String dojoModuleWidget = (String)dojoModulesWidgetIter.next();
-                    if ( dojoModuleWidget != null && dojoModuleWidget.length() > 0 )
+                    if ( canAddHeaderNamedResourceFragment( dojoModuleWidget, namedResourcesAddedFragmentsDefault, registryContent ) )
                     {
-                        if ( canAddHeaderNamedResourceFragment( dojoModuleWidget, namedResourcesAddedFragmentsDefault, registryContent ) )
+                        String dojoModuleContent = null;
+                        if ( registryContent[0] != null )
                         {
-                            String dojoModuleContent = null;
-                            if ( registryContent[0] != null )
-                            {
-                                dojoModuleContent = registryContent[0];
-                            }
-                            else
-                            {
-                                dojoModuleContent = dojoModuleWidget;
-                            }
-                            dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
-                            if ( dojoModuleContent.length() > 0 )
-                            {
-                                dojoModulesWidgetContent.append( dojoModuleContent );
-                                addedContent = true;
-                            }
+                            dojoModuleContent = registryContent[0];
+                        }
+                        else
+                        {
+                            dojoModuleContent = dojoModuleWidget;
+                        }
+                        dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
+                        if ( dojoModuleContent.length() > 0 )
+                        {
+                            dojoModulesNamespaceContent.append( dojoModuleContent );
+                            addedContent = true;
                         }
                     }
                 }
-                if ( addedContent )
-                {
-                    namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_MODULES_NAMESPACE, dojoModulesWidgetContent.toString() );
-                    // registerAndOrderNamedHeaderResource called below
-                }
             }
-            
-            // dojo requires - module libraries (from add-on modules)
-            List dojoRequiresModules = (List)dojoConfigMap.get( "dojo.requires.modules" );
-            if ( dojoRequiresModules != null && dojoRequiresModules.size() > 0 )
+            if ( addedContent )
             {
-                StringBuffer dojoRequiresContent = new StringBuffer();
-                Iterator dojoRequiresModulesIter = dojoRequiresModules.iterator();
-                while ( dojoRequiresModulesIter.hasNext() )
+                namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_MODULES_NAMESPACE, dojoModulesNamespaceContent.toString() );
+                // registerAndOrderNamedHeaderResource called below
+            }
+        }
+        
+        // dojo requires - module libraries (from add-on modules)
+        List dojoRequiresModules = (List)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_REQUIRES_MODULES );
+        if ( dojoRequiresModules != null && dojoRequiresModules.size() > 0 )
+        {
+            StringBuffer dojoRequiresContent = new StringBuffer();
+            Iterator dojoRequiresModulesIter = dojoRequiresModules.iterator();
+            while ( dojoRequiresModulesIter.hasNext() )
+            {
+                String dojoReq = (String)dojoRequiresModulesIter.next();
+                if ( dojoReq != null && dojoReq.length() > 0 )
                 {
-                    String dojoReq = (String)dojoRequiresModulesIter.next();
-                    if ( dojoReq != null && dojoReq.length() > 0 )
+                    if ( canAddHeaderNamedResourceFragment( dojoReq, namedResourcesAddedFragmentsDefault, registryContent ) )
                     {
-                        if ( canAddHeaderNamedResourceFragment( dojoReq, namedResourcesAddedFragmentsDefault, registryContent ) )
+                        if ( registryContent[0] != null )
                         {
-                            if ( registryContent[0] != null )
+                            String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
+                            if ( dojoReqFromRegistry.length() > 0 )
                             {
-                                String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
-                                if ( dojoReqFromRegistry.length() > 0 )
-                                {
-                                    dojoRequiresContent.append( registryContent[0] );
-                                }
+                                dojoRequiresContent.append( registryContent[0] );
                             }
-                            else
-                            {
-                                dojoRequiresContent.append( "    dojo.require(\"").append( dojoReq ).append( "\");" ).append( EOL );
-                            }
+                        }
+                        else
+                        {
+                            dojoRequiresContent.append( "    dojo.require(\"").append( dojoReq ).append( "\");" ).append( EOL );
                         }
                     }
                 }
-                namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, dojoRequiresContent.toString() );
-                registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, null, dojoEnableName, headerDynamicConfigurationDefault );
             }
-            
-            // dojo writeincludes - for automatically added members to djConfig (eg. djConfig.baseScriptUri="...")
-            //    - adding to order only at this point
-            //    - if header contains content, generated content will not be added
-            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_WRITEINCLUDES, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo widget module - register widget packages (eg. dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget'))
-            //    - default resource added above
-            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_MODULES_NAMESPACE, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo style bodyexpand
-            setNamedHeaderResourceProperties( HeaderResource.HEADER_SECTION_DOJO_STYLE_BODYEXPAND, HeaderResource.HEADER_TYPE_STYLE_BLOCK, dojoEnableName, headerDynamicConfigurationDefault );
-            
-            // dojo style bodyexpand noscroll
-            setNamedHeaderResourceProperties( HeaderResource.HEADER_SECTION_DOJO_STYLE_BODYEXPAND_NOSCROLL, HeaderResource.HEADER_TYPE_STYLE_BLOCK, dojoEnableName, headerDynamicConfigurationDefault );
-            
-        }   // if ( dojoConfigMap != null && dojoConfigMap.size() > 0 )
+            namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, dojoRequiresContent.toString() );
+            registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, null, dojoEnableName, headerDynamicConfigurationDefault );
+        }
+        
+        // dojo writeincludes
+        //    - adding to order only at this point
+        //    - if header contains content, generated content will not be added
+        registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_WRITEINCLUDES, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo widget module - register widget packages (eg. dojo.widget.manager.registerWidgetPackage('jetspeed.ui.widget'))
+        //    - default resource added above
+        registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_MODULES_NAMESPACE, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo style bodyexpand
+        setNamedHeaderResourceProperties( HeaderResource.HEADER_SECTION_DOJO_STYLE_BODYEXPAND, HeaderResource.HEADER_TYPE_STYLE_BLOCK, dojoEnableName, headerDynamicConfigurationDefault );
+        
+        // dojo style bodyexpand noscroll
+        setNamedHeaderResourceProperties( HeaderResource.HEADER_SECTION_DOJO_STYLE_BODYEXPAND_NOSCROLL, HeaderResource.HEADER_TYPE_STYLE_BLOCK, dojoEnableName, headerDynamicConfigurationDefault );
     }
 
     

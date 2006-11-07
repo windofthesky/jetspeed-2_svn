@@ -21,7 +21,7 @@ import java.util.Map;
  * HeaderResource has tags information to put them into &lt;head&gt; tag.
  * 
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
- * @version $Id: PortalReservedParameters.java 188569 2005-05-13 13:35:18Z weaver $
+ * @version $Id: HeaderResource.java 188569 2005-05-13 13:35:18Z weaver $
  */
 public interface HeaderResource
 {
@@ -76,6 +76,29 @@ public interface HeaderResource
     public final static String HEADER_INTERNAL_JETSPEED_VAR_NAME = "jetspeed";
     public final static String HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME = "djConfig." + HEADER_INTERNAL_JETSPEED_VAR_NAME;  // internal use - not a configuration entry name
     
+    // header configuration - dojo
+    public final static String HEADER_CONFIG_DOJO_ENABLE = "dojo.enable";
+    public final static String HEADER_CONFIG_DOJO_PATH = "dojo.path";
+    public final static String HEADER_CONFIG_DOJO_PARAM_ISDEBUG = "dojo.parameter.isDebug";
+    public final static String HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS = "dojo.parameter.debugAtAllCosts";
+    public final static String HEADER_CONFIG_DOJO_PARAMS = "dojo.parameters";
+    public final static String HEADER_CONFIG_DOJO_REQUIRES_CORE = "dojo.requires.core";
+    public final static String HEADER_CONFIG_DOJO_MODULES_PATH = "dojo.modules.path";
+    public final static String HEADER_CONFIG_DOJO_MODULES_NAMESPACE = "dojo.modules.namespace";
+    public final static String HEADER_CONFIG_DOJO_REQUIRES_MODULES = "dojo.requires.modules";
+    
+    // header configuration - desktop
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_TILING = "desktop.window.tiling";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND = "desktop.window.heightexpand";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT = "desktop.window.height";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_WIDTH = "desktop.window.width";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER = "desktop.window.action.button.order";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE = "desktop.window.action.noimage";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER = "desktop.window.action.menu.order";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE = "desktop.window.action.button.hide";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX = "desktop.window.action.button.maximum";
+    
+    public final static String HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION = "desktop.window.action";
     
     /**
      * Output all content (that has not already been output)

@@ -18,8 +18,12 @@ package org.apache.jetspeed.desktop.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
+
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -40,7 +44,7 @@ import org.springframework.web.context.ServletContextAware;
  * Desktop Valve
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id: JetspeedDesktopImpl.java $
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 {    
@@ -50,9 +54,13 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     
     private static final String RESOURCE_FILE_ATTR =  "resource.file";
 
-    private final static String EOL = "\r\n";   // html eol    
-    private final static String INIT_FUNCTION_NAME = "jetspeed.initializeDesktop";
-    private final static String DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME = "djConfig.desktopThemeRootUrl";
+    private final static String EOL = "\r\n";   // html eol
+    private final static String DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopThemeRootUrl";
+    private final static String DOJO_CONFIG_THEME_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopTheme";
+    private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
+
+    private final static String[] DESKTOP_WINDOW_ACTIONS = new String[] { "tile", "untile", "heightexpand", "heightnormal", "restore", "remove" };
+    private final static String DESKTOP_WINDOW_ACTION_RESOURCE_NAME_PREFIX = "desktop.window.action.";
     
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
@@ -106,6 +114,8 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             
             HeaderResource hr = getHeaderResourceFactory().getHeaderResouce( request );
             
+            hr.dojoEnable();
+            
             JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(
                     request, this.baseUrlAccess, theme, getThemeRootPath( theme ), getResourceName( theme ), hr );
             request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext );
@@ -113,32 +123,43 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             request.getRequest().setAttribute( "JS2ComponentManager", Jetspeed.getComponentManager() );
             
             StringBuffer dojoConfigAddOn = new StringBuffer();
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "\";" );
-            hr.addHeaderSectionFragment( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "\";" ).append( EOL );
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopTheme() ).append( "\";" );
+            hr.addHeaderSectionFragment( DOJO_CONFIG_THEME_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
             
             if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME ) )
             {
                 hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, HeaderResource.HEADER_TYPE_LINK_TAG );
                 StringBuffer desktopThemeStyleLink = new StringBuffer();
-                desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "/css/styles.css\"/>" );
+                desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" );
+                desktopThemeStyleLink.append( desktopContext.getDesktopThemeRootUrl() ).append( "/css/styles.css\"/>" );
                 hr.addHeaderSectionFragment( "desktop.style.desktoptheme", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, desktopThemeStyleLink.toString() );
             }
-            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_INIT ) )
+            
+            // desktop action labels
+            StringBuffer desktopActionLabels = new StringBuffer();
+            ResourceBundle messages = desktopContext.getResourceBundle( request.getLocale() );
+            for ( int i = 0 ; i < DESKTOP_WINDOW_ACTIONS.length ; i++ )
             {
-                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_INIT, HeaderResource.HEADER_TYPE_SCRIPT_BLOCK_START );
-                StringBuffer desktopInitScript = new StringBuffer();
-                desktopInitScript.append( "    function jsDesktopInit() {" );
-                desktopInitScript.append( INIT_FUNCTION_NAME ).append( "(\"" );
-                desktopInitScript.append( desktopContext.getDesktopTheme() );
-                desktopInitScript.append( "\", \"");
-                desktopInitScript.append( desktopContext.getDesktopThemeRootUrl() );
-                desktopInitScript.append( "\"); }" ).append( EOL );
-                desktopInitScript.append( "    function doRender(bindArgs,portletEntityId) { " );
-                desktopInitScript.append( "jetspeed.doRender(bindArgs,portletEntityId); }" ).append( EOL );
-                desktopInitScript.append( "    function doAction(bindArgs,portletEntityId) { " );
-                desktopInitScript.append( "jetspeed.doAction(bindArgs,portletEntityId); }" ).append( EOL );
-                desktopInitScript.append( "    dojo.addOnLoad( window.jsDesktopInit );" );
-                hr.addHeaderSectionFragment( "desktop.init", HeaderResource.HEADER_SECTION_DESKTOP_INIT, desktopInitScript.toString() );
+                String actionLabel = messages.getString( DESKTOP_WINDOW_ACTION_RESOURCE_NAME_PREFIX + DESKTOP_WINDOW_ACTIONS[ i ] );
+                if ( actionLabel != null )
+                {
+                    if ( desktopActionLabels.length() == 0 )
+                    {
+                        desktopActionLabels.append( "{ " );
+                    }
+                    else
+                    {
+                        desktopActionLabels.append( ", " );
+                    }
+                    desktopActionLabels.append( DESKTOP_WINDOW_ACTIONS[ i ] ).append( ": \"" ).append( actionLabel ).append( "\"" );
+                }
+            }
+            if ( desktopActionLabels.length() > 0 )
+            {
+                dojoConfigAddOn = new StringBuffer();
+                dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_ACTION_LABELS_NAME ).append( " = " ).append( desktopActionLabels.toString() ).append( " };" ).append( EOL );
+                hr.addHeaderSectionFragment( DOJO_CONFIG_ACTION_LABELS_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
             }
             
             dispatcher.include( request.getRequest(), request.getResponse() );

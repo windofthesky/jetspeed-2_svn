@@ -45,17 +45,20 @@ public interface Constants
     public static final String Z = "z";
     public static final String WIDTH = "width";
     public static final String HEIGHT = "height";
+    public static final String DESKTOP_EXTENDED = "jsdesktop";
     public static final String OLD_X = "oldx";
     public static final String OLD_Y = "oldy";
     public static final String OLD_Z = "oldz";
     public static final String OLD_WIDTH = "oldwidth";
     public static final String OLD_HEIGHT = "oldheight";
+    public static final String OLD_DESKTOP_EXTENDED = "oldjsdesktop";
     
     public static final String FILTER = "filter";
     public static final String PORTLETS = "portlets";
     public static final String PAGES = "pages";
     public static final String PAGE = "page";
     public static final String FOLDER = "folder";
+    public static final String FOLDERS = "folders";
     public static final String SIZES = "sizes";
 
     public static final String STANDARD_MENUS = "standardMenus";
@@ -70,6 +73,7 @@ public interface Constants
     public static final String LAYOUTS = "layouts";
     public static final String DESKTOP_THEMES = "desktopThemes";
     public static final String LINK = "link";
+    public static final String LINKS = "links";
     public static final String FRAGMENTS = "fragments";
     public static final String TYPE = "type";
     public static final String FORMAT = "format";
