@@ -15,14 +15,13 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
-
-import tyrex.util.ArraySet;
 
 /**
  * Default bean like implementation of MediaTypeEntry interface
@@ -203,7 +202,7 @@ public class MediaTypeImpl
     public void addMimetype(MimeType mimeType)
     {
     	if (mimetypes == null)
-    		mimetypes = new ArraySet();
+    		mimetypes = new ArrayList();
         if (!mimetypes.contains(mimeType.getName()))
         {
             mimetypes.add(mimeType);
@@ -214,7 +213,7 @@ public class MediaTypeImpl
     public void addCapability(Capability capability)
     {
     	if (capabilities == null)
-    		capabilities = new ArraySet();
+    		capabilities = new ArrayList();
         if (!capabilities.contains(capability.getName()))
         {
         	capabilities.add(capability);
