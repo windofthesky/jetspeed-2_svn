@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
@@ -26,7 +27,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class ProfileResolversImpl implements ProfileResolvers 
+public class ProfileResolversImpl implements ProfileResolvers, Serializable
 {
     private Map resolvers;
     
