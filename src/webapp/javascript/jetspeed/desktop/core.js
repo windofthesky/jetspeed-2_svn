@@ -480,11 +480,18 @@ jetspeed.getPortletDefinitions = function()
     jetspeed.url.retrieveContent( { url: getPortletsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
 };
 
-jetspeed.addNewPortletDefinition = function( /* jetspeed.om.PortletDef */ portletDef, windowWidgetId )
+jetspeed.addNewPortletDefinition = function( /* jetspeed.om.PortletDef */ portletDef, windowWidgetId, /* String */ psmlUrl )
 {
-    var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId );
+    var addToCurrentPage = true;
+    if ( psmlUrl != null )
+        addToCurrentPage = false;
+    var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId, addToCurrentPage );
     var queryString = "?action=add&id=" + escape( portletDef.getPortletName() );
-    var addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;   //  http://localhost:8080/jetspeed/ajaxapi/google-maps.psml
+    var addPortletUrl = null;
+    if ( psmlUrl != null )
+        addPortletUrl = psmlUrl + queryString;   //  psmlUrl example: http://localhost:8080/jetspeed/ajaxapi/google-maps.psml
+    else
+        addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;
     var mimetype = "text/xml";
     var ajaxApiContext = new jetspeed.om.Id( "addportlet", { } );
     jetspeed.url.retrieveContent( { url: addPortletUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
@@ -1771,7 +1778,7 @@ dojo.lang.extend( jetspeed.om.Page,
     },
     removePortletFromPage: function( /* Portlet */ portlet )
     {
-        var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId );
+        var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId, false );
         var queryString = "?action=remove&id=" + escape( portletDef.getPortletName() );
         var addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;
         var mimetype = "text/xml";
@@ -3086,10 +3093,11 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiCallbackContentListener,
 
 
 // ... jetspeed.om.PortletAddAjaxApiCallbackContentListener
-jetspeed.om.PortletAddAjaxApiCallbackContentListener = function(  /* jetspeed.om.PortletDef */ portletDef, windowWidgetId )
+jetspeed.om.PortletAddAjaxApiCallbackContentListener = function(  /* jetspeed.om.PortletDef */ portletDef, windowWidgetId, addToCurrentPage )
 {
     this.portletDef = portletDef;
     this.windowWidgetId = windowWidgetId;
+    this.addToCurrentPage = addToCurrentPage;
 };
 dojo.lang.extend( jetspeed.om.PortletAddAjaxApiCallbackContentListener,
 {
@@ -3098,8 +3106,10 @@ dojo.lang.extend( jetspeed.om.PortletAddAjaxApiCallbackContentListener,
         if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "add-portlet" ) )
         {
             var entityId = this.parseAddPortletResponse( data );
-            if ( entityId )
+            if ( entityId && this.addToCurrentPage )
+            {
                 jetspeed.page.addNewPortlet( this.portletDef.getPortletName(), entityId, this.windowWidgetId );
+            }
         }
     },
     parseAddPortletResponse: function( /* XMLNode */ node )
