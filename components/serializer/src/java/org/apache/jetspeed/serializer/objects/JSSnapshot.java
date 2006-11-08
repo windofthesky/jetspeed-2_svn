@@ -128,11 +128,9 @@ public class JSSnapshot
                 xml.add(g.getGroups());
                 xml.add(g.getUsers()); 
                 
-                /**
-                 * xml.add(g.getPermissions());
-                 * 
-                 * xml.add(g.getRules());
-                 */
+                xml.add(g.getPermissions());
+                xml.add(g.getRules());
+
             } catch (Exception e)
             {
                 e.printStackTrace();

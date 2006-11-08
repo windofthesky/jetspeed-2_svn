@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-
+import org.apache.jetspeed.components.jndi.SpringJNDIStarter;
 /**
  * Jetspeed Serializer Application
  * 
@@ -139,8 +139,9 @@ public class JetspeedSerializerApplication
 
         // if we still miss some settings, use hardoced defaults
         if (applicationPath == null) applicationPath = "./";
-        if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/*.xml";
-        if (configFiles == null) configFiles = "assembly/*.xml";
+        if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/";
+        if (configFiles == null) configFiles = "assembly/";
+        
 
         bootConfigFiles = bootConfigFiles + "*.xml";
         configFiles = configFiles + "*.xml";
@@ -194,18 +195,37 @@ public class JetspeedSerializerApplication
             }
         }
         JetspeedSerializer serializer = null;
+        
+        HashMap context = new HashMap();
+ 
+        
+        SpringJNDIStarter starter = new SpringJNDIStarter(context,applicationPath,getTokens(bootConfigFiles),getTokens(configFiles));
+        
+        System.out.println("starter framework created " + starter);
+        
+        
         try
         {
-            if (applicationPath == null) applicationPath = "./";
-            if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/*.xml";
-            if (configFiles == null) configFiles = configuration.getString("assembly/*.xml");
-
-            serializer = new JetspeedSerializerImpl(applicationPath,getTokens(bootConfigFiles),getTokens(configFiles));
+            starter.setUp();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+            
+        System.out.println("starter framework established " + starter);
+               
+        try
+        {
+            serializer = new JetspeedSerializerImpl(starter.getComponentManager());     
             if (doExport)
                 serializer.exportData(name, fileName, settings);
             else
                 serializer.importData(fileName, settings);
-        } catch (Exception e)
+            
+        } 
+        catch (Exception e)
         {
             System.err.println("Failed to process XML " + (doExport?"export":"import")+ ":" + e);
             e.printStackTrace();
@@ -214,6 +234,16 @@ public class JetspeedSerializerApplication
         {
             if (serializer != null)
                 serializer.closeUp();
+            try
+            {
+               starter.tearDown();
+            }
+            catch (Exception e1)
+            {
+                System.out.println("starter framework teardown caused exception "  + e1.getLocalizedMessage());
+                e1.printStackTrace();
+                
+            }            
             System.out.println("DONE performing " + (doExport?"export":"import")+ " with " + fileName);
         }
 

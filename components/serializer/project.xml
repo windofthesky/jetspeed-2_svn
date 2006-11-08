@@ -17,7 +17,7 @@ limitations under the License.
     $Id: project.xml 355198 2005-12-08 20:44:03Z rogerrut $
 -->
 <project>
-<extend>${basedir}/../../core-build.xml</extend>
+<extend>${basedir}/../../jetspeed-components.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-serializer</id>
   <name>Jetspeed-2 Serializer</name>
