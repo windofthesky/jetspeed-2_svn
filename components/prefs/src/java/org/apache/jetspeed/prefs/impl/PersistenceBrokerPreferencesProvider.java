@@ -17,7 +17,9 @@ package org.apache.jetspeed.prefs.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
@@ -126,7 +128,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         }
     }
 
-    private HashMap nodeMap = new HashMap();
+    private Map nodeMap = Collections.synchronizedMap(new HashMap());
 
     /**
      * @param repository
