@@ -16,7 +16,7 @@
 
 package org.apache.jetspeed.capabilities;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -26,7 +26,6 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
-import tyrex.util.ArraySet;
 
 /**
  * Test Capability Service
@@ -391,7 +390,7 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         // setting links:
         
         
-        ArraySet set = new ArraySet(someCapabilities.values());
+        ArrayList set = new ArrayList(someCapabilities.values());
         mediaType.setCapabilities(set);
         assertTrue("number of Capabilities added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numCapabilities));
         
@@ -477,11 +476,11 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         client.setManufacturer(manufacturer);
         client.setModel(model);
 
-        ArraySet set = new ArraySet(someCapabilities.values());
+        ArrayList set = new ArrayList(someCapabilities.values());
         client.setCapabilities(set);
         assertTrue("number of Capabilities added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numCapabilities));
         
-        set = new ArraySet(someMimeTypes.values());
+        set = new ArrayList(someMimeTypes.values());
         client.setCapabilities(set);
         assertTrue("number of MimeTypes added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numMimeTypes));
 
