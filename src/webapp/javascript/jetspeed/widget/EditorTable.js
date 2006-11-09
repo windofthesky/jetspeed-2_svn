@@ -61,7 +61,7 @@ dojo.lang.extend( jetspeed.widget.EditorTable, {
         jetspeed.widget.EditorTable.superclass.buildRendering.call( this, args, frag );
         if ( args.templateCssPath )
         {
-            dojo.widget.fillFromTemplateCache(this, null, dojo.uri.dojoUri(args.templateCssPath), null, false);
+            dojo.html.insertCssFile( dojo.uri.dojoUri(args.templateCssPath), document, true );
         }
     },
 
