@@ -126,4 +126,7 @@ public interface Decoration
      * @return the base CSS class the template should use.
      */
     String getBaseCSSClass();
+    
+    void setCurrentModeAction( String currentModeAction );
+    void setCurrentStateAction( String currentStateAction );     
 }
