@@ -1,0 +1,16 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    
+    <portlets>
+#foreach ($portlet in $fragments)
+    <portlet id="$portlet.getId()">
+#foreach ($action in $portlet.decoration.actions)
+        <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
+#end
+	<mode>$portlet.decoration.getCurrentModeAction()</mode>
+	<state>$portlet.decoration.getCurrentStateAction()</state>
+    </portlet>
+#end
+    </portlets>
+</js>

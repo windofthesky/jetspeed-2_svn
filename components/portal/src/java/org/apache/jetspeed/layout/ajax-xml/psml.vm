@@ -24,8 +24,10 @@
 	#end
 	#if($f.Type == "portlet")
 	#foreach ($action in $f.decoration.actions)
-     <action name="${action.Name}"  url="${action.Action}"/>    
+     <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
 #end
+	<mode>$f.decoration.getCurrentModeAction()</mode>
+	<state>$f.decoration.getCurrentStateAction()</state>
 	#end
     </fragment>                                		
 #end
