@@ -50,7 +50,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         boolean customAction = (template.getMode() != null && !template.getMode().equals(template.getCustomMode()))
                         || (template.getState() != null && !template.getState().equals(template.getCustomState()));
 
-        return new DecoratorAction(actionName, rc.getLocale(), linkURL, actionURL, customAction);
+        return new DecoratorAction( actionName, rc.getLocale(), linkURL, actionURL, customAction, template.getActionType() );
     }
         
 }

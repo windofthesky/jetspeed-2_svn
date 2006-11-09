@@ -5,11 +5,17 @@ import javax.portlet.WindowState;
 
 public class DecoratorActionTemplate
 {
+    protected static final String ACTION_TYPE_MODE = "mode";
+    protected static final String ACTION_TYPE_STATE = "state";
+    protected static final String ACTION_TYPE_BOTH = "both";
+
     private String action;
     private PortletMode mode;
     private PortletMode customMode;
     private WindowState state;
     private WindowState customState;
+
+    private String actionType;
 
     public DecoratorActionTemplate(String action, PortletMode mode, PortletMode customMode, WindowState state, WindowState customState)
     {
@@ -18,6 +24,14 @@ public class DecoratorActionTemplate
         this.customMode = customMode;
         this.state = state;
         this.customState = customState;
+        if ( mode != null )
+        {
+            this.actionType = ( state != null ) ? ACTION_TYPE_BOTH : ACTION_TYPE_MODE;
+        }
+        else if ( state != null )
+        {
+            this.actionType = ACTION_TYPE_STATE;
+        }
     }
 
     public DecoratorActionTemplate(String action, PortletMode mode, WindowState state)
@@ -48,6 +62,11 @@ public class DecoratorActionTemplate
     public String getAction()
     {
         return action;
+    }
+
+    public String getActionType()
+    {
+        return actionType;
     }
 
     public PortletMode getCustomMode()
@@ -87,6 +106,11 @@ public class DecoratorActionTemplate
     public void setAction(String action)
     {
         this.action = action;
+    }
+
+    public void setActionType( String actionType )
+    {
+        this.actionType = actionType;
     }
 
     public void setCustomMode(PortletMode customMode)

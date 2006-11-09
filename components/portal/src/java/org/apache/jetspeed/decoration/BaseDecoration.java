@@ -43,6 +43,8 @@ public class BaseDecoration implements Decoration
     private final PathResolverCache cache;
     private final String styleSheet;
     private List actions;
+    private String currentModeAction;
+    private String currentStateAction;
     
     /**
      * 
@@ -152,6 +154,25 @@ public class BaseDecoration implements Decoration
     public String getBaseCSSClass()
     {
         return config.getProperty(Decoration.BASE_CSS_CLASS_PROP, getName());
+    }
+
+
+    public String getCurrentModeAction()
+    {
+        return this.currentModeAction;
+    }
+    public void setCurrentModeAction( String currentModeAction )
+    {
+        this.currentModeAction = currentModeAction;
+    }
+
+    public String getCurrentStateAction()
+    {
+        return this.currentStateAction;
+    }
+    public void setCurrentStateAction( String currentStateAction )
+    {
+        this.currentStateAction = currentStateAction;
     }
     
 }
