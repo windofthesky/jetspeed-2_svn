@@ -126,7 +126,30 @@ public interface Decoration
      * @return the base CSS class the template should use.
      */
     String getBaseCSSClass();
-    
+
+    /**
+     * Returns the name of the currently active mode action
+     * 
+     * @return the name of the currently active mode action
+     */
+    String getCurrentModeAction();
+
+    /**
+     * Set the name of the currently active mode action
+     * 
+     */
     void setCurrentModeAction( String currentModeAction );
-    void setCurrentStateAction( String currentStateAction );     
+    
+    /**
+     * Returns the name of the currently active state action
+     * 
+     * @return the name of the currently active state action
+     */
+    String getCurrentStateAction();
+    
+    /**
+     * Set the name of the currently active state action
+     * 
+     */
+    void setCurrentStateAction( String currentStateAction );
 }
