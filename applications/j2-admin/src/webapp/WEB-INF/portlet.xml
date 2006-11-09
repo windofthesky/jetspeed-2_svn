@@ -1278,7 +1278,7 @@ limitations under the License.
 		</init-param>
 		<init-param>
 			<name>dojo.requires.modules</name>
-			<value>jetspeed.ui.widget.EditorTable;jetspeed.desktop.compatibility</value>
+			<value>jetspeed.widget.EditorTable;jetspeed.desktop.compatibility</value>
 		</init-param>
         <portlet-name>SecurityConstraintsPortlet</portlet-name>
     	<display-name>Security Constraints</display-name>        

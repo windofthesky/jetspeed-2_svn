@@ -26,7 +26,7 @@ dojo.lang.shallowCopy(this.portlets) ;
     layoutChildPriority="left-right"
     style="width: 100%">
 
-<div id="mainTabContainer" dojoType="TabContainer" selectedTab="portlets" doLayout="false">
+<div id="mainTabContainer" dojoType="TabContainer" selectedChild="portlets" doLayout="false">
 
 <div id="portlets" dojoType="ContentPane" label="Portlets">
 <div class="tableContainer">
@@ -212,7 +212,7 @@ function clearAndDisableEditor()
         {
             actionCheckbox.checked = false;
             actionCheckbox.disabled = true;
-            actionCheckbox._updateImgSrc();
+            actionCheckbox._setInfo();
         }
     }
     for ( var i = 0 ; i < rolePrincipals.length; i++ )
@@ -223,7 +223,7 @@ function clearAndDisableEditor()
         {
             roleCheckbox.checked = false;
             roleCheckbox.disabled = true;
-            roleCheckbox._updateImgSrc();
+            roleCheckbox._setInfo();
         }
     }
 
@@ -262,9 +262,9 @@ function updateEditor( rowData )
         var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
         if ( actionCheckbox )
         {
-            actionCheckbox.disabled = "enabled";
+            actionCheckbox.disabled = false;
             actionCheckbox.checked = false;
-            actionCheckbox._updateImgSrc();
+            actionCheckbox._setInfo();
         }
     }
 
@@ -277,7 +277,7 @@ function updateEditor( rowData )
             if ( actionCheckbox )
             {
                 actionCheckbox.checked = true;
-                actionCheckbox._updateImgSrc();
+                actionCheckbox._setInfo();
             }
         }
     }
@@ -286,9 +286,9 @@ function updateEditor( rowData )
     {
         var roleIndex = i + 1;
         var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
-        roleCheckbox.disabled = "enabled";
+        roleCheckbox.disabled = false;
         roleCheckbox.checked = false;
-        roleCheckbox._updateImgSrc();
+        roleCheckbox._setInfo();
     }
     var rolesList = rowData.roles.split( new RegExp( " *, *" ) );
     if ( rolesList )
@@ -305,7 +305,7 @@ function updateEditor( rowData )
                     if ( roleCheckbox )
                     {
                         roleCheckbox.checked = true;
-                        roleCheckbox._updateImgSrc();
+                        roleCheckbox._setInfo();
                     }
                 }
             }
@@ -317,7 +317,7 @@ function updateEditor( rowData )
 function getTableWidget( containedInTab )
 {
     if ( ! containedInTab )
-        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedTabWidget;
+        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedChildWidget;
     return dojo.widget.byId( containedInTab.widgetId + "Table" );
 }
 function checkForChanges()
@@ -534,7 +534,7 @@ function okToChangeSelectionOrExit(invocation)
 function addListeners()
 {
     var tabContainer = dojo.widget.byId("mainTabContainer");
-    dojo.event.connect("around", tabContainer, "selectTab", function(invocation) {
+    dojo.event.connect("around", tabContainer, "selectChild", function(invocation) {
         if ( checkForChanges() )
         {
             dojo.widget.byId( "SaveWarningDialog" ).show();
@@ -622,8 +622,8 @@ function addListeners()
         var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
         if ( actionCheckbox )
         {
-            dojo.event.connect(actionCheckbox, "onMouseUp", function() {
-                if(actionCheckbox.disabled == "enabled"){
+            dojo.event.connect(actionCheckbox, "onClick", function() {
+                if(!actionCheckbox.disabled){
                     updateSelectedRow();
                 }
             });
@@ -635,8 +635,8 @@ function addListeners()
         var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
         if ( roleCheckbox )
         {
-            dojo.event.connect(roleCheckbox, "onMouseUp", function() {
-                if(roleCheckbox.disabled == "enabled"){
+            dojo.event.connect(roleCheckbox, "onClick", function() {
+                if(!roleCheckbox.disabled){
                     updateSelectedRow();
                 }
             });

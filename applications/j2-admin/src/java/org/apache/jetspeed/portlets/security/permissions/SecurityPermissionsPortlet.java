@@ -98,7 +98,7 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Dialog" );
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Button" );
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Menu2" );
-        headerResource.dojoAddModuleLibraryRequire( "jetspeed.ui.widget.EditorTable" );
+        headerResource.dojoAddModuleLibraryRequire( "jetspeed.widget.EditorTable" );
     }
     
     public void doView(RenderRequest request, RenderResponse response)

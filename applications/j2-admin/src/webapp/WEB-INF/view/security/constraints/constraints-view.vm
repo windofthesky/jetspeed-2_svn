@@ -5,7 +5,7 @@
      layoutChildPriority="left-right"
      style="width: 100%">
     
-    <div id="mainTabContainer" dojoType="TabContainer" selectedTab="portlets" doLayout="false">
+    <div id="mainTabContainer" dojoType="TabContainer" selectedChild="defs" doLayout="false">
 
         <div id="defs" dojoType="ContentPane" label="Definitions">
             <div class="tableContainer">
@@ -418,9 +418,9 @@ function updateConstraintsEditor( rowData )
         var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
         if ( actionCheckbox )
         {
-            actionCheckbox.disabled = "enabled";
+            actionCheckbox.disabled = false;
             actionCheckbox.checked = false;
-            actionCheckbox._updateImgSrc();
+            actionCheckbox._setInfo();
         }
     }
 
@@ -433,7 +433,7 @@ function updateConstraintsEditor( rowData )
             if ( actionCheckbox )
             {
                 actionCheckbox.checked = true;
-                actionCheckbox._updateImgSrc();
+                actionCheckbox._setInfo();
             }
         }
     }
@@ -442,9 +442,9 @@ function updateConstraintsEditor( rowData )
     {
         var roleIndex = i + 1;
         var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
-        roleCheckbox.disabled = "enabled";
+        roleCheckbox.disabled = false;
         roleCheckbox.checked = false;
-        roleCheckbox._updateImgSrc();
+        roleCheckbox._setInfo();
     }
     var rolesList = rowData.roles.split( new RegExp( " *, *" ) );
     if ( rolesList )
@@ -461,7 +461,7 @@ function updateConstraintsEditor( rowData )
                     if ( roleCheckbox )
                     {
                         roleCheckbox.checked = true;
-                        roleCheckbox._updateImgSrc();
+                        roleCheckbox._setInfo();
                     }
                 }
             }
@@ -472,9 +472,9 @@ function updateConstraintsEditor( rowData )
     {
         var groupIndex = i + 1;
         var groupCheckbox = dojo.widget.byId( "group_" + groupIndex );
-        groupCheckbox.disabled = "enabled";
+        groupCheckbox.disabled = false;
         groupCheckbox.checked = false;
-        groupCheckbox._updateImgSrc();
+        groupCheckbox._setInfo();
     }
     var groupsList = rowData.groups.split( new RegExp( " *, *" ) );
     if ( groupsList )
@@ -491,7 +491,7 @@ function updateConstraintsEditor( rowData )
                     if ( groupCheckbox )
                     {
                         groupCheckbox.checked = true;
-                        groupCheckbox._updateImgSrc();
+                        groupCheckbox._setInfo();
                     }
                 }
             }
@@ -527,7 +527,7 @@ function clearAndDisableConstraintsEditor()
         {
             actionCheckbox.checked = false;
             actionCheckbox.disabled = true;
-            actionCheckbox._updateImgSrc();
+            actionCheckbox._setInfo();
         }
     }
     for ( var i = 0 ; i < rolePrincipals.length; i++ )
@@ -538,7 +538,7 @@ function clearAndDisableConstraintsEditor()
         {
             roleCheckbox.checked = false;
             roleCheckbox.disabled = true;
-            roleCheckbox._updateImgSrc();
+            roleCheckbox._setInfo();
         }
     }
     for ( var i = 0 ; i < groupPrincipals.length; i++ )
@@ -549,7 +549,7 @@ function clearAndDisableConstraintsEditor()
         {
             groupCheckbox.checked = false;
             groupCheckbox.disabled = true;
-            groupCheckbox._updateImgSrc();
+            groupCheckbox._setInfo();
         }
     }
 
@@ -910,8 +910,14 @@ function updateSelectedConstraintsRow()
 function getTableWidget( containedInTab )
 {
     if ( ! containedInTab )
-        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedTabWidget;
-    return dojo.widget.byId( containedInTab.widgetId + "Table" );
+        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedChildWidget;
+    if ( ! containedInTab )
+        alert( "no selected mainTabContainer child widget" );
+    var tableWidgetId = containedInTab.widgetId + "Table";
+    var tableWidget = dojo.widget.byId( tableWidgetId );
+    if ( ! tableWidget )
+        alert( "no table widget " + tableWidgetId + " could be found" );
+    return tableWidget;
 }
 function checkForChanges()
 {
@@ -1000,7 +1006,7 @@ function addListeners()
     // ... mainTabContainer
 
     var tabContainer = dojo.widget.byId("mainTabContainer");
-    dojo.event.connect("around", tabContainer, "selectTab", function(invocation) {
+    dojo.event.connect("around", tabContainer, "selectChild", function(invocation) {
         if ( ! okToChangeSelectionOrExit() )
         {
             return false;  // was return (with no value) 2006/08/29
@@ -1128,8 +1134,8 @@ function addListeners()
         var actionCheckbox = dojo.widget.byId( "action" + actionNames[i] );
         if ( actionCheckbox )
         {
-            dojo.event.connect(actionCheckbox, "onMouseUp", function() {
-                if(actionCheckbox.disabled == "enabled"){
+            dojo.event.connect(actionCheckbox, "onClick", function() {
+                if(!actionCheckbox.disabled){
                     updateSelectedConstraintsRow();
                 }
             });
@@ -1141,8 +1147,8 @@ function addListeners()
         var roleCheckbox = dojo.widget.byId( "role_" + roleIndex );
         if ( roleCheckbox )
         {
-            dojo.event.connect(roleCheckbox, "onMouseUp", function() {
-                if(roleCheckbox.disabled == "enabled"){
+            dojo.event.connect(roleCheckbox, "onClick", function() {
+                if(!roleCheckbox.disabled){
                     updateSelectedConstraintsRow();
                 }
             });
@@ -1154,8 +1160,8 @@ function addListeners()
         var groupCheckbox = dojo.widget.byId( "group_" + groupIndex );
         if ( groupCheckbox )
         {
-            dojo.event.connect(groupCheckbox, "onMouseUp", function() {
-                if(groupCheckbox.disabled == "enabled"){
+            dojo.event.connect(groupCheckbox, "onClick", function() {
+                if(!groupCheckbox.disabled){
                     updateSelectedConstraintsRow();
                 }
             });
