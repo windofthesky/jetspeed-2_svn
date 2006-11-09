@@ -317,10 +317,32 @@
         <value>window</value>
     </constructor-arg>
     <constructor-arg index='3'>
-        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+        <ref bean="org.apache.jetspeed.page.PageManager"/>
     </constructor-arg>    
     <constructor-arg index='4'>
-        <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/>        
+        <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/>
+    </constructor-arg>
+    <constructor-arg index='5'>
+        <ref bean="PortletActionSecurityBehavior"/>
+    </constructor-arg>
+</bean>
+
+<bean id="AjaxGetActions"
+    class="org.apache.jetspeed.layout.impl.GetPortletActionsAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getactions.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+        <value>getactions</value>
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="DecorationValve"/>
+    </constructor-arg>    
+    <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>
     </constructor-arg>        
     <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
@@ -439,10 +461,13 @@
             </entry>			                        
             <entry key="getthemes">
                 <ref bean="AjaxGetThemes"/>
-            </entry>			                        
+            </entry>
+            <entry key="getactions">
+                <ref bean="AjaxGetActions"/>
+            </entry>
             <entry key="window">
                 <ref bean="AjaxChangeWindow"/>
-            </entry>			            
+            </entry>
             <entry key="getmenus">
                 <ref bean="AjaxGetMenus"/>
             </entry>			            
