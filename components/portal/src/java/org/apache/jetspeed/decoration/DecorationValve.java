@@ -84,15 +84,27 @@ public class DecorationValve extends AbstractValve implements Valve
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
     {
         boolean isAjaxRequest = (context == null);
-        if (isAjaxRequest)
-        {
-            requestContext.setAttribute(IS_AJAX_DECORATION_REQUEST, new Boolean(true));
-        }
         
         if (requestContext.getRequest().getParameter("clearThemeCache") != null)
         {
             decorationFactory.clearCache(requestContext);
         }
+
+        initFragments( requestContext, isAjaxRequest, null );
+        
+        if (!isAjaxRequest)
+        {
+            context.invokeNext(requestContext);
+        }
+    }
+
+    public void initFragments( RequestContext requestContext, boolean isAjaxRequest, List fragments )
+    {
+        if (isAjaxRequest)
+        {
+            requestContext.setAttribute(IS_AJAX_DECORATION_REQUEST, new Boolean(true));
+        }
+
         ContentPage page = requestContext.getPage();
 
         // Globaly override all psml themes if override session attribute has been set
@@ -107,18 +119,25 @@ public class DecorationValve extends AbstractValve implements Valve
         Theme theme = decorationFactory.getTheme(page, requestContext);
 
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
-        
+
         PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
         
-        ContentFragment rootFragment = page.getRootContentFragment();
-        
-        initFragment(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest); 
-        
-        if (!isAjaxRequest)
+        if ( fragments == null )
         {
-            context.invokeNext(requestContext);
+            ContentFragment rootFragment = page.getRootContentFragment();
+            initDepthFragments(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest);
+        }
+        else
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while ( fragmentsIter.hasNext() )
+            {
+                ContentFragment fragment = (ContentFragment)fragmentsIter.next();
+                initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest);
+            }
         }
     }
+
 
     public String toString()
     {
@@ -213,6 +232,9 @@ public class DecorationValve extends AbstractValve implements Valve
             
             Iterator iter = actionsAdapter.getSupportedActions(requestContext, pa, window, currentMappedMode, currentMappedState, decoration).iterator();
             
+            String currentModeAction = null;
+            String currentStateAction = null;
+
             while ( iter.hasNext() )
             {
                 action = iter.next();
@@ -220,14 +242,23 @@ public class DecorationValve extends AbstractValve implements Valve
                 {
                     mappedMode = (PortletMode)action;
                     customMode = pa.getCustomPortletMode(mappedMode);
-                    if ( customMode != null && !customMode.equals(currentMode) )
+                    
+                    if ( customMode != null )
                     {
-                        if (    content.supportsPortletMode(customMode) 
-                             && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
-                             && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
-                           )
+                        boolean equalsCurrentMode = customMode.equals(currentMode);
+                        if ( equalsCurrentMode )
                         {
-                            actionTemplates.add(new DecoratorActionTemplate(mappedMode, customMode));
+                            currentModeAction = mappedMode.toString();
+                        }
+                        if ( ! equalsCurrentMode || isAjaxRequest )
+                        {
+                            if ( content.supportsPortletMode(customMode) 
+                                 && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
+                                 && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
+                                 )
+                            {
+                                actionTemplates.add(new DecoratorActionTemplate(mappedMode, customMode));
+                            }
                         }
                     }
                 }
@@ -235,19 +266,31 @@ public class DecorationValve extends AbstractValve implements Valve
                 {
                     mappedState = (WindowState)action;
                     customState = pa.getCustomWindowState(mappedState);
-                    if ( customState != null && !customState.equals(currentState) )
+
+                    if ( customState != null )
                     {
-                        if ( pageActionAccess.checkWindowState(fragmentId, portletName, mappedState ) )
+                        boolean equalsCurrentState = customState.equals(currentState);
+                        if ( equalsCurrentState )
                         {
-                            actionTemplates.add(new DecoratorActionTemplate(mappedState, customState));
+                            currentStateAction = mappedState.toString();
+                        }
+                        if ( ! equalsCurrentState || isAjaxRequest )
+                        {
+                            if ( pageActionAccess.checkWindowState(fragmentId, portletName, mappedState ) )
+                            {
+                                actionTemplates.add(new DecoratorActionTemplate(mappedState, customState));
+                            }
                         }
                     }
                 }
             }
             actions = actionsAdapter.getDecoratorActions(requestContext, pa, window, currentMode, currentState, decoration, actionTemplates);
+            
+            decoration.setCurrentModeAction( currentModeAction );
+            decoration.setCurrentStateAction( currentStateAction );
         }
         
-        decoration.setActions(actions);
+        decoration.setActions( actions );
     }
     
     /**
@@ -281,7 +324,7 @@ public class DecorationValve extends AbstractValve implements Valve
                   ? portalURL.createNavigationalEncoding(window, PortletMode.VIEW, WindowState.NORMAL)                          
                   : portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString();
                 String actionName = PortletMode.VIEW.toString();
-                pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action));
+                pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action,DecoratorActionTemplate.ACTION_TYPE_MODE));
             }
             else if ( pageActionAccess.isEditAllowed() )
             {
@@ -295,7 +338,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 String action = (isAjaxRequest)
                     ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true)                                              
                     : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString();
-                pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action));
+                pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 
                 if (content.supportsPortletMode(PortletMode.HELP))
                 {
@@ -315,7 +358,7 @@ public class DecorationValve extends AbstractValve implements Valve
                             : portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString();
                     }
                     String actionName = PortletMode.HELP.toString();
-                    pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action));
+                    pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 }
             }
         }
@@ -338,11 +381,11 @@ public class DecorationValve extends AbstractValve implements Valve
      * @param fragment
      * @param pageActionAccess
      */
-    protected void initFragment(RequestContext requestContext, 
-                                Theme theme, 
-                                ContentFragment fragment, 
-                                PageActionAccess pageActionAccess,
-                                boolean isAjaxRequest)
+    protected void initDepthFragments(RequestContext requestContext, 
+                                      Theme theme, 
+                                      ContentFragment fragment, 
+                                      PageActionAccess pageActionAccess,
+                                      boolean isAjaxRequest)
     {
         final List contentFragments = fragment.getContentFragments();
         
@@ -352,21 +395,30 @@ public class DecorationValve extends AbstractValve implements Valve
             while(itr.hasNext())
             {
                 ContentFragment aFragment = (ContentFragment) itr.next();
-                initFragment(requestContext, theme, aFragment, pageActionAccess, isAjaxRequest);
+                initDepthFragments(requestContext, theme, aFragment, pageActionAccess, isAjaxRequest);
             }
         }
         
+        initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest);
+    }
+
+    protected void initFragment(RequestContext requestContext, 
+                                Theme theme, 
+                                ContentFragment fragment, 
+                                PageActionAccess pageActionAccess,
+                                boolean isAjaxRequest)
+    {
         try
         {
-            fragment.setDecoration(theme.getDecoration(fragment));
-            initActionsForFragment(requestContext, fragment, pageActionAccess, theme.getDecoration(fragment), isAjaxRequest);
+            Decoration decoration = theme.getDecoration(fragment);
+            fragment.setDecoration(decoration);
+            initActionsForFragment(requestContext, fragment, pageActionAccess, decoration, isAjaxRequest);
         }
         catch (Exception e)
         {
             log.warn("Unable to initalize actions for fragment "+fragment.getId(), e);
         }
-       
-    }   
+    }
 
     
 }
