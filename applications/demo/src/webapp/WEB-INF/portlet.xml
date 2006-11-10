@@ -49,7 +49,7 @@ limitations under the License.
     <portlet-info>
       <title>HelloWorldTitle</title>
       <short-title>This is the short title</short-title>
-      <keywords>Test</keywords>
+      <keywords>demo,tutorial,learn</keywords>
     </portlet-info>
   </portlet>
   
@@ -81,6 +81,10 @@ limitations under the License.
     <supported-locale>de</supported-locale>            
     <supported-locale>ja</supported-locale>            
     <resource-bundle>org.apache.portals.applications.desktop.resources.Bookmark</resource-bundle>            
+    <portlet-info>
+      <title>Bookmarks</title>
+      <keywords>tools,bookmark</keywords>
+    </portlet-info>      
     <portlet-preferences>
       <preference>                            
         <name>Jetspeed-2 Site</name>                    
@@ -125,6 +129,10 @@ limitations under the License.
     <supported-locale>de</supported-locale>            
     <supported-locale>ja</supported-locale>            
     <resource-bundle>org.apache.portals.applications.desktop.resources.Bookmark</resource-bundle>            
+    <portlet-info>
+      <title>Bookmarks</title>
+      <keywords>tools,bookmark</keywords>
+    </portlet-info>            
     <portlet-preferences>
       <preference>                            
         <name>Jetspeed-2 Site</name>                    
@@ -156,7 +164,7 @@ limitations under the License.
     <portlet-info>
       <title>Preference Test</title>
       <short-title>Preference Test</short-title>
-      <keywords>Preferences</keywords>
+      <keywords>demo,tutorial,programming,preference</keywords>
     </portlet-info>
     <portlet-preferences>
        <preference>
@@ -189,8 +197,9 @@ limitations under the License.
     <supported-locale>ja</supported-locale>
     <resource-bundle>org.apache.jetspeed.demo.simple.resources.DisplayRequestResources</resource-bundle>
     <portlet-info>
-      <title>Display the Portlet Request Information</title>
-      <short-title>Portlet Request Information</short-title>
+      <title>Portlet Request Information</title>
+      <short-title>Request Info</short-title>
+      <keywords>demo,tutorial,programming,request</keywords>        
     </portlet-info>
   </portlet>
 
@@ -225,6 +234,7 @@ limitations under the License.
     <resource-bundle>org.apache.jetspeed.demo.simple.resources.PickANumberResources</resource-bundle>
     <portlet-info>
       <title>Pick a Number</title>
+      <keywords>fun,game,pick</keywords>        
     </portlet-info>
     <portlet-preferences>
        <preference>
@@ -256,7 +266,9 @@ limitations under the License.
     <supported-locale>ja</supported-locale>
     <resource-bundle>org.apache.jetspeed.demo.simple.resources.AttributeScopeResources</resource-bundle>
     <portlet-info>
-      <title>Attribute Scope Demo Portlet</title>
+      <title>Attribute Scope Demo</title>
+      <short-title>Attributes</short-title>  
+      <keywords>demo,tutorial,programming,attribute,scope</keywords>        
     </portlet-info>
   </portlet>
 
@@ -283,7 +295,8 @@ limitations under the License.
     <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerListResources</resource-bundle>
     <portlet-info>
       <title>Customer List</title>
-      <short-title>Customer List</short-title>
+      <short-title>List</short-title>
+      <keywords>demo,tutorial,programming,customer</keywords>        
     </portlet-info>
   </portlet>
 
@@ -310,7 +323,8 @@ limitations under the License.
     <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerInfoResources</resource-bundle>
     <portlet-info>
       <title>Customer Information</title>
-      <short-title>Customer Info</short-title>
+      <short-title>Info</short-title>
+      <keywords>demo,tutorial,programming,customer</keywords>                
     </portlet-info>
   </portlet>
 
@@ -337,7 +351,8 @@ limitations under the License.
     <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerDetailResources</resource-bundle>
     <portlet-info>
       <title>Customer Detail</title>
-      <short-title>Customer Detail</short-title>
+      <short-title>Detail</short-title>
+      <keywords>demo,tutorial,programming,customer</keywords>                
     </portlet-info>
   </portlet>
 
@@ -368,7 +383,8 @@ limitations under the License.
     <supported-locale>ja</supported-locale>
     <portlet-info>
       <title>Role Security Test</title>
-      <short-title>Role Security Test</short-title>
+      <short-title>Role Test</short-title>
+      <keywords>demo,tutorial,programming,role,security</keywords>                
     </portlet-info>
     <security-role-ref>
       <role-name>Administrator</role-name>
@@ -411,7 +427,8 @@ limitations under the License.
     <resource-bundle>org.apache.jetspeed.demo.userinfo.resources.UserInfoResources</resource-bundle>
     <portlet-info>
       <title>User Info Test</title>
-      <short-title>User Info Test</short-title>
+      <short-title>User Test</short-title>
+      <keywords>demo,tutorial,programming,user,attributes,info</keywords>                        
     </portlet-info>
   </portlet>
 
@@ -437,10 +454,15 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <portlet-info>
+      <title>IFrame</title>
+      <short-title>IFrame</short-title>
+      <keywords>tool,iframe,web,frame</keywords>                        
+    </portlet-info>        
     <portlet-preferences>
       <preference>
         <name>SRC</name>
-				<value>http://portals.apache.org</value>
+		<value>http://portals.apache.org</value>
       </preference>
 <!-- Don't specify a HEIGHT if you want a normal filled out layout
      because percentage values result in the content not to be displayed on IE6.
@@ -482,14 +504,13 @@ limitations under the License.
             Example of using the SSO IFRAME portlet
         </description>
 		<init-param>
-		<name>EditPage</name>
+		  <name>EditPage</name>
 		  <value>/WEB-INF/view/sso-edit-prefs.vm</value>
 		</init-param>
 		<init-param>
-		<name>HelpPage</name>
+		  <name>HelpPage</name>
 		  <value>/WEB-INF/view/iframe-help.html</value>
 		</init-param>
-		
         <portlet-class>org.apache.jetspeed.portlet.SSOIFramePortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -498,6 +519,11 @@ limitations under the License.
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>HELP</portlet-mode>
         </supports>
+        <portlet-info>
+          <title>SSO IFrame</title>
+          <short-title>SSO IFrame</short-title>
+          <keywords>tool,iframe,SSO,single,sign-on,security,web,frame</keywords>                        
+        </portlet-info>                
         <portlet-preferences>
             <preference>
                 <name>SRC</name>
@@ -549,21 +575,9 @@ limitations under the License.
     <portlet-info>
       <title>CSS Demo Portlet</title>
       <short-title>CSS Demo Portlet for PLT.C style</short-title>
+      <keywords>CSS,demo,tutorial,style</keywords>
     </portlet-info>
   </portlet>
-
-  <user-attribute>
-	<description>User Given Name</description>
-	<name>user.name.given</name>
-  </user-attribute>
-  <user-attribute>
-	<description>User Last Name</description>
-	<name>user.name.family</name>
-  </user-attribute>
-  <user-attribute>
-	<description>User eMail</description>
-	<name>user.home-info.online.email</name>
-  </user-attribute>
 
   <portlet id="web-cont-demo">
         <portlet-name>WebContentPortlet</portlet-name>
@@ -575,7 +589,6 @@ limitations under the License.
 		<name>EditPage</name>
 		  <value>/WEB-INF/view/edit-wcprefs.vm</value>
 		</init-param>
-
         <portlet-class>org.apache.jetspeed.portlet.WebContentPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -583,6 +596,11 @@ limitations under the License.
             <portlet-mode>EDIT</portlet-mode>
             <portlet-mode>VIEW</portlet-mode>
          </supports>
+        <portlet-info>
+            <title>WebContent Prototype</title>
+            <short-title>WebContent</short-title>
+            <keywords>web,content,webnav,bridge,proxy,rewrite</keywords>
+        </portlet-info>      
         <portlet-preferences>
             <preference>
                 <name>SRC</name>
@@ -590,11 +608,6 @@ limitations under the License.
             </preference>
         </portlet-preferences>
         <supported-locale>en</supported-locale>
-        <portlet-info>
-            <title>WebContent Prototype Portlet</title>
-            <short-title>WebContent</short-title>
-            <keywords>WebContent,Web, WebNav</keywords>
-        </portlet-info>
     </portlet>
 
   <portlet id="SSOWebContent">
@@ -610,7 +623,7 @@ limitations under the License.
         <init-param>
   		  <name>HelpPage</name>
 		  <value>/WEB-INF/view/sso-webcontent-help.vm</value>
-		</init-param>        
+		</init-param> 
         <portlet-class>org.apache.jetspeed.portlet.SSOWebContentPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -619,6 +632,11 @@ limitations under the License.
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>HELP</portlet-mode>
          </supports>
+        <portlet-info>
+            <title>SSO Web Content</title>
+            <short-title>SSO Content</short-title>
+            <keywords>web,content,webnav,bridge,proxy,rewrite,SSO,single,sign-on</keywords>            
+        </portlet-info>     
         <portlet-preferences>
             <!--  NY TIMES EXAMPLE, user ID is 'jetspeed_test0' and password is 'jetspeed' -->
             <preference>
@@ -647,11 +665,6 @@ limitations under the License.
             </preference>
 		</portlet-preferences>
         <supported-locale>en</supported-locale>
-        <portlet-info>
-            <title>WebContent</title>
-            <short-title>WebContent</short-title>
-            <keywords>WebContent,Web, SSO, single signon</keywords>
-        </portlet-info>
     </portlet>
 
   <portlet>
@@ -681,6 +694,11 @@ limitations under the License.
     <supported-locale>en</supported-locale>                
     <supported-locale>de</supported-locale>            
     <resource-bundle>org.apache.portals.gems.browser.resources.Browser</resource-bundle>            
+    <portlet-info>
+        <title>Database Browser</title>
+        <short-title>DB Browser</short-title>
+        <keywords>database,browser,tools,SQL,query,DB</keywords>            
+    </portlet-info>           
     <portlet-preferences>
       <preference>                            
         <name>DatasourceType</name>                    
@@ -754,7 +772,7 @@ limitations under the License.
 	<portlet-info>
         <title>Content Viewer</title>
         <short-title>Content</short-title>
-		<keywords>content,viewer,file</keywords>
+		<keywords>tools,CMS,content,viewer,file</keywords>        
     </portlet-info>
     <portlet-preferences>
         <preference>                            
@@ -763,7 +781,7 @@ limitations under the License.
         </preference>         
     </portlet-preferences>                      		
 </portlet> 
-
+<!--
 <portlet id="SSOProxyPortlet">
     <portlet-name>SSOProxyPortletPortlet</portlet-name>
     <display-name>SSOProxyPortlet</display-name>
@@ -794,7 +812,7 @@ limitations under the License.
         </preference>
     </portlet-preferences>
   </portlet>
-
+-->
   <portlet id="GoogleMapsPortlet">
       <init-param>
           <name>ViewPage</name>
@@ -816,6 +834,8 @@ limitations under the License.
       <supported-locale>en</supported-locale>
       <portlet-info>
           <title>Google Map</title>
+          <short-title>Map</short-title>
+          <keywords>technology,map,google,satellite</keywords>
       </portlet-info>
       <portlet-preferences>
           <preference>
@@ -849,7 +869,7 @@ limitations under the License.
         <init-param>
             <name>EditPage</name>
             <value>/WEB-INF/view/edit-prefs.vm</value>
-        </init-param>			
+        </init-param>	
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -860,7 +880,7 @@ limitations under the License.
         <portlet-info>
            <title>Weather</title>
            <short-title>Weather</short-title>
-           <keywords>weather</keywords>
+           <keywords>weather,tools,desktop</keywords>
         </portlet-info>        
         <portlet-preferences>
 		<preference>
@@ -894,7 +914,7 @@ limitations under the License.
         <init-param>
             <name>EditPage</name>
             <value>/WEB-INF/view/edit-prefs.vm</value>
-        </init-param>			
+        </init-param>	
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -905,12 +925,12 @@ limitations under the License.
         <portlet-info>
            <title>Flash Demo</title>
            <short-title>Flash</short-title>
-           <keywords>flash,flex,SWF,FLA</keywords>
+           <keywords>technology,flash,flex,SWF,FLA</keywords>
         </portlet-info>        
         <portlet-preferences>
          <preference>
             <name>SRC</name>
-            <value>/demo/WEB-INF/SWF/Clock.swf</value>
+            <value>/demo/SWF/Clock.swf</value>
          </preference>
          <preference>
             <name>HEIGHT</name>
@@ -922,7 +942,7 @@ limitations under the License.
          </preference>
          <preference>
             <name>MAX-SRC</name>
-            <value>/demo/WEB-INF/SWF/Paycheck_calculator.swf</value>
+            <value>/demo/SWF/Paycheck_calculator.swf</value>
          </preference>            
          <preference>
             <name>MAX-HEIGHT</name>
@@ -934,5 +954,19 @@ limitations under the License.
          </preference>          
       </portlet-preferences>            
 	</portlet>                     
+    
+  <user-attribute>
+	<description>User Given Name</description>
+	<name>user.name.given</name>
+  </user-attribute>
+  <user-attribute>
+	<description>User Last Name</description>
+	<name>user.name.family</name>
+  </user-attribute>
+  <user-attribute>
+	<description>User eMail</description>
+	<name>user.home-info.online.email</name>
+  </user-attribute>
+    
 </portlet-app>
 
