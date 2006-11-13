@@ -2,25 +2,25 @@
 #if ($type == "portletDecorations")
 [
 #foreach($p in $portletDecorations)    
- ["$p", "$p"],
+#if($velocityCount > 1),#end["$p", "$p"]
 #end        
 ]
 #elseif ($type == "pageDecorations")
 [
 #foreach($p in $pageDecorations)    
- ["$p", "$p"],
+#if($velocityCount > 1),#end["$p", "$p"]
 #end        
 ]
 #elseif ($type == "desktopThemes")
 [
 #foreach($dt in $desktopThemes)    
- ["$dt", "$dt"],
+#if($velocityCount > 1),#end["$dt", "$dt"]
 #end 
 ]
 #elseif ($type == "layouts")
 [
 #foreach($l in $layouts)    
- ["$l.DisplayName", "$l.Name"],
+#if($velocityCount > 1),#end["$l.DisplayName", "$l.Name"]
 #end        
 ]
 #end

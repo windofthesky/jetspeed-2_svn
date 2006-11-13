@@ -27,12 +27,14 @@ public class PortletInfo
     private String name;
     private String displayName;
     private String description;
+    private String image;
     
-    public PortletInfo(String name, String displayName, String description)
+    public PortletInfo(String name, String displayName, String description, String image)
     {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
+        this.image = image;
     }
     /**
      * @return Returns the description.
@@ -54,5 +56,21 @@ public class PortletInfo
     public String getName()
     {
         return name;
+    }
+    
+    /**
+     * @return Returns the image.
+     */
+    public String getImage()
+    {
+        return image;
+    }
+    
+    /**
+     * @param image The image to set.
+     */
+    public void setImage(String image)
+    {
+        this.image = image;
     }
 }

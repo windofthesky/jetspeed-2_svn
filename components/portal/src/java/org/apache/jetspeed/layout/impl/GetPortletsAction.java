@@ -41,6 +41,7 @@ import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
+import org.apache.pluto.om.common.Parameter;
 
 /**
  * Get Portlets retrieves the portlet list available to the current subject
@@ -59,6 +60,7 @@ public class GetPortletsAction
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
+    public final static String PORTLET_ICON = "portlet-icon";
     
     public GetPortletsAction(String template, String errorTemplate)
     {
@@ -145,7 +147,20 @@ public class GetPortletsAction
             try
             {
                 AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
-                list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale)));
+                Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);
+                String image;
+                if (param != null)
+                {
+                    String relativeImagePath = param.getValue();
+                    String context = muta.getWebApplicationDefinition().getContextRoot();
+                    image = context + relativeImagePath;
+                }
+                else
+                {
+                    // default TODO: assign image by category
+                    image = "images/portlets/office-calendar.png";
+                }                
+                list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale), image));
             }
             catch (AccessControlException ace)
             {

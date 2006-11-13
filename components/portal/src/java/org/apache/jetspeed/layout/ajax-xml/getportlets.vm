@@ -4,14 +4,7 @@
     
     <portlets>
 #foreach ($portlet in $portlets)    
-        <portlet name="$portlet.Name" displayName="$portlet.DisplayName" description="$portlet.Description">
-##           <position column="$portlet.Column" row="$portlet.Row"/>
-##           <parameters>
-###foreach ($param in $portlet.Parameters)
-##                <param name="$param.Name" value="$param.Value"/>
-###end
-##           </parameters>
-        </portlet>
+        <portlet name="$portlet.Name" displayName="$!portlet.DisplayName" description="$!portlet.Description"/>
 #end        
     </portlets>
     
