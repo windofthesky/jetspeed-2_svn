@@ -27,6 +27,7 @@ jetspeed.widget.PortletWindow = function()
     this.resizable = true;
     this.portletInitialized = false;
     this.actionButtons = {};
+    this.actionMenus = {};
 };
 
 dojo.inherits( jetspeed.widget.PortletWindow, dojo.widget.FloatingPane );
@@ -41,9 +42,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     hasShadow: false,
     nextIndex: 1,
 
+    windowTheme: null,
+    windowThemeConfig: null,
+
     windowPositionStatic: false,
     windowHeightToFit: false,
-    windowIsColumnBound: false,
     titleMouseIn: 0,
     titleLit: false,
 
@@ -52,6 +55,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     
     templateDomNodeClassName: null,
     templateContainerNodeClassName: null,
+
+    processingContentChanged: false,
 
     /*  static   */
     staticDefineAsAltInitParameters: function( defineIn, params )
@@ -126,7 +131,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    setWindowTheme: function( fragment )
+    initWindowTheme: function( fragment )
     {
         var windowtheme = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_THEME );
         if ( ! windowtheme )
@@ -136,16 +141,19 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             else
                 windowtheme = jetspeed.page.getWindowThemeDefault();
         }
-        this.portletWindowTheme = windowtheme ;
+        this.windowTheme = windowtheme ;
+        this.windowThemeConfig = jetspeed.prefs.getWindowThemeConfig( windowtheme );
+
         var prevCssPath = ( this.templateCssPath == null ? null : this.templateCssPath.toString() );
         this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalWindowThemeUrl( windowtheme ) + "/css/styles.css" );
+
         if ( this.portletInitialized )
         {   // load new stylesheet    // BOZO: it would be nice to check if this were necessary
             if ( prevCssPath == null || prevCssPath != this.templateCssPath.toString() )
                 dojo.html.insertCssFile( this.templateCssPath, null, true );
         }
     },
-    setWindowTitle: function( fragment )
+    initWindowTitle: function( fragment )
     {
         var windowtitle = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE );
         if ( windowtitle )
@@ -157,7 +165,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             // BOZO: update title
         }
     },
-    setWindowIcon: function( fragment )
+    initWindowIcon: function( fragment )
     {
         var windowicon = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_ICON );
         if ( ! windowicon )
@@ -183,8 +191,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.windowPositionStatic = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
         this.windowHeightToFit = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_HEIGHT_TO_FIT );
         this.windowColumnSpan = this.getInitProperty( jetspeed.id.PORTLET_PROP_COLUMN_SPAN );
-        if ( this.windowPositionStatic )
-            this.windowIsColumnBound = true;
 
         this.constrainToContainer = 0;
 
@@ -242,9 +248,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     portletMixinProperties: function( fragment )
     {
-        this.setWindowTheme( fragment );
-        this.setWindowTitle( fragment );
-        this.setWindowIcon( fragment );
+        this.initWindowTheme( fragment );
+        this.initWindowTitle( fragment );
+        this.initWindowIcon( fragment );
 
         if ( dojo.render.html.mozilla )  // dojo.render.html.ie
         {
@@ -288,8 +294,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
         
         this.portletMixinProperties( fragment );
-
-        //dojo.debug("PortletWindow  widgetId=" + this.widgetId + "  windowtheme=" + windowtheme + "  templateCssPath=" + this.templateCssPath);
     },
 
     _incrementNextIndex: function()
@@ -329,35 +333,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		}
     },
 
-    _createActionButtonNode: function( actionName )
-    {
-        if ( actionName != null )
-        {
-            var actionButton = document.createElement("div");
-            actionButton.className = "portletWindowActionButton";
-            actionButton.style.backgroundImage = "url(" + jetspeed.url.basePortalWindowThemeUrl( this.portletWindowTheme ) + "/images/desktop/" + actionName + ".gif)";
-            this.actionButtons[ actionName ] = actionButton;
-            this.titleBar.appendChild( actionButton );
-
-            if ( actionName == "minimize" )
-            {
-                dojo.event.connect( actionButton, "onclick", this, "minimizeWindow");
-                //this.minimizeAction = actionButton;
-            }
-            else if ( actionName == "maximize" )
-            {
-                dojo.event.connect( actionButton, "onclick", this, "maximizeWindow");
-                //this.maximizeAction = actionButton;
-            }
-            else if ( actionName == "restore" )
-            {
-                dojo.event.connect( actionButton, "onclick", this, "restoreWindow");
-                //this.restoreAction = actionButton;
-            }
-            
-        }
-    },
-
     // dojo.widget.Widget create->buildRendering protocol
 	fillInTemplate: function(args, frag)   /* copied from FloatingPane.js 0.3.1 with changes as noted */
     {
@@ -372,7 +347,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
 		// if display:none then state=minimized, otherwise state=normal
 		if(!this.isShowing()){
-			this.windowState="minimized";
+			this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE;
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
@@ -382,7 +357,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
 		}
 
-		if(this.titleBarDisplay!="none"){	
+		if(this.titleBarDisplay!="none")
+        {	
 			this.titleBar.style.display="";
 			dojo.html.disableSelection(this.titleBar);
 
@@ -390,48 +366,155 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
             var windowTitleBarButtons = null;
 
-            if ( jetspeed.prefs.windowActionButtonOrder != null )
+            if ( this.windowThemeConfig != null )
             {
-                if ( this.portlet )
+                var menuActionNames = new Array();
+                var menuActionNoImage = false;
+                if ( this.windowThemeConfig.windowActionButtonOrder != null )
                 {
-                    var portletActions = this.portlet.actions;
-                
-                    for ( var actionIdx = (jetspeed.prefs.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
+                    // all possible button actions must be added here (no support for adding action buttons after init)
+                    // this including buttons for the current mode and state (which will be initially hidden)
+                    var btnActionNames = new Array();
+                    if ( this.portlet )
                     {
-                        var actionName = jetspeed.prefs.windowActionButtonOrder[ actionIdx ];
-                        var includeAction = false;
-                        var portletActionConfig = portletActions[ actionName ];
-                        if ( portletActionConfig != null )
+                        for ( var actionIdx = (this.windowThemeConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
                         {
-                            includeAction = true;
-                        }
-                        else
-                        {
-                            if ( actionName == "restore" || actionName == "menu" )
+                            var actionName = this.windowThemeConfig.windowActionButtonOrder[ actionIdx ];
+                            var includeAction = false;
+                            if ( this.portlet.getAction( actionName ) != null || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+                            {
                                 includeAction = true;
+                            }
+                            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                            {
+                                includeAction = true;
+                            }
+                            if ( includeAction )
+                            {
+                                btnActionNames.push( actionName );
+                            }
                         }
-                        if ( includeAction )
+                    }
+                    else
+                    {
+                        for ( var actionIdx = (this.windowThemeConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
                         {
-                            this._createActionButtonNode( actionName );
+                            var actionName = this.windowThemeConfig.windowActionButtonOrder[ actionIdx ];
+                            var includeAction = false;
+                            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE || actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+                            {
+                                includeAction = true;
+                            }
+                            if ( includeAction )
+                            {
+                                btnActionNames.push( actionName );
+                            }
+                        }
+                    }   // if ( this.portlet )
+                    var btnMax = ( this.windowThemeConfig.windowActionButtonMax == null ? -1 : this.windowThemeConfig.windowActionButtonMax );
+                    if ( btnMax != -1 && btnActionNames.length >= btnMax )
+                    {
+                        var removedBtns = 0;
+                        var mustRemoveBtns = btnActionNames.length - btnMax + 1;
+                        for ( var i = 0 ; i < btnActionNames.length && removedBtns < mustRemoveBtns ; i++ )
+                        {
+                            if ( btnActionNames[i] != jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                            {
+                                menuActionNames.push( btnActionNames[i] );
+                                btnActionNames[i] = null;
+                                removedBtns++;
+                            }
+                        }
+                    }
+                    if ( this.windowThemeConfig.windowActionNoImage != null )
+                    {
+                        for ( var i = 0 ; i < btnActionNames.length ; i++ )
+                        {
+                            if ( this.windowThemeConfig.windowActionNoImage[ btnActionNames[ i ] ] != null )
+                            {
+                                if ( btnActionNames[ i ] == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                                {
+                                    menuActionNoImage = true;
+                                }
+                                else
+                                {
+                                    menuActionNames.push( btnActionNames[i] );
+                                }
+                                btnActionNames[ i ] = null;
+                            }
+                        }
+                    }
+                    for ( var i = 0 ; i < btnActionNames.length ; i++ )
+                    {
+                        if ( btnActionNames[i] != null )
+                        {
+                            this._createActionButtonNode( btnActionNames[i] );
+                        }
+                    }
+                }   // if ( this.windowThemeConfig.windowActionButtonOrder != null )
+    
+                if ( this.windowThemeConfig.windowActionMenuOrder != null )
+                {
+                    if ( this.portlet )
+                    {
+                        for ( var actionIdx = 0 ; actionIdx < this.windowThemeConfig.windowActionMenuOrder.length ; actionIdx++ )
+                        {
+                            var actionName = this.windowThemeConfig.windowActionMenuOrder[ actionIdx ];
+                            var includeAction = false;
+                            if ( this.portlet.getAction( actionName ) != null || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+                            {
+                                includeAction = true;
+                            }
+                            if ( includeAction )
+                            {
+                                menuActionNames.push( actionName );
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for ( var actionIdx = 0 ; actionIdx < this.windowThemeConfig.windowActionMenuOrder.length ; actionIdx++ )
+                        {
+                            var actionName = this.windowThemeConfig.windowActionMenuOrder[ actionIdx ];
+                            if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+                            {
+                                menuActionNames.push( actionName );
+                            }
+                        }
+                    }   // if ( this.portlet )
+                }   // if ( this.windowThemeConfig.windowActionMenuOrder != null )
+                
+                if ( menuActionNames.length > 0 )
+                {
+                    var addedActionNames = new Object();
+                    var finalMenuActionNames = new Array();
+                    for ( var i = 0 ; i < menuActionNames.length ; i++ )
+                    {
+                        var actionName = menuActionNames[i];
+                        if ( actionName != null && addedActionNames[ actionName ] == null && this.actionButtons[ actionName ] == null )
+                        {
+                            finalMenuActionNames.push( actionName );
+                            addedActionNames[ actionName ] = true;
+                        }
+                    }
+                    if ( finalMenuActionNames.length > 0 )
+                    {
+                        this._createActionMenu( finalMenuActionNames );
+                        if ( menuActionNoImage )
+                        {
+                    		dojo.event.kwConnect({
+			                    srcObj:     this.titleBar,
+			                    srcFunc:    "oncontextmenu",
+			                    targetObj:  this,
+			                    targetFunc: "windowActionMenuOpen",
+			                    once:       true
+                    		});
                         }
                     }
                 }
-                else
-                {
-                    
-                    
-                }
+    
+                this.windowActionButtonSync();
             }
-            
-
-			//this.minimizeAction.style.display = (this.displayMinimizeAction ? "" : "none");
-			//this.maximizeAction.style.display= 
-			//	(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
-			//this.restoreAction.style.display= 
-			//	(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
-			//this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-
-
 
             // j2o - deletion - initialization of HtmlDragMoveSource and call to setDragHandle
             //                  equivalent is done in postCreate with PortletWindowDragMoveSource
@@ -471,6 +554,277 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //dojo.debug( "fillInTemplate-end [" + this.widgetId + "] containerNode-outerwidth: " + dojo.html.getMarginBox( this.containerNode ).width + " containerNode-contentwidth: " + dojo.html.getContentBox( this.containerNode ).width + " domNode-outerwidth: " + dojo.html.getMarginBox( this.domNode ).width );
 	},
 
+    _createActionButtonNode: function( actionName )
+    {
+        if ( actionName != null )
+        {
+            var actionButton = document.createElement("div");
+            actionButton.className = "portletWindowActionButton";
+            actionButton.style.backgroundImage = "url(" + jetspeed.url.basePortalWindowThemeUrl( this.windowTheme ) + "/images/desktop/" + actionName + ".gif)";
+            actionButton.actionName = actionName;
+            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                actionButton.id = this.widgetId + "_menuBtn";
+
+            this.actionButtons[ actionName ] = actionButton;
+            this.titleBar.appendChild( actionButton );
+
+            dojo.event.connect( actionButton, "onclick", this, "windowActionButtonClick" );
+        }
+    },
+
+    _getActionMenuPopupWidget: function()
+    {
+        return dojo.widget.byId( this.widgetId + "_ctxmenu" );
+    },  
+    _createActionMenu: function( /* Array */ menuActionNames )
+    {
+        if ( menuActionNames == null || menuActionNames.length == 0 ) return;
+        var portletWindow = this;
+
+        var titleBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", contextMenuForWindow: false }, null );
+        var actionLabelPrefs = jetspeed.prefs.desktopActionLabels;
+        for ( var i = 0 ; i < menuActionNames.length ; i++ )
+        {
+            var actionName = menuActionNames[i];
+            var menulabel = null;
+            if ( actionLabelPrefs != null )
+                menulabel = actionLabelPrefs[ actionName ];
+            if ( menulabel == null || menulabel.length == 0 )
+            {
+                if ( this.portlet )
+                {
+                    var portletActionDef = this.portlet.getAction( actionName );
+                    if ( portletActionDef != null )
+                        menulabel = portletActionDef.label;
+                }
+                if ( menulabel == null || menulabel.length == 0 )
+                {
+                    menulabel = dojo.string.capitalize( actionName );
+                }
+            }
+            
+            var menuitem = this._createActionMenuItem( portletWindow, menulabel, actionName );
+
+            this.actionMenus[ actionName ] = menuitem;
+
+            titleBarContextMenu.addChild( menuitem );
+        }
+
+        document.body.appendChild( titleBarContextMenu.domNode );
+    },
+    _createActionMenuItem: function( portletWindow, menulabel, actionName )
+    {
+        var menuitem = dojo.widget.createWidget( "MenuItem2", { caption: menulabel } );
+        dojo.event.connect( menuitem, "onClick", function(e) { portletWindow.windowActionProcessChange( actionName ); } );
+        return menuitem;
+    },
+
+    windowActionButtonClick: function( evt )
+    {
+        if ( evt == null || evt.target == null ) return;
+        this.windowActionProcessChange( evt.target.actionName, evt );
+    },
+    windowActionMenuOpen: function( evt )
+    {
+        var currentPortletActionState = null;
+        var currentPortletActionMode = null;
+        if ( this.portlet )
+        {
+            currentPortletActionState = this.portlet.getCurrentActionState();
+            currentPortletActionMode = this.portlet.getCurrentActionMode();
+        }
+        for ( var actionName in this.actionMenus )
+        {
+            var menuitem = this.actionMenus[ actionName ];
+            if ( this._isWindowActionEnabled( actionName, currentPortletActionState, currentPortletActionMode ) )
+            {
+                menuitem.domNode.style.display = "";   // instead of menuitem.enable();
+            }
+            else
+            {
+                menuitem.domNode.style.display = "none";   // instead of menuitem.disable();
+            }
+        }
+        this._getActionMenuPopupWidget().onOpen( evt );        
+    },
+    windowActionProcessChange: function( /* String */ actionName, evt )
+    {   // evt arg is needed only for opening action menu
+        //dojo.debug( "windowActionProcessChange [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + actionName );
+        if ( actionName == null ) return;
+        if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+        {
+            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE )
+            {
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE )
+            {
+                this.makeTiled();
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
+            {
+                this.makeHeightToFit( false );
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
+            {
+                this.makeHeightVariable( false );
+            }
+        }
+        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+        {
+            this.windowActionMenuOpen( evt );
+        }
+        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+        {   // make no associated content request - just notify server of change
+            this.minimizeWindow();
+            if ( this.portlet )
+            {
+                jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE, null );
+            }
+            if ( ! this.portlet )
+            {
+                this.windowActionButtonSync();
+            }
+        }
+        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE )
+        {   // if minimized, make no associated content request - just notify server of change
+            if ( this.portlet )
+            {
+                if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+                {
+                    this.portlet.renderAction( actionName );
+                }
+                else
+                {
+                    jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.PORTLET_ACTION_NAME_RESTORE, null );
+                }
+            }
+            this.restoreWindow();
+            if ( ! this.portlet )
+            {
+                this.windowActionButtonSync();
+            }
+        }
+        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        {
+            if ( this.portlet )
+            {
+                this.portlet.renderAction( actionName );
+            }
+            this.maximizeWindow();
+            if ( ! this.portlet )
+            {
+                this.windowActionButtonSync();
+            }
+        }
+        else
+        {
+            this.portlet.renderAction( actionName );
+        }
+    },
+
+    _isWindowActionEnabled: function( actionName, currentPortletActionState, currentPortletActionMode )
+    {
+        var enabled = false;
+        if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+        {
+            enabled = true;
+        }
+        else if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+        {
+            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
+            {
+                if ( ! this.windowHeightToFit )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
+            {
+                if ( this.windowHeightToFit )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE )
+            {
+                if ( ! this.windowPositionStatic )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE )
+            {
+                if ( this.windowPositionStatic )
+                    enabled = true;
+            }
+        }
+        else if ( this.portlet )
+        {
+            var actionDef = this.portlet.getAction( actionName );
+            if ( actionDef != null )
+            {
+                if ( actionDef.type == jetspeed.id.PORTLET_ACTION_TYPE_MODE )
+                {
+                    if ( actionName != currentPortletActionMode )
+                    {
+                        enabled = true; 
+                    }
+                }
+                else
+                {   // assume actionDef.type == jetspeed.id.PORTLET_ACTION_TYPE_STATE
+                    if ( actionName != currentPortletActionState )
+                    {
+                        enabled = true;
+                    }
+                }
+            }
+        }
+        else
+        {   // adjust visible action buttons - BOZO:NOW: this non-portlet case needs more attention
+            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            {
+                if ( actionName != this.windowState )
+                {
+                    enabled = true;
+                }
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+            {
+                if ( actionName != this.windowState )
+                {
+                    enabled = true;
+                }
+            }
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE )
+            {
+                if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE || this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+                {
+                    enabled = true;
+                }
+            }
+        }
+        return enabled;
+    },
+
+    windowActionButtonSync: function()
+    {
+        var hideButtons = this.windowThemeConfig.windowActionButtonHide;
+        var currentPortletActionState = null;
+        var currentPortletActionMode = null;
+        if ( this.portlet )
+        {
+            currentPortletActionState = this.portlet.getCurrentActionState();
+            currentPortletActionMode = this.portlet.getCurrentActionMode();
+        }
+        for ( var actionName in this.actionButtons )
+        {
+            var showBtn = false;
+            if ( ! hideButtons || this.titleLit )
+            {
+                showBtn = this._isWindowActionEnabled( actionName, currentPortletActionState, currentPortletActionMode );
+            }
+            var buttonNode = this.actionButtons[ actionName ];
+            if ( showBtn )
+                buttonNode.style.display = "";
+            else
+                buttonNode.style.display = "none";
+        }
+    },
+
     portletInitDimensions: function()
     {
         if ( this.windowPositionStatic )
@@ -480,7 +834,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             this.domNode.style.top = "auto";
         }
 
-        if ( this.windowPositionStatic && this.windowHeightToFit )
+        if ( this.windowHeightToFit )
         {
             this.domNode.style.overflow = "visible";
             this.domNode.style.height = "";
@@ -500,9 +854,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( ! this.templateDomNodeClassName )
             this.templateDomNodeClassName = this.domNode.className;
         var domNodeClassName = this.templateDomNodeClassName;
-        if ( this.portletWindowTheme )
+        if ( this.windowTheme )
         {
-            domNodeClassName = this.portletWindowTheme + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
+            domNodeClassName = this.windowTheme + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
         }
         this.domNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
         
@@ -511,13 +865,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             if ( ! this.templateContainerNodeClassName )
                 this.templateContainerNodeClassName = this.containerNode.className;
             var containerNodeClassName = this.templateContainerNodeClassName;
-            if ( this.portletWindowTheme )
+            if ( this.windowTheme )
             {
-                containerNodeClassName = this.portletWindowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
+                containerNodeClassName = this.windowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
             }
             this.containerNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
 
-            if ( this.windowPositionStatic && this.windowHeightToFit )
+            if ( this.windowHeightToFit )
             {
                 this.containerNode.style.overflow = "visible";
                 this.containerNode.style.height = "";
@@ -539,8 +893,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.resetLostHeightWidth();
         
         this.resizeTo( this.width, this.height );
-
-        this.titleDim( true );
     },
 
     //     resetWindow: function( /* Portlet */ portlet )
@@ -565,8 +917,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
         
         this.portletInitDimensions();
-
-        this.createTitleBarContextMenu();
         
         if ( jetspeed.debug.createWindow )
             dojo.debug( "createdWindow [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " width=" + this.domNode.style.width + " height=" + this.domNode.style.height + " left=" + this.domNode.style.left + " top=" + this.domNode.style.top ) ;
@@ -574,7 +924,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.portletInitialized = true;
 
         var initWindowState = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_STATE );
-        if ( initWindowState == "minimized" )
+        if ( initWindowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
             this.minimizeWindow();
     },
 
@@ -594,7 +944,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         var tbiWidget = dojo.widget.byId( this.widgetId + "_tbi" );
         
-        if ( this.windowState != "maximized" )
+        if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
             this._setPreviousDimensions();
 
         this.containerNode.style.display = "none";
@@ -606,9 +956,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //else
         //    this.hide();
     
-        this.windowState = "minimized";
-        
-        this.quickTitleLightAdjust();
+        this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE;
     },
 	restoreWindow: function(evt)
     {
@@ -636,12 +984,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		this.resizeTo( this.previous.width, this.previous.height, true );
 		this.previous = null;
 
-		this.restoreAction.style.display = "none";
-		this.maximizeAction.style.display = this.displayMaximizeAction ? "" : "none";
-
 		this.windowState = "normal";
-
-        this.quickTitleLightAdjust();
 
         //dojo.debug( "restore [" + this.widgetId + "] end container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
 	},
@@ -679,7 +1022,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             dojo.html.getBorderBox( document.body ).height - yPos
 		);
 
-		this.windowState ="maximized";
+		this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE;
 	},
     bringToTop: function( evt )
     {
@@ -807,7 +1150,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         dojo.debug( "window-position [" + this.widgetId + "] x=" + winAbsPos.x + " y=" + winAbsPos.y + " width=" + winWidth + " height=" + winHeight + " cNode-width=" + winContainerNodeWidth + " cNode-height=" + winContainerNodeHeight + " document-width=" + dojo.html.getMarginBox( document[ "body" ] ).width + " document-height=" + dojo.html.getMarginBox( document[ "body" ] ).height ) ;
     },
 
-    makeFreeFloating: function( positioningNode )
+    makeTiled: function( positioningNode )
     {
         if ( ! positioningNode )
             positioningNode = this.domNode;
@@ -834,31 +1177,44 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitChangedWindowState();
     },
 
-    makeHeightToFit: function( suppressSubmitChange )
-    {
-        if ( this.windowPositionStatic )
+    contentChanged: function( evt )
+    {   // currently used for dojo-debug window only
+        if ( this.processingContentChanged == false )
         {
-            var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-            this.windowHeightToFit = true;
-            this.domNode.style.overflow = "visible";
-            this.domNode.style.height = "";
-            if ( this.containerNode )
+            this.processingContentChanged = true;
+            if ( this.windowHeightToFit )
             {
-                this.containerNode.style.overflow = "visible";
-                this.containerNode.style.height = "";
+                this.makeHeightToFit( true, true );
             }
-            var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-            this.width = domNodeMarginBox.width;
-            this.height = domNodeMarginBox.height;
-            this.resetLostHeightWidth();
-
-            dojo.debug( "makeHeightToFit [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
-        
-            this.resizeTo( this.width, this.height, true );
-
-            if ( ! suppressSubmitChange && this.portlet )
-                this.portlet.submitChangedWindowState();
+            this.processingContentChanged = false;
         }
+    },
+
+    makeHeightToFit: function( suppressSubmitChange, suppressLogging )
+    {   // suppressLogging is to support contentChanged
+        var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+        this.windowHeightToFit = true;
+        this.domNode.style.overflow = "visible";
+        this.domNode.style.height = "";
+        if ( this.containerNode )
+        {
+            this.containerNode.style.overflow = "visible";
+            this.containerNode.style.height = "";
+        }
+        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+        this.width = domNodeMarginBox.width;
+        this.height = domNodeMarginBox.height;
+        this.resetLostHeightWidth();
+
+        if ( suppressLogging == null || suppressLogging != true )
+        {
+            dojo.debug( "makeHeightToFit [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
+        }
+    
+        this.resizeTo( this.width, this.height, true );
+
+        if ( ! suppressSubmitChange && this.portlet )
+            this.portlet.submitChangedWindowState();
     },
     makeHeightVariable: function( suppressSubmitChange )
     {
@@ -880,28 +1236,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         if ( ! suppressSubmitChange && this.portlet )
             this.portlet.submitChangedWindowState();
-    },
-
-    createTitleBarContextMenu: function()
-    {
-        var portletWindow = this;
-        var titleBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", targetNodeIds: [ this.titleBar.id ], contextMenuForWindow: false }, null );
-        var dumpPosMenuItem = dojo.widget.createWidget( "MenuItem2", { caption: "Dump Position"} );
-        var makeFreeFloating = dojo.widget.createWidget( "MenuItem2", { caption: "Make Free Floating"} );
-        var makeVariableHeight = dojo.widget.createWidget( "MenuItem2", { caption: "Height - Variable"} );
-        var makeFitContentHeight = dojo.widget.createWidget( "MenuItem2", { caption: "Height - Fit Content"} );
-        
-        dojo.event.connect( dumpPosMenuItem, "onClick", function(e) { portletWindow.dumpPostionInfo(); } );
-        dojo.event.connect( makeFreeFloating, "onClick", function(e) { portletWindow.makeFreeFloating(); } );
-        dojo.event.connect( makeVariableHeight, "onClick", function(e) { portletWindow.makeHeightVariable( false ); } );
-        dojo.event.connect( makeFitContentHeight, "onClick", function(e) { portletWindow.makeHeightToFit( false ); } );
-
-        titleBarContextMenu.addChild( dumpPosMenuItem );
-        titleBarContextMenu.addChild( makeFreeFloating );
-        titleBarContextMenu.addChild( makeVariableHeight );
-        titleBarContextMenu.addChild( makeFitContentHeight );
-
-        document.body.appendChild( titleBarContextMenu.domNode );
     },
     
     getPageColumnIndex: function()
@@ -954,119 +1288,77 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitChangedWindowState();
     },
 
-    _getTitleLightNodes: function()
-    {
-        var shouldBeDisplayed = new dojo.collections.ArrayList();
-        this._titleButtonInclude( this.displayMinimizeAction && this.windowState != "minimized", true, this.minimizeAction, shouldBeDisplayed );
-        this._titleButtonInclude( this.displayMaximizeAction && this.windowState != "maximized", true, this.maximizeAction, shouldBeDisplayed );
-        this._titleButtonInclude( this.displayRestoreAction && ( this.windowState == "minimized" || this.windowState == "maximized" ) , true, this.restoreAction, shouldBeDisplayed );
-        this._titleButtonInclude( this.displayCloseAction, true, this.closeAction, shouldBeDisplayed );
-        return shouldBeDisplayed;
-    },
-    _titleButtonInclude: function(condition, requiredResult, button, includedArrayList)
-    {
-        if ( button == null ) return includedArrayList ;
-        if ( dojo.lang.isFunction( condition ) )
-        {
-            if ( condition.call( this ) == requiredResult )
-                includedArrayList.add( button );
-        }
-        else if ( condition == requiredResult )
-        {
-            includedArrayList.add( button );
-        }
-        return includedArrayList;
-    },
-
-    quickTitleLightAdjust: function()
-    {
-        var allNodes = [ this.restoreAction, this.maximizeAction, this.minimizeAction, this.closeAction ] ;
-        var shouldBeDisplayed = this._getTitleLightNodes();
-
-        var hideNodes = dojo.collections.Set.difference( allNodes, shouldBeDisplayed ).toArray();
-        for ( var i = 0 ; i < hideNodes.length ; i++ )
-        {
-            if ( hideNodes[i] != null )
-            {
-                hideNodes[i].style.visibility = "hidden";
-                if ( hideNodes[i] == this.restoreAction )
-                    this.restoreAction.style.display = "none";
-            }
-        }
-        shouldBeDisplayed = shouldBeDisplayed.toArray();
-        for ( var i = 0 ; i < shouldBeDisplayed.length ; i++ )
-        {
-            if ( shouldBeDisplayed[i] == this.restoreAction )
-                shouldBeDisplayed[i].style.display = "block" ;
-            shouldBeDisplayed[i].style.visibility == "";
-        }
-    },
-
     titleLight: function()
     {
-        var mightBeEnlightened = this._getTitleLightNodes().toArray();
-        var toBeEnlightened = [] ;
-        for ( var i = 0 ; i < mightBeEnlightened.length ; i++ )
+        var toBeEnlightened = [];
+        var currentPortletActionState = null;
+        var currentPortletActionMode = null;
+        if ( this.portlet )
         {
-            var btn = mightBeEnlightened[i];
-            if ( btn == this.restoreAction )
-                btn.style.display = "block" ;
-            if ( btn.style.visibility == "hidden" )
-                toBeEnlightened.push( btn );
+            currentPortletActionState = this.portlet.getCurrentActionState();
+            currentPortletActionMode = this.portlet.getCurrentActionMode();
+        }
+        for ( var actionName in this.actionButtons )
+        {
+            var showBtn = this._isWindowActionEnabled( actionName, currentPortletActionState, currentPortletActionMode );
+            if ( showBtn )
+            {
+                var buttonNode = this.actionButtons[ actionName ];
+                toBeEnlightened.push( buttonNode );
+            }
         }
         for ( var i = 0 ; i < toBeEnlightened.length ; i++ )
         {
-            toBeEnlightened[i].style.visibility = "" ;
+            toBeEnlightened[i].style.display = "" ;
         }
         //jetspeed.ui.fadeIn( toBeEnlightened, 325, "" );
         this.titleLit = true ;
     },
     titleDim: function( immediateForce )
     {
-        var mightBeExtinguished = [ this.restoreAction, this.maximizeAction, this.minimizeAction, this.closeAction ] ;
-        var toBeExtinguished = [] ;
-        for ( var i = 0 ; i < mightBeExtinguished.length ; i++ )
+        var toBeExtinguished = [];
+        for ( var actionName in this.actionButtons )
         {
-            var btn = mightBeExtinguished[i];
-            if ( btn != null )
+            var buttonNode = this.actionButtons[ actionName ];
+            if ( buttonNode.style.display != "none" )
             {
-                if ( immediateForce )
-                    btn.style.visibility = "hidden" ;
-                else if ( btn.style.visibility != "hidden" )
-                    toBeExtinguished.push( btn );
+                toBeExtinguished.push( buttonNode );
             }
         }
+    
         for ( var i = 0 ; i < toBeExtinguished.length ; i++ )
         {
-            toBeExtinguished[i].style.visibility = "hidden" ;
+            toBeExtinguished[i].style.display = "none" ;
         }
-        if ( this.restoreAction != null )
-        {
-            this.restoreAction.style.display = "none";
-            //jetspeed.ui.fadeOut( toBeExtinguished, 280, [ this.restoreAction ] );   // nodes in 3rd arg will be set to display=none
-        }
+        //jetspeed.ui.fadeOut( toBeExtinguished, 280, [ this.restoreAction ] );   // nodes in 3rd arg will be set to display=none
         this.titleLit = false ;
     },
     titleMouseOver: function( evt )
     {
-        var self = this ;
-        this.titleMouseIn = 1 ;   // was ++
-        window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight(); self.titleMouseIn = 0; } }, 270 ) ;
+        if ( this.windowThemeConfig.windowActionButtonHide )
+        {
+            var self = this ;
+            this.titleMouseIn = 1 ;   // was ++
+            window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight(); self.titleMouseIn = 0; } }, 270 ) ;
             // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+        }
     },
     titleMouseOut: function( evt )
     {
-        var self = this ;
-        var nTitleMouseIn = this.titleMouseIn ;
-        if ( nTitleMouseIn > 0 )
+        if ( this.windowThemeConfig.windowActionButtonHide )
         {
-            nTitleMouseIn = 0 ; // was Math.max( 0, ( nTitleMouseIn - 1 ) );
-            this.titleMouseIn = nTitleMouseIn ;
-        }
-        if ( nTitleMouseIn == 0 && this.titleLit )
-        {
-            window.setTimeout( function() { if ( self.titleMouseIn == 0 && self.titleLit ) { self.titleDim(); } }, 200 ) ;
-            // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+            var self = this ;
+            var nTitleMouseIn = this.titleMouseIn ;
+            if ( nTitleMouseIn > 0 )
+            {
+                nTitleMouseIn = 0 ; // was Math.max( 0, ( nTitleMouseIn - 1 ) );
+                this.titleMouseIn = nTitleMouseIn ;
+            }
+            if ( nTitleMouseIn == 0 && this.titleLit )
+            {
+                window.setTimeout( function() { if ( self.titleMouseIn == 0 && self.titleLit ) { self.titleDim(); } }, 200 ) ;
+                // NOTE: setup in template HtmlFloatingPane.html: dojoAttachEvent="onMouseOver:titleMouseOver;onMouseOut:titleMouseOut"
+            }
         }
     },
     
@@ -1423,7 +1715,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
 
         this.portletWindow.isDragging = false;
 
-        if ( this.portletWindow.windowState == "minimized" )
+        if ( this.portletWindow.windowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
         {
             this.portletWindow._updatePositionPreviousDimensions();
         }

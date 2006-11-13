@@ -94,6 +94,8 @@
 	height: 22px;
 	width: 22px;
 
+    cursor: default;
+
     float: right;
 
     background-repeat: no-repeat;
