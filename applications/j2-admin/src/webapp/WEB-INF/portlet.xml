@@ -41,7 +41,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Application Lifecycle Manager</title>
       <short-title>PALM</short-title>
-      <keywords>applications,apps,PALM</keywords>
+      <keywords>applications,apps,PALM,management,admin</keywords>
     </portlet-info>
   </portlet>
 
@@ -67,6 +67,7 @@ limitations under the License.
         <portlet-info>
             <title>Login</title>
             <short-title>Login</short-title>
+            <keywords>login,security,management,admin</keywords>            
         </portlet-info>
     </portlet>
     <portlet id="LoginPortletForXHTMLBasic">
@@ -91,6 +92,7 @@ limitations under the License.
         <portlet-info>
             <title>Login</title>
             <short-title>Login</short-title>
+            <keywords>login,security,management,admin</keywords>                        
         </portlet-info>
     </portlet>
     <!-- *********************** -->
@@ -123,7 +125,7 @@ limitations under the License.
         <portlet-info>
             <title>Change Password</title>
             <short-title>Change Password</short-title>
-            <keywords>security,user,password</keywords>
+            <keywords>security,user,password,admin,login</keywords>            
         </portlet-info>
     </portlet>
 
@@ -157,7 +159,7 @@ limitations under the License.
         <portlet-info>
             <title>User Browser</title>
             <short-title>Users</short-title>
-            <keywords>admin,security,users</keywords>
+            <keywords>admin,security,users</keywords>            
         </portlet-info>
         <portlet-preferences>
             <preference>
@@ -264,7 +266,7 @@ limitations under the License.
         <portlet-info>
             <title>User Detail Information</title>
             <short-title>User</short-title>
-            <keywords>admin,security,users</keywords>
+            <keywords>admin,security,users</keywords>            
         </portlet-info>
     </portlet>
 
@@ -298,7 +300,7 @@ limitations under the License.
         <portlet-info>
             <title>Group Detail Information</title>
             <short-title>Group</short-title>
-            <keywords>admin,security,group</keywords>
+            <keywords>admin,security,group</keywords>            
         </portlet-info>
     </portlet>
 
@@ -438,7 +440,7 @@ limitations under the License.
         <portlet-info>
             <title>User Select</title>
             <short-title>Users</short-title>
-            <keywords>admin,security,users</keywords>
+            <keywords>users,selector,chooser</keywords>
         </portlet-info>
     </portlet>
 
@@ -476,7 +478,7 @@ limitations under the License.
         <portlet-info>
             <title>Users Select</title>
             <short-title>Users</short-title>
-            <keywords>admin,security,users</keywords>
+            <keywords>users,chooser,selector,multi</keywords>
         </portlet-info>
     </portlet>
 
@@ -514,7 +516,7 @@ limitations under the License.
         <portlet-info>
             <title>Role Select</title>
             <short-title>Roles</short-title>
-            <keywords>admin,security,roles</keywords>
+            <keywords>roles,selector,chooser</keywords>
         </portlet-info>
     </portlet>
 
@@ -552,7 +554,7 @@ limitations under the License.
       <portlet-info>
         <title>Roles Select</title>
         <short-title>Roles</short-title>
-        <keywords>admin,security,roles</keywords>
+        <keywords>roles,selector,chooser,multi</keywords>
       </portlet-info>
     </portlet>
     
@@ -590,7 +592,7 @@ limitations under the License.
         <portlet-info>
             <title>Group Select</title>
             <short-title>Groups</short-title>
-            <keywords>admin,security,groups</keywords>
+            <keywords>groups,selector,chooser</keywords>
         </portlet-info>
     </portlet>
 
@@ -688,7 +690,7 @@ limitations under the License.
     <portlet-info>
       <title>Locale Selector</title>
       <short-title>This is a portlet to select your preferred locale</short-title>
-      <keywords>Locale,Language</keywords>
+      <keywords>locale,language,tools</keywords>
     </portlet-info>
 </portlet>
 
@@ -719,7 +721,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Application Browser</title>
       <short-title>Apps</short-title>
-      <keywords>applications,apps,PAM</keywords>
+      <keywords>admin,registry,applications,apps,PAM</keywords>
     </portlet-info>
   </portlet>
 
@@ -750,7 +752,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Application Detail</title>
       <short-title>PAD</short-title>
-      <keywords>applications,apps,PAM</keywords>
+      <keywords>admin,registry,applications,apps,PAM</keywords>
     </portlet-info>
   </portlet>
 <!--
@@ -804,7 +806,7 @@ limitations under the License.
     <portlet-info>
       <title>Portal Site Browser</title>
       <short-title>Site</short-title>
-      <keywords>admin,site</keywords>
+      <keywords>admin,site,portal,pages,folders</keywords>
     </portlet-info>
 </portlet>
 
@@ -841,7 +843,7 @@ limitations under the License.
     <portlet-info>
       <title>Portal Site Detail</title>
       <short-title>Site</short-title>
-      <keywords>admin,site</keywords>
+      <keywords>admin,site,portal,pages,folders</keywords>
     </portlet-info>
 	
 </portlet>
@@ -876,10 +878,10 @@ limitations under the License.
     <portlet-info>
       <title>Profiler Admin</title>
       <short-title>Profiler</short-title>
-      <keywords>admin,profiler</keywords>
+      <keywords>admin,profiler,profile</keywords>
     </portlet-info>
 </portlet>
-
+<!--
 <portlet id="JetspeedUserAdmin">
     <init-param>
         <description>This parameter sets the template used in view mode.</description>
@@ -906,10 +908,10 @@ limitations under the License.
     <portlet-info>
       <title>User Administration</title>
       <short-title>Users</short-title>
-      <keywords>admin,security,users</keywords>
+      <keywords>admin,security,users</keywords>        
     </portlet-info>
 </portlet>
-
+-->
 <portlet id="PortletSelector">
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
@@ -944,7 +946,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Selector</title>
       <short-title>Portlets</short-title>
-      <keywords>portlet,selector,customizer,chooser,add</keywords>
+      <keywords>admin,portlet,selector,customizer,chooser,add</keywords>
     </portlet-info>
 </portlet>
 <portlet id="PortletEntityBrowserPortlet">
@@ -972,7 +974,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Entity Browser</title>
       <short-title>Portlet Entity Browser</short-title>
-      <keywords>applications,apps,entity,manager</keywords>
+      <keywords>admin,applications,apps,entity,manager</keywords>
     </portlet-info>
   </portlet>
   <portlet id="PortletEntityEditorPortlet">
@@ -986,7 +988,7 @@ limitations under the License.
     <display-name xml:lang="ja">ポートレットエンティティブラウザ</display-name>
     <display-name xml:lang="zh">编辑Portlet实例</display-name>
     <display-name xml:alang="zh-TW">編輯Portlet實例</display-name>
-    <description>Provides for editing of portlet enitites</description>
+    <description>Provides for editing of portlet entites</description>
     <description xml:lang="ja">ポートレットエンティティの編集する機能を提供します。</description>
     <description xml:lang="zh">编辑Portlet实例。</description>
     <description xml:lang="zh-TW">編輯Portlet實例。</description>
@@ -1000,7 +1002,7 @@ limitations under the License.
     <portlet-info>
       <title>Portlet Entity Editor</title>
       <short-title>Portlet Entity Editor</short-title>
-      <keywords>applications,apps,entity,manager</keywords>
+      <keywords>admin,applications,apps,entity,manager</keywords>
     </portlet-info>
   </portlet>
 
@@ -1029,7 +1031,7 @@ limitations under the License.
     <portlet-info>
       <title>Portal Statistics</title>
       <short-title>Statistics</short-title>
-      <keywords>statistics,portlets,pages,access</keywords>
+      <keywords>admin,statistics,portlets,pages,access</keywords>
     </portlet-info>
   </portlet>
 
@@ -1083,7 +1085,7 @@ limitations under the License.
     <portlet-info>
       <title>Forgotten Password</title>
       <short-title>Forgotten Password</short-title>
-      <keywords>password, forgotten, lost, passwd </keywords>
+      <keywords>tools,users,password,forgotten,lost,passwd</keywords>
     </portlet-info>
   </portlet>
 
@@ -1113,7 +1115,7 @@ limitations under the License.
     <portlet-info>
       <title>Forgotten Password Return</title>
       <short-title>forgot PS return</short-title>
-      <keywords> </keywords>
+      <keywords>password</keywords>
     </portlet-info>
   </portlet>
   
@@ -1188,10 +1190,10 @@ limitations under the License.
     <portlet-info>
       <title>User Registration </title>
       <short-title>User Registration</short-title>
-      <keywords>password, register, signup, new user </keywords>
+      <keywords>admin,password,register,signup,user</keywords>
     </portlet-info>
   </portlet>
-
+<!--
   <portlet id="CustomizerPortlet">
     <init-param>
         <description>This parameter sets the template used in view mode.</description>
@@ -1220,6 +1222,7 @@ limitations under the License.
       <keywords>customizer, site</keywords>
     </portlet-info>
   </portlet>
+-->    
     <portlet id="PortalLoginPortlet">
         <init-param>
             <name>ViewPage</name>
@@ -1242,6 +1245,7 @@ limitations under the License.
         <portlet-info>
             <title>Portal Login</title>
             <short-title>Login</short-title>
+            <keywords>admin,security,users,login</keywords>                        
         </portlet-info>
     </portlet>
     <portlet id="SecurityPermissionsPortlet">
@@ -1263,6 +1267,7 @@ limitations under the License.
         <portlet-info>
             <title>Security Permissions</title>
             <short-title>Permissions</short-title>
+            <keywords>admin,security,permission,policy,JAAS</keywords>                        
         </portlet-info>
     </portlet>
 
@@ -1292,6 +1297,7 @@ limitations under the License.
         <portlet-info>
             <title>Security Constraints</title>
             <short-title>Constraints</short-title>
+            <keywords>admin,security,constraint,policy,page</keywords>                        
         </portlet-info>
     </portlet>
 
@@ -1313,8 +1319,93 @@ limitations under the License.
     <portlet-info>
       <title>Date Time</title>
       <short-title>Time</short-title>
+      <keywords>tools,date,time</keywords>                    
     </portlet-info>
   </portlet>
-         
+
+    <portlet id="CategoryPortletSelector">
+		<init-param>
+			<name>ViewPage</name>
+			<value>/WEB-INF/view/selectors/category-portlet-selector.vm</value>
+		</init-param>        
+		<init-param>
+			<name>EditPage</name>
+			<value>/WEB-INF/view/selectors/category-edit-selector.vm</value>
+		</init-param>                
+		<init-param>
+			<name>HeaderPage</name>
+			<value>/WEB-INF/view/selectors/category-portlet-header.vm</value>
+		</init-param>                
+		<init-param>
+			<name>dojo.requires.core</name>
+			<value>dojo.lang.*;dojo.event.*;dojo.io.*;dojo.widget.*;dojo.widget.Tree;dojo.widget.Button;dojo.widget.Checkbox;dojo.widget.Dialog;dojo.widget.TabContainer;dojo.widget.ContentPane;dojo.widget.LayoutContainer</value>
+		</init-param>        
+        <portlet-name>CategoryPortletSelector</portlet-name>
+    	<display-name>Portlet Selector</display-name>        
+    	<display-name xml:lang="ja">セキュリティ制限</display-name>        
+        <portlet-class>org.apache.jetspeed.portlets.selector.CategoryPortletSelector</portlet-class>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>org.apache.jetspeed.portlets.selector.resources.PortletSelector</resource-bundle>
+        <portlet-info>
+            <title>Portlet Selector</title>
+            <short-title>Select</short-title>
+            <keywords>admin,registry,selector,choose,portlets,add,customize</keywords>            
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>Categories</name>
+                <value>Administration,Finance,Fun,News,Security,Sports,Technology,Tools,Tutorial</value>
+            </preference>
+            <preference>
+                <name>Keywords:Administration</name>
+                <value>admin,management</value>
+            </preference>
+            <preference>
+                <name>Keywords:Finance</name>
+                <value>finance,stock,market,money,quote</value>
+            </preference>
+            <preference>
+                <name>Keywords:Fun</name>
+                <value>fun,game,cool</value>
+            </preference>
+            <preference>
+                <name>Keywords:News</name>
+                <value>news,RSS,feed,headline</value>
+            </preference>
+            <preference>
+                <name>Keywords:Security</name>
+                <value>security,user,role,group</value>
+            </preference>
+            <preference>
+                <name>Keywords:Sports</name>
+                <value>sport,football,baseball,hockey,soccer,golf,tennis</value>
+            </preference>
+            <preference>
+                <name>Keywords:Technology</name>
+                <value>technology,computer,web</value>
+            </preference>
+            <preference>
+                <name>Keywords:Tools</name>
+                <value>tools,desktop,weather</value>
+            </preference>            
+            <preference>
+                <name>Keywords:Tutorial</name>
+                <value>demo,learn,tutorial,programming</value>
+            </preference>    
+            <preference>
+                <name>Columns</name>                    
+                <value>4</value>
+            </preference>
+            <preference>
+                <name>Rows</name>                    
+                <value>5</value>
+            </preference>
+        </portlet-preferences>        
+    </portlet>
+             
 </portlet-app>
 

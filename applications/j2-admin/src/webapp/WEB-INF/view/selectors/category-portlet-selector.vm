@@ -1,0 +1,274 @@
+#*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*#
+<div dojoType="dialog" id="AddPortletDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
+  <form onsubmit="return false;">
+  <input type="hidden" id='theNewPortlet'>
+    <div id="AddPortletPane" dojoType="ContentPane" label="Portlet Info" class="constraints">
+      <div style="height:21px; padding: 2px"><b>Portlet Name:&nbsp;</b><span id="portletDefName"></span></div>
+      <div class="portletTableDiv">
+      <table>
+      <tr>
+        <td>Pref one:</td>
+        <td><input type="text" value="UNDER CONSTRUCTION!"></td>
+      </tr>
+      <tr>
+        <td>Pref Two:</td>
+        <td><input type="text"></td>
+      </tr>
+      </table>
+      </div>
+      <div dojoType="LayoutContainer"
+                     widgetId="constraintsEditorBottom"
+                     minHeight="20"
+                     layoutAlign="bottom"
+                     style="padding: 4px; width: 100%; height: 30px">
+            <div dojoType="LayoutContainer"
+                 widgetId="constraintsEditorBottomLeft"
+                 minHeight="20"
+                 layoutAlign="left"
+                 style="padding: 4px; width: 18%; height: 30px">
+            </div>
+            <div dojoType="LayoutContainer"
+                 widgetId="constraintsEditorBottomRight"
+                 minHeight="20"
+                 layoutAlign="right"
+                 style="padding: 4px; border-right: thin inset grey; width: 78%; height: 30px">
+                <div class="buttonbox">
+                    <button dojoType="Button" onClick="dojo.widget.byId( 'AddPortletDialog' ).hide();" >Cancel</button>
+                    <button dojoType="Button" onClick="addPortletToPage();">OK</button>
+                </div>
+            </div>
+      </div>
+    </div>
+  </form>
+</div>
+#set ($refreshLink = $renderResponse.createActionURL())
+$refreshLink.setParameter("reset","true")
+<!-- Search Form -->
+<form id='jsSelectorForm' onSubmit='return false;' style="height:21px; padding: 2px; margin:10px">
+<table>
+<tr>
+<td nowrap class="portlet-section-alternate" align="right">Search for portlets:&nbsp;</td>
+<td nowrap>
+<input type="text" name="searchString" id="searchString" size="40" value="$!searchString" class="portlet-form-field-label">    
+<input type="submit" value="Search" onClick='javascript:performSearch();'>
+<input type="submit" value="Refresh" onClick="javascript:performRefresh()">
+</td>
+</tr>
+</table>
+</form>
+
+<table id='ctable' cellspacing="5" cellpadding="5" style="margin:10px">
+</table>
+<table id='ptable' border="1" cellspacing="10" cellpadding="1">
+</table>
+<script language="JavaScript" type="text/javascript">
+function PortletInfo(name, display, desc, image)
+{
+  this.name = name;
+  this.display = display;
+  this.desc = desc;
+  this.image = image;
+  this.count = 0;
+}
+function CategoryInfo(name)
+{
+   this.name = name;
+   this.portlets = new Array();
+}
+function performRefresh()
+{
+   var searchForm = document.getElementById('jsSelectorForm');
+   searchForm.action = "$refreshLink";
+   searchForm.submit();
+}
+function displayPortlets(cat)
+{                                             
+   if (cat == null)
+   {
+      cat = "All"; // TODO: localize
+   }
+   var currentPortlets = selectorPortlets;
+
+   for (i=0; i < this.categories.length; i++)
+   {
+       if (this.categories[i].name == cat)
+       {
+          catPortlets = this.categories[i].portlets;
+          break;
+       }
+   }
+    var ptable = document.getElementById('ptable');
+    while (ptable.hasChildNodes())
+    {
+      ptable.removeChild(ptable.lastChild);
+    }
+    var portletCount = 0;
+    var rowCount = 0;
+    var columns = $Columns;
+    var outerRow = null;
+    // TODO: rows
+    for (iz = 0; iz <  catPortlets.length; iz++)
+    {         
+         var cellIndex = portletCount % columns;
+         if (cellIndex == 0)
+         {
+             outerRow = ptable.insertRow(rowCount);
+             rowCount = rowCount + 1;
+         }
+         var cell = outerRow.insertCell(cellIndex);            
+         var pt1 = document.createElement("table");
+         var row0 = pt1.insertRow(0);
+         var c0 = row0.insertCell(0);
+         var c1 = row0.insertCell(1);
+         c1.setAttribute("style","font-size: 9pt; color: blue;");
+         //c1.setAttribute("class","portlet-selector-title");
+         var image = new Image();
+
+         image.src = currentPortlets[catPortlets[iz]].image;
+
+         c0.appendChild(image);
+         c1.innerHTML = currentPortlets[catPortlets[iz]].display;
+        
+         var pt2 = document.createElement("table");
+         var row1 = pt2.insertRow(0);
+         c0 = row1.insertCell(0);
+         c0.setAttribute("style","font-size: 8pt; color: green;");
+         //c0.setAttribute("class","portlet-selector-text");
+         c0.innerHTML = currentPortlets[catPortlets[iz]].desc;
+         
+         var pt3 = document.createElement("table");
+         var row3 = pt3.insertRow(0);
+         c0 = row3.insertCell(0);
+         c0.setAttribute("style","font-size: 8pt; color: blue;");
+         var a = document.createElement("a");
+         a.innerHTML = "Add"; // TODO: localize
+         a.href = "javascript:displayAddPortletDialog(" + "\"" + currentPortlets[catPortlets[iz]].name + "\"" + ")";
+         c0.appendChild(a);
+         c1 = row3.insertCell(1);
+         c1.innerHTML = "Count: " + currentPortlets[catPortlets[iz]].count; // TODO: localize
+         c1.setAttribute("style","font-size: 8pt; color: blue;");
+         c1.setAttribute("id", currentPortlets[catPortlets[iz]].name);
+
+         cell.appendChild(pt1);
+         cell.appendChild(pt2);
+         cell.appendChild(pt3);
+         portletCount = portletCount + 1;
+    }
+    highlightSelectedCategory(cat);
+}
+function displayAddPortletDialog(portletName)
+{
+   var nameSpan = dojo.byId( "portletDefName" );   
+   var theNewPortlet = document.getElementById('theNewPortlet');
+   theNewPortlet.value = portletName;
+   nameSpan.innerHTML = selectorPortlets[portletName].display;   
+   dojo.widget.byId("AddPortletDialog").show();   
+}
+function addPortletToPage()
+{                                                      
+   var theNewPortlet = document.getElementById('theNewPortlet').value;
+   selectorPortlets[theNewPortlet].count = selectorPortlets[theNewPortlet].count + 1;
+   var cell = document.getElementById(theNewPortlet);
+   if (cell != null)
+   {
+      cell.innerHTML = "Count: " + selectorPortlets[theNewPortlet].count; // TODO: localize
+   }
+   dojo.widget.byId("AddPortletDialog").hide();   
+   var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
+   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + "$jspage";
+   jetspeed.addNewPortletDefinition( portletDef, null, pagePath );
+}
+//   dojo.lang.setTimeout(window, "performSearch2", 20);
+function performSearch()
+{
+   var ix = this.categories.length-1;
+   this.categories[ix].portlets = new Array();    
+   var searchString = document.getElementById("searchString").value;
+   jetspeed.searchForPortletDefinitions(searchString, searchFinishedFunction);
+}
+function searchFinishedFunction(domainObjects, portletList)
+{
+   var searchIndex = categories.length-1; 
+   for ( var i = 0 ; i < portletList.length ; i++ )
+   {
+       categories[searchIndex].portlets[i] = portletList[i].portletName;
+   }
+   displayPortlets("Search");   
+}
+function highlightSelectedCategory(cat)
+{
+    var ctable = document.getElementById('ctable');
+    var row = ctable.rows[0];
+    for (i = 0; i < row.childNodes.length; i++)
+    {
+        var a = row.childNodes[i].firstChild;
+        var atext = a.innerHTML;
+        var style = row.childNodes[i].firstChild.attributes.getNamedItem("style");
+        if (atext == cat)
+             a.setAttribute("style", "font-weight:bold");
+        else
+             a.setAttribute("style", "font-weight:normal");
+    }
+}
+function initializePortletSelector()
+{
+    categories[0] = new CategoryInfo("All");
+    #foreach ( $portlet in $portlets )
+    selectorPortlets["$portlet.Name"] = new PortletInfo("$portlet.Name", "$!portlet.DisplayName", "$!portlet.Description", "$!portlet.Image");
+    #set ($count = $velocityCount - 1)
+    categories[0].portlets[$count] = "$portlet.Name";
+    #end
+    #foreach ( $cat in $categories)
+    categories[$velocityCount] = new CategoryInfo("$cat.Name");
+    #set ($icount = $velocityCount)
+    #foreach ( $portlet in $cat.Portlets )
+    #set ($jcount = $velocityCount - 1)
+    categories[$icount].portlets[$jcount] = "$portlet.Name";
+    #end
+    #end
+    var ctable = document.getElementById('ctable');
+    var row = ctable.insertRow(0);
+    for(i=0; i<categories.length; i++)
+    {    
+         var c1 = row.insertCell(i);
+         var a = document.createElement("a");
+         a.innerHTML = categories[i].name;
+         a.href = "javascript:displayPortlets(" + "\"" + categories[i].name + "\"" + ")";
+         a.setAttribute("style", "font-weight:normal");
+         c1.appendChild(a);
+    }
+     categories[categories.length] = new CategoryInfo("Search"); // TODO: localize
+     var c1 = row.insertCell(i);
+     var a = document.createElement("a");
+     a.innerHTML = categories[i].name;
+     a.href = "javascript:displayPortlets(" + "\"" + categories[i].name + "\"" + ")";
+     a.setAttribute("style", "font-weight:normal");
+     c1.appendChild(a);
+     var c2 = row.insertCell(i+1);
+     var a2 = document.createElement("a");
+     a2.innerHTML = "Back to Page";  // TODO: localize
+     // TODO: determine if JETSPEED or DESKTOP 
+     a2.href = jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED + "/portal" + "$jspage";
+     a2.setAttribute("style", "font-weight:normal");
+     c2.appendChild(a2);
+
+     displayPortlets("All");
+}
+window.selectorPortlets = new Array();
+window.categories = new Array();
+dojo.addOnLoad( window.initializePortletSelector );
+</script>

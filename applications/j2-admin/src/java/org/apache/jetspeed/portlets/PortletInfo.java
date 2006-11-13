@@ -12,7 +12,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 package org.apache.jetspeed.portlets;
 
 import java.io.Serializable;
@@ -31,6 +30,7 @@ public class PortletInfo implements Serializable
     String name;
     String displayName;
     String description;
+    String image;
     
     public PortletInfo(String name, String displayName, String description)
     {
@@ -38,6 +38,15 @@ public class PortletInfo implements Serializable
         this.displayName = displayName;
         this.description = description;
     }
+
+    public PortletInfo(String name, String displayName, String description, String image)
+    {
+        this.name = name;
+        this.displayName = displayName;
+        this.description = description;
+        this.image = image;
+    }
+    
     /**
      * @return Returns the description.
      */
@@ -58,5 +67,23 @@ public class PortletInfo implements Serializable
     public String getName()
     {
         return name;
+    }
+
+    
+    /**
+     * @return Returns the image.
+     */
+    public String getImage()
+    {
+        return image;
+    }
+
+    
+    /**
+     * @param image The image to set.
+     */
+    public void setImage(String image)
+    {
+        this.image = image;
     }
 }
