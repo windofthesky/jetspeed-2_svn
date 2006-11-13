@@ -13,6 +13,6 @@ limitations under the License.
 -->
 <folder hidden="true">
   <security-constraints>
-    <security-constraints-ref>users</security-constraints-ref>
+    <security-constraints-ref>AEUV</security-constraints-ref>
   </security-constraints>
 </folder>
