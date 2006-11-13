@@ -62,7 +62,7 @@ limitations under the License.
     <portlet-info>
       <title>RSS Portlet</title>
       <short-title>RSS</short-title>
-      <keywords>RSS,syndication</keywords>
+      <keywords>news,RSS,syndication</keywords>
     </portlet-info>	
 	<portlet-preferences>	
 		<preference>
@@ -135,7 +135,7 @@ limitations under the License.
     <portlet-info>
       <title>Rome RSS Portlet</title>
       <short-title>Rome RSS</short-title>
-      <keywords>RSS,atom,syndication</keywords>
+      <keywords>news,RSS,atom,syndication</keywords>
     </portlet-info>	
 	<portlet-preferences>
 		<preference>
