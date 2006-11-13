@@ -622,7 +622,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         
         String windowActionButtonOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER;
         String actionButtonOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionButtonOrderName ), actionList );
-        if ( actionButtonOrderContent.length() > 0 )
+        if ( actionButtonOrderContent != null && actionButtonOrderContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionButtonOrderName, namedResourcesAddedFragmentsDefault, null ) )
             {
@@ -632,7 +632,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         
         String windowActionNoImageName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE;
         String actionNoImageContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionNoImageName ), actionList );
-        if ( actionNoImageContent.length() > 0 )
+        if ( actionNoImageContent != null && actionNoImageContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionNoImageName, namedResourcesAddedFragmentsDefault, null ) )
             {
@@ -642,7 +642,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         
         String windowActionMenuOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER;
         String actionMenuOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionMenuOrderName ), actionList );
-        if ( actionMenuOrderContent.length() > 0 )
+        if ( actionMenuOrderContent != null && actionMenuOrderContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionMenuOrderName, namedResourcesAddedFragmentsDefault, null ) )
             {
@@ -660,12 +660,28 @@ public class HeaderAggregatorImpl implements PageAggregator
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonHide = " ).append( windowActionButtonHide ).append( ";" ).append( EOL );
         }
 
-        // windowActionButtonMax - desktop.window.action.button.maximum
         String windowActionButtonMaxName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
         String windowActionButtonMax = makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
         if ( windowActionButtonMax != null && canAddHeaderNamedResourceFragment( windowActionButtonMaxName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
+        }
+        
+        String windowThemeName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
+        String windowTheme = (String)desktopConfigMap.get( windowThemeName );
+        if ( windowTheme != null && windowTheme.length() > 0 && canAddHeaderNamedResourceFragment( windowThemeName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowTheme = \"" ).append( windowTheme ).append( "\";" ).append( EOL );
+        }
+        
+        String windowThemesAllowedName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_THEME_ALLOWED;
+        String windowThemesAllowedContent = makeJSONStringArray( (List)desktopConfigMap.get( windowThemesAllowedName ) );
+        if ( windowThemesAllowedContent != null && windowThemesAllowedContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowThemesAllowedName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowThemesAllowed = " ).append( windowThemesAllowedContent ).append( ";" ).append( EOL );
+            }
         }
 
         if ( desktopDojoConfigContent.length() > 0 )
