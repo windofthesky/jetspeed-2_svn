@@ -154,7 +154,7 @@ limitations under the License.
 ##        #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
 ##        <a href="#" onClick="portletform.action='$formAction';openWindow('$response.encodeURL($chooser)');return false">
 ############################################
-          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${rc.Page.Path}")
+          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${rc.Path}")
           <a href="$response.encodeURL($chooser)">
           <img src="#GetPageResource('images/select.gif')" border="0" title="$messages.getString("portal.page.editing.addportlet")"/>
         </a>
