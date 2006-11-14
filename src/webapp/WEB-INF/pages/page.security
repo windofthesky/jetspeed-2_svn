@@ -39,5 +39,15 @@
       <permissions>view, edit</permissions>
     </security-constraint>
   </security-constraints-def>
+  <security-constraints-def name="AEUV">
+    <security-constraint>
+      <users>admin</users>
+      <permissions>view, edit</permissions>
+    </security-constraint>
+    <security-constraint>
+      <users>user</users>
+      <permissions>view</permissions>
+    </security-constraint>    
+  </security-constraints-def>
 
 </page-security>
