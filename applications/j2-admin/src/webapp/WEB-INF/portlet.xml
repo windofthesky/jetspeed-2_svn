@@ -1406,6 +1406,34 @@ limitations under the License.
             </preference>
         </portlet-preferences>        
     </portlet>
-             
+
+  <portlet id="SitemapView">
+    <portlet-name>SitemapView</portlet-name>
+    <display-name>Sitemap View</display-name>
+    <description>A view of the site map available to the current user</description>      
+    <portlet-class>org.apache.portals.bridges.velocity.GenericVelocityPortlet</portlet-class>
+    <resource-bundle>org.apache.jetspeed.portlets.site.resources.Sitemap</resource-bundle>
+    <init-param>
+      <description>This parameter sets the template used in view mode.</description>
+      <name>ViewPage</name>
+      <value>/WEB-INF/view/site/sitemap.vm</value>
+    </init-param>
+    <init-param>
+        <name>portlet-icon</name>
+        <value>system-file-manager.png</value>
+    </init-param>          
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+      <supported-locale>en</supported-locale>
+      <supported-locale>pt</supported-locale>      
+      <portlet-info>
+        <title>Site Map View</title>
+        <short-title>Site</short-title>
+        <keywords>site,sitemap,map,portal,view</keywords>
+      </portlet-info>
+  </portlet>
+                 
 </portlet-app>
 

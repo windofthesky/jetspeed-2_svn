@@ -1,0 +1,34 @@
+#set($site = $request.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
+#set ($PropertiesValue = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($req = $rc.Request)
+#set($preferedLocale = "en")
+#set($navigationsStandardMenu = $site.getMenu("site-navigations"))
+
+<div id="contentsPageTitleContainer">
+<p class="contentsPageIntro"><b>$PropertiesValue.getString('IntroText')</b></p>
+
+<p style="margin-top: 25px"></p>
+</div><!-- Contents Main Container -->
+<div id="contentsMainContainer">
+
+#set($myVar =2)
+#set($childVar =1)
+#if(!$navigationsStandardMenu.empty)
+      <p class="mapaSiteTitle">1.  <a href="${req.ContextPath}/">HomePage</a></p>
+      <p class="contentsPageSep" style="margin: 15px 0 10px 0"></p>
+    #foreach($element in $navigationsStandardMenu.elements.iterator())
+        <p class="mapaSiteTitle">$myVar.  <a href="${req.ContextPath}/portal$element.url">$element.Title</a></p>
+        <p class="contentsPageSep" style="margin: 15px 0 10px 0"></p>
+        #if($element.elementType == "menu")
+            <ul class="mapaSiteListLevel1">
+            #set($childVar =1)
+               #foreach($childElement in $element.elements.iterator())
+                    <li>$myVar.$childVar <a href="${req.ContextPath}/portal$childElement.url">$childElement.Title</a></li>
+                    #set($childVar = $childVar+1)    
+               #end
+            </ul>
+         #end
+        #set($myVar = $myVar+1)
+    #end
+#end
