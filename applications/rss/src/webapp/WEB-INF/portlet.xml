@@ -14,9 +14,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<portlet-app id="rss" version="1.0">
+<portlet-app id="rss" 
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" version="1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
 
 <portlet id="RSS">
+    <description>RSS is a simple XML-based system that allows users to subscribe to their favorite websites. 
+        Using RSS, content is stored into a standardized format, which can be viewed and organized 
+        through RSS-aware software or automatically conveyed as new content on another website or portal.</description>
+    <portlet-name>RSS</portlet-name>
+    <display-name>RSS Portlet</display-name>    
+    <portlet-class>org.apache.portals.applications.rss.RSSPortlet</portlet-class>    
     <init-param>
       <name>HelpPage</name>
       <value>/WEB-INF/view/rss-help.html</value>
@@ -26,24 +35,24 @@ limitations under the License.
       <value>/WEB-INF/view/edit-prefs.vm</value>
     </init-param>		
 	<init-param>
+      <description>Default RSS Transform XSLT</description>        
       <name>stylesheet</name>
       <value>/WEB-INF/xsl/rss.xsl</value>
-      <description>Default RSS Transform XSLT</description>
 	</init-param>
 	<init-param>
+      <description>HTML RSS Transform XSLT</description>        
       <name>stylesheet.text/html</name>
       <value>/WEB-INF/xsl/rss.xsl</value>
-      <description>HTML RSS Transform XSLT</description>
 	</init-param>
 	<init-param>
+      <description>WML RSS Transform XSLT</description>        
       <name>stylesheet.text/vnd.wap.wml</name>
       <value>/WEB-INF/xsl/rss-wml.xsl</value>
-      <description>WML RSS Transform XSLT</description>
 	</init-param>		
-    <portlet-name>RSS</portlet-name>
-    <display-name>RSS Portlet</display-name>
-    <description>RSS Portlet</description>
-    <portlet-class>org.apache.portals.applications.rss.RSSPortlet</portlet-class>
+    <init-param>
+        <name>portlet-icon</name>
+        <value>internet-news-reader.png</value>
+    </init-param>    
     <expiration-cache>15</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -60,7 +69,7 @@ limitations under the License.
     <supported-locale>fr</supported-locale>
     <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
     <portlet-info>
-      <title>RSS Portlet</title>
+      <title>News</title>
       <short-title>RSS</short-title>
       <keywords>news,RSS,syndication</keywords>
     </portlet-info>	
@@ -97,6 +106,12 @@ limitations under the License.
 </portlet>
 
 <portlet id="RomeRSS">
+    <description>RSS is a simple XML-based system that allows users to subscribe to their favorite websites. 
+        Using RSS, content is stored into a standardized format, which can be viewed and organized 
+        through RSS-aware software or automatically conveyed as new content on another website or portal.</description>    
+    <portlet-name>RomeRSS</portlet-name>
+    <display-name>Rome RSS Portlet</display-name>
+    <portlet-class>org.apache.portals.applications.rss.RomeRSSPortlet</portlet-class>    
 	<init-param>
 		<name>AllowPreferences</name>
 		<value>true</value>
@@ -113,11 +128,10 @@ limitations under the License.
       <name>EditPage</name>
       <value>/WEB-INF/view/edit-prefs.vm</value>
     </init-param>			
-
-    <portlet-name>RomeRSS</portlet-name>
-    <display-name>Rome RSS Portlet</display-name>
-    <description>Rome RSS Portlet</description>
-    <portlet-class>org.apache.portals.applications.rss.RomeRSSPortlet</portlet-class>
+    <init-param>
+        <name>portlet-icon</name>
+        <value>internet-news-reader.png</value>
+    </init-param>
     <expiration-cache>15</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -133,8 +147,8 @@ limitations under the License.
     <supported-locale>fr</supported-locale>
     <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
     <portlet-info>
-      <title>Rome RSS Portlet</title>
-      <short-title>Rome RSS</short-title>
+      <title>RSS(R)</title>
+      <short-title>RSS</short-title>
       <keywords>news,RSS,atom,syndication</keywords>
     </portlet-info>	
 	<portlet-preferences>
@@ -165,5 +179,332 @@ limitations under the License.
 	</portlet-preferences>		
 </portlet>
 
+<portlet id="BBCFootballNews">
+    <description>This is an RSS feed from the BBC Sport website for the latest football (soccer) news. 
+     RSS feeds allow you to stay up to date with the latest news and features you want from BBC Sport..</description>    
+    <portlet-name>BBCFootballNews</portlet-name>
+    <display-name>Football (Soccer) Sports News from the BBC</display-name>
+    <portlet-class>org.apache.portals.applications.rss.RSSPortlet</portlet-class>    
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/view/rss-help.html</value>
+    </init-param>	
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>		
+	<init-param>
+      <description>Default RSS Transform XSLT</description>        
+      <name>stylesheet</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>HTML RSS Transform XSLT</description>        
+      <name>stylesheet.text/html</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>WML RSS Transform XSLT</description>        
+      <name>stylesheet.text/vnd.wap.wml</name>
+      <value>/WEB-INF/xsl/rss-wml.xsl</value>
+	</init-param>		
+    <init-param>
+        <name>portlet-icon</name>
+        <value>bbcnews.png</value>
+    </init-param>    
+    <expiration-cache>15</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>	 
+      <portlet-mode>HELP</portlet-mode>	  	  	   
+    </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>
+      <portlet-mode>VIEW</portlet-mode>	  
+	</supports>	
+    <supported-locale>en</supported-locale>
+    <supported-locale>es</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
+    <portlet-info>
+      <title>BBC Football News</title>
+      <short-title>Football</short-title>
+      <keywords>sports,football,soccer,RSS,syndication</keywords>
+    </portlet-info>	
+	<portlet-preferences>	
+		<preference>
+			<name>url</name>
+			<value>http://newsrss.bbc.co.uk/rss/sportonline_uk_edition/football/rss.xml</value>		
+		</preference>	
+		<preference>
+			<name>itemdisplayed</name>
+			<value>15</value>		
+		</preference>
+		<preference>
+			<name>openinpopup</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showdescription</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>showtitle</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showtextinput</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>minrefresh</name>
+			<value>3600</value>		
+		</preference>	
+	</portlet-preferences>				
+</portlet>
+
+<portlet id="NFLNews">
+    <description>This is an RSS feed from the ESPN website for the latest NFL American football news. 
+     RSS feeds allow you to stay up to date with the latest news and headlines from ESPN.</description>    
+    <portlet-name>NFLNews</portlet-name>
+    <display-name>Football (American) Sports News from ESPN</display-name>
+    <portlet-class>org.apache.portals.applications.rss.RSSPortlet</portlet-class>    
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/view/rss-help.html</value>
+    </init-param>	
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>		
+	<init-param>
+      <description>Default RSS Transform XSLT</description>        
+      <name>stylesheet</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>HTML RSS Transform XSLT</description>        
+      <name>stylesheet.text/html</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>WML RSS Transform XSLT</description>        
+      <name>stylesheet.text/vnd.wap.wml</name>
+      <value>/WEB-INF/xsl/rss-wml.xsl</value>
+	</init-param>		
+    <init-param>
+        <name>portlet-icon</name>
+        <value>nfl.png</value>
+    </init-param>    
+    <expiration-cache>15</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>	 
+      <portlet-mode>HELP</portlet-mode>	  	  	   
+    </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>
+      <portlet-mode>VIEW</portlet-mode>	  
+	</supports>	
+    <supported-locale>en</supported-locale>
+    <supported-locale>es</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
+    <portlet-info>
+      <title>NFL News</title>
+      <short-title>NFL</short-title>
+      <keywords>sports,football,NFL,RSS,syndication</keywords>
+    </portlet-info>	
+	<portlet-preferences>	
+		<preference>
+			<name>url</name>
+			<value>http://sports.espn.go.com/espn/rss/nfl/news</value>		
+		</preference>	
+		<preference>
+			<name>itemdisplayed</name>
+			<value>15</value>		
+		</preference>
+		<preference>
+			<name>openinpopup</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showdescription</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>showtitle</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showtextinput</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>minrefresh</name>
+			<value>3600</value>		
+		</preference>	
+	</portlet-preferences>				
+</portlet>
+    
+<portlet id="TechNews">
+    <description>Latest Technology Industry News from the BBC in RSS format.
+     RSS feeds allow you to stay up to date with the latest news and headlines from BBC.</description>    
+    <portlet-name>TechNews</portlet-name>
+    <display-name>Latest Technology News</display-name>
+    <portlet-class>org.apache.portals.applications.rss.RSSPortlet</portlet-class>    
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/view/rss-help.html</value>
+    </init-param>	
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>		
+	<init-param>
+      <description>Default RSS Transform XSLT</description>        
+      <name>stylesheet</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>HTML RSS Transform XSLT</description>        
+      <name>stylesheet.text/html</name>
+      <value>/WEB-INF/xsl/rss.xsl</value>
+	</init-param>
+	<init-param>
+      <description>WML RSS Transform XSLT</description>        
+      <name>stylesheet.text/vnd.wap.wml</name>
+      <value>/WEB-INF/xsl/rss-wml.xsl</value>
+	</init-param>		
+    <init-param>
+        <name>portlet-icon</name>
+        <value>bbcnews.png</value>
+    </init-param>    
+    <expiration-cache>15</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>	 
+      <portlet-mode>HELP</portlet-mode>	  	  	   
+    </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>
+      <portlet-mode>VIEW</portlet-mode>	  
+	</supports>	
+    <supported-locale>en</supported-locale>
+    <supported-locale>es</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
+    <portlet-info>
+      <title>Technology news</title>
+      <short-title>Tech</short-title>
+      <keywords>news,tech,technology,computer,software,IT,IS,RSS,syndication</keywords>
+    </portlet-info>	
+	<portlet-preferences>	
+		<preference>
+			<name>url</name>
+			<value>http://news.bbc.co.uk/rss/newsonline_uk_edition/technology/rss.xml</value>		
+		</preference>	
+		<preference>
+			<name>itemdisplayed</name>
+			<value>15</value>		
+		</preference>
+		<preference>
+			<name>openinpopup</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showdescription</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>showtitle</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showtextinput</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>minrefresh</name>
+			<value>3600</value>		
+		</preference>	
+	</portlet-preferences>				
+</portlet>
+
+<portlet id="StockMarketNews">
+    <description>Latest Stock Market and Financial News from Yahoo RSS news feeds.</description>    
+    <portlet-name>StockMarketNews</portlet-name>
+    <display-name>Stock Market News</display-name>
+    <portlet-class>org.apache.portals.applications.rss.RomeRSSPortlet</portlet-class>    
+	<init-param>
+		<name>AllowPreferences</name>
+		<value>true</value>
+	</init-param>
+	<init-param>
+		<name>ViewPage</name>
+		<value>/WEB-INF/view/view.vm</value>
+	</init-param>	
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/view/rss-help.html</value>
+    </init-param>	
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>			
+    <init-param>
+        <name>portlet-icon</name>
+        <value>utilities-system-monitor.png</value>
+    </init-param>
+    <expiration-cache>15</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>	  
+      <portlet-mode>HELP</portlet-mode>	  	  
+    </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>
+      <portlet-mode>VIEW</portlet-mode>	  
+	</supports>	
+    <supported-locale>en</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <resource-bundle>org.apache.portals.applications.rss.resources.RssResources</resource-bundle>
+    <portlet-info>
+      <title>Stock Market News</title>
+      <short-title>Market News</short-title>
+      <keywords>news,RSS,stock,market,finance,financial,business</keywords>
+    </portlet-info>	
+	<portlet-preferences>
+		<preference>
+			<name>url</name>
+			<value>http://rss.news.yahoo.com/rss/stocks</value>		
+		</preference>	
+		<preference>
+			<name>itemdisplayed</name>
+			<value>15</value>		
+		</preference>
+		<preference>
+			<name>openinpopup</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showdescription</name>
+			<value>true</value>		
+		</preference>	
+		<preference>
+			<name>showtitle</name>
+			<value>true</value>		
+		</preference>
+		<preference>
+			<name>showtextinput</name>
+			<value>false</value>		
+		</preference>		
+	</portlet-preferences>		
+</portlet>
+        
 </portlet-app>
 
