@@ -322,6 +322,7 @@ public class MovePortletAction
                 Coordinate returnCoordinate = null;
                 float oldX = 0f, oldY = 0f, oldZ = 0f, oldWidth = 0f, oldHeight = 0f;
                 float x = -1f, y = -1f, z = -1f, width = -1f, height = -1f;
+                boolean absHeightChanged = false;
                 
                 String posExtended = getActionParameter(requestContext, DESKTOP_EXTENDED);
                 if ( posExtended != null )
@@ -343,6 +344,14 @@ public class MovePortletAction
                 {
                     Coordinate a_oCoordinate = getCoordinateFromParams(requestContext);
                     returnCoordinate = placement.moveAbsolute(fragment, a_oCoordinate);
+                    String sHeight = getActionParameter(requestContext, HEIGHT);
+                    if ( sHeight != null && sHeight.length() > 0 )
+                    {
+                        oldHeight = fragment.getLayoutHeight();
+                        height = Float.parseFloat(sHeight);
+                        fragment.setLayoutHeight(height);
+                        absHeightChanged = true;
+                    }
                 } 
                 else if (iMoveType == LEFT)
                 {
@@ -426,6 +435,10 @@ public class MovePortletAction
                             .getNewCol()));
                     resultMap.put(NEWROW, String.valueOf(returnCoordinate
                             .getNewRow()));
+                    if ( absHeightChanged )
+                    {
+                        putCartesianResult(resultMap, height, oldHeight, HEIGHT, OLD_HEIGHT);
+                    }
                 }
             }
             resultMap.put(STATUS, status);

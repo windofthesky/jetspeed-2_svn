@@ -667,7 +667,7 @@ public class HeaderAggregatorImpl implements PageAggregator
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
         }
         
-        String windowThemeName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
+        String windowThemeName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_THEME;
         String windowTheme = (String)desktopConfigMap.get( windowThemeName );
         if ( windowTheme != null && windowTheme.length() > 0 && canAddHeaderNamedResourceFragment( windowThemeName, namedResourcesAddedFragmentsDefault, null ) )
         {
