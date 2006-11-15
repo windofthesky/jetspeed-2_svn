@@ -41,6 +41,10 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /** The default authentication provider name. */
     private String defaultAuthenticationProvider = null;
 
+    
+    /** The default authentication provider name for raw passwords. */
+    private String defaultRawAuthenticationProvider = null;
+
     /**
      * <p>
      * Constructor given a list of {@link AuthenticationProvider}.
@@ -81,6 +85,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     {
         return this.defaultAuthenticationProvider;
     }
+    
     
     /**
      * @see org.apache.jetspeed.security.AuthenticationProviderProxy#getAuthenticationProvider(java.lang.String)
@@ -294,6 +299,40 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
     }
 
+    
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#importPassword(String, String, String, String)
+     */
+    public void importPassword(String userName, String newPassword, String authenticationProvider) throws SecurityException
+    {
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
+        {
+            provider.getCredentialHandler().importPassword(userName,newPassword);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#importPassword(java.lang.String,java.lang.String,java.lang.String)
+     */
+    public void importPassword(String userName, String newPassword) throws SecurityException
+    {
+        String providerName = getAuthenticationProvider(userName);
+        if ( providerName != null )
+        {
+            importPassword(userName, newPassword, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
+        }
+    }
+    
+    
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */

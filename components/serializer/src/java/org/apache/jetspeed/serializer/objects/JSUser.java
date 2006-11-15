@@ -18,11 +18,12 @@ package org.apache.jetspeed.serializer.objects;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Jetspeed Serialized (JS) User
@@ -253,35 +254,37 @@ public class JSUser
             try
             {
                 JSUser g = (JSUser) o;
-                g.name = xml.getAttribute("name", "unknown");
-                g.password = xml.getAttribute("password","").toCharArray();
+                g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "unknown"));
+                String pw = StringEscapeUtils.unescapeHtml(xml.getAttribute("password",""));
+                if ((pw != null) && (pw.length()>0))
+                	g.password = pw.toCharArray();
+                else
+                	g.password = null;
                 
                 Object o1 = null;
  
 
-                while (xml.hasNext())
-                {
-                     o1 = xml.getNext(); // mime
-
-                    if (o1 instanceof JSUserRoles)
-                        g.roleString = (JSUserRoles) o1;
-                    else
-                    if (o1 instanceof JSUserGroups)
-                        g.groupString = (JSUserGroups) o1;
-                    else
-                        if (o1 instanceof JSNameValuePairs)
-                        g.preferences  = (JSNameValuePairs) o1;
-                        else
+				while (xml.hasNext())
+				{
+					o1 = xml.getNext(); // mime
+					
+					if (o1 instanceof JSUserGroups)
+						g.groupString = (JSUserGroups) o1;
+					else
+	                    if (o1 instanceof JSUserRoles)
+	                        g.roleString = (JSUserRoles) o1;
+	                    else
                             if (o1 instanceof JSUserAttributes)
-                            g.userInfo  = (JSUserAttributes) o1;
-                            else
-                                if (o1 instanceof JSPrincipalRules)
-                                g.rules  = (JSPrincipalRules) o1;
+	                            g.userInfo  = (JSUserAttributes) o1;
+	                            else
+		                        if (o1 instanceof JSNameValuePairs)
+		                        	g.preferences  = (JSNameValuePairs) o1;
+		                        else
+	                                if (o1 instanceof JSPrincipalRules)
+	                                g.rules  = (JSPrincipalRules) o1;
                 }
                 
-                g.roles = g.getTokens((String) xml.get("roles"));
-                g.groups = g.getTokens((String) xml.get("groups"));
-
+ 
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -290,19 +293,6 @@ public class JSUser
 
     };
 
-    // todo - needs work....outcome should be the right collection for lookup
-    // etc....
-    private ArrayList getTokens(String _line)
-    {
-        if ((_line == null) || (_line.length() == 0)) return null;
-
-        StringTokenizer st = new StringTokenizer(_line, ",");
-        ArrayList list = new ArrayList();
-
-        while (st.hasMoreTokens())
-            list.add(st.nextToken());
-        return list;
-    }
 
     private String append(JSRole rule)
     {
@@ -381,5 +371,15 @@ public class JSUser
     {
         this.principal = principal;
     }
+
+	public JSUserGroups getGroupString()
+	{
+		return groupString;
+	}
+
+	public JSUserRoles getRoleString()
+	{
+		return roleString;
+	}
 
 }

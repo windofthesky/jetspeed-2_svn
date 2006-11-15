@@ -101,6 +101,15 @@ public class LdapCredentialHandler implements CredentialHandler
         }
     }
 
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#importPassword(java.lang.String,java.lang.String)
+     */
+    public void importPassword(String uid, String newPassword) throws SecurityException
+    {
+        ldap.changePassword(uid, newPassword);
+   }
+    
     /**
      * <p>
      * Adds or updates a private password credential. <br>

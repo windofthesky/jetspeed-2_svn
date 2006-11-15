@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
@@ -46,6 +48,7 @@ import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
@@ -54,10 +57,14 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.PortalResourcePermission;
+import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
@@ -124,10 +131,12 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private HashMap userMap = new HashMap();
 
     private HashMap mimeMap = new HashMap();
+    private HashMap mimeMapInt = new HashMap();
 
     private HashMap mediaMap = new HashMap();
 
     private HashMap capabilityMap = new HashMap();
+    private HashMap capabilityMapInt = new HashMap();
 
     private HashMap clientMap = new HashMap();
 
@@ -150,6 +159,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     /** current indent for XML files - defaults to tab */
     private String currentIndent = null;
 
+    private static String ENCODING_STRING = "JETSPEED 2.1 - 2006";
+    private static String JETSPEED = "JETSPEED";
+    
     public JetspeedSerializerImpl()
     {
     }
@@ -197,7 +209,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     public void initializeComponentManager(String appRoot, String[] bootConfig,
             String[] appConfig) throws SerializerException
     {
-        if (this.initialized)
+
+    	
+    	
+    	if (this.initialized)
             throw new SerializerException(
                     SerializerException.COMPONENT_MANAGER_EXISTS.create(""));
         SpringComponentManager cm = new SpringComponentManager(bootConfig,
@@ -264,6 +279,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         setupAliases(binding);
         checkSettings(settings);
 
+        /** determine if we need to backup the current data source*/
+        //TODO: HJB, implement logic for backup prior to XML import
+        
+        
         this.snapshot = readFile(importFileName, binding);
 
         if (this.snapshot == null)
@@ -284,18 +303,6 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                                             .getSavedSubversion())}));
 
         /** ok, now we have a valid snapshot and can start processing it */
-
-        // TODO: HJB complete rules/users etc. for read/write
-        // TODO: HJB rebuild objkect references from string lists
-        
-        
-        TEST_ONLY(binding, importFileName);
-
-        // TODO: HJB build simple j2 types (like Mime) first, if excluded read current ones
-        // TODO: HJB Reuse lookup tables with environment objects
-        // TODO: HJB Make sure to clean lookup tables before next run
-        
-        
 
         /** ensure we can work undisturbed */
         synchronized (cm)
@@ -566,22 +573,697 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         snapshot.setSavedSubversion(JSSnapshot.softwareSubVersion);
     }
 
-    private void importCapabilitiesInfrastructure()
+    
+    private void recreateCapabilities (Capabilities caps) throws SerializerException
     {
-        System.out.println("importCapabilitiesInfrastructure - processing");
+    	logMe("recreateCapabilities - processing");
+    	JSCapabilities capabilities = this.snapshot.getCapabilities();
+    	if ((capabilities != null) && (capabilities.size() > 0))
+    	{
+    		Iterator _it = capabilities.iterator();
+    		while (_it.hasNext())
+    		{
+    			JSCapability _c = (JSCapability)_it.next();
+// create a new Capability
+    			try
+    			{
+    				Capability capability = caps.createCapability(_c.getName());
+					/** THE KEY_OVERWRITE_EXISTING test is not required for capabilites, since they carry no other information than the name
+					 *  Used here for consistency, though
+					 */   				
+    				if ((this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (capability.getCapabilityId() == 0))
+    				{
+    					caps.storeCapability(capability);
+    				}
+    				this.capabilityMap.put(_c.getName(), capability);
+    			}
+    			catch (Exception e)
+    			{
+    				throw new SerializerException(
+    			            SerializerException.CREATE_OBJECT_FAILED
+    			            	.create("org.apache.jetspeed.capabilities.Capabilities",e.getLocalizedMessage()));
+ 			}
+    		}
+    	}
+    	else
+    		logMe("NO CAPABILITES?????");
+    	logMe("recreateCapabilities - done");
+    }
+    private void recreateMimeTypes (Capabilities caps) throws SerializerException
+    {
+    	logMe("recreateMimeTypes - processing");
+    	JSMimeTypes mimeTypes = this.snapshot.getMimeTypes();
+    	if ((mimeTypes != null) && (mimeTypes.size() > 0))
+    	{
+    		Iterator _it = mimeTypes.iterator();
+    		while (_it.hasNext())
+    		{
+    			JSMimeType _c = (JSMimeType)_it.next();
+// create a new Mime Type
+    			try
+    			{
+    				MimeType mimeType = caps.createMimeType(_c.getName());
+					/** THE KEY_OVERWRITE_EXISTING test is not required for mime types, since they carry no other information than the name
+					 *  Used here for consistency, though
+					 */   				
+    				if ((this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (mimeType.getMimetypeId() == 0))
+    				{
+    					caps.storeMimeType(mimeType);
+    				}
+    				this.mimeMap.put(_c.getName(), mimeType);
+
+    			}
+    			catch (Exception e)
+    			{
+    				throw new SerializerException(
+    			            SerializerException.CREATE_OBJECT_FAILED
+    			                    .create("org.apache.jetspeed.capabilities.MimeType",e.getLocalizedMessage()));
+    			}
+    		}
+    	}
+    	else
+    		logMe("NO MIME TYPES?????");
+    	logMe("recreateMimeTypes - done");
     }
 
-    private void importUsers()
+    private void recreateMediaTypes (Capabilities caps) throws SerializerException
     {
-        System.out.println("importUsers - processing");
-
+    	 String _line;
+    	 
+    	logMe("recreateMediaTypes - processing");
+    	JSMediaTypes mediaTypes = this.snapshot.getMediaTypes();
+    	if ((mediaTypes != null) && (mediaTypes.size() > 0))
+    	{
+    		Iterator _it = mediaTypes.iterator();
+    		while (_it.hasNext())
+    		{
+    			JSMediaType _c = (JSMediaType)_it.next();
+// create a new Media
+    			try
+    			{
+    				MediaType mediaType = caps.createMediaType(_c.getName());
+					/** THE KEY_OVERWRITE_EXISTING test IS required for media types, since they carry no other information than the name
+					 *  Used here for consistency, though
+					 */   				
+    				if ((this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (mediaType.getMediatypeId() == 0))
+    				{
+//    					 set object fields               
+    			        mediaType.setCharacterSet(_c.getCharacterSet());
+    			        mediaType.setTitle(_c.getTitel());
+    			        mediaType.setDescription(_c.getDescription());
+    			       
+    			        try
+    			        {
+    			        	_line = _c.getMimeTypesString().toString();
+    			        	ArrayList list = this.getTokens(_line);
+    			        	if ((list != null) && (list.size()>0))
+    			        	{
+    			        		Iterator _it1 = list.iterator();
+	        			        int added = 0;
+	        			        while (_it1.hasNext())
+	        			        {
+	        			        	MimeType _mt = caps.createMimeType((String)_it1.next());
+	        			        	if (_mt != null)
+	        			        		mediaType.addMimetype(_mt);
+	        			        	added++;
+	        			        }
+    			        	}
+    			        }
+    			        catch (Exception e1)
+    			        {
+    			        	e1.printStackTrace();
+    			        }
+    			        try
+    			        {
+    			        	_line  = _c.getCapabilitiesString().toString();
+    			        	ArrayList list = this.getTokens(_line);
+    			        	if ((list != null) && (list.size()>0))
+    			        	{
+	    			        	Iterator _it1 = list.iterator();
+	    			        	if ((list != null) && (list.size()>0))
+	    			        	{
+		        			        int added = 0;
+		        			        while (_it1.hasNext())
+		        			        {
+		        			        	Capability _ct = caps.createCapability((String)_it1.next());
+		        			        	if (_ct != null)
+		        			        		mediaType.addCapability(_ct);
+		        			        	added++;
+		        			        }
+	    			        	}
+    			        	}
+    			        }
+    			        catch (Exception e1)
+    			        {
+    			        	e1.printStackTrace();
+    			        }
+    					caps.storeMediaType(mediaType);
+    				}
+    				this.mediaMap.put(_c.getName(), mediaType);
+    			}
+    			catch (Exception e)
+    			{
+    				throw new SerializerException(
+    			            SerializerException.CREATE_OBJECT_FAILED
+    			                    .create("org.apache.jetspeed.capabilities.MediaType",e.getLocalizedMessage()));
+    			}
+    		}
+    	}
+    	else
+    		logMe("NO MEDIA TYPES?????");
+    	logMe("recreateMediaTypes - done");
+    }
+ 
+    
+    private void recreateClients (Capabilities caps) throws SerializerException
+    {
+    	 String _line;
+    	 
+    	logMe("recreateClients - processing");
+    	JSClients clients = this.snapshot.getClients();
+    	if ((clients != null) && (clients.size() > 0))
+    	{
+    		Iterator _it = clients.iterator();
+    		while (_it.hasNext())
+    		{
+    			JSClient _c = (JSClient)_it.next();
+// create a new Media
+    			try
+    			{
+    				Client client = caps.createClient(_c.getName());
+					/** THE KEY_OVERWRITE_EXISTING test IS required for media types, since they carry no other information than the name
+					 *  Used here for consistency, though
+					 */   				
+    				if ((this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (client.getClientId() == 0))
+    				{
+//    					 set object fields               
+    			        client.setUserAgentPattern(_c.getUserAgentPattern());
+    			        client.setManufacturer(_c.getManufacturer());
+    			        client.setModel(_c.getModel());
+    			        client.setEvalOrder(_c.getEvalOrder());
+    			        String myPrefMimeType = _c.getPreferredMimeTypeID();
+    			        client.setVersion(_c.getVersion());
+    			        try
+    			        {
+    			        	_line = _c.getMimeTypesString().toString();
+    			        	ArrayList list = this.getTokens(_line);
+    			        	if ((list != null) && (list.size()>0))
+    			        	{
+    			        		Iterator _it1 = list.iterator();
+	        			        int added = 0;
+	        			        while (_it1.hasNext())
+	        			        {
+	        			        	MimeType _mt = caps.createMimeType((String)_it1.next());
+	        			        	if (_mt != null)
+	        			        	{
+	        			        		client.getMimetypes().add(_mt);
+	        			        		if (_mt.getMimetypeId() == 0)
+	        			        		{
+	        			        			caps.storeMimeType(_mt);
+	        			        		}
+	        			        		if (myPrefMimeType.equalsIgnoreCase(_mt.getName()))
+	        			        				client.setPreferredMimeTypeId(_mt.getMimetypeId());	
+	        			        			
+	        			        	}
+	        			        	added++;
+	        			        }
+    			        	}
+    			        }
+    			        catch (Exception e1)
+    			        {
+    			        	e1.printStackTrace();
+    			        }
+    			        try
+    			        {
+    			        	_line  = _c.getCapabilitiesString().toString();
+    			        	ArrayList list = this.getTokens(_line);
+    			        	if ((list != null) && (list.size()>0))
+    			        	{
+	    			        	Iterator _it1 = list.iterator();
+	    			        	if ((list != null) && (list.size()>0))
+	    			        	{
+		        			        int added = 0;
+		        			        while (_it1.hasNext())
+		        			        {
+		        			        	Capability _ct = caps.createCapability((String)_it1.next());
+		        			        	if (_ct != null)
+		        			        		client.getCapabilities().add(_ct);
+		        			        	added++;
+		        			        }
+	    			        	}
+    			        	}
+    			        }
+    			        catch (Exception e1)
+    			        {
+    			        	e1.printStackTrace();
+    			        }
+    					caps.storeClient(client);
+    				}
+    				this.clientMap.put(_c.getName(), client);
+    			}
+    			catch (Exception e)
+    			{
+    				throw new SerializerException(
+    			            SerializerException.CREATE_OBJECT_FAILED
+    			                    .create("org.apache.jetspeed.capabilities.Client",e.getLocalizedMessage()));
+    			}
+    		}
+    	}
+    	else
+    		logMe("NO MEDIA TYPES?????");
+    	logMe("recreateClients - done");
     }
 
+    
+    private void importCapabilitiesInfrastructure() throws SerializerException
+    {
+    	logMe("importCapabilitiesInfrastructure - processing");
+        Capabilities caps = (Capabilities) cm
+        .getComponent("org.apache.jetspeed.capabilities.Capabilities");
+        if (caps == null)
+        	throw new SerializerException(
+            SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                    .create("org.apache.jetspeed.capabilities.Capabilities"));
+        
+        recreateCapabilities(caps);
+        recreateMimeTypes(caps);
+        recreateMediaTypes(caps);
+        recreateClients(caps);
+        
+        
+    	logMe("importCapabilitiesInfrastructure - processing done");
+    }
+
+
+    /**
+     * import the groups, roles and finally the users to the current environment
+     * 
+     * @throws SerializerException
+     */
+    private void recreateRolesGroupsUsers() throws SerializerException
+    {
+    	logMe("recreateRolesGroupsUsers");
+        GroupManager groupManager = (GroupManager) cm
+                .getComponent("org.apache.jetspeed.security.GroupManager");
+        if (groupManager == null)
+            throw new SerializerException(
+                    SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                            .create("org.apache.jetspeed.security.GroupManager"));
+        RoleManager roleManager = (RoleManager) cm
+        .getComponent("org.apache.jetspeed.security.RoleManager");
+        if (roleManager == null)
+            throw new SerializerException(
+                    SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                            .create("org.apache.jetspeed.security.RoleManager"));
+        UserManager userManager = (UserManager) cm
+        .getComponent("org.apache.jetspeed.security.UserManager");
+        if (userManager == null)
+        	throw new SerializerException(
+            SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                    .create("org.apache.jetspeed.security.UserManager"));
+
+        
+        
+        
+        JSGroups groups = null;
+        JSRoles roles = null;
+
+        groups = this.snapshot.getGroups();
+        
+        Iterator _it = groups.iterator();
+        while (_it.hasNext())
+        {
+        	String name = ((JSGroup)_it.next()).getName();
+
+	        try
+	        {
+	        	if (!(groupManager.groupExists(name)))
+	        		groupManager.addGroup(name);
+	        	Group group = groupManager.getGroup(name);
+	        	this.groupMap.put(name, group.getPrincipal());
+	        } catch (Exception e)
+	        {
+	            throw new SerializerException(
+	                    SerializerException.CREATE_OBJECT_FAILED
+	                            .create(new String[]
+	                            { "Group", e.getMessage()}));
+	        }
+        }
+    	logMe("recreateGroups - done");
+    	logMe("processing roles");
+
+        roles = this.snapshot.getRoles();
+        
+        _it = roles.iterator();
+        while (_it.hasNext())
+        {
+        	String name = ((JSRole)_it.next()).getName();
+
+	        try
+	        {
+	        	if (!(roleManager.roleExists(name)))
+	        		roleManager.addRole(name);
+	        	Role role = roleManager.getRole(name);
+	        	this.roleMap.put(name, role.getPrincipal());
+	        } catch (Exception e)
+	        {
+	            throw new SerializerException(
+	                    SerializerException.CREATE_OBJECT_FAILED
+	                            .create(new String[]
+	                            { "Role", e.getMessage()}));
+	        }
+        }
+    	logMe("recreateRoles - done");
+    	logMe("processing users");
+
+    	/** determine whether passwords can be reconstructed or not */
+    	int passwordEncoding = compareCurrentSecurityProvider(snapshot);
+        JSUsers users = null;
+        users = this.snapshot.getUsers();
+        
+        _it = users.iterator();
+        while (_it.hasNext())
+        {
+        	
+        	JSUser jsuser = (JSUser)_it.next();
+
+	        try
+	        {
+	        	User user = null;
+	        	if (userManager.userExists(jsuser.getName()))
+	        	{
+	        		user = userManager.getUser(jsuser.getName());
+	        	}
+				if ((this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (user == null))
+				{
+					if (user == null) //create new one
+					{
+    					String password = recreatePassword(jsuser.getPassword());
+    			    	logMe("add User "+ jsuser.getName() + " with password " + password);
+   			    		userManager.importUser(jsuser.getName(), password,(passwordEncoding == PASSTHRU_REQUIRED));
+    			    	logMe("add User done ");
+						user = userManager.getUser(jsuser.getName());
+					}
+					else
+					{}// we should not touch existing passwords....
+					
+				//credentials
+			        Subject subject = user.getSubject();
+
+					ArrayList listTemp = jsuser.getPrivateCredentials();
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+							subject.getPrivateCredentials().add(_itTemp.next());
+						}
+					}
+					listTemp = jsuser.getPublicCredentials();
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+							subject.getPublicCredentials().add(_itTemp.next());
+						}
+					}
+					JSUserGroups jsUserGroups = jsuser.getGroupString();
+					if (jsUserGroups != null)
+						listTemp = this.getTokens(jsUserGroups.toString());
+					else
+						listTemp = null;
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+							groupManager.addUserToGroup(jsuser.getName(), (String)_itTemp.next());
+						}
+					}
+					JSUserRoles jsUserRoles = jsuser.getRoleString();
+					if (jsUserRoles != null)
+						listTemp = this.getTokens(jsUserRoles.toString());
+					else
+						listTemp = null;
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+							roleManager.addRoleToUser(jsuser.getName(), (String)_itTemp.next());
+						}
+					}
+    				JSUserAttributes attributes = jsuser.getUserInfo();
+					if (attributes != null)
+					{
+		                Preferences userAttributes = user.getUserAttributes();
+						HashMap map = attributes.getMyMap();
+						if (map != null)
+						{
+							Iterator _itTemp = map.keySet().iterator();
+							while (_itTemp.hasNext())
+							{
+						         String userAttrName = (String)_itTemp.next();
+//						         if ( userAttributes.get(userAttrName, "").equals("") 
+						         String userAttrValue = (String)map.get(userAttrName);
+						         userAttributes.put(userAttrName, userAttrValue);
+				            }
+						}
+						
+					}
+    				
+					JSNameValuePairs jsNVP = jsuser.getPreferences();
+					if ((jsNVP != null) && (jsNVP.getMyMap() != null))
+					{
+    					Preferences preferences = user.getPreferences();	
+						Iterator _itTemp = jsNVP.getMyMap().keySet().iterator();
+						while (_itTemp.hasNext())
+						{
+							String prefKey = (String)_itTemp.next();
+							String prefValue = (String)(jsNVP.getMyMap().get(prefKey));
+							preferences.put(prefKey,prefValue);
+						}
+					}
+		        	
+		        	this.userMap.put(jsuser.getName(), getUserPrincipal(user));
+
+				}    					
+	        } catch (Exception e)
+	        {
+	            throw new SerializerException(
+	                    SerializerException.CREATE_OBJECT_FAILED
+	                            .create(new String[]
+	                            { "User", e.getMessage()}));
+	        }
+        }
+    	logMe("recreateUsers - done");
+    	recreatePermissions();
+    	return;
+    }
+    
+    /**
+     * called only after users have been established
+     * @throws SerializerException
+     */
+    private void recreateUserPrincipalRules() throws SerializerException
+    {
+    	logMe("recreateUserPrincipalRules - started");
+    	
+        Profiler pm = (Profiler) cm
+        .getComponent("org.apache.jetspeed.profiler.Profiler");
+        if (pm == null)
+
+        	throw new SerializerException(
+            SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                    .create("org.apache.jetspeed.profiler.Profiler"));
+        UserManager userManager = (UserManager) cm
+        .getComponent("org.apache.jetspeed.security.UserManager");
+        if (userManager == null)
+        	throw new SerializerException(
+            SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                    .create("org.apache.jetspeed.security.UserManager"));
+
+        // get Rules for each user
+
+        Iterator _itUsers = snapshot.getUsers().iterator();
+        while (_itUsers.hasNext())
+        {
+            JSUser _user = (JSUser) _itUsers.next();
+            JSPrincipalRules jsRules = _user.getRules();
+            try
+            {
+	            User user = userManager.getUser(_user.getName());
+	            Principal principal = getUserPrincipal(user);
+	            if (jsRules != null)
+	            {
+	            	Iterator _itRoles = jsRules.iterator();
+	                while (_itRoles.hasNext())
+	                {
+	                	JSPrincipalRule pr = (JSPrincipalRule) _itRoles.next();
+	                	ProfilingRule pRule = pm.getRule(pr.getRule());
+	                	
+	                	try
+	                	{
+	                		PrincipalRule p1 = pm.createPrincipalRule();
+	                		p1.setLocatorName(pr.getLocator());
+	                		p1.setProfilingRule(pRule);
+	                		p1.setPrincipalName(principal.getName());
+	                		pm.storePrincipalRule(p1);
+	                	}
+	                	catch (Exception eRole)
+	                	{
+	                		eRole.printStackTrace();
+	                	}
+	                }
+	            }
+            }
+        	catch (Exception eUser)
+        	{
+        		eUser.printStackTrace();
+        	}
+        }
+    	logMe("recreateUserPrincipalRules - done");
+
+    }
+    /**
+     * recreates all permissions from the current snapshot
+     * 
+     * @throws SerializerException
+     */
+    private void recreatePermissions() throws SerializerException
+    {
+    	logMe("recreatePermissions - started");
+        Object o = null;
+        PermissionManager pm = (PermissionManager) cm
+                .getComponent("org.apache.jetspeed.security.PermissionManager");
+        if (pm == null)
+            throw new SerializerException(
+                    SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                            .create("org.apache.jetspeed.security.PermissionManager"));
+
+        Iterator list = null;
+        try
+        {
+        	list = snapshot.getPermissions().iterator();
+        } catch (Exception e)
+        {
+            throw new SerializerException(
+                    SerializerException.GET_EXISTING_OBJECTS
+                            .create(new String[]
+                            { "Permissions", e.getMessage()}));
+        }
+
+        while (list.hasNext())
+        {
+            JSPermission _js = (JSPermission)list.next();
+            PortalResourcePermission perm = _js.getPermissionForType();
+            if ((perm != null) && (perm instanceof PortalResourcePermission))
+            {
+            	try
+                {
+                    pm.addPermission(perm);
+                    ArrayList listTemp = null;
+					JSUserGroups jsUserGroups = _js.getGroupString();
+					if (jsUserGroups != null)
+						listTemp = this.getTokens(jsUserGroups.toString());
+					else
+						listTemp = null;
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+							Principal p = (Principal)this.groupMap.get((String)_itTemp.next());
+							if (p != null)
+								pm.grantPermission(p, perm);
+						}
+					}
+					JSUserRoles jsUserRoles = _js.getRoleString();
+					if (jsUserRoles != null)
+						listTemp = this.getTokens(jsUserRoles.toString());
+					else
+						listTemp = null;
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+   							Principal p = (Principal)this.roleMap.get((String)_itTemp.next());
+							if (p != null)
+								pm.grantPermission(p, perm);
+						}
+					}
+					JSUserUsers jsUserUsers = _js.getUserString();
+					if (jsUserUsers != null)
+						listTemp = this.getTokens(jsUserUsers.toString());
+					else
+						listTemp = null;
+					if ((listTemp != null) && (listTemp.size()>0))
+					{
+						Iterator _itTemp = listTemp.iterator();
+						while (_itTemp.hasNext())
+						{
+   							Principal p = (Principal)this.userMap.get((String)_itTemp.next());
+							if (p != null)
+								pm.grantPermission(p, perm);
+						}
+					}
+
+	            } 
+	           	catch (Exception e)
+	            {
+	                throw new SerializerException(
+	                        SerializerException.CREATE_SERIALIZED_OBJECT_FAILED
+	                                .create(new String[]
+	                                { "Permissions", e.getMessage()}));
+	            }
+            }
+        }
+    	logMe("recreatePermissions - done");
+    }
+
+    private Principal getUserPrincipal(User user)
+    {
+        Subject subject = user.getSubject();
+        // get the user principal
+        Set principals = subject.getPrincipals();
+        Iterator list = principals.iterator();
+        while (list.hasNext())
+        {
+            BasePrincipal principal = (BasePrincipal) list.next();
+            String path = principal.getFullPath();
+            if (path.startsWith("/user/"))
+            return principal;
+        }
+        return null;
+
+    }
+    
     private void importProfiler()
     {
         System.out.println("importProfiler - processing");
-
+        try
+        {
+        	recreateProfilingRules();
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
+  
+        try
+        {
+            this.recreateRolesGroupsUsers();
+            recreateUserPrincipalRules();
+        	
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
     }
+
 
     /**
      * The workhorse for importing data
@@ -594,28 +1276,39 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void processImport() throws SerializerException
     {
         this.logMe("*********reinstalling data*********");
+        
+        // TODO: HJB Make sure to clean lookup tables before next run
 
         if (this.getSetting(JetspeedSerializer.KEY_PROCESS_CAPABILITIES))
         {
             logMe("creating clients, mediatypes and mimetypes");
             importCapabilitiesInfrastructure();
-        } else
-            logMe("capabilities skipped");
-
-        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_USERS))
-        {
-            logMe("creating users/roles/groups");
-            importUsers();
-        } else
-            logMe("users skipped");
-
+        }
+        
+        /**
+         * the order is important, since profiling rules are referenced by the user 
+         * 
+         */
+        
         if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PROFILER))
         {
-            logMe("collecting permissions, profiling rules etc.");
+            logMe("collecting permissions, profiling rules and users/proups etc. etc.");
             importProfiler();
         } else
+        {
             logMe("permissions, rules etc. skipped ");
-
+	       
+	        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_USERS))
+	        {
+	            logMe("creating users/roles/groups");
+	            this.recreateRolesGroupsUsers();
+	        }
+	        else
+	        {
+	            logMe("users skipped - ensure we have valid users to work with");
+	            exportUsers();
+	        }
+        } 
     }
 
     /**
@@ -669,57 +1362,75 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      */
     private void setupAliases(XMLBinding binding)
     {
-        binding.setAlias(JSRole.class, "role");
-        binding.setAlias(JSRoles.class, "all_roles");
-        binding.setAlias(JSGroup.class, "group");
-        binding.setAlias(JSGroups.class, "all_groups");
-        binding.setAlias(JSUser.class, "user");
-        binding.setAlias(JSUsers.class, "all_users");
+        binding.setAlias(JSRole.class, "Role");
+        binding.setAlias(JSRoles.class, "Roles");
+        binding.setAlias(JSGroup.class, "Group");
+        binding.setAlias(JSGroups.class, "Groups");
+        binding.setAlias(JSUser.class, "User");
+        binding.setAlias(JSUsers.class, "Users");
         binding.setAlias(JSNameValuePairs.class, "preferences");
         binding.setAlias(JSUserAttributes.class, "userinfo");
         binding.setAlias(JSSnapshot.class, "snapshot");
         binding.setAlias(JSUserRoles.class, "roles");
         binding.setAlias(JSUserGroups.class, "groups");
-        binding.setAlias(JSClient.class, "client");
-        binding.setAlias(JSClients.class, "all_clients");
+        binding.setAlias(JSClient.class, "Client");
+        binding.setAlias(JSClients.class, "Clients");
         binding.setAlias(JSClientCapabilities.class, "capabilities");
         binding.setAlias(JSClientMimeTypes.class, "mimeTypes");
-        binding.setAlias(JSMimeTypes.class, "all_mimeTypes");
-        binding.setAlias(JSMimeType.class, "all_mimeType");
-        binding.setAlias(JSCapabilities.class, "all_capabilities");
-        binding.setAlias(JSCapability.class, "capability");
-        binding.setAlias(JSMediaTypes.class, "all_mediaTypes");
-        binding.setAlias(JSMediaType.class, "mediaType");
+        binding.setAlias(JSMimeTypes.class, "MimeTypes");
+        binding.setAlias(JSMimeType.class, "MimeType");
+        binding.setAlias(JSCapabilities.class, "Capabilities");
+        binding.setAlias(JSCapability.class, "Capability");
+        binding.setAlias(JSMediaTypes.class, "MediaTypes");
+        binding.setAlias(JSMediaType.class, "MediaType");
         binding.setAlias(JSUserUsers.class, "users");
 
-        binding.setAlias(JSPermissions.class, "permissions");
-        binding.setAlias(JSPermission.class, "permission");
-        binding.setAlias(JSProfilingRules.class, "profiling_rules");
-        binding.setAlias(JSProfilingRule.class, "profiling_rule");
-        binding.setAlias(JSRuleCriterions.class, "criteria");
-        binding.setAlias(JSRuleCriterion.class, "criterion");
+        binding.setAlias(JSPermissions.class, "Permissions");
+        binding.setAlias(JSPermission.class, "Permission");
+        binding.setAlias(JSProfilingRules.class, "ProfilingRules");
+        binding.setAlias(JSProfilingRule.class, "ProfilingRule");
+        binding.setAlias(JSRuleCriterions.class, "Criteria");
+        binding.setAlias(JSRuleCriterion.class, "Criterion");
 
-        binding.setAlias(JSPrincipalRule.class, "rule");
-        binding.setAlias(JSPrincipalRules.class, "user_rules");
+        binding.setAlias(JSPrincipalRule.class, "Rule");
+        binding.setAlias(JSPrincipalRules.class, "Rules");
 
         binding.setAlias(String.class, "String");
         binding.setAlias(Integer.class, "int");
 
-        binding.setClassAttribute("type");
+        binding.setClassAttribute(null);
 
     }
+
+    /**
+     * simple lookup for principal object from a map
+     * @param map
+     * @param _fullPath
+     * @return
+     */
 
     private Object getObjectBehindPrinicpal(Map map, BasePrincipal _principal)
     {
         return getObjectBehindPath(map, _principal.getFullPath());
     }
 
+    /**
+     * simple lookup for object from a map
+     * @param map
+     * @param _fullPath
+     * @return
+     */
     private Object getObjectBehindPath(Map map, String _fullPath)
     {
         return map.get(_fullPath);
     }
 
-    /** ROLES ----------- */
+	/**
+	 * create a serializable wrapper for role 
+	 * 
+	 * @param role
+	 * @return
+	 */
     private JSRole createJSRole(Role role)
     {
         JSRole _role = new JSRole();
@@ -727,6 +1438,11 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         return _role;
     }
 
+	/**
+	 * export roles 
+	 * 
+	 * @return
+	 */
     private void exportRoles() throws SerializerException
     {
         RoleManager roleManager = (RoleManager) cm
@@ -929,16 +1645,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         _newUser.setPreferences(preferences);
         preferences = user.getUserAttributes();
         _newUser.setUserInfo(preferences);
+        //TODO: HJB, fix preferences...userinfo doesn't return values in prefs_property_value (in fact preferences.keys() is []
         return _newUser;
     }
 
-    private String getCurrentSecurityProvider()
-    {
-        PasswordCredentialProvider provider = (PasswordCredentialProvider) cm
-                .getComponent("org.apache.jetspeed.security.spi.PasswordCredentialProvider");
-        if (provider == null) return "";
-        return provider.getEncoder().getClass().getName();
-    }
 
     /**
      * Collect all the roles, groups and users from the current environment.
@@ -951,7 +1661,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void exportUsers() throws SerializerException
     {
         /** set the security provider info in the snapshot file */
-        this.snapshot.setEncryption(getCurrentSecurityProvider());
+        this.snapshot.setEncryption(getEncryptionString());
         /** get the roles */
         exportRoles();
         /** get the groups */
@@ -1016,8 +1726,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
             try
             {
                 Capability _cp = (Capability) list.next();
-                JSCapability _jsC = new JSCapability(_cp);
+                JSCapability _jsC = new JSCapability();
+                _jsC.setName(_cp.getName());
                 this.capabilityMap.put(_jsC.getName(), _jsC);
+                this.capabilityMapInt.put(new Integer(_cp.getCapabilityId()), _jsC);
                 this.snapshot.getCapabilities().add(_jsC);
             } catch (Exception e)
             {
@@ -1048,8 +1760,11 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
             try
             {
                 MimeType _mt = (MimeType) list.next();
-                JSMimeType _jsM = new JSMimeType(_mt);
+                JSMimeType _jsM = new JSMimeType();
+                _jsM.setName(_mt.getName());
                 this.mimeMap.put(_jsM.getName(), _jsM);
+                this.mimeMapInt.put(new Integer(_mt.getMimetypeId()), _jsM);
+
                 this.snapshot.getMimeTypes().add(_jsM);
             } catch (Exception e)
             {
@@ -1085,6 +1800,14 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 JSMimeType _mt = (JSMimeType) mimeMap.get(_m.getName());
                 if (_mt != null) jsC.getMimeTypes().add(_mt);
             }
+            
+    		Integer id = new Integer(c.getPreferredMimeTypeId());
+    		JSMimeType _mt = (JSMimeType) mimeMapInt.get(id);
+    		if (_mt != null)
+    			jsC.setPreferredMimeTypeID(_mt.getName());
+    		else
+    			jsC.setPreferredMimeTypeID("???");
+
             // find the capabilities
             Iterator _itC = c.getCapabilities().iterator();
             while (_itC.hasNext())
@@ -1302,9 +2025,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                         }
 
                     }
-                    this.permissionMap.put(_js.getType(), _js);
-                    this.snapshot.getPermissions().add(_js);
                 }
+                this.permissionMap.put(_js.getType(), _js);
+                this.snapshot.getPermissions().add(_js);
 
             } catch (Exception e)
             {
@@ -1324,10 +2047,13 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * @param p
      * @return
      */
-    private JSProfilingRule createProfilingRule(ProfilingRule p)
+    private JSProfilingRule createProfilingRule(ProfilingRule p, boolean standard)
     {
         JSProfilingRule rule = new JSProfilingRule();
-        rule.setClassName(p.getClassname());
+        
+        
+        
+        rule.setStandardRule(standard);
         rule.setDescription(p.getTitle());
         rule.setId(p.getId());
 
@@ -1360,6 +2086,20 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
             throw new SerializerException(
                     SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
                             .create("org.apache.jetspeed.profiler.Profiler"));
+        Class standardRuleClass = null;
+        try
+        {
+        	ProfilingRule tempStandardRule = pm.createProfilingRule(true);
+        	standardRuleClass = tempStandardRule.getClass();
+        }
+        catch (Exception e)
+        {
+        	throw new SerializerException(
+                SerializerException.CREATE_OBJECT_FAILED
+                        .create(new String[]
+                        { "Standard Rule", e.getMessage()}));
+        }
+        
         Iterator list = null;
         try
         {
@@ -1380,7 +2120,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 ProfilingRule p = (ProfilingRule) list.next();
                 if (!(this.rulesMap.containsKey(p.getId())))
                 {
-                    JSProfilingRule rule = createProfilingRule(p);
+                    JSProfilingRule rule = createProfilingRule(p, (standardRuleClass == p.getClass()));
                     rulesMap.put(rule.getId(), rule);
                     snapshot.getRules().add(rule);
 
@@ -1395,7 +2135,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         }
 
         // determine the defualt rule
-        snapshot.setDefaultRule(pm.getDefaultRule().getId());
+        ProfilingRule defaultRule = pm.getDefaultRule();
+        if (defaultRule != null)
+        	snapshot.setDefaultRule(defaultRule.getId());
 
         // get Rules for each user
 
@@ -1429,28 +2171,43 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * 
      * @return
      */
-    public int compareCurrentSecurityProvider(JSSnapshot file)
+    protected int compareCurrentSecurityProvider(JSSnapshot file)
     {
         String _fileEncryption = file.getEncryption();
         if ((_fileEncryption == null) || (_fileEncryption.length() == 0))
             return NO_DECODING; // passwords are in clear text
-
-        PasswordCredentialProvider provider = (PasswordCredentialProvider) cm
-                .getComponent("org.apache.jetspeed.security.spi.PasswordCredentialProvider");
-        if (provider == null)
-        {
-            System.err
-                    .println("Error!!! PasswordCredentialProvider not available");
-            return ERROR_DECODING;
-        }
-
-        boolean encodingSupported = (provider.getEncoder() instanceof org.apache.jetspeed.security.PasswordEncodingService);
-        if (provider.getEncoder().getClass().getName().equals(_fileEncryption))
-            return (encodingSupported ? DECODING_SUPPORTED : PASSTHRU_REQUIRED);
+        
+        if (_fileEncryption.equals(getEncryptionString()))
+        	return PASSTHRU_REQUIRED;
         else
-            return INVALID_PASSWORDS;
+        	return NO_DECODING;
     }
 
+    private String getEncryptionString()
+    {
+        PasswordCredentialProvider provider = (PasswordCredentialProvider) cm
+        .getComponent("org.apache.jetspeed.security.spi.PasswordCredentialProvider");
+		if (provider == null)
+		{
+		    System.err
+		            .println("Error!!! PasswordCredentialProvider not available");
+		    return ENCODING_STRING;
+		}
+		try
+		{
+			PasswordCredential credential = provider.create(JETSPEED,ENCODING_STRING);
+			if ((credential != null) && (credential.getPassword() != null))
+				return new String(credential.getPassword());
+			else
+			    return ENCODING_STRING;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return ENCODING_STRING;
+		}
+    }
+    
     /**
      * ++++++++++++++++++++++++++++++HELPERS
      * +++++++++++++++++++++++++++++++++++++++++++++
@@ -1498,63 +2255,161 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         return null;
     }
 
-    /**
-     * TEST ONLY
-     */
-    private void TEST_ONLY(XMLBinding binding, String filename)
-            throws SerializerException
+ /**
+  * convert a list of elements in a string, seperated by ',' into an arraylist of strings
+  * @param _line Strinbg containing one or more elements seperated by ','
+  * @return list of elements of null
+  */    
+    private ArrayList getTokens(String _line)
     {
-        XMLObjectWriter writer = null;
-        logMe("*********open test writer********");
-        String fn = filename + ".testcopy.xml";
-        try
-        {
-            writer = XMLObjectWriter.newInstance(new FileOutputStream(fn));
-            writer.setBinding(binding);
-            logMe("*********Writing test data*********");
-            writer.write(this.snapshot, JetspeedSerializer.TAG_SNAPSHOT,
-                    JSSnapshot.class);
+        if ((_line == null) || (_line.length() == 0)) return null;
 
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        } finally
-        {
-            /** ensure the writer is closed */
-            try
-            {
-                logMe("*********closing test writer********");
-                writer.close();
-            } catch (Exception e)
-            {
-                logMe("Error in closing test writer " + e.getMessage());
-                /**
-                 * don't do anything with this exception - never let the bubble
-                 * out of the finally block
-                 */
-            }
-        }
+        StringTokenizer st = new StringTokenizer(_line, ",");
+        ArrayList list = new ArrayList();
 
+        while (st.hasMoreTokens())
+            list.add(st.nextToken());
+        return list;
     }
 
     /**
-     * TEMP ONLY - IGNORE
+     * recreate a rule criterion object from the deserialized wrapper
+     * @param profiler established profile manager
+     * @param jsr deserialized object
+     * @return new RuleCriterion with content set to deserialized wrapepr
+     * @throws SerializerException
      */
-    private void getGroups1() throws SerializerException
-    {
-        /**
-         * GroupManager groupManager = (GroupManager) cm
-         * .getComponent("org.apache.jetspeed.security.GroupManager"); throw new
-         * SerializerException(
-         * SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
-         * .create("org.apache.jetspeed.security.GroupManager"));
-         * 
-         * throw new
-         * SerializerException(SerializerException.GET_EXISTING_OBJECTS
-         * .create("Group", e.getMessage())); throw new SerializerException(
-         * SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create( "Group",
-         * e.getMessage()));
-         */
-    }
+	protected RuleCriterion recreateRuleCriterion(Profiler profiler, JSRuleCriterion jsr, ProfilingRule rule)
+		throws SerializerException, ClassNotFoundException
+	
+	{
+		try
+		{
+	
+	    	RuleCriterion c = profiler.createRuleCriterion();
+	    	if (c == null)
+	    		throw new SerializerException(
+	    				SerializerException.CREATE_OBJECT_FAILED
+	    					.create("org.apache.jetspeed.profiler.rules.RuleCriterion","returned null"));
+	    	c.setFallbackOrder(jsr.getFallBackOrder());
+	    	c.setFallbackType(jsr.getFallBackType());
+	    	c.setName(jsr.getName());
+	    	c.setType(jsr.getType());
+	    	c.setValue(jsr.getValue());
+	    	c.setRuleId(rule.getId());
+	    	return c;
+		}
+		catch (Exception e)
+		{
+			SerializerException.CREATE_OBJECT_FAILED
+			.create("org.apache.jetspeed.profiler.rules.RuleCriterion",e.getLocalizedMessage());
+			return null;
+		}
+	}
+    	
+	   /**
+     * recreate a profiling rule object from the deserialized wrapper and store it
+     * @param profiler established profile manager
+     * @param jsp deserialized object
+     * @
+     * @throws SerializerException, ClassNotFoundException, ProfilerException
+     */
+	   protected ProfilingRule recreateRule(Profiler profiler, ProfilingRule existingRule, JSProfilingRule jsp) throws SerializerException, ClassNotFoundException, ProfilerException
+	   {
+		   ProfilingRule rule = null;
+		   boolean existing = false;
+		   
+		   if (existingRule == null)
+		   {
+			   rule = profiler.getRule(jsp.getId());
+			   if (jsp.isStandardRule())
+			  	   rule = profiler.createProfilingRule(true);   
+			   else
+			  	   rule = profiler.createProfilingRule(false); 
+			   rule.setId(jsp.getId());
+		   }
+		   else
+		   {
+			   rule = existingRule;
+			   existing = true;
+		   }
+			   
+		   rule.setTitle(jsp.getDescription());
+		   
+		   JSRuleCriterions col = jsp.getCriterions();
+			   
+		   Iterator _it = col.iterator();
+		   while (_it.hasNext())
+		   {
+				   RuleCriterion c = recreateRuleCriterion(profiler, (JSRuleCriterion) _it.next(),rule);
+				   if (c != null)
+				   {
+					   Collection cHelp = rule.getRuleCriteria();
+					   if ((existing) && (cHelp.contains(c)))
+						   cHelp.remove(c); //remove existing duplicate
+					   cHelp.add(c); // add the current version back in
+				   }
+		   }
+		   return rule;
 
+	   }  	
+	
+    	
+    	
+	   private void recreateProfilingRules () throws SerializerException
+	    {
+	    	logMe("recreateProfilingRules - processing");
+	        Profiler pm = (Profiler) cm
+            .getComponent("org.apache.jetspeed.profiler.Profiler");
+	        if (pm == null)
+	        	throw new SerializerException(
+	        			SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
+                        	.create("org.apache.jetspeed.profiler.Profiler"));
+	    	JSProfilingRules rules = this.snapshot.getRules();
+	    	if ((rules != null) && (rules.size() > 0))
+	    	{
+	    		Iterator _it = rules.iterator();
+	    		while (_it.hasNext())
+	    		{
+	    			JSProfilingRule _c = (JSProfilingRule)_it.next();
+
+	    			try
+	    			{
+	    				ProfilingRule rule = null;
+	    				   
+	    				   rule = pm.getRule(_c.getId());
+	    				   if ((rule == null) || (this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)))
+	    				   {
+	    					   rule = recreateRule(pm,rule, _c);
+	    					   pm.storeProfilingRule(rule);
+	    				   }
+	    			}
+	    			catch (Exception e)
+	    			{
+	    				throw new SerializerException(
+	    			            SerializerException.CREATE_OBJECT_FAILED
+	    			            	.create("org.apache.jetspeed.capabilities.Capabilities",e.getLocalizedMessage()));
+	 			}
+	    		}
+	    		/** reset the default profiling rule */
+	    		String defaultRuleID = snapshot.getDefaultRule();
+	    		if (defaultRuleID != null)
+	    		{
+	    			ProfilingRule defaultRule = pm.getRule(defaultRuleID);
+	    			if (defaultRule != null)
+	    				pm.setDefaultRule(defaultRuleID);
+	    		}
+	    	}
+	    	else
+	    		logMe("NO PROFILING RULES?????");
+	    	logMe("recreateProfilingRules - done");
+	    }	
+
+
+	private String recreatePassword(char[] savedPassword)
+	{
+		if (savedPassword == null)
+			return null;
+		return new String(savedPassword);
+	}
 }

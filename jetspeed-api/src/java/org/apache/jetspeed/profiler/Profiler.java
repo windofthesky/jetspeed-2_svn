@@ -233,4 +233,13 @@ public interface Profiler
      */
     public RuleCriterion createRuleCriterion() throws ClassNotFoundException;
 
+    
+    
+    /**
+     * Resets the default rule for this portal
+     * @param defaultRule
+     *            The default rule to set.
+     */
+    public void setDefaultRule(String defaultRule);
+
 }

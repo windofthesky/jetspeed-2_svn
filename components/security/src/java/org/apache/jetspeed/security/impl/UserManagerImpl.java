@@ -194,9 +194,11 @@ public class UserManagerImpl implements UserManager
         { username}, new String[]
         { "username"}, "addUser(java.lang.String, java.lang.String)");
 
-        addUser(username, password, atnProviderProxy
-                .getDefaultAuthenticationProvider());
+        createUser(username, password, atnProviderProxy
+                .getDefaultAuthenticationProvider(),false);
     }
+
+    
 
     /**
      * @see org.apache.jetspeed.security.UserManager#addUser(java.lang.String,
@@ -205,14 +207,56 @@ public class UserManagerImpl implements UserManager
     public void addUser(String username, String password, String atnProviderName)
             throws SecurityException
     {
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "addUser(java.lang.String, java.lang.String)");
+
+        createUser(username, password, atnProviderName, false);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#importUser(java.lang.String,
+     *      java.lang.String, boolean)
+     */
+    public void importUser(String username, String password, boolean passThrough)
+            throws SecurityException
+    {
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "addUser(java.lang.String, java.lang.String)");
+
+        createUser(username, password, atnProviderProxy
+                .getDefaultAuthenticationProvider(),passThrough);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#importUser(java.lang.String,
+     *      java.lang.String, java.lang.String, boolean)
+     */
+    public void importUser(String username, String password, String atnProviderName, boolean passThrough)
+            throws SecurityException
+    {
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "addUser(java.lang.String, java.lang.String)");
+
+        createUser(username, password, atnProviderName,passThrough);
+    }
+    /**
+     * @see org.apache.jetspeed.security.UserManager#addUser(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
+    protected void createUser(String username, String password, String atnProviderName, boolean raw)
+            throws SecurityException
+    {
         ArgUtil
                 .notNull(new Object[]
                 { username, atnProviderName}, new String[]
                 { "username", "atnProviderName"},
                         "addUser(java.lang.String, java.lang.String, java.lang.String)");
 
-        if (getAnonymousUser().equals(username)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED.create(username)); }
+//        if (getAnonymousUser().equals(username)) { throw new SecurityException(
+//                SecurityException.ANONYMOUS_USER_PROTECTED.create(username)); }
 
         // Check if user already exists.
         if (userExists(username)) { 
@@ -239,7 +283,10 @@ public class UserManagerImpl implements UserManager
                     try
                     {
                         // Set private password credential
-                        atnProviderProxy.setPassword(username, null, password,atnProviderName);
+                    	if (raw)
+                            atnProviderProxy.importPassword(username, password,atnProviderName);
+                    	else
+                    		atnProviderProxy.setPassword(username, null, password,atnProviderName);
                     }
                     catch (SecurityException se1)
                     {
@@ -276,6 +323,8 @@ public class UserManagerImpl implements UserManager
         }
     }
 
+    
+    
     /**
      * @see org.apache.jetspeed.security.UserManager#removeUser(java.lang.String)
      * 

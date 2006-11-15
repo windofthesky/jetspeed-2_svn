@@ -35,5 +35,12 @@ public class JSUserUsers extends JSUserRoles
 	{
 		super(s);
 	}
+	/**
+	 * 
+	 */
+	public JSUserUsers()
+	{
+		super();
+	}
 
 }

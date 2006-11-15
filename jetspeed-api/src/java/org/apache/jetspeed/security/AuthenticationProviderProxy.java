@@ -36,7 +36,7 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      * @return The default authentication provider.
      */
     String getDefaultAuthenticationProvider();
-    
+  
     /**
      * <p>
      * Returns the authentication provider of a user principal.
@@ -80,10 +80,40 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
 
     /**
      * <p>
+     * Adds or updates a private password credentialin a given authentication provider.<br>
+     * Note that there is no checking of the <code>oldPassword</code> and the provided password is 
+     * assumed to be encoded. Hence no encoding will take place.
+     * </p>
+     * 
+     * @param username The user to be updated.
+     * @param newPassword The new password.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void importPassword(String userName, String newPassword) throws SecurityException;
+
+    
+    
+    /**
+     * <p>
+     * Adds or updates a private password credentialin a given authentication provider.<br>
+     * Note that there is no checking of the <code>oldPassword</code> and the provided password is 
+     * assumed to be encoded. Hence no encoding will take place.
+     * </p>
+     * 
+     * @param username The user to be updated.
+     * @param newPassword The new password.
+     * @param authenticationProvider The authentication provider name.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void importPassword(String userName, String newPassword,String authenticationProvider) throws SecurityException;
+
+    /**
+     * <p>
      * Adds or updates a private password credential in a given authentication provider.<br>
      * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
+     * @param userName The name of the user to be updated.
      * @param oldPassword The old password value.
      * @param newPassword The new password value.
      * @param authenticationProvider The authentication provider name.
@@ -91,7 +121,7 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      */
     void setPassword(String userName, String oldPassword, String newPassword,
             String authenticationProvider) throws SecurityException;
-    
+
     /**
      * <p>
      * Set the update required state of the user password credential in a given authentication provider.

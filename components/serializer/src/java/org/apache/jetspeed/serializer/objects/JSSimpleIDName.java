@@ -18,7 +18,7 @@ package org.apache.jetspeed.serializer.objects;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.jetspeed.capabilities.MimeType;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class JSSimpleIDName 
 {
@@ -65,7 +65,7 @@ public class JSSimpleIDName
 		try
 		{
 			JSSimpleIDName g = (JSSimpleIDName) o;
-			g.setName(xml.getAttribute("name","Unknown"));
+			g.setName(StringEscapeUtils.unescapeHtml(xml.getAttribute("name","Unknown")));
 			g.setId(xml.getAttribute("id",0));
 			
 		} catch (Exception e)

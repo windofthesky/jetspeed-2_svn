@@ -59,15 +59,33 @@ public interface CredentialHandler
     /**
      * <p>
      * Adds or updates a private password credential.<br>
+     * Note that there is no checking of the <code>oldPassword</code> and the provided password is 
+     * assumed to be encoded. Hence no encoding will take place.
+     * 
+     * </p>
+     * 
+     * @param username The user to be updated.
+     * @param newPassword The new password.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void importPassword(String userName, String newPassword) throws SecurityException;
+
+    
+    /**
+     * <p>
+     * Adds or updates a private password credential.<br>
      * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
+     * @param username The user to be updated.
      * @param oldPassword The old password.
      * @param newPassword The new password.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
     void setPassword(String userName, String oldPassword, String newPassword) throws SecurityException;
 
+    
+    
     /**
      * <p>
      * Set the update required state of the user password credential.

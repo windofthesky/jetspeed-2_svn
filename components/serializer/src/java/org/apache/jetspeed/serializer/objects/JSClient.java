@@ -16,13 +16,14 @@
 package org.apache.jetspeed.serializer.objects;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javolution.xml.XMLBinding;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.capabilities.Client;
 /**
  * Jetspeed Serializer - Client Wrapper
@@ -46,7 +47,7 @@ public class JSClient
 
 	private String model;
 
-	private int preferredMimeTypeID;
+	private String preferredMimeTypeID;
 
 	private String userAgentPattern;
 
@@ -76,12 +77,26 @@ public class JSClient
 
 		this.evalOrder = c.getEvalOrder();
 		this.manufacturer = c.getManufacturer();
-		this.preferredMimeTypeID = c.getPreferredMimeTypeId();
 
 		capabilities = new ArrayList();
 		mimeTypes = new ArrayList();
 	}
 
+	public static final String XML_TAG = "Client".intern();
+    
+	/**
+     * All local attributes and list-type classes are bound here,
+     * referenced classes should return their own binding.
+     * @param binding
+     */
+	
+	public static void setupAliases(XMLBinding binding)
+{
+        binding.setAlias(JSClient.class, JSClient.XML_TAG);
+    }
+  
+	
+	
 	/***************************************************************************
 	 * SERIALIZER
 	 */
@@ -94,7 +109,6 @@ public class JSClient
 			try
 			{
 				JSClient g = (JSClient) o;
-				xml.setAttribute("id", g.id);
 				xml.setAttribute("name", g.name);
 				xml.setAttribute("evalOrder", g.evalOrder);
 				xml.setAttribute("preferredMimeTypeID", g.preferredMimeTypeID);
@@ -120,15 +134,14 @@ public class JSClient
 			try
 			{
 				JSClient g = (JSClient) o;
-                g.id = xml.getAttribute("id",-1);
-                g.name = xml.getAttribute("name","");
+                g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name",""));
                 g.evalOrder = xml.getAttribute("evalOrder",0);
-                g.preferredMimeTypeID = xml.getAttribute("preferredMimeTypeID",0);
+                g.preferredMimeTypeID = StringEscapeUtils.unescapeHtml(xml.getAttribute("preferredMimeTypeID","0"));
                 
-                g.userAgentPattern = (String)xml.get("userAgentPattern",String.class);
-                g.version = (String)xml.get("version",String.class);
-                g.model = (String)xml.get("model",String.class);
-                g.manufacturer = (String)xml.get("manufacturer",String.class);
+                g.userAgentPattern = StringEscapeUtils.unescapeHtml((String)xml.get("userAgentPattern",String.class));
+                g.version = StringEscapeUtils.unescapeHtml((String)xml.get("version",String.class));
+                g.model = StringEscapeUtils.unescapeHtml((String)xml.get("model",String.class));
+                g.manufacturer = StringEscapeUtils.unescapeHtml((String)xml.get("manufacturer",String.class));
                 g.capabilitiesString = (JSClientCapabilities) xml.getNext();
                 g.mimeTypesString = (JSClientMimeTypes) xml.getNext();
 			} catch (Exception e)
@@ -260,7 +273,7 @@ public class JSClient
 	/**
 	 * @return Returns the preferredMimeTypeID.
 	 */
-	public int getPreferredMimeTypeID()
+	public String getPreferredMimeTypeID()
 	{
 		return preferredMimeTypeID;
 	}
@@ -269,7 +282,7 @@ public class JSClient
 	 * @param preferredMimeTypeID
 	 *            The preferredMimeTypeID to set.
 	 */
-	public void setPreferredMimeTypeID(int preferredMimeTypeID)
+	public void setPreferredMimeTypeID(String preferredMimeTypeID)
 	{
 		this.preferredMimeTypeID = preferredMimeTypeID;
 	}
@@ -347,4 +360,16 @@ public class JSClient
 		return _sb.toString();
 	}
 
+	public JSClientCapabilities getCapabilitiesString()
+	{
+		return capabilitiesString;
+	}
+
+	public JSClientMimeTypes getMimeTypesString()
+	{
+		return mimeTypesString;
+	}
+
+
+	
 }

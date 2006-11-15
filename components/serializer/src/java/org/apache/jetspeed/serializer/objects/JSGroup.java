@@ -21,6 +21,7 @@ import javolution.xml.stream.XMLStreamException;
 import java.util.prefs.Preferences;
 import java.util.*;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.security.Role;
 
 public class JSGroup 
@@ -28,8 +29,6 @@ public class JSGroup
 	// private int refID;
 
 	String name;
-
-	private JSNameValuePairs preferences;
 
 	public JSGroup()
 	{
@@ -59,7 +58,7 @@ public class JSGroup
 		try
 		{
 			JSGroup g = (JSGroup) o;
-			g.setName(xml.getText().toString());
+			g.setName(StringEscapeUtils.unescapeHtml(xml.getText().toString()));
 		} catch (Exception e)
 		{
 			e.printStackTrace();

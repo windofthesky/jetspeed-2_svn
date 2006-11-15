@@ -21,6 +21,13 @@ import java.util.Iterator;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.jetspeed.security.FolderPermission;
+import org.apache.jetspeed.security.FragmentPermission;
+import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.PortalResourcePermission;
+import org.apache.jetspeed.security.PortletPermission;
+
 /**
  * Serialized Permission <permission type='folder' resource='/' actions='view,
  * edit'> <roles>admin, user</roles> <groups>dev</groups> <users>joe</users>
@@ -97,18 +104,44 @@ public class JSPermission
 			return TYPE_FRAGMENT;
 		if (className.equals("org.apache.jetspeed.security.PagePermission"))
 			return TYPE_PAGE;
+		if (className.equals("org.apache.jetspeed.security.PortletPermission"))
+			return TYPE_PORTAL;
+
 		if (className
 				.equals("org.apache.jetspeed.security.PortalResourcePermission"))
 			return TYPE_PORTALRESOURCE;
 		if (className
 				.equals("org.apache.jetspeed.security.PortalResourcePermissionCollection"))
 			return TYPE_PORTALRESOURCECOLLECTION;
-		if (className.equals("org.apache.jetspeed.security.PortletPermission"))
-			return TYPE_PORTAL;
 		return TYPE_UNKNOWN;
 
 	}
 
+	public PortalResourcePermission getPermissionForType()
+	{
+		PortalResourcePermission newPermission = null; 
+		if ((this.type == null) || (this.type == TYPE_UNKNOWN))
+			return null;
+		try
+		{
+		if (type.equals(TYPE_FOLDER))
+			newPermission = new FolderPermission(this.resource,this.actions);
+		else if (type.equals(TYPE_FRAGMENT))
+			newPermission = new FragmentPermission(this.resource,this.actions);
+			else if (type.equals(TYPE_PAGE))
+				newPermission = new PagePermission(this.resource,this.actions);
+				else if (type.equals(TYPE_PORTAL))
+					newPermission = new PortletPermission(this.resource,this.actions);
+					else return null;
+			return newPermission;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 	public JSPermission()
 	{
 	}
@@ -336,10 +369,21 @@ public class JSPermission
 			try
 			{
 				JSPermission g = (JSPermission) o;
-				g.resource = xml.getAttribute("resource", "unknown");
-//				g.roles = g.getTokens((String) xml.get("roles"));
-//				g.groups = g.getTokens((String) xml.get("groups"));
+				g.type = StringEscapeUtils.unescapeHtml(xml.getAttribute("type", "type_unknown"));
+				g.resource = StringEscapeUtils.unescapeHtml(xml.getAttribute("resource", "resource_unknown"));
+				g.actions = StringEscapeUtils.unescapeHtml(xml.getAttribute("actions", "unknown_actions"));
+				
+	               while (xml.hasNext())
+	                {
+	                    Object o1 = xml.getNext(); // mime
 
+	                    if (o1 instanceof JSUserGroups)
+	                        g.groupString = (JSUserGroups) o1;
+	                    else if (o1 instanceof JSUserUsers)
+	                        g.userString = (JSUserUsers) o1;
+	                    else if (o1 instanceof JSUserRoles)
+	                        g.roleString = (JSUserRoles) o1;
+	                }
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -347,6 +391,21 @@ public class JSPermission
 		}
 
 	};
+
+	public JSUserGroups getGroupString()
+	{
+		return groupString;
+	}
+
+	public JSUserRoles getRoleString()
+	{
+		return roleString;
+	}
+
+	public JSUserUsers getUserString()
+	{
+		return userString;
+	}
 
 
 	

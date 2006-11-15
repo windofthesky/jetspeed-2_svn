@@ -22,6 +22,7 @@ import java.util.List;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.capabilities.MediaType;
 
 public class JSMediaType
@@ -79,7 +80,6 @@ public class JSMediaType
 				JSMediaType g = (JSMediaType) o;
                 /** attributes here */
 
-                xml.setAttribute("id", g.id);
 				xml.setAttribute("name", g.name);
 
                 /** named fields HERE */
@@ -108,13 +108,14 @@ public class JSMediaType
 			try
 			{
 				JSMediaType g = (JSMediaType) o;
-				g.id = xml.getAttribute("id", -1);
-                g.name = xml.getAttribute("name","");
+               g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name",""));
 
                 /** named fields HERE */
                 Object o1 = xml.get("charcterSet",String.class); //characterSet
-                g.titel = (String)xml.get("titel", String.class); //titel;
-                g.description  = (String)xml.get("description", String.class); //description;
+                if ((o1 != null) && (o1 instanceof String))
+                	g.characterSet = StringEscapeUtils.unescapeHtml((String)o1);
+                g.titel = StringEscapeUtils.unescapeHtml((String)xml.get("titel", String.class)); //titel;
+                g.description  = StringEscapeUtils.unescapeHtml((String)xml.get("description", String.class)); //description;
 
                 while (xml.hasNext())
                 {
@@ -285,5 +286,15 @@ public class JSMediaType
     {
         this.mimeTypes = mimeTypes;
     }
+
+	public JSClientCapabilities getCapabilitiesString()
+	{
+		return capabilitiesString;
+	}
+
+	public JSClientMimeTypes getMimeTypesString()
+	{
+		return mimeTypesString;
+	}
 
 }

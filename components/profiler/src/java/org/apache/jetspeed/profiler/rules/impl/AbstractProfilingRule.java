@@ -26,6 +26,7 @@ import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
 
 /**
  * ProfilingRuleImpl
@@ -36,7 +37,7 @@ import org.apache.jetspeed.request.RequestContext;
 public abstract class AbstractProfilingRule implements ProfilingRule
 {
     private static final long serialVersionUID = 1;    
-    protected Collection criteria = new Vector();
+    protected Collection criteria = new RemovalAwareCollection();
     protected String id;
     protected String title;
     protected String ojbConcreteClass;
@@ -169,4 +170,8 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     {
         this.resolvers = resolvers;
     }
+    
+    
+    
+    
 }

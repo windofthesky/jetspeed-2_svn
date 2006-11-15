@@ -138,6 +138,22 @@ public class DefaultCredentialHandler implements CredentialHandler
      */
     public void setPassword(String userName, String oldPassword, String newPassword) throws SecurityException
     {
+    	setPassword (userName, oldPassword, newPassword, false);
+    }
+  
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#importPassword(java.lang.String,java.lang.String)
+     */
+    public void importPassword(String userName, String newPassword) throws SecurityException
+    {
+    	setPassword (userName, null, newPassword, true);
+    }
+  
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPassword(java.lang.String,java.lang.String,java.lang.String, boolean)
+     */
+    protected void setPassword(String userName, String oldPassword, String newPassword, boolean raw) throws SecurityException
+    {
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
         if (null == internalUser)
         {
@@ -175,23 +191,25 @@ public class DefaultCredentialHandler implements CredentialHandler
             // supplied PasswordCredential not defined for this user
             throw new InvalidPasswordException();
         }
-        
-        if ( pcProvider.getValidator() != null )
+        if (!raw) // bypass validation if raw 
         {
-            try
-            {
-                pcProvider.getValidator().validate(newPassword);
-            }
-            catch (InvalidPasswordException ipe)
-            {
-                throw new InvalidNewPasswordException();
-            }
+	        if ( pcProvider.getValidator() != null )
+	        {
+	            try
+	            {
+	                pcProvider.getValidator().validate(newPassword);
+	            }
+	            catch (InvalidPasswordException ipe)
+	            {
+	                throw new InvalidNewPasswordException();
+	            }
+	        }
         }
-        
         boolean encoded = false;
         if ( pcProvider.getEncoder() != null )
         {
-            newPassword = pcProvider.getEncoder().encode(userName, newPassword);
+        	if (!(raw)) // if raw just bypass encoding
+        		newPassword = pcProvider.getEncoder().encode(userName, newPassword);
             encoded = true;
         }
 

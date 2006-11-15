@@ -15,11 +15,10 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Import ProfilingRule
@@ -38,7 +37,7 @@ import javolution.xml.stream.XMLStreamException;
 public class JSProfilingRule
 {
     private String id;
-    private String className;
+    private boolean standardRule;
     private String description;
     JSRuleCriterions criterions = new JSRuleCriterions();
     
@@ -48,15 +47,15 @@ public class JSProfilingRule
     }
 
     
-    public String getClassName()
+    public boolean isStandardRule()
     {
-        return className;
+        return standardRule;
     }
 
     
-    public void setClassName(String className)
+    public void setStandardRule(boolean standard)
     {
-        this.className = className;
+        this.standardRule = standard;
     }
 
     
@@ -98,8 +97,8 @@ public class JSProfilingRule
 			{
 				JSProfilingRule g = (JSProfilingRule) o;
 				xml.setAttribute("id", g.id);
+				xml.setAttribute("standardRule", g.standardRule);
 				xml.add( g.description, "description",String.class);
-				xml.add(g.className ,"classname", String.class);
 				xml.add(g.criterions);
 
 			} catch (Exception e)
@@ -113,8 +112,19 @@ public class JSProfilingRule
 			try
 			{
 				JSProfilingRule g = (JSProfilingRule) o;
-				g.setId(xml.getText().toString());
-			} catch (Exception e)
+				g.id = StringEscapeUtils.unescapeHtml(xml.getAttribute("id","unkwown_id"));
+				g.standardRule = xml.getAttribute("standardRule",false);
+	               Object o1 = xml.get("description",String.class);
+	                if (o1 instanceof String)
+	                    g.description = (String) o1;
+	                while (xml.hasNext())
+	                {
+	                    o1 = xml.getNext(); // mime
+
+	                    if (o1 instanceof JSRuleCriterions)
+	                        g.criterions = (JSRuleCriterions) o1;
+	                }
+	        			} catch (Exception e)
 			{
 				e.printStackTrace();
 			}

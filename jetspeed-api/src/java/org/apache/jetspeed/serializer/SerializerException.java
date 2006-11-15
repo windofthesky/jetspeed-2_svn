@@ -36,6 +36,9 @@ public class SerializerException extends JetspeedException
     /** <p>Creating the serilized Object failed </p> */
     public static final KeyedMessage CREATE_SERIALIZED_OBJECT_FAILED = new KeyedMessage("Creating a serialized representation of {0} failed with message {1}");
 
+    /** <p>Creating the serilized Object failed </p> */
+    public static final KeyedMessage CREATE_OBJECT_FAILED = new KeyedMessage("Creating an instance from a serialized representation of {0} failed with message {1}");
+
     /** <p>Component Manager already initialized</p> */
     public static final KeyedMessage COMPONENT_MANAGER_EXISTS = new KeyedMessage("Component Manager already established");
 

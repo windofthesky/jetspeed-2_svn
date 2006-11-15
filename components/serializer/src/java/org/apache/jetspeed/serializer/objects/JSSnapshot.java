@@ -18,6 +18,9 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
+import javolution.xml.XMLBinding;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
@@ -90,6 +93,7 @@ public class JSSnapshot
         rules = new JSProfilingRules();
     }
 
+ 
     /***************************************************************************
      * SERIALIZER
      */
@@ -99,6 +103,7 @@ public class JSSnapshot
         public void write(Object o, OutputElement xml)
                 throws XMLStreamException
         {
+        	
             try
             {
                 JSSnapshot g = (JSSnapshot) o;
@@ -111,11 +116,11 @@ public class JSSnapshot
 
                 xml.add(String.valueOf(g.getSoftwareVersion()),
                         "softwareVersion");
-                xml.add(String.valueOf(g.getSoftwareVersion()),
+                xml.add(String.valueOf(g.getSoftwareSubVersion()),
                         "softwareSubVersion");
                 xml.add(g.getDefaultRule(), "default_rule", String.class);
 
-                xml.add(g.encryption,"Encryption",String.class);
+                xml.add(g.encryption,"encryption",String.class);
                 
                 /** implicitly named (through binding) fields here */
 
@@ -142,17 +147,17 @@ public class JSSnapshot
             try
             {
                 JSSnapshot g = (JSSnapshot) o;
-                g.name = xml.getAttribute("name", "unknown");
-                Object o1 = xml.get("softwareVersion");
+                g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "unknown"));
+                Object o1 = xml.get("softwareVersion",String.class);
                 if (o1 instanceof String)
                     g.savedVersion = Integer.parseInt(((String) o1));
-                o1 = xml.get("softwareSubVersion");
+                o1 = xml.get("softwareSubVersion",String.class);
                 if (o1 instanceof String)
                     g.savedSubversion = Integer.parseInt(((String) o1));
-                o1 = xml.get("default_rule");
-                if (o1 instanceof String) g.defaultRule = (String) o1;
-                o1 = xml.get("Encryption");
-                if (o1 instanceof String) g.encryption = (String) o1;
+                o1 = xml.get("default_rule",String.class);
+                if (o1 instanceof String) g.defaultRule = StringEscapeUtils.unescapeHtml((String) o1);
+                o1 = xml.get("encryption",String.class);
+                if (o1 instanceof String) g.encryption = StringEscapeUtils.unescapeHtml((String) o1);
 
                 while (xml.hasNext())
                 {

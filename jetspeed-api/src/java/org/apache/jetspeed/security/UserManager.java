@@ -54,7 +54,7 @@ public interface UserManager
      * @throws Throws a security exception.
      */
     void addUser(String username, String password) throws SecurityException;
-    
+
     /**
      * <p>
      * Add a new user provided a username and password in the specified authentication
@@ -68,6 +68,34 @@ public interface UserManager
      */
     void addUser(String username, String password, String atnProviderName) throws SecurityException;
 
+    
+    /**
+     * <p>
+     * Import a new user with username and password and allow to bypass the enconding algorithm
+     * </p>
+     * 
+     * @param username The user name.
+     * @param password The password.
+     * @param passThrough If true the provided password will not be validated/encoded
+     * @throws Throws a security exception.
+     */
+    void importUser(String username, String password, boolean passThrough) throws SecurityException;
+
+    /**
+     * <p>
+     * Import a new user with username and password in the specified authentication
+     * provider store and allow to bypass the enconding algorithm
+     * </p>
+     * 
+     * @param username The user name.
+     * @param password The password.
+     * @param atnProviderName The authentication provider name.
+     * @param passThrough If true the provided password will not be validated/encoded
+     * @throws Throws a security exception.
+     */
+    void importUser(String username, String password, String atnProviderName, boolean passThrough) throws SecurityException;
+
+    
     /**
      * <p>
      * Remove a user. If there is a {@link java.util.prefs.Preferences}node for

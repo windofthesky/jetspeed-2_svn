@@ -81,6 +81,8 @@ limitations under the License.
          name="criteria"
          element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
          auto-retrieve="true"
+         auto-update="object"
+         auto-delete="object"
     >
     <inverse-foreignkey field-ref="ruleId"/>
     </collection-descriptor>

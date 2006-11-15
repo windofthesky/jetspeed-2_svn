@@ -18,6 +18,7 @@ package org.apache.jetspeed.serializer.objects;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 
 public class JSRuleCriterion
@@ -26,7 +27,6 @@ public class JSRuleCriterion
 
 	private String name;
 
-	private String id;
 
 	private String type;
 
@@ -43,9 +43,7 @@ public class JSRuleCriterion
 
 	public JSRuleCriterion(RuleCriterion c)
 	{
-		this.id = c.getRuleId();
 		this.name = c.getName();
-
 		this.type = c.getType();
 		this.value = c.getValue();
 		this.fallBackOrder = c.getFallbackOrder();
@@ -64,7 +62,6 @@ public class JSRuleCriterion
 			try
 			{
 				JSRuleCriterion g = (JSRuleCriterion) o;
-				xml.setAttribute("id", g.id);
 				xml.setAttribute("name", g.name);
 				xml.add( g.type, "type",String.class);
 				xml.add(g.value,"value", String.class);
@@ -84,8 +81,23 @@ public class JSRuleCriterion
 			try
 			{
 				JSRuleCriterion g = (JSRuleCriterion) o;
-				g.setName(xml.getText().toString());
-			} catch (Exception e)
+				g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name","unknown_name"));
+                Object o1 = xml.get("type",String.class);
+                if (o1 instanceof String) g.type = StringEscapeUtils.unescapeHtml((String) o1);
+                o1 = xml.get("value",String.class);
+                if (o1 instanceof String) g.value = StringEscapeUtils.unescapeHtml((String) o1);
+
+	              o1 = xml.get("fallBackOrder",String.class);
+	                if (o1 instanceof String)
+	                    g.fallBackOrder = Integer.parseInt(((String) o1));
+	                o1 = xml.get("fallBackType",String.class);
+	                if (o1 instanceof String)
+	                    g.fallBackType = Integer.parseInt(((String) o1));
+
+	                while (xml.hasNext())
+	                {
+	                }
+	  			} catch (Exception e)
 			{
 				e.printStackTrace();
 			}
@@ -140,21 +152,7 @@ public class JSRuleCriterion
 		this.fallBackType = fallBackType;
 	}
 
-	/**
-	 * @return Returns the id.
-	 */
-	public String getId()
-	{
-		return id;
-	}
 
-	/**
-	 * @param id The id to set.
-	 */
-	public void setId(String id)
-	{
-		this.id = id;
-	}
 
 	/**
 	 * @return Returns the name.

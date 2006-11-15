@@ -23,16 +23,6 @@ import org.apache.jetspeed.capabilities.Capability;
  * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-public class JSCapability extends JSSimpleIDName
+public class JSCapability extends JSGroup
 {
-	public JSCapability(Capability source)
-	{
-		super(source.getCapabilityId(),source.getName());   
-		
-	}
-    public JSCapability()
-    {
-        super();   
-        
-    }
 }

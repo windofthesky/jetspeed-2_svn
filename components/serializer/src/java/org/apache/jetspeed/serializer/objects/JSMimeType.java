@@ -20,16 +20,6 @@ import javolution.xml.stream.XMLStreamException;
 
 import org.apache.jetspeed.capabilities.MimeType;
 
-public class JSMimeType extends JSSimpleIDName
+public class JSMimeType extends JSGroup
 {
-	
-
-    public JSMimeType()
-    {
-        super();
-    }
-	public JSMimeType(MimeType mime)
-	{
-		super(mime.getMimetypeId(),mime.getName());
-	}
 }

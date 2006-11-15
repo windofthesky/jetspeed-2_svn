@@ -25,29 +25,35 @@ package org.apache.jetspeed.serializer.objects;
  */
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.prefs.Preferences;
 
 import javolution.xml.XMLFormat;
-import javolution.xml.stream.XMLStreamException;
 import javolution.xml.sax.Attributes;
+import javolution.xml.stream.XMLStreamException;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class JSNameValuePairs
 {
 
-    private HashMap myMap = null;
+    private HashMap myMap = new HashMap();
 
     public JSNameValuePairs()
     {
     }
     
  
-    /**
+    public HashMap getMyMap()
+	{
+		return myMap;
+	}
+
+
+	/**
      * @param arg0
      */
     public JSNameValuePairs(Preferences preferences)
     {
-        myMap = new HashMap();
         try
         {
             String[] strings = preferences.keys();
@@ -102,8 +108,8 @@ public class JSNameValuePairs
                 {
                     try
                     {
-                        String _key = attribs.getLocalName(i).toString();
-                        String _value = attribs.getValue(i).toString();
+                        String _key = StringEscapeUtils.unescapeHtml(attribs.getLocalName(i).toString());
+                        String _value = StringEscapeUtils.unescapeHtml(attribs.getValue(i).toString());
                         g.myMap.put(_key, _value);
                     } catch (Exception e)
                     {

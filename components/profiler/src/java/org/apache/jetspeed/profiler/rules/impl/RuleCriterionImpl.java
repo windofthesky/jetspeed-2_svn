@@ -46,7 +46,35 @@ public class RuleCriterionImpl implements RuleCriterion
         this.fallbackOrder = master.getFallbackOrder();
         this.fallbackType = master.getFallbackType();
     }
-        
+    /**
+     * two objects of type RuleCriterion should be considered equal if their name and type  are the same
+     * 
+     */
+     public boolean equals(Object o)
+    {
+    	if (this == o) return true;
+    	if ((o == null) || (!(o instanceof RuleCriterion)))
+    		return false;
+    	RuleCriterion r = (RuleCriterion)o;
+    	if (this.name != null)
+    	{
+    		if (!(this.name.equals(r.getName())))
+    				return false;
+    	}
+    	else
+    		if (r.getName() != null)
+    			return false;
+    	if (this.type != null)
+    	{
+    		if (!(this.type.equals(r.getName())))
+    				return false;
+    	}
+    	else
+    		if (r.getType() != null)
+    			return false;
+    	return true;    	
+    	
+    }
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterion#getType()
      */

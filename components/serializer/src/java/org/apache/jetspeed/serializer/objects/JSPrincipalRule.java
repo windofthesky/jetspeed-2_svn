@@ -17,7 +17,7 @@ package org.apache.jetspeed.serializer.objects;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class JSPrincipalRule
 {
@@ -61,8 +61,8 @@ public class JSPrincipalRule
 			try
 			{
 				JSPrincipalRule g = (JSPrincipalRule) o;
-				g.setLocator(xml.getAttribute("locator","unknown"));
-				g.setRule(xml.getAttribute("rule","unknown"));
+				g.setLocator(StringEscapeUtils.unescapeHtml(xml.getAttribute("locator","unknown")));
+				g.setRule(StringEscapeUtils.unescapeHtml(xml.getAttribute("rule","unknown")));
 				
 				
 			} catch (Exception e)

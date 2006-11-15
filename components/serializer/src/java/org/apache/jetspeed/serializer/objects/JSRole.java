@@ -23,66 +23,6 @@ import java.util.*;
 
 import org.apache.jetspeed.security.Role;
 
-public class JSRole
+public class JSRole extends JSGroup
 {
-	// private int refID;
-
-	String name;
-
-	private JSNameValuePairs preferences;
-
-	public JSRole()
-	{
-		// refID = id;
-	}
-
-	/***************************************************************************
-	 * SERIALIZER
-	 */
-	private static final XMLFormat XML = new XMLFormat(JSRole.class)
-	{
-		public void write(Object o, OutputElement xml)
-				throws XMLStreamException
-		{
-			try
-			{
-				JSRole g = (JSRole) o;
-				xml.addText(g.getName());
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-		public void read(InputElement xml, Object o)
-		{
-			try
-			{
-				JSRole g = (JSRole) o;
-				g.setName(xml.getText().toString());
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-	};
-
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName()
-	{
-		return name;
-	}
-
-	/**
-	 * @param name
-	 *            The name to set.
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
 }

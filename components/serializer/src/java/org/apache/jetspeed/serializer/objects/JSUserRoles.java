@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
@@ -30,6 +32,8 @@ import javolution.xml.stream.XMLStreamException;
 public class JSUserRoles
 {
 	String roles;
+	
+	
     public JSUserRoles()
     {
     }
@@ -37,7 +41,14 @@ public class JSUserRoles
 	{
 		roles = s;
 	}
-	private static final XMLFormat XML = new XMLFormat(JSUserRoles.class)
+	public String toString()
+	{
+		return roles;
+	}
+
+    
+    
+    private static final XMLFormat XML = new XMLFormat(JSUserRoles.class)
 	{
 		public void write(Object oo, OutputElement xml)
 		throws XMLStreamException
@@ -47,7 +58,7 @@ public class JSUserRoles
 		public void read(InputElement xml, Object oo)
 		throws XMLStreamException
 		{
-	        ((JSUserRoles)oo).roles = xml.getText().toString();
+	        ((JSUserRoles)oo).roles = StringEscapeUtils.unescapeHtml(xml.getText().toString());
 	    }
 	};
 }
