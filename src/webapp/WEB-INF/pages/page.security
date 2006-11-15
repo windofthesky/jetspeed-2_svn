@@ -41,11 +41,11 @@
   </security-constraints-def>
   <security-constraints-def name="AEUV">
     <security-constraint>
-      <users>admin</users>
+      <roles>admin</roles>
       <permissions>view, edit</permissions>
     </security-constraint>
     <security-constraint>
-      <users>user</users>
+      <roles>user</roles>
       <permissions>view</permissions>
     </security-constraint>    
   </security-constraints-def>
