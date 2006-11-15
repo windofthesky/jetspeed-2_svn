@@ -18,11 +18,11 @@ limitations under the License.
 
   <custom-window-state>
     <!--  the custom "popup" window state is mapped to the Jetspeed-2 solo" window state in jetspeed-portlet.xml --> 
-    <name>popup</name>
+    <window-state>popup</window-state>
     <description>a Custom Popup State</description> 
   </custom-window-state>
   <custom-portlet-mode>
-    <name>print</name>
+    <portlet-mode>print</portlet-mode>
     <description>a Custom Print Mode</description> 
   </custom-portlet-mode>
 

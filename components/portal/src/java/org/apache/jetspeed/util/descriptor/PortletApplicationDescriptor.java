@@ -146,11 +146,19 @@ public class PortletApplicationDescriptor
             
             digester.addObjectCreate("portlet-app/custom-portlet-mode", CustomPortletModeImpl.class);
             digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/description", "description");
+            // support both custom-portlet-mode/portlet-mode (correct) and custom-portlet-mode/name (incorrect but needed for backwards compatibility)
+            // see: http://issues.apache.org/jira/browse/JS2-611
+            // TODO: when portlet.xml xsd validation is added the custom-portlet-mode/name definition will no longer be needed/supported
+            digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/portlet-mode", "customName");
             digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/name", "customName");
             digester.addSetNext("portlet-app/custom-portlet-mode", "addCustomPortletMode");
             
             digester.addObjectCreate("portlet-app/custom-window-state", CustomWindowStateImpl.class);
             digester.addBeanPropertySetter("portlet-app/custom-window-state/description", "description");
+            // support both custom-window-state/window-state (correct) and custom-window-state/name (incorrect but needed for backwards compatibility)
+            // see: http://issues.apache.org/jira/browse/JS2-611
+            // TODO: when portlet.xml xsd validation is added the custom-window-state/name definition will no longer be needed/supported
+            digester.addBeanPropertySetter("portlet-app/custom-window-state/window-state", "customName");
             digester.addBeanPropertySetter("portlet-app/custom-window-state/name", "customName");
             digester.addSetNext("portlet-app/custom-window-state", "addCustomWindowState");
             
