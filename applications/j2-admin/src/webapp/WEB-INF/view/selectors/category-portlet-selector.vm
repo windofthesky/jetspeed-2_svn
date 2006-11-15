@@ -13,48 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
-<div dojoType="dialog" id="AddPortletDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
-  <form onsubmit="return false;">
-  <input type="hidden" id='theNewPortlet'>
-    <div id="AddPortletPane" dojoType="ContentPane" label="Portlet Info" class="constraints">
-      <div style="height:21px; padding: 2px"><b>Portlet Name:&nbsp;</b><span id="portletDefName"></span></div>
-      <div class="portletTableDiv">
-      <table>
-      <tr>
-        <td>Pref one:</td>
-        <td><input type="text" value="UNDER CONSTRUCTION!"></td>
-      </tr>
-      <tr>
-        <td>Pref Two:</td>
-        <td><input type="text"></td>
-      </tr>
-      </table>
-      </div>
-      <div dojoType="LayoutContainer"
-                     widgetId="constraintsEditorBottom"
-                     minHeight="20"
-                     layoutAlign="bottom"
-                     style="padding: 4px; width: 100%; height: 30px">
-            <div dojoType="LayoutContainer"
-                 widgetId="constraintsEditorBottomLeft"
-                 minHeight="20"
-                 layoutAlign="left"
-                 style="padding: 4px; width: 18%; height: 30px">
-            </div>
-            <div dojoType="LayoutContainer"
-                 widgetId="constraintsEditorBottomRight"
-                 minHeight="20"
-                 layoutAlign="right"
-                 style="padding: 4px; border-right: thin inset grey; width: 78%; height: 30px">
-                <div class="buttonbox">
-                    <button dojoType="Button" onClick="dojo.widget.byId( 'AddPortletDialog' ).hide();" >Cancel</button>
-                    <button dojoType="Button" onClick="addPortletToPage();">OK</button>
-                </div>
-            </div>
-      </div>
-    </div>
-  </form>
-</div>
 #set ($refreshLink = $renderResponse.createActionURL())
 $refreshLink.setParameter("reset","true")
 <!-- Search Form -->
@@ -62,10 +20,13 @@ $refreshLink.setParameter("reset","true")
 <table>
 <tr>
 <td nowrap class="portlet-section-alternate" align="right">Search for portlets:&nbsp;</td>
-<td nowrap>
+<td nowrap class="portlet-section-alternate">
 <input type="text" name="searchString" id="searchString" size="40" value="$!searchString" class="portlet-form-field-label">    
 <input type="submit" value="Search" onClick='javascript:performSearch();'>
 <input type="submit" value="Refresh" onClick="javascript:performRefresh()">
+</td>
+<td nowrap>
+<a href='' id='previousButton'><img style="border:none" src="images/portlets/go-previous.png"></a>
 </td>
 </tr>
 </table>
@@ -156,7 +117,7 @@ function displayPortlets(cat)
          c0.setAttribute("style","font-size: 8pt; color: blue;");
          var a = document.createElement("a");
          a.innerHTML = "Add"; // TODO: localize
-         a.href = "javascript:displayAddPortletDialog(" + "\"" + currentPortlets[catPortlets[iz]].name + "\"" + ")";
+         a.href = "javascript:addPortletToPage(" + "\"" + currentPortlets[catPortlets[iz]].name + "\"" + ")";
          c0.appendChild(a);
          c1 = row3.insertCell(1);
          c1.innerHTML = "Count: " + currentPortlets[catPortlets[iz]].count; // TODO: localize
@@ -170,29 +131,19 @@ function displayPortlets(cat)
     }
     highlightSelectedCategory(cat);
 }
-function displayAddPortletDialog(portletName)
-{
-   var nameSpan = dojo.byId( "portletDefName" );   
-   var theNewPortlet = document.getElementById('theNewPortlet');
-   theNewPortlet.value = portletName;
-   nameSpan.innerHTML = selectorPortlets[portletName].display;   
-   dojo.widget.byId("AddPortletDialog").show();   
-}
-function addPortletToPage()
+function addPortletToPage(theNewPortlet)
 {                                                      
-   var theNewPortlet = document.getElementById('theNewPortlet').value;
+   //dojo.widget.byId("AddPortletDialog").hide();   
+   var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
+   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + "$jspage";
+   jetspeed.addNewPortletDefinition( portletDef, null, pagePath );
    selectorPortlets[theNewPortlet].count = selectorPortlets[theNewPortlet].count + 1;
    var cell = document.getElementById(theNewPortlet);
    if (cell != null)
    {
       cell.innerHTML = "Count: " + selectorPortlets[theNewPortlet].count; // TODO: localize
-   }
-   dojo.widget.byId("AddPortletDialog").hide();   
-   var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
-   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + "$jspage";
-   jetspeed.addNewPortletDefinition( portletDef, null, pagePath );
+   }   
 }
-//   dojo.lang.setTimeout(window, "performSearch2", 20);
 function performSearch()
 {
    var ix = this.categories.length-1;
@@ -260,14 +211,20 @@ function initializePortletSelector()
      c1.appendChild(a);
      var c2 = row.insertCell(i+1);
      var a2 = document.createElement("a");
-     a2.innerHTML = "Back to Page";  // TODO: localize
+     a2.innerHTML = "[Go Back]";  // TODO: localize
      // TODO: determine if JETSPEED or DESKTOP 
-     a2.href = jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED + "/portal" + "$jspage";
+     a2.href = getReturnURL();
      a2.setAttribute("style", "font-weight:normal");
      c2.appendChild(a2);
-
+     var prevButton = document.getElementById("previousButton");
+     prevButton.setAttribute('href', getReturnURL());
      displayPortlets("All");
 }
+function getReturnURL()
+{
+   return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED + "/portal" + "$jspage";
+}
+
 window.selectorPortlets = new Array();
 window.categories = new Array();
 dojo.addOnLoad( window.initializePortletSelector );

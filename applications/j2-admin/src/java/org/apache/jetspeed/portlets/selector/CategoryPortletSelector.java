@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -65,6 +66,13 @@ import org.apache.velocity.context.Context;
  */
 public class CategoryPortletSelector extends AbstractDojoVelocityPortlet implements Comparator
 {
+    public final String[] DEFAULT_IMAGES = new String[]
+    {
+            "images/portlets/applications-development.png",
+            "images/portlets/applications-system.png",
+            "images/portlets/applications-other.png",
+            "images/portlets/linux.png"
+    };
     protected final Log logger = LogFactory.getLog(this.getClass());
     public final static String PORTLET_ICON = "portlet-icon";
     protected final static String PORTLETS = "category.selector.portlets";
@@ -74,7 +82,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
-       
+    protected Random rand;
+    
     public void init(PortletConfig config)
     throws PortletException 
     {
@@ -89,7 +98,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         if (null == searchEngine)
         {
             throw new PortletException("Failed to find the Search Engine on portlet initialization");
-        }                
+        }
+        rand = new Random( 19580427 );
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -212,6 +222,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         return list;
     }
 
+    
+    
     /**
      * Filters portlets being added to the based on security checks and layout criteria
      * 
@@ -236,23 +248,41 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
             Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);
             String image;
             if (param != null)
-            {
-                String relativeImagePath = param.getValue();
-                String context = muta.getWebApplicationDefinition().getContextRoot();
-                image = context + relativeImagePath;
+            {                
+                //String relativeImagePath = param.getValue();
+                //String context = muta.getWebApplicationDefinition().getContextRoot();
+                // Have to use a supported icon in jetspeed, otherwise image can be out of skew
+                String  imagePath = param.getValue();
+                if (imagePath == null)
+                {
+                    image = DEFAULT_IMAGES[rand.nextInt(DEFAULT_IMAGES.length)];
+                }
+                else
+                {
+                    if (-1 == imagePath.indexOf("/"))
+                        image = "images/portlets/" + param.getValue();
+                    else
+                        image = param.getValue();
+                }
             }
             else
             {
-                // default TODO: assign image by category
-                image = "images/portlets/preferences-desktop-locale.png";
+                image = DEFAULT_IMAGES[rand.nextInt(DEFAULT_IMAGES.length)];
             }
-            return new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale), image);
+            return new PortletInfo(uniqueName, cleanup(portlet.getDisplayNameText(locale)), cleanup(portlet.getDescriptionText(locale)), image);
         }
         catch (AccessControlException ace)
         {
             return null;
         }
         
+    }
+    
+    protected String cleanup(String str)
+    {
+        if (str == null)
+            return str;
+        return str.replaceAll("\r|\n|\"|\'", "");
     }
     
     protected PortletDefinitionComposite getPortletFromParsedObject(ParsedObject po)
