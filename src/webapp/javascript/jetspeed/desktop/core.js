@@ -52,6 +52,7 @@ jetspeed.version =
 // ... jetspeed.id
 jetspeed.id =
 {
+    PAGE: "jetspeedPage",
     DESKTOP: "jetspeedDesktop",
     TASKBAR: "jetspeedTaskbar",
     COLUMNS: "jetspeedColumns",
@@ -108,8 +109,8 @@ jetspeed.prefs =
     windowTiling: true,                 // false indicates no-columns, free-floating windows
     windowHeightExpand: false,          // only meaningful when windowTiling == true
     
-    windowWidth: "280",
-    windowHeight: "200",
+    windowWidth: null,                  // last-ditch defaults for these defined in initializeDesktop
+    windowHeight: null,
 
     desktopTheme: null,                 // do not access directly - use getDesktopTheme()
     desktopThemeRootUrl: null,          // do not access directly - use getDesktopThemeRootUrl()
@@ -193,6 +194,11 @@ jetspeed.initializeDesktop = function()
                     jetspeed.prefs[ prefKey ] = prefOverrideVal;
             }
         }
+        if ( jetspeed.prefs.windowWidth == null || isNaN( jetspeed.prefs.windowWidth ) )
+            jetspeed.prefs.windowWidth = "280";
+        if ( jetspeed.prefs.windowHeight == null || isNaN( jetspeed.prefs.windowHeight ) )
+            jetspeed.prefs.windowHeight = "200";
+        
         var windowActionDesktop = {};
         windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND ] = true;
         windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL ] = true;
@@ -269,7 +275,7 @@ jetspeed.loadDebugWindow = function()
         windowParams[ jetspeed.id.PORTLET_PROP_TOP ] = "0";
         windowParams[ jetspeed.id.PORTLET_PROP_EXCLUDE_PCONTENT ] = false;
         windowParams[ jetspeed.id.PORTLET_PROP_CONTENT_RETRIEVER ] = new jetspeed.om.DojoDebugContentRetriever();
-        //windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_STATE ] = "minimized" ;
+        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_STATE ] = "minimized" ;
         var pwWidgetParams = jetspeed.widget.PortletWindow.prototype.staticDefineAsAltInitParameters( null, windowParams );
         jetspeed.ui.createPortletWindow( pwWidgetParams );
         pwWidgetParams.retrieveContent( null, null );
@@ -2653,6 +2659,8 @@ dojo.lang.extend( jetspeed.om.Portlet,
                     queryStringFragment += "&row=" + changedState.row;
                 if ( changedState.layout != null )
                     queryStringFragment += "&layoutid=" + changedState.layout;
+                if ( changedState.height != null )
+                    queryStringFragment += "&height=" + changedState.height;
             }
             else
             {

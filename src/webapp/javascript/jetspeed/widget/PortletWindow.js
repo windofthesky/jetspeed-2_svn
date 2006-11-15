@@ -58,6 +58,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     processingContentChanged: false,
 
+    lastUntiledPositionInfo: null,
+    lastTiledPositionInfo: null,
+
     /*  static   */
     staticDefineAsAltInitParameters: function( defineIn, params )
     {
@@ -186,7 +189,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    setWindowDimensions: function( fragment )
+    initWindowDimensions: function( fragment )
     {
         this.windowPositionStatic = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC );
         this.windowHeightToFit = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_HEIGHT_TO_FIT );
@@ -194,54 +197,102 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         this.constrainToContainer = 0;
 
-        var portletWidth = null, portletHeight = null, portletLeft = null, portletTop = null;
+        var windowWidth = null, windowHeight = null, windowLeft = null, windowTop = null;
         if ( this.portlet )
         {
             var portletWindowDimensions = this.portlet.getInitialWindowDimensions();
-        	portletWidth = portletWindowDimensions.width;
-            portletHeight = portletWindowDimensions.height;
-            portletLeft = portletWindowDimensions.left;
-            portletTop = portletWindowDimensions.top;
+        	windowWidth = portletWindowDimensions.width;
+            windowHeight = portletWindowDimensions.height;
+            windowLeft = portletWindowDimensions.left;
+            windowTop = portletWindowDimensions.top;
             // NOTE: portletWindowDimensions.zIndex;  - should be dealt with in the creation order
         }
         else
         {
-            portletWidth = this.getInitProperty( jetspeed.id.PORTLET_PROP_WIDTH );
-            portletHeight = this.getInitProperty( jetspeed.id.PORTLET_PROP_HEIGHT );
-            portletLeft = this.getInitProperty( jetspeed.id.PORTLET_PROP_LEFT );
-            portletTop = this.getInitProperty( jetspeed.id.PORTLET_PROP_TOP );
+            windowWidth = this.getInitProperty( jetspeed.id.PORTLET_PROP_WIDTH );
+            windowHeight = this.getInitProperty( jetspeed.id.PORTLET_PROP_HEIGHT );
+            windowLeft = this.getInitProperty( jetspeed.id.PORTLET_PROP_LEFT );
+            windowTop = this.getInitProperty( jetspeed.id.PORTLET_PROP_TOP );
         }
         
-        if ( portletWidth != null && portletWidth > 0 ) portletWidth = Math.floor(portletWidth) + "px";
-        else portletWidth = jetspeed.prefs.windowWidth;
+        this.lastUntiledPositionInfo = {};
+        this.lastTiledPositionInfo = { width: "" };
+        
+        // to allow for an initial untiled placement based on tiled position,
+        //   only record lastUntiledPositionInfo when value is specified (not defaulted) or if window is already untiled
+        if ( windowWidth != null && windowWidth > 0 )
+        {
+            windowWidth = Math.floor(windowWidth);
+            this.lastUntiledPositionInfo.width = windowWidth;
+        }
+        else
+        {
+            windowWidth = jetspeed.prefs.windowWidth;
+            if ( ! this.windowPositionStatic )
+                this.lastUntiledPositionInfo.width = windowWidth;
+        }
     
-        if ( portletHeight != null && portletHeight > 0 ) portletHeight = Math.floor(portletHeight) + "px";
-        else portletHeight = jetspeed.prefs.windowHeight;
+        if ( windowHeight != null && windowHeight > 0 )
+        {
+            windowHeight = Math.floor(windowHeight);
+            this.lastUntiledPositionInfo.height = windowHeight;
+            this.lastTiledPositionInfo.height = windowHeight;
+        }
+        else
+        {
+            windowHeight = jetspeed.prefs.windowHeight;
+            this.lastTiledPositionInfo.height = windowHeight;
+            if ( ! this.windowPositionStatic )
+                this.lastUntiledPositionInfo.height = windowHeight;
+        }
             
-        if ( portletLeft != null && portletLeft >= 0 ) portletLeft = Math.floor(portletLeft) + "px";
-        else portletLeft = (((this.portletIndex -2) * 30 ) + 200) + "px";
+        if ( windowLeft != null && windowLeft >= 0 )
+        {
+            windowLeft = Math.floor(windowLeft);
+            this.lastUntiledPositionInfo.left = windowLeft;
+        }
+        else
+        {
+            windowLeft = (((this.portletIndex -2) * 30 ) + 200);
+            if ( ! this.windowPositionStatic )
+                this.lastUntiledPositionInfo.left = windowLeft;
+        }
     
-        if ( portletTop != null && portletTop >= 0 ) portletTop = Math.floor(portletTop) + "px";
-        else portletTop = (((this.portletIndex -2) * 30 ) + 170) + "px";
+        if ( windowTop != null && windowTop >= 0 )
+        {
+            windowTop = Math.floor(windowTop);
+            this.lastUntiledPositionInfo.top = windowTop;
+        }
+        else
+        {
+            windowTop = (((this.portletIndex -2) * 30 ) + 170);
+            if ( ! this.windowPositionStatic )
+                this.lastUntiledPositionInfo.top = windowTop;
+        }
+        
+        windowWidth = windowWidth + "px";
+        windowHeight = windowHeight + "px";
+        windowLeft = windowLeft + "px";
+        windowTop = windowTop + "px";
 
         if ( ! this.portletInitialized )
         {
             var source = this.getFragNodeRef( fragment );
-            var dimensionsCss = "width: " + portletWidth + ( ( portletHeight != null && portletHeight.length > 0 ) ? ( "; height: " + portletHeight ) : "");
+            var dimensionsCss = "width: " + windowWidth + ( ( windowHeight != null && windowHeight.length > 0 ) ? ( "; height: " + windowHeight ) : "");
             if ( ! this.windowPositionStatic )
-                dimensionsCss += "; left: " + portletLeft + "; top: " + portletTop + ";";
+                dimensionsCss += "; left: " + windowLeft + "; top: " + windowTop + ";";
         
             source.style.cssText = dimensionsCss;
         }
         else
         {   // update dimensions
             this.domNode.style.position = "absolute";
-            this.domNode.style.width = portletWidth;
-            this.domNode.style.height = portletHeight;
+            this.domNode.style.width = windowWidth;
+            this.domNode.style.height = windowHeight;
             if ( ! this.windowPositionStatic )
             {
-                this.domNode.style.left = portletLeft;
-                this.domNode.style.top = portletTop;
+                this.domNode.style.left = windowLeft;
+                this.domNode.style.top = windowTop;
             }
         }
     },
@@ -252,14 +303,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.initWindowTitle( fragment );
         this.initWindowIcon( fragment );
 
-        if ( dojo.render.html.mozilla )  // dojo.render.html.ie
-        {
-            //this.hasShadow = "true";
-            //        dojo.debug( "nWidget.domNode.cssText: " + 
-            //nWidget.domNode.style = "overflow: visible;";   // so that drop shadow is displayed
-        }
+        //if ( dojo.render.html.mozilla )  // dojo.render.html.ie
+        //{
+        //    this.hasShadow = "true";
+        //    this.domNode.style = "overflow: visible;";   // so that drop shadow is displayed
+        //}
 
-        this.setWindowDimensions( fragment );
+        this.initWindowDimensions( fragment );
     },
 
     // dojo.widget.Widget create protocol
@@ -315,20 +365,20 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( isResizable )
         {
 			this.resizeBar.style.display = "block";
-            var rh = null;
             var rhWidgetId = this.widgetId + "_resize";
             if ( ! this.portletInitialized )
-			    rh = dojo.widget.createWidget( "jetspeed:PortletWindowResizeHandle", { targetElmId: this.widgetId, id: rhWidgetId, portletWindow: this } );
+			    this.resizeHandle = dojo.widget.createWidget( "jetspeed:PortletWindowResizeHandle", { targetElmId: this.widgetId, id: rhWidgetId, portletWindow: this } );
             else
-                rh = dojo.widget.byId( rhWidgetId );
-            if ( rh )
+                this.resizeHandle = dojo.widget.byId( rhWidgetId );
+            if ( this.resizeHandle )
             {
-                if ( this.windowPositionStatic && dojo.render.html.mozilla )  // dojo.render.html.ie
-                    rh.domNode.style.position = "static";
-                else
-                    rh.domNode.style.position = "absolute";
+                //if ( this.windowPositionStatic && dojo.render.html.mozilla )  // dojo.render.html.ie
+                    this.resizeHandle.domNode.style.position = "static";  // until 2006-11-15, was set to absolute for all but dojo.render.html.mozilla
+                                                                          // but setting to static for all seems to fix IE failure to initially display resize handle
+                //else
+                //    this.resizeHandle.domNode.style.position = "absolute";
                 if ( ! this.portletInitialized )
-			        this.resizeBar.appendChild( rh.domNode );
+			        this.resizeBar.appendChild( this.resizeHandle.domNode );
             }
 		}
     },
@@ -351,18 +401,21 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
-		if(this.iconSrc==""){
-			dojo.dom.removeNode(this.titleBarIcon);
-		}else{
-			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
+		if ( this.iconSrc=="" )
+        {
+			dojo.dom.removeNode( this.titleBarIcon );
+		}
+        else
+        {
+			this.titleBarIcon.src = this.iconSrc.toString();    // dojo.uri.Uri obj req. toString()
 		}
 
-		if(this.titleBarDisplay!="none")
+		if ( this.titleBarDisplay!="none" )
         {	
-			this.titleBar.style.display="";
-			dojo.html.disableSelection(this.titleBar);
+			this.titleBar.style.display = "";
+			dojo.html.disableSelection( this.titleBar );
 
-			this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
+			this.titleBarIcon.style.display = ( this.iconSrc == "" ? "none" : "" );
 
             var windowTitleBarButtons = null;
 
@@ -655,10 +708,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE )
             {
+                this.makeTiled();
             }
             else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE )
             {
-                this.makeTiled();
+                this.makeUntiled();
             }
             else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
             {
@@ -741,7 +795,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 if ( this.windowHeightToFit )
                     enabled = true;
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE )
+            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE && jetspeed.prefs.windowTiling )
             {
                 if ( ! this.windowPositionStatic )
                     enabled = true;
@@ -827,30 +881,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     portletInitDimensions: function()
     {
-        if ( this.windowPositionStatic )
-        {            
-            this.domNode.style.position = "static";  // can't be done earlier
-            this.domNode.style.left = "auto";                
-            this.domNode.style.top = "auto";
-        }
-
-        if ( this.windowHeightToFit )
-        {
-            this.domNode.style.overflow = "visible";
-            this.domNode.style.height = "";
-        }
-        else
-            this.domNode.style.overflow = "hidden";
-
-        if ( this.windowPositionStatic )
-        {
-            this.domNode.style.width = "";
-            if ( this.titleBar )
-                this.titleBar.style.width = "";
-            if ( this.resizeBar )
-                this.resizeBar.style.width = "";
-        }
-
         if ( ! this.templateDomNodeClassName )
             this.templateDomNodeClassName = this.domNode.className;
         var domNodeClassName = this.templateDomNodeClassName;
@@ -870,29 +900,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 containerNodeClassName = this.windowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
             }
             this.containerNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
-
-            if ( this.windowHeightToFit )
-            {
-                this.containerNode.style.overflow = "visible";
-                this.containerNode.style.height = "";
-            }
-            else
-                this.containerNode.style.overflow = "auto";
-
-            if ( this.windowPositionStatic )
-            {
-                //this.containerNode.style.width = "";   // commented-out with change to ie width 100% in resizeTo
-                //dojo.debug( "portletInitDimensions containerNode-width: " + dojo.html.getMarginBox( this.containerNode ).width + " domNode-width: " + this.domNode.style.width );
-            }
         }
 
-        //dojo.debug( "PortletWindow.portletInitDimensions [" + this.portlet.entityId + "] setting domNode.className=" + this.domNode.className + " containerNode.className=" + this.containerNode.className );
-        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        this.width = domNodeMarginBox.width;
-        this.height = domNodeMarginBox.height;
-        this.resetLostHeightWidth();
-        
-        this.resizeTo( this.width, this.height );
+        this._adjustPositionToDesktopState();
+
+        //this.resizeTo( null, null, true );
+
+        //dojo.debug( "portletInitDimensions [" + this.widgetId + "] completed - domNode.style.width=" + this.domNode.style.width + " domNode.style.height=" + this.domNode.style.height );
     },
 
     //     resetWindow: function( /* Portlet */ portlet )
@@ -925,7 +939,10 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         var initWindowState = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_STATE );
         if ( initWindowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+        {
             this.minimizeWindow();
+            this.windowActionButtonSync();
+        }
     },
 
     // dojo.widget.ContentPane protocol
@@ -940,120 +957,313 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     minimizeWindow: function( evt )
     {
-        //dojo.debug( "minimize [" + this.widgetId + "] before this[w=" + this.width + " y=" + this.height + "] container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
-
-        var tbiWidget = dojo.widget.byId( this.widgetId + "_tbi" );
-        
-        if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
-            this._setPreviousDimensions();
+        this._setLastPositionInfo();
 
         this.containerNode.style.display = "none";
         this.resizeBar.style.display = "none";
         dojo.html.setContentBox( this.domNode, { height: dojo.html.getMarginBox( this.titleBar ).height } );
-
-        //if ( tbiWidget && tbiWidget.domNode )
-        //    dojo.fx.html.implode( this.domNode, tbiWidget.domNode, 340 ) ; // began as 300 in ff
-        //else
-        //    this.hide();
     
         this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE;
     },
-	restoreWindow: function(evt)
-    {
-        //dojo.debug( "restore [" + this.widgetId + "] begin container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
-        if ( this.previous.columnIndex != null )
-        {
-            var columnElmt = jetspeed.page.columns[ this.previous.columnIndex ];
-            if ( this.previous.previousSibling )
-                dojo.dom.insertAfter( this.domNode, this.previous.previousSibling );
-            else if ( this.previous.nextSibling )
-                dojo.dom.insertBefore( this.domNode, this.previous.nextSibling );
-            else
-                columnElmt.domNode.appendChild( this.domNode );
-
-            this.domNode.style.position = "static";
-        }
-
-		this.containerNode.style.display = "";
-        this.resizeBar.style.display = "";
-
-        for(var attr in this.previous){
-			this.domNode.style[attr]=this.previous[attr];
-		}
-        
-		this.resizeTo( this.previous.width, this.previous.height, true );
-		this.previous = null;
-
-		this.windowState = "normal";
-
-        //dojo.debug( "restore [" + this.widgetId + "] end container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
-	},
     maximizeWindow: function( evt )
     {
-        this._setPreviousDimensions();
+        var tiledStateIsChanging = this.windowPositionStatic;
+        this._setLastPositionInfo( tiledStateIsChanging, true );
         
         var jetspeedDesktop = document.getElementById( jetspeed.id.DESKTOP );
         if ( this.windowPositionStatic )
         {
-            var sibling = dojo.dom.getPreviousSiblingElement( this.domNode );
-            if ( sibling )
-                this.previous.previousSibling = sibling;
-            else
-            {
-                sibling = dojo.dom.getNextSiblingElement( this.domNode );
-                if ( sibling )
-                    this.previous.nextSibling = sibling;
-            }
-            
-            this.previous.columnIndex = this.getPageColumnIndex();
-            
             this.domNode.style.position = "absolute";
             jetspeedDesktop.appendChild( this.domNode );
         }
         jetspeed.widget.PortletWindow.superclass.bringToTop.call( this, evt );
         
-        var yPos = dojo.html.getAbsolutePosition( jetspeedDesktop ).y;
-		this.domNode.style.left =
-			dojo.html.getPixelValue( jetspeedDesktop, "padding-left", true) + "px";
+        // hardcoded to fill document.body width leaving 1px on each side
+        var yPos = dojo.html.getAbsolutePosition( jetspeedDesktop, true ).y;    // passing true to fix position at top (so not affected by vertically scrolled window)
+		this.domNode.style.left = "1px";
 		this.domNode.style.top = yPos;
 
-        this.resizeTo(
-            dojo.html.getContentBox( jetspeedDesktop ).width,
-            dojo.html.getBorderBox( document.body ).height - yPos
-		);
+        this.windowPositionStatic = false;
+
+        var jetspeedPage = document.getElementById( jetspeed.id.PAGE );
+
+        var viewport = dojo.html.getViewport();
+        var padding = dojo.html.getPadding( dojo.body() );
+        
+        this.resizeTo( viewport.width - padding.width - 2, viewport.height - padding.height - yPos );
+
+        //this.resizeTo(
+        //    dojo.html.getContentBox( jetspeedPage ).width - 2,
+        //    dojo.html.getBorderBox( document.body ).height - yPos
+		//);
 
 		this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE;
 	},
+	restoreWindow: function( evt )
+    {
+        var currentlyAbsolute = false;
+        if ( this.domNode.style.position == "absolute" )
+        {
+            currentlyAbsolute = true;
+        }
+
+        var lastPositionInfo = null;
+        if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        {
+            this.windowPositionStatic = ( this.lastWindowPositionStatic != null ? this.lastWindowPositionStatic : false );
+        }
+
+        this.containerNode.style.display = "";
+        this.resizeBar.style.display = "";
+
+        if ( this.windowPositionStatic )
+        {
+            lastPositionInfo = this.lastTiledPositionInfo;
+        }
+        else
+        {
+            lastPositionInfo = this.lastUntiledPositionInfo;
+        }
+
+        var lpiWidth = null;
+        var lpiHeight = null;
+        if ( lastPositionInfo != null )
+        {
+            lpiWidth = lastPositionInfo.width;
+            lpiHeight = lastPositionInfo.height;
+            for ( var attr in lastPositionInfo )
+            {
+                if ( attr != "columnInfo" )
+			        this.domNode.style[ attr ] = lastPositionInfo[ attr ];
+		    }
+        }
+
+        this._adjustPositionToDesktopState();
+        
+        if ( this.windowPositionStatic && currentlyAbsolute )
+        {   // tiled window in maximized needs to be placed back in previous column/row
+            if ( lastPositionInfo != null && lastPositionInfo.columnInfo != null && lastPositionInfo.columnInfo.columnIndex != null )
+            {
+                var columnElmt = jetspeed.page.columns[ lastPositionInfo.columnInfo.columnIndex ];
+                if ( lastPositionInfo.columnInfo.previousSibling )
+                    dojo.dom.insertAfter( this.domNode, lastPositionInfo.columnInfo.previousSibling );
+                else if ( lastPositionInfo.columnInfo.nextSibling )
+                    dojo.dom.insertBefore( this.domNode, lastPositionInfo.columnInfo.nextSibling );
+                else
+                    columnElmt.domNode.appendChild( this.domNode );
+            }
+            else
+            {
+                if ( jetspeed.page.columns != null && jetspeed.page.columns.length > 0 )
+                    dojo.dom.prependChild( this.domNode, jetspeed.page.columns[ 0 ].domNode );
+            }
+            this.domNode.style.position = "static";
+        }
+        
+		this.resizeTo( lpiWidth, lpiHeight, true );
+
+		this.windowState = jetspeed.id.PORTLET_ACTION_NAME_RESTORE;  // "normal"
+	},
+
+    _setLastPositionInfo: function( tiledStateIsChanging, changingToMaximized )
+    {
+        if ( changingToMaximized )
+        {
+            this.lastWindowPositionStatic = this.windowPositionStatic;
+        }
+        if ( this.windowPositionStatic )
+        {
+            if ( this.lastTiledPositionInfo == null )
+            {
+                this.lastTiledPositionInfo = {};
+            }
+            if ( tiledStateIsChanging )
+            {   // record col/row location
+                var columnInfo = {};
+                var sibling = dojo.dom.getPreviousSiblingElement( this.domNode );
+                if ( sibling )
+                    columnInfo.previousSibling = sibling;
+                else
+                {
+                    sibling = dojo.dom.getNextSiblingElement( this.domNode );
+                    if ( sibling )
+                        columnInfo.nextSibling = sibling;
+                }
+                columnInfo.columnIndex = this.getPageColumnIndex();
+                this.lastTiledPositionInfo.columnInfo = columnInfo;
+            }
+            if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            {
+                this.lastTiledPositionInfo.height = this.domNode.style.height;
+            }
+            this.lastTiledPositionInfo.width = "";
+        }
+        else
+        {
+            if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            {
+                var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+                this.lastUntiledPositionInfo =
+                {
+			        width: domNodeMarginBox.width,
+			        height: domNodeMarginBox.height,
+			        left: this.domNode.style.left,
+			        top: this.domNode.style.top,
+			        bottom: this.domNode.style.bottom,
+			        right: this.domNode.style.right
+                };
+            }
+        }
+    },
+    _updateLastPositionInfoPositionOnly: function()
+    {
+        if ( ! this.windowPositionStatic && this.lastUntiledPositionInfo != null )
+        {
+            this.lastUntiledPositionInfo.left = this.domNode.style.left;
+            this.lastUntiledPositionInfo.top = this.domNode.style.top;
+        }
+    },
+
     bringToTop: function( evt )
     {
         var beforeZIndex = this.domNode.style.zIndex;
         jetspeed.widget.PortletWindow.superclass.bringToTop.call( this, evt );
-        if ( ! this.windowPositionStatic && this.isPortletWindowInitialized() && this.portlet )
+        if ( this.portlet && ! this.windowPositionStatic && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE && this.isPortletWindowInitialized() )
         {
             this.portlet.submitChangedWindowState();
             //dojo.debug( "bringToTop [" + this.portlet.entityId + "] zIndex   before=" + beforeZIndex + " after=" + this.domNode.style.zIndex );
         }
     },
+    makeUntiled: function()
+    {
+        this._setLastPositionInfo( true, false );
+
+        var winWidth = null;
+        var winHeight = null;
+        var winLeft = null;
+        var winTop = null;
+
+        var lastUntiledPosInfo = this.lastUntiledPositionInfo;
+        if ( lastUntiledPosInfo != null &&
+             lastUntiledPosInfo.width != null && lastUntiledPosInfo.height != null &&
+             lastUntiledPosInfo.left != null && lastUntiledPosInfo.top != null )
+        {   // use last untiled position if all properties are defined in this.lastUntiledPositionInfo
+            winWidth = lastUntiledPosInfo.width;
+            winHeight = lastUntiledPosInfo.height;
+            winLeft = lastUntiledPosInfo.left;
+            winTop = lastUntiledPosInfo.top;
+        }
+        else
+        {   // determine initial untiled position based on current tiled position
+            var positioningNode = this.domNode;
+            var winAbsPos = dojo.html.getAbsolutePosition( positioningNode, true );
+            var winMarginTop = dojo.html.getPixelValue( positioningNode, "margin-top", true );
+            var winMarginLeft = dojo.html.getPixelValue( positioningNode, "margin-left", true );
+            var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+            winWidth = domNodeMarginBox.width;
+            winHeight = domNodeMarginBox.height;
+            winLeft = winAbsPos.x - winMarginTop;
+            winTop = winAbsPos.y - winMarginLeft;
+        }
+        this.domNode.style.position = "absolute";
+        
+        this.domNode.style.left = winLeft;
+        this.domNode.style.top = winTop;
+
+        this.windowPositionStatic = false;
+
+        this._adjustPositionToDesktopState();
+        
+        this.resizeTo( winWidth, winHeight, true );
+        
+        var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
+        addToElmt.appendChild( this.domNode );
+
+        if ( this.portlet )
+            this.portlet.submitChangedWindowState();
+    },
+    makeTiled: function()
+    {
+        this.windowPositionStatic = true;
+        
+        this.restoreWindow();
+
+        if ( this.portlet )
+            this.portlet.submitChangedWindowState();
+    },
+
+    makeHeightToFit: function( suppressSubmitChange, suppressLogging )
+    {   // suppressLogging is to support contentChanged
+        var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+
+        this.windowHeightToFit = true;
+
+        this._adjustPositionToDesktopState();
+
+        if ( suppressLogging == null || suppressLogging != true )
+        {   // flags are to avoid init problems with dojo-debug window when height-to-fit is set (causing stack overflow when dojo.debug() is called)
+            //dojo.debug( "makeHeightToFit [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
+        }
+    
+        this.resizeTo( null, null, true );
+
+        if ( ! suppressSubmitChange && this.portlet )
+            this.portlet.submitChangedWindowState();
+    },
+    makeHeightVariable: function( suppressSubmitChange )
+    {
+        var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+
+        this.windowHeightToFit = false;
+
+        this._adjustPositionToDesktopState();
+
+        //dojo.debug( "makeHeightVariable [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
+        //dojo.debug( "makeHeightVariable [" + this.widgetId + "] containerNode PREV style.width=" + this.containerNode.style.width + " style.height=" + this.containerNode.style.height );
+        
+        this.resizeTo( null, null, true );
+    
+        if ( dojo.render.html.ie )
+            dojo.lang.setTimeout( this, this._IEPostResize, 10 );
+
+        //dojo.debug( "makeHeightVariable [" + this.widgetId + "] containerNode NEW style.width=" + this.containerNode.style.width + " style.height=" + this.containerNode.style.height );
+
+        if ( ! suppressSubmitChange && this.portlet )
+            this.portlet.submitChangedWindowState();
+    },
 
     resizeTo: function( w, h, force )
     {
         //dojo.debug( "resizeTo [" + this.widgetId + "] begin w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
-
-		if(w==this.width && h == this.height && ! force){
+        
+        if ( w == null || w == 0 || isNaN( w ) || h == null || h == 0 || isNaN( h ) )
+        {
+            var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
+            if ( w == null || w == 0 || isNaN( w ) )
+                w = domNodeMarginBox.width;
+            if ( h == null || h == 0 || isNaN( h ) )
+                h = domNodeMarginBox.height;
+        }
+        
+		if ( w == this.lastWidthResizeTo && h == this.lastHeightResizeTo && ! force )
+        {
+            //dojo.debug( "resize unneeded [" + this.widgetId + "]" );
 			return;
 		}
-		this.width=w;
-		this.height=h;
+		this.lastWidthResizeTo = w;
+		this.lastHeightResizeTo = h;
+
+        this.resetLostHeightWidth();
 
 		// IE won't let you decrease the width of the domnode unless you decrease the
 		// width of the inner nodes first (???)
 
 		dojo.lang.forEach(
-			[this.titleBar, this.resizeBar, this.containerNode],
-			function(node){ dojo.html.setMarginBox( node, { width: w - this.lostWidth } ); }, this
+			[ this.titleBar, this.resizeBar, this.containerNode ],
+			function( node ){ dojo.html.setMarginBox( node, { width: w - this.lostWidth } ); }, this
 		);
 
-        //dojo.debug( "resizeTo [" + this.widgetId + "] before-adjust w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
+        //dojo.debug( "resizeTo [" + this.widgetId + "] before-adjust w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " style-width=" + this.containerNode.style.width + " style-height=" + this.containerNode.style.height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
 
         if ( this.windowPositionStatic )
         {
@@ -1065,10 +1275,17 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             if ( this.containerNode )
             {
                 if ( dojo.render.html.ie )
+                {
+                    //dojo.lang.setTimeout( this, this._IEPostResize, 10 );
+                    // IE will adjust consistently if step is deferred
+                    //this.containerNode.style.width = "99%";
                     this.containerNode.style.width = "100%";
+                    //this.containerNode.style.marginLeft = "2px";
+                }
                 else
+                {
                     this.containerNode.style.width = "";  // I only know that ff 1.5 likes it blanked and ie6 likes it 100%
-                //jetspeed.ui.dumpColumnWidths();
+                }
             }
         }
         else
@@ -1089,32 +1306,85 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.bgIframe.onResized();
         if ( this.shadow )
         {
-            this.shadow.size( width, height );
+            this.shadow.size( w, h );
         }
 		this.onResized();
 
-        //dojo.debug( "resizeTo [" + this.widgetId + "] end w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " desired-h=" + (h-this.lostHeight) + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
+        //dojo.debug( "resizeTo [" + this.widgetId + "] end w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " desired-h=" + (h-this.lostHeight) + " style-width=" + this.containerNode.style.width + " style-height=" + this.containerNode.style.height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
 	},
 
-    _setPreviousDimensions: function()
-    {
-        this.previous =
-        {
-			width: this.width,
-			height: this.height,
-			left: this.domNode.style.left,
-			top: this.domNode.style.top,
-			bottom: this.domNode.style.bottom,
-			right: this.domNode.style.right
-        };
+    _IEPostResize: function()
+    {   // IE will adjust consistently if step is deferred - setting to 99 then 100 is to force it to re-render,
+        // which fixes the IE problem where part of containerNode scroll bars outside window bounds
+        //
+        // NOTE: not in use currently from resizeTo - slows down resize too much
+        this.containerNode.style.width = "99%";
+        this.containerNode.style.width = "100%";
     },
-    _updatePositionPreviousDimensions: function()
-    {
-        if ( this.previous != null )
-        {
-            this.previous.left = this.domNode.style.left;
-            this.previous.top = this.domNode.style.top;
+
+    _adjustPositionToDesktopState: function()
+    {   // sets window dimension appropriatly based on 
+        // this.windowPositionStatic and this.windowHeightToFit
+        if ( this.windowPositionStatic )
+        {            
+            this.domNode.style.position = "static";  // can't be done earlier (this comment is from portletInitDimensions - not sure of full meaning here)
+            this.domNode.style.left = "auto";
+            this.domNode.style.top = "auto";
         }
+        else
+        {
+            this.domNode.style.position = "absolute";
+            // BOZO: untiled-window - what about left/top here?
+        }
+
+        if ( this.windowHeightToFit )
+        {
+            this.domNode.style.overflow = "visible";
+            this.domNode.style.height = "";
+        }
+        else
+            this.domNode.style.overflow = "hidden";
+
+        if ( this.windowPositionStatic )
+        {
+            this.domNode.style.width = "";
+            if ( this.titleBar )
+                this.titleBar.style.width = "";
+            if ( this.resizeBar )
+                this.resizeBar.style.width = "";
+        }
+        else
+        {
+            // BOZO: untiled-window - what about width here?
+            // BOZO: may want record values for these as early as possible
+            //       keeping them up-to-date so that this method can reliable
+            //       set these values
+        }
+
+        // BOZO: what about resize handle ?
+
+
+        if ( this.containerNode )
+        {
+            if ( this.windowHeightToFit )
+            {
+                this.containerNode.style.overflow = "visible";
+                this.containerNode.style.height = "";
+            }
+            else
+            {
+                this.containerNode.style.overflow = "auto";
+            }
+            if ( dojo.render.html.ie )
+            {
+                this.containerNode.style.width = "100%";
+            }
+            else
+            {
+                this.containerNode.style.width = "";  // I only know that ff 1.5 likes it blanked and ie6 likes it 100%
+            }
+        }
+        //dojo.debug( "_adjustPositionToDesktopState [" + this.widgetId + "] completed - domNode.style.width=" + this.domNode.style.width + " domNode.style.height=" + this.domNode.style.height );
     },
 
     resetLostHeightWidth: function()
@@ -1128,6 +1398,19 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 			+ dojo.html.getMarginBox(this.titleBar).height
 			+ dojo.html.getMarginBox(this.resizeBar).height;
 		this.lostWidth = domNodeMarginBox.width - domNodeContentBox.width;
+    },
+
+    contentChanged: function( evt )
+    {   // currently used for dojo-debug window only
+        if ( this.processingContentChanged == false )
+        {
+            this.processingContentChanged = true;
+            if ( this.windowHeightToFit )
+            {
+                this.makeHeightToFit( true, true );
+            }
+            this.processingContentChanged = false;
+        }
     },
  
     closeWindow: function()
@@ -1148,94 +1431,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         var winContainerNodeHeight = containerNodeMarginBox.height;
         
         dojo.debug( "window-position [" + this.widgetId + "] x=" + winAbsPos.x + " y=" + winAbsPos.y + " width=" + winWidth + " height=" + winHeight + " cNode-width=" + winContainerNodeWidth + " cNode-height=" + winContainerNodeHeight + " document-width=" + dojo.html.getMarginBox( document[ "body" ] ).width + " document-height=" + dojo.html.getMarginBox( document[ "body" ] ).height ) ;
-    },
-
-    makeTiled: function( positioningNode )
-    {
-        if ( ! positioningNode )
-            positioningNode = this.domNode;
-        var winAbsPos = dojo.html.getAbsolutePosition( positioningNode, true );
-        var winMarginTop = dojo.html.getPixelValue( positioningNode, "margin-top", true );
-        var winMarginLeft = dojo.html.getPixelValue( positioningNode, "margin-left", true );
-        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        var winWidth = domNodeMarginBox.width ;
-        var winHeight = domNodeMarginBox.height ;
-
-        this.domNode.style.position = "absolute";
-        
-        this.domNode.style.left = winAbsPos.x - winMarginTop;
-        this.domNode.style.top = winAbsPos.y - winMarginLeft;
-
-        this.windowPositionStatic = false;
-        
-        this.resizeTo( winWidth, winHeight, true );
-        
-        var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
-        addToElmt.appendChild( this.domNode );
-
-        if ( this.portlet )
-            this.portlet.submitChangedWindowState();
-    },
-
-    contentChanged: function( evt )
-    {   // currently used for dojo-debug window only
-        if ( this.processingContentChanged == false )
-        {
-            this.processingContentChanged = true;
-            if ( this.windowHeightToFit )
-            {
-                this.makeHeightToFit( true, true );
-            }
-            this.processingContentChanged = false;
-        }
-    },
-
-    makeHeightToFit: function( suppressSubmitChange, suppressLogging )
-    {   // suppressLogging is to support contentChanged
-        var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        this.windowHeightToFit = true;
-        this.domNode.style.overflow = "visible";
-        this.domNode.style.height = "";
-        if ( this.containerNode )
-        {
-            this.containerNode.style.overflow = "visible";
-            this.containerNode.style.height = "";
-        }
-        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        this.width = domNodeMarginBox.width;
-        this.height = domNodeMarginBox.height;
-        this.resetLostHeightWidth();
-
-        if ( suppressLogging == null || suppressLogging != true )
-        {
-            dojo.debug( "makeHeightToFit [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
-        }
-    
-        this.resizeTo( this.width, this.height, true );
-
-        if ( ! suppressSubmitChange && this.portlet )
-            this.portlet.submitChangedWindowState();
-    },
-    makeHeightVariable: function( suppressSubmitChange )
-    {
-        var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        this.windowHeightToFit = false;
-        this.domNode.style.overflow = "hidden";
-        if ( this.containerNode )
-        {
-            this.containerNode.style.overflow = "auto";
-        }
-        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        this.width = domNodeMarginBox.width;
-        this.height = domNodeMarginBox.height;
-        this.resetLostHeightWidth();
-
-        dojo.debug( "makeHeightVariable [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
-        
-        this.resizeTo( this.width, this.height, true );
-
-        if ( ! suppressSubmitChange && this.portlet )
-            this.portlet.submitChangedWindowState();
     },
     
     getPageColumnIndex: function()
@@ -1279,12 +1474,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //dojo.debug( "PortletWindow.endSizing [" + this.portlet.entityId + "]" );
         dojo.event.disconnect( document.body, "onmouseup", this, "endSizing" );
         this.windowIsSizing = false;
-        if ( this.portlet )
+        if ( this.portlet && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
     },
     endDragging: function()
     {
-        if ( this.portlet )
+        if ( this.portlet && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
     },
 
@@ -1717,122 +1912,10 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
 
         if ( this.portletWindow.windowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
         {
-            this.portletWindow._updatePositionPreviousDimensions();
+            this.portletWindow._updateLastPositionInfoPositionOnly();
         }
 
         this.portletWindow.endDragging();
         //dojo.debug( "jetspeed.widget.PortletWindowDragMoveSource.onDragEnd" );
 	}
 });
-
-/* start - new layout management (not yet used) */
-jetspeed.ui.spacerwindows = {};
-jetspeed.ui.getSpacerWindow = function( associatedWidgetId, instanceNumber )
-{
-    var spacerWin = jetspeed.ui.spacerwindows[ jetspeed.ui.getSpacerDomNodeId( associatedWidgetId, instanceNumber ) ];
-    return spacerWin;
-};
-jetspeed.ui.getSpacerWindowFromNode = function( spacerWindowDomNode )
-{
-    if ( ! spacerWindowDomNode ) return null;
-    var domNodeId = spacerWindowDomNode.id;
-    if ( ! domNodeId ) return null;
-    return jetspeed.ui.spacerwindows[ domNodeId ];
-}
-jetspeed.ui.getSpacerWindows = function( associatedWidgetId, minNeeded )
-{
-    if ( ! minNeeded )
-        minNeeded = null;
-    var spacerWindows = [];
-    var instanceNum = 1;
-    var spacerWin = null;
-    while ( instanceNum == 1 || spacerWin != null )
-    {
-        spacerWin = jetspeed.ui.spacerwindows[ jetspeed.ui.getSpacerDomNodeId( associatedWidgetId, instanceNum ) ];
-        if ( spacerWin != null )
-        {
-            spacerWindows.push( spacerWin );
-        }
-        instanceNum++;
-    }
-    if ( minNeeded && minNeeded > 0 && spacerWindows.length < minNeeded )
-    {
-        instanceNum = spacerWindows.length + 1;
-        while ( instanceNum <= minNeeded )
-        {
-            spacerWin = new jetspeed.ui.SpacerWindow( associatedWidgetId, instanceNum );
-            jetspeed.ui.spacerwindows[ spacerWin.domNodeId ] = spacerWin;
-            spacerWindows.push( spacerWin );
-        }
-    }
-    return spacerWindows;
-};
-jetspeed.ui.getSpacerDomNodeIdPrefix = function( associatedWidgetId )
-{
-    return associatedWidgetId + "_spacer_";
-};
-jetspeed.ui.getSpacerDomNodeId = function( associatedWidgetId, instanceNumber )
-{
-    return associatedWidgetId + "_spacer_" + instanceNumber;
-};
-jetspeed.ui.SpacerWindow = function( associatedWidgetId, instanceNumber )
-{   // use getSpacerWindows for create - do not call ctor directly
-    this.windowWidgetId = associatedWidgetId;
-    this.instanceNumber = instanceNumber;
-    this.domNodeIdPrefix = jetspeed.ui.getSpacerDomNodeIdPrefix( associatedWidgetId );
-    this.domNodeId = jetspeed.ui.getSpacerDomNodeId( associatedWidgetId, instanceNumber );
-};
-dojo.lang.extend( jetspeed.ui.SpacerWindow, {
-    sizeDomNode: function( height )
-    {
-        var spacerDomNode = this.getDomNode();
-        if ( spacerDomNode == null )
-        {
-            spacerDomNode = document.createElement( "div" );
-            dojo.html.setClass( spacerDomNode, jetspeed.id.PORTLET_WINDOW_GHOST_STYLE_CLASS ) ;
-            spacerDomNode.id = this.domNodeId;
-            this.domNode = spacerDomNode;
-        }
-        spacerDomNode.style.height = height + "px";
-    },
-    getGroupNodes: function()
-    {
-        return this._getSiblings( true );
-    },
-    getGroupSiblings: function()
-    {
-        return this._getSiblings( false );
-    },
-    _getGroupSiblings: function( /* boolean */ includeSelf )
-    {
-        if ( ! jetspeed.page.columns ) return null;
-        var siblings = [];
-        for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
-        {
-            var columnElmt = jetspeed.page.columns[i];
-            var spacerChildren = jetspeed.ui.getPortletWindowChildren( columnElmt.domNode, null, true, true );
-            if ( spacerChildren == null ) continue;
-            for ( var j = 0 ; j < spacerChildren.length ; j++ )
-            {
-                var tId = spacerChildren[j].id;
-                if ( tId != null && tId.indexOf( this.domNodeIdPrefix ) == 0 )
-                {
-                    if ( includeSelf || this.domNodeId != tId )
-                        siblings.push( spacerChildren[j] );
-                }
-            }
-        }
-        return spacerChildren;
-    },
-    getPortletWindow: function()
-    {
-        
-    },
-    getDomNode: function()
-    {
-        if ( this.domNode != null ) return this.domNode ;
-        this.domNode = document.getElementById( this.domNodeId );
-        return this.domNode;
-    }
-});
-/* end - new layout management (not yet used) */
