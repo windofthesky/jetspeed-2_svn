@@ -65,6 +65,7 @@ import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
 // HTTPClient imports
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -1421,12 +1422,17 @@ public class PersistenceBrokerSSOProvider extends
     
     private String scramble(String pwd)
     {
-    	return new String( xor(pwd.toCharArray(), scrambler));
+        // xor-ing persistent String values is dangerous because of the (uncommon) way Java encodes UTF-8 0x00 (and some other characters).
+        // See: http://en.wikipedia.org/wiki/UTF-8#Java
+        // On some database platforms, like PostgreSQL this can lead to something like:
+        //   org.postgresql.util.PSQLException: ERROR: invalid byte sequence for encoding "UTF8": 0x00
+        // To prevent this, the resulting xored password is encoded in Base64
+        return new String( Base64.encodeBase64(new String( xor(pwd.toCharArray(), scrambler) ).getBytes() ) );
     }
     
     private String unscramble(String pwd)
     {
-    	return new String(xor(pwd.toCharArray(),scrambler));
+        return new String(xor(Base64.decodeBase64(pwd.getBytes()).toString().toCharArray(),scrambler));
     }
     
     private char[] xor(char[] a, char[]b)
