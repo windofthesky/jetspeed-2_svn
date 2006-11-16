@@ -151,14 +151,14 @@ public class GetPortletsAction
                 String image;
                 if (param != null)
                 {
-                    String relativeImagePath = param.getValue();
-                    String context = muta.getWebApplicationDefinition().getContextRoot();
-                    image = context + relativeImagePath;
+                    //String relativeImagePath = param.getValue();
+                    //String context = muta.getWebApplicationDefinition().getContextRoot();
+                    // Have to use a supported icon in jetspeed, otherwise image can be out of skew
+                    image = "images/portlets/" + param.getValue();
                 }
                 else
-                {
-                    // default TODO: assign image by category
-                    image = "images/portlets/office-calendar.png";
+                {                                        
+                    image = "images/portlets/applications-internet.png";
                 }                
                 list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale), image));
             }

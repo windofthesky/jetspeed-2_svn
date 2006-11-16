@@ -4,7 +4,7 @@
     
     <portlets>
 #foreach ($portlet in $portlets)    
-        <portlet name="$portlet.Name" displayName="$!portlet.DisplayName" description="$!portlet.Description"/>
+        <portlet name="$portlet.Name" displayName="$!portlet.DisplayName" description="$!portlet.Description" image="$portlet.Image"/>
 #end        
     </portlets>
     

@@ -148,49 +148,12 @@ public class ChangePortletAction
             {
                 throw new Exception("portlet mode " + portletMode + " is not supported");
             }
-                        
-            if (false == checkAccess(requestContext, JetspeedActions.EDIT))
-            {
-                ContentPage page = requestContext.getPage();
-                ContentFragment fragment = page.getContentFragmentById(portletId);
-                if (fragment == null)
-                {
-                    success = false;
-                    resultMap.put(REASON, "Fragment not found");
-                    return success;                    
-                }
-                int column = fragment.getLayoutColumn();
-                int row = fragment.getLayoutRow();                
-                if (!createNewPageOnEdit(requestContext))
-                {
-                    success = false;
-                    resultMap.put(REASON, "Insufficient access to edit page");
-                    return success;
-                }
-                status = "refresh";
-                // translate old portlet id to new portlet id
-                Fragment newFragment = getFragmentIdFromLocation(row, column, requestContext.getPage());
-                if (newFragment == null)
-                {
-                    success = false;
-                    resultMap.put(REASON, "Failed to find new fragment");
-                    return success;                    
-                }                
-                portletId = newFragment.getId();
-            }            
+
             ContentPage page = requestContext.getPage();            
             ContentFragment fragment = page.getContentFragmentById(portletId);
+            
             String oldState = fragment.getState();
             String oldMode = fragment.getMode();
-            if (windowState != null)
-                fragment.setState(windowState);
-            if (portletMode != null)
-                fragment.setMode(portletMode);
-            
-            if (pageManager != null && !batch)
-            {
-                pageManager.updatePage(page);
-            }
             
             // Now Change the transient navigational state
             MutableNavigationalState navState = (MutableNavigationalState)requestContext.getPortalURL().getNavigationalState();
@@ -208,6 +171,20 @@ public class ChangePortletAction
                     navState.setMode(portletWindow, new PortletMode(portletMode));
                 }
                 navState.sync(requestContext);                                
+            }
+            
+
+            if (checkAccess(requestContext, JetspeedActions.EDIT))
+            {
+                if (windowState != null)
+                    fragment.setState(windowState);
+                if (portletMode != null)
+                    fragment.setMode(portletMode);
+                
+                if (pageManager != null && !batch)
+                {
+                    pageManager.updatePage(page);
+                }
             }
             
             //requestContext.getPortalURL().getNavigationalState().
