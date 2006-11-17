@@ -73,6 +73,9 @@
                     <!-- default window width -->
                     <value>280</value>
                 </entry>
+
+                <!-- window themes -->
+                <!-- NOTE: each window theme may override any of the "desktop.window.action.*" properties in its windowtheme.js file -->
                 <entry key="desktop.window.theme">
                     <!-- default desktop window theme -->
                     <value>tigris</value>
@@ -84,6 +87,9 @@
                         <value>blueocean</value>
                     </list>
                 </entry>
+
+                <!-- window actions -->
+                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
                 <entry key="desktop.window.action.button.order">
                     <!-- order, left to right, that action buttons should be rendered -->
                     <!-- all listed actions are expected to have associated images at derived path {windowtheme}/images/{action}.gif -->
@@ -102,9 +108,11 @@
                     </list>
                 </entry>
                 <entry key="desktop.window.action.button.maximum">
+                    <!-- maximum number of action buttons allowed - overflow items will be displayed at top of action menu -->
                     <value>10</value>
                 </entry>
                 <entry key="desktop.window.action.button.hide">
+                    <!-- hide action buttons unless mouse is over window title bar -->
                     <value>false</value>
                 </entry>
                 <entry key="desktop.window.action.noimage">
@@ -118,13 +126,22 @@
                 </entry>
                 <entry key="desktop.window.action.menu.order">
                     <!-- order, top to bottom, the actions should appear in action menu -->
-                    <!--    -->
                     <list>
                         <value>tile</value>
                         <value>untile</value>
                         <value>heightexpand</value>
                         <value>heightnormal</value>
                     </list>
+                </entry>
+                <entry key="desktop.window.action.button.tooltip">
+                    <!-- display tooltips for window action buttons -->
+                    <value>true</value>
+                </entry>
+
+                <!-- page actions -->
+                <entry key="desktop.page.action.button.tooltip">
+                    <!-- display tooltips for page action buttons -->
+                    <value>true</value>
                 </entry>
             </map>
         </constructor-arg>
@@ -220,6 +237,7 @@
                 <value>dojo.widget.LinkPane</value>
                 <value>dojo.widget.SplitContainer</value>
                 <value>dojo.widget.Tree</value>
+                <value>dojo.widget.Tooltip</value>
                 <value>dojo.lfx.html</value>
                 <value>dojo.dnd.HtmlDragMove</value>
                 <value>dojo.dnd.HtmlDragAndDrop</value>
@@ -235,6 +253,7 @@
                 <value>jetspeed.widget.PortletWindow</value>
                 <value>jetspeed.widget.PortalTabContainer</value>
                 <value>jetspeed.widget.PortalAccordionContainer</value>
+                <value>jetspeed.widget.PortalBreadcrumbContainer</value>
                 <value>jetspeed.widget.PortletDefContainer</value>
             </list>
         </constructor-arg>
