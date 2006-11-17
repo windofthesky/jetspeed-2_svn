@@ -16,10 +16,30 @@ limitations under the License.
 
 @import url("../../../decorations/layout/css/portal-standard.css");
 
+
+/*  jetspeed desktop settings  */
+
 DIV.portlet
 {
     margin: 2px;    /* necessary to override margin settings from decorations/layout/css/standard-columns.css */
                     /* needs to match margin setting for .dojoFloatingPaneClient */
+}
+
+.layout-blue #jetspeedPageControls {
+    float: right;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.layout-blue #portalBreadcrumbList {
+    float: left;
+    margin-left: 6px;
+    margin-top: 2px;
+}
+
+.layout-blue .portalPageActionButton {
+	height: 11px;
+	width: 11px;
 }
 
 
@@ -274,17 +294,12 @@ body.layout-blue
 }
 
 .layout-blue #breadcrumbs {
-    margin:0px;
-    padding:3px;
-    position:absolute;
-    top:140px;
-    left:0px;
-    width:100%;
-    height:30px;
-    vertical-align:middle;
+    height: 20px;
+    width: 100%;
 
     background-color: #ffffff;
-    font-family:Verdana,Helvetica,Arial,sans-serif;
+
+    font-family: Verdana,Helvetica,Arial,sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
     font-size: 10pt;
@@ -299,9 +314,10 @@ body.layout-blue
 }
 
 .layout-blue #main {
-    margin:0px;
-    padding:3px;
-    width:100%;
+    margin: 0px;
+    padding: 3px;
+    clear: both;
+    width: 100%;
 }
 
 .layout-blue #leftcol {

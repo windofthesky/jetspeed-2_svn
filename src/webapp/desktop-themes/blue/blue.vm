@@ -51,6 +51,7 @@ limitations under the License.
   </table>
 </div>
 <div widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer" style="width: 100%; margin-top: 2px; margin-left: -1px"></div>
+<div widgetId="jetspeed-menu-breadcrumbs" dojoType="jetspeed:PortalBreadcrumbContainer" style="width: 100%; margin-top: 2px; margin-left: -1px"></div>
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>
 <td id="leftcol" >
