@@ -53,10 +53,14 @@ jetspeed.version =
 jetspeed.id =
 {
     PAGE: "jetspeedPage",
+    DESKTOP_CELL: "jetspeedDesktopCell",
     DESKTOP: "jetspeedDesktop",
-    TASKBAR: "jetspeedTaskbar",
     COLUMNS: "jetspeedColumns",
+    PAGE_CONTROLS: "jetspeedPageControls",
+
+    TASKBAR: "jetspeedTaskbar",
     SELECTOR: "jetspeedSelector",
+    
     PORTLET_STYLE_CLASS: "portlet",
     PORTLET_WINDOW_STYLE_CLASS: "dojoFloatingPane",
     PORTLET_WINDOW_GHOST_STYLE_CLASS: "ghostPane",
@@ -135,10 +139,13 @@ jetspeed.prefs =
     windowActionNotPortlet: [ jetspeed.id.PORTLET_ACTION_NAME_MENU, jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE, jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE, jetspeed.id.PORTLET_ACTION_NAME_RESTORE ],
     windowActionButtonMax: 5,
     windowActionButtonHide: false,
+    windowActionButtonTooltip: true,
     windowActionMenuOrder: [ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE ],
 
     windowThemesAllowed: [ "tigris", "blueocean" ],
     windowTheme: "tigris",
+
+    pageActionButtonTooltip: true,
 
     getWindowThemeConfig: function( windowtheme )
     {
@@ -388,6 +395,7 @@ jetspeed.loadWindowThemeConfig = function( windowtheme )
     windowThemeConfig.windowActionNotPortlet = jetspeed.prefs.windowActionNotPortlet;
     windowThemeConfig.windowActionButtonMax = jetspeed.prefs.windowActionButtonMax;
     windowThemeConfig.windowActionButtonHide = jetspeed.prefs.windowActionButtonHide;
+    windowThemeConfig.windowActionButtonTooltip = jetspeed.prefs.windowActionButtonTooltip;
     windowThemeConfig.windowActionMenuOrder = jetspeed.prefs.windowActionMenuOrder;
     windowThemeConfig.windowActionNoImage = jetspeed.prefs.windowActionNoImage;
 
@@ -1169,6 +1177,9 @@ dojo.lang.extend( jetspeed.om.Page,
 
         // load menus
         this.retrieveAllMenus();
+
+        // render page buttons
+        this.renderPageControls();
     },
     _parsePSML: function( psml )
     {
@@ -2047,6 +2058,57 @@ dojo.lang.extend( jetspeed.om.Page,
 
         jetspeed.url.retrieveContent( { url: psmlMenuActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
     },
+
+    // ... page buttons
+    renderPageControls: function()
+    {
+        var actionButtonNames = [];
+        actionButtonNames.push( "addportlet" );
+
+        var pageControlsContainer = dojo.byId( jetspeed.id.PAGE_CONTROLS );
+        if ( pageControlsContainer != null && actionButtonNames != null && actionButtonNames.length > 0 )
+        {
+            if ( this.actionButtons == null )
+                this.actionButtons = {};
+            
+            for ( var i = 0 ; i < actionButtonNames.length ; i++ )
+            {
+                var actionName = actionButtonNames[ i ];
+                var actionButton = document.createElement( "div" );
+                actionButton.className = "portalPageActionButton";
+                actionButton.style.backgroundImage = "url(" + jetspeed.prefs.getDesktopThemeRootUrl() + "/images/" + actionName + ".gif)";
+                actionButton.actionName = actionName;
+                this.actionButtons[ actionName ] = actionButton;
+                pageControlsContainer.appendChild( actionButton );
+    
+                dojo.event.connect( actionButton, "onclick", this, "pageActionButtonClick" );
+
+                if ( jetspeed.prefs.pageActionButtonTooltip )
+                {   // setting isContainer=false and fastMixIn=true to avoid recursion hell when connectId is a node (could give each an id instead)
+                    var actionlabel = null;
+                    if ( jetspeed.prefs.desktopActionLabels != null )
+                        actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+                    if ( actionlabel == null || actionlabel.length == 0 )
+                        actionlabel = dojo.string.capitalize( actionName );
+                    var tooltip = dojo.widget.createWidget( "Tooltip", { isContainer: false, fastMixIn: true, caption: actionlabel, connectId: actionButton, delay: "100" } );
+                    document.body.appendChild( tooltip.domNode );
+                }
+            }
+        }
+    },
+    pageActionButtonClick: function( evt )
+    {
+        if ( evt == null || evt.target == null ) return;
+        this.pageActionProcess( evt.target.actionName, evt );
+    },
+    pageActionProcess: function( /* String */ actionName, evt )
+    {
+        if ( actionName == null ) return;
+        alert( "pageActionProcess: " + actionName + " - not yet implemented" );
+    },
+
+
+    // ... page url access
 
     getPageUrl: function()
     {
@@ -3698,6 +3760,19 @@ jetspeed.ui.dumpPortletWindowsPerColumn = function()
         dumpClosure.dumpMsg = "column " + i + ": " + dumpClosure.dumpMsg;
         dojo.debug( dumpClosure.dumpMsg );
     }
+};
+
+jetspeed.ui.dumpPortletWindowWidgets = function()
+{
+    var portletWindows = jetspeed.ui.getAllPortletWindowWidgets();
+    var pwOut = "";
+    for ( var i = 0 ; i < portletWindows.length; i++ )
+    {
+        if ( i > 0 )
+            pwOut += ", ";
+        pwOut += portletWindows[i].widgetId;
+    }
+    dojo.debug( "PortletWindow widgets: " + pwOut );
 };
 
 jetspeed.ui.getAllPortletWindowWidgets = function()

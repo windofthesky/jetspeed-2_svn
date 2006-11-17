@@ -124,24 +124,24 @@ dojo.lang.extend( jetspeed.widget.PortalTabContainer,
     },
     contextMenuCreate: function()
     {
-        var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstc_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
+        //var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstc_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
         //var resetLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item1", caption: "Reset Window Layout"} );
         //var freeFormLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item2", caption: "Free Flowing Layout"} );
         //var twoColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item3", caption: "Two Column Layout"} );
         //var threeColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item4", caption: "Three Column Layout"} );
-        var openPortletSelectorMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item5", caption: "Portlet Selector"} );
+        //var openPortletSelectorMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item5", caption: "Portlet Selector"} );
         
         //dojo.event.connect( resetLayoutMenuItem, "onClick", function(e) { jetspeed.page.resetWindowLayout(); } );
         //dojo.event.connect( freeFormLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = false; jetspeed.page.resetWindowLayout(); jetspeed.page.reload(); } );
         //dojo.event.connect( twoColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 2; jetspeed.page.reload(); } );
         //dojo.event.connect( threeColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 3; jetspeed.page.reload(); } );
-        dojo.event.connect( openPortletSelectorMenuItem, "onClick", function(e) { jetspeed.loadPortletSelector(); } );
+        //dojo.event.connect( openPortletSelectorMenuItem, "onClick", function(e) { jetspeed.loadPortletSelector(); } );
         //taskBarContextMenu.addChild( resetLayoutMenuItem );
         //taskBarContextMenu.addChild( freeFormLayoutMenuItem );
         //taskBarContextMenu.addChild( twoColummLayoutMenuItem );
         //taskBarContextMenu.addChild( threeColummLayoutMenuItem );
-        taskBarContextMenu.addChild( openPortletSelectorMenuItem );
-        document.body.appendChild( taskBarContextMenu.domNode );
+        //taskBarContextMenu.addChild( openPortletSelectorMenuItem );
+        //document.body.appendChild( taskBarContextMenu.domNode );
     }
 });
 

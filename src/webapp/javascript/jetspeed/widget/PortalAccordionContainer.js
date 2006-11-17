@@ -110,25 +110,6 @@ dojo.lang.extend( jetspeed.widget.PortalAccordionContainer,
     }
 });
 
-/*
-jetspeed.widget.PortalAccordionPane = function()
-{  
-    dojo.widget.AccordionPane.call(this);
-    this.widgetType = "PortalAccordionPane";
-};
-
-dojo.inherits( jetspeed.widget.PortalAccordionPane, dojo.widget.AccordionPane );
-
-dojo.lang.extend( jetspeed.widget.PortalAccordionPane,
-{
-    setSizes: function()
-    {
-        this.siblingWidgets = [];    // to keep label click from collapsing all siblings
-    }
-
-});
-*/
-
 jetspeed.widget.PortalMenuOptionLink = function()
 {    
 	dojo.widget.HtmlWidget.call(this);
@@ -141,6 +122,10 @@ dojo.inherits(jetspeed.widget.PortalMenuOptionLink, dojo.widget.HtmlWidget);
 dojo.lang.extend(jetspeed.widget.PortalMenuOptionLink, {
     fillInTemplate: function()
     {
+        if ( this.menuOption.type == "page" )
+            this.menuOptionLinkNode.className = "LinkPage";
+        else if ( this.menuOption.type == "folder" )
+            this.menuOptionLinkNode.className = "LinkFolder";
 		if ( this.iconSrc )
         {
 			var img = document.createElement("img");

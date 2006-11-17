@@ -611,51 +611,60 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     {
         if ( actionName != null )
         {
-            var actionButton = document.createElement("div");
+            var actionButton = document.createElement( "div" );
             actionButton.className = "portletWindowActionButton";
             actionButton.style.backgroundImage = "url(" + jetspeed.url.basePortalWindowThemeUrl( this.windowTheme ) + "/images/desktop/" + actionName + ".gif)";
             actionButton.actionName = actionName;
-            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
-                actionButton.id = this.widgetId + "_menuBtn";
 
             this.actionButtons[ actionName ] = actionButton;
             this.titleBar.appendChild( actionButton );
 
             dojo.event.connect( actionButton, "onclick", this, "windowActionButtonClick" );
+
+            if ( this.windowThemeConfig != null && this.windowThemeConfig.windowActionButtonTooltip )
+            {   // setting isContainer=false and fastMixIn=true to avoid recursion hell when connectId is a node (could give each an id instead)
+                var tooltip = dojo.widget.createWidget( "Tooltip", { isContainer: false, fastMixIn: true, caption: this._getActionLabel( actionName ), connectId: actionButton, delay: "100" } );
+                document.body.appendChild( tooltip.domNode );
+            }
         }
     },
 
     _getActionMenuPopupWidget: function()
     {
         return dojo.widget.byId( this.widgetId + "_ctxmenu" );
-    },  
+    },
+    _getActionLabel: function( actionName )
+    {
+        if ( actionName == null ) return null;
+        var actionlabel = null;
+        var actionLabelPrefs = jetspeed.prefs.desktopActionLabels;
+        if ( actionLabelPrefs != null )
+            actionlabel = actionLabelPrefs[ actionName ];
+        if ( actionlabel == null || actionlabel.length == 0 )
+        {
+            if ( this.portlet )
+            {
+                var portletActionDef = this.portlet.getAction( actionName );
+                if ( portletActionDef != null )
+                    actionlabel = portletActionDef.label;
+            }
+        }
+        if ( actionlabel == null || actionlabel.length == 0 )
+        {
+            actionlabel = dojo.string.capitalize( actionName );
+        }
+        return actionlabel;
+    },
     _createActionMenu: function( /* Array */ menuActionNames )
     {
         if ( menuActionNames == null || menuActionNames.length == 0 ) return;
         var portletWindow = this;
 
         var titleBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", contextMenuForWindow: false }, null );
-        var actionLabelPrefs = jetspeed.prefs.desktopActionLabels;
         for ( var i = 0 ; i < menuActionNames.length ; i++ )
         {
             var actionName = menuActionNames[i];
-            var menulabel = null;
-            if ( actionLabelPrefs != null )
-                menulabel = actionLabelPrefs[ actionName ];
-            if ( menulabel == null || menulabel.length == 0 )
-            {
-                if ( this.portlet )
-                {
-                    var portletActionDef = this.portlet.getAction( actionName );
-                    if ( portletActionDef != null )
-                        menulabel = portletActionDef.label;
-                }
-                if ( menulabel == null || menulabel.length == 0 )
-                {
-                    menulabel = dojo.string.capitalize( actionName );
-                }
-            }
-            
+            var menulabel = this._getActionLabel( actionName );
             var menuitem = this._createActionMenuItem( portletWindow, menulabel, actionName );
 
             this.actionMenus[ actionName ] = menuitem;
@@ -668,14 +677,14 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     _createActionMenuItem: function( portletWindow, menulabel, actionName )
     {
         var menuitem = dojo.widget.createWidget( "MenuItem2", { caption: menulabel } );
-        dojo.event.connect( menuitem, "onClick", function(e) { portletWindow.windowActionProcessChange( actionName ); } );
+        dojo.event.connect( menuitem, "onClick", function(e) { portletWindow.windowActionProcess( actionName ); } );
         return menuitem;
     },
 
     windowActionButtonClick: function( evt )
     {
         if ( evt == null || evt.target == null ) return;
-        this.windowActionProcessChange( evt.target.actionName, evt );
+        this.windowActionProcess( evt.target.actionName, evt );
     },
     windowActionMenuOpen: function( evt )
     {
@@ -700,9 +709,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
         this._getActionMenuPopupWidget().onOpen( evt );        
     },
-    windowActionProcessChange: function( /* String */ actionName, evt )
+    windowActionProcess: function( /* String */ actionName, evt )
     {   // evt arg is needed only for opening action menu
-        //dojo.debug( "windowActionProcessChange [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + actionName );
+        //dojo.debug( "windowActionProcess [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + actionName );
         if ( actionName == null ) return;
         if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
         {
