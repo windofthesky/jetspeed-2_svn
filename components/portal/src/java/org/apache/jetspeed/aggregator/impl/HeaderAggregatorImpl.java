@@ -659,6 +659,13 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonHide = " ).append( windowActionButtonHide ).append( ";" ).append( EOL );
         }
+        
+        String windowActionButtonTooltipName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP;
+        String windowActionButtonTooltip = makeJSONBoolean( desktopConfigMap.get( windowActionButtonTooltipName ) );
+        if ( windowActionButtonTooltip != null && canAddHeaderNamedResourceFragment( windowActionButtonTooltipName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonTooltip = " ).append( windowActionButtonTooltip ).append( ";" ).append( EOL );
+        }
 
         String windowActionButtonMaxName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
         String windowActionButtonMax = makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
@@ -682,6 +689,13 @@ public class HeaderAggregatorImpl implements PageAggregator
             {
                 desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowThemesAllowed = " ).append( windowThemesAllowedContent ).append( ";" ).append( EOL );
             }
+        }
+        
+        String pageActionButtonTooltipName = HeaderResource.HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP;
+        String pageActionButtonTooltip = makeJSONBoolean( desktopConfigMap.get( pageActionButtonTooltipName ) );
+        if ( pageActionButtonTooltip != null && canAddHeaderNamedResourceFragment( pageActionButtonTooltipName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".pageActionButtonTooltip = " ).append( pageActionButtonTooltip ).append( ";" ).append( EOL );
         }
 
         if ( desktopDojoConfigContent.length() > 0 )

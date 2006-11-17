@@ -96,10 +96,11 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE = "desktop.window.action.noimage";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER = "desktop.window.action.menu.order";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE = "desktop.window.action.button.hide";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP = "desktop.window.action.button.tooltip";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX = "desktop.window.action.button.maximum";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_THEME = "desktop.window.theme";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_THEME_ALLOWED = "desktop.window.theme.allowed";
-    
+    public final static String HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP = "desktop.page.action.button.tooltip";
     
     public final static String HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION = "desktop.window.action";
     

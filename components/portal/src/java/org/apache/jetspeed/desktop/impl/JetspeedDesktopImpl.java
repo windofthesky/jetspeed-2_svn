@@ -59,8 +59,8 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     private final static String DOJO_CONFIG_THEME_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopTheme";
     private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
 
-    private final static String[] DESKTOP_WINDOW_ACTIONS = new String[] { "tile", "untile", "heightexpand", "heightnormal", "restore", "remove" };
-    private final static String DESKTOP_WINDOW_ACTION_RESOURCE_NAME_PREFIX = "desktop.window.action.";
+    private final static String[] DESKTOP_ACTIONS = new String[] { "menu", "tile", "untile", "heightexpand", "heightnormal", "restore", "removeportlet", "addportlet", "editpage" };
+    private final static String DESKTOP_ACTION_RESOURCE_NAME_PREFIX = "desktop.action.";
     
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
@@ -139,9 +139,9 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             // desktop action labels
             StringBuffer desktopActionLabels = new StringBuffer();
             ResourceBundle messages = desktopContext.getResourceBundle( request.getLocale() );
-            for ( int i = 0 ; i < DESKTOP_WINDOW_ACTIONS.length ; i++ )
+            for ( int i = 0 ; i < DESKTOP_ACTIONS.length ; i++ )
             {
-                String actionLabel = messages.getString( DESKTOP_WINDOW_ACTION_RESOURCE_NAME_PREFIX + DESKTOP_WINDOW_ACTIONS[ i ] );
+                String actionLabel = messages.getString( DESKTOP_ACTION_RESOURCE_NAME_PREFIX + DESKTOP_ACTIONS[ i ] );
                 if ( actionLabel != null )
                 {
                     if ( desktopActionLabels.length() == 0 )
@@ -152,7 +152,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                     {
                         desktopActionLabels.append( ", " );
                     }
-                    desktopActionLabels.append( DESKTOP_WINDOW_ACTIONS[ i ] ).append( ": \"" ).append( actionLabel ).append( "\"" );
+                    desktopActionLabels.append( DESKTOP_ACTIONS[ i ] ).append( ": \"" ).append( actionLabel ).append( "\"" );
                 }
             }
             if ( desktopActionLabels.length() > 0 )
