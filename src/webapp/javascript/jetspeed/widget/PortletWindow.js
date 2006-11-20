@@ -61,6 +61,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     lastUntiledPositionInfo: null,
     lastTiledPositionInfo: null,
 
+    // see setPortletContent for info on these ContentPane settings:
+    executeScripts: false,
+    scriptSeparation: false,
+    adjustPaths: false,
+
     /*  static   */
     staticDefineAsAltInitParameters: function( defineIn, params )
     {
@@ -1614,56 +1619,109 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             initialHtmlStr = '<div class="PContent" >' + initialHtmlStr + '</div>';   // BOZO: get this into the template ?
         }
-        var ppR = null;
-        if ( this.portlet )
-        {
-            ppR = this.portlet.preParseAnnotateHtml( initialHtmlStr, url );
-        }
-        else
-        {
-            ppR = jetspeed.ui.preParseAnnotateHtml( initialHtmlStr, url );
-        }
-        //this.executeScripts = true;
 
-        var setContentObj = { titles: [], scripts: ppR.preParsedScripts, linkStyles: [], styles: [], remoteScripts: ppR.preParsedRemoteScripts, xml: ppR.preParsedContent, url: url, requires: [] };
+        /* IMPORTANT:
+              We are avoiding a call to ContentPane.splitAndFixPaths for these reasons:
+                  - it does more than we need (wasting time)
+                  - we want to use its script processing but we don't need executeScripts to be set to false
 
-        this.setContent( setContentObj );
+              So we have copied the script processing code from ContentPane.splitAndFixPaths (0.4.0), and we call our copy here.
 
-        if ( setContentObj.scripts && setContentObj.scripts.length > 0 )
-        {   // do inline scripts  - taken from dojo ContentPane.js _executeScripts
-		    var repl = null;
-		    for( var i = 0; i < setContentObj.scripts.length; i++ )
-            {
-			    // not sure why comment and carraige return clean is needed
-			    // but better safe than sorry so we keep it, Fredrik
-			    // Clean up content: remove inline script  comments
-                repl = new RegExp('//.*?$', 'gm');
-			    setContentObj.scripts[i] = setContentObj.scripts[i].replace(repl, '\n');
-	
+              We set executeScripts=false to delay script execution until after call to dojo.widget.getParser().createSubComponents
+                  - this allows dojo.addOnLoad to work normally
+                  - we call ContentPane._executeScripts after calling ContentPane.setContent (which calls createSubComponents)
 
-                // BOZO: despite the comment above from the dojo code, we cannot do this (carriage returns are syntatically required in javascript)
-			    // Clean up content: remove carraige returns
-			    //repl = new RegExp('[\n\r]', 'g');
-			    //setContentObj.scripts[i] = setContentObj.scripts[i].replace(repl, ' ');
-            
-			    // Execute commands
-                
-                if ( jetspeed.debug.setPortletContent )
-                    dojo.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "] script: " + setContentObj.scripts[i] );
-                
-			    eval( setContentObj.scripts[i] );
-		    }
-        }
-        else
-        {
-            if ( jetspeed.debug.setPortletContent )
-                dojo.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
-        }
+              We set scriptSeparation=false to opt-out of support for scoping scripts to ContentPane widget instance
+                  - this feature, while cool, requires script modification in most cases (e.g. if one of your scripts calls another)
+                  
+              Although we don't call ContentPane.splitAndFixPaths, it is notable that adjustPaths=false is likely correct for portlet content
+                  - e.g. when set to true, security-permissions.css is still fetched but not used (not affected by scriptSeparation)
+
+              A better use of ContentPane features, particularly, scriptSeparation=true, can be accomplished as follows:
+                  - code: 
+                          this.executeScripts = true;
+                          this.scriptSeparation = true;
+                          this.adjustPaths = false;
+                          this.setContent( initialHtmlStr );
+
+                  - this requires script content to follow the conventions shown in: security/permissions/view-dojo-scriptScope.vm,
+                    which works in both portal and desktop, should allow (at least with scripts name collisions), coexistence
+                    of multiple instances of same portlet (with permissions there would be id collisions among widgets)
+        */
+
+        var setContentObj = this._splitAndFixPaths_scriptsonly( initialHtmlStr, url );
         
-        this._executeScripts( { scripts: [], remoteScripts: setContentObj.remoteScripts } );
+        this.setContent( setContentObj );
+        this._executeScripts( setContentObj.scripts );
+
+        if ( jetspeed.debug.setPortletContent )
+            dojo.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
 
         if ( this.portlet )
             this.portlet.postParseAnnotateHtml( this.containerNode );
+    },
+
+    _splitAndFixPaths_scriptsonly: function( /* String */ s, /* String */ url )
+    {
+        var forcingExecuteScripts = true;
+        var scripts = [] ;
+        // deal with embedded script tags 
+        // /=/=/=/=/=  begin  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
+        //   - only modification is: replacement of "this.executeScripts" with "forcingExecuteScripts"
+        //
+				var regex = /<script([^>]*)>([\s\S]*?)<\/script>/i;
+				var regexSrc = /src=(['"]?)([^"']*)\1/i;
+				var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
+				var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
+				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
+
+				while(match = regex.exec(s)){
+					if(forcingExecuteScripts && match[1]){
+						if(attr = regexSrc.exec(match[1])){
+							// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
+							// we declare all files named dojo.js as bad, regardless of path
+							if(regexDojoJs.exec(attr[2])){
+								dojo.debug("Security note! inhibit:"+attr[2]+" from  being loaded again.");
+							}else{
+								scripts.push({path: attr[2]});
+							}
+						}
+					}
+					if(match[2]){
+						// remove all invalid variables etc like djConfig and dojo.hostenv.writeIncludes()
+						var sc = match[2].replace(regexInvalid, "");
+    						if(!sc){ continue; }
+		
+						// cut out all dojo.require (...) calls, if we have execute 
+						// scripts false widgets dont get there require calls
+						// takes out possible widgetpackage registration as well
+						while(tmp = regexRequires.exec(sc)){
+							requires.push(tmp[0]);
+							sc = sc.substring(0, tmp.index) + sc.substr(tmp.index + tmp[0].length);
+						}
+						if(forcingExecuteScripts){
+							scripts.push(sc);
+						}
+					}
+					s = s.substr(0, match.index) + s.substr(match.index + match[0].length);
+				}
+        // /=/=/=/=/=  end  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
+
+        //dojo.debug( "= = = = = =  annotated content for: " + ( url ? url : "unknown url" ) );
+        //dojo.debug( initialHtmlStr );
+        //if ( scripts.length > 0 )
+        //{
+        //    dojo.debug( "      = = =  script content for: " + ( url ? url : "unknown url" ) );
+        //    for ( var i = 0 ; i < scripts.length; i++ )
+        //        dojo.debug( "      =[" + (i+1) + "]:" + scripts[i] );
+        //}
+        //dojo.debug( "preParse  scripts: " + ( scripts ? scripts.length : "0" ) + " remoteScripts: " + ( remoteScripts ? remoteScripts.length : "0" ) );
+        return {"xml": 		    s, // Object
+				"styles":		[],
+				"titles": 		[],
+				"requires": 	[],
+				"scripts": 		scripts,
+				"url": 			url};
     }
 });
 

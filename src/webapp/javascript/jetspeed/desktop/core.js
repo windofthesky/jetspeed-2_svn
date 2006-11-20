@@ -181,7 +181,7 @@ jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "app
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "addportlet" ];                // dump portlet selector response
 //jetspeed.debugContentDumpIds = [ "P-10acd169a40-10001", "P-10acd169a40-10000" ];
-jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select" ];
+jetspeed.debugContentDumpIds = [ "notifyGridSelect", "P-10acd169a40-10001", "reports-select", "P-10ea50cab5b-10001" ];
 
 // ... load page /portlets
 jetspeed.page = null ;
@@ -671,6 +671,7 @@ jetspeed.url.path =
     JETSPEED: null,   //   /jetspeed
     AJAX_API: null,   //   /jetspeed/ajaxapi
     DESKTOP: null,    //   /jetspeed/desktop
+    PORTAL: null,     //   /jetspeed/portal
     PORTLET: null,    //   /jetspeed/portlet
     initialized: false
 };
@@ -711,6 +712,7 @@ jetspeed.url.pathInitialize = function( force )
     jetspeed.url.path.SERVER = serverUri;
     jetspeed.url.path.AJAX_API = jetspeed.url.path.JETSPEED + "/ajaxapi";
     jetspeed.url.path.DESKTOP = jetspeed.url.path.JETSPEED + "/desktop";
+    jetspeed.url.path.PORTAL = jetspeed.url.path.JETSPEED + "/portal";
     jetspeed.url.path.PORTLET = jetspeed.url.path.JETSPEED + "/portlet";
     
     jetspeed.url.path.initialized = true;
@@ -2104,7 +2106,15 @@ dojo.lang.extend( jetspeed.om.Page,
     pageActionProcess: function( /* String */ actionName, evt )
     {
         if ( actionName == null ) return;
-        alert( "pageActionProcess: " + actionName + " - not yet implemented" );
+        if ( actionName == "addportlet" )
+        {
+            var addportletPageUrl = jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + "/system/customizer/selector.psml?" + this.getPath();
+            jetspeed.pageNavigate( addportletPageUrl ); 
+        }
+        else
+        {
+            alert( "pageActionProcess: " + actionName + " - not yet implemented" );
+        }
     },
 
 
@@ -2364,10 +2374,6 @@ dojo.lang.extend( jetspeed.om.Portlet,
         return { url: justTheUrl, operation: op, portletEntityId: entityId };
     },
 
-    preParseAnnotateHtml: function( /* String */ portletContent )
-    {
-        return jetspeed.ui.preParseAnnotateHtml( portletContent );
-    },
     postParseAnnotateHtml: function( /* DOMNode */ containerNode )
     {   
         if ( containerNode )
@@ -3882,59 +3888,6 @@ jetspeed.ui.createPortletWindowWidget = function( windowConfigObject, createWidg
     var nWidget = dojo.widget.createWidget( "jetspeed:PortletWindow", createWidgetParams );
     
     return nWidget;
-};
-
-jetspeed.ui.preParseAnnotateHtml = function( /* String */ initialHtmlStr, /* String */ url )
-{   // deal with embedded script tags -  /=/=/=/=/=  taken from dojo ContentPane.js  splitAndFixPaths()  =/=/=/=/=/
-    var scripts = [];
-    var remoteScripts = [];
-    // cut out all script tags, stuff them into scripts array
-    var match = [];
-    while ( match )
-    {
-        match = initialHtmlStr.match(/<script([^>]*)>([\s\S]*?)<\/script>/i);
-        if(!match){ break; }
-        if(match[1]){
-            attr = match[1].match(/src=(['"]?)([^"']*)\1/i);
-            if ( attr )
-            {
-                // remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
-                if ( (attr[2].search(/\/?\bdojo.js(?:\.uncompressed.js)?/i) != -1) && (dojo.hostenv.getBaseScriptUri() == attr[2].match(/[.\/]*/)[0]) )
-                {	
-                    dojo.debug("Security note! inhibit:"+attr[2]+" from  beeing loaded again.");
-                }
-                else
-                {
-                    remoteScripts.push( attr[2] );
-                }
-            }
-        }
-        if ( match[2] )
-        {
-            // get rid of html comment blanket
-            var scriptText = match[2].replace(/^\s*<!--/, "");
-            scriptText = scriptText.replace(/-->\s*$/, "");
-
-            scriptText = scriptText.replace(/function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g, "window.$1 = function(" );
-
-            // strip out all djConfig variables from script tags nodeValue
-            // this is ABSOLUTLY needed as reinitialize djConfig after dojo is initialised
-            // makes a dissaster greater than Titanic                
-            scripts.push(scriptText.replace(/(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo.hostenv.writeIncludes\(\s*\);?/g, ""));
-        }
-        initialHtmlStr = initialHtmlStr.replace(/<script[^>]*>[\s\S]*?<\/script>/i, "");
-    }
-    //dojo.debug( "= = = = = =  annotated content for: " + ( url ? url : "unknown url" ) );
-    //dojo.debug( initialHtmlStr );
-    //if ( scripts.length > 0 )
-    //{
-    //    dojo.debug( "      = = =  script content for: " + ( url ? url : "unknown url" ) );
-    //    for ( var i = 0 ; i < scripts.length; i++ )
-    //        dojo.debug( "      =[" + (i+1) + "]:" + scripts[i] );
-    //}
-    //     /=/=/=/=/=  end of taken from dojo ContentPane.js  splitAndFixPaths()  =/=/=/=/=/
-    //dojo.debug( "preParse  scripts: " + ( scripts ? scripts.length : "0" ) + " remoteScripts: " + ( remoteScripts ? remoteScripts.length : "0" ) );
-    return { preParsedContent: initialHtmlStr, preParsedScripts: scripts, preParsedRemoteScripts: remoteScripts };
 };
 
 // ... fade-in convenience methods (work with set of nodes)
