@@ -27,8 +27,8 @@ DIV.portlet
 
 .layout-tigris #jetspeedPageControls {
     float: right;
-    margin-right: 4px;
-    margin-top: 2px;
+    
+    width: 100px;
 }
 
 .layout-tigris #portalBreadcrumbList {
