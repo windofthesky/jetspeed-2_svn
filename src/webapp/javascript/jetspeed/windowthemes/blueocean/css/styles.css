@@ -29,6 +29,12 @@ limitations under the License.
 	color: #ffffff;
 }
 
+.blueocean .portletWindowActionButton {
+	height: 15px;
+	width: 15px;
+    margin-top: 4px;
+}
+
 /* minimize/maximize icons are specified by CSS only */
 .blueocean .dojoFloatingPaneMinimizeIcon,
 .blueocean .dojoFloatingPaneMaximizeIcon,

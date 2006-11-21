@@ -402,7 +402,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
 		// if display:none then state=minimized, otherwise state=normal
 		if(!this.isShowing()){
-			this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE;
+			this.windowState = jetspeed.id.ACTION_NAME_MINIMIZE;
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
@@ -443,7 +443,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                             {
                                 includeAction = true;
                             }
-                            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                            else if ( actionName == jetspeed.id.ACTION_NAME_RESTORE || actionName == jetspeed.id.ACTION_NAME_MENU )
                             {
                                 includeAction = true;
                             }
@@ -459,7 +459,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                         {
                             var actionName = this.windowThemeConfig.windowActionButtonOrder[ actionIdx ];
                             var includeAction = false;
-                            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE || actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE || actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
+                            if ( actionName == jetspeed.id.ACTION_NAME_MINIMIZE || actionName == jetspeed.id.ACTION_NAME_MAXIMIZE || actionName == jetspeed.id.ACTION_NAME_RESTORE || actionName == jetspeed.id.ACTION_NAME_MENU || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
                             {
                                 includeAction = true;
                             }
@@ -476,7 +476,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                         var mustRemoveBtns = btnActionNames.length - btnMax + 1;
                         for ( var i = 0 ; i < btnActionNames.length && removedBtns < mustRemoveBtns ; i++ )
                         {
-                            if ( btnActionNames[i] != jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                            if ( btnActionNames[i] != jetspeed.id.ACTION_NAME_MENU )
                             {
                                 menuActionNames.push( btnActionNames[i] );
                                 btnActionNames[i] = null;
@@ -490,7 +490,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                         {
                             if ( this.windowThemeConfig.windowActionNoImage[ btnActionNames[ i ] ] != null )
                             {
-                                if ( btnActionNames[ i ] == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+                                if ( btnActionNames[ i ] == jetspeed.id.ACTION_NAME_MENU )
                                 {
                                     menuActionNoImage = true;
                                 }
@@ -720,50 +720,50 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( actionName == null ) return;
         if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
         {
-            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE )
+            if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_TILE )
             {
                 this.makeTiled();
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_UNTILE )
             {
                 this.makeUntiled();
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
             {
                 this.makeHeightToFit( false );
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
             {
                 this.makeHeightVariable( false );
             }
         }
-        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+        else if ( actionName == jetspeed.id.ACTION_NAME_MENU )
         {
             this.windowActionMenuOpen( evt );
         }
-        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+        else if ( actionName == jetspeed.id.ACTION_NAME_MINIMIZE )
         {   // make no associated content request - just notify server of change
             this.minimizeWindow();
             if ( this.portlet )
             {
-                jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE, null );
+                jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.ACTION_NAME_MINIMIZE, null );
             }
             if ( ! this.portlet )
             {
                 this.windowActionButtonSync();
             }
         }
-        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE )
+        else if ( actionName == jetspeed.id.ACTION_NAME_RESTORE )
         {   // if minimized, make no associated content request - just notify server of change
             if ( this.portlet )
             {
-                if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+                if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
                 {
                     this.portlet.renderAction( actionName );
                 }
                 else
                 {
-                    jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.PORTLET_ACTION_NAME_RESTORE, null );
+                    jetspeed.changeActionForPortlet( this.portlet.getId(), jetspeed.id.ACTION_NAME_RESTORE, null );
                 }
             }
             this.restoreWindow();
@@ -772,7 +772,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 this.windowActionButtonSync();
             }
         }
-        else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        else if ( actionName == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {
             if ( this.portlet )
             {
@@ -793,28 +793,28 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     _isWindowActionEnabled: function( actionName, currentPortletActionState, currentPortletActionMode )
     {
         var enabled = false;
-        if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MENU )
+        if ( actionName == jetspeed.id.ACTION_NAME_MENU )
         {
             enabled = true;
         }
         else if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
         {
-            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
+            if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
             {
                 if ( ! this.windowHeightToFit )
                     enabled = true;
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
             {
                 if ( this.windowHeightToFit )
                     enabled = true;
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE && jetspeed.prefs.windowTiling )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_TILE && jetspeed.prefs.windowTiling )
             {
                 if ( ! this.windowPositionStatic )
                     enabled = true;
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE )
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_UNTILE )
             {
                 if ( this.windowPositionStatic )
                     enabled = true;
@@ -843,23 +843,23 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
         else
         {   // adjust visible action buttons - BOZO:NOW: this non-portlet case needs more attention
-            if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            if ( actionName == jetspeed.id.ACTION_NAME_MAXIMIZE )
             {
                 if ( actionName != this.windowState )
                 {
                     enabled = true;
                 }
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+            else if ( actionName == jetspeed.id.ACTION_NAME_MINIMIZE )
             {
                 if ( actionName != this.windowState )
                 {
                     enabled = true;
                 }
             }
-            else if ( actionName == jetspeed.id.PORTLET_ACTION_NAME_RESTORE )
+            else if ( actionName == jetspeed.id.ACTION_NAME_RESTORE )
             {
-                if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE || this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+                if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE || this.windowState == jetspeed.id.ACTION_NAME_MINIMIZE )
                 {
                     enabled = true;
                 }
@@ -952,7 +952,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.portletInitialized = true;
 
         var initWindowState = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_STATE );
-        if ( initWindowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+        if ( initWindowState == jetspeed.id.ACTION_NAME_MINIMIZE )
         {
             this.minimizeWindow();
             this.windowActionButtonSync();
@@ -977,7 +977,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.resizeBar.style.display = "none";
         dojo.html.setContentBox( this.domNode, { height: dojo.html.getMarginBox( this.titleBar ).height } );
     
-        this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE;
+        this.windowState = jetspeed.id.ACTION_NAME_MINIMIZE;
     },
     maximizeWindow: function( evt )
     {
@@ -1011,7 +1011,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //    dojo.html.getBorderBox( document.body ).height - yPos
 		//);
 
-		this.windowState = jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE;
+		this.windowState = jetspeed.id.ACTION_NAME_MAXIMIZE;
 	},
 	restoreWindow: function( evt )
     {
@@ -1022,7 +1022,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
 
         var lastPositionInfo = null;
-        if ( this.windowState == jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {
             this.windowPositionStatic = ( this.lastWindowPositionStatic != null ? this.lastWindowPositionStatic : false );
         }
@@ -1076,7 +1076,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         
 		this.resizeTo( lpiWidth, lpiHeight, true );
 
-		this.windowState = jetspeed.id.PORTLET_ACTION_NAME_RESTORE;  // "normal"
+		this.windowState = jetspeed.id.ACTION_NAME_RESTORE;  // "normal"
 	},
 
     _setLastPositionInfo: function( tiledStateIsChanging, changingToMaximized )
@@ -1106,7 +1106,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 columnInfo.columnIndex = this.getPageColumnIndex();
                 this.lastTiledPositionInfo.columnInfo = columnInfo;
             }
-            if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            if ( this.windowState != jetspeed.id.ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             {
                 this.lastTiledPositionInfo.height = this.domNode.style.height;
             }
@@ -1114,7 +1114,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
         else
         {
-            if ( this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+            if ( this.windowState != jetspeed.id.ACTION_NAME_MINIMIZE && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             {
                 var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
                 this.lastUntiledPositionInfo =
@@ -1142,7 +1142,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     {
         var beforeZIndex = this.domNode.style.zIndex;
         jetspeed.widget.PortletWindow.superclass.bringToTop.call( this, evt );
-        if ( this.portlet && ! this.windowPositionStatic && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE && this.isPortletWindowInitialized() )
+        if ( this.portlet && ! this.windowPositionStatic && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE && this.isPortletWindowInitialized() )
         {
             this.portlet.submitChangedWindowState();
             //dojo.debug( "bringToTop [" + this.portlet.entityId + "] zIndex   before=" + beforeZIndex + " after=" + this.domNode.style.zIndex );
@@ -1488,12 +1488,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //dojo.debug( "PortletWindow.endSizing [" + this.portlet.entityId + "]" );
         dojo.event.disconnect( document.body, "onmouseup", this, "endSizing" );
         this.windowIsSizing = false;
-        if ( this.portlet && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        if ( this.portlet && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
     },
     endDragging: function()
     {
-        if ( this.portlet && this.windowState != jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE )
+        if ( this.portlet && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
     },
 
@@ -1977,7 +1977,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
 
         this.portletWindow.isDragging = false;
 
-        if ( this.portletWindow.windowState == jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE )
+        if ( this.portletWindow.windowState == jetspeed.id.ACTION_NAME_MINIMIZE )
         {
             this.portletWindow._updateLastPositionInfoPositionOnly();
         }

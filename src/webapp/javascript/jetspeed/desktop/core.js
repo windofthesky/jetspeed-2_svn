@@ -89,17 +89,21 @@ jetspeed.id =
     PORTLET_PROP_DESKTOP_EXTENDED_PAIR_SEPARATOR: ";",
 
     // these constants for action names are defined because they have special meaning to desktop (ie. this is not a list of all supported actions)
-    PORTLET_ACTION_NAME_MENU: "menu",
-    PORTLET_ACTION_NAME_MINIMIZE: "minimized",
-    PORTLET_ACTION_NAME_MAXIMIZE: "maximized",
-    PORTLET_ACTION_NAME_RESTORE: "normal",
-    PORTLET_ACTION_NAME_PRINT: "print",
-    PORTLET_ACTION_NAME_CLOSE: "close",
+    ACTION_NAME_MENU: "menu",
+    ACTION_NAME_MINIMIZE: "minimized",
+    ACTION_NAME_MAXIMIZE: "maximized",
+    ACTION_NAME_RESTORE: "normal",
+    ACTION_NAME_PRINT: "print",
+    ACTION_NAME_CLOSE: "close",
+    ACTION_NAME_EDIT: "edit",
+    ACTION_NAME_VIEW: "view",
+    ACTION_NAME_HELP: "help",
+    ACTION_NAME_ADDPORTLET: "addportlet",
 
-    PORTLET_ACTION_NAME_DESKTOP_TILE: "tile",
-    PORTLET_ACTION_NAME_DESKTOP_UNTILE: "untile",
-    PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND: "heightexpand",
-    PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL: "heightnormal",
+    ACTION_NAME_DESKTOP_TILE: "tile",
+    ACTION_NAME_DESKTOP_UNTILE: "untile",
+    ACTION_NAME_DESKTOP_HEIGHT_EXPAND: "heightexpand",
+    ACTION_NAME_DESKTOP_HEIGHT_NORMAL: "heightnormal",
 
     PORTLET_ACTION_TYPE_MODE: "mode",
     PORTLET_ACTION_TYPE_STATE: "state",
@@ -135,12 +139,12 @@ jetspeed.prefs =
     portletSelectorWindowIcon: "text-x-script.png",
     portletSelectorBounds: { x: 20, y: 20, width: 400, height: 600 },
 
-    windowActionButtonOrder: [ jetspeed.id.PORTLET_ACTION_NAME_MENU, "edit", "view", "help", jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE, jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE, jetspeed.id.PORTLET_ACTION_NAME_RESTORE ],
-    windowActionNotPortlet: [ jetspeed.id.PORTLET_ACTION_NAME_MENU, jetspeed.id.PORTLET_ACTION_NAME_MINIMIZE, jetspeed.id.PORTLET_ACTION_NAME_MAXIMIZE, jetspeed.id.PORTLET_ACTION_NAME_RESTORE ],
+    windowActionButtonOrder: [ jetspeed.id.ACTION_NAME_MENU, "edit", "view", "help", jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_MAXIMIZE, jetspeed.id.ACTION_NAME_RESTORE ],
+    windowActionNotPortlet: [ jetspeed.id.ACTION_NAME_MENU, jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_MAXIMIZE, jetspeed.id.ACTION_NAME_RESTORE ],
     windowActionButtonMax: 5,
     windowActionButtonHide: false,
     windowActionButtonTooltip: true,
-    windowActionMenuOrder: [ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE, jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE ],
+    windowActionMenuOrder: [ jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND, jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL, jetspeed.id.ACTION_NAME_DESKTOP_TILE, jetspeed.id.ACTION_NAME_DESKTOP_UNTILE ],
 
     windowThemesAllowed: [ "tigris", "blueocean" ],
     windowTheme: "tigris",
@@ -207,10 +211,10 @@ jetspeed.initializeDesktop = function()
             jetspeed.prefs.windowHeight = "200";
         
         var windowActionDesktop = {};
-        windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_EXPAND ] = true;
-        windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_HEIGHT_NORMAL ] = true;
-        windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_TILE ] = true;
-        windowActionDesktop[ jetspeed.id.PORTLET_ACTION_NAME_DESKTOP_UNTILE ] = true;
+        windowActionDesktop[ jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND ] = true;
+        windowActionDesktop[ jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL ] = true;
+        windowActionDesktop[ jetspeed.id.ACTION_NAME_DESKTOP_TILE ] = true;
+        windowActionDesktop[ jetspeed.id.ACTION_NAME_DESKTOP_UNTILE ] = true;
         jetspeed.prefs.windowActionDesktop = windowActionDesktop;
     }
     dojo.html.insertCssFile( jetspeed.ui.getDefaultFloatingPaneTemplateCss(), document, true );
@@ -1134,6 +1138,8 @@ dojo.lang.extend( jetspeed.om.Page,
         // create layout model
         var portletsByPageColumn = this._layoutCreateModel( parsedRootLayoutFragment );
 
+        this.rootFragmentId = parsedRootLayoutFragment.id ;
+
         // create columns
         if ( jetspeed.prefs.windowTiling )
         {
@@ -1192,6 +1198,7 @@ dojo.lang.extend( jetspeed.om.Page,
         var children = pageElement.childNodes;
         var simpleValueLNames = new RegExp( "(name|path|title|short-title)" );
         var rootFragment = null;
+        var rootFragmentActions = {};
         for ( var i = 0 ; i < children.length ; i++ )
         {
             var child = children[i];
@@ -1211,7 +1218,13 @@ dojo.lang.extend( jetspeed.om.Page,
             {
                 this[ jetspeed.purifyIdentifier( childLName, "", "lo" ) ] = ( ( child && child.firstChild ) ? child.firstChild.nodeValue : null );
             }
+            else if ( childLName == "action" )
+            {
+                this._parsePSMLAction( child, rootFragmentActions ) ;
+            }
+            // BOZO:NOW: title handling - and does anything need to be done with metadata (to get correct title?)
         }
+        this.actions = rootFragmentActions;
 
         if ( rootFragment == null )
         {
@@ -1306,21 +1319,25 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         if ( actionsMap == null )
             actionsMap = {};
-        var actions = fragmentNode.getElementsByTagName( "action" );
-        for( var actionsIdx=0; actionsIdx < actions.length; actionsIdx++ )
+        var actionChildren = fragmentNode.getElementsByTagName( "action" );
+        for( var actionsIdx=0; actionsIdx < actionChildren.length; actionsIdx++ )
         {
-            var actionNode = actions[actionsIdx];
-            var actionName = actionNode.getAttribute( "id" );
-            if ( actionName != null )
-            {
-                var actionType = actionNode.getAttribute( "type" );
-                var actionLabel = actionNode.getAttribute( "name" );
-                var actionUrl = actionNode.getAttribute( "url" );
-                var actionAlt = actionNode.getAttribute( "alt" );
-                actionsMap[ actionName.toLowerCase() ] = { id: actionName, type: actionType, label: actionLabel, url: actionUrl, alt: actionAlt };
-            }
+            var actionNode = actionChildren[actionsIdx];
+            this._parsePSMLAction( actionNode, actionsMap );
         }
         return actionsMap;
+    },
+    _parsePSMLAction: function( actionNode, actionsMap )
+    {
+        var actionName = actionNode.getAttribute( "id" );
+        if ( actionName != null )
+        {
+            var actionType = actionNode.getAttribute( "type" );
+            var actionLabel = actionNode.getAttribute( "name" );
+            var actionUrl = actionNode.getAttribute( "url" );
+            var actionAlt = actionNode.getAttribute( "alt" );
+            actionsMap[ actionName.toLowerCase() ] = { id: actionName, type: actionType, label: actionLabel, url: actionUrl, alt: actionAlt };
+        }
     },
     _parsePSMLCurrentActionState: function( fragmentNode )
     {
@@ -2065,7 +2082,17 @@ dojo.lang.extend( jetspeed.om.Page,
     renderPageControls: function()
     {
         var actionButtonNames = [];
-        actionButtonNames.push( "addportlet" );
+        if ( this.actions != null )
+        {
+            for ( var actionName in this.actions )
+            {
+                if ( actionName == jetspeed.id.ACTION_NAME_EDIT )
+                {
+                    actionButtonNames.push( jetspeed.id.ACTION_NAME_ADDPORTLET );
+                }
+                actionButtonNames.push( actionName );
+            }
+        }
 
         var pageControlsContainer = dojo.byId( jetspeed.id.PAGE_CONTROLS );
         if ( pageControlsContainer != null && actionButtonNames != null && actionButtonNames.length > 0 )
@@ -2103,18 +2130,28 @@ dojo.lang.extend( jetspeed.om.Page,
         if ( evt == null || evt.target == null ) return;
         this.pageActionProcess( evt.target.actionName, evt );
     },
-    pageActionProcess: function( /* String */ actionName, evt )
+    pageActionProcess: function( /* String */ actionName )
     {
         if ( actionName == null ) return;
-        if ( actionName == "addportlet" )
+        if ( actionName == jetspeed.id.ACTION_NAME_ADDPORTLET )
         {
-            var addportletPageUrl = jetspeed.url.path.SERVER + jetspeed.url.path.DESKTOP + "/system/customizer/selector.psml?" + this.getPath();
-            jetspeed.pageNavigate( addportletPageUrl ); 
+            var addportletPageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.DESKTOP + "/system/customizer/selector.psml?jspage=" + this.getPath();
+            jetspeed.changeActionForPortlet( this.rootFragmentId, null, jetspeed.id.ACTION_NAME_EDIT, new jetspeed.om.PageChangeActionContentListener( addportletPageUrl ) );
         }
         else
         {
-            alert( "pageActionProcess: " + actionName + " - not yet implemented" );
+            var action = this.getPageAction( actionName );
+            alert( "pageAction " + actionName + " : " + action );
+            if ( action == null ) return;
+            if ( action.url == null ) return;
+            var pageActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.DESKTOP + "/" + action.url;
+            jetspeed.pageNavigate( pageActionUrl );
         }
+    },
+    getPageAction: function( name )
+    {
+        if ( this.actions == null ) return null;
+        return this.actions[ name ];
     },
 
 
@@ -3402,6 +3439,27 @@ dojo.lang.extend( jetspeed.om.PortletChangeActionContentListener,
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
         dojo.raise( "PortletChangeActionContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    }
+});
+
+// ... jetspeed.om.PageChangeActionContentListener
+jetspeed.om.PageChangeActionContentListener = function( /* String */ pageActionUrl )
+{
+    this.pageActionUrl = pageActionUrl;
+};
+dojo.lang.extend( jetspeed.om.PageChangeActionContentListener,
+{
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
+    {
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "page-change-action" ) )
+        {
+            if ( this.pageActionUrl != null && this.pageActionUrl.length > 0 )
+                jetspeed.pageNavigate( this.pageActionUrl ); 
+        }
+    },
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
+    {
+        dojo.raise( "PageChangeActionContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 });
 
