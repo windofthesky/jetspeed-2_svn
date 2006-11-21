@@ -103,8 +103,8 @@
                         <value>print</value>
                         <value>help</value>
                         <value>minimized</value>
-                        <value>maximized</value>
                         <value>normal</value>
+                        <value>maximized</value>
                     </list>
                 </entry>
                 <entry key="desktop.window.action.button.maximum">
