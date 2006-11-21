@@ -49,6 +49,9 @@
 #foreach ($meta in $page.Metadata.Fields)
 	<metadata name="$meta.Name" xml:lang="$meta.Locale.Language">$meta.Value</metadata>
 #end
+#foreach ($action in $page.getRootContentFragment().decoration.actions)
+     <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
+#end
 
 #if ($fragments == "true")    
   #traverseFragments($page.RootFragment)

@@ -93,46 +93,52 @@ public class GetPortletActionsAction
         return runAction(requestContext, resultMap, false);
     }
     
-    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
+    public boolean runAction( RequestContext requestContext, Map resultMap, boolean batch )
     {
         boolean success = true;
         String status = "success";
         try
         {
-            resultMap.put(ACTION, action);
-            // Get the necessary parameters off of the request
-            String[] portletIds = requestContext.getRequest().getParameterValues( PORTLETID );
-            if (portletIds == null) 
-            { 
-                throw new Exception("no portlet id was provided"); 
-            }
+            resultMap.put( ACTION, action );
             
             ContentPage page = requestContext.getPage();
             
-            ArrayList portletFragments = new ArrayList();
-            for ( int i = 0 ; i < portletIds.length ; i++ )
+            // Get the necessary parameters off of the request
+            ArrayList getActionsForFragments = new ArrayList();
+            String[] portletIds = requestContext.getRequest().getParameterValues( PORTLETID );
+            if ( portletIds != null && portletIds.length > 0 ) 
             {
-                String portletId = portletIds[ i ];
-                ContentFragment fragment = (ContentFragment)page.getFragmentById( portletId );
-                if ( fragment == null )
+                for ( int i = 0 ; i < portletIds.length ; i++ )
                 {
-                    throw new Exception("fragment not found for specified portlet id: " + portletId); 
+                    String portletId = portletIds[ i ];
+                    ContentFragment fragment = (ContentFragment)page.getFragmentById( portletId );
+                    if ( fragment == null )
+                    {
+                        throw new Exception("fragment not found for specified portlet id: " + portletId); 
+                    }
+                    getActionsForFragments.add( fragment );
                 }
-                portletFragments.add( fragment );
+                getActionsForFragments.add( page.getRootContentFragment() );
             }
 
             // Run the Decoration valve to get actions
-            decorationValve.initFragments( requestContext, true, portletFragments );
+            decorationValve.initFragments( requestContext, true, getActionsForFragments );
             
-            resultMap.put(FRAGMENTS, portletFragments);
+            if ( getActionsForFragments.size() > 0 )
+            {
+                Fragment rootFragment = (Fragment)getActionsForFragments.remove( getActionsForFragments.size()-1 );
+                resultMap.put( PAGE, rootFragment );
+            }
             
-            resultMap.put(STATUS, status);
+            resultMap.put( PORTLETS, getActionsForFragments );
+            
+            resultMap.put( STATUS, status );
         } 
         catch (Exception e)
         {
             // Log the exception
-            log.error("exception while moving a portlet", e);
-            resultMap.put(REASON, e.toString());
+            log.error( "exception while getting actions for a fragment", e );
+            resultMap.put( REASON, e.toString() );
             // Return a failure indicator
             success = false;
         }

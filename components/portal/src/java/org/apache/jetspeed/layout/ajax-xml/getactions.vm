@@ -2,8 +2,15 @@
     <status>$status</status>
     <action>$action</action>
     
+    #if ( $page )
+    <page>
+#foreach ($action in $page.decoration.actions)
+        <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
+#end
+    </page>
+    #end
     <portlets>
-#foreach ($portlet in $fragments)
+#foreach ($portlet in $portlets)
     <portlet id="$portlet.getId()">
 #foreach ($action in $portlet.decoration.actions)
         <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    

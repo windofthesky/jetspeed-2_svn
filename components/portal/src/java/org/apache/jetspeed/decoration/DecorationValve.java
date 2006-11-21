@@ -122,10 +122,10 @@ public class DecorationValve extends AbstractValve implements Valve
 
         PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
         
-        if ( fragments == null )
+        if ( fragments == null || fragments.size() == 0 )
         {
             ContentFragment rootFragment = page.getRootContentFragment();
-            initDepthFragments(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest);
+            initDepthFragments(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest, fragments);
         }
         else
         {
@@ -185,19 +185,19 @@ public class DecorationValve extends AbstractValve implements Valve
      * @throws PortletEntityNotStoredException 
      * @throws FailedToRetrievePortletWindow 
      */
-    protected void initActionsForFragment(
-                        RequestContext requestContext, 
-                        ContentFragment fragment, 
-                        PageActionAccess pageActionAccess, 
-                        Decoration decoration,
-                        boolean isAjaxRequest) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
+    protected boolean initActionsForFragment(RequestContext requestContext, 
+                                             ContentFragment fragment, 
+                                             PageActionAccess pageActionAccess, 
+                                             Decoration decoration,
+                                             boolean isAjaxRequest) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
     {
+        boolean fragmentSupportsActions = false;
         PortletWindow window = windowAccessor.getPortletWindow(fragment); 
         PortletDefinitionComposite portlet = (PortletDefinitionComposite) window.getPortletEntity().getPortletDefinition();
         
         if (null == portlet)
         {
-            return; // allow nothing
+            return fragmentSupportsActions; // allow nothing
         }
 
         List actions = Collections.EMPTY_LIST;
@@ -208,10 +208,12 @@ public class DecorationValve extends AbstractValve implements Valve
         
         if ( fragment.equals(requestContext.getPage().getRootFragment()) )
         {
+            fragmentSupportsActions = true;
             actions = getPageModes(requestContext, window, content, currentMode, currentState, pageActionAccess, decoration, isAjaxRequest);
         }
         else if ( !Fragment.LAYOUT.equals(fragment.getType()) )
         {
+            fragmentSupportsActions = true;
             String fragmentId = fragment.getId();
             PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
 
@@ -291,6 +293,8 @@ public class DecorationValve extends AbstractValve implements Valve
         }
         
         decoration.setActions( actions );
+        
+        return fragmentSupportsActions;
     }
     
     /**
@@ -308,8 +312,8 @@ public class DecorationValve extends AbstractValve implements Valve
      * @throws PortletEntityNotStoredException 
      */
     protected List getPageModes(RequestContext requestContext, PortletWindow window, ContentTypeSet content, 
-                    PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration,
-                    boolean isAjaxRequest)
+                                PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration,
+                                boolean isAjaxRequest)
     {
         List pageModes = new ArrayList();
         
@@ -385,7 +389,8 @@ public class DecorationValve extends AbstractValve implements Valve
                                       Theme theme, 
                                       ContentFragment fragment, 
                                       PageActionAccess pageActionAccess,
-                                      boolean isAjaxRequest)
+                                      boolean isAjaxRequest,
+                                      List collectFragments )
     {
         final List contentFragments = fragment.getContentFragments();
         
@@ -395,29 +400,37 @@ public class DecorationValve extends AbstractValve implements Valve
             while(itr.hasNext())
             {
                 ContentFragment aFragment = (ContentFragment) itr.next();
-                initDepthFragments(requestContext, theme, aFragment, pageActionAccess, isAjaxRequest);
+                initDepthFragments(requestContext, theme, aFragment, pageActionAccess, isAjaxRequest, collectFragments);
             }
         }
         
-        initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest);
+        if ( initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest) )
+        {
+            if ( collectFragments != null )
+            {
+                collectFragments.add( fragment );
+            }
+        }
     }
 
-    protected void initFragment(RequestContext requestContext, 
-                                Theme theme, 
-                                ContentFragment fragment, 
-                                PageActionAccess pageActionAccess,
-                                boolean isAjaxRequest)
+    protected boolean initFragment(RequestContext requestContext, 
+                                   Theme theme, 
+                                   ContentFragment fragment, 
+                                   PageActionAccess pageActionAccess,
+                                   boolean isAjaxRequest)
     {
+        boolean fragmentSupportsActions = false;
         try
         {
             Decoration decoration = theme.getDecoration(fragment);
             fragment.setDecoration(decoration);
-            initActionsForFragment(requestContext, fragment, pageActionAccess, decoration, isAjaxRequest);
+            fragmentSupportsActions = initActionsForFragment(requestContext, fragment, pageActionAccess, decoration, isAjaxRequest);
         }
         catch (Exception e)
         {
             log.warn("Unable to initalize actions for fragment "+fragment.getId(), e);
         }
+        return fragmentSupportsActions;
     }
 
     
