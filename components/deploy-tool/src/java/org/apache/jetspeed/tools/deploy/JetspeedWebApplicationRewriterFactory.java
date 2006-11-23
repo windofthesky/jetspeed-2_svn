@@ -4,6 +4,7 @@ import org.jdom.Document;
 
 /**
  * @author Nicolas Dutertry
+ * @version $Id$
  */
 public class JetspeedWebApplicationRewriterFactory {
     

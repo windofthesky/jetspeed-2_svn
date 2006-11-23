@@ -23,6 +23,7 @@ import org.jdom.Namespace;
  * Utilities for manipulating the web.xml deployment descriptor version 2.4
  * 
  * @author Nicolas Dutertry
+ * @version $Id$
  */
 class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
 {
