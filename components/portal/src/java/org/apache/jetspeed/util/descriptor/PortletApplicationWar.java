@@ -44,6 +44,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
+import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriterFactory;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
@@ -572,8 +573,8 @@ public class PortletApplicationWar
                 webXmlIn.close();
             }
 
-
-            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(doc);
+            JetspeedWebApplicationRewriterFactory rewriterFactory = new JetspeedWebApplicationRewriterFactory();
+            JetspeedWebApplicationRewriter rewriter = rewriterFactory.getInstance(doc);
             rewriter.processWebXML();
             
             if (rewriter.isChanged())

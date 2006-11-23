@@ -45,30 +45,49 @@ public class JetspeedDeploy implements Deploy
 {
     public static void main(String[] args) throws Exception
     {
-        if (args.length < 2 || args.length > 3 || args.length == 3 && !(args[0].equalsIgnoreCase("-s")))
+        if (args.length < 2)
         {
-            System.out.println("Usage: java -jar jetspeed-deploy-tools-<version>.jar [-s] INPUT OUTPUT");
-            System.out.println("Options:");
-            System.out
-                            .println("  -s: stripLoggers - remove commons-logging[version].jar and/or log4j[version].jar from war");
-            System.out.println("                     (required when targetting application servers like JBoss)");
-
+            printUsage();
             System.exit(1);
             return;
         }
-        if ( args.length == 3 )
-        {
-            new JetspeedDeploy(args[1], args[2], true);
+        
+        boolean stripLoggers = false;
+        String version = null;
+        for(int i = 0; i < args.length-2; i++) {
+            String option = args[i];
+            if(option.equals("-s")) {
+                stripLoggers = true;
+            } else if(option.equals("-v") && i < args.length-3) {
+                version = args[i+1];
+                i++;
+            } else {
+                // invalid option
+                printUsage();
+                System.exit(1);
+                return;
+            }
         }
-        else
-        {
-            new JetspeedDeploy(args[0], args[1], false);
-        }
+        
+        new JetspeedDeploy(args[args.length-2], args[args.length-1], stripLoggers, version);
+    }
+    
+    private static void printUsage() {
+        System.out.println("Usage: java -jar jetspeed-deploy-tools-<version>.jar [options] INPUT OUTPUT");
+        System.out.println("Options:");
+        System.out.println("  -s: stripLoggers - remove commons-logging[version].jar and/or log4j[version].jar from war");
+        System.out.println("                     (required when targetting application servers like JBoss)");
+        System.out.println("  -v VERSION: force servlet specification version to handle web.xml");
+        System.out.println("                     (default will automatically determine version)");
     }
 
     private final byte[] buffer = new byte[4096];
 
-    public JetspeedDeploy(String inputName, String outputName, boolean stripLoggers) throws Exception
+    public JetspeedDeploy(String inputName, String outputName, boolean stripLoggers) throws Exception {
+        this(inputName, outputName, stripLoggers, null);
+    }
+    
+    public JetspeedDeploy(String inputName, String outputName, boolean stripLoggers, String forcedVersion) throws Exception
     {
         File tempFile = null;
         JarFile jin = null;
@@ -91,6 +110,7 @@ public class JetspeedDeploy implements Deploy
             Document webXml = null;
             Document portletXml = null;
             Document contextXml = null;
+            boolean taglibFound = false;
             ZipEntry src;
             InputStream source;
             Enumeration zipEntries = jin.entries();
@@ -115,6 +135,10 @@ public class JetspeedDeploy implements Deploy
                     {
                         System.out.println("Found META-INF/context.xml");
                         contextXml = parseXml(source);
+                    }
+                    else if ("WEB-INF/tld/portlet.tld".equals(target))
+                    {
+                        taglibFound = true;
                     }
                     else
                     {
@@ -141,9 +165,12 @@ public class JetspeedDeploy implements Deploy
             {
                 throw new IllegalArgumentException("WEB-INF/portlet.xml");
             }
-
-            JetspeedWebApplicationRewriter webRewriter = new JetspeedWebApplicationRewriter(webXml,
-                                                                                            portletApplicationName);
+            
+            JetspeedWebApplicationRewriterFactory webRewriterFactory = new JetspeedWebApplicationRewriterFactory();
+            JetspeedWebApplicationRewriter webRewriter = webRewriterFactory.getInstance(
+                    webXml,
+                    portletApplicationName,
+                    forcedVersion);
             webRewriter.processWebXML();
             JetspeedContextRewriter contextRewriter = new JetspeedContextRewriter(contextXml, portletApplicationName);
             contextRewriter.processContextXML();
@@ -153,7 +180,7 @@ public class JetspeedDeploy implements Deploy
             addFile("WEB-INF/portlet.xml", portletXml, jout);
             addFile("META-INF/context.xml", contextXml, jout);
 
-            if (webRewriter.isPortletTaglibAdded())
+            if (webRewriter.isPortletTaglibAdded() || !taglibFound)
             {
                 System.out.println("Attempting to add portlet.tld to war...");
                 InputStream is = this.getClass().getResourceAsStream("/org/apache/jetspeed/tools/deploy/portlet.tld");
