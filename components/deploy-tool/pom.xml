@@ -49,7 +49,11 @@ limitations under the License.
             <groupId>jdom</groupId>
             <artifactId>jdom</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        
         <!-- Runtime Dependencies -->
         <dependency>
             <groupId>jaxen</groupId>
