@@ -35,6 +35,20 @@ limitations under the License.
     <filter-name>AJAXFilter</filter-name>
     <filter-class>org.apache.jetspeed.ajax.AJAXFilter</filter-class>   
   </filter>
+    
+  <filter>
+      <filter-name>staticResourceCachingFilter</filter-name>
+      <filter-class>org.apache.jetspeed.engine.servlet.StaticResourceCachingFilter</filter-class>
+      <init-param>
+          <param-name>ExpireHours</param-name>
+          <param-value>48</param-value>
+      </init-param>
+  </filter>
+
+  <filter-mapping>
+      <filter-name>staticResourceCachingFilter</filter-name>
+      <servlet-name>default</servlet-name>
+  </filter-mapping>    
   <!--
   <filter>
     <filter-name>PortalFilter</filter-name>
