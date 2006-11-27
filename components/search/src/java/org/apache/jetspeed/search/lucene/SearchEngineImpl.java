@@ -157,36 +157,36 @@ public class SearchEngineImpl implements SearchEngine
 
             // Populate document from the parsed object
             if (parsedObject.getKey() != null)
-            {
-                doc.add(Field.Keyword(ParsedObject.FIELDNAME_KEY, parsedObject.getKey()));
+            {                
+                doc.add(new Field(ParsedObject.FIELDNAME_KEY, parsedObject.getKey(), Field.Store.YES, Field.Index.UN_TOKENIZED));
             }
             if (parsedObject.getType() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_TYPE, parsedObject.getType()));
+                doc.add(new Field(ParsedObject.FIELDNAME_TYPE, parsedObject.getType(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if (parsedObject.getTitle() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_TITLE, parsedObject.getTitle()));
+                doc.add(new Field(ParsedObject.FIELDNAME_TITLE, parsedObject.getTitle(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if (parsedObject.getDescription() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_DESCRIPTION, parsedObject.getDescription()));
+                doc.add(new Field(ParsedObject.FIELDNAME_DESCRIPTION, parsedObject.getDescription(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if (parsedObject.getContent() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_CONTENT, parsedObject.getContent()));
+                doc.add(new Field(ParsedObject.FIELDNAME_CONTENT, parsedObject.getContent(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if (parsedObject.getLanguage() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_LANGUAGE, parsedObject.getLanguage()));   
+                doc.add(new Field(ParsedObject.FIELDNAME_LANGUAGE, parsedObject.getLanguage(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if (parsedObject.getURL() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_URL, parsedObject.getURL().toString()));
+                doc.add(new Field(ParsedObject.FIELDNAME_URL, parsedObject.getURL().toString(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             if(parsedObject.getClassName() != null)
             {
-                doc.add(Field.Text(ParsedObject.FIELDNAME_CLASSNAME, parsedObject.getClassName()));
+                doc.add(new Field(ParsedObject.FIELDNAME_CLASSNAME, parsedObject.getClassName(), Field.Store.YES, Field.Index.TOKENIZED));
             }
             
             String[] keywordArray = parsedObject.getKeywords();
@@ -195,7 +195,7 @@ public class SearchEngineImpl implements SearchEngine
             	for(int i=0; i<keywordArray.length; ++i)
             	{
             		String keyword = keywordArray[i];
-            		doc.add(Field.Keyword(ParsedObject.FIELDNAME_KEYWORDS, keyword));
+            		doc.add(new Field(ParsedObject.FIELDNAME_KEYWORDS, keyword, Field.Store.YES, Field.Index.UN_TOKENIZED));
             	}
             }
 
@@ -284,7 +284,7 @@ public class SearchEngineImpl implements SearchEngine
                 {
                     term = new Term(ParsedObject.FIELDNAME_KEY, parsedObject.getKey());
                     // Remove the document from search index
-                    int rc = indexReader.delete(term);
+                    int rc = indexReader.deleteDocuments(term);
                     //logger.info("Attempted to delete '" + term.toString() + "' from index, documents deleted = " + rc);
                     //System.out.println("Attempted to delete '" + term.toString() + "' from index, documents deleted = " + rc);
                     result = rc > 0;
@@ -403,7 +403,10 @@ public class SearchEngineImpl implements SearchEngine
         Query query= null;
         try
         {
-            query = MultiFieldQueryParser.parse(queryString, searchFields, analyzer);
+        	String s[] = new String[searchFields.length];
+        	for(int i=0;i<s.length;i++)
+        		s[i] = queryString;
+            query = MultiFieldQueryParser.parse(s, searchFields, analyzer);
 //          Query query = QueryParser.parse(searchString, ParsedObject.FIELDNAME_CONTENT, analyzer);
         }
         catch (ParseException e)
@@ -567,11 +570,11 @@ public class SearchEngineImpl implements SearchEngine
                                 {
                                     if(type == TEXT)
                                     {
-                                        doc.add(Field.Text(key.toString(), value.toString()));
+                                        doc.add(new Field(key.toString(), value.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED));
                                     }
                                     else
                                     {
-                                        doc.add(Field.Keyword(key.toString(), value.toString()));
+                                        doc.add(new Field(key.toString(), value.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED));
                                     }
                                 }
                             }
@@ -580,11 +583,11 @@ public class SearchEngineImpl implements SearchEngine
                         {
                             if(type == TEXT)
                             {
-                                doc.add(Field.Text(key.toString(), values.toString()));
+                                doc.add(new Field(key.toString(), values.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED));
                             }
                             else
                             {
-                                doc.add(Field.Keyword(key.toString(), values.toString()));
+                                doc.add(new Field(key.toString(), values.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED));
                             }
                         }
                     }

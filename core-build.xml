@@ -98,8 +98,9 @@ limitations under the License.
 		
 		<!-- jakarta commons and other misc. jakarta projects -->
 		<dependency>
-			<id>lucene</id>
-			<version>1.4.1</version>
+			<id>lucene-core</id>            
+            <groupId>lucene</groupId>
+			<version>2.0.0</version>
 			<properties>
 	          <war.bundle>true</war.bundle>
 	        </properties>
