@@ -29,6 +29,7 @@
     	<menu name="Building">
     	    <item name="From Source" href="getting-started-source.html" />
     	    <item name="From Maven Plugin" href="getting-started-binary.html" />
+    	    <item name="From Eclipse" href="jetspeed-eclipse.html" />            
     	</menu>
     	<menu name="Download">
     		<item name="Installer" href="download.html" />
