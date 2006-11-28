@@ -77,7 +77,8 @@ public class RomeRSSPortlet extends GenericVelocityPortlet
                     .getValue("openinpopup", "true")).booleanValue(), new Boolean(prefs.getValue("showdescription", "true"))
                     .booleanValue(), new Boolean(prefs.getValue("showtitle", "true")).booleanValue(), new Boolean(prefs.getValue(
                     "showtextinput", "true")).booleanValue());
-
+            if (feed.getTitle() != null)
+                response.setTitle(feed.getTitle());
             velocityContext.put("rssInfo", rssInfo);
 
             super.doView(request, response);

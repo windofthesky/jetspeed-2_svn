@@ -39,6 +39,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.portals.applications.transform.TransformCacheEntry;
 import org.apache.portals.applications.util.Streams;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
@@ -187,7 +189,28 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
                 StringWriter sw= new StringWriter();
                 transform.transform(realStylesheet, source, sw, parameters); //response.getPortletOutputStream(), parameters);
                 Streams.drain(new StringReader(sw.toString()), response.getWriter());
-
+                try
+                {
+                	// Java 1.5 only
+                    // String t = document.getDocumentElement().getElementsByTagName("title").item(0).getTextContent();
+                    String t = document.getDocumentElement().getElementsByTagName("title").item(0).getNodeValue();
+                    NodeList nodes = document.getDocumentElement().getElementsByTagName("title");
+                    if (nodes != null)
+                    {
+                        Node node = nodes.item(0);
+                        if (node != null)
+                        {
+                            Node title = node.getFirstChild();
+                            if (title != null)
+                                response.setTitle(title.getNodeValue());
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                	
+                }
+                
                 cache.put(key, sw.toString().getBytes("UTF-8"), 15);                
             }
             catch (Exception ex)
