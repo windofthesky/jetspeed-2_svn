@@ -66,34 +66,30 @@
 
 #* Adds additional style sheets and java script from portlets *#
 #macro (includeHeaderResource)
- #set($resourceHeaderFactory = $jetspeed.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
- #if ( $resourceHeader )
+ #acquireHeaderResource()
 $resourceHeader.getContent()
- #else
-     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
-$resourceHeader.getContent()
- #end
 #end
 
 #* Adds additional style sheets and java script from portlets - desktop version *#
 #macro (desktopIncludeDojoHeaderContent)
- #set($resourceHeaderFactory = $JS2ComponentManager.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
- #if ( $resourceHeader )
+ #acquireHeaderResource()
 $resourceHeader.getNamedContentForPrefix( "header.dojo" )
- #else
-     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
-$resourceHeader.getNamedContentForPrefix( "header.dojo" )
- #end
 #end
 
 #* Adds additional style sheets and java script from portlets - desktop version *#
 #macro (desktopIncludeHeaderContent)
- #set($resourceHeaderFactory = $JS2ComponentManager.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
- #if ( $resourceHeader )
+ #acquireHeaderResource()
 $resourceHeader.getContent()
- #else
-     #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
-$resourceHeader.getContent()
+#end
+
+#macro (acquireHeaderResource)
+ #if ( ! $resourceHeader )
+  #if ( $JS2ComponentManager )
+   #set($resourceHeaderFactory = $JS2ComponentManager.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+  #else
+   #set($resourceHeaderFactory = $jetspeed.getComponent("org.apache.jetspeed.headerresource.HeaderResourceFactory"))
+  #end
+  #set($resourceHeader = $resourceHeaderFactory.getHeaderResouce($JS2RequestContext))
  #end
 #end
 
