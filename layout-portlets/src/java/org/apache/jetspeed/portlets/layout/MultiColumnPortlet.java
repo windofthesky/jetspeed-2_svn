@@ -581,6 +581,36 @@ public class MultiColumnPortlet extends LayoutPortlet
                     }
                     return;
                 }
+                // evlach
+                String decorators = request.getParameter("decorators");
+                if ( decorators != null )
+                {
+                    Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
+                    while(fragmentsIter.hasNext())
+                    {
+                    	Fragment fragment = (Fragment) fragmentsIter.next();
+                    	if ( fragment == null )
+                        {
+                            // ignore no longer consistent page definition
+                            return;
+                        }
+                        
+                        if (decorators.trim().length() == 0)
+                            fragment.setDecorator(null);
+                        else
+                            fragment.setDecorator(decorators);
+                    }
+                    try
+                    {
+                        pageManager.updatePage(requestPage);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
+                    }
+                    return;
+                }                
+                //end evlach
             }
             
             String portlets = request.getParameter("portlets");
