@@ -52,7 +52,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final char PARAM_KEY = 'e';
     protected static final char CLEAR_PARAMS_KEY = 'f';
     
-    protected static final String keytable = "01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    protected static final String keytable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     protected final PortletMode[] portletModes;
     protected final WindowState[] windowStates;
     private final PortletWindowAccessor windowAccessor;
