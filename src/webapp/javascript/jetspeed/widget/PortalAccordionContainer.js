@@ -19,7 +19,7 @@ dojo.provide("jetspeed.widget.PortalMenuOptionLink");
 
 dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.TabContainer");
+dojo.require("dojo.widget.AccordionContainer");
 
 jetspeed.widget.PortalAccordionContainer = function()
 {    
