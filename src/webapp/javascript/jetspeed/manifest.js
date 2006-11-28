@@ -1,9 +1,5 @@
-dojo.provide("desktop.manifest");
+dojo.provide("jetspeed.manifest");
 dojo.require("dojo.string.extras");
-
-
-
-dojo.provide("dojo.namespaces.dojo");
 dojo.require("dojo.ns");
 
 (function(){
