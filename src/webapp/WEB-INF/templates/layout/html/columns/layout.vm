@@ -128,9 +128,7 @@ limitations under the License.
         #end    
         #getBoolProperty($allowChangePortletDecorator $rootDecorator "allow.change.portlet.decorator" true)
          ####### Take all fragments and apply style	  
-        #if($allowChangePortletDecorator)
-           <form name="$form$dcnt" action="$formAction" method='post'>
-           
+        #if($allowChangePortletDecorator)          
               <input type="hidden" name="fragment" value="$f.id">
               <input type="hidden" name="move" value="">
               <input type="hidden" name="remove" value="">
@@ -141,7 +139,6 @@ limitations under the License.
         	    #end
         	  </select>
         	    <input type="submit" name="jsSubmitTheme" value="$messages.getString("portal.page.editing.changethemeall")"/>
-        	</form> 
         #end	   
         #if($allowAddLayout||$allowChangeLayout)
           </div>
