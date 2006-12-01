@@ -990,7 +990,8 @@ public class HeaderResourceImpl implements HeaderResource
         StringBuffer preinitOut = new StringBuffer();
         //preinitOut.append( "    " ).append( "function de_jsessionid_url(url){var tEnds = url.indexOf(';jsessionid=');if (tEnds > 0) url = url.substring(0, tEnds);return url;}" ).append( EOL );
         // presence of ;jsessionid in dojo baseScriptUri is bad news
-        preinitOut.append( "    " ).append( "djConfig.baseScriptUri = \"" ).append( getPortalResourceUrl( dojoGetPath(), false ) ).append( "\";" );
+        preinitOut.append( "    " ).append( "djConfig.baseScriptUri = \"" ).append( getPortalResourceUrl( dojoGetPath(), false ) ).append( "\";" ).append( EOL );
+        preinitOut.append( "    " ).append( "djConfig.jetspeed.servletPath = \"" ).append( this.requestContext.getRequest().getServletPath() ).append( "\";" );
         return preinitOut.toString();
     }
     protected String dojoGenerateInit()
