@@ -21,6 +21,15 @@
 
 dojo.provide("jetspeed.desktop.core");
 
+dojo.require("dojo.lang.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.io.*");
+dojo.require("dojo.uri.Uri");
+dojo.require("dojo.widget.*");
+dojo.require("dojo.collections.ArrayList");
+dojo.require("dojo.collections.Set");
+dojo.require("jetspeed.common");
+
 // ... testing
 
 // ... jetspeed base objects
@@ -28,26 +37,12 @@ if ( ! window.jetspeed )
     jetspeed = {} ;
 if ( ! jetspeed.om )
     jetspeed.om = {} ;
-if ( ! jetspeed.url )
-    jetspeed.url = {} ;
 if ( ! jetspeed.ui )
     jetspeed.ui = {} ;
 if ( ! jetspeed.ui.widget )
     jetspeed.ui.widget = {} ;
 
-// ... jetspeed version
-jetspeed.version = 
-{
-    major: 2, minor: 1, patch: 0, flag: "dev",
-    revision: "",
-    toString: function() 
-    {
-        with (jetspeed.version) 
-        {
-            return major + "." + minor + "." + patch + flag + " (" + revision + ")";
-        }
-    }
-};
+
 
 // ... jetspeed.id
 jetspeed.id =
@@ -139,12 +134,15 @@ jetspeed.prefs =
     portletSelectorWindowIcon: "text-x-script.png",
     portletSelectorBounds: { x: 20, y: 20, width: 400, height: 600 },
 
-    windowActionButtonOrder: [ jetspeed.id.ACTION_NAME_MENU, "edit", "view", "help", jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_MAXIMIZE, jetspeed.id.ACTION_NAME_RESTORE ],
-    windowActionNotPortlet: [ jetspeed.id.ACTION_NAME_MENU, jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_MAXIMIZE, jetspeed.id.ACTION_NAME_RESTORE ],
+    windowActionButtonOrder: [ jetspeed.id.ACTION_NAME_MENU, "edit", "view", "help", jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_RESTORE, jetspeed.id.ACTION_NAME_MAXIMIZE ],
+    windowActionNotPortlet: [ jetspeed.id.ACTION_NAME_MENU, jetspeed.id.ACTION_NAME_MINIMIZE, jetspeed.id.ACTION_NAME_RESTORE, jetspeed.id.ACTION_NAME_MAXIMIZE ],
     windowActionButtonMax: 5,
     windowActionButtonHide: false,
     windowActionButtonTooltip: true,
     windowActionMenuOrder: [ jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND, jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL, jetspeed.id.ACTION_NAME_DESKTOP_TILE, jetspeed.id.ACTION_NAME_DESKTOP_UNTILE ],
+    
+    windowIconEnabled: true,
+    windowIconPath: "/images/portlets/small/",
 
     windowThemesAllowed: [ "tigris", "blueocean" ],
     windowTheme: "tigris",
@@ -402,6 +400,8 @@ jetspeed.loadWindowThemeConfig = function( windowtheme )
     windowThemeConfig.windowActionButtonTooltip = jetspeed.prefs.windowActionButtonTooltip;
     windowThemeConfig.windowActionMenuOrder = jetspeed.prefs.windowActionMenuOrder;
     windowThemeConfig.windowActionNoImage = jetspeed.prefs.windowActionNoImage;
+    windowThemeConfig.windowIconEnabled = jetspeed.prefs.windowIconEnabled;
+    windowThemeConfig.windowIconPath = jetspeed.prefs.windowIconPath;
 
     // load window theme config
     var windowThemeConfigUri = jetspeed.url.basePortalWindowThemeUrl( windowtheme ) + "/" + windowtheme + ".js";
@@ -418,6 +418,23 @@ jetspeed.loadWindowThemeConfig = function( windowtheme )
                         noImageMap[ windowThemeConfig.windowActionNoImage[ i ] ] = true;
                     }
                     windowThemeConfig.windowActionNoImage = noImageMap;
+                }
+                if ( windowThemeConfig.windowIconPath != null )
+                {
+                    windowThemeConfig.windowIconPath = dojo.string.trim( windowThemeConfig.windowIconPath );
+                    if ( windowThemeConfig.windowIconPath == null || windowThemeConfig.windowIconPath.length == 0 )
+                        windowThemeConfig.windowIconPath = null;
+                    else
+                    {
+                        var winIconsPath = windowThemeConfig.windowIconPath;
+                        var firstCh = winIconsPath.charAt(0);
+                        if ( firstCh != "/" )
+                            winIconsPath = "/" + winIconsPath;
+                        var lastCh = winIconsPath.charAt( winIconsPath.length -1 );
+                        if ( lastCh != "/" )
+                            winIconsPath = winIconsPath + "/";
+                        windowThemeConfig.windowIconPath = winIconsPath;
+                    }
                 }
 			});
 };
@@ -667,231 +684,6 @@ jetspeed.debugDumpForm = function( formNode )
     return formDump;
 };
 
-
-// ... jetspeed.url
-jetspeed.url.path =
-{
-    SERVER: null,     //   http://localhost:8080
-    JETSPEED: null,   //   /jetspeed
-    AJAX_API: null,   //   /jetspeed/ajaxapi
-    DESKTOP: null,    //   /jetspeed/desktop
-    PORTAL: null,     //   /jetspeed/portal
-    PORTLET: null,    //   /jetspeed/portlet
-    initialized: false
-};
-
-jetspeed.url.pathInitialize = function( force )
-{
-    if ( ! force && jetspeed.url.path.initialized ) return;
-    var baseTag = null;
-    var baseTags = document.getElementsByTagName( "base" );
-    if ( baseTags && baseTags.length == 1 )
-        baseTag = new dojo.uri.Uri( baseTags[0].href );
-    else
-        baseTag = new dojo.uri.Uri( window.location.href );
-
-    var basePath = baseTag.path;
-    
-    var sepPos = -1;
-    for( var startPos =1 ; sepPos <= startPos ; startPos++ )
-    {
-        sepPos = basePath.indexOf( "/", startPos );
-        if ( sepPos == -1 )
-            break;
-    }
-
-    var serverUri = "";
-    if ( baseTag.scheme != null) { serverUri += baseTag.scheme + ":"; }
-    if ( baseTag.authority != null) { serverUri += "//" + baseTag.authority; }
-
-    var jetspeedPath = null;
-    if ( sepPos == -1 )
-        jetspeedPath = basePath;
-    else
-        jetspeedPath = basePath.substring( 0, sepPos );
-    
-    //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jetspeed.url.path.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
-    
-    jetspeed.url.path.JETSPEED = jetspeedPath;
-    jetspeed.url.path.SERVER = serverUri;
-    jetspeed.url.path.AJAX_API = jetspeed.url.path.JETSPEED + "/ajaxapi";
-    jetspeed.url.path.DESKTOP = jetspeed.url.path.JETSPEED + "/desktop";
-    jetspeed.url.path.PORTAL = jetspeed.url.path.JETSPEED + "/portal";
-    jetspeed.url.path.PORTLET = jetspeed.url.path.JETSPEED + "/portlet";
-    
-    jetspeed.url.path.initialized = true;
-}
-jetspeed.url.scheme =
-{   // used to make jetspeed.url.validateUrlStartsWithHttp cleaner
-    HTTP_PREFIX: "http://",
-    HTTP_PREFIX_LEN: "http://".length,
-    HTTPS_PREFIX: "https://",
-    HTTPS_PREFIX_LEN: "https://".length
-};
-jetspeed.url.basePortalUrl = function()
-{
-    if ( ! jetspeed.url.path.initialized )
-        jetspeed.url.pathInitialize();
-    return jetspeed.url.path.SERVER;    // return document.location.protocol + "//" + document.location.host ;
-};
-jetspeed.url.basePortalDesktopUrl = function()
-{
-    if ( ! jetspeed.url.path.initialized )
-        jetspeed.url.pathInitialize();
-    return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED ;
-};
-jetspeed.url.basePortalWindowThemeUrl = function( windowtheme )
-{
-    return jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/windowthemes/" + windowtheme;
-};
-
-jetspeed.url.validateUrlStartsWithHttp = function( url )
-{
-    if ( url )
-    {
-        var len = url.length;
-        var hSLen = jetspeed.url.scheme.HTTPS_PREFIX_LEN;
-        if ( len > hSLen )  // has to be at least longer than as https://
-        {
-            var hLen = jetspeed.url.scheme.HTTP_PREFIX_LEN;
-            if ( url.substring( 0, hLen ) == jetspeed.url.scheme.HTTP_PREFIX )
-                return true;
-            if ( url.substring( 0, hSLen ) == jetspeed.url.scheme.HTTPS_PREFIX )
-                return true;
-        }
-    }
-    return false;
-};
-
-jetspeed.url.BindArgs = function( bindArgs )
-{
-    dojo.lang.mixin( this, bindArgs );
-
-    if ( ! this.mimetype )
-        this.mimetype = "text/html";
-};
-
-dojo.lang.extend( jetspeed.url.BindArgs,
-{
-    createIORequest: function()
-    {
-        var ioReq = new dojo.io.Request( this.url, this.mimetype );
-        ioReq.fromKwArgs( this );  // doing this cause dojo.io.Request tests arg0 for ctor == Object; we want out own obj here
-        return ioReq;
-    },
-
-    load: function( type, data, evt )
-    {
-        //dojo.debug( "loaded content for url: " + this.url );
-        //dojo.debug( "r e t r i e v e C o n t e n t . l o a d" ) ;
-        //dojo.debug( "  type:" );
-        //dojo.debugShallow( type ) ;
-        //dojo.debug( "  evt:" );
-        //dojo.debugShallow( evt ) ;
-        var dmId = null;
-        if ( this.debugContentDumpIds )
-        {
-            dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
-            for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
-            {
-                if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
-                {
-                    if ( dojo.lang.isString( data ) )
-                        dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
-                    else
-                    {
-                        var textContent = dojo.dom.innerXML( data );
-                        if ( ! textContent )
-                            textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
-                        dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
-                    }
-                }
-            }
-        }
-        if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifySuccess ) )
-        {
-            this.contentListener.notifySuccess( data, this.url, this.domainModelObject ) ;
-        }
-        else
-        {
-            dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
-            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] no valid contentListener" );
-        }
-    },
-
-    error: function( type, error )
-    {
-        //dojo.debug( "r e t r i e v e C o n t e n t . e r r o r" ) ;
-        //dojo.debug( "  type:" );
-        //dojo.debugShallow( type ) ;
-        //dojo.debug( "  error:" );
-        //dojo.debugShallow( error ) ;
-        if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifyFailure ) )
-        {
-            this.contentListener.notifyFailure( type, error, this.url, this.domainModelObject );
-        }
-    }
-});
-
-jetspeed.url.retrieveContent = function( bindArgs, contentListener, domainModelObject, debugContentDumpIds )
-{
-    if ( ! bindArgs ) bindArgs = {};
-    bindArgs.contentListener = contentListener ;
-    bindArgs.domainModelObject = domainModelObject ;
-    bindArgs.debugContentDumpIds = debugContentDumpIds ;
-    
-    var jetspeedBindArgs = new jetspeed.url.BindArgs( bindArgs );
-
-    dojo.io.bind( jetspeedBindArgs.createIORequest() ) ;
-};
-
-jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, reportError, apiRequestDescription, dumpOutput )
-{
-    var success = false;
-    var statusElmt = data.getElementsByTagName( "status" );
-    if ( statusElmt != null )
-    {
-        var successVal = statusElmt[0].firstChild.nodeValue;
-        if ( successVal == "success" )
-        {
-            success = true;
-        }
-    }
-    if ( ( ! success && reportError ) || dumpOutput )
-    {
-        var textContent = dojo.dom.innerXML( data );
-        if ( ! textContent )
-            textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
-        if ( apiRequestDescription == null )
-            apiRequestDescription = "ajax-api";
-        if ( success )
-            dojo.debug( apiRequestDescription + " success  url=" + requestUrl + "  xml-content=" + textContent );
-        else
-            dojo.raise( apiRequestDescription + " failure  url=" + requestUrl + "  xml-content=" + textContent );
-    }
-    return success;
-};
-
-jetspeed.url.formatBindError = function( /* Object */ bindError )
-{
-    if ( bindError == null ) return "";
-    var msg = " error:";
-    if ( bindError.message != null )
-        msg += " " + bindError.message;
-    if ( bindError.number != null && bindError.number != "0" )
-    {
-        msg += " (" + bindError.number;
-        if ( bindError.type != null && bindError.type != "unknown" )
-            msg += "/" + bindError.type;
-        msg += ")";
-    }
-    else if ( bindError.type != null && bindError.type != "unknown" )
-    {
-        msg += " (" + bindError.type + ")";
-    }
-    return msg;
-};
-
 // ... jetspeed.om.PortletContentRetriever
 jetspeed.om.PortletContentRetriever = function()
 {
@@ -1010,7 +802,7 @@ jetspeed.om.PageContentListenerCreateWidget.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Page */ page )
     {
-        dojo.raise( "PageContentListenerCreateWidget notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.raise( "PageContentListenerCreateWidget error url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -1268,7 +1060,17 @@ dojo.lang.extend( jetspeed.om.Page,
                 }
                 else
                 {
-                    fragChildren.push( { id: child.getAttribute( "id" ), type: fragType, name: child.getAttribute( "name" ), properties: this._parsePSMLProperties( child, null ), actions: this._parsePSMLActions( child, null ), currentActionState: this._parsePSMLCurrentActionState( child ), currentActionMode: this._parsePSMLCurrentActionMode( child ), decorator: child.getAttribute( "decorator" ), documentOrderIndex: i } );
+                    var portletProps = this._parsePSMLProperties( child, null );
+                    var portletIcon = portletProps[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ];
+                    if ( portletIcon == null || portletIcon.length == 0 )
+                    {
+                        portletIcon = this._parsePSMLIcon( child );
+                        if ( portletIcon != null && portletIcon.length > 0 )
+                        {
+                            portletProps[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = portletIcon;
+                        }
+                    }
+                    fragChildren.push( { id: child.getAttribute( "id" ), type: fragType, name: child.getAttribute( "name" ), properties: portletProps, actions: this._parsePSMLActions( child, null ), currentActionState: this._parsePSMLCurrentActionState( child ), currentActionMode: this._parsePSMLCurrentActionMode( child ), decorator: child.getAttribute( "decorator" ), documentOrderIndex: i } );
                 }
             }
             else if ( childLName == "property" )
@@ -1351,6 +1153,15 @@ dojo.lang.extend( jetspeed.om.Page,
     _parsePSMLCurrentActionMode: function( fragmentNode )
     {
         var nodes = fragmentNode.getElementsByTagName( "mode" );
+        if ( nodes != null && nodes.length == 1 )
+        {
+            return nodes[0].firstChild.nodeValue;
+        }
+        return null;
+    },
+    _parsePSMLIcon: function( fragmentNode )
+    {
+        var nodes = fragmentNode.getElementsByTagName( "icon" );
         if ( nodes != null && nodes.length == 1 )
         {
             return nodes[0].firstChild.nodeValue;
@@ -2821,9 +2632,14 @@ dojo.lang.extend( jetspeed.om.Portlet,
         
         this.contentRetriever.getContent( bindArgs, contentListener, portlet, jetspeed.debugContentDumpIds );
     },
-    setPortletContent: function( portletContent, renderUrl )
+    setPortletContent: function( portletContent, renderUrl, portletTitle )
     {
         var windowWidget = this.getPortletWindow();
+        if ( portletTitle != null )
+        {
+            this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE, portletTitle );
+            windowWidget.setPortletTitle( portletTitle );
+        }
         if ( windowWidget )
         {
             windowWidget.setPortletContent( portletContent, renderUrl );
@@ -3045,9 +2861,16 @@ jetspeed.om.PortletContentListener = function( suppressGetActions )
 };
 jetspeed.om.PortletContentListener.prototype =
 {
-    notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet )
+    notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet, http )
     {
-        portlet.setPortletContent( portletContent, requestUrl );
+        var portletTitle = null;
+        if ( http != null )
+        {
+            portletTitle = http.getResponseHeader("JS_PORTLET_TITLE");
+            if ( portletTitle != null )
+                portletTitle = unescape( portletTitle );
+        }
+        portlet.setPortletContent( portletContent, requestUrl, portletTitle );
         if ( this.suppressGetActions == null || this.suppressGetActions == false )
             jetspeed.getActionsForPortlet( portlet.getId() );
     },

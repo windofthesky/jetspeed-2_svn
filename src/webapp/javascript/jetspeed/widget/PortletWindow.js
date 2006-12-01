@@ -18,7 +18,7 @@ dojo.provide("jetspeed.widget.PortletWindow");
 
 dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
-dojo.provide("dojo.widget.FloatingPane");
+dojo.require("dojo.widget.FloatingPane");
 
 jetspeed.widget.PortletWindow = function()
 {
@@ -164,33 +164,33 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     initWindowTitle: function( fragment )
     {
         var windowtitle = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE );
-        if ( windowtitle )
-            this.title = windowtitle;
-        else if ( this.title == null )
-            this.title = "";
-        if ( this.portletInitialized )
-        {
-            // BOZO: update title
-        }
+        this.setPortletTitle( windowtitle );
     },
     initWindowIcon: function( fragment )
     {
-        var windowicon = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_ICON );
-        if ( ! windowicon )
+        if ( this.windowThemeConfig != null && this.windowThemeConfig.windowIconEnabled && this.windowThemeConfig.windowIconPath != null )
         {
-            if ( jetspeed.debugPortletWindowIcons )
+            var windowicon = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_ICON );
+            if ( ! windowicon )
             {
-                windowicon = jetspeed.debugPortletWindowIcons[Math.floor(Math.random()*jetspeed.debugPortletWindowIcons.length)];
+                if ( jetspeed.debugPortletWindowIcons )
+                {
+                    windowicon = jetspeed.debugPortletWindowIcons[Math.floor(Math.random()*jetspeed.debugPortletWindowIcons.length)];
+                }
+                else
+                {
+                    windowicon = "document.gif";
+                }
+            }
+            this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + this.windowThemeConfig.windowIconPath + windowicon ) ;
+            if ( this.portletInitialized && this.titleBarIcon )
+            {
+                this.titleBarIcon.src = this.iconSrc.toString();
             }
         }
-        if ( windowicon )
-            this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/windowicons/" + windowicon ) ;
         else
-            this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/windowicons/document.gif" ) ;
-        if ( this.portletInitialized )
         {
-            if ( this.titleBarIcon )
-                this.titleBarIcon.src = this.iconSrc.toString();
+            this.iconSrc = null;
         }
     },
 
@@ -406,7 +406,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
-		if ( this.iconSrc=="" )
+		if ( this.iconSrc == "" )
         {
 			dojo.dom.removeNode( this.titleBarIcon );
 		}
@@ -1659,6 +1659,17 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         if ( this.portlet )
             this.portlet.postParseAnnotateHtml( this.containerNode );
+    },
+    setPortletTitle: function( newPortletTitle )
+    {
+        if ( newPortletTitle )
+            this.title = newPortletTitle;
+        else
+            this.title = "";
+        if ( this.portletInitialized && this.titleBarText )
+        {
+            this.titleBarText.innerHTML = this.title;
+        }
     },
 
     _splitAndFixPaths_scriptsonly: function( /* String */ s, /* String */ url )

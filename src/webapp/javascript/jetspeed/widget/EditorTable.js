@@ -277,5 +277,39 @@ dojo.lang.extend( jetspeed.widget.EditorTable, {
         if ( invocation != null )
             invocation.proceed();
         return true;
+    },
+
+    dojoDebugTableData: function()
+    {
+        dojo.debug( debugTableData() );
+    },
+    debugTableData: function()
+    {
+        var tTableWidget = this;
+        // format: js_masterdata[index][key]=value (data[index][key]
+        buff = tTableWidget.widgetId + " data:" + "\r\n";
+        for ( var masterDataIndex = 0 ; masterDataIndex < tTableWidget.js_masterdata.length ; masterDataIndex++ )
+        {
+            buff += "[" + masterDataIndex + "]" + "\r\n";
+            var slotsUsed = new Object();
+            for ( var slotKey in tTableWidget.js_masterdata[masterDataIndex] )
+            {
+                buff += "   " + slotKey + "=" + tTableWidget.js_masterdata[masterDataIndex][ slotKey ];
+                if ( slotKey == "__isModified" || slotKey == "__isNew" )
+                    buff += "\r\n";
+                else
+                {
+                    var dataVal = null;
+                    if ( tTableWidget.data.length <= masterDataIndex )
+                       buff += " <out-of-bounds>" + "\r\n";
+                    else
+                    {
+                       dataVal = tTableWidget.data[masterDataIndex][ slotKey ];
+                       buff += " (" + ( dataVal == null ? "null" : dataVal ) + ")" + "\r\n";
+                    }
+                }
+            }
+        }
+        return buff;
     }
 });
