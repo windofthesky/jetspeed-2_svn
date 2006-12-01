@@ -33,6 +33,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 /**
  * 
@@ -78,11 +79,15 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     // Default Action if no action specified
     protected String defaultAction = "getpage";
     
+    // Handy Velocity Escape Tool (is threadsafe)
+    protected EscapeTool velocityEscTool = null;
+    
     // Spring can be used to inject this information
     public AjaxRequestServiceImpl(Map objects, VelocityEngine velocityEngine)
     {
         this.objects = objects;
         this.velocityEngine = velocityEngine;
+        this.velocityEscTool = new EscapeTool();
     }
 
     // Spring can be used to inject this information
@@ -91,7 +96,8 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     {
         this.objects = objects;
         this.velocityEngine = velocityEngine;
-        this.urlParameterName = urlParameterName;        
+        this.urlParameterName = urlParameterName;
+        this.velocityEscTool = new EscapeTool();
     }
     
     // This is the entry point for this service
@@ -180,6 +186,7 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
             }
             
             Context context = new VelocityContext(inputMap);
+            context.put("esc", this.velocityEscTool);
             
             // Check to see if we have a valid context
             if (result)
