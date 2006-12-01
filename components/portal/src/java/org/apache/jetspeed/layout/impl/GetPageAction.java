@@ -35,6 +35,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.common.DisplayName;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format
@@ -110,8 +111,10 @@ public class GetPageAction
                 }
             }
             Map fragSizes = new HashMap();
-            retrieveLayoutFragmentSizes( page.getRootFragment(), fragSizes );
+            Map portletIcons = new HashMap();
+            retrieveFragmentSpecialProperties( requestContext, page.getRootFragment(), fragSizes, portletIcons );
             resultMap.put( SIZES, fragSizes );
+            resultMap.put( "portletIcons", portletIcons );
         } 
         catch (Exception e)
         {
@@ -137,10 +140,14 @@ public class GetPageAction
     }        
     
     
-    protected void retrieveLayoutFragmentSizes( Fragment frag, Map fragSizes )
+    protected void retrieveFragmentSpecialProperties( RequestContext requestContext, Fragment frag, Map fragSizes, Map portletIcons )
     {
-    	if ( frag != null && "layout".equals( frag.getType() ) )
-    	{
+        if ( frag == null )
+        {
+            return;
+        }
+    	if ( fragSizes != null && "layout".equals( frag.getType() ) )
+    	{   // get layout fragment sizes
     		String sizesVal = frag.getProperty( "sizes" );
     		if ( sizesVal == null || sizesVal.length() == 0 )
     		{
@@ -148,7 +155,8 @@ public class GetPageAction
     			if ( layoutName != null && layoutName.length() > 0 )
     			{
     				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
-    				PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(frag.getName());
+    				PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( layoutName );
+                    
     				ParameterSet paramSet = portletDef.getInitParameterSet();
     				Parameter sizesParam = paramSet.get( "sizes" );
     				String sizesParamVal = ( sizesParam == null ) ? null : sizesParam.getValue();
@@ -195,9 +203,29 @@ public class GetPageAction
     			while ( childFragIter.hasNext() )
     			{
     				Fragment childFrag = (Fragment)childFragIter.next();
-    				retrieveLayoutFragmentSizes( childFrag, fragSizes );
+                    retrieveFragmentSpecialProperties( requestContext, childFrag, fragSizes, portletIcons );
     			}
     		}
     	}
-    }   
+        else if ( portletIcons != null && "portlet".equals( frag.getType() ) )
+        {   // get portlet icon and locale specific portlet display name
+            String portletName = frag.getName();
+            if ( portletName != null && portletName.length() > 0 )
+            {
+                PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( portletName );
+                
+                if ( portletIcons != null )
+                {
+                    ParameterSet paramSet = portletDef.getInitParameterSet();
+                    Parameter iconParam = paramSet.get( "portlet-icon" );
+                    String iconParamVal = ( iconParam == null ) ? null : iconParam.getValue();
+                    if ( iconParamVal != null && iconParamVal.length() > 0 )
+                    {
+                        portletIcons.put( frag.getId(), iconParamVal );
+                    }
+                }
+            }
+        }
+    }
+    
 }

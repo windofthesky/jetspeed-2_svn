@@ -674,6 +674,26 @@ public class HeaderAggregatorImpl implements PageAggregator
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
         }
         
+        String windowIconEnabledName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED;
+        String iconEnabledContent = makeJSONBoolean( desktopConfigMap.get( windowIconEnabledName ) );
+        if ( iconEnabledContent != null && iconEnabledContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowIconEnabledName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowIconEnabled = " ).append( iconEnabledContent ).append( ";" ).append( EOL );
+            }
+        }
+        
+        String windowIconPathName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_PATH;
+        String iconPathContent = (String)desktopConfigMap.get( windowIconPathName );
+        if ( iconPathContent != null && iconPathContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowIconPathName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowIconPath = \"" ).append( iconPathContent ).append( "\";" ).append( EOL );
+            }
+        }
+        
         String windowThemeName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_THEME;
         String windowTheme = (String)desktopConfigMap.get( windowThemeName );
         if ( windowTheme != null && windowTheme.length() > 0 && canAddHeaderNamedResourceFragment( windowThemeName, namedResourcesAddedFragmentsDefault, null ) )
