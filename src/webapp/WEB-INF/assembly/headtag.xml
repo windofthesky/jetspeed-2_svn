@@ -75,7 +75,6 @@
                 </entry>
 
                 <!-- window themes -->
-                <!-- NOTE: each window theme may override any of the "desktop.window.action.*" properties in its windowtheme.js file -->
                 <entry key="desktop.window.theme">
                     <!-- default desktop window theme -->
                     <value>tigris</value>
@@ -136,6 +135,17 @@
                 <entry key="desktop.window.action.button.tooltip">
                     <!-- display tooltips for window action buttons -->
                     <value>true</value>
+                </entry>
+
+                <!-- window icons -->
+                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
+                <entry key="desktop.window.icon.enabled">
+                    <!-- display icon for each window -->
+                    <value>true</value>
+                </entry>
+                <entry key="desktop.window.icon.path">
+                    <!-- path to window icons -->
+                    <value>/images/portlets/small/</value> <!-- /javascript/jetspeed/windowicons/ -->
                 </entry>
 
                 <!-- page actions -->
@@ -346,7 +356,7 @@
                     <!-- template: dojo.require( "${value}" ); -->
                     <!-- header section: header.dojo.requires.modules -->
                     <list>
-                        <value>jetspeed.desktop.compatibility</value>
+                        <value>jetspeed.common</value>
                     </list>
                 </entry>
                 <entry key="dojo.modules.namespace">
