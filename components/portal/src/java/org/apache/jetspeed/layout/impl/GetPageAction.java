@@ -214,7 +214,7 @@ public class GetPageAction
             {
                 PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( portletName );
                 
-                if ( portletIcons != null )
+                if ( portletDef != null && portletIcons != null )
                 {
                     ParameterSet paramSet = portletDef.getInitParameterSet();
                     Parameter iconParam = paramSet.get( "portlet-icon" );
@@ -223,6 +223,10 @@ public class GetPageAction
                     {
                         portletIcons.put( frag.getId(), iconParamVal );
                     }
+                }
+                else if ( portletDef == null )
+                {
+                    log.error( "GetPageAction could not obtain PortletDefinition for portlet " + portletName );
                 }
             }
         }
