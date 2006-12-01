@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -35,6 +36,7 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
@@ -61,26 +63,34 @@ public class PortletRendererImpl implements PortletRenderer
     protected PortletContainer container;
     protected PortletWindowAccessor windowAccessor;
     protected PortalStatistics statistics;
+    protected DynamicTitleService addTitleService;
+
+    public PortletRendererImpl(PortletContainer container, 
+                               PortletWindowAccessor windowAccessor,
+                               WorkerMonitor workMonitor,
+                               PortalStatistics statistics,
+                               DynamicTitleService addTitleService)
+    {
+        this.container = container;
+        this.windowAccessor = windowAccessor;
+        this.workMonitor = workMonitor;
+        this.statistics = statistics;
+        this.addTitleService = addTitleService;
+    }
 
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics)
     {
-        this.container = container;
-        this.windowAccessor = windowAccessor;
-        this.workMonitor = workMonitor;
-        this.statistics = statistics;
+        this( container, windowAccessor, workMonitor, statistics, null );
     }
-
+    
     public PortletRendererImpl(PortletContainer container, 
-            PortletWindowAccessor windowAccessor,
-            WorkerMonitor workMonitor)
+                               PortletWindowAccessor windowAccessor,
+                               WorkerMonitor workMonitor)
     {
-        this.container = container;
-        this.windowAccessor = windowAccessor;
-        this.workMonitor = workMonitor;
-        this.statistics = null;
+        this( container, windowAccessor, workMonitor, null );
     }
     
     public void start()
@@ -118,7 +128,7 @@ public class PortletRendererImpl implements PortletRenderer
 
             RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
             rJob.execute();
-
+            addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
         catch (Exception e)
         {
@@ -152,6 +162,7 @@ public class PortletRendererImpl implements PortletRenderer
 
             RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
             rJob.execute();
+            addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
         catch (Exception e)
         {
@@ -185,7 +196,8 @@ public class PortletRendererImpl implements PortletRenderer
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
             RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
-            workMonitor.process(rJob);            
+            workMonitor.process(rJob);
+            addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
         catch (Exception e1)
         {
@@ -259,7 +271,28 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
+        
         return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
-
+    }
+    
+    protected void addTitleToHeader( PortletWindow portletWindow, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response )
+    {
+        if ( this.addTitleService != null )
+        {
+            try
+            {
+                String title = fragment.getTitle();
+                if ( title == null )
+                {
+                    title = addTitleService.getDynamicTitle( portletWindow, request );
+                }
+                log.info( "PortletRenderer title: " + title );
+                response.setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( title ) );
+            }
+            catch (Exception e)
+            {
+                log.error("Unable to reteive portlet title: " + e.getMessage(), e);
+            }
+        }
     }
 }
