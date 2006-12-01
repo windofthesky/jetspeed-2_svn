@@ -135,7 +135,7 @@ function addPortletToPage(theNewPortlet)
 {                                                      
    //dojo.widget.byId("AddPortletDialog").hide();   
    var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
-   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + "$jspage";
+   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + getReturnPagePath();
    jetspeed.addNewPortletDefinition( portletDef, null, pagePath );
    selectorPortlets[theNewPortlet].count = selectorPortlets[theNewPortlet].count + 1;
    var cell = document.getElementById(theNewPortlet);
@@ -220,9 +220,16 @@ function initializePortletSelector()
      prevButton.setAttribute('href', getReturnURL());
      displayPortlets("All");
 }
+function getReturnPagePath()
+{
+   var jsPagePath = jetspeed.url.getQueryParameter( document.location.href, "jspage" );
+   if ( jsPagePath == null )
+      jsPagePath = "";
+   return jsPagePath;
+}
 function getReturnURL()
 {
-   return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED + "/portal" + "$jspage";
+   return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED + jetspeed.url.servletPath() + getReturnPagePath();
 }
 
 window.selectorPortlets = new Array();
