@@ -23,7 +23,13 @@
             <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
         </constructor-arg>        
     </bean>
-    
+
+    <bean id="org.apache.jetspeed.aggregator.PortletAggregatorTitleInHeader" class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader" />
+        </constructor-arg>
+    </bean>
+
     <!-- Portlet Renderer -->
     <bean id="org.apache.jetspeed.aggregator.PortletRenderer" class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start"
         destroy-method="stop">
@@ -39,6 +45,26 @@
         <constructor-arg>
             <ref bean="PortalStatistics" />
         </constructor-arg>                        
+    </bean>
+
+    <!-- Portlet Renderer w/title in http response header -->
+    <bean id="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader" class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start"
+        destroy-method="stop">
+        <constructor-arg>
+            <ref bean="org.apache.pluto.PortletContainer" />
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.aggregator.WorkerMonitor" />
+        </constructor-arg>        
+        <constructor-arg>
+            <ref bean="PortalStatistics" />
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="org.apache.pluto.services.title.DynamicTitleService" />
+        </constructor-arg>
     </bean>
 
     <!-- Aggregation: Page Leave in place until new development completed -->

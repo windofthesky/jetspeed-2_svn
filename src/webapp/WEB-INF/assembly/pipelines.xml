@@ -160,6 +160,15 @@ limitations under the License.
    </constructor-arg>
   </bean> 
 
+  <bean id="portletValveTitleInHeader"
+        class="org.apache.jetspeed.aggregator.PortletValve"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="org.apache.jetspeed.aggregator.PortletAggregatorTitleInHeader"/>
+   </constructor-arg>
+  </bean> 
+
   <bean id="fileServerValve"
         class="org.apache.jetspeed.aggregator.FileServerValve"
         init-method="initialize"
@@ -335,7 +344,7 @@ limitations under the License.
         <ref bean="localizationValve"/>
         <ref bean="profilerValve"/>                        
         <ref bean="containerValve"/>
-        <ref bean="portletValve"/>    
+        <ref bean="portletValveTitleInHeader"/>    
     </list>
     </constructor-arg>
   </bean> 
