@@ -531,6 +531,20 @@ function okToChangeSelectionOrExit(invocation)
     return tTableWidget.okToChangeSelectionOrExit(invocation);
 }
 
+function dojoDebugCurrentTableData()
+{
+    dojo.debug( debugCurrentTableData() );
+}
+function alertDebugCurrentTableData()
+{
+    alert( debugCurrentTableData() );
+}
+function debugCurrentTableData()
+{
+    var tTableWidget = getTableWidget();
+    return tTableWidget.debugTableData();
+}
+
 function addListeners()
 {
     var tabContainer = dojo.widget.byId("mainTabContainer");
