@@ -54,7 +54,10 @@ import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.context.Context;
+import org.apache.velocity.tools.generic.log.LogSystemCommonsLog;
+import org.apache.velocity.tools.view.servlet.WebappLoader;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
@@ -168,21 +171,46 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
      */
     protected void initVelocity(ServletConfig config) throws ServletException
     {
+        VelocityEngine velocity = new VelocityEngine();
+        setVelocityEngine(velocity);
+
+        // register this engine to be the default handler of log messages
+        // if the user points commons-logging to the LogSystemCommonsLog
+        LogSystemCommonsLog.setVelocityEngine(velocity);
+
+        velocity.setApplicationAttribute(SERVLET_CONTEXT_KEY, getServletContext());
+
+        // default to servletlogger, which logs to the servlet engines log
+        velocity.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.tools.view.servlet.ServletLogger");
+
+        // by default, load resources with webapp resource loader
+        velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "webapp");
+        velocity.setProperty("webapp.resource.loader.class", 
+                             WebappLoader.class.getName());
+
+        // Try reading an overriding Velocity configuration
         try
         {
-            Velocity.setApplicationAttribute(SERVLET_CONTEXT_KEY, getServletContext());
-            Velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.tools.view.servlet.ServletLogger");
-            ExtendedProperties configuration = loadConfiguration(getServletConfig());
-            configuration.addProperty("velocimacro.library", "/WEB-INF/jetspeed_macros.vm");
-            configuration.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
-            Velocity.setExtendedProperties(configuration);
-
-            // initialize and return velocity engine
-            Velocity.init();
+            ExtendedProperties p = loadConfiguration(config);
+            p.addProperty("velocimacro.library", "/WEB-INF/jetspeed_macros.vm");
+            p.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
+            velocity.setExtendedProperties(p);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            log.error("initVelocity(): unable to initialize default Velocity engine", e);
+            getServletContext().log("VelocityViewServlet: Unable to read Velocity configuration file: "+e);
+            getServletContext().log("VelocityViewServlet: Using default Velocity configuration.");
+        }   
+
+        // now all is ready - init Velocity
+        try
+        {
+            velocity.init();
+        }
+        catch(Exception e)
+        {
+            getServletContext().log("VelocityViewServlet: PANIC! unable to init() - "+e);
+            throw new ServletException(e);
         }
     }
     
