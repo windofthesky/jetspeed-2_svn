@@ -379,6 +379,14 @@ limitations under the License.
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>        
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-support</artifactId>
+            <version>${spring2.version}</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>        
         </dependency>      
                                     
     </dependencies>
