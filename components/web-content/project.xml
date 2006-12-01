@@ -70,7 +70,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>velocity-tools</id>
-      <version>1.1</version>
+      <version>1.2</version>
       <url>http://jakarta.apache.org/velocity</url>
       <properties>
         <war.bundle>true</war.bundle>
