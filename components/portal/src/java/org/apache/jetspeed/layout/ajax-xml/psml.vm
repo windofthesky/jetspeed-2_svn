@@ -22,13 +22,16 @@
         #traverseFragments($subf)
 		#end
 	#end
-	#if($f.Type == "portlet")
+#if($f.Type == "portlet")
 	#foreach ($action in $f.decoration.actions)
      <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
-#end
+	#end
 	<mode>$f.decoration.getCurrentModeAction()</mode>
 	<state>$f.decoration.getCurrentStateAction()</state>
-	#end
+	#if($portletIcons.get($f.Id))
+    <icon>$portletIcons.get($f.Id)</icon>
+    #end
+#end
     </fragment>                                		
 #end
 
@@ -43,8 +46,8 @@
   />
   <name>$page.Name</name>
   <path>$page.Path</path>
-  <title>$page.Title</title>
-  <short-title>$page.ShortTitle</short-title>
+  <title>$esc.xml($page.Title)</title>
+  <short-title>$esc.xml($page.ShortTitle)</short-title>
   
 #foreach ($meta in $page.Metadata.Fields)
 	<metadata name="$meta.Name" xml:lang="$meta.Locale.Language">$meta.Value</metadata>

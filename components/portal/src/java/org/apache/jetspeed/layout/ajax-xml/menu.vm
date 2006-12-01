@@ -4,11 +4,11 @@ ${_indent}<menu>
 ${_indent}    <name>$_menu.getName()</name>
 #end
 #if("$!_locale" != "")
-${_indent}    <title>$_menu.getTitle($_locale)</title>
-${_indent}    <short-title>$_menu.getShortTitle($_locale)</short-title>
+${_indent}    <title>$esc.xml($_menu.getTitle($_locale))</title>
+${_indent}    <short-title>$esc.xml($_menu.getShortTitle($_locale))</short-title>
 #else
-${_indent}    <title>$_menu.getTitle()</title>
-${_indent}    <short-title>$_menu.getShortTitle()</short-title>
+${_indent}    <title>$esc.xml($_menu.getTitle())</title>
+${_indent}    <short-title>$esc.xml($_menu.getShortTitle())</short-title>
 #end
 #if("$!_menu.getSkin()" != "")
 ${_indent}    <skin>$_menu.getSkin()</skin>
@@ -27,11 +27,11 @@ ${_indent}    <selected>false</selected>
 ${_indent}    <option>
 ${_indent}        <type>$element.getType()</type>
 #if("$!_locale" != "")
-${_indent}        <title>$element.getTitle($_locale)</title>
-${_indent}        <short-title>$element.getShortTitle($_locale)</short-title>
+${_indent}        <title>$esc.xml($element.getTitle($_locale))</title>
+${_indent}        <short-title>$esc.xml($element.getShortTitle($_locale))</short-title>
 #else
-${_indent}        <title>$element.getTitle()</title>
-${_indent}        <short-title>$element.getShortTitle()</short-title>
+${_indent}        <title>$esc.xml($element.getTitle())</title>
+${_indent}        <short-title>$esc.xml($element.getShortTitle())</short-title>
 #end
 #if("$!element.getSkin()" != "")
 ${_indent}        <skin>$element.getSkin()</skin>
@@ -53,17 +53,17 @@ ${_indent}    </option>
 ${_indent}    <separator>
 #if("$!_locale" != "")
 #if("$!element.getTitle($_locale)" != "")
-${_indent}        <title>$element.getTitle($_locale)</title>
+${_indent}        <title>$esc.xml($element.getTitle($_locale))</title>
 #end
 #if("$!element.getText($_locale)" != "")
-${_indent}        <text>$element.getText($_locale)</text>
+${_indent}        <text>$esc.xml($element.getText($_locale))</text>
 #end
 #else
 #if("$!element.getTitle()" != "")
-${_indent}        <title>$element.getTitle()</title>
+${_indent}        <title>$esc.xml($element.getTitle())</title>
 #end
 #if("$!element.getText()" != "")
-${_indent}        <text>$element.getText()</text>
+${_indent}        <text>$esc.xml($element.getText())</text>
 #end
 #end
 #if("$!element.getSkin()" != "")
