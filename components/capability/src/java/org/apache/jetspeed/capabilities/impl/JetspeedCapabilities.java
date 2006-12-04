@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.CapabilitiesException;
 import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
@@ -785,7 +786,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.capabilities.Capabilities#storeMediaType(MediaType)
      */
-    public void storeMediaType(MediaType mediaType) throws Exception
+    public void storeMediaType(MediaType mediaType) throws CapabilitiesException
     {
 
     	//TODO: change exception to better indicate cause
@@ -798,7 +799,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * @see org.apache.jetspeed.capabilities.Capabilities#deleteMediaType(MediaType)
      */
     public void deleteMediaType(MediaType mediaType)
-            throws Exception
+            throws CapabilitiesException
     {
     	//TODO: change exception to better indicate cause
         getPersistenceBrokerTemplate().delete(mediaType);
@@ -810,7 +811,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.capabilities.Capabilities#storeCapability(MediaType)
      */
-    public void storeCapability(Capability capability) throws Exception
+    public void storeCapability(Capability capability) throws CapabilitiesException
     {
 
     	//TODO: change exception to better indicate cause
@@ -823,7 +824,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * @see org.apache.jetspeed.capabilities.Capabilities#deleteCapability(Capability)
      */
     public void deleteCapability(Capability capability)
-            throws Exception
+            throws CapabilitiesException
     {
     	//TODO: change exception to better indicate cause
         getPersistenceBrokerTemplate().delete(capability);
@@ -834,7 +835,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.capabilities.Capabilities#storeMimeType(MimeType)
      */
-    public void storeMimeType(MimeType mimeType) throws Exception
+    public void storeMimeType(MimeType mimeType) throws CapabilitiesException
     {
 
     	//TODO: change exception to better indicate cause
@@ -847,7 +848,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * @see org.apache.jetspeed.capabilities.Capabilities#deleteMimeType(MimeType)
      */
     public void deleteMimeType(MimeType mimeType)
-            throws Exception
+            throws CapabilitiesException
     {
     	//TODO: change exception to better indicate cause
         getPersistenceBrokerTemplate().delete(mimeType);
@@ -861,7 +862,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * 
      * @see org.apache.jetspeed.capabilities.Capabilities#storeClient(MediaType)
      */
-    public void storeClient(Client client) throws Exception
+    public void storeClient(Client client) throws CapabilitiesException
     {
 
     	//TODO: change exception to better indicate cause
@@ -874,7 +875,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * @see org.apache.jetspeed.capabilities.Capabilities#deleteClient(Client)
      */
     public void deleteClient(Client client)
-            throws Exception
+            throws CapabilitiesException
     {
     	//TODO: change exception to better indicate cause
         getPersistenceBrokerTemplate().delete(client);
