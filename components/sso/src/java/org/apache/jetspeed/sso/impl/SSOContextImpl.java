@@ -16,6 +16,8 @@
 
 package org.apache.jetspeed.sso.impl;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.sso.SSOContext;
 
 /**
@@ -25,8 +27,8 @@ import org.apache.jetspeed.sso.SSOContext;
 * @author <a href="mailto:rogerrut@apache.org">Roger Ruttimann</a>
 * @version $Id$
 */
-public class SSOContextImpl implements SSOContext {
-
+public class SSOContextImpl implements SSOContext, Serializable
+{
 	private long	remotePrincipalId;
 	private String remoteCredential;
 	private String remotePrincipal;
