@@ -207,8 +207,8 @@ public interface Capabilities
      * 
      * @param mediaType valid mediatype object
      */
-    public void storeMediaType(MediaType mediaType) throws Exception;
-    	//TODO: change exception to better indicate cause
+    public void storeMediaType(MediaType mediaType) throws CapabilitiesException;
+    	//TODO: change CapabilitiesException to better indicate cause
  
 	/**
      * delete existing media type from backend storage
@@ -216,7 +216,7 @@ public interface Capabilities
      * @param mediaType valid mediatype object
      */
     public void deleteMediaType(MediaType mediaType)
-            throws Exception;
+            throws CapabilitiesException;
 
 	
 	/**
@@ -224,7 +224,7 @@ public interface Capabilities
      * 
      * @param capability valid capability object
      */
-    public void storeCapability(Capability capability) throws Exception;
+    public void storeCapability(Capability capability) throws CapabilitiesException;
 
     /**
      * delete existing capability from backend storage
@@ -232,15 +232,14 @@ public interface Capabilities
      * @param capability valid capability object
      */
     public void deleteCapability(Capability capability)
-            throws Exception;
+            throws CapabilitiesException;
 
 	/**
      * Save mime type to backend storage
      * 
      * @param mimeType valid mimetype object
      */
-    public void storeMimeType(MimeType mimeType) throws Exception;
-    	//TODO: change exception to better indicate cause
+    public void storeMimeType(MimeType mimeType) throws CapabilitiesException;
  
 	/**
      * delete existing mime type from backend storage
@@ -248,7 +247,7 @@ public interface Capabilities
      * @param mimeType valid mimetype object
      */
     public void deleteMimeType(MimeType mimeType)
-            throws Exception;
+            throws CapabilitiesException;
 
 
 	
@@ -257,7 +256,7 @@ public interface Capabilities
      * 
      * @param client valid Client object
      */
-    public void storeClient(Client client) throws Exception;
+    public void storeClient(Client client) throws CapabilitiesException;
 
     /**
      * delete existing client from backend storage
@@ -265,6 +264,6 @@ public interface Capabilities
      * @param client valid client object
      */
     public void deleteClient(Client client)
-            throws Exception;
+            throws CapabilitiesException;
 
 }
