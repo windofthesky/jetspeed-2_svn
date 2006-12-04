@@ -561,13 +561,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 userManager.removeUser(userName);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
-                
-                // TODO: remove ALL user from PSML
-                Page page = pageManager.getPage(Folder.USER_FOLDER + userName + "/default-page.psml");
-                pageManager.removePage(page);
-                
-                Folder folder = pageManager.getFolder(Folder.USER_FOLDER + userName);
-                pageManager.removeFolder(folder);
+                                
+                // TODO: handle subsite roots
+                if (pageManager.folderExists(Folder.USER_FOLDER + userName))
+                {
+                    Folder folder = pageManager.getFolder(Folder.USER_FOLDER + userName);                    
+                    pageManager.removeFolder(folder);
+                }
                             
                 // remove selected user from USERS_TOPIC
                 PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
