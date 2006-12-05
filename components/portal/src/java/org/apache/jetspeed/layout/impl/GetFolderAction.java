@@ -23,6 +23,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
@@ -37,7 +38,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @version $Id: $
  */
 public class GetFolderAction 
-    extends BasePortletAction 
+    extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(GetFolderAction.class);
@@ -66,6 +67,7 @@ public class GetFolderAction
             Folder folder = retrieveFolder(requestContext);            
             resultMap.put(STATUS, status);
             resultMap.put(FOLDER, folder);
+            putSecurityInformation(resultMap, folder);
         } 
         catch (Exception e)
         {

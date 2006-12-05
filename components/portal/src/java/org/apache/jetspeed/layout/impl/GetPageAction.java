@@ -47,7 +47,7 @@ import org.apache.pluto.om.common.DisplayName;
  * @version $Id: $
  */
 public class GetPageAction 
-    extends BasePortletAction 
+    extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(GetPageAction.class);
@@ -93,6 +93,7 @@ public class GetPageAction
             }
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
+            putSecurityInformation(resultMap, page);                        
             String fragments = getActionParameter(requestContext, FRAGMENTS);
             if (fragments == null)
             {

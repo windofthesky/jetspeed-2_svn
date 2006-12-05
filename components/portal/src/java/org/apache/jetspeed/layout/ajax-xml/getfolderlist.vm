@@ -1,0 +1,18 @@
+[
+#set ($fcount = 0)
+#foreach($f in $folders)    
+#if($fcount > 0),#end{isFolder: true, object: "Folder", widgetId: "$f.Path", title: "$f.Name", childIconSrc: "/j2-admin/images/folder.gif"}
+#set ($fcount = $fcount + 1)
+#end        
+#foreach($p in $pages)    
+#if($fcount > 0),#end{isFolder: false, object: "Page", widgetId: "$p.Path", title: "$p.Name", childIconSrc: "/j2-admin/images/page.gif"}
+#set ($fcount = $fcount + 1)
+#end        
+#foreach($l in $links)    
+#if($fcount > 0),#end{isFolder: false, object: "Link", widgetId: "$l.Path", title: "$l.Name", childIconSrc: "/j2-admin/images/link.gif"}
+#set ($fcount = $fcount + 1)
+#end        
+]
+
+ 
+ 

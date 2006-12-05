@@ -26,8 +26,8 @@
 	#foreach ($action in $f.decoration.actions)
      <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
 	#end
-	<mode>$f.decoration.getCurrentModeAction()</mode>
-	<state>$f.decoration.getCurrentStateAction()</state>
+	<mode>$!f.decoration.getCurrentModeAction()</mode>
+	<state>$!f.decoration.getCurrentStateAction()</state>
 	#if($portletIcons.get($f.Id))
     <icon>$portletIcons.get($f.Id)</icon>
     #end
@@ -41,16 +41,16 @@
     
 <page hidden='$page.Hidden'>
   <defaults
-     layout-decorator='$page.getDefaultDecorator("layout")'
-     portlet-decorator='$page.getDefaultDecorator("portlet")'
+     layout-decorator='$!page.getDefaultDecorator("layout")'
+     portlet-decorator='$!page.getDefaultDecorator("portlet")'
+     theme='$!page.Skin'     
   />
   <name>$page.Name</name>
   <path>$page.Path</path>
-  <title>$esc.xml($page.Title)</title>
-  <short-title>$esc.xml($page.ShortTitle)</short-title>
-  
+  <title>$esc.xml($!page.Title)</title>
+  <short-title>$esc.xml($!page.ShortTitle)</short-title>
 #foreach ($meta in $page.Metadata.Fields)
-	<metadata name="$meta.Name" xml:lang="$meta.Locale.Language">$meta.Value</metadata>
+	<metadata name="$meta.Name" xml:lang="$meta.Locale.toString()">$!meta.Value</metadata>
 #end
 #foreach ($action in $page.getRootContentFragment().decoration.actions)
      <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
@@ -59,7 +59,24 @@
 #if ($fragments == "true")    
   #traverseFragments($page.RootFragment)
 #end
-  
+#if ($securityRefs)
+#foreach ($sec in $securityRefs)
+      	<security-ref>$sec</security-ref>
+#end
+#end
+#if ($securityOwner)
+      <security-owner>$securityOwner</security-owner>
+#end
+#if ($securityDefs)
+#foreach ($sec in $securityDefs)
+      	<security-def id="$velocityCount">
+      	   <permissions>$!sec.Permissions</permissions>
+      	   <roles>$!sec.Roles</roles>
+      	   <groups>$!sec.Groups</groups>
+      	   <users>$!sec.Users</users>      	   
+      	</security-def>
+#end  
+#end
 </page>    
 
 </js>

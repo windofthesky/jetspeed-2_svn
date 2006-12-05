@@ -1,9 +1,34 @@
 <js>
     <status>$status</status>
     <action>$action</action>    
-    <link>
-      <path>$link.Path</path>
-		      <title>$link.Title</title>
-		      <shortTitle>$link.ShortTitle</shortTitle>		      
+    <link hidden="$!link.isHidden()">
+      <name>$!link.Name</name>
+      <path>$!link.Path</path>
+		      <title>$!link.Title</title>
+		      <short-title>$!link.ShortTitle</short-title>		      
+		      <url>$!link.Url</url>
+		      <target>$!link.Target</target>
+      <version>$!link.Version</version>
+#foreach ($meta in $link.Metadata.Fields)
+	      <metadata name="$meta.Name" xml:lang="$meta.Locale.toString()">$!meta.Value</metadata>
+#end
+#if ($securityRefs)
+#foreach ($sec in $securityRefs)
+      	<security-ref>$sec</security-ref>
+#end
+#end
+#if ($securityOwner)
+      <security-owner>$securityOwner</security-owner>
+#end
+#if ($securityDefs)
+#foreach ($sec in $securityDefs)
+      	<security-def id="$velocityCount">
+      	   <permissions>$!sec.Permissions</permissions>
+      	   <roles>$!sec.Roles</roles>
+      	   <groups>$!sec.Groups</groups>
+      	   <users>$!sec.Users</users>      	   
+      	</security-def>
+#end  
+#end
     </link>    
 </js>

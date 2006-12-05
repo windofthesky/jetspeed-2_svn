@@ -1,17 +1,40 @@
 <js>
     <status>$!status</status>
     <action>$!action</action>    
-    <folder>
-      <path>$!folder.Path</path>
+    <folder hidden="$!folder.isHidden()">
+    <defaults
+       layout-decorator='$!folder.getDefaultDecorator("layout")'
+       portlet-decorator='$!folder.getDefaultDecorator("portlet")'
+       theme='$!folder.Skin'
+     />    
       <name>$!folder.Name</name>
+      <path>$!folder.Path</path>      
       <url>$!folder.Url</url>
       <hidden>$!folder.isHidden()</hidden>
       <reserved>$!folder.isReserved()</reserved>
 		      <title>$!folder.Title</title>
-		      <shortTitle>$!folder.ShortTitle</shortTitle>		      
-		      <pageDecorator>$!folder.getDefaultDecorator("layout")</pageDecorator>
-		      <portletDecorator>$!folder.getDefaultDecorator("portlet")</portletDecorator>		      
-		      <defaultPage>$!folder.DefaultPage</defaultPage>
-		      <desktopTheme>$!folder.Skin</desktopTheme>
+		      <short-title>$!folder.ShortTitle</short-title>		      		      
+      <default-page>$!folder.DefaultPage</default-page>
+#foreach ($meta in $folder.Metadata.Fields)
+	<metadata name="$meta.Name" xml:lang="$meta.Locale.toString()">$!meta.Value</metadata>
+#end		      
+#if ($securityRefs)
+#foreach ($sec in $securityRefs)
+      	<security-ref>$sec</security-ref>
+#end
+#end
+#if ($securityOwner)
+      <security-owner>$securityOwner</security-owner>
+#end
+#if ($securityDefs)
+#foreach ($sec in $securityDefs)
+      	<security-def id="$velocityCount">
+      	   <permissions>$!sec.Permissions</permissions>
+      	   <roles>$!sec.Roles</roles>
+      	   <groups>$!sec.Groups</groups>
+      	   <users>$!sec.Users</users>      	   
+      	</security-def>
+#end  
+#end
     </folder>    
 </js>

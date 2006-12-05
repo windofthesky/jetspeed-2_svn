@@ -167,7 +167,18 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
             RequestContext requestContext, boolean actionSuccessFlag)
     {
         // Response will always be text/xml
-        requestContext.getResponse().setContentType(CONTENT_TYPE);
+        String format = requestContext.getRequestParameter("format");
+        if (format == null)
+        {
+            requestContext.getResponse().setContentType(CONTENT_TYPE);
+        }
+        else
+        {
+            if (format.equals("json"))
+            {
+                requestContext.getResponse().setContentType("text/json");
+            }
+        }
 
         try
         {

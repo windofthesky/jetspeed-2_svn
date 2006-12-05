@@ -55,6 +55,16 @@ public abstract class BasePortletAction
     }
 
     public BasePortletAction(String template, 
+            String errorTemplate, 
+            PageManager pageManager)
+    {
+        this.template = template;
+        this.errorTemplate = errorTemplate;
+        this.pageManager = pageManager;
+        this.securityBehavior = null;
+    }
+    
+    public BasePortletAction(String template, 
                              String errorTemplate, 
                              PageManager pageManager,
                              PortletActionSecurityBehavior securityBehavior)

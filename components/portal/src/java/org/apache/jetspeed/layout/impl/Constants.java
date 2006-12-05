@@ -77,6 +77,10 @@ public interface Constants
     public static final String FRAGMENTS = "fragments";
     public static final String TYPE = "type";
     public static final String FORMAT = "format";
+    public static final String METADATA = "metadata";
+    public static final String SECURITY_REFS = "securityRefs";
+    public static final String SECURITY_DEFS = "securityDefs";
+    public static final String SECURITY_OWNER = "securityOwner";
     
 	// Move types
 	public static final int ABS = 1;

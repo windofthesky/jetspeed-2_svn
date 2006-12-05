@@ -53,14 +53,12 @@ public class SecurityConstraintsAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(SecurityConstraintsAction.class);
-    protected PageManager pm = null;
 
     public SecurityConstraintsAction(String template, 
                                      String errorTemplate, 
                                      PageManager pm)
     {
-        super(template, errorTemplate, null); 
-        this.pm = pm;
+        super(template, errorTemplate, pm); 
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -128,7 +126,7 @@ public class SecurityConstraintsAction
         
         try
         {
-            PageSecurity pageSecurity = pm.getPageSecurity();        
+            PageSecurity pageSecurity = pageManager.getPageSecurity();        
             SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(name);
             if (def == null)
             {
@@ -137,7 +135,7 @@ public class SecurityConstraintsAction
             List defs = pageSecurity.getSecurityConstraintsDefs();
             defs.remove(def);
             pageSecurity.setSecurityConstraintsDefs(defs);
-            pm.updatePageSecurity(pageSecurity);
+            pageManager.updatePageSecurity(pageSecurity);
         }
         catch (Exception e)
         {
@@ -161,13 +159,12 @@ public class SecurityConstraintsAction
             Document document = saxBuilder.build(reader);
             Element root = document.getRootElement();
             String name = root.getAttribute("name").getValue();
-            System.out.println("name = " + name);
-            PageSecurity pageSecurity = pm.getPageSecurity();
+            PageSecurity pageSecurity = pageManager.getPageSecurity();
             SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(name);
             int defsSize = 0;
             if (def == null)
             {
-                def = pm.newSecurityConstraintsDef();
+                def = pageManager.newSecurityConstraintsDef();
                 def.setName(name);
                 added = true;
             }
@@ -210,7 +207,7 @@ public class SecurityConstraintsAction
                 for (int ix = min; ix < xmlSize; ix++)
                 {
                     Element xmlConstraint = (Element)xmlConstraints.get(ix);
-                    SecurityConstraint constraint =  pm.newPageSecuritySecurityConstraint();                    
+                    SecurityConstraint constraint =  pageManager.newPageSecuritySecurityConstraint();                    
                     updateConstraintValues(xmlConstraint, constraint);
                     constraints.add(constraint);                    
                     count++;
@@ -221,7 +218,7 @@ public class SecurityConstraintsAction
                 pageSecurity.getSecurityConstraintsDefs().add(def);
                 pageSecurity.setSecurityConstraintsDefs(pageSecurity.getSecurityConstraintsDefs());
             }
-            pm.updatePageSecurity(pageSecurity);
+            pageManager.updatePageSecurity(pageSecurity);
         }
         catch (Exception e)
         {
@@ -270,7 +267,7 @@ public class SecurityConstraintsAction
         
         try
         {
-            PageSecurity pageSecurity = pm.getPageSecurity();        
+            PageSecurity pageSecurity = pageManager.getPageSecurity();        
             List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
             if (!globals.contains(name))
             {
@@ -278,7 +275,7 @@ public class SecurityConstraintsAction
             }
             globals.remove(name);
             pageSecurity.setGlobalSecurityConstraintsRefs(globals);
-            pm.updatePageSecurity(pageSecurity);
+            pageManager.updatePageSecurity(pageSecurity);
             count++;
         }
         catch (Exception e)
@@ -299,7 +296,7 @@ public class SecurityConstraintsAction
         
         try
         {
-            PageSecurity pageSecurity = pm.getPageSecurity();        
+            PageSecurity pageSecurity = pageManager.getPageSecurity();        
             List globals = pageSecurity.getGlobalSecurityConstraintsRefs();
             if (pageSecurity.getSecurityConstraintsDef(name) == null)
             {
@@ -312,7 +309,7 @@ public class SecurityConstraintsAction
             }
             globals.add(name);
             pageSecurity.setGlobalSecurityConstraintsRefs(globals);
-            pm.updatePageSecurity(pageSecurity);
+            pageManager.updatePageSecurity(pageSecurity);
             count++;
         }
         catch (Exception e)

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,31 +25,30 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Retrieve a single link
+ * Get the immediate contents of a folder in JSON format 
  *
  * AJAX Parameters: 
- *    link = the path of the link to retrieve information on 
+ *    folder: full path to the folder 
  *    
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class GetLinkAction 
+public class GetFolderListAction 
     extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetLinkAction.class);
+    protected Log log = LogFactory.getLog(GetThemesAction.class);
     
-    public GetLinkAction(String template, 
-                             String errorTemplate,
-                             PageManager pageManager,
-                             PortletActionSecurityBehavior securityBehavior)
+    public GetFolderListAction(String template, 
+            String errorTemplate,
+            PageManager pageManager,
+            PortletActionSecurityBehavior securityBehavior)
     {
-        super(template, errorTemplate, pageManager, securityBehavior);
+        super(template, errorTemplate, pageManager, securityBehavior);        
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -57,40 +57,52 @@ public class GetLinkAction
         String status = "success";
         try
         {
-            resultMap.put(ACTION, "getlink");
+            resultMap.put(ACTION, "getfolderlist");
             if (false == checkAccess(requestContext, JetspeedActions.VIEW))
             {
                     success = false;
-                    resultMap.put(REASON, "Insufficient access to get link");
+                    resultMap.put(REASON, "Insufficient access to get folderlist");
                     return success;
-            }                                    
-            Link link = retrieveLink(requestContext);            
+            }                     
+            String data = getActionParameter(requestContext, "data");
+            StringTokenizer tokenizer = new StringTokenizer(data, "[{:\"");
+            String folderName = null;            
+            while (tokenizer.hasMoreTokens())
+            {
+                String token = tokenizer.nextToken();
+                if (token.equals("widgetId"))
+                {
+                    folderName = tokenizer.nextToken();
+                    break;
+                }
+            }
+            String format = getActionParameter(requestContext, FORMAT);
+            if (format == null)
+                format = "json";
+            if (folderName == null)
+            {
+                success = false;
+                resultMap.put(REASON, "Folder name not found.");
+                return success;                
+            }
+            resultMap.put(FORMAT, format);
+            Folder folder = pageManager.getFolder(folderName);
+            resultMap.put(FOLDER, folder);
+            resultMap.put("folders", folder.getFolders().iterator());
+            resultMap.put("pages", folder.getPages().iterator());
+            resultMap.put("links", folder.getLinks().iterator());
             resultMap.put(STATUS, status);            
-            resultMap.put(LINK, link);
-            // resultMap.put(METADATA, link.getMetadata().getFields());
-            putSecurityInformation(resultMap, link);            
         } 
         catch (Exception e)
         {
             // Log the exception
-            log.error("exception while getting link info", e);
-            resultMap.put(REASON, e.getMessage());
+            log.error("exception while getting theme info", e);
             // Return a failure indicator
             success = false;
         }
 
         return success;
-	}
+    }
     
-    protected Link retrieveLink(RequestContext requestContext)
-    throws Exception
-    {        
-        String linkName = getActionParameter(requestContext, LINK);
-        if (linkName == null)
-        {
-            linkName = "/";
-        }
-        Link link = pageManager.getLink(linkName);
-        return link;
-    }        
+    
 }
