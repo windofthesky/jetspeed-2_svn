@@ -379,12 +379,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         }
                         return path;
                     }
-                    else
-                    {
-                        // interpret null path as using default
-                        // locator request path
-                        return requestPath;
-                    }
                 }
             }
         }
