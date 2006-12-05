@@ -288,7 +288,23 @@
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		        
 </bean>
-    
+
+<bean id="AjaxGetFolderList"
+    class="org.apache.jetspeed.layout.impl.GetFolderListAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getfolderlist.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
+</bean>
+        
 <bean id="AjaxGetThemes"
     class="org.apache.jetspeed.layout.impl.GetThemesAction">
     <constructor-arg index="0">
@@ -416,7 +432,46 @@
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
 </bean>
-        
+
+<bean id="AjaxUpdateFolder"
+    class="org.apache.jetspeed.layout.impl.UpdateFolderAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+</bean>
+
+<bean id="AjaxUpdatePage"
+    class="org.apache.jetspeed.layout.impl.UpdatePageAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+</bean>
+                
+<bean id="AjaxUpdateLink"
+    class="org.apache.jetspeed.layout.impl.UpdateLinkAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>    
+</bean>
+    
 <bean id="AjaxActionMap" class="java.util.HashMap">
     <constructor-arg index="0">
         <map>
@@ -459,6 +514,9 @@
             <entry key="getlink">
                 <ref bean="AjaxGetLink"/>
             </entry>			                        
+            <entry key="getfolderlist">
+                <ref bean="AjaxGetFolderList"/>
+            </entry>			                        
             <entry key="getthemes">
                 <ref bean="AjaxGetThemes"/>
             </entry>
@@ -479,7 +537,16 @@
             </entry>			                        
             <entry key="constraints">
                 <ref bean="AjaxSecurityConstraints"/>
-            </entry>			                                    
+            </entry>			          
+            <entry key="updatefolder">
+                <ref bean="AjaxUpdateFolder"/>                
+            </entry>                          
+            <entry key="updatepage">
+                <ref bean="AjaxUpdatePage"/>                
+            </entry>              
+            <entry key="updatelink">
+                <ref bean="AjaxUpdateLink"/>                
+            </entry>                                                              
         </map>
     </constructor-arg>    
 </bean>    

@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -57,8 +58,8 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     }
 
     public LanguageSetImpl()
-    {
-        this(new ArrayList());
+    {        
+        this(Collections.synchronizedList(new ArrayList()));
     }
 
     /**
@@ -75,13 +76,15 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     public Iterator getLocales()
     {
         HashSet localSet = new HashSet();
-        Iterator itr = innerCollection.iterator();
-        while (itr.hasNext())
+        synchronized (innerCollection)
         {
-            Language lang = (Language) itr.next();
-            localSet.add(lang.getLocale());
+            Iterator itr = innerCollection.iterator();
+            while (itr.hasNext())
+            {
+                Language lang = (Language) itr.next();
+                localSet.add(lang.getLocale());
+            }
         }
-
         return localSet.iterator();
     }
 
@@ -91,26 +94,28 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     public Language get( Locale locale )
     {
         LanguageImpl fallback = null;
-        Iterator searchItr = innerCollection.iterator();
-        while (searchItr.hasNext())
+        synchronized(innerCollection)
         {
-            LanguageImpl lang = (LanguageImpl)searchItr.next();
-
-            if (lang.getLocale().equals(locale))
+            Iterator searchItr = innerCollection.iterator();
+            while (searchItr.hasNext())
             {
-                if (resources != null && lang.getParentResourceBundle() == null)
+                LanguageImpl lang = (LanguageImpl)searchItr.next();
+    
+                if (lang.getLocale().equals(locale))
                 {
-                    lang.setResourceBundle(loadResourceBundle(lang.getLocale()));
+                    if (resources != null && lang.getParentResourceBundle() == null)
+                    {
+                        lang.setResourceBundle(loadResourceBundle(lang.getLocale()));
+                    }
+                    return lang;
                 }
-                return lang;
+                else if (lang.getLocale().getLanguage().equals(locale.getLanguage()))
+                {
+                    fallback = lang;
+                }
+    
             }
-            else if (lang.getLocale().getLanguage().equals(locale.getLanguage()))
-            {
-                fallback = lang;
-            }
-
         }
-        
         if ( fallback == null )
         {
             if ( getDefaultLocale().equals(locale) )
@@ -165,14 +170,17 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
                 ((MutableLanguage) o).setLocale(getDefaultLocale());
             }
 
-            Iterator ite = innerCollection.iterator();
-            while (ite.hasNext())
+            synchronized (innerCollection)
             {
-                Language lang = (Language) ite.next();
-                if (lang.equals(language))
+                Iterator ite = innerCollection.iterator();
+                while (ite.hasNext())
                 {
-                    innerCollection.remove(lang);
-                    return innerCollection.add(o);
+                    Language lang = (Language) ite.next();
+                    if (lang.equals(language))
+                    {
+                        innerCollection.remove(lang);
+                        return innerCollection.add(o);
+                    }
                 }
             }
             return innerCollection.add(o);

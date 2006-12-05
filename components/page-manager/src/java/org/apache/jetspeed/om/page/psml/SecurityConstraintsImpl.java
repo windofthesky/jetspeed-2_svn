@@ -16,18 +16,16 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.page.PageNotFoundException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>
@@ -88,6 +86,10 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public List getSecurityConstraints()
     {
+        if (this.constraints == null)
+        {
+            this.constraints = Collections.synchronizedList(new ArrayList());
+        }                
         return constraints;
     }
     
@@ -100,7 +102,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @param constraints
      */
     public void setSecurityConstraints(List constraints)
-    {
+    {        
         this.constraints = constraints;
     }
 
@@ -114,6 +116,10 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      */
     public List getSecurityConstraintsRefs()
     {
+        if (this.constraintsRefs == null)
+        {
+            this.constraintsRefs = Collections.synchronizedList(new ArrayList());
+        }        
         return constraintsRefs;
     }
     
@@ -241,7 +247,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // construct new ordered security constraints list
-        allConstraints = new ArrayList(8);
+        allConstraints = Collections.synchronizedList(new ArrayList(8));
 
         // add any defined security constraints
         if (constraints != null)
@@ -302,7 +308,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
                 {
                     if (constraints == null)
                     {
-                        constraints = new ArrayList(constraintsRefs.size());
+                        constraints = Collections.synchronizedList(new ArrayList(constraintsRefs.size()));
                     }
                     constraints.addAll(securityConstraintsDef.getSecurityConstraints());
                 }

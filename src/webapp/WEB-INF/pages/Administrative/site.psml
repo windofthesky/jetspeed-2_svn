@@ -25,14 +25,8 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">Portal頁面管理</metadata>
       
 
-  <fragment id="js-site" type="layout" name="jetspeed-layouts::VelocityTwoColumns2575">
-    <fragment id="pdb-1" type="portlet" name="j2-admin::PortalSiteBrowser" >
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>
-    <fragment id="psd-1" type="portlet" name="j2-admin::PortalSiteDetail" >
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
+  <fragment id="js-site2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="psm-10" type="portlet" name="j2-admin::PortalSiteManager" >
     </fragment>
   </fragment>
 </page>
