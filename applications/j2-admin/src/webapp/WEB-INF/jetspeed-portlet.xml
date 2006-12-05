@@ -52,6 +52,7 @@ limitations under the License.
 	    <js:service name='SearchComponent'/>                
         <js:service name="SSO" />                 
         <js:service name='UserManager'/>     
+        <js:service name='DecorationFactory'/>        
 	</js:services>
 
 </portlet-app>

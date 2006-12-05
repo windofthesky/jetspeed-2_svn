@@ -838,84 +838,7 @@ limitations under the License.
       <short-title>PAD</short-title>
       <keywords>admin,registry,applications,apps,PAM</keywords>
     </portlet-info>
-</portlet>
-    
-<!-- TODO: delete this when new site completed -->
-<portlet id="PortalSiteBrowser">
-    <description>The Portal Site Browser displays a hierarchical view of the portal site. From here you can add, edit, and delete folders and pages.</description>
-    <description xml:lang="ja">ポータルサイトブラウザは、ポータルサイトの階層的な表示をすることができます。このポートレットにより、フォルダとページの追加・編集・削除することができます。</description>
-    <description xml:lang="zh">树状显示门户站点地图。你可以添加、修改、删除目录或者页面。</description>
-    <description xml:lang="zh-TW">樹狀顯示門戶站點地圖。你可以添加、修改、刪除目錄或者頁面。</description>    
-    <portlet-name>PortalSiteBrowser</portlet-name>
-    <display-name>Portal Site Browser</display-name>
-    <display-name xml:lang="ja">ポータルサイトブラウザ</display-name>
-    <display-name xml:lang="zh">门户站点浏览器</display-name>
-    <display-name xml:lang="zh-TW">門戶站點流覽器</display-name>
-    <portlet-class>org.apache.jetspeed.portlets.site.SiteBrowserPortlet</portlet-class>
-    <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/view/site/site-browser.jsp</value>
-     </init-param>   
-    <init-param>
-        <name>portlet-icon</name>
-        <value>user-home.png</value>
-    </init-param>                                                                                            
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
-    </supports>
-    <portlet-info>
-      <title>Portal Site Browser</title>
-      <short-title>Site</short-title>
-      <keywords>admin,site,portal,pages,folders</keywords>
-    </portlet-info>
-</portlet>
-
-<!-- TODO: delete this when new site completed -->    
-<portlet id="PortalSiteDetail">
-    <description>The Portal Site Detail portlet displays the details of a selected folder/page. From here you can add, edit, and delete folders and pages.</description>
-    <description xml:lang="ja">ポータルサイト詳細ポートレットは、選択されたフォルダ・ページの詳細を表示します。このポートレットにより、フォルダとページの追加・編集・削除することができます。</description>
-    <description xml:lang="zh">显示选中的目录或者页面的详情。可以添加、修改和删除页面或者目录。</description>
-    <description xml:lang="zh-TW">顯示選中的目錄或者頁面的詳情。可以添加、修改和刪除頁面或者目錄。</description>    
-    <portlet-name>PortalSiteDetail</portlet-name>
-    <display-name>Portal Site Detail</display-name>
-    <display-name xml:lang="ja">ポータルサイト詳細</display-name>
-    <display-name xml:lang="zh">门户站点详情</display-name>
-    <display-name xml:lang="zh-TW">門戶站點詳情</display-name>
-    <portlet-class>org.apache.jetspeed.portlets.site.SiteDetailsPortlet</portlet-class>
-	<init-param>
-		<name>spring-configuration</name>
-		<value>/WEB-INF/model/spring-portlet-configuration.xml</value>
-	</init-param>
-	<init-param>
-		<name>validator-configuration</name>
-		<value>/WEB-INF/model/validator-configuration.xml</value>
-	</init-param>	
-    <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>folder-view</value>
-     </init-param>   
-    <init-param>
-        <name>portlet-icon</name>
-        <value>user-home.png</value>
-    </init-param>                                                                                                
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-    </supports>
-     <resource-bundle>org.apache.jetspeed.portlets.site.resources.SiteResources</resource-bundle>            	
-    <portlet-info>
-      <title>Portal Site Detail</title>
-      <short-title>Site</short-title>
-      <keywords>admin,site,portal,pages,folders</keywords>
-    </portlet-info>	
-</portlet>
+</portlet>    
 
 <portlet id="ProfilerAdmin">
     <description>The Profiler Admin portlet is used to administer profiling rules. You can create new rules, edit rules and delete rules and criterion.</description>
@@ -1498,6 +1421,62 @@ limitations under the License.
       <keywords>site,sitemap,map,portal,view</keywords>
     </portlet-info>
 </portlet>
+    
+<portlet>
+    <description>The Portal Site Manager displays a hierarchical view of the entire portal site. From here you can add, edit, and delete folders, links, and pages.</description>
+    <portlet-name>PortalSiteManager</portlet-name>
+    <display-name>Portal Site Manager</display-name>        
+    <portlet-class>org.apache.jetspeed.portlets.site.PortalSiteManager</portlet-class>
+    <init-param>
+        <name>ViewPage</name>
+        <value>/WEB-INF/view/site/site-view.vm</value>
+    </init-param>
+    <init-param>
+        <name>EditPage</name>
+        <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>        
+    <init-param>
+        <name>HeaderPage</name>
+        <value>/WEB-INF/view/site/site-view-header.vm</value>
+    </init-param> 
+    <init-param>
+        <name>dojo.requires.core</name>
+        <value>dojo.lang.*;dojo.event.*;dojo.io.*;dojo.dnd.*;dojo.widget.*;dojo.widget.Tree;dojo.widget.Button;dojo.widget.Checkbox;dojo.widget.Dialog;dojo.widget.TabContainer;dojo.widget.ContentPane;dojo.widget.LayoutContainer;dojo.widget.TreeRPCController;dojo.widget.TreeSelector;dojo.widget.TreeNode;dojo.widget.TreeContextMenu;dojo.widget.validate;dojo.widget.ComboBox;</value>                                   
+    </init-param>                
+    <init-param>
+        <name>portlet-icon</name>
+        <value>user-home.png</value>
+    </init-param>              
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>view</portlet-mode>
+        <portlet-mode>edit</portlet-mode>
+    </supports>
+    <resource-bundle>org.apache.jetspeed.portlets.site.resources.Site</resource-bundle>
+    <portlet-info>
+        <title>Portal Site Manager</title>
+        <short-title>Site</short-title>
+        <keywords>admin,site,portal,pages,folders</keywords>
+    </portlet-info>
+    <portlet-preferences>
+        <preference>
+            <name>defaultLayout</name>
+            <value>jetspeed-layouts::VelocityTwoColumns</value>
+        </preference>
+        <preference>
+            <name>root</name>
+            <value>/</value>
+        </preference>
+        <preference>
+            <name>viewInNewWindow</name>
+            <value>true</value>
+        </preference>          
+        <preference>
+            <name>showSearchTab</name>
+            <value>true</value>
+        </preference>                        
+    </portlet-preferences>
+</portlet>    
                  
 </portlet-app>
 
