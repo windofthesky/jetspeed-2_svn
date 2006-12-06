@@ -111,7 +111,7 @@ jetspeed.callPageLoaded = function()
 	}
 };
 
-jetspeed.printobj = function( obj )
+jetspeed.printobj = function( obj, omitLineBreaks )
 {
     var props = [];
     for( var prop in obj )
@@ -130,7 +130,7 @@ jetspeed.printobj = function( obj )
     for( var i = 0; i < props.length; i++ )
     {
         if ( buff.length > 0 )
-            buff += "\r\n";
+            buff += ( omitLineBreaks ? ", " : "\r\n" );
         buff += props[i];
     }
     return buff;
@@ -140,7 +140,7 @@ jetspeed.println = function( line )
 {
     try
     {
-        var console = document.getElementById( "debug_container" );
+        var console = jetspeed.getDebugElement();
         if( !console )
         {
             console = document.getElementsByTagName( "body" )[0] || document.body;
@@ -160,6 +160,94 @@ jetspeed.println = function( line )
             window.status = line;
         }
     }
+};
+
+jetspeed.debugNodeTree = function( node, string )
+{
+    if ( ! node ) return ;
+    
+    if ( string )
+    {
+        if ( string.length > 0 )
+            jetspeed.println( string );
+    }
+    else
+    {
+        jetspeed.println( 'node: ' );
+    }
+    if ( node.nodeType != ELEMENT_NODE && node.nodeType != TEXT_NODE )
+    {
+        if ( node.length && node.length > 0 && ( node[0].nodeType == ELEMENT_NODE || node[0].nodeType == TEXT_NODE ) )
+        {
+            for ( var i = 0 ; i < node.length ; i++ )
+            {
+                debugNodeTree( node[i], " [" + i + "]" )
+            }
+        }
+        else
+        {
+            jetspeed.println( " node is not a node! " + node.length );
+        }   
+        return ;
+    }
+    if ( node.innerXML )
+    {
+        jetspeed.println( node.innerXML );
+    }
+    else if ( node.xml )
+    {
+        jetspeed.println( node.xml );
+    }
+    else if ( typeof XMLSerializer != "undefined" )
+    {
+        jetspeed.println( (new XMLSerializer()).serializeToString( node ) );
+    }
+    else
+    {
+        jetspeed.println( " node != null (IE no XMLSerializer)" );
+    }
+};
+jetspeed.debugShallow = function( obj, string )
+{
+    if ( string )
+        jetspeed.println( string );
+    else
+        jetspeed.println( 'Object: ' + obj );
+    var props = [];
+    for(var prop in obj){
+        try {
+            props.push(prop + ': ' + obj[prop]);
+        } catch(E) {
+            props.push(prop + ': ERROR - ' + E.message);
+        }
+    }
+    props.sort();
+    for(var i = 0; i < props.length; i++) {
+        jetspeed.println( props[i] );
+    }
+};
+jetspeed.getDebugElement = function( clear )
+{
+    var console = null ;
+    try {
+        var console = document.getElementById("debug_container");
+        if(!console)
+        {
+            var consoleContainer = document.getElementsByTagName("body")[0] || document.body;
+            var console = document.createElement("div");
+            console.setAttribute( "id", "debug_container" );
+            consoleContainer.appendChild(console);
+        }
+        else if ( clear )
+        {
+            console.innerHTML = "";
+        }
+    } catch (e) {
+        try {
+
+        } catch(e2){}
+    }
+    return console ;   
 };
 
 
