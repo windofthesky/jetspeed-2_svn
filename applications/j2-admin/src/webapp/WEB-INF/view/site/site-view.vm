@@ -1098,8 +1098,9 @@ dojo.addOnLoad(function()
    dojo.event.connect(securityTable, "updateEditor", updateEditor );
    dojo.event.connect(securityTable, "saveEntrySubmit", saveSecurityEntrySubmit );
    dojo.event.connect(securityTable, "clearAndDisableEditor", clearAndDisableEditor );
-   var rootNode = dojo.widget.byId("/");
-   rootNode.expand();   
+   var tree = dojo.widget.byId("siteTree");
+   if (tree.children[0])
+       tree.children[0].expand();
 }); 
 // General Table Functions
 function processTableRowEvent(e, tableName)
