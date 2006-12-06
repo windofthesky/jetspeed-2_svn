@@ -561,7 +561,6 @@ dojo.addOnLoad(function()
 #macro (TraverseFolders $f)
   <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$f.Path" title="$f.Name" childIconSrc="$app/images/folder.gif">
   #foreach($subf in $f.Folders.iterator())
-## DST: MIGHT NEED TO LAZY LOAD  FOR PERFORMANCE 
 ##    #TraverseFolders($subf) 
     <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$subf.Path" title="$subf.Name" childIconSrc="$app/images/folder.gif"></div>
   #end  
@@ -1099,6 +1098,8 @@ dojo.addOnLoad(function()
    dojo.event.connect(securityTable, "updateEditor", updateEditor );
    dojo.event.connect(securityTable, "saveEntrySubmit", saveSecurityEntrySubmit );
    dojo.event.connect(securityTable, "clearAndDisableEditor", clearAndDisableEditor );
+   var rootNode = dojo.widget.byId("/");
+   rootNode.expand();   
 }); 
 // General Table Functions
 function processTableRowEvent(e, tableName)
