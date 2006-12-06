@@ -1353,11 +1353,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         if ( this.windowHeightToFit )
         {
-            this.domNode.style.overflow = "visible";
+            this.domNode.style.overflowY = "visible";
             this.domNode.style.height = "";
         }
         else
-            this.domNode.style.overflow = "hidden";
+            this.domNode.style.overflowY = "hidden";
 
         if ( this.windowPositionStatic )
         {
@@ -1382,12 +1382,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             if ( this.windowHeightToFit )
             {
-                this.containerNode.style.overflow = "visible";
+                this.containerNode.style.overflowY = "visible";
                 this.containerNode.style.height = "";
             }
             else
             {
-                this.containerNode.style.overflow = "auto";
+                this.containerNode.style.overflowY = "auto";
             }
             if ( dojo.render.html.ie )
             {
@@ -1852,29 +1852,43 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
 
             var inColIndex = this.portletWindow.getPageColumnIndex();
 
-            this.columnsX = new Array( jetspeed.page.columns.length );
+            this.columnDimensions = new Array( jetspeed.page.columns.length );
             for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
             {
-                this.columnsX[ i ] = dojo.html.getAbsolutePosition( jetspeed.page.columns[i].domNode, true ).x;
+                var col = jetspeed.page.columns[i];
+                if ( ! col.columnContainer )
+                {
+                    var colAbsPos = dojo.html.getAbsolutePosition( col.domNode, true );
+                    var marginBox = dojo.html.getMarginBox( col.domNode );
+                    this.columnDimensions[ i ] = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
+                }
             }
             
             var inCol = ( inColIndex >= 0 ? jetspeed.page.columns[ inColIndex ] : null );
             pwGhost.col = inCol;
         }
 
-        //dojo.debug( "PortletWindowDragMoveObject [" + this.portletWindow.widgetId + "] onDragStart:  portletWindowNode.hasParent=" + dojo.dom.hasParent( portletWindowNode ) + " dragOffset.left=" + this.dragOffset.left + " dragOffset.top=" + this.dragOffset.top + " dragStartPosition.left=" + this.dragStartPosition.left + " dragStartPosition.top=" + this.dragStartPosition.top );
+        // debugging
+        /*
+        var posDump = "dragOffset={" + jetspeed.printobj(this.dragOffset,true) + "} dragStartPosition={" + jetspeed.printobj(this.dragStartPosition) + "}";
+        if ( this.windowPositionStatic )
+        {
+            for ( var i = 0; i < jetspeed.page.columns.length ; i++ )
+            {
+                posDump += " col[" + i + "]: {" + jetspeed.printobj( this.columnDimensions[i] ) + "}";
+            }
+            posDump += "}";
+        }
+        dojo.debug( "PortletWindowDragMoveObject [" + this.portletWindow.widgetId + "] onDragStart:  portletWindowNode.hasParent=" + dojo.dom.hasParent( portletWindowNode ) + " " + posDump );
+        */
     },
     onDragMove: function( e )
     {
-        //jetspeed.widget.PortletWindowDragMoveObject.superclass.onDragMove.call( this, e );
-        // BOZO: code copied from dojo.dnd.HtmlDragMoveObject.onDragMove
+        // NOTE: code copied from dojo.dnd.HtmlDragMoveObject.onDragMove
 
-        var mouse = dojo.html.getCursorPosition(e);
 		this.updateDragOffset();
-		var x = this.dragOffset.x + mouse.x;
-		var y = this.dragOffset.y + mouse.y;
-        //var x = mouse.x ;
-        //var y = mouse.y ;
+		var x = this.dragOffset.x + e.pageX;
+		var y = this.dragOffset.y + e.pageY;
 
 		if (this.constrainToContainer) {
 			if (x < this.constraints.minX) { x = this.constraints.minX; }
@@ -1882,6 +1896,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
 			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
 			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
 		}
+
+		this.setAbsolutePosition(x, y);
 
 		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
 		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
@@ -1891,35 +1907,47 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
         if ( this.windowPositionStatic )
         {
             var colIndex = -1;
-            for ( var i = jetspeed.page.columns.length-1 ; i >= 0  ; i-- )
+            //dojo.debug( "PortletWindowDragMoveObject onDragMove pick column: offsetWidth=" + this.domNode.offsetWidth + " offsetHeight=" + this.domNode.offsetHeight + " x=" + x + " y=" + y + " dragOffset.x=" + this.dragOffset.x + " dragOffset.y=" + this.dragOffset.y + " e.pageX=" + e.pageX + " e.pageY=" + e.pageY );
+            var offsetWidthHalf = this.domNode.offsetWidth / 2;
+            var offsetHeightHalf = this.domNode.offsetHeight / 2;
+            var noOfCols = jetspeed.page.columns.length;
+            for ( var i = 0 ; i < noOfCols ; i++ )
             {
-                //dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + i + "] columnsX=" + this.columnsX[i] + " this.domNode.offsetWidth/2=" + (this.domNode.offsetWidth/2) + " x=" + x );
-                if ( ( x + ( this.domNode.offsetWidth / 2 ) ) >= this.columnsX[ i ] )
+                var colDims = this.columnDimensions[ i ];
+                if ( colDims != null )
                 {
-                    if ( y + ( this.domNode.offsetHeight / 2 ) >=  dojo.html.getAbsolutePosition( jetspeed.page.columns[i].domNode, true ).y )
+                    var xTest = x + offsetWidthHalf;
+                    if ( xTest >= colDims.left && xTest <= colDims.right )
                     {
-                        colIndex = i;
-                        break;
+                        var yTest = y + offsetHeightHalf;
+                        if ( yTest >= colDims.top && yTest <= colDims.bottom )
+                        {
+                            colIndex = i;
+                            break;
+                        }
                     }
                 }
             }
             var col = ( colIndex >= 0 ? jetspeed.page.columns[ colIndex ] : null );
             //if ( col != null )
-            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + colIndex + "] columnsX=" + this.columnsX[colIndex] + " this.domNode.offsetWidth=" + this.domNode.offsetWidth + " x=" + x );
+            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: col[" + colIndex + "] {" + jetspeed.printobj( this.columnDimensions[colIndex] ) + "}" );
             //else
-            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: no col  this.domNode.offsetWidth=" + this.domNode.offsetWidth + " x=" + x );
+            //    dojo.debug( "PortletWindowDragMoveObject onDragMove: no column" );
             
-            if ( pwGhost.col != col )
+            if ( pwGhost.col != col && col != null )
             {
                 dojo.dom.removeNode( pwGhost );
 				pwGhost.col = col;
 				col.domNode.appendChild(pwGhost);
 			}
             
-            var portletWindowsResult = jetspeed.ui.getPortletWindowChildren( col.domNode, pwGhost );
-            var portletWindowsInCol = portletWindowsResult.portletWindowNodes;
-            
-            if ( portletWindowsInCol )
+            var portletWindowsResult = null, portletWindowsInCol = null;
+            if ( col != null )
+            {
+                portletWindowsResult = jetspeed.ui.getPortletWindowChildren( col.domNode, pwGhost );
+                portletWindowsInCol = portletWindowsResult.portletWindowNodes;
+            }
+            if ( portletWindowsInCol != null )
             {
                 var ghostIndex = portletWindowsResult.matchIndex;
                 if ( ghostIndex > 0 )

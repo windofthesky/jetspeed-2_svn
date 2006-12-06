@@ -38,8 +38,10 @@
 .dojoFloatingPane {
 	/* essential css */
 	position: absolute;
-    overflow: hidden;		/* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
+    overflow-y: hidden;		/* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
                             /* we says 'hidden' cause IE likes to kindly expand div to fit content otherwise */
+    overflow-x: hidden;
+
 	z-index: 10;
 
 	/* styling css */

@@ -30,7 +30,6 @@ dojo.require("dojo.collections.ArrayList");
 dojo.require("dojo.collections.Set");
 dojo.require("jetspeed.common");
 
-// ... testing
 
 // ... jetspeed base objects
 if ( ! window.jetspeed )
@@ -41,7 +40,6 @@ if ( ! jetspeed.ui )
     jetspeed.ui = {} ;
 if ( ! jetspeed.ui.widget )
     jetspeed.ui.widget = {} ;
-
 
 
 // ... jetspeed.id
@@ -759,7 +757,7 @@ jetspeed.om.PortletSelectorContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "PortletSelectorContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.raise( "PortletSelectorContentListener notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -786,7 +784,7 @@ jetspeed.om.PageContentListenerUpdate.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Page */ page )
     {
-        dojo.raise( "PageContentListenerUpdate notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.raise( "PageContentListenerUpdate notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -928,14 +926,15 @@ dojo.lang.extend( jetspeed.om.Page,
         var parsedRootLayoutFragment = this._parsePSML( psml );
 
         // create layout model
-        var portletsByPageColumn = this._layoutCreateModel( parsedRootLayoutFragment );
+        var portletsByPageColumn = {};
+        this.columnsStructure = this._layoutCreateModel( parsedRootLayoutFragment, null, portletsByPageColumn );
 
         this.rootFragmentId = parsedRootLayoutFragment.id ;
 
         // create columns
         if ( jetspeed.prefs.windowTiling )
         {
-            this._createColumns( document.getElementById( jetspeed.id.DESKTOP ) );
+            this._createColumnsStart( document.getElementById( jetspeed.id.DESKTOP ) );
         }
 
         // create portlet windows
@@ -1200,91 +1199,107 @@ dojo.lang.extend( jetspeed.om.Page,
         return ( rowA - rowB );
     },
 
-    _layoutCreateModel: function( parsedRootLayoutFragment )
-    {
-        var layoutFragment = parsedRootLayoutFragment;
-        var portletsByPageColumn = {};
+    _layoutCreateModel: function( layoutFragment, parentColumn, portletsByPageColumn )
+    {  // layoutFragmentParentColumnIndex, parentColumnsInLayout
+        var allColumnsStartIndex = this.columns.length;
+        var columnsInLayout = this._layoutRegisterAndCreateColumnsModel( layoutFragment, parentColumn );
+        var columnsInLayoutLen = ( columnsInLayout == null ? 0 : columnsInLayout.length ) ;
 
-        // desktop layout handling rule:
-        //   in order to persist portlet positions, all layout fragments must span the entire width of the page
-
-        // does root fragment contain portlets only / layouts only / mix of layouts & portlets
         if ( layoutFragment.layoutFragmentIndexes != null && layoutFragment.layoutFragmentIndexes.length > 0 )
-        {
-            if ( layoutFragment.columnSizes.length > 1 )
-            {   // root fragments with multiple columns can contain portlets only
-                //    since a nested layout has to appear in a particular column (thus diving one column in the outer fragment into n columns)
-                this.noMovePersist = true;
-            }
+        {   // layout contains child layout fragments
+            var currentClonedLayoutFragByCol = null;
+            var clonedLayoutFragmentCount = 0;
+            if ( layoutFragment.otherFragmentIndexes != null && layoutFragment.otherFragmentIndexes.length > 0 )
+                currentClonedLayoutFragByCol = new Array();
 
-            if ( layoutFragment.otherFragmentIndexes == null || layoutFragment.otherFragmentIndexes.length == 0 )
-            {   // root fragment contains layout fragments only - ignore the root fragment
-                for ( var i = 0 ; i < layoutFragment.layoutFragmentIndexes.length ; i++ )
+            for ( var i = 0 ; i < columnsInLayoutLen ; i++ )
+            {
+                if ( currentClonedLayoutFragByCol != null )
+                    currentClonedLayoutFragByCol.push( null );
+                columnsInLayout[i].columnContainer = true;   // column cannot contain portlets
+            }
+            for ( var i = 0 ; i < layoutFragment.fragments.length ; i++ )
+            {
+                var childFrag = layoutFragment.fragments[ i ];
+                var childFragInColIndex = i;
+                if ( childFrag.properties && childFrag.properties[ jetspeed.id.PORTLET_PROP_COLUMN ] >= 0 )
                 {
-                    var layoutChildFrag = layoutFragment.fragments[ layoutFragment.layoutFragmentIndexes[i] ];
-                    var hasNestedLayouts = this._layoutFragmentChildCollapse( layoutChildFrag );
-                    if ( hasNestedLayouts )
-                        this.noMovePersist = true;
-                    var pageColumnStartIndex = this.columns.length;
-                    var columnsInLayout = this._layoutRegisterAndCreateColumnsModel( layoutChildFrag );
-                    this._layoutCreatePortletsModel( layoutChildFrag, columnsInLayout, pageColumnStartIndex, portletsByPageColumn );
+                    if ( childFrag.properties[ jetspeed.id.PORTLET_PROP_COLUMN ] != null && childFrag.properties[ jetspeed.id.PORTLET_PROP_COLUMN ] >= 0 )
+                        childFragInColIndex = childFrag.properties[ jetspeed.id.PORTLET_PROP_COLUMN ] ;
+                }
+                if ( childFragInColIndex >= columnsInLayoutLen )
+                {
+                    childFragInColIndex = ( columnsInLayoutLen > 0 ? ( columnsInLayoutLen -1 ) : 0 );
+                }
+    
+                var currentClonedLayoutFragForCol = ( (currentClonedLayoutFragByCol == null) ? null : currentClonedLayoutFragByCol[ childFragInColIndex ] );
+                if ( childFrag.type == "layout" )
+                {
+                    if ( currentClonedLayoutFragForCol != null )
+                    {
+                        this._layoutCreateModel( currentClonedLayoutFragForCol, columnsInLayout[childFragInColIndex], portletsByPageColumn ) ;
+                        currentClonedLayoutFragByCol[ childFragInColIndex ] = null;
+                    }
+                    this._layoutCreateModel( childFrag, columnsInLayout[childFragInColIndex], portletsByPageColumn ) ;
+                }
+                else
+                {
+                    if ( currentClonedLayoutFragForCol == null )
+                    {
+                        clonedLayoutFragmentCount++;
+                        var clonedPortletLayout = {};
+                        dojo.lang.mixin( clonedPortletLayout, layoutFragment );
+                        clonedPortletLayout.fragments = new Array();
+                        clonedPortletLayout.layoutFragmentIndexes = new Array();
+                        clonedPortletLayout.otherFragmentIndexes = new Array();
+                        clonedPortletLayout.documentOrderIndex = layoutFragment.fragments[i].documentOrderIndex;
+                        clonedPortletLayout.clonedFromRootId = clonedPortletLayout.id;
+                        clonedPortletLayout.clonedLayoutFragmentIndex = clonedLayoutFragmentCount;
+                        clonedPortletLayout.columnSizes = [ "100" ];
+                        clonedPortletLayout.columnSizesSum = [ 100 ];
+                        clonedPortletLayout.id = clonedPortletLayout.id + "-jsclone_" + clonedLayoutFragmentCount;
+                        currentClonedLayoutFragByCol[ childFragInColIndex ] = clonedPortletLayout;
+                        currentClonedLayoutFragForCol = clonedPortletLayout;
+                    }
+                    currentClonedLayoutFragForCol.fragments.push( childFrag );
+                    currentClonedLayoutFragForCol.otherFragmentIndexes.push( currentClonedLayoutFragForCol.fragments.length -1 );
                 }
             }
-            else
-            {   // mixed layout and portlet fragments - collapse portlet fragments in one or more clones of the root layout
-                var currentClonedLayoutFragment = null;
-                var clonedLayoutFragmentCount = 0;
-                for ( var i = 0 ; i <= layoutFragment.fragments.length ; i++ )  // iterate one past the last index - to catch end currentClonedLayoutFragment
-                {   // fragments array is sorted by row, so a contiguous set of portlet fragments belong together in the same cloned layout fragment
-                    if ( currentClonedLayoutFragment != null && ( i == layoutFragment.fragments.length || layoutFragment.fragments[i].type == "layout" ) )
+            if ( currentClonedLayoutFragByCol != null )
+            {
+                for ( var i = 0 ; i < columnsInLayoutLen ; i++ )
+                {
+                    var currentClonedLayoutFragForCol = currentClonedLayoutFragByCol[ i ];
+                    if ( currentClonedLayoutFragForCol != null )
                     {
-                        var pageColumnStartIndex = this.columns.length;
-                        var columnsInLayout = this._layoutRegisterAndCreateColumnsModel( currentClonedLayoutFragment );
-                        this._layoutCreatePortletsModel( currentClonedLayoutFragment, columnsInLayout, pageColumnStartIndex, portletsByPageColumn );
-                        currentClonedLayoutFragment = null;
-                    }
-                    if ( i < layoutFragment.fragments.length )
-                    {
-                        if ( layoutFragment.fragments[i].type == "layout" )
-                        {
-                            var layoutChildFrag = layoutFragment.fragments[ i ];  // index was: layoutFragment.layoutFragmentIndexes[i]
-                            var hasNestedLayouts = this._layoutFragmentChildCollapse( layoutChildFrag );
-                            if ( hasNestedLayouts )
-                                this.noMovePersist = true;
-                            var pageColumnStartIndex = this.columns.length;
-                            var columnsInLayout = this._layoutRegisterAndCreateColumnsModel( layoutChildFrag );
-                            this._layoutCreatePortletsModel( layoutChildFrag, columnsInLayout, pageColumnStartIndex, portletsByPageColumn );
-                        }
-                        else
-                        {
-                            if ( currentClonedLayoutFragment == null )
-                            {
-                                clonedLayoutFragmentCount++;
-                                var clonedPortletLayout = {};
-                                dojo.lang.mixin( clonedPortletLayout, layoutFragment );
-                                clonedPortletLayout.fragments = new Array();
-                                clonedPortletLayout.layoutFragmentIndexes = new Array();
-                                clonedPortletLayout.otherFragmentIndexes = new Array();
-                                clonedPortletLayout.documentOrderIndex = layoutFragment.fragments[i].documentOrderIndex;
-                                clonedPortletLayout.clonedFromRootId = clonedPortletLayout.id;
-                                clonedPortletLayout.clonedLayoutFragmentIndex = clonedLayoutFragmentCount;
-                                clonedPortletLayout.id = clonedPortletLayout.id + "-rootclone_" + clonedLayoutFragmentCount;
-                                currentClonedLayoutFragment = clonedPortletLayout ;
-                            }
-                            clonedPortletLayout.fragments.push( layoutFragment.fragments[i] );
-                            clonedPortletLayout.otherFragmentIndexes.push( clonedPortletLayout.fragments.length -1 );
-                        }
+                        this._layoutCreateModel( currentClonedLayoutFragForCol, columnsInLayout[i], portletsByPageColumn ) ;
                     }
                 }
             }
+            if ( layoutFragment.otherFragmentIndexes != null && layoutFragment.otherFragmentIndexes.length > 0 )
+            {
+                var correctedFragments = new Array();
+                for ( var i = 0 ; i < layoutFragment.fragments.length ; i++ )
+                {
+                    var includeFrag = true;
+                    for ( var j = 0 ; j < layoutFragment.otherFragmentIndexes.length ; j++ )
+                    {
+                        if ( layoutFragment.otherFragmentIndexes[j] == i )
+                        {
+                            includeFrag = false;
+                            break;
+                        }
+                    }
+                    if ( includeFrag )
+                        correctedFragments.push( layoutFragment.fragments[ i ] );
+                }
+                layoutFragment.fragments = correctedFragments;
+                layoutFragment.otherFragmentIndexes = new Array();
+            }
         }
-        else if ( layoutFragment.otherFragmentIndexes != null && layoutFragment.otherFragmentIndexes.length > 0 )
-        {   // root fragment contains portlet fragments only
-            var pageColumnStartIndex = this.columns.length;
-            var columnsInLayout = this._layoutRegisterAndCreateColumnsModel( layoutFragment );
-            this._layoutCreatePortletsModel( layoutFragment, columnsInLayout, pageColumnStartIndex, portletsByPageColumn );
-        }
-        return portletsByPageColumn;
+        this._layoutCreatePortletsModel( layoutFragment, columnsInLayout, allColumnsStartIndex, portletsByPageColumn ) ;
+
+        return columnsInLayout;
     },
 
     _layoutFragmentChildCollapse: function( layoutFragment, targetLayoutFragment )
@@ -1317,7 +1332,7 @@ dojo.lang.extend( jetspeed.om.Page,
         return hasNestedLayouts;
     },
 
-    _layoutRegisterAndCreateColumnsModel: function( layoutFragment )
+    _layoutRegisterAndCreateColumnsModel: function( layoutFragment, parentColumn )
     {   // columnSizes: sizes, columnSizesSum: sizesSum
         this.layouts[ layoutFragment.id ] = layoutFragment;
         var columnsInLayout = new Array();
@@ -1333,6 +1348,12 @@ dojo.lang.extend( jetspeed.om.Page,
                     size = size - 1;
                 var colModelObj = new jetspeed.om.Column( i, layoutFragment.id, size, this.columns.length );
                 this.columns.push( colModelObj );
+                if ( parentColumn != null )
+                {
+                    if ( parentColumn.columnChildren == null )
+                        parentColumn.columnChildren = new Array();
+                    parentColumn.columnChildren.push( colModelObj );
+                }
                 columnsInLayout.push( colModelObj );
             }
         }
@@ -1476,18 +1497,32 @@ dojo.lang.extend( jetspeed.om.Page,
         return ( aZIndex - bZIndex );
     },
 
-    _createColumns: function( columnsParent )
+    _createColumnsStart: function( allColumnsParent )
     {
-        if ( ! this.columns || this.columns.length == 0 ) return;
+        if ( ! this.columnsStructure || this.columnsStructure.length == 0 ) return;
         var columnContainer = document.createElement( "div" );
         columnContainer.id = jetspeed.id.COLUMNS;
         columnContainer.setAttribute( "id", jetspeed.id.COLUMNS );
-        for ( var colIndex = 0 ; colIndex < this.columns.length ; colIndex++ )
+        for ( var colIndex = 0 ; colIndex < this.columnsStructure.length ; colIndex++ )
         {
-            var colObj = this.columns[colIndex];
-            colObj.createColumn( columnContainer );
+            var colObj = this.columnsStructure[colIndex];
+            this._createColumns( colObj, columnContainer ) ;
         }
-        columnsParent.appendChild( columnContainer );
+        allColumnsParent.appendChild( columnContainer );
+    },
+
+    _createColumns: function( column, columnContainer )
+    {
+        column.createColumn() ;
+        if ( column.columnChildren != null && column.columnChildren.length > 0 )
+        {
+            for ( var colIndex = 0 ; colIndex < column.columnChildren.length ; colIndex++ )
+            {
+                var colObj = column.columnChildren[ colIndex ];
+                this._createColumns( colObj, column.domNode ) ;
+            }
+        }
+        columnContainer.appendChild( column.domNode );
     },
     _removeColumns: function( /* DOM Node */ preserveWindowNodesInNode )
     {
@@ -1597,21 +1632,6 @@ dojo.lang.extend( jetspeed.om.Page,
                 break;
         }
         return result;
-    },
-
-    _debugDumpPortletZIndexInfo: function()
-    {
-        var portletArray = this._getPortletArrayByZIndex();
-        var dumpMsg = "";
-        for ( var i = 0; i < portletArray.length; i++ )
-        {
-            var portlet = portletArray[i];
-            if ( i > 0 ) dumpMsg += ", ";
-            var windowState = portlet.getLastSavedWindowState();
-            var zIndex = ( windowState ? windowState.zIndex : "null" );
-            dumpMsg += "[" + portlet.entityId + "] zIndex=" + zIndex;
-        }
-        return dumpMsg;
     },
     _getPortletArrayByZIndex: function()
     {
@@ -1746,6 +1766,19 @@ dojo.lang.extend( jetspeed.om.Page,
             var portlet = this.portlets[portletIndex];
             portlet._destroy();
         }
+    },
+    debugDumpLastSavedWindowStateAllPortlets: function()
+    {
+        var portletArray = this.getPortletArray();
+        var dumpMsg = "";
+        for ( var i = 0; i < portletArray.length; i++ )
+        {
+            var portlet = portletArray[i];
+            if ( i > 0 ) dumpMsg += "\r\n";
+            var windowState = portlet.getLastSavedWindowState();
+            dumpMsg += "[" + portlet.name + "] " + jetspeed.printobj( windowState, true );
+        }
+        return dumpMsg;
     },
     debugDumpWindowStateAllPortlets: function()
     {
@@ -2035,6 +2068,7 @@ dojo.lang.extend( jetspeed.om.Column,
     size: null,
     pageColumnIndex: null,
     domNode: null,
+    columnContainer: false,
 
     createColumn: function( columnContainer )
     {
@@ -2047,7 +2081,8 @@ dojo.lang.extend( jetspeed.om.Column,
         divElmt.style.minHeight = "40px";
         divElmt.className = columnClass;
         this.domNode = divElmt;
-        columnContainer.appendChild( divElmt );
+        if ( columnContainer != null )
+            columnContainer.appendChild( divElmt );
     },
     containsNode: function( node )
     {
@@ -2360,7 +2395,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
     getLastSavedWindowState: function()
     {
         if ( ! this.lastSavedWindowState )
-            dojo.raise( "portlet.getLastSavedWindowState() is null - portlet not properly initialized." );
+            dojo.raise( "portlet.getLastSavedWindowState() is null - portlet (" + this.name + ") not properly initialized." );
         return this.lastSavedWindowState;
     },
     getInitialWindowDimensions: function( dimensionsObj, reset )
@@ -2850,7 +2885,7 @@ jetspeed.om.BasicContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
-        dojo.raise( "BasicContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.raise( "BasicContentListener notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -2876,7 +2911,7 @@ jetspeed.om.PortletContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "PortletContentListener notifyFailure url=" + requestUrl + " type=" + type + " error=" + error ) ;
+        dojo.raise( "PortletContentListener notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -2908,8 +2943,7 @@ jetspeed.om.PortletActionContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "PortletActionContentListener notifyFailure type=" + type ) ;
-        dojo.debugShallow( error );
+        dojo.raise( "PortletActionContentListener notifyFailure type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };
 
@@ -3507,7 +3541,7 @@ dojo.lang.extend( jetspeed.om.PortletSelectorSearchContentListener,
     },
     notifyFailure: function( /* String */ type, /* String */ error, /* String */ requestUrl, domainModelObject )
     {
-        dojo.raise( "PortletSelectorAjaxApiContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + " error: " + error );
+        dojo.raise( "PortletSelectorAjaxApiContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     },
 
     parsePortlets: function( /* XMLNode */ node )
@@ -3647,6 +3681,19 @@ jetspeed.ui.dumpPortletWindowsPerColumn = function()
         dumpClosure.dumpMsg = "column " + i + ": " + dumpClosure.dumpMsg;
         dojo.debug( dumpClosure.dumpMsg );
     }
+};
+
+jetspeed.ui.dumpPortletWindowWidgets = function()
+{
+    var portletWindows = jetspeed.ui.getAllPortletWindowWidgets();
+    var pwOut = "";
+    for ( var i = 0 ; i < portletWindows.length; i++ )
+    {
+        if ( i > 0 )
+            pwOut += ", ";
+        pwOut += portletWindows[i].widgetId;
+    }
+    dojo.debug( "PortletWindow widgets: " + pwOut );
 };
 
 jetspeed.ui.dumpPortletWindowWidgets = function()
