@@ -25,7 +25,8 @@ dojo.require("dojo.ns");
             "portletdefcontainer": "jetspeed.widget.PortletDefContainer",
             "portletwindow": "jetspeed.widget.PortletWindow",
             "portletwindowresizehandle": "jetspeed.widget.PortletWindowResizeHandle",
-            "portletdefcontaineritem": "jetspeed.widget.PortletDefContainerItem"
+            "portletdefcontaineritem": "jetspeed.widget.PortletDefContainerItem",
+            "sitemanagertreerpccontroller": "jetspeed.widget.SiteManagerTreeRPCController"
         }
     };
 

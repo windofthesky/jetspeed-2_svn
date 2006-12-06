@@ -86,7 +86,7 @@
     </form>
   </div>
 
-<div dojoType="TreeRPCController" 
+<div dojoType="jetspeed:SiteManagerTreeRPCController" 
      RPCUrl="${rooturl}/ajaxapi?action=getfolderlist" 
      widgetId="treeController" 
      DNDController="create">
