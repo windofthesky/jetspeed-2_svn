@@ -30,8 +30,13 @@ dojo.lang.extend( jetspeed.widget.SiteManagerTreeRPCController,
 {
     doRemoveNode: function(node, callObj, callFunc)
     {
+        var args = [ node, callObj, callFunc ];
+        dojo.widget.TreeLoadingController.prototype.doRemoveNode.apply(this, args);
     },
     doCreateChild: function(parent, index, output, callObj, callFunc)
     {
+        if ( output == null ) output = {};
+        var args = [parent, index, output, callObj, callFunc];
+		dojo.widget.TreeLoadingController.prototype.doCreateChild.apply(this, args);
     }
 });
