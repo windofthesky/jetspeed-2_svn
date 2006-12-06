@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -203,18 +204,40 @@ public class JetspeedContainerServlet extends HttpServlet
         Integer method = ContainerConstants.METHOD_NOOP;
         Portlet portlet = null;
         boolean destroyPortlet = false;
+        Map workerAsMap = null;
         
         try
         {
-            method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
+            Thread ct = Thread.currentThread();
+            if (ct instanceof Map)
+            {
+                workerAsMap = (Map) ct;
+            }
+            if (workerAsMap != null)
+            {
+                method = (Integer) workerAsMap.get(ContainerConstants.METHOD_ID);
+            }
+            else
+            {
+                method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
+            }
             if (method == ContainerConstants.METHOD_NOOP)
             {
                 return;
             }
             
-            portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
-            portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
             request.removeAttribute(ContainerConstants.PORTLET);
+            if (workerAsMap != null)
+            {
+                portlet = (Portlet) workerAsMap.get(ContainerConstants.PORTLET);
+                portletName = (String) workerAsMap.get(ContainerConstants.PORTLET_NAME);
+            }
+            else
+            {
+                portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
+                portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
+                request.removeAttribute(ContainerConstants.PORTLET);
+            }
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
@@ -227,11 +250,21 @@ public class JetspeedContainerServlet extends HttpServlet
             }
             else if (method == ContainerConstants.METHOD_RENDER)
             {
-                RenderRequest renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                RenderResponse renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                RenderRequest renderRequest = null;
+                RenderResponse renderResponse =  null;
+
+                if (workerAsMap != null)
+                {
+                    renderRequest = (RenderRequest) workerAsMap.get(ContainerConstants.PORTLET_REQUEST);
+                    renderResponse = (RenderResponse) workerAsMap.get(ContainerConstants.PORTLET_RESPONSE);
+                }
+                else
+                {
+                    renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                }                
                 // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
                 ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
-
                 portlet.render(renderRequest, renderResponse);
             }
 

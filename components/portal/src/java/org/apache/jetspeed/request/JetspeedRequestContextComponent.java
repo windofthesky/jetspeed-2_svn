@@ -16,6 +16,7 @@
 package org.apache.jetspeed.request;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -114,8 +115,19 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     
     public RequestContext getRequestContext()
     {
-        RequestContext rc =  (RequestContext) tlRequestContext.get();        
-        
+        RequestContext rc = null;
+
+        Thread ct = Thread.currentThread();
+        if (ct instanceof Map)
+        {
+            Map workerAsMap = (Map) ct;
+            rc = (RequestContext) workerAsMap.get(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        }
+        else
+        {
+            rc = (RequestContext) tlRequestContext.get();        
+        }
+
         if(rc != null)
         {
             return rc;

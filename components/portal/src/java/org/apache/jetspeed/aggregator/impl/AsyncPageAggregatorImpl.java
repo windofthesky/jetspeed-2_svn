@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator.impl;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,8 @@ import org.apache.jetspeed.aggregator.ContentServerAdapter;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -93,7 +96,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         }
         else
         {
-            aggregateAndRender(root, context, page, true);
+            aggregateAndRender(root, context, page, true, null, null);
         }
         
         //dispatcher.include(root);
@@ -157,11 +160,22 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         }
     }
 
-    protected void aggregateAndRender(ContentFragment f, RequestContext context, ContentPage page, boolean isRoot)
+    protected void aggregateAndRender(ContentFragment f, RequestContext context, ContentPage page, boolean isRoot,
+                                      List portletJobs, List layoutFragments)
             throws FailedToRenderFragmentException
     {
         // First Pass, kick off async render threads for all portlets on page 
-                
+        // Store portlet rendering jobs in the list to wait later.
+        // Store layout fragment in the list to render later.
+        if (portletJobs == null) 
+        {
+            portletJobs = new ArrayList(16);
+        }
+        if (layoutFragments == null)
+        {
+            layoutFragments = new ArrayList(4);
+        }
+
         if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
         {
             Iterator children = f.getContentFragments().iterator();
@@ -173,29 +187,57 @@ public class AsyncPageAggregatorImpl implements PageAggregator
                     if (child.getType().equals(ContentFragment.PORTLET))
                     {
                         // kick off render thread
-                        renderer.render(child, context); 
+                        // and store the portlet rendering job into the portlet jobs list.
+                        RenderingJob job = renderer.render(child, context); 
+                        portletJobs.add(job);
                     }
                     else
                     {
                         // walk thru layout 
-                        aggregateAndRender(child, context, page, false);
+                        // and store the layout rendering job into the layout jobs list.
+                        aggregateAndRender(child, context, page, false, portletJobs, layoutFragments);
+                        layoutFragments.add(child);
                     }
                 }
             }
         }
 
+        // If the fragment is not root, skip the following.
+        if (!isRoot)
+            return;
 
-        // sync
-        // TODO: synchronize on completion of all jobs
-        // not sure where that code went, used to be in here, very odd
-        try
+
+        // synchronize on completion of all jobs
+        Iterator it = portletJobs.iterator();
+        
+        try 
         {
-            // TODO: remove this when I get the monitor/sync in place (again)
-            // need to dig thru old code in cvs if its still there
-            Thread.sleep(4000);
+            while (it.hasNext()) 
+            {
+                RenderingJob job = (RenderingJob) it.next();
+                PortletContent portletContent = job.getPortletContent();
+                
+                if (!portletContent.isComplete()) 
+                {
+                    synchronized (portletContent) 
+                    {
+                        portletContent.wait();
+                    }
+                }
+            }
         }
         catch (Exception e)
-        {}
+        {
+            log.error("Exception during synchronizing all portlet rendering jobs.", e);
+        }
+        
+        // render layout fragments.
+        it = layoutFragments.iterator();
+        while (it.hasNext()) 
+        {
+            ContentFragment child = (ContentFragment) it.next();
+            renderer.renderNow(child, context);
+        }
         
         // Start the actual rendering process
         String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
@@ -207,15 +249,6 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         renderer.renderNow(f, context);
         
         
-//        if (strategy == STRATEGY_SEQUENTIAL)
-//        {
-//            renderer.renderNow(f, context);
-//        }
-//        else
-//        {
-//            renderer.render(f, context);
-//        }
-
         if (f.getDecorator() != null && f.getType().equals(ContentFragment.PORTLET))
         {
             log.debug("decorator=" + f.getDecorator());
@@ -224,8 +257,10 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         else if (f.getDecorator() == null && f.getType().equals(ContentFragment.PORTLET))
         {
             log.debug("no decorator for defined for portlet fragement," + f.getId() + ".  So using page default, "
-                    + defaultPortletDecorator);
+                      + defaultPortletDecorator);
             contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
         }
     }
+    
+
 }

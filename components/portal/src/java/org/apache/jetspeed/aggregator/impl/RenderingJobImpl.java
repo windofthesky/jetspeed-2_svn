@@ -16,6 +16,8 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import java.util.Map;
+
 import javax.portlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,9 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 
 /**
  * The RenderingJob is responsible for storing all necessary objets for
@@ -56,6 +61,8 @@ public class RenderingJobImpl implements RenderingJob
 
     protected PortletContent portletContent;
     protected PortalStatistics statistics;
+
+    protected Map workerAttributes;
     
     public RenderingJobImpl(PortletContainer container, 
                             PortletContent portletContent, 
@@ -76,6 +83,20 @@ public class RenderingJobImpl implements RenderingJob
         this.portletContent = portletContent; 
         ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
         
+    }
+
+    public RenderingJobImpl(PortletContainer container, 
+                            PortletContent portletContent, 
+                            ContentFragment fragment, 
+                            HttpServletRequest request, 
+                            HttpServletResponse response, 
+                            RequestContext requestContext, 
+                            PortletWindow window,
+                            PortalStatistics statistics,
+                            Map workerAttributes)
+    {
+        this(container, portletContent, fragment, request, response, requestContext, window, statistics);
+        this.workerAttributes = workerAttributes;
     }
 
     /**
@@ -110,10 +131,41 @@ public class RenderingJobImpl implements RenderingJob
      */
     public void execute()
     {
-        long start = System.currentTimeMillis();       
+        long start = System.currentTimeMillis();
+
+        Map workerAsMap = null;
+
         try
         {
-            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);            
+            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+
+            // if the current thread is worker, then store attribues in that.
+            if (this.workerAttributes != null)
+            {
+                Thread ct = Thread.currentThread();
+                if (ct instanceof Map)
+                {
+                    workerAsMap = (Map) ct;
+                    workerAsMap.putAll(this.workerAttributes);
+
+                    // Sometimes, the portlet definition of some portlet entities are replaced.
+                    // I could not find why it happens.
+                    // If the portlet definition of portlet entity is not same as an attribute of worker's, then
+                    // reset the portlet definition of portlet entity. (by Woonsan Ko)
+                    // TODO: Investigate more and find why it happens.
+                    PortletDefinition portletDefinition = 
+                        (PortletDefinition) workerAsMap.get(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
+                    PortletWindow window = 
+                        (PortletWindow) workerAsMap.get(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE);
+                    PortletEntityImpl portletEntityImpl = (PortletEntityImpl) window.getPortletEntity();
+                    PortletDefinition oldPortletDefinition = portletEntityImpl.getPortletDefinition();
+
+                    if (!oldPortletDefinition.getId().equals(portletDefinition.getId())) {
+                        portletEntityImpl.setPortletDefinition(portletDefinition);
+                    }
+                }
+            }
+            
             this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
@@ -137,6 +189,11 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
+            if (workerAsMap != null)
+            {
+                workerAsMap.clear();
+            }
+
             portletContent.complete();
             if (fragment.getType().equals(ContentFragment.PORTLET))
             {
@@ -159,5 +216,18 @@ public class RenderingJobImpl implements RenderingJob
     public PortletWindow getWindow()
     {
         return window;
+    }
+
+    /**
+     * 
+     * <p>
+     * getPortletContent
+     * </p>
+     *
+     * @return The portlet content this job is in charge of rendering
+     */
+    public PortletContent getPortletContent()
+    {
+        return portletContent;
     }
 }

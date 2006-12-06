@@ -54,8 +54,9 @@ public interface PortletRenderer
      * Render the specified Page fragment.
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
+     * @return the asynchronous portlet rendering job to synchronize
      */
-    public void render(ContentFragment fragment, RequestContext request);
+    public RenderingJob render(ContentFragment fragment, RequestContext request);
 
     /**
      * Retrieve the ContentDispatcher for the specified request

@@ -207,6 +207,29 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
      */
     public Object getAttribute( String name )
     {
+        Object value = null;
+
+        // In parallel mode, first look up from the worker.
+
+        Thread ct = Thread.currentThread();
+
+        if (ct instanceof Map) 
+        {
+            Map workerAsMap = (Map) ct;
+            value = workerAsMap.get(name);
+        }
+
+        // If no attribute found, then look up from the request
+        if (null == value) 
+        {
+            value = getAttributeInternal(name);
+        }
+
+        return value;
+    }
+
+    private Object getAttributeInternal( String name )
+    {
         Object value = super.getAttribute(name);
         if (name.equals(PortletRequest.USER_INFO))
         {
@@ -346,6 +369,31 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
      * @param arg1
      */
     public void setAttribute( String name, Object value )
+    {
+        // In parallel mode, put attribute into worker.
+
+        Thread ct = Thread.currentThread();
+
+        if (ct instanceof Map) 
+        {
+            Map workerAsMap = (Map) ct;
+
+            if (null == value) 
+            {
+                workerAsMap.remove(name);
+            } 
+            else 
+            {
+                workerAsMap.put(name, value);
+            }
+        }
+
+        // put attribute into request also.
+
+        setAttributeInternal(name, value);
+    }
+
+    private void setAttributeInternal( String name, Object value )
     {
         if (name == null)
         {

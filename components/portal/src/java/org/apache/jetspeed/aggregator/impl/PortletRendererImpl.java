@@ -15,6 +15,9 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -126,7 +129,7 @@ public class PortletRendererImpl implements PortletRenderer
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
 
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
+            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, false);
             rJob.execute();
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
@@ -160,7 +163,7 @@ public class PortletRendererImpl implements PortletRenderer
             HttpServletRequest servletRequest = requestContext.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
 
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
+            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, false);
             rJob.execute();
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
@@ -180,8 +183,9 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws UnknownPortletDefinitionException
      * @throws FailedToRetrievePortletWindow
      */
-    public void render( ContentFragment fragment, RequestContext requestContext )
+    public RenderingJob render( ContentFragment fragment, RequestContext requestContext )
     {
+        RenderingJob rJob = null;
         PortletWindow portletWindow;
         
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
@@ -195,7 +199,7 @@ public class PortletRendererImpl implements PortletRenderer
             portletWindow = getPortletWindow(fragment);
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
+            rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, true);                
             workMonitor.process(rJob);
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
@@ -208,7 +212,7 @@ public class PortletRendererImpl implements PortletRenderer
 //            ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
         //    ((ContentDispatcherImpl) dispatcherCtrl).notify(oid);
         }
-
+        return rJob;
     }
 
     /**
@@ -250,9 +254,10 @@ public class PortletRendererImpl implements PortletRenderer
     }
 
     protected RenderingJob buildRenderingJob( ContentFragment fragment, HttpServletRequest request,
-            HttpServletResponse response, RequestContext requestContext ) throws FailedToRetrievePortletWindow,
-            FailedToRenderFragmentException, PortletEntityNotStoredException
+        HttpServletResponse response, RequestContext requestContext, boolean isParallel ) 
+    throws FailedToRetrievePortletWindow, FailedToRenderFragmentException, PortletEntityNotStoredException
     {
+        RenderingJob rJob = null;
         ContentDispatcher dispatcher = null;
         
         PortletWindow portletWindow = getPortletWindow(fragment);
@@ -265,14 +270,38 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
-        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);        
-        request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
+        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);                
         request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
         request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
         
-        return new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
+        // In case of parallel mode, store attributes in a map to be refered by worker.
+        if (isParallel)
+        {
+            Map workerAttrs = new HashMap();
+            workerAttrs.put(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
+            workerAttrs.put(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
+            workerAttrs.put(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
+            workerAttrs.put(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);        
+            workerAttrs.put(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
+            workerAttrs.put(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
+
+            // the portlet invoker is not thread safe; it stores current portlet definition as a member variable.
+            // so, store portlet definition as an attribute of worker
+            workerAttrs.put(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, 
+                            portletWindow.getPortletEntity().getPortletDefinition());
+
+            rJob = new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics, workerAttrs);
+        }
+        else
+        {
+            rJob = new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
+        }
+
+
+        return rJob;
+        
     }
     
     protected void addTitleToHeader( PortletWindow portletWindow, ContentFragment fragment, HttpServletRequest request, HttpServletResponse response )

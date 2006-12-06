@@ -16,6 +16,7 @@
 package org.apache.jetspeed.container.invoker;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -164,6 +165,24 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID)
         throws PortletException, IOException
     {
+        // In case of parallel mode, the portletDefinition member is not thread-safe.
+        // So, hide the member variable by the following local variable.
+        PortletDefinition portletDefinition = null;
+
+        // In case of parallel mode, get portlet definition object from the worker thread.
+        // Otherwise, refer the member variable.
+        Map workerAsMap = null;
+        Thread ct = Thread.currentThread();
+        if (ct instanceof Map)
+        {
+            workerAsMap = (Map) ct;
+            portletDefinition = (PortletDefinition) workerAsMap.get(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
+        }
+        else
+        {
+            portletDefinition = this.portletDefinition;
+        }
+        
         ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader((PortletApplication)portletDefinition.getPortletApplicationDefinition());
 
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
@@ -211,6 +230,18 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
+            // Store same request attributes into the worker in parallel mode.
+            if (workerAsMap != null)
+            {
+                workerAsMap.put(ContainerConstants.PORTLET, portletInstance);
+                workerAsMap.put(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
+                workerAsMap.put(ContainerConstants.PORTLET_REQUEST, portletRequest);
+                workerAsMap.put(ContainerConstants.PORTLET_RESPONSE, portletResponse);
+                workerAsMap.put(ContainerConstants.METHOD_ID, methodID);
+                workerAsMap.put(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                workerAsMap.put(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());                
+            }
+
             PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
             dispatcher.include(servletRequest, servletResponse);
             
@@ -225,6 +256,19 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         finally
         {
             PortletRequestContext.clearContext();
+
+            // In parallel mode, remove attributes of worker.
+            if (workerAsMap != null)
+            {
+                workerAsMap.remove(ContainerConstants.PORTLET);
+                workerAsMap.remove(ContainerConstants.PORTLET_CONFIG);
+                workerAsMap.remove(ContainerConstants.PORTLET_REQUEST);
+                workerAsMap.remove(ContainerConstants.PORTLET_RESPONSE);
+                workerAsMap.remove(ContainerConstants.METHOD_ID);
+                workerAsMap.remove(ContainerConstants.PORTLET_NAME);
+                workerAsMap.remove(ContainerConstants.PORTAL_CONTEXT);
+            }
+
             servletRequest.removeAttribute(ContainerConstants.PORTLET);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
