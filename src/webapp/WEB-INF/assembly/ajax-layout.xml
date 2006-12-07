@@ -436,7 +436,7 @@
 <bean id="AjaxUpdateFolder"
     class="org.apache.jetspeed.layout.impl.UpdateFolderAction">
     <constructor-arg index="0">
-        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+        <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
@@ -449,7 +449,7 @@
 <bean id="AjaxUpdatePage"
     class="org.apache.jetspeed.layout.impl.UpdatePageAction">
     <constructor-arg index="0">
-        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+        <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
@@ -457,12 +457,18 @@
     <constructor-arg index='2'>    
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
+    <constructor-arg index='3'>
+        <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/>
+    </constructor-arg>  
+    <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
+    </constructor-arg>      
 </bean>
                 
 <bean id="AjaxUpdateLink"
     class="org.apache.jetspeed.layout.impl.UpdateLinkAction">
     <constructor-arg index="0">
-        <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
+        <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>

@@ -1,0 +1,7 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <method>$method</method>    
+    <count>$count</count>       
+    <id>$!id</id> 
+</js>

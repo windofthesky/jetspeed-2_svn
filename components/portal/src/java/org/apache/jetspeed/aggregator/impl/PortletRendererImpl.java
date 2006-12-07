@@ -15,8 +15,8 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,9 +41,7 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -238,9 +236,7 @@ public class PortletRendererImpl implements PortletRenderer
 
     protected PortletWindow getPortletWindow( ContentFragment fragment ) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
     {
-
-            ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-
+            // ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
             PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
             if (portletWindow == null)
             {

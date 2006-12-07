@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -23,11 +24,18 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
+import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * Update Page action -- updates various parts of the PSML page
@@ -42,6 +50,10 @@ import org.apache.jetspeed.request.RequestContext;
  *    | add-meta | update-meta | remove-meta
  *    Security methods:
  *    | add-secref | remove-secref
+ *    Fragment methods:
+ *    | update-fragment | add-fragment | remove-fragment
+ *    
+ *    update-fragment params: id, layout(name), sizes, layoutid (add)
  *    
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
@@ -51,12 +63,19 @@ public class UpdatePageAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(UpdatePageAction.class);
-
+    protected PortletWindowAccessor windowAccess;
+    protected PortletEntityAccessComponent entityAccess;
+    
     public UpdatePageAction(String template, 
                             String errorTemplate, 
-                            PageManager pm)
+                            PageManager pm,
+                            PortletWindowAccessor windowAccess,
+                            PortletEntityAccessComponent entityAccess)
+                            
     {
-        super(template, errorTemplate, pm); 
+        super(template, errorTemplate, pm);
+        this.windowAccess = windowAccess;
+        this.entityAccess = entityAccess;
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -81,23 +100,28 @@ public class UpdatePageAction
                 return success;
             }           
             int count = 0;
+            Page page = null;            
             String path = getActionParameter(requestContext, "path");
             if (path == null)
-                throw new AJAXException("Missing 'path' parameter");
-            Page page = null; 
-            if (!method.equals("add"))
             {
-                page = pageManager.getPage(path);
+                page = requestContext.getPage();
             }
             else
             {
-                if (pageManager.pageExists(path))
+                if (!method.equals("add"))
                 {
-                    success = false;
-                    resultMap.put(REASON, "Can't create: Page already exists: " + path);                
-                    return success;                
+                    page = pageManager.getPage(path);
                 }
-            }                
+                else
+                {
+                    if (pageManager.pageExists(path))
+                    {
+                        success = false;
+                        resultMap.put(REASON, "Can't create: Page already exists: " + path);                
+                        return success;                
+                    }
+                }
+            }
             if (method.equals("info"))
             {
                 count = updateInformation(requestContext, resultMap, page, path);
@@ -133,16 +157,48 @@ public class UpdatePageAction
             else if (method.equals("add"))
             {
                 page = pageManager.newPage(path);
-                page.setTitle(getActionParameter(requestContext, "title"));
-                String s = getActionParameter(requestContext, "short-title");
+                page.setTitle(getActionParameter(requestContext, TITLE));
+                String s = getActionParameter(requestContext, SHORT_TITLE );
                 if (!isBlank(s))
                     page.setShortTitle(s);                
-                page.getRootFragment().setName(getActionParameter(requestContext, "defaultLayout"));
+                page.getRootFragment().setName(getActionParameter(requestContext, DEFAULT_LAYOUT));
                 count++;                
             }
             else if (method.equals("remove"))
             {
                 pageManager.removePage(page);
+            }
+            else if (method.equals("update-fragment"))
+            {
+                String fragmentId = getActionParameter(requestContext, PORTLETID);
+                String layout = getActionParameter(requestContext, LAYOUT);                
+                if (isBlank(fragmentId) || isBlank(layout))
+                {
+                    resultMap.put(REASON, "Missing parameter to update fragment");                
+                    return false;                    
+                }                
+                count = updateFragment(requestContext, resultMap, page, fragmentId, layout);
+            }
+            else if (method.equals("add-fragment"))
+            {
+                String parentId = getActionParameter(requestContext, LAYOUTID);
+                String layout = getActionParameter(requestContext, LAYOUT);                
+                if (isBlank(parentId) || isBlank(layout))
+                {
+                    resultMap.put(REASON, "Missing parameter to add fragment");                
+                    return false;                    
+                }                
+                count = addFragment(requestContext, resultMap, page, parentId, layout);
+            }
+            else if (method.equals("remove-fragment"))
+            {
+                String fragmentId = getActionParameter(requestContext, PORTLETID);
+                if (isBlank(fragmentId))
+                {
+                    resultMap.put(REASON, "Missing parameter to remove fragment");                
+                    return false;                    
+                }                
+                count = removeFragment(requestContext, resultMap, page, fragmentId);                
             }            
             else
             {
@@ -166,6 +222,70 @@ public class UpdatePageAction
         return success;
     }
     
+    protected int updateFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String layout)
+    throws PortletEntityNotStoredException, FailedToRetrievePortletWindow
+    {
+        int count = 0;
+        String sizes = getActionParameter(requestContext, SIZES);
+        Fragment fragment = page.getFragmentById(fragmentId);
+        if (fragment != null)
+        {                
+            if (!layout.equals(fragment.getName()))
+            {
+                fragment.setName(layout);
+                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());                    
+                PortletWindow window = windowAccess.getPortletWindow(contentFragment);
+                if (window != null)
+                {
+                    entityAccess.updatePortletEntity(window.getPortletEntity(), contentFragment);
+                    entityAccess.storePortletEntity(window.getPortletEntity());
+                    windowAccess.createPortletWindow(window.getPortletEntity(), contentFragment.getId());
+                    count++;
+                }
+            }
+            if (!isBlank(sizes))
+            {
+                fragment.setLayoutSizes(sizes);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    protected int addFragment(RequestContext requestContext, Map resultMap, Page page, String parentFragmentId, String layout)
+    {
+        int count = 0;
+        String sizes = getActionParameter(requestContext, SIZES);
+        Fragment fragment = page.getFragmentById(parentFragmentId);
+        if (fragment != null)
+        {
+            Fragment newFragment = pageManager.newFragment();
+            newFragment.setType(Fragment.LAYOUT);            
+            newFragment.setName(layout);
+            fragment.getFragments().add(newFragment);            
+            resultMap.put(PORTLETID, newFragment.getId());                        
+            count++;
+            if (!isBlank(sizes))
+            {
+                newFragment.setLayoutSizes(sizes);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    protected int removeFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId)
+    {
+        int count = 0;
+        Fragment fragment = page.getFragmentById(fragmentId);
+        if (fragment != null)
+        {
+            page.removeFragmentById(fragment.getId());
+            count++;
+        }
+        return count;
+    }    
+        
     protected int updateInformation(RequestContext requestContext, Map resultMap, Node node, String path)
     throws AJAXException    
     {

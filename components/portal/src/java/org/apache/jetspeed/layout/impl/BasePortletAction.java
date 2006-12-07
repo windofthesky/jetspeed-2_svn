@@ -16,6 +16,7 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -158,4 +159,46 @@ public abstract class BasePortletAction
         }
         return parameter;
     }
+    
+    public Fragment getParentFragmentById(String id, Fragment root)
+    {
+        if ( id == null )
+        {
+            return null;
+        }
+        return searchForParentFragmentById( id, root );
+    }
+    
+    protected Fragment searchForParentFragmentById( String id, Fragment parent )
+    {   
+        // find fragment by id, tracking fragment parent
+        Fragment matchedParent = null;
+        if( parent != null ) 
+        {
+            // process the children
+            List children = parent.getFragments();
+            for( int i = 0, cSize = children.size() ; i < cSize ; i++) 
+            {
+                Fragment childFrag = (Fragment)children.get( i );
+                if ( childFrag != null ) 
+                {
+                    if ( id.equals( childFrag.getId() ) )
+                    {
+                        matchedParent = parent;
+                        break;
+                    }
+                    else
+                    {
+                        matchedParent = searchForParentFragmentById( id, childFrag );
+                        if ( matchedParent != null )
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return matchedParent;
+    }
+    
 }

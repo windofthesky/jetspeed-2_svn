@@ -170,7 +170,8 @@ public class MovePortletAction
                     {
                         // figure out the current layout fragment - must know to be able to find the portlet
                         //    fragment by row/col when a new page is created
-                        currentLayoutFragment = getParentFragmentById( portletId, requestContext );
+                        Fragment root = requestContext.getPage().getRootFragment();
+                        currentLayoutFragment = getParentFragmentById(portletId, root);
                     }
                 }
                 if ( currentLayoutFragment == null )
@@ -477,46 +478,5 @@ public class MovePortletAction
             resultMap.put(oldName, new Float(oldValue));
             resultMap.put(name, new Float(value));
         }
-    }
-    public Fragment getParentFragmentById( String id, RequestContext requestContext )
-    {
-        if ( id == null )
-        {
-            return null;
-        }
-        Fragment root = requestContext.getPage().getRootFragment();
-        return searchForParentFragmentById( id, root );
-    }
-    
-    protected Fragment searchForParentFragmentById( String id, Fragment parent )
-    {   
-        // find fragment by id, tracking fragment parent
-        Fragment matchedParent = null;
-        if( parent != null ) 
-        {
-            // process the children
-            List children = parent.getFragments();
-            for( int i = 0, cSize = children.size() ; i < cSize ; i++) 
-            {
-                Fragment childFrag = (Fragment)children.get( i );
-                if ( childFrag != null ) 
-                {
-                    if ( id.equals( childFrag.getId() ) )
-                    {
-                        matchedParent = parent;
-                        break;
-                    }
-                    else
-                    {
-                        matchedParent = searchForParentFragmentById( id, childFrag );
-                        if ( matchedParent != null )
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return matchedParent;
     }
 }
