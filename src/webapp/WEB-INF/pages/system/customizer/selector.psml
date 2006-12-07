@@ -3,17 +3,7 @@
     <title>Selector</title>
     <short-title>Selector</short-title>
     <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
-    <fragment id="P-10ea507ced5-10000" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-        <fragment id="P-10ea50cab5b-10001" type="portlet"
-            name="j2-admin::CategoryPortletSelector" decorator="gray-gradient">
-            <property name="z" value="102.0"/>
-            <property name="row" value="0"/>
-            <property name="width" value="1046.0"/>
-            <property name="height" value="495.0"/>
-            <property name="column" value="0"/>
-            <property name="y" value="262.0"/>
-            <property name="x" value="200.0"/>
-            <property name="jsdesktop" value="staticpos=false;fitheight=false"/>
-        </fragment>
+    <fragment id="js-cp-selector" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="js-cp-selector.2" type="portlet" name="j2-admin::CategoryPortletSelector"/>
     </fragment>
 </page>
