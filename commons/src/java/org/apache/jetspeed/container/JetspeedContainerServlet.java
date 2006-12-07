@@ -225,8 +225,6 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 return;
             }
-            
-            request.removeAttribute(ContainerConstants.PORTLET);
             if (workerAsMap != null)
             {
                 portlet = (Portlet) workerAsMap.get(ContainerConstants.PORTLET);
