@@ -16,6 +16,7 @@
 package org.apache.jetspeed.aggregator;
 
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.aggregator.PortletContent;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -30,6 +31,8 @@ public interface RenderingJob extends Runnable
     void execute();
     
     PortletWindow getWindow(); 
+
+    PortletContent getPortletContent();
         
 }
 
