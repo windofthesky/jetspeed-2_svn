@@ -46,7 +46,7 @@ limitations under the License.
         <column name="FULL_PATH" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <foreign-key foreignTable="PREFS_NODE">
+        <foreign-key foreignTable="PREFS_NODE" name="FK_PREFS_NODE_1">
             <reference foreign="NODE_ID" local="PARENT_NODE_ID"/>
         </foreign-key>
     </table>

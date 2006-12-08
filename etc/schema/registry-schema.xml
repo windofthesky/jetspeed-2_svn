@@ -71,7 +71,7 @@ limitations under the License.
         <column name="COLUMN_VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">                        
+        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_PA_METADATA_FIELDS_1" onDelete="cascade">                        
             <reference foreign="APPLICATION_ID" local="OBJECT_ID"/>            
         </foreign-key>        
     </table>
@@ -85,7 +85,7 @@ limitations under the License.
         <column name="COLUMN_VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_DEFINITION" onDelete="cascade">                        
+        <foreign-key foreignTable="PORTLET_DEFINITION" name="FK_PD_METADATA_FIELDS_1" onDelete="cascade">                        
             <reference foreign="ID" local="OBJECT_ID"/>            
         </foreign-key>                
     </table>
@@ -175,7 +175,7 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="NAME" size="150" type="VARCHAR"/>
         <column name="NAME_LINK" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_USER_ATTRIBUTE_REF_1" onDelete="cascade">
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
         </foreign-key>                
     </table>
@@ -188,7 +188,7 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="NAME" size="150" type="VARCHAR"/>
         <column name="DESCRIPTION" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_USER_ATTRIBUTE_1" onDelete="cascade">
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
         </foreign-key>        
     </table>
@@ -234,7 +234,7 @@ limitations under the License.
         <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
         <column name="DESCRIPTION" type="LONGVARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_CUSTOM_PORTLET_MODE_1" onDelete="cascade">
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
         </foreign-key>        
     </table>
@@ -248,7 +248,7 @@ limitations under the License.
         <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
         <column name="DESCRIPTION" type="LONGVARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" onDelete="cascade">
+        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_CUSTOM_WINDOW_STATE_1" onDelete="cascade">
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
         </foreign-key>        
     </table>
