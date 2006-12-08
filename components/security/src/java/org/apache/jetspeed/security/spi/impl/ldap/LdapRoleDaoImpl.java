@@ -21,6 +21,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 
@@ -76,6 +77,10 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
         	classes.add(getObjectClasses()[i]);
         attrs.put(classes);
         attrs.put(getEntryPrefix(), principalUid);
+        if(!StringUtils.isEmpty(getRoleObjectRequiredAttributeClasses()))
+        	attrs.put(getRoleObjectRequiredAttributeClasses(), "");
+        for (int i=0;i<getAttributes().length;i++)
+        	attrs.put(parseAttr(getAttributes()[i],principalUid)[0], parseAttr(getAttributes()[i],principalUid)[1]);
         return attrs;
     }
 
@@ -115,6 +120,15 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
 	protected String[] getObjectClasses() {
 		return this.getRoleObjectClasses();
 	}
+
+	protected String getUidAttributeForPrincipal() {
+		return this.getRoleUidAttribute();
+	}
+
+	protected String[] getAttributes() {
+		return getRoleAttributes();
+	}
 	
 	
 }
+

@@ -27,6 +27,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.GroupPrincipal;
@@ -98,10 +99,14 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     public void create(final String principalUid) throws SecurityException
     {
         Attributes attrs = defineLdapAttributes(principalUid);
+        logger.debug("creating principal with " + attrs);
         try
         {
-            String userDn = getEntryPrefix() + "=" + principalUid;
-            if (getDnSuffix()!=null && !getDnSuffix().equals("")) userDn+="," + getDnSuffix();// + ',' + getDefaultSearchBase();
+        	String userDn = getEntryPrefix() + "=" + principalUid;
+            if (!StringUtils.isEmpty(getDnSuffix())) 
+            		userDn+="," + getDnSuffix();
+
+            logger.debug("userDn = " + userDn);
             
             ctx.createSubcontext(userDn, attrs);
             if (logger.isDebugEnabled())
@@ -125,6 +130,16 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     protected abstract String getDnSuffix();
 
     /**
+     * <p>
+     * Builds the dn suffix.
+     * </p>
+     * 
+     * @return The dn suffix.
+     */
+    protected abstract String getUidAttributeForPrincipal();
+
+    
+    /**
      * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#delete(java.lang.String)
      */
     public void delete(final String principalUid) throws SecurityException
@@ -140,6 +155,8 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         try
         {
             rdn = getSubcontextName(dn);
+            if(!StringUtils.isEmpty(getSearchDomain()))
+            	rdn+="," + getSearchDomain();
             ctx.destroySubcontext(rdn);
         }
         catch (NamingException e)
@@ -261,7 +278,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         {
             Attributes atts = searchResult.getAttributes();
 
-            String uid = (String) getAttribute(getEntryPrefix(), atts).getAll().next();
+            String uid = (String) getAttribute(getUidAttributeForPrincipal(), atts).getAll().next();
             Principal principal = makePrincipal(uid);
 
             principals.add(principal);
@@ -281,7 +298,7 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         {
             Attribute attr = (Attribute) ae.next();
 
-            if (attr.getID().equals(attributeName))
+            if (attr.getID().equalsIgnoreCase(attributeName))
             {
                 return attr;
             }
@@ -291,6 +308,53 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
     
 	protected String getSearchDomain() {
 		return this.getUserFilterBase();
-	}    
+	}
+
+	protected String[] parseAttr(String attr, String replace) {
+		attr = StringUtils.replace(attr, "{u}", replace);
+		return StringUtils.split(attr,"=");
+	}
+
+	protected String getGroupDN(String groupPrincipalUid) {
+		return getGroupDN(groupPrincipalUid,true);
+	}
+
+	protected String getGroupDN(String groupPrincipalUid, boolean includeBaseDN) {
+		String groupDN = getGroupIdAttribute() + "=" + groupPrincipalUid;
+		if (!StringUtils.isEmpty(getGroupFilterBase()))
+			groupDN += "," + getGroupFilterBase();
+		if (includeBaseDN && !StringUtils.isEmpty(getRootContext()))
+			groupDN += "," + getRootContext();
+		return groupDN;
+	}	
+
+	protected String getRoleDN(String rolePrincipalUid) {
+		return getRoleDN(rolePrincipalUid,true);
+	}
+	
+	protected String getRoleDN(String rolePrincipalUid, boolean includeBaseDN) {
+		String roleDN = getRoleIdAttribute() + "=" + rolePrincipalUid; 
+		if (!StringUtils.isEmpty(getRoleFilterBase())) 
+			roleDN+="," + getRoleFilterBase();
+		if (includeBaseDN && !StringUtils.isEmpty(getRootContext())) 
+			roleDN+="," + getRootContext();
+		return roleDN;
+	}    	
+
+	protected String getUserDN(String userPrincipalUid) {
+		return getUserDN(userPrincipalUid,true);
+	}
+	
+	protected String getUserDN(String userPrincipalUid, boolean includeBaseDN) {
+		String userDN = getUserIdAttribute() + "=" + userPrincipalUid;
+		if (!StringUtils.isEmpty(getUserFilterBase()))
+			userDN += "," + getUserFilterBase();
+		if (includeBaseDN && !StringUtils.isEmpty(getRootContext()))
+			userDN += "," + getRootContext();
+		return userDN;
+	}	
+
+
+
 
 }

@@ -19,7 +19,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.SecurityException;
 
 /**
  * <p>
@@ -40,17 +39,11 @@ public class LdapBindingConfig
     private String rootPassword;
     private String rootContext;
     
-    private String defaultDnSuffix;
-    
     private PropertiesConfiguration props = null;
 
-	private String roleFilter;
 	private String groupFilter;
 	private String userFilter;
 
-	private String userAuthenticationFiler;
-	
-	private String roleMembershipAttributes;
 	private String userRoleMembershipAttributes;
 
 	private String groupMembershipAttributes;
@@ -58,23 +51,42 @@ public class LdapBindingConfig
 
 	private String defaultSearchBase;
 
-	private String roleFilterBase;
 	private String groupFilterBase;
 	private String userFilterBase;
 	
-	private String roleIdAttribute;
 	private String groupIdAttribute;
 	private String userIdAttribute;
-
-	private String[] roleObjectClasses;
+	
+	private String uidAttribute;
+	private String memberShipSearchScope;
 
 	private String[] groupObjectClasses;
 
 	private String[] userObjectClasses;
 
-	private String roleGroupMembershipForRoleAttributes;
+	private String groupMembershipForRoleAttributes;
 
-	private String groupMembershipForRoleAttributes;	
+	private String groupUidAttribute;
+	private String userUidAttribute;	
+	
+	private String[] groupAttributes;
+	private String[] userAttributes;	
+		
+	private String groupObjectRequiredAttributeClasses;
+	
+	private String[] roleObjectClasses;
+	private String roleGroupMembershipForRoleAttributes;
+	private String[] roleAttributes;
+	private String roleObjectRequiredAttributeClasses;
+	private String roleFilter;
+	private String roleFilterBase;
+	private String roleIdAttribute;
+	private String roleUidAttribute;
+	private String roleMembershipAttributes;
+	
+	private String userPasswordAttribute;
+
+	private String[] knownAttributes;
 
     /**
      * @param factory The initial context factory.
@@ -90,14 +102,12 @@ public class LdapBindingConfig
     public LdapBindingConfig(String factory, 
     		String name, 
     		String port, 
-    		String suffix, 
     		String context, 
     		String dn,
             String password, 
             String roleFilter,
     		String groupFilter,
     		String userFilter,
-			String userAuthenticationFiler,
 			String roleMembershipAttributes,
 			String userRoleMembershipAttributes,
 			String groupMembershipAttributes,
@@ -113,56 +123,72 @@ public class LdapBindingConfig
 			String userObjectClasses,			
 			String roleIdAttribute,
 			String groupIdAttribute,
-			String userIdAttribute)    
+			String userIdAttribute,
+			String uidAttribute,
+			String memberShipSearchScope,
+			String roleUidAttribute,
+			String groupUidAttribute,
+			String userUidAttribute,
+			String roleObjectRequiredAttributeClasses,
+			String groupObjectRequiredAttributeClasses,
+			String userAttributes,
+			String roleAttributes,
+			String groupAttributes,
+			String userPasswordAttribute,
+			String knownAttributes)    
     {
-        try
-        {
-            initialContextFactory = factory;
-            ldapServerName = name;
-            ldapServerPort = port;
-            defaultDnSuffix = suffix;
-            rootContext = context;
-            rootDn = dn;
-            rootPassword = password;
-    
-            this.roleFilter=roleFilter;
-    		this.groupFilter=groupFilter;
-    		this.userFilter=userFilter;
-    		this.userAuthenticationFiler=userAuthenticationFiler;
-			
-    		this.roleMembershipAttributes=roleMembershipAttributes;
-			this.userRoleMembershipAttributes=userRoleMembershipAttributes;
-			
-			this.groupMembershipAttributes=groupMembershipAttributes;
-			this.userGroupMembershipAttributes=userGroupMembershipAttributes;
-			
-			this.groupMembershipForRoleAttributes=groupMembershipForRoleAttributes;
-			this.roleGroupMembershipForRoleAttributes=roleGroupMembershipForRoleAttributes;
-			this.defaultSearchBase=defaultSearchBase;
-    		
-			this.roleFilterBase=roleFilterBase;
-    		this.groupFilterBase=groupFilterBase;
-    		this.userFilterBase=userFilterBase;
-    		
-    		
-    		this.roleObjectClasses=StringUtils.split(roleObjectClasses,",");
-    		this.groupObjectClasses=StringUtils.split(groupObjectClasses,",");
-    		this.userObjectClasses=StringUtils.split(userObjectClasses,",");
-    		
-    		this.roleIdAttribute=roleIdAttribute;
-    		this.groupIdAttribute=groupIdAttribute;
-    		this.userIdAttribute=userIdAttribute;
-    		
-            new InitLdapSchema(this);
-        }
-        catch (SecurityException se)
-        {
-            if (logger.isWarnEnabled())
-            {
-                logger.warn("The LDAP directory should already be initialized.  If this is not the case, an exception"
-                        + "occured during initialization.");
-            }
-        }
+        initialContextFactory = factory;
+        ldapServerName = name;
+        ldapServerPort = port;
+        rootContext = context;
+        rootDn = dn;
+        rootPassword = password;
+
+        this.roleFilter=roleFilter;
+        this.groupFilter=groupFilter;
+        this.userFilter=userFilter;
+        
+        this.roleMembershipAttributes=roleMembershipAttributes;
+        this.userRoleMembershipAttributes=userRoleMembershipAttributes;
+        
+        this.groupMembershipAttributes=groupMembershipAttributes;
+        this.userGroupMembershipAttributes=userGroupMembershipAttributes;
+        
+        this.groupMembershipForRoleAttributes=groupMembershipForRoleAttributes;
+        this.roleGroupMembershipForRoleAttributes=roleGroupMembershipForRoleAttributes;
+        this.defaultSearchBase=defaultSearchBase;
+        
+        this.roleFilterBase=roleFilterBase;
+        this.groupFilterBase=groupFilterBase;
+        this.userFilterBase=userFilterBase;
+        
+        
+        this.roleObjectClasses=StringUtils.split(roleObjectClasses,",");
+        this.groupObjectClasses=StringUtils.split(groupObjectClasses,",");
+        this.userObjectClasses=StringUtils.split(userObjectClasses,",");
+        
+        this.roleIdAttribute=roleIdAttribute;
+        this.groupIdAttribute=groupIdAttribute;
+        this.userIdAttribute=userIdAttribute;
+        
+        this.uidAttribute = uidAttribute;
+        this.memberShipSearchScope=memberShipSearchScope;
+        
+
+        this.roleUidAttribute=roleUidAttribute;
+        this.groupUidAttribute=groupUidAttribute;
+        this.userUidAttribute=userUidAttribute;             
+        
+        this.roleObjectRequiredAttributeClasses=roleObjectRequiredAttributeClasses;
+        this.groupObjectRequiredAttributeClasses=groupObjectRequiredAttributeClasses;
+        
+        this.roleAttributes=StringUtils.split(roleAttributes,",");
+        this.groupAttributes = StringUtils.split(groupAttributes,",");
+        this.userAttributes = StringUtils.split(userAttributes,",");
+        
+        this.userPasswordAttribute = userPasswordAttribute;
+        
+        this.knownAttributes =  StringUtils.split(knownAttributes,",");
     }
 
     /**
@@ -175,11 +201,10 @@ public class LdapBindingConfig
     {
         try
         {
-            props = new PropertiesConfiguration("JETSPEED-INF/ldap/" + ldapType + "/ldap.properties");
+            props = new PropertiesConfiguration("JETSPEED-INF/directory/config/" + ldapType + "/ldap.properties");
             initialContextFactory = props.getString("org.apache.jetspeed.ldap.initialContextFactory");
             ldapServerName = props.getString("org.apache.jetspeed.ldap.ldapServerName");
             ldapServerPort = props.getString("org.apache.jetspeed.ldap.ldapServerPort");
-            defaultDnSuffix = props.getString("org.apache.jetspeed.ldap.defaultDnSuffix");
             rootContext = props.getString("org.apache.jetspeed.ldap.rootContext");
             rootDn = props.getString("org.apache.jetspeed.ldap.rootDn");
             rootPassword = props.getString("org.apache.jetspeed.ldap.rootPassword");
@@ -187,8 +212,6 @@ public class LdapBindingConfig
             roleFilter=props.getString("org.apache.jetspeed.ldap.RoleFilter");
             groupFilter=props.getString("org.apache.jetspeed.ldap.GroupFilter");
             userFilter=props.getString("org.apache.jetspeed.ldap.UserFilter");
-
-            userAuthenticationFiler=props.getString("org.apache.jetspeed.ldap.UserAuthenticationFiler");
 
             roleMembershipAttributes=props.getString("org.apache.jetspeed.ldap.RoleMembershipAttributes");
             userRoleMembershipAttributes=props.getString("org.apache.jetspeed.ldap.UserRoleMembershipAttributes");
@@ -199,6 +222,7 @@ public class LdapBindingConfig
             groupMembershipForRoleAttributes=props.getString("org.apache.jetspeed.ldap.GroupMembershipForRoleAttributes");
             roleGroupMembershipForRoleAttributes=props.getString("org.apache.jetspeed.ldap.RoleGroupMembershipForRoleAttributes");
 
+            
             defaultSearchBase=props.getString("org.apache.jetspeed.ldap.DefaultSearchBase");
             
             roleFilterBase=props.getString("org.apache.jetspeed.ldap.RoleFilterBase");
@@ -213,37 +237,29 @@ public class LdapBindingConfig
             groupIdAttribute=props.getString("org.apache.jetspeed.ldap.GroupIdAttribute");
             userIdAttribute=props.getString("org.apache.jetspeed.ldap.UserIdAttribute");
 
-            new InitLdapSchema(this);
+            uidAttribute =props.getString("org.apache.jetspeed.ldap.UidAttribute");
+            memberShipSearchScope = props.getString("org.apache.jetspeed.ldap.MemberShipSearchScope");
+            
+    		this.roleUidAttribute=props.getString("org.apache.jetspeed.ldap.roleUidAttribute");
+    		this.groupUidAttribute=props.getString("org.apache.jetspeed.ldap.groupUidAttribute");
+    		this.userUidAttribute=props.getString("org.apache.jetspeed.ldap.userUidAttribute");
+
+    		this.roleObjectRequiredAttributeClasses=props.getString("org.apache.jetspeed.ldap.roleObjectRequiredAttributeClasses");
+    		this.groupObjectRequiredAttributeClasses=props.getString("org.apache.jetspeed.ldap.groupObjectRequiredAttributeClasses");
+
+			this.roleAttributes=StringUtils.split(props.getString("org.apache.jetspeed.ldap.roleAttributes"),",");
+			this.groupAttributes=StringUtils.split(props.getString("org.apache.jetspeed.ldap.groupAttributes"),",");
+			this.userAttributes=StringUtils.split(props.getString("org.apache.jetspeed.ldap.userAttributes"),",");
+			this.userPasswordAttribute=props.getString("org.apache.jetspeed.ldap.userPasswordAttribute");
+			
+			this.knownAttributes=StringUtils.split(props.getString("org.apache.jetspeed.ldap.knownAttributes"),",");
         }
         catch (ConfigurationException ce)
         {
             logger.error("Could not configure LdapBindingConfig: " + ce);
         }
-        catch (SecurityException se)
-        {
-            if (logger.isWarnEnabled())
-            {
-                logger.warn("The LDAP directory should already be initialized.  If this is not the case, an exception"
-                        + "occured during initialization.");
-            }
-        }
     }
 
-    /**
-     * @return Returns the defaultDnSuffix.
-     */
-    public String getDefaultDnSuffix()
-    {
-        return defaultDnSuffix;
-    }
-
-    /**
-     * @param defaultDnSuffix The defaultDnSuffix to set.
-     */
-    public void setDefaultDnSuffix(String defaultDnSuffix)
-    {
-        this.defaultDnSuffix = defaultDnSuffix;
-    }
     /**
      * @return Returns the initialContextFactory.
      */
@@ -340,38 +356,6 @@ public class LdapBindingConfig
         this.rootPassword = rootPassword;
     }
 
-	public String getRoleFilter() {
-		return roleFilter;
-	}
-
-	public void setRoleFilter(String roleFilter) {
-		this.roleFilter = roleFilter;
-	}
-
-	public String getRoleFilterBase() {
-		return roleFilterBase;
-	}
-
-	public void setRoleFilterBase(String roleFilterBase) {
-		this.roleFilterBase = roleFilterBase;
-	}
-
-	public String getRoleMembershipAttributes() {
-		return roleMembershipAttributes;
-	}
-
-	public void setRoleMembershipAttributes(String roleMembershipAttributes) {
-		this.roleMembershipAttributes = roleMembershipAttributes;
-	}
-
-	public String getUserAuthenticationFiler() {
-		return userAuthenticationFiler;
-	}
-
-	public void setUserAuthenticationFiler(String userAuthenticationFiler) {
-		this.userAuthenticationFiler = userAuthenticationFiler;
-	}
-
 	public String getUserFilter() {
 		return userFilter;
 	}
@@ -445,13 +429,6 @@ public class LdapBindingConfig
 		this.groupIdAttribute = groupIdAttribute;
 	}
 
-	public String getRoleIdAttribute() {
-		return roleIdAttribute;
-	}
-
-	public void setRoleIdAttribute(String roleIdAttribute) {
-		this.roleIdAttribute = roleIdAttribute;
-	}
 
 	public String getUserIdAttribute() {
 		return userIdAttribute;
@@ -469,13 +446,7 @@ public class LdapBindingConfig
 		this.groupObjectClasses = groupObjectClasses;
 	}
 
-	public String[] getRoleObjectClasses() {
-		return roleObjectClasses;
-	}
 
-	public void setRoleObjectClasses(String[] roleObjectClasses) {
-		this.roleObjectClasses = roleObjectClasses;
-	}
 
 	public String[] getUserObjectClasses() {
 		return userObjectClasses;
@@ -485,20 +456,165 @@ public class LdapBindingConfig
 		this.userObjectClasses = userObjectClasses;
 	}
 
-	public String getRoleGroupMembershipForRoleAttributes() {
-		return this.roleGroupMembershipForRoleAttributes;
-	}
 
 	public String getGroupMembershipForRoleAttributes() {
 		return this.groupMembershipForRoleAttributes;
+	}
+	
+
+
+	public void setGroupMembershipForRoleAttributes(String groupMembershipForRoleAttributes) {
+		this.groupMembershipForRoleAttributes=groupMembershipForRoleAttributes;
+	}
+
+	public String getUidAttribute() {
+		return uidAttribute;
+	}
+
+	public void setUidAttribute(String uidAttribute) {
+		this.uidAttribute = uidAttribute;
+	}
+
+	public String getMemberShipSearchScope() {
+		return memberShipSearchScope;
+	}
+
+	public void setMemberShipSearchScope(String memberShipSearchScope) {
+		this.memberShipSearchScope = memberShipSearchScope;
+	}
+
+	public String getGroupUidAttribute() {
+		return this.groupUidAttribute;
+	}
+
+	public void setGroupUidAttribute(String groupUidAttribute) {
+		this.groupUidAttribute = groupUidAttribute;
+	}
+
+	public String getUserUidAttribute() {
+		return this.userUidAttribute;
+	}		
+	
+	public void setUserUidAttribute(String userUidAttribute) {
+		this.userUidAttribute = userUidAttribute;
+	}
+
+	public String getGroupObjectRequiredAttributeClasses() {
+		return groupObjectRequiredAttributeClasses;
+	}
+
+	public void setGroupObjectRequiredAttributeClasses(
+			String groupObjectRequiredAttributeClasses) {
+		this.groupObjectRequiredAttributeClasses = groupObjectRequiredAttributeClasses;
+	}
+
+
+
+	public String[] getGroupAttributes() {
+		return groupAttributes;
+	}
+
+	public void setGroupAttributes(String[] groupAttributes) {
+		this.groupAttributes = groupAttributes;
+	}
+
+	public String[] getUserAttributes() {
+		return userAttributes;
+	}
+
+	public void setUserAttributes(String[] userAttributes) {
+		this.userAttributes = userAttributes;
+	}	
+	
+	public String getRoleObjectRequiredAttributeClasses() {
+		return roleObjectRequiredAttributeClasses;
+	}
+
+	public void setRoleObjectRequiredAttributeClasses(
+			String roleObjectRequiredAttributeClasses) {
+		this.roleObjectRequiredAttributeClasses = roleObjectRequiredAttributeClasses;
+	}
+	
+	public String[] getRoleAttributes() {
+		return roleAttributes;
+	}
+
+	public void setRoleAttributes(String[] roleAttributes) {
+		this.roleAttributes = roleAttributes;
+	}
+	
+	public String[] getRoleObjectClasses() {
+		return roleObjectClasses;
+	}
+
+	public void setRoleObjectClasses(String[] roleObjectClasses) {
+		this.roleObjectClasses = roleObjectClasses;
+	}
+	
+
+	public String getRoleGroupMembershipForRoleAttributes() {
+		return this.roleGroupMembershipForRoleAttributes;
 	}
 	
 	public void setRoleGroupMembershipForRoleAttributes(String roleGroupMembershipForRoleAttributes) {
 		this.roleGroupMembershipForRoleAttributes=roleGroupMembershipForRoleAttributes;
 	}
 
-	public void setGroupMembershipForRoleAttributes(String groupMembershipForRoleAttributes) {
-		this.groupMembershipForRoleAttributes=groupMembershipForRoleAttributes;
+	public String getRoleFilter() {
+		return roleFilter;
+	}
+
+	public void setRoleFilter(String roleFilter) {
+		this.roleFilter = roleFilter;
+	}
+
+	public String getRoleFilterBase() {
+		return roleFilterBase;
+	}
+
+	public void setRoleFilterBase(String roleFilterBase) {
+		this.roleFilterBase = roleFilterBase;
+	}
+
+	public String getRoleMembershipAttributes() {
+		return roleMembershipAttributes;
+	}
+
+	public void setRoleMembershipAttributes(String roleMembershipAttributes) {
+		this.roleMembershipAttributes = roleMembershipAttributes;
+	}
+
+	public String getRoleUidAttribute() {
+		return this.roleUidAttribute;
+	}
+
+	public void setRoleUidAttribute(String roleUidAttribute) {
+		this.roleUidAttribute = roleUidAttribute;
+	}
+	
+
+	public String getRoleIdAttribute() {
+		return roleIdAttribute;
+	}
+
+	public void setRoleIdAttribute(String roleIdAttribute) {
+		this.roleIdAttribute = roleIdAttribute;
+	}
+
+	public String getUserPasswordAttribute() {
+		return userPasswordAttribute;
+	}
+
+	public void setUserPasswordAttribute(String userPasswordAttribute) {
+		this.userPasswordAttribute = userPasswordAttribute;
+	}
+
+	public String[] getKnownAttributes() {
+		return this.knownAttributes;
+	}	
+	
+	public void setKnownAttributes(String[] knownAttributes) {
+		this.knownAttributes = knownAttributes;
 	}	
 	
 }

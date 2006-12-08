@@ -159,7 +159,6 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      */
     public void removeUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException
     {
-    	//TODO: check if this is ok
         verifyUserAndRoleExist(username, roleFullPathName);
         removeUserFromRole(username, roleFullPathName);
     }

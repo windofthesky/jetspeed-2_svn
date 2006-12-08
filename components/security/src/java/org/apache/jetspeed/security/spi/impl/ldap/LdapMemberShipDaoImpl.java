@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -16,10 +15,8 @@ import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
-import javax.naming.ldap.LdapName;
-*/
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
@@ -27,6 +24,9 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 
 public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapMembershipDao {
+
+	/** The logger. */
+	private static final Log logger = LogFactory.getLog(LdapMemberShipDaoImpl.class);
 
 	public LdapMemberShipDaoImpl() throws SecurityException {
 		super();
@@ -36,35 +36,29 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		super(config);
 	}	
 
-	/** The logger. */
-    private static final Log logger = LogFactory.getLog(LdapMemberShipDaoImpl.class);
-
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.security.spi.impl.ldap.LdapMembershipDao#searchGroupMemberShipByGroup(java.lang.String, javax.naming.directory.SearchControls)
 	 */
 	public String[] searchGroupMemberShipByGroup(final String userPrincipalUid, SearchControls cons) throws NamingException {
-		String subfilter = "uid=" + userPrincipalUid + "," + getUserFilterBase() + "," + getRootContext(); 
-		String query = "(&(" + getGroupMembershipAttribute() + "=" + subfilter + ")" + getGroupFilter()  + ")";
+		
+		String query = "(&(" + getGroupMembershipAttribute() + "=" + getUserDN(userPrincipalUid) + ")" + getGroupFilter()  + ")";
 		
 	    if (logger.isDebugEnabled())
 	    {
 	        logger.debug("query[" + query + "]");
 	    }
+	    
+	    cons.setSearchScope(getSearchScope());
+        String groupFilterBase = getGroupFilterBase();
+	    NamingEnumeration searchResults = ((DirContext) ctx).search(groupFilterBase,query , cons);	    
 
-/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
-        Name name = new LdapName(getGroupFilterBase());
-	    NamingEnumeration searchResults = ((DirContext) ctx).search(name,query , cons);
-*/
 	   List groupPrincipalUids = new ArrayList();
-/*       
 	    while (searchResults.hasMore())
 	    {
 	        SearchResult result = (SearchResult) searchResults.next();
 	        Attributes answer = result.getAttributes();
-	
 	        groupPrincipalUids.addAll(getAttributes(getAttribute(getGroupIdAttribute(), answer)));
 	    }
-*/        
 	    return (String[]) groupPrincipalUids.toArray(new String[groupPrincipalUids.size()]);
 	
 	}
@@ -79,39 +73,45 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    {
 	        throw new NamingException("Could not find any user with uid[" + userPrincipalUid + "]");
 	    }
-	
-	    Attributes userAttributes = getFirstUser(searchResults);
-	    List uids = getAttributes(getAttribute(getUserGroupMembershipAttribute(), userAttributes));
-	    return (String[]) uids.toArray(new String[uids.size()]);
+	    
+		Attributes userAttributes = getFirstUser(searchResults);
+		List groupUids = new ArrayList();
+		Attribute attr = getAttribute(getUserGroupMembershipAttribute(), userAttributes);
+		 List attrs = getAttributes(attr);
+		        Iterator it = attrs.iterator();
+		        while(it.hasNext()) {
+		        	String cnfull = (String)it.next();
+		        	if(cnfull.toLowerCase().indexOf(getRoleFilterBase().toLowerCase())!=-1) {
+			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
+			        	groupUids.add(cn);
+		        	}
+		        }
+	    //List uids = getAttributes(getAttribute(getUserGroupMembershipAttribute(), userAttributes),getGroupFilterBase());
+	    return (String[]) groupUids.toArray(new String[groupUids.size()]);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.security.spi.impl.ldap.LdapMembershipDao#searchRoleMemberShipByRole(java.lang.String, javax.naming.directory.SearchControls)
 	 */
 	public String[] searchRoleMemberShipByRole(final String userPrincipalUid, SearchControls cons) throws NamingException {
-		String subfilter = "uid=" + userPrincipalUid + "," + getUserFilterBase() + "," + getRootContext(); 
-		String query = "(&(" + getRoleMembershipAttribute() + "=" + subfilter + ")" + getRoleFilter()  + ")";
+
+		String query = "(&(" + getRoleMembershipAttribute() + "=" + getUserDN(userPrincipalUid) + ")" + getRoleFilter()  + ")";
 		
 	    if (logger.isDebugEnabled())
 	    {
 	        logger.debug("query[" + query + "]");
 	    }
 
-/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
-	    Name name = new LdapName(getRoleFilterBase()) ;
-	    NamingEnumeration searchResults = ((DirContext) ctx).search(name,query , cons);
-*/	
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration searchResults = ((DirContext) ctx).search(getRoleFilterBase(),query , cons);
 	    List rolePrincipalUids = new ArrayList();
-/*        
 	     while (searchResults.hasMore())
 	     {
 	    	 
 	         SearchResult result = (SearchResult) searchResults.next();
 	         Attributes answer = result.getAttributes();
-	
 	         rolePrincipalUids.addAll(getAttributes(getAttribute(getRoleIdAttribute(), answer)));
 	     }
-*/         
 	     return (String[]) rolePrincipalUids.toArray(new String[rolePrincipalUids.size()]);
 	}
 
@@ -134,36 +134,13 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		        Iterator it = attrs.iterator();
 		        while(it.hasNext()) {
 		        	String cnfull = (String)it.next();
-		        	String cn = extractCn(cnfull);
-		        	newAttrs.add(cn);
+		        	if(cnfull.toLowerCase().indexOf(getRoleFilterBase().toLowerCase())!=-1) {
+			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
+			        	newAttrs.add(cn);
+		        	}
 		        }
-		//List uids = getAttributes(attr);
 		return (String[]) newAttrs.toArray(new String[newAttrs.size()]);
 	}
-
-//	/**
-//	 * <p>
-//	 * Search user by group.
-//	 * </p>
-//	 * 
-//	 * @param groupPrincipalUid
-//	 * @param cons
-//	 * @return
-//	 * @throws NamingException A {@link NamingException}.
-//	 */
-//	private NamingEnumeration searchRolesByGroup(final String rolePrincipalUid, SearchControls cons)
-//	        throws NamingException
-//	{
-//	    String query = "(&(cn=" + (rolePrincipalUid) + ")" + getRoleFilter() + ")";
-//	
-//	    if (logger.isDebugEnabled())
-//	    {
-//	        logger.debug("query[" + query + "]");
-//	    }
-//	    NamingEnumeration searchResults = ((DirContext) ctx).search("",query , cons);
-//	
-//	    return searchResults;
-//	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.security.spi.impl.ldap.LdapMembershipDao#searchUsersFromGroupByGroup(java.lang.String, javax.naming.directory.SearchControls)
@@ -181,7 +158,8 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    
 	    ArrayList userPrincipalUids=new ArrayList();
 	    
-	    NamingEnumeration results = ((DirContext) ctx).search("",query , cons);
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(getGroupFilterBase(),query , cons);	    
 		
 	    while (results.hasMore())
 	    {
@@ -195,9 +173,12 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	        Iterator it = attrs.iterator();
 	        while(it.hasNext()) {
 	        	String uidfull = (String)it.next();
-	        	String uid = extractUid(uidfull);
-	        	if (uidfull.indexOf(getUserFilterBase())!=-1)
-	        		newAttrs.add(uid);
+	        	if (!StringUtils.isEmpty(uidfull)) {
+		        	if (uidfull.toLowerCase().indexOf(getUserFilterBase().toLowerCase())!=-1) {
+			        	String uid = extractLdapAttr(uidfull,getUserIdAttribute());
+		        		newAttrs.add(uid);
+		        	}
+	        	}
 	        }
 	        userPrincipalUids.addAll(newAttrs);
 	    }
@@ -211,24 +192,22 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	        throws NamingException
 	{
 		
-		String subfilter = getGroupIdAttribute() + "=" 	+  getGroupFilterBase(); 
-	    if (getGroupFilterBase()!=null && !getGroupFilterBase().equals("")) subfilter+="," + getGroupFilterBase();
-	    subfilter+="," + getRootContext();
-		String query = "(&(" + getUserGroupMembershipAttribute() + "=" + subfilter + ")" + getUserFilter() + ")";
+		String query = "(&(" + getUserGroupMembershipAttribute() + "=" + getGroupDN(groupPrincipalUid) + ")" + getUserFilter() + ")";
 	    if (logger.isDebugEnabled())
 	    {
 	        logger.debug("query[" + query + "]");
 	    }
-	    NamingEnumeration results = ((DirContext) ctx).search("", query, cons);
-	
+
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(getUserFilterBase(),query , cons);	    
+
 	    ArrayList userPrincipalUids = new ArrayList();
 	    
 	    while (results.hasMore())
 	    {
 	        SearchResult result = (SearchResult) results.next();
 	        Attributes answer = result.getAttributes();
-	
-	        userPrincipalUids.addAll(getAttributes(getAttribute("uid", answer)));
+	        userPrincipalUids.addAll(getAttributes(getAttribute(getUserIdAttribute(), answer)));
 	    }
 	    return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
 	}
@@ -236,8 +215,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	public String[] searchRolesFromGroupByGroup(final String groupPrincipalUid,
 			SearchControls cons) throws NamingException {
 
-		String query = "(&(" + getGroupIdAttribute() + "=" + (groupPrincipalUid) + ")" + getGroupFilter()
-				+ ")";
+		String query = "(&(" + getGroupIdAttribute() + "=" + (groupPrincipalUid) + ")" + getGroupFilter() + ")";
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("query[" + query + "]");
@@ -245,28 +223,30 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 
 		ArrayList rolePrincipalUids = new ArrayList();
 
-		NamingEnumeration results = ((DirContext) ctx).search("", query, cons);
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration groups = ((DirContext) ctx).search(getGroupFilterBase(),query , cons);	    
 
-		while (results.hasMore()) {
-			SearchResult result = (SearchResult) results.next();
-			Attributes answer = result.getAttributes();
+		while (groups.hasMore()) {
+			SearchResult group = (SearchResult) groups.next();
+			Attributes groupAttributes = group.getAttributes();
 
-			List newAttrs = new ArrayList();
-
-			Attribute userPrincipalUid = getAttribute(
-					getGroupMembershipForRoleAttribute(), answer);
-			List attrs = getAttributes(userPrincipalUid);
-			Iterator it = attrs.iterator();
+			Attribute rolesFromGroup = getAttribute(getGroupMembershipForRoleAttribute(), groupAttributes);
+			List roleDNs = getAttributes(rolesFromGroup,getRoleFilterBase());
+			Iterator it = roleDNs.iterator();
 			while (it.hasNext()) {
-				String uidfull = (String) it.next();
-				String uid = extractUid(uidfull);
-				if (uidfull.indexOf(getRoleFilterBase())!=-1)
-					newAttrs.add(uid);
+				String roleDN = (String) it.next();
+				if (!StringUtils.isEmpty(roleDN)) {
+					String roleId = extractLdapAttr(roleDN,getRoleUidAttribute());
+					if (roleId!=null) {
+						NamingEnumeration rolesResults = searchRoleByWildcardedUid(roleId, cons);
+						if (rolesResults.hasMore())
+							if(rolesResults.nextElement()!=null)
+								rolePrincipalUids.add(roleId);
+					}
+				}
 			}
-			rolePrincipalUids.addAll(newAttrs);
 		}
-		return (String[]) rolePrincipalUids
-				.toArray(new String[rolePrincipalUids.size()]);
+		return (String[]) rolePrincipalUids.toArray(new String[rolePrincipalUids.size()]);
 	}
 
 	/*
@@ -278,28 +258,26 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	public String[] searchRolesFromGroupByRole(final String groupPrincipalUid,
 			SearchControls cons) throws NamingException {
 
-		String subfilter = getGroupIdAttribute() + "=" + groupPrincipalUid;
-		if (getGroupFilterBase() != null && !getGroupFilterBase().equals(""))
-			subfilter += "," + getGroupFilterBase() + "," + getRootContext();
-		String query = "(&(" + getRoleGroupMembershipForRoleAttribute() + "="
-				+ subfilter + ")" + getUserFilter() + ")";
+		String query = "(&(" + getRoleGroupMembershipForRoleAttribute() + "=" + getGroupDN(groupPrincipalUid) + ")" + getRoleFilter() + ")";
+		
 		if (logger.isDebugEnabled()) {
 			logger.debug("query[" + query + "]");
 		}
-		NamingEnumeration results = ((DirContext) ctx).search("", query, cons);
+		
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(getRoleFilterBase(),query , cons);	    
 
-		ArrayList userPrincipalUids = new ArrayList();
+		ArrayList rolePrincipalUids = new ArrayList();
 
 		while (results.hasMore()) {
 			SearchResult result = (SearchResult) results.next();
 			Attributes answer = result.getAttributes();
-
-			userPrincipalUids
-					.addAll(getAttributes(getAttribute("uid", answer)));
+			rolePrincipalUids.addAll(getAttributes(getAttribute(getRoleIdAttribute(), answer)));
 		}
-		return (String[]) userPrincipalUids
-				.toArray(new String[userPrincipalUids.size()]);
-	}	
+		return (String[]) rolePrincipalUids
+				.toArray(new String[rolePrincipalUids.size()]);
+	}
+
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.security.spi.impl.ldap.LdapMembershipDao#searchUsersFromRoleByRole(java.lang.String, javax.naming.directory.SearchControls)
@@ -316,30 +294,25 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    }
 	    
 	    ArrayList userPrincipalUids=new ArrayList();
-	    
-	    NamingEnumeration results = ((DirContext) ctx).search("",query , cons);
+
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(getRoleFilterBase(),query , cons);	    
 		
 	    while (results.hasMore())
 	    {
 	        SearchResult result = (SearchResult) results.next();
 	        Attributes answer = result.getAttributes();
 	        
-	        //List cUserPrincipalUid = getAttributes(getAttribute(getRoleMembershipAttribute(), answer));
-	        //TODO: better implementtion
-	        List newAttrs = new ArrayList();
-	        
 	        Attribute userPrincipalUid = getAttribute(getRoleMembershipAttribute(), answer);
 	        List attrs = getAttributes(userPrincipalUid);
 	        Iterator it = attrs.iterator();
 	        while(it.hasNext()) {
 	        	String uidfull = (String)it.next();
-	        	String uid = extractUid(uidfull);
-	        	newAttrs.add(uid);
+	        	if (!StringUtils.isEmpty(uidfull)) {	        	
+		        	String uid = extractLdapAttr(uidfull,getUserIdAttribute());
+		        	userPrincipalUids.add(uid);
+	        	}
 	        }
-	        userPrincipalUids.addAll(newAttrs);
-
-	        
-	        //userPrincipalUids.addAll(cUserPrincipalUid);
 	    }
 	    return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
 	}
@@ -351,29 +324,25 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	throws NamingException
 	{
 	
-		//TODO: rename params / vars !!!
-		String subfilter = getRoleIdAttribute() + "=" + rolePrincipalUid; 
-		if (getRoleFilterBase()!=null && !getRoleFilterBase().equals("")) subfilter+="," + getRoleFilterBase();
-		subfilter+="," + getRootContext();
-		String query = "(&(" + getUserRoleMembershipAttribute() + "=" + subfilter + ")" + getUserFilter() + ")";
+		String query = "(&(" + getUserRoleMembershipAttribute() + "=" + getRoleDN(rolePrincipalUid) + ")" + getUserFilter() + ")";
 		if (logger.isDebugEnabled())
 		{
 		    logger.debug("query[" + query + "]");
 		}
-		NamingEnumeration results = ((DirContext) ctx).search("", query, cons);
-		
+	    
+		cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(getUserFilterBase(),query , cons);	    
+
 		ArrayList userPrincipalUids = new ArrayList();
 		
 		while (results.hasMore())
 		{
 		    SearchResult result = (SearchResult) results.next();
 		    Attributes answer = result.getAttributes();
-		
-		    userPrincipalUids.addAll(getAttributes(getAttribute("uid", answer)));
+		    userPrincipalUids.addAll(getAttributes(getAttribute(getUserIdAttribute(), answer)));
 		}
 		return (String[]) userPrincipalUids.toArray(new String[userPrincipalUids.size()]);
 	}
-	
 
     /**
      * @param attr
@@ -382,13 +351,27 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
      */
     protected List getAttributes(Attribute attr) throws NamingException
     {
+    	return getAttributes(attr, null);
+    }
+    /**
+     * @param attr
+     * @return
+     * @throws NamingException
+     */
+    protected List getAttributes(Attribute attr,String filter) throws NamingException
+    {
         List uids = new ArrayList();
         if (attr != null)
         {
             Enumeration groupUidEnum = attr.getAll();
             while (groupUidEnum.hasMoreElements())
             {
-                uids.add(groupUidEnum.nextElement());
+            	String groupDN = (String)groupUidEnum.nextElement();
+            	if (filter==null) {
+            		uids.add(groupDN);
+            	} else if (filter!=null && groupDN.toLowerCase().indexOf(filter.toLowerCase())!=-1) {
+            		uids.add(groupDN);
+            	}
             }
         }
         return uids;
@@ -407,13 +390,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
         return answer;
     }
     
-	protected String getEntryPrefix() {
-		return "uid";
-	}
 
-	protected String getSearchSuffix() {
-		return this.getUserFilter();
-	}
 
 	/**
 	 * <p>
@@ -440,12 +417,12 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	}
 
 	/**
-	     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDaoImpl#getDnSuffix()
-	     */
-	    protected String getDnSuffix()
-	    {
-	        return this.getUserFilterBase();
-	    }
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDaoImpl#getDnSuffix()
+     */
+    protected String getDnSuffix()
+    {
+        return this.getUserFilterBase();
+    }
 
 	/**
 	 * <p>
@@ -460,21 +437,36 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	    return new UserPrincipalImpl(principalUid);
 	}    
 	
-	private String extractUid(String ldapName) {
-		if (ldapName.indexOf(",")!=-1)
-			return ldapName.substring(ldapName.indexOf("uid=")+4,ldapName.indexOf(","));
-		return ldapName.substring(ldapName.indexOf("uid=")+4,ldapName.length());
+	private String extractLdapAttr(String dn,String ldapAttrName) {
+
+		String dnLowerCase = dn.toLowerCase();
+		String ldapAttrNameLowerCase = ldapAttrName.toLowerCase();
+		
+		if (dnLowerCase.indexOf(ldapAttrNameLowerCase + "=")==-1)
+			return null;
+		
+		if (dn.indexOf(",")!=-1 && dnLowerCase.indexOf(ldapAttrNameLowerCase + "=")!=-1)
+			return dn.substring(dnLowerCase.indexOf(ldapAttrNameLowerCase)+ldapAttrName.length()+1,dn.indexOf(","));
+		return dn.substring(dnLowerCase.indexOf(ldapAttrNameLowerCase)+ldapAttrName.length()+1,dn.length());
 	}
-	
-	private String extractCn(String ldapName) {
-		if (ldapName.indexOf(",")!=-1)
-			return ldapName.substring(ldapName.indexOf("cn=")+3,ldapName.indexOf(","));
-		return ldapName.substring(ldapName.indexOf("cn=")+3,ldapName.length());
-	}
-	
+
 	protected String[] getObjectClasses() {
 		return this.getUserObjectClasses();
 	}
 	
-	
+	protected String getUidAttributeForPrincipal() {
+		return this.getUserUidAttribute();
+	}
+
+	protected String[] getAttributes() {
+		return getUserAttributes();
+	}
+
+	protected String getEntryPrefix() {
+		return "uid";
+	}
+
+	protected String getSearchSuffix() {
+		return this.getUserFilter();
+	}	
 }

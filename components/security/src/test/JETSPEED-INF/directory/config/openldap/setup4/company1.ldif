@@ -1,0 +1,176 @@
+# Sample LDIF file for populating Lotus LDAP Server
+#
+# Group objectClass = groupOfUniqueNames
+# Role objectClass = groupOfUniqueNames
+#
+# Roles and groups have an empty uniqueMember attribute (required by schema)
+#
+dn: ou=People,o=sevenSeas
+ou: People
+objectClass: top
+objectClass: organizationalunit
+
+
+dn: cn=Group1,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+uniqueMember:
+uniqueMember: cn=OrgUnit1User1,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit1User2,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit2User1,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit2User2,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit3User1,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit3User2,ou=People,o=sevenSeas
+uniqueMember: cn=adminuser,ou=People,o=sevenSeas
+cn: Group1
+
+dn: cn=Group2,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+uniqueMember:
+uniqueMember: cn=OrgUnit1User1,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit2User1,ou=People,o=sevenSeas
+uniqueMember: cn=OrgUnit3User1,ou=People,o=sevenSeas
+uniqueMember: cn=adminuser,ou=People,o=sevenSeas
+cn: Group2
+
+dn: cn=Group3,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+uniqueMember:
+uniqueMember: cn=OrgUnit1User1,ou=People,o=sevenSeas
+cn: Group3
+
+dn: cn=adminGroup,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+uniqueMember:
+cn: adminGroup
+
+dn: cn=managerGroup,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+uniqueMember: cn=adminuser,ou=People,o=sevenSeas
+cn: managerGroup
+
+dn: cn=Role1,o=sevenSeas
+objectClass: top
+objectClass: groupOfNames
+member:
+member: cn=OrgUnit1User2,ou=People,o=sevenSeas
+cn: Role1
+
+
+dn: cn=Role2,o=sevenSeas
+objectClass: top
+objectClass: groupOfNames
+member:
+member: cn=OrgUnit1User2,ou=People,o=sevenSeas
+member: cn=OrgUnit2User2,ou=People,o=sevenSeas
+member: cn=OrgUnit3User2,ou=People,o=sevenSeas
+cn: Role2
+
+
+dn: cn=Role3,o=sevenSeas
+objectClass: top
+objectClass: groupOfNames
+member:
+member: cn=OrgUnit1User1,ou=People,o=sevenSeas
+member: cn=OrgUnit1User2,ou=People,o=sevenSeas
+member: cn=OrgUnit2User1,ou=People,o=sevenSeas
+member: cn=OrgUnit2User2,ou=People,o=sevenSeas
+member: cn=OrgUnit3User1,ou=People,o=sevenSeas
+member: cn=OrgUnit3User2,ou=People,o=sevenSeas
+member: cn=adminuser,ou=People,o=sevenSeas
+cn: Role3
+
+dn: cn=admin,o=sevenSeas
+objectClass: top
+objectClass: groupOfNames
+member: cn=adminuser,ou=People,o=sevenSeas
+cn: admin
+
+dn: cn=manager,o=sevenSeas
+objectClass: top
+objectClass: groupOfNames
+member: cn=adminuser,ou=People,o=sevenSeas
+cn: manager
+
+dn: cn=OrgUnit1User1,ou=People,o=sevenSeas
+uid: OrgUnit1User1
+givenName: OrgUnit1User1
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit1User1
+cn: OrgUnit1User1
+
+dn: cn=OrgUnit1User2,ou=People,o=sevenSeas
+uid: OrgUnit1User2
+givenName: OrgUnit1User2
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit1User2
+cn: OrgUnit1User2
+
+dn: cn=OrgUnit2User1,ou=People,o=sevenSeas
+uid: OrgUnit2User1
+givenName: OrgUnit2User1
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit2User1
+cn: OrgUnit2User1
+
+dn: cn=OrgUnit2User2,ou=People,o=sevenSeas
+uid: OrgUnit2User2
+givenName: OrgUnit2User2
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit2User2
+cn: OrgUnit2User2
+
+
+dn: cn=OrgUnit3User1,ou=People,o=sevenSeas
+uid: OrgUnit3User1
+givenName: OrgUnit3User1
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit3User1
+cn: OrgUnit3User1
+
+dn: cn=OrgUnit3User2,ou=People,o=sevenSeas
+uid: OrgUnit3User2
+givenName: OrgUnit3User2
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: x
+sn: OrgUnit3User2
+cn: OrgUnit3User2
+
+dn: cn=adminuser,ou=People,o=sevenSeas
+uid: adminuser
+givenName: admin
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+userPassword: admin
+sn: adminuser
+cn: adminuser
+

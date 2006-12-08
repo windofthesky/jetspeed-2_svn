@@ -49,7 +49,6 @@ public class InitLdapSchema extends AbstractLdapDao
     public InitLdapSchema(LdapBindingConfig ldapConfig) throws SecurityException
     {
         super(ldapConfig);
-        init();
     }
 
     /**
@@ -62,20 +61,6 @@ public class InitLdapSchema extends AbstractLdapDao
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#create(java.lang.String)
-     */
-    public void init() throws SecurityException
-    {
-    	initOu("OrgUnit1");
-    	initOu("People","ou=OrgUnit1");
-    	initOu("Groups","ou=OrgUnit1");
-    	initOu("Roles","ou=OrgUnit1");
-//        initOu(getUsersOu());
-//        initOu(getGroupsOu());
-//        initOu(getRolesOu());
-    }
-
-    /**
      * <p>
      * Inits a given ou.
      * </p>
@@ -83,36 +68,22 @@ public class InitLdapSchema extends AbstractLdapDao
      * @param ou The org unit.
      * @throws SecurityException
      */
-    public void initOu(String ou) throws SecurityException
+    public void initOu(String ou) throws NamingException
     {
         if (!StringUtils.isEmpty(ou))
         {
             Attributes attrs = defineLdapAttributes(ou);
-            try
-            {
-                String dn = "ou=" + ou; // + "," + getDefaultSearchBase();
-                ctx.createSubcontext(dn, attrs);
-            }
-            catch (NamingException e)
-            {
-                throw new SecurityException(e);
-            }
+            String dn = "ou=" + ou; // + "," + getDefaultSearchBase();
+            ctx.createSubcontext(dn, attrs);
         }
     }
     
-    public void initOu(String ou,String folder) throws SecurityException
+    public void initOu(String ou,String folder) throws NamingException
     {
         if (!StringUtils.isEmpty(ou))
         {
             Attributes attrs = defineLdapAttributes(ou);
-            try
-            {
-                ctx.createSubcontext("ou=" + ou + "," + folder, attrs);
-            }
-            catch (NamingException e)
-            {
-                throw new SecurityException(e);
-            }
+            ctx.createSubcontext("ou=" + ou + "," + folder, attrs);
         }
     }    
 
@@ -154,5 +125,8 @@ public class InitLdapSchema extends AbstractLdapDao
 		return null;
 	}
 
+    protected String[] getAttributes() {
+        return null;
+    }
 
 }

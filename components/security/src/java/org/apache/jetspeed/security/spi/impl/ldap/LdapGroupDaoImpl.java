@@ -21,6 +21,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 
@@ -77,6 +78,11 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         	classes.add(getObjectClasses()[i]);
         attrs.put(classes);
         attrs.put(getEntryPrefix(), principalUid);
+        if(!StringUtils.isEmpty(getGroupObjectRequiredAttributeClasses()))
+        	attrs.put(getGroupObjectRequiredAttributeClasses(), "");
+        for (int i=0;i<getAttributes().length;i++)
+        	attrs.put(parseAttr(getAttributes()[i],principalUid)[0], parseAttr(getAttributes()[i],principalUid)[1]);
+                
         return attrs;
     }
 
@@ -116,6 +122,14 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
 
 	protected String[] getObjectClasses() {
 		return this.getGroupObjectClasses();
+	}
+
+	protected String getUidAttributeForPrincipal() {
+		return this.getGroupUidAttribute();
+	}
+
+	protected String[] getAttributes() {
+		return this.getGroupAttributes();
 	}
 	
  	

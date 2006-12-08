@@ -51,7 +51,6 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
     public void testGetRolePrincipal() throws Exception
     {
         String fullPath = (new RolePrincipalImpl(roleUid1)).getFullPath();
-        //RolePrincipal rolePrincipal = grHandler.getRolePrincipal(fullPath);
         RolePrincipal rolePrincipal = roleHandler.getRolePrincipal(roleUid1);
         assertNotNull("Role was not found.", rolePrincipal);
         assertEquals(roleUid1,rolePrincipal.getName());

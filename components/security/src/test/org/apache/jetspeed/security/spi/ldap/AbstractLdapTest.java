@@ -16,8 +16,11 @@ package org.apache.jetspeed.security.spi.ldap;
 
 import java.util.Random;
 
-import junit.framework.TestCase;
+import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
@@ -28,6 +31,7 @@ import org.apache.jetspeed.security.spi.impl.LdapGroupSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapRoleSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.LdapSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.LdapUserSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.ldap.InitLdapSchema;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapMemberShipDaoImpl;
@@ -47,8 +51,13 @@ import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * 
  */
-public abstract class AbstractLdapTest extends TestCase
+public abstract class AbstractLdapTest extends AbstractSpringTestCase
 {
+    /** The logger. */
+    private static final Log logger = LogFactory.getLog(AbstractLdapTest.class);
+    
+	private static final String LDAP_CONFIG = "openldap/setup2";
+	
     /** The {@link UserSecurityHandler}. */
     UserSecurityHandler userHandler;
 
@@ -101,6 +110,7 @@ public abstract class AbstractLdapTest extends TestCase
 
     /** The test password. */
     protected String password = "fred";
+    
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -108,7 +118,25 @@ public abstract class AbstractLdapTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        LdapBindingConfig ldapConfig = new LdapBindingConfig("apacheds");
+        LdapBindingConfig ldapConfig = (LdapBindingConfig)ctx.getBean(LdapBindingConfig.class.getName());
+        InitLdapSchema ldapSchema = new InitLdapSchema(ldapConfig);
+        try
+        {
+            // make sure standard test case schema exists
+            ldapSchema.initOu("OrgUnit1");
+            ldapSchema.initOu("People");
+            ldapSchema.initOu("Roles");
+            ldapSchema.initOu("People","ou=OrgUnit1");
+            ldapSchema.initOu("Groups","ou=OrgUnit1");
+            ldapSchema.initOu("Roles","ou=OrgUnit1");
+
+        }
+        catch (NamingException se)
+        {
+            logger.error("Initializing the LDAP directory failed:", se);
+            throw se;
+        }
+
         ldapCredDao = new LdapUserCredentialDaoImpl(ldapConfig);
         ldapPrincipalDao = new LdapUserPrincipalDaoImpl(ldapConfig);
 
@@ -116,8 +144,6 @@ public abstract class AbstractLdapTest extends TestCase
         crHandler = new LdapCredentialHandler(ldapCredDao);
         LdapDataHelper.setUserSecurityHandler(userHandler);
         LdapDataHelper.setCredentialHandler(crHandler);
-//        uid1 = Integer.toString(rand.nextInt());
-//        uid2 = Integer.toString(rand.nextInt());
         
         ldapGroupDao = new LdapGroupDaoImpl(ldapConfig);
         ldapRoleDao = new LdapRoleDaoImpl(ldapConfig);
@@ -126,11 +152,6 @@ public abstract class AbstractLdapTest extends TestCase
         roleHandler = new LdapRoleSecurityHandler(ldapRoleDao);
         LdapDataHelper.setGroupSecurityHandler(grHandler);
         LdapDataHelper.setRoleSecurityHandler(roleHandler);
-//        gpUid1 = Integer.toString(rand.nextInt());
-//        gpUid2 = Integer.toString(rand.nextInt());
-//        
-//        roleUid1 = Integer.toString(rand.nextInt());
-//        roleUid2 = Integer.toString(rand.nextInt());        
         
         secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao, ldapRoleDao);
     }
@@ -143,4 +164,8 @@ public abstract class AbstractLdapTest extends TestCase
         super.tearDown();
     }
 
+    protected String[] getConfigurations()
+    {
+        return new String[] {"JETSPEED-INF/directory/config/" + LDAP_CONFIG + "/security-spi-ldap.xml" };
+    }    
 }

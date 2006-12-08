@@ -29,8 +29,10 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.SecurityException;
 
 /**
@@ -43,7 +45,6 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
     private static final Log logger = LogFactory.getLog(LdapUserCredentialDaoImpl.class);
 
     /** The password attribute. */ 
-    private static final String PASSWORD_ATTR_NAME = "userPassword";
     
     /**
      * <p>
@@ -80,7 +81,9 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
     {
         validateUid(uid);
         validatePassword(password);
+        logger.debug("changePassword for " + uid + " with " + password);
         String userDn = lookupByUid(uid);
+        logger.debug("userDn = " + userDn);
         try
         {
             setPassword(userDn, password);
@@ -110,12 +113,25 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
         try
         {
 			Hashtable env = this.ctx.getEnvironment();
-			String savedPassword = String.valueOf(getPassword(uid));
+			//String savedPassword = String.valueOf(getPassword(uid));
 			String oldCredential = (String)env.get(Context.SECURITY_CREDENTIALS);
 			String oldUsername = (String)env.get(Context.SECURITY_PRINCIPAL);
-			env.put(Context.SECURITY_PRINCIPAL,"uid=" + uid + "," + getUserFilterBase() + "," + getRootContext());
+			
+			
+			String principal = getEntryPrefix() + "=" + uid;
+			
+			if (!StringUtils.isEmpty(getUserFilterBase()))
+				principal+="," + getUserFilterBase();
+			if (!StringUtils.isEmpty(getRootContext()))
+				principal+="," + getRootContext();
+			
+			if (lookupByUid(uid)==null)
+				throw new SecurityException(new KeyedMessage("User " + uid + " not found"));
+			
+			
+			env.put(Context.SECURITY_PRINCIPAL,principal);
 			env.put(Context.SECURITY_CREDENTIALS,password);
-			InitialContext ctx = new InitialContext(env);
+			new InitialContext(env);
 			env.put(Context.SECURITY_PRINCIPAL,oldUsername);
 			env.put(Context.SECURITY_CREDENTIALS,oldCredential);
 			return true;
@@ -160,10 +176,14 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      */
     private void setPassword(final String userDn, final String password) throws NamingException
     {
+    	logger.debug("setPassword userDn = " + userDn);
         String rdn = getSubcontextName(userDn);
+        if (!StringUtils.isEmpty(getUserFilterBase()))
+        	rdn+="," + getUserFilterBase();
+        logger.debug("setPassword rdn = " + rdn);
         Attributes attrs = new BasicAttributes(false);
 
-        attrs.put("userPassword", password);
+        attrs.put(getUserPasswordAttribute(), password);
         ctx.modifyAttributes(rdn, DirContext.REPLACE_ATTRIBUTE, attrs);
     }
 
@@ -179,14 +199,14 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      */
     private char[] getPassword(final NamingEnumeration results, final String uid) throws NamingException
     {
-        if (!results.hasMore())
+    	if (!results.hasMore())
         {
             throw new NamingException("Could not find any user with uid[" + uid + "]");
         }
 
         Attributes userAttributes = getFirstUser(results);
 
-        char[] rawPassword = convertRawPassword(getAttribute(PASSWORD_ATTR_NAME, userAttributes));
+        char[] rawPassword = convertRawPassword(getAttribute(getUserPasswordAttribute(), userAttributes));
         return rawPassword;
     }
 
@@ -264,20 +284,8 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
         return answer;
     }
 
-    /**
-     * <p>
-     * A template method that returns the LDAP object class of the concrete DAO.
-     * </p>
-     * 
-     * @return A String containing the LDAP object class name.
-     */
-    protected String getObjectClass()
-    {
-        return "jetspeed-2-user";
-    }
-
 	protected String getEntryPrefix() {
-		return "uid";
+		return this.getUserIdAttribute();
 	}
 	
 	protected String getSearchSuffix() {
@@ -290,6 +298,10 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 	
 	protected String[] getObjectClasses() {
 		return this.getUserObjectClasses();
+	}
+
+	protected String[] getAttributes() {
+		return this.getUserAttributes();
 	}
 	
 }

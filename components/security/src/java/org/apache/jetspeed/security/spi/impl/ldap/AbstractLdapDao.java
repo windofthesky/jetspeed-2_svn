@@ -28,6 +28,8 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.InvalidDnException;
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.InvalidUidException;
@@ -43,6 +45,9 @@ import org.apache.jetspeed.security.SecurityException;
  */
 public abstract class AbstractLdapDao
 {
+	
+	private static final Log logger = LogFactory.getLog(AbstractLdapDao.class);
+	
     /** The ldap binding configuration. */
     private LdapBindingConfig ldapBindingConfig = null;
 
@@ -167,7 +172,7 @@ public abstract class AbstractLdapDao
     protected SearchControls setSearchControls()
     {
         SearchControls controls = new SearchControls();
-        controls.setReturningAttributes(new String[] {"cn","sn","o","uid","ou","objectClass","nsroledn","userPassword","member","uniqueMember"});
+        controls.setReturningAttributes(getKnownAttributes());
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         controls.setReturningObjFlag(true);
 
@@ -198,53 +203,6 @@ public abstract class AbstractLdapDao
         }
     }
     
-    /**
-     * <p>
-     * Searches the LDAP server for the group with the specified uid attribute.
-     * </p>
-     * 
-     * @return the user's DN
-     */
-    public String lookupGroupByUid(final String uid) throws SecurityException
-    {
-        validateUid(uid);
-
-        try
-        {
-            SearchControls cons = setSearchControls();
-            NamingEnumeration searchResults = searchGroupByWildcardedUid(uid, cons);
-
-            return getFirstDnForUid(searchResults);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }    
-    
-    /**
-     * <p>
-     * Searches the LDAP server for the role with the specified uid attribute.
-     * </p>
-     * 
-     * @return the user's DN
-     */
-    public String lookupRoleByUid(final String uid) throws SecurityException
-    {
-        validateUid(uid);
-
-        try
-        {
-            SearchControls cons = setSearchControls();
-            NamingEnumeration searchResults = searchRoleByWildcardedUid(uid, cons);
-
-            return getFirstDnForUid(searchResults);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }        
 
     /**
      * <p>
@@ -261,15 +219,7 @@ public abstract class AbstractLdapDao
         while ((null != searchResults) && searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
-            
-/* TODO: Java 5 dependency, needs to be resolved for Java 1.4 first before this can be enabled again
-            userDn = searchResult.getNameInNamespace();
-*/            
-//            if (searchResult.getObject() instanceof DirContext)
-//            {
-//                DirContext userEntry = (DirContext) searchResult.getObject();
-//                userDn = userEntry.getNameInNamespace();
-//            }
+            userDn = searchResult.getName();
         }
         return userDn;
     }
@@ -303,16 +253,20 @@ public abstract class AbstractLdapDao
     protected NamingEnumeration searchByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
     	// usa a template method to use users/groups/roles
-        String searchFilter = "";
-        if (getSearchSuffix()==null || getSearchSuffix().equals("")) {
-        	searchFilter = "(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+    	String query = "";
+        if (StringUtils.isEmpty(getSearchSuffix())) {
+        	query = "(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
         } else {
-        	searchFilter = "(&(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
+        	query = "(&(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
         }
-        
-        NamingEnumeration searchResults = ((DirContext) ctx).search(getSearchDomain(), searchFilter, cons);
+        logger.debug("searchByWildCardedUid = " + query); 
 
-        return searchResults;
+	    cons.setSearchScope(getSearchScope());
+	    //TODO: added this here for OpenLDAP (when users are stored in ou=People,o=evenSeas)
+	    String searchBase = StringUtils.replace(getSearchDomain(), "," + getRootContext(), "");
+	    NamingEnumeration results = ((DirContext) ctx).search(searchBase,query , cons);	
+
+        return results;
     }
     
     /**
@@ -328,16 +282,20 @@ public abstract class AbstractLdapDao
     protected NamingEnumeration searchGroupByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
     	// usa a template method to use users/groups/roles
-        String searchFilter = "";
-        if (getSearchSuffix()==null || getSearchSuffix().equals("")) {
-        	searchFilter = "(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+        String query = "";
+        if (StringUtils.isEmpty(getGroupFilter())) {
+        	query = "(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
         } else {
-        	searchFilter = "(&(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getGroupFilter() + ")";
+        	query = "(&(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getGroupFilter() + ")";
         }        
         
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
+	    String searchBase = "";
+	    if (!StringUtils.isEmpty(getGroupFilterBase()))
+	    	searchBase+=getGroupFilterBase();
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(searchBase,query , cons);	
 
-        return searchResults;
+        return results;
     }   
     
     /**
@@ -352,16 +310,20 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchRoleByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        //String searchFilter = "(&(uid=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass="+ "jetspeed-2-role" + "))";
-        String searchFilter = "";
-        if (getRoleFilter()==null || getRoleFilter().equals("")) {
-        	searchFilter = "(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+        String query = "";
+        if (StringUtils.isEmpty(getRoleFilter())) {
+        	query = "(" + getRoleIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
         } else {
-        	searchFilter = "(&(" + getGroupIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getRoleFilter() + ")";
-        }      	
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", searchFilter, cons);
+        	query = "(&(" + getRoleIdAttribute() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getRoleFilter() + ")";
+        }  
+        
+	    String searchBase = "";
+	    if (!StringUtils.isEmpty(getRoleFilterBase()))
+	    	searchBase+=getRoleFilterBase();
+	    cons.setSearchScope(getSearchScope());
+	    NamingEnumeration results = ((DirContext) ctx).search(searchBase,query , cons);	
 
-        return searchResults;
+        return results;
     }      
 
     /**
@@ -501,14 +463,7 @@ public abstract class AbstractLdapDao
     {
         return this.ldapBindingConfig.getUserFilter();
     }
-    
-    /**
-     * <p>
-     * Returns the default Group suffix dn.
-     * </p>
-     * 
-     * @return The defaultDnSuffix.
-     */
+
     protected String[] getUserObjectClasses()
     {
         return this.ldapBindingConfig.getUserObjectClasses();
@@ -560,6 +515,64 @@ public abstract class AbstractLdapDao
         return this.ldapBindingConfig.getUserIdAttribute();
     }    
 
-	protected abstract String[] getObjectClasses();
-	
+    protected  String getUidAttribute()
+    {
+        return this.ldapBindingConfig.getUidAttribute();
+    }        
+    
+    protected  int getSearchScope()
+    {
+        return Integer.parseInt(this.ldapBindingConfig.getMemberShipSearchScope());
+    }        
+    
+    protected String getRoleUidAttribute()
+    {
+        return this.ldapBindingConfig.getRoleUidAttribute();
+    }        
+    
+    protected String getGroupUidAttribute()
+    {
+        return this.ldapBindingConfig.getGroupUidAttribute();
+    }        
+    
+    protected String getUserUidAttribute()
+    {
+        return this.ldapBindingConfig.getUserUidAttribute();
+    }        
+    
+    protected String getGroupObjectRequiredAttributeClasses()
+    {
+        return this.ldapBindingConfig.getGroupObjectRequiredAttributeClasses();
+    }        
+    
+    protected String getRoleObjectRequiredAttributeClasses()
+    {
+        return this.ldapBindingConfig.getRoleObjectRequiredAttributeClasses();
+    }        
+        
+    protected String[] getUserAttributes()
+    {
+        return this.ldapBindingConfig.getUserAttributes();
+    }        
+    
+    protected String[] getGroupAttributes()
+    {
+        return this.ldapBindingConfig.getGroupAttributes();
+    }        
+    
+    protected String[] getRoleAttributes()
+    {
+        return this.ldapBindingConfig.getRoleAttributes();
+    }        
+    
+    protected String getUserPasswordAttribute() {
+    	return this.ldapBindingConfig.getUserPasswordAttribute();
+    }
+    
+    protected String[] getKnownAttributes() {
+    	return this.ldapBindingConfig.getKnownAttributes();
+    }    
+
+    protected abstract String[] getObjectClasses();
+    protected abstract String[] getAttributes();
 }
