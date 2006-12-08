@@ -20,6 +20,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
@@ -177,7 +178,7 @@ public abstract class NodeProxy extends SiteViewProxy
             List locators = getMenuDefinitionLocators();
             if (locators != null)
             {
-                menuDefinitions = new ArrayList(locators.size());
+                menuDefinitions = Collections.synchronizedList(new ArrayList(locators.size()));
                 Iterator locatorsIter = locators.iterator();
                 while (locatorsIter.hasNext())
                 {
@@ -260,7 +261,7 @@ public abstract class NodeProxy extends SiteViewProxy
                     {
                         if (menuDefinitionLocators == null)
                         {
-                            menuDefinitionLocators = new ArrayList(definitions.size() * 2);
+                            menuDefinitionLocators = Collections.synchronizedList(new ArrayList(definitions.size() * 2));
                         }
                         menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, node));
                     }
@@ -295,7 +296,7 @@ public abstract class NodeProxy extends SiteViewProxy
                 {
                     if (menuDefinitionLocators == null)
                     {
-                        menuDefinitionLocators = new ArrayList(locators.size() * 2);
+                        menuDefinitionLocators = Collections.synchronizedList(new ArrayList(locators.size() * 2));
                     }
                     menuDefinitionLocators.add(locator);
                 }
@@ -326,13 +327,15 @@ public abstract class NodeProxy extends SiteViewProxy
         // find matching menu definition locator by name
         if ((menuDefinitionLocators != null) && (name != null))
         {
-            Iterator locatorsIter = menuDefinitionLocators.iterator();
-            while (locatorsIter.hasNext())
-            {
-                SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
-                if (name.equals(locator.getName()))
+            synchronized (menuDefinitionLocators) {
+                Iterator locatorsIter = menuDefinitionLocators.iterator();
+                while (locatorsIter.hasNext())
                 {
-                    return locator;
+                    SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
+                    if (name.equals(locator.getName()))
+                    {
+                        return locator;
+                    }
                 }
             }
         }

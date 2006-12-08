@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
@@ -413,7 +414,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             if (locators != null)
             {
                 // get custom definition names
-                pageMenuDefinitionNames = new HashSet(locators.size());
+                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(locators.size()));
                 Iterator locatorsIter = locators.iterator();
                 while (locatorsIter.hasNext())
                 {
@@ -427,7 +428,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             }
             else
             {
-                pageMenuDefinitionNames = new HashSet(0);
+                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(0));
             }
         }
         return pageMenuDefinitionNames;
@@ -508,7 +509,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     // cache relative menu for request
                     if (menuDefinitionLocatorCache == null)
                     {
-                        menuDefinitionLocatorCache = new HashMap(8);
+                        menuDefinitionLocatorCache = Collections.synchronizedMap(new HashMap(8));
                     }
                     menuDefinitionLocatorCache.put(locator, menu);
                 }
@@ -517,7 +518,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     // cache absolute menu for session
                     if (sessionContext.getMenuDefinitionLocatorCache() == null)
                     {
-                        sessionContext.setMenuDefinitionLocatorCache(new HashMap(8));
+                        sessionContext.setMenuDefinitionLocatorCache(Collections.synchronizedMap(new HashMap(8)));
                     }
                     sessionContext.getMenuDefinitionLocatorCache().put(locator, menu);
                 }
