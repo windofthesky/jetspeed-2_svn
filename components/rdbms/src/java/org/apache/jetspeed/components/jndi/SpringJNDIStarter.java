@@ -28,7 +28,7 @@ package org.apache.jetspeed.components.jndi;
  *
  */
 
-import org.apache.jetspeed.testhelpers.AbstractTestHelper;
+
 import java.util.Map;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -37,11 +37,20 @@ import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent;
 
-public class SpringJNDIStarter extends AbstractTestHelper
+public class SpringJNDIStarter
 {
 
 	   public static final String JNDI_DS_NAME = "jetspeed";
-	    
+		public static final String DATASOURCE_DRIVER = "org.apache.jetspeed.database.driver".intern();
+		public static final String DATASOURCE_URL = "org.apache.jetspeed.database.url".intern();
+		public static final String DATASOURCE_USERNAME = "org.apache.jetspeed.database.user".intern();
+		public static final String DATASOURCE_PASSWORD = "org.apache.jetspeed.database.password".intern();
+
+
+		
+		
+		private final Map context;
+	   
 	    protected BoundDBCPDatasourceComponent datasourceComponent;
 	    protected JNDIComponent jndi;
 	    String appRoot = null; 
@@ -60,7 +69,7 @@ public class SpringJNDIStarter extends AbstractTestHelper
     */
         public SpringJNDIStarter(Map context,String appRoot, String[] bootConfig, String[] appConfig)
 	    {
-	    	super(context);
+	    	this.context = context;
 	    	this.appRoot = appRoot;
 	    	this.bootConfig = bootConfig;
 	    	this.appConfig = appConfig;
@@ -113,16 +122,31 @@ public class SpringJNDIStarter extends AbstractTestHelper
 		}
     }
     
-    
+    String getProperty(String name)
+    {
+    	String s = null;
+    	try
+    	{
+    		if (context != null)
+    			s = (String) context.get(name);
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	if (s == null)
+    		s = System.getProperty(name);
+    	return s;
+    }
     
     
     public void setupJNDI() throws Exception
     {
         jndi = new TyrexJNDIComponent();
-        String url = System.getProperty("org.apache.jetspeed.database.url");
-        String driver = System.getProperty("org.apache.jetspeed.database.driver");
-        String user = System.getProperty("org.apache.jetspeed.database.user");
-        String password = System.getProperty("org.apache.jetspeed.database.password");
+        String url = getProperty("org.apache.jetspeed.database.url");
+        String driver = getProperty("org.apache.jetspeed.database.driver");
+        String user = getProperty("org.apache.jetspeed.database.user");
+        String password = getProperty("org.apache.jetspeed.database.password");
         datasourceComponent = new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000,
                 GenericObjectPool.WHEN_EXHAUSTED_GROW, true, JNDI_DS_NAME, jndi);
         datasourceComponent.start();
@@ -133,6 +157,10 @@ public class SpringJNDIStarter extends AbstractTestHelper
 		return scm;
 	}
 
+    public Map getContext()
+    {
+        return context;
+    }
     
     
 }
