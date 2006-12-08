@@ -43,16 +43,16 @@ public class NodeSetImpl implements NodeSet
 
     public NodeSetImpl(List nodes, Comparator comparator)
     {
-        this.nodes = new TreeMap(comparator);
-        Iterator addIter = nodes.iterator();
-        while (addIter.hasNext())
+        this.nodes = new TreeMap(comparator);        
+        Object[] nodeToCopy = nodes.toArray();
+        for (int ix = 0; ix < nodeToCopy.length; ix++)
         {
-            Node node = (Node)addIter.next();
-            if (!this.nodes.containsKey(node.getName()))
+            Node node = (Node)nodeToCopy[ix];
+            if (!this.nodes.containsKey( node.getName()))
             {
                 this.nodes.put(node.getName(), node);
             }
-        }
+        }         
         this.comparator = comparator;
     }
 
