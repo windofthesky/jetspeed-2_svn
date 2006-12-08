@@ -63,6 +63,11 @@ limitations under the License.
             <version>4.0.2</version>
         </dependency>
         <dependency>
+            <groupId>DdlUtils</groupId>
+            <artifactId>DdlUtils</artifactId>
+            <version>1.0-RC1-PATCHED</version>
+        </dependency>
+        <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-rdbms</artifactId>
         </dependency>

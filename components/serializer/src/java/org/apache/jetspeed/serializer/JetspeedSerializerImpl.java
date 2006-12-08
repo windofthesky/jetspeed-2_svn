@@ -21,7 +21,7 @@ import java.io.FileOutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -78,6 +78,7 @@ import org.apache.jetspeed.serializer.objects.JSMediaTypes;
 import org.apache.jetspeed.serializer.objects.JSMimeType;
 import org.apache.jetspeed.serializer.objects.JSMimeTypes;
 import org.apache.jetspeed.serializer.objects.JSNameValuePairs;
+import org.apache.jetspeed.serializer.objects.JSPWAttributes;
 import org.apache.jetspeed.serializer.objects.JSPermission;
 import org.apache.jetspeed.serializer.objects.JSPermissions;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
@@ -564,7 +565,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      */
     private void setSnapshotData()
     {
-        Date d = new Date();
+    	java.util.Date d1 = new java.util.Date();
+        Date d = new Date(d1.getTime());
         snapshot.setDateCreated(d.toString());
         snapshot.setSavedVersion(JSSnapshot.softwareVersion);
         snapshot.setSavedSubversion(JSSnapshot.softwareSubVersion);
@@ -961,8 +963,19 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     			    	logMe("add User done ");
 						user = userManager.getUser(jsuser.getName());
 					}
-					else
-					{}// we should not touch existing passwords....
+					try
+					{
+						userManager.setPasswordEnabled(jsuser.getName(), jsuser.getPwEnabled());						
+						userManager.setPasswordUpdateRequired(jsuser.getName(), jsuser.getPwRequiredUpdate());
+						java.sql.Date d = jsuser.getPwExpirationDate();
+						if (d != null)
+							userManager.setPasswordExpiration(jsuser.getName(), d);						
+					}
+					catch (Exception e)
+					{
+						// most likely caused by protected users (like "guest")
+						logMe("setting userinfo for "+ jsuser.getName() + " failed because of " + e.getLocalizedMessage());
+					}
 					
 				//credentials
 			        Subject subject = user.getSubject();
@@ -1394,6 +1407,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
         binding.setAlias(String.class, "String");
         binding.setAlias(Integer.class, "int");
+        
+        binding.setAlias(JSPWAttributes.class,"credentials");
 
         binding.setClassAttribute(null);
 
@@ -1569,7 +1584,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         if (credential instanceof PasswordCredential)
         {
             PasswordCredential pw = (PasswordCredential) credential;
-            newUser.setUserCredential(pw.getUserName(), pw.getPassword());
+            newUser.setUserCredential(pw.getUserName(), pw.getPassword(),pw.getExpirationDate(),pw.isEnabled(), pw.isExpired(), pw.isUpdateRequired());
             return;
         } else if (isPublic)
             newUser.addPublicCredential(credential);

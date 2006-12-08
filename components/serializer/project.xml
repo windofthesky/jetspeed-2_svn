@@ -17,7 +17,7 @@ limitations under the License.
     $Id: project.xml 355198 2005-12-08 20:44:03Z rogerrut $
 -->
 <project>
-<extend>${basedir}/../../jetspeed-components.xml</extend>
+<extend>${basedir}/../../core-build.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-serializer</id>
   <name>Jetspeed-2 Serializer</name>
@@ -35,15 +35,9 @@ limitations under the License.
         </developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/serializer/</url>
   </repository>
-
+  
+  
   <dependencies>
-  	<dependency>
-      <id>javolution</id>
-      <version>4.0.2</version>
-      <properties>
-         <war.bundle>true</war.bundle>
-      </properties>          
-    </dependency>	  
   	<dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-commons</id>
       <version>${jetspeed.version}</version>
@@ -51,13 +45,6 @@ limitations under the License.
          <war.bundle>true</war.bundle>
       </properties>                    
     </dependency>
-  	<dependency>
-      <id>org.apache.portals.jetspeed-2:jetspeed-portal</id>
-      <version>${jetspeed.version}</version>
-      <properties>
-         <war.bundle>true</war.bundle>
-      </properties>                    
-    </dependency>            
   	<dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-cm</id>
       <version>${jetspeed.version}</version>
@@ -87,5 +74,6 @@ limitations under the License.
       </properties>                            
     </dependency>            
   </dependencies>
+  
   
 </project>

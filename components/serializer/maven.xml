@@ -49,7 +49,7 @@
             <pathelement path="${maven.build.dest}"/>
             <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
           </classpath>
-            <arg line="-E export.xml -b target/assembly/boot/ -c target/assembly/"/>  
+            <arg line="-E c:/temp/export100.xml -b target/assembly/boot/ -c target/assembly/"/>  
             <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
@@ -59,7 +59,57 @@
 	<preGoal name='export'>
         <attainGoal name="java:compile" />		
 	</preGoal>				
-    <goal name='test2'>
+    <goal name='import'>
+        <copy todir='${maven.build.dir}/classes'
+          file="../../etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'>
+          <fileset dir="../../etc/db-ojb/"/>
+        </copy>                      
+        <attainGoal name='copyAssemblies'/>
+        <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
+          </classpath>
+            <arg line="-I c:/temp/export100.xml -b target/assembly/boot/ -c target/assembly/"/>  
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>            
+        </java>
+    </goal>
+	<preGoal name='import'>
+        <attainGoal name="java:compile" />		
+	</preGoal>		   <goal name='test2'>
         <echo message="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
     </goal>
+	
+	<goal name='createDB'>
+	        <copy todir='${maven.build.dir}/classes'
+	          file="../../etc/log4j/log4j.properties"/>
+	        <copy todir='${maven.build.dir}/schema'>
+	          <fileset dir="../../etc/schema/"/>
+	        </copy>                      
+	        <java classname="org.apache.jetspeed.serializer.JetspeedDDLApplication" fork="yes">
+	          <classpath>
+	            <path refid="maven.dependency.classpath"/>
+	            <pathelement path="${maven.build.dest}"/>
+	            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
+	          </classpath> 
+	            <arg line="-I target/schema -R"/>  
+	            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+	            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+	            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+	            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>            
+	        </java>
+	    </goal>
+		<preGoal name='export'>
+	        <attainGoal name="java:compile" />		
+		</preGoal>				
+	    <goal name='test2'>
+	        <echo message="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+	    </goal>
+		
+	
 </project>

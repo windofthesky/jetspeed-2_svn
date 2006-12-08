@@ -17,6 +17,7 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
@@ -37,6 +38,8 @@ public class JSUser
     private String name;
 
     private char[] password;
+
+    private JSPWAttributes pwData = null;
 
     private ArrayList roles = null;
 
@@ -101,13 +104,92 @@ public class JSUser
         return password;
     }
 
-    public void setUserCredential(String name, char[] password)
+    public void setUserCredential(String name, char[] password, Date expirationDate, boolean isEnabled, boolean isExpired, boolean requireUpdate)
     {
         setName(name);
         setPassword(password);
-
+        pwData = new JSPWAttributes();
+        if (password != null)
+        {
+	        pwData.getMyMap().put("password",this.getPasswordString());
+	        if (expirationDate != null)
+	        {
+	        	pwData.getMyMap().put("expirationDate",expirationDate.toString());
+	        }
+	        pwData.getMyMap().put("enabled",(isEnabled?"TRUE":"FALSE"));
+	        pwData.getMyMap().put("requiresUpdate",(requireUpdate?"TRUE":"FALSE"));
+        }
     }
 
+    protected void resetPassword()
+    {
+    	try
+    	{
+	    	if (pwData != null)
+	    	{
+	    		Object o = pwData.getMyMap().get("password");
+    		
+	    		String pw = StringEscapeUtils.unescapeHtml((String)o);
+	    		if ((pw != null) && (pw.length()>0))
+	    			password = pw.toCharArray();
+	    		else
+	    			password = null;
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+			password = null;
+    	}
+    }
+    
+    public boolean getPwEnabled()
+    {
+       	return getPWBoolean("enabled",false);
+    }
+    public boolean getPwRequiredUpdate()
+    {
+       	return getPWBoolean("requiresUpdate",false);
+    }
+
+    
+
+    
+    
+    public Date getPwExpirationDate()
+    {
+    	if (pwData != null)
+    	{
+    		Object o = pwData.getMyMap().get("expirationDate");
+    		if (o == null)
+    			return null;
+    		if ( o instanceof Date)
+    			return (Date)o;
+    		
+    		Date d = Date.valueOf((String)o);
+    		return d;
+    		
+    	}
+    	return null;
+    }
+    
+    
+   private boolean getPWBoolean(String property, boolean defaultSetting)
+    {
+       	if (pwData == null)
+       		return defaultSetting;
+       	try
+       	{
+	   		Object o = pwData.getMyMap().get(property);
+			if (o == null)
+				return defaultSetting;
+			return ((String)o).equalsIgnoreCase("TRUE");
+       	}
+       	catch (Exception e)
+       	{
+       		return defaultSetting;
+       	}
+    }
+   
     public void setPassword(char[] password)
     {
         this.password = password;
@@ -228,8 +310,9 @@ public class JSUser
                 String s = g.getName();
                 if ((s == null) || (s.length() == 0)) s = "guest";
                 xml.setAttribute("name", s);
-                xml.setAttribute("password", g.getPasswordString());
- 
+
+                
+                xml.add(g.getPwData());
 
                 /** named fields HERE */
  
@@ -255,11 +338,7 @@ public class JSUser
             {
                 JSUser g = (JSUser) o;
                 g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "unknown"));
-                String pw = StringEscapeUtils.unescapeHtml(xml.getAttribute("password",""));
-                if ((pw != null) && (pw.length()>0))
-                	g.password = pw.toCharArray();
-                else
-                	g.password = null;
+                
                 
                 Object o1 = null;
  
@@ -268,6 +347,13 @@ public class JSUser
 				{
 					o1 = xml.getNext(); // mime
 					
+					
+					if (o1 instanceof JSPWAttributes)
+					{
+						g.pwData = (JSPWAttributes) o1;
+						g.resetPassword();
+					}
+					else
 					if (o1 instanceof JSUserGroups)
 						g.groupString = (JSUserGroups) o1;
 					else
@@ -380,6 +466,16 @@ public class JSUser
 	public JSUserRoles getRoleString()
 	{
 		return roleString;
+	}
+
+	public JSPWAttributes getPwData()
+	{
+		return pwData;
+	}
+
+	public void setPwData(JSPWAttributes pwData)
+	{
+		this.pwData = pwData;
 	}
 
 }

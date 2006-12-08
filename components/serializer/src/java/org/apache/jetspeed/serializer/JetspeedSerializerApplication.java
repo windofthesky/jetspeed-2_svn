@@ -22,6 +22,8 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.components.jndi.SpringJNDIStarter;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 /**
  * Jetspeed Serializer Application
  * 
@@ -43,12 +45,24 @@ import org.apache.jetspeed.components.jndi.SpringJNDIStarter;
  *      PROFILE = extract/import profile settings (for export requires USER) 
  *      NOOVERWRITE = don't overwrite existing file (for export)
  *      BACKUP = backup before process
- *       
- * The overall XML file needs to indicate whether passwords used in credentials
- * are plain text or whether they are encoded. The export algoritm can determine -
- * prior to reading users - which encode/decode scheme was used and if <none> or
- * <implements PasswordEncodingService> then we store plain passwords (Note that
- * that alone requires the resulting XML to be encoded!!!!!)
+
+ * <p>
+ * -dc driverClass, for example com.mysql.jdbc.Driver
+ * </p>
+ * <p>
+ * -ds url, ruls according to the driver used, URL needs to point to the correct
+ * database
+ * </p>
+ * <p>
+ * -du user, user with create/drop etc. rights on the database
+ * </p>
+ * <p>
+ * -dp password
+ * </p>
+ * 
+ * <p>
+ * -l log4j-level, ERROR (default), WARN, INFO 
+ * </p>
  * 
  * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
  * @version $Id: $
@@ -75,6 +89,13 @@ public class JetspeedSerializerApplication
         
         String defaultIndent = null;
 
+    	String driverClass = null; // jdbc driver
+    	String url = null; // jdbc url to database
+    	String user = null; // user
+    	String password = null; // password
+
+        String logLevel = null;
+        
         boolean doImport = false;
         boolean doExport = false;
  
@@ -92,7 +113,16 @@ public class JetspeedSerializerApplication
           else if (args[n].equals("-E")) { doExport = true; fileName = args[++n];}
           else if (args[n].equals("-I")) { doImport = true; fileName = args[++n];}
           else if (args[n].equals("-N")) name = args[++n];
-          else if (args[n].equals("-O")) options = args[++n];
+          else if (args[n].equals("-l")) logLevel = args[++n];
+            else if (args[n].equals("-O")) options = args[++n];
+  		else if (args[n].equals("-dc"))
+			driverClass = args[++n];
+		else if (args[n].equals("-ds"))
+			url = args[++n];
+		else if (args[n].equals("-du"))
+			user = args[++n];
+		else if (args[n].equals("-dp"))
+			password = args[++n];
           else throw new IllegalArgumentException("Unknown argument: " + args[n]);
         }
 
@@ -133,7 +163,19 @@ public class JetspeedSerializerApplication
                 if (configFiles == null) applicationPath = configuration.getString("configFiles");
                 if (options == null) applicationPath = configuration.getString("options");
                 if (defaultIndent == null) applicationPath = configuration.getString("defaultIndent");
-                
+
+        		if (driverClass == null)
+    				driverClass = configuration.getString("driverClass");
+    			if (url == null)
+    				url = configuration.getString("url");
+    			if (user == null)
+    				user = configuration.getString("user");
+    			if (password == null)
+    				password = configuration.getString("password");
+    			if (logLevel == null)
+    				logLevel = configuration.getString("loglevel");
+    				
+    	
             }
         }
 
@@ -141,7 +183,8 @@ public class JetspeedSerializerApplication
         if (applicationPath == null) applicationPath = "./";
         if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/";
         if (configFiles == null) configFiles = "assembly/";
-        
+		if (logLevel == null) logLevel = "ERROR";
+      
 
         bootConfigFiles = bootConfigFiles + "*.xml";
         configFiles = configFiles + "*.xml";
@@ -195,10 +238,51 @@ public class JetspeedSerializerApplication
             }
         }
         JetspeedSerializer serializer = null;
+
+		if (driverClass == null)
+			driverClass = System.getProperty(
+					"org.apache.jetspeed.database.driverClass",
+					"com.mysql.jdbc.Driver");
+		if (url == null)
+			url = System.getProperty("org.apache.jetspeed.database.url",
+					"jdbc:mysql://localhost/j2test");
+		if (user == null)
+			user = System.getProperty("org.apache.jetspeed.database.user",
+					"user");
+		if (password == null)
+			password = System.getProperty(
+					"org.apache.jetspeed.database.password", "password");
+
+		if (driverClass == null)
+			throw new IllegalArgumentException(
+					"Can't proceed without a valid driver");
+		if (url == null)
+			throw new IllegalArgumentException(
+					"Can't proceed without a valid url to the target database");
+		if (user == null)
+			throw new IllegalArgumentException(
+					"Can't proceed without a valid database user");
+
+        
         
         HashMap context = new HashMap();
  
+		context.put(SpringJNDIStarter.DATASOURCE_DRIVER, driverClass);
+		context.put(SpringJNDIStarter.DATASOURCE_URL, url);
+		context.put(SpringJNDIStarter.DATASOURCE_USERNAME, user);
+		context.put(SpringJNDIStarter.DATASOURCE_PASSWORD, password);
         
+		Logger  logger = Logger.getLogger("org.springframework");
+		Level level = logger.getLevel();
+		if (logLevel.equalsIgnoreCase("INFO"))
+			logger.setLevel(Level.INFO);
+		else
+			if (logLevel.equalsIgnoreCase("WARN"))
+				logger.setLevel(Level.WARN);
+			else
+				logger.setLevel(Level.ERROR);
+				
+
         SpringJNDIStarter starter = new SpringJNDIStarter(context,applicationPath,getTokens(bootConfigFiles),getTokens(configFiles));
         
         System.out.println("starter framework created " + starter);
@@ -237,6 +321,7 @@ public class JetspeedSerializerApplication
             try
             {
                starter.tearDown();
+               logger.setLevel(level);;
             }
             catch (Exception e1)
             {
@@ -249,7 +334,7 @@ public class JetspeedSerializerApplication
 
     }
         
-        
+       
         private static  String[] getTokens(String _line)
         {
             if ((_line == null) || (_line.length() == 0))
