@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.sso.impl;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,25 +29,19 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.jetspeed.security.UserPrincipal;
-
 import javax.security.auth.Subject;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
-
-import org.apache.jetspeed.sso.SSOContext;
-import org.apache.jetspeed.sso.SSOCookie;
-import org.apache.jetspeed.sso.SSOException;
-import org.apache.jetspeed.sso.SSOProvider;
-import org.apache.jetspeed.sso.SSOSite;
-import org.apache.jetspeed.sso.SSOPrincipal;
-
-import org.apache.jetspeed.sso.impl.SSOSiteImpl;
-import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
-
-
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalCredential;
@@ -58,27 +51,15 @@ import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
-
+import org.apache.jetspeed.sso.SSOContext;
+import org.apache.jetspeed.sso.SSOException;
+import org.apache.jetspeed.sso.SSOPrincipal;
+import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.jetspeed.sso.SSOSite;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
-
-// HTTPClient imports
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.HttpAuthenticator;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -1427,12 +1408,19 @@ public class PersistenceBrokerSSOProvider extends
         // On some database platforms, like PostgreSQL this can lead to something like:
         //   org.postgresql.util.PSQLException: ERROR: invalid byte sequence for encoding "UTF8": 0x00
         // To prevent this, the resulting xored password is encoded in Base64
-        return new String( Base64.encodeBase64(new String( xor(pwd.toCharArray(), scrambler) ).getBytes() ) );
+    	String xored = new String(xor(pwd.toCharArray(), scrambler));
+        byte[] bytes = Base64.encodeBase64(xored.getBytes());
+        String scrambled = new String(bytes);
+        return scrambled;
     }
     
     private String unscramble(String pwd)
     {
-        return new String(xor(Base64.decodeBase64(pwd.getBytes()).toString().toCharArray(),scrambler));
+    	byte[] bytes = pwd.getBytes();
+        bytes = Base64.decodeBase64(bytes);
+        String chars = new String(bytes);
+        String unscrambled = new String(xor(chars.toCharArray(), scrambler));
+        return unscrambled;
     }
     
     private char[] xor(char[] a, char[]b)

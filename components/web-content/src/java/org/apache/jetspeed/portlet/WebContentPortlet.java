@@ -14,29 +14,26 @@
  */
 package org.apache.jetspeed.portlet;
 
-import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -45,27 +42,22 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
-import org.apache.portals.messaging.PortletMessaging;
-
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.portlet.webcontent.WebContentHistoryList;
+import org.apache.jetspeed.portlet.webcontent.WebContentHistoryPage;
 import org.apache.jetspeed.rewriter.JetspeedRewriterController;
 import org.apache.jetspeed.rewriter.RewriterController;
 import org.apache.jetspeed.rewriter.RewriterException;
@@ -74,8 +66,8 @@ import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
-import org.apache.jetspeed.portlet.webcontent.WebContentHistoryList;
-import org.apache.jetspeed.portlet.webcontent.WebContentHistoryPage;
+import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
+import org.apache.portals.messaging.PortletMessaging;
 
 
 /**
@@ -339,10 +331,14 @@ public class WebContentPortlet extends GenericVelocityPortlet
             // ...set up URL and HttpClient stuff
             HttpClient httpClient = getHttpClient(request) ;
             httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, isPost, request);
-            doPreemptiveAuthentication(httpClient, httpMethod, request, response);
+            byte[] result = doPreemptiveAuthentication(httpClient, httpMethod, request, response);
             
             // ...get, cache, and return the content
-            return doHttpWebContent(httpClient, httpMethod, 0, request, response);
+            if (result == null) {
+            	return doHttpWebContent(httpClient, httpMethod, 0, request, response);
+            } else {
+            	return result;
+            }
         }
         catch (PortletException pex)
         {
@@ -454,6 +450,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
             // Page has been rewritten
             // TODO: Write it to cache
+            //System.out.println(new String(byteOutputStream.toByteArray()));
             return byteOutputStream.toByteArray();
         }
         catch (UnsupportedEncodingException ueex)
@@ -475,10 +472,10 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return source;    
     }
     
-    protected boolean doPreemptiveAuthentication(HttpClient clent,HttpMethod method, RenderRequest request, RenderResponse response)
+    protected byte[] doPreemptiveAuthentication(HttpClient clent,HttpMethod method, RenderRequest request, RenderResponse response)
     {
         // derived class responsibilty - return true, if credentials have been set
-        return false ;
+        return null ;
     }
     
     protected boolean doRequestedAuthentication(HttpClient clent,HttpMethod method, RenderRequest request, RenderResponse response)

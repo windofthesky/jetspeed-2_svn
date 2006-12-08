@@ -15,15 +15,11 @@
  */
 package org.apache.jetspeed.portlet;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.security.AccessControlContext;
 import java.security.AccessController;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -37,28 +33,21 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.AuthState;
 import org.apache.commons.httpclient.auth.BasicScheme;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.portals.messaging.PortletMessaging;
-
-import org.apache.jetspeed.rewriter.BasicRewriter;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.portals.messaging.PortletMessaging;
 
 
 /**
@@ -255,12 +244,13 @@ public class SSOWebContentPortlet extends WebContentPortlet
         return Subject.getSubject(context);         
     }
     
-    protected boolean doPreemptiveAuthentication(HttpClient client,HttpMethod method, RenderRequest request, RenderResponse response)
+    protected byte[] doPreemptiveAuthentication(HttpClient client,HttpMethod method, RenderRequest request, RenderResponse response)
     {
-        if ( super.doPreemptiveAuthentication(client, method, request, response))
+    	byte[] result = super.doPreemptiveAuthentication(client, method, request, response);
+        if ( result != null)
         {
             // already handled
-            return true ;
+            return result ;
         }
         
         // System.out.println("SSOWebContentPortlet.doPreemptiveAuthentication...");
@@ -282,7 +272,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
             client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
             
             // handled!
-            return true ;
+            return result ;
             
         }
         else if (type.startsWith(SSO_TYPE_FORM))
@@ -293,7 +283,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 if (formAuth != null)
                 {
                     // already been here, done that
-                    return formAuth.booleanValue();
+                    return (formAuth.booleanValue() ? result : null);
                 }
                 else
                 {
@@ -305,19 +295,19 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 if (formAction == null || formAction.length() == 0)
                 {
                     log.warn("sso.type specified as 'form', but no: "+SSO_TYPE_FORM_ACTION_URL+", action was specified - unable to preemptively authenticate by form.");
-                    return false ;
+                    return null ;
                 }
                 String userNameField = prefs.getValue(SSO_TYPE_FORM_USERNAME_FIELD, "");
                 if (userNameField == null || userNameField.length() == 0)
                 {
                     log.warn("sso.type specified as 'form', but no: "+SSO_TYPE_FORM_USERNAME_FIELD+", username field was specified - unable to preemptively authenticate by form.");
-                    return false ;
+                    return null ;
                 }
                 String passwordField = prefs.getValue(SSO_TYPE_FORM_PASSWORD_FIELD, "password");
                 if (passwordField == null || passwordField.length() == 0)
                 {
                     log.warn("sso.type specified as 'form', but no: "+SSO_TYPE_FORM_PASSWORD_FIELD+", password field was specified - unable to preemptively authenticate by form.");
-                    return false ;
+                    return null ;
                 }
                 
                 String userName = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME);
@@ -349,11 +339,10 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 // resuse client - in case new cookies get set - but create a new method (for the formAction)
                 method = getHttpMethod(client, getURLSource(formAction, formParams, request, response), formParams, isPost, request);
                 // System.out.println("...posting credentials");
-                byte[] result = doHttpWebContent(client, method, 0, request, response) ;
-                boolean success = result != null; 
+                result = doHttpWebContent(client, method, 0, request, response) ;
                 // System.out.println("Result of attempted authorization: "+success);
-                PortletMessaging.publish(request, FORM_AUTH_STATE, Boolean.valueOf(success));
-                return success ;
+                PortletMessaging.publish(request, FORM_AUTH_STATE, Boolean.valueOf(result != null));
+                return result ;
             }
             catch (Exception ex)
             {
@@ -368,13 +357,13 @@ public class SSOWebContentPortlet extends WebContentPortlet
             if (userNameParam == null || userNameParam.length() == 0)
             {
                 log.warn("sso.type specified as 'url', but no: "+SSO_TYPE_URL_USERNAME_PARAM+", username parameter was specified - unable to preemptively authenticate by URL.");
-                return false ;
+                return null ;
             }
             String passwordParam = prefs.getValue(SSO_TYPE_URL_PASSWORD_PARAM, "");
             if (passwordParam == null || passwordParam.length() == 0)
             {
                 log.warn("sso.type specified as 'url', but no: "+SSO_TYPE_URL_PASSWORD_PARAM+", password parameter was specified - unable to preemptively authenticate by URL.");
-                return false ;
+                return null ;
             }
             String userName = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME);
             if (userName == null) userName = "";
@@ -409,12 +398,12 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 }
             }
             
-            return true ;
+            return result ;
         }
         // else System.out.println("...sso.type: "+type+", no pre-emptive authentication");
         
         // not handled
-        return false ;
+        return null ;
     }
 
     protected boolean doRequestedAuthentication(HttpClient client,HttpMethod method, RenderRequest request, RenderResponse response)
