@@ -54,18 +54,20 @@ limitations under the License.
             <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>        
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
         </dependency>
         <dependency>
             <groupId>javolution</groupId>
             <artifactId>javolution</artifactId>
-            <version>4.0.2</version>
         </dependency>
         <dependency>
-            <groupId>DdlUtils</groupId>
-            <artifactId>DdlUtils</artifactId>
-            <version>1.0-RC1-PATCHED</version>
+            <groupId>ddlutils</groupId>
+            <artifactId>ddlutils</artifactId>
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
