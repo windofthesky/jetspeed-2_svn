@@ -309,6 +309,17 @@ limitations under the License.
 				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
+		<!-- Serializer -->
+		<dependency>
+			<id>jetspeed-serializer</id>
+			<groupId>org.apache.portals.jetspeed-2</groupId>
+			<version>
+				${jetspeed.version}
+			</version>
+			<properties>
+	           <war.bundle>true</war.bundle>
+	        </properties>
+		</dependency>
 	</dependencies>
 
 </project>
