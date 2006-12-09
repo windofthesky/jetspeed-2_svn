@@ -1,0 +1,76 @@
+/*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.pageEditorPane { }
+
+.pageEditorPane .container { }
+
+
+.pageEditorPane
+{
+  width: 100%;
+  padding-top: 5px;
+  font-size: 8pt;
+  color: blue;
+  overflow: hidden;
+  clip: auto;
+}
+
+.pageEditorPane label, 
+.pageEditorPane input, 
+.pageEditorPane select 
+{
+  font-size: 8pt;
+  color: blue;
+}
+
+.pageEditorPane input
+{
+  font-size: 8pt;
+}
+
+.pageEditorPaneLeft
+{
+  display:inline;
+  float:left;
+}
+
+.pageEditorPaneRight
+{
+  display:inline;
+  float:right;
+  padding-right: 5px;
+}
+
+
+.dojoDialog .container { padding: 0.5em; background: #fff; border: 2px solid #333; -moz-border-radius : 5px; }
+
+.dojoDialog .deletePortletDialog { background: transparent; width: 20em; }
+.dojoDialog .deletePortletDialog h2 { margin-top: 0; padding-top: 0; }
+.dojoDialog .deletePortletDialog p { clear: both; }
+.dojoDialog .deletePortletDialog .dojoButton { float: right; margin-right: 5px }
+
+.dojoDialog .columnSizeDialog { background: transparent; width: 20em; }
+.dojoDialog .columnSizeDialog h2{ margin-top: 0; padding-top: 0; }
+.dojoDialog .columnSizeDialog p{ clear: both; }
+.dojoDialog .columnSizeDialog .dojoButton { float: right; margin-right: 5px }
+.dojoDialog .columnSizeDialog .columnSizeField { margin-bottom: 5px }
+.dojoDialog .columnSizeDialog .columnSizeField .range { font-size: 8pt; color: red }
+.dojoDialog .columnSizeDialog .columnSizeField .missing { font-size: 8pt; color: red }
+.dojoDialog .columnSizeDialog .columnSizeField .invalid { font-size: 8pt; color: red }
+
+.pageEditorPane .detail { }
+

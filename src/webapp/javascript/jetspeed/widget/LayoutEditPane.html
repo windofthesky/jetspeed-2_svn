@@ -1,0 +1,16 @@
+<div class="layoutEditPane">
+    <div dojoAttachPoint="containerNode" class="container"></div>
+
+    <fieldset>
+        <div dojoAttachPoint="detail" class="detail">
+           <div class="layoutNameContainer">
+            <select name="layoutNameSelect" dojoAttachPoint="layoutNameSelect" dojoType="Select" class="layoutName" autocomplete="false">
+            </select></div>
+            <div class="selectSpacer">&nbsp;</div>
+            <button dojoType="Button" dojoAttachPoint="changeLayoutButton" dojoAttachEvent="onClick:changeLayout">Change Layout</button>
+            <div class="operationSpacer">&nbsp;</div>
+            <button dojoType="Button" dojoAttachEvent="onClick:openColumnSizeEditor">Column Sizes</button>
+        </div>
+    </fieldset>
+
+</div>

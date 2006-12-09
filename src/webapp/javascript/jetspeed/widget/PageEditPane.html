@@ -1,0 +1,49 @@
+<div class="pageEditPane">
+    <div dojoAttachPoint="containerNode" class="container"></div>
+
+    <fieldset>
+        <div dojoAttachPoint="detail" class="detail">
+            <div>Page Configuration</div>
+            <div class="buttonContainer">
+                <button dojoType="Button" dojoAttachEvent="onClick:deletePage">Delete Page</button>
+                <button dojoType="Button" dojoAttachEvent="onClick:createPage">Create New Page</button>
+                <div class="buttonContainerRight"><button dojoType="Button" dojoAttachEvent="onClick:addPortlet">Add Portlet</button></div>
+            </div>
+        </div>
+    </fieldset>
+
+	<div dojoAttachPoint="deletePageDialog">
+		<div class="container" dojoAttachPoint="deletePageDialogBg">
+			<div class="deletePageDialog" dojoAttachPoint="deletePageDialogFg">
+				<h2>Are you sure you want to delete this page?</h2>
+				<button dojoType="Button" id="deletePageYes" dojoAttachEvent="onClick:deletePageConfirmed">Yes</button>
+				<button dojoType="Button" id="deletePageNo" dojoAttachPoint="deletePageCancel">No</button>
+				<p></p>
+			</div>
+		</div>
+	</div>
+
+    <div dojoAttachPoint="createPageDialog">
+		<div class="container" dojoAttachPoint="createPageDialogBg">
+			<div class="createPageDialog" dojoAttachPoint="createPageDialogFg">
+				<h2>Create New Page</h2>
+                <div dojoAttachPoint="createPageNameField" class="createPageField">
+                    <div>Name</div>
+                    <input dojoType="Textbox" dojoAttachPoint="createPageNameTextbox" maxlength="30">
+                </div>
+                <div dojoAttachPoint="createPageTitleField" class="createPageField">
+                    <div>Title</div>
+                    <input dojoType="Textbox" dojoAttachPoint="createPageTitleTextbox" maxlength="30">
+                </div>
+                <div dojoAttachPoint="createPageShortTitleField" class="createPageField">
+                    <div>Short Title</div>
+                    <input dojoType="Textbox" dojoAttachPoint="createPageShortTitleTextbox" maxlength="30">
+                </div>
+				<button dojoType="Button" id="createPageYes" dojoAttachEvent="onClick:createPageConfirmed">OK</button>
+				<button dojoType="Button" id="createPageNo" dojoAttachPoint="createPageCancel">Cancel</button>
+				<p></p>
+			</div>
+		</div>
+	</div>
+
+</div>

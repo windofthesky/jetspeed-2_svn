@@ -1,0 +1,52 @@
+<div class="pageEditorPane">
+    <div dojoAttachPoint="containerNode" class="container"></div>
+
+    <fieldset>
+        <div class="pageEditorPaneLeft"><b>Jetspeed Customizer</b></div>
+        <div class="pageEditorPaneRight"></div>
+    </fieldset>
+
+    <div dojoAttachPoint="deletePortletDialog">
+		<div class="container" dojoAttachPoint="deletePortletDialogBg">
+			<div class="deletePortletDialog" dojoAttachPoint="deletePortletDialogFg">
+				<h2>Are you sure you want to delete this portlet?</h2>
+                <div dojoAttachPoint="deletePortletTitle">&nbsp;</div>
+                <button dojoType="Button" dojoAttachEvent="onClick:deletePortletConfirmed">OK</button>
+                <button dojoType="Button" dojoAttachPoint="deletePortletCancel">Cancel</button>
+				<p></p>
+			</div>
+		</div>
+	</div>
+
+	<div dojoAttachPoint="columnSizeDialog">
+		<div class="container" dojoAttachPoint="columnSizeDialogBg">
+			<div class="columnSizeDialog" dojoAttachPoint="columnSizeDialogFg">
+				<h2>Change Column Sizes</h2>
+                <div dojoAttachPoint="spinner0Field" class="columnSizeField">
+                    <div>Column 1</div>
+                    <input dojoType="IntegerSpinner" dojoAttachPoint="spinner0" value="0" delta="1" min="0" max="100" separator="," maxlength="10" >
+                </div>
+                <div dojoAttachPoint="spinner1Field" class="columnSizeField">
+                    <div>Column 2</div>
+                    <input dojoType="IntegerSpinner" dojoAttachPoint="spinner1" value="0" delta="1" min="0" max="100" separator="," maxlength="10" >
+                </div>
+                <div dojoAttachPoint="spinner2Field" class="columnSizeField">
+                    <div>Column 3</div>
+                    <input dojoType="IntegerSpinner" dojoAttachPoint="spinner2" value="0" delta="1" min="0" max="100" separator="," maxlength="10" >
+                </div>
+                <div dojoAttachPoint="spinner3Field" class="columnSizeField">
+                    <div>Column 4</div>
+                    <input dojoType="IntegerSpinner" dojoAttachPoint="spinner3" value="0" delta="1" min="0" max="100" separator="," maxlength="10" >
+                </div>
+                <div dojoAttachPoint="spinner4Field" class="columnSizeField">
+                    <div>Column 5</div>
+                    <input dojoType="IntegerSpinner" dojoAttachPoint="spinner4" value="0" delta="1" min="0" max="100" separator="," maxlength="10" >
+                </div>
+                <button dojoType="Button" dojoAttachEvent="onClick:columnSizeConfirmed">OK</button>
+                <button dojoType="Button" dojoAttachPoint="columnSizeCancel">Cancel</button>
+                <p></p>
+			</div>
+		</div>
+	</div>
+
+</div>
