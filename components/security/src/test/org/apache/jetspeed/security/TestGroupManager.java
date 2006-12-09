@@ -471,12 +471,23 @@ public class TestGroupManager extends AbstractSecurityTestcase
      */
     public void testGetGroups() throws Exception
     {
-        ums.addUser("notme", "one-pw");
+    	int groupCount = 0;
+    	int groupAdded = 0;
+        Iterator it = gms.getGroups("");
+        while (it.hasNext())
+        {
+            Group group = (Group) it.next();
+            System.out.println("Group is " + group);
+            groupCount++;
+        }
+
+    	ums.addUser("notme", "one-pw");
         gms.addGroup("g1");
         gms.addGroup("g2");
         gms.addGroup("g3");
+        groupAdded = 3;
         int count = 0;
-        Iterator it = gms.getGroups("");
+        it = gms.getGroups("");
         while (it.hasNext())
         {
             Group group = (Group) it.next();
@@ -487,7 +498,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         gms.removeGroup("g1");
         gms.removeGroup("g2");
         gms.removeGroup("g3");
-        //assertTrue("group count should be 3", count == 3);
+        assertTrue("group count should be " + (groupAdded + groupCount), count == (groupAdded + groupCount));
                
     }
     

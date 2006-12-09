@@ -35,7 +35,6 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestRoleManager extends AbstractSecurityTestcase
 {
-
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -604,13 +603,24 @@ public class TestRoleManager extends AbstractSecurityTestcase
      */
     public void testGetRoles() throws Exception
     {
+    	int roleCount = 0;
+    	int rolesAdded = 0;
+        Iterator it = rms.getRoles("");
+        while (it.hasNext())
+        {
+            Role role = (Role) it.next();
+            roleCount++;
+        }
         ums.addUser("notme", "one-pw");
         gms.addGroup("g1");
         rms.addRole("r1");
         rms.addRole("r2");
         rms.addRole("r3");
+        rolesAdded = 3;
+
         int count = 0;
-        Iterator it = rms.getRoles("");
+        
+        it = rms.getRoles("");
         while (it.hasNext())
         {
             Role role = (Role) it.next();
@@ -621,7 +631,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         rms.removeRole("r1");
         rms.removeRole("r2");
         rms.removeRole("r3");
-        assertTrue("role count should be 3", count == 3);
+        assertTrue("role count should be " + (rolesAdded + roleCount), count == (rolesAdded + roleCount));
                
     }
    

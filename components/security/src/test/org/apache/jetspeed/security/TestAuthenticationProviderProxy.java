@@ -42,7 +42,9 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
 {
-
+	int userCount = 0;
+	int usersAdded = 0;
+	
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -136,9 +138,10 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
                 users.next();
                 count++;
             }
+            
             // assertEquals(8, count);
-
-            assertEquals(5, count);
+           
+            assertEquals(userCount + usersAdded, count);
         }
         catch (SecurityException sex)
         {
@@ -257,11 +260,30 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
         final String[] groups = new String[] { "testgroup1", "testgroup1.subgroup1", "testgroup1.subgroup1.subgroup2",
                 "testgroup2", "testgroup2.subgroup1" };
 
+        
+        //before we adding users make sure we know how mnay we have
+        try
+        {
+	        Iterator it = ums.getUsers("");
+	        userCount = 0;
+	        while (it.hasNext())
+	        {
+	        	it.next();
+	        	userCount++;
+	        }
+        }
+        catch (Exception e)
+        {
+        	
+        }
+    
+        usersAdded = 0;
         for (int i = 0; i < users.length; i++)
         {
             try
             {
                 ums.addUser(users[i], "password");
+                usersAdded++;
             }
             catch (SecurityException e)
             {

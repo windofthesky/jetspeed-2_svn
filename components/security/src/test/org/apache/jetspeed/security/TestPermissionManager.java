@@ -84,12 +84,12 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         //////////////////////////////////////////////////////////////////////////
         // setup
         ////////////
-        UserPrincipal adminUser = new UserPrincipalImpl("admin");
-        UserPrincipal userUser = new UserPrincipalImpl("user");
-        PortletPermission adminPerm = new PortletPermission("admin::*", "view, edit");
-        PortletPermission userPerm = new PortletPermission("demo::*", "view, edit");
-        RolePrincipal adminRole = new RolePrincipalImpl("admin");
-        RolePrincipal userRole = new RolePrincipalImpl("user");
+        UserPrincipal adminUser = new UserPrincipalImpl("adminTEST");
+        UserPrincipal userUser = new UserPrincipalImpl("userTEST");
+        PortletPermission adminPerm = new PortletPermission("adminTEST::*", "view, edit");
+        PortletPermission userPerm = new PortletPermission("demoTEST::*", "view, edit");
+        RolePrincipal adminRole = new RolePrincipalImpl("adminTEST");
+        RolePrincipal userRole = new RolePrincipalImpl("userTEST");
         
         try
         {
