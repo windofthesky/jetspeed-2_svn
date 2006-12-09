@@ -320,7 +320,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     // dojo.widget.Widget create protocol
     postMixInProperties: function( args, fragment, parentComp )
     {
-        jetspeed.widget.PortletWindow.superclass.postMixInProperties.call( this );
+        jetspeed.widget.PortletWindow.superclass.postMixInProperties.apply( this, arguments );
 
         this.portletIndex = this._getNextIndex();
 
@@ -784,9 +784,21 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 this.windowActionButtonSync();
             }
         }
+        else if ( actionName == jetspeed.id.ACTION_NAME_REMOVEPORTLET )
+        {
+            if ( this.portlet )
+            {
+                var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+                if ( pageEditorWidget != null )
+                {
+                    pageEditorWidget.deletePortlet( this.portlet.entityId, this.title );
+                }
+            }
+        }
         else
         {
-            this.portlet.renderAction( actionName );
+            if ( this.portlet )
+                this.portlet.renderAction( actionName );
         }
     },
 
@@ -825,7 +837,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             var actionDef = this.portlet.getAction( actionName );
             if ( actionDef != null )
             {
-                if ( actionDef.type == jetspeed.id.PORTLET_ACTION_TYPE_MODE )
+                if ( actionDef.id == jetspeed.id.ACTION_NAME_REMOVEPORTLET )
+                {
+                    if ( jetspeed.page.editMode )
+                        enabled = true;
+                }
+                else if ( actionDef.type == jetspeed.id.PORTLET_ACTION_TYPE_MODE )
                 {
                     if ( actionName != currentPortletActionMode )
                     {
@@ -1650,10 +1667,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         */
 
         var setContentObj = this._splitAndFixPaths_scriptsonly( initialHtmlStr, url );
-        
         this.setContent( setContentObj );
-        this._executeScripts( setContentObj.scripts );
-
+        if ( setContentObj.scripts != null && setContentObj.scripts.length != null && setContentObj.scripts.length > 0 )
+        {
+            this._executeScripts( setContentObj.scripts );
+        }
         if ( jetspeed.debug.setPortletContent )
             dojo.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
 
@@ -1835,7 +1853,31 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
         this.initialStyleWidth = portletWindowNode.style.width;
         this.initialOffsetWidth = portletWindowNode.offsetWidth;
 
-        jetspeed.widget.PortletWindowDragMoveObject.superclass.onDragStart.call( this, e );
+        /* start HtmlDragMoveObject.onDragStart from dojo-0.4.0 - copied due to agressive changes in dojo-0.4.1 */
+        /* used to call superclass.onDragStart: */
+        /* jetspeed.widget.PortletWindowDragMoveObject.superclass.onDragStart.call( this, e ); */
+
+        dojo.html.clearSelection();
+
+		this.dragClone = this.domNode;
+
+		this.scrollOffset = dojo.html.getScroll().offset;
+		this.dragStartPosition = dojo.html.abs(this.domNode, true);
+		
+		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
+			x: this.dragStartPosition.x - e.pageX};
+
+		this.containingBlockPosition = this.domNode.offsetParent ? 
+			dojo.html.abs(this.domNode.offsetParent, true) : {x:0, y:0};
+
+		this.dragClone.style.position = "absolute";
+
+		if (this.constrainToContainer) {
+			this.constraints = this.getConstraints();
+		}
+
+        /* end HtmlDragMoveObject.onDragStart from dojo-0.4.0 */
+
 
         // ghost placement - must happen after superclass.onDragStart
         var pwGhost = jetspeed.widget.pwGhost;
@@ -1856,7 +1898,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
             for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
             {
                 var col = jetspeed.page.columns[i];
-                if ( ! col.columnContainer )
+                if ( ! col.columnContainer && ! col.layoutHeader )
                 {
                     var colAbsPos = dojo.html.getAbsolutePosition( col.domNode, true );
                     var marginBox = dojo.html.getMarginBox( col.domNode );
