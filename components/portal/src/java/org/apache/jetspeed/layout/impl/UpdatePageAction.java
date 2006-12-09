@@ -241,12 +241,24 @@ public class UpdatePageAction
                     entityAccess.storePortletEntity(window.getPortletEntity());
                     windowAccess.createPortletWindow(window.getPortletEntity(), contentFragment.getId());
                     count++;
+                    if ( isBlank(sizes) )
+                    {
+                        fragment.setLayoutSizes(null);
+                    }
+                    else
+                    {
+                        fragment.setLayoutSizes(sizes);
+                    }
+                    count++;
                 }
             }
-            if (!isBlank(sizes))
+            else
             {
-                fragment.setLayoutSizes(sizes);
-                count++;
+                if (!isBlank(sizes))
+                {
+                    fragment.setLayoutSizes(sizes);
+                    count++;
+                }
             }
         }
         return count;
@@ -294,34 +306,34 @@ public class UpdatePageAction
         {
             Page page = (Page)node;            
             String title = getActionParameter(requestContext, "title");
-            if (isFieldModified(title, page.getTitle()))
+            if (title != null && isFieldModified(title, page.getTitle()))
                 page.setTitle(title);
             String shortTitle = getActionParameter(requestContext, "short-title");
-            if (isFieldModified(shortTitle, page.getShortTitle()))
+            if (shortTitle != null && isFieldModified(shortTitle, page.getShortTitle()))
                 page.setShortTitle(shortTitle);
             String layoutDecorator = getActionParameter(requestContext, "layout-decorator");
-            if (isFieldModified(layoutDecorator, page.getDefaultDecorator(Fragment.LAYOUT)))
+            if (layoutDecorator != null && isFieldModified(layoutDecorator, page.getDefaultDecorator(Fragment.LAYOUT)))
             {
                 if (isBlank(layoutDecorator))
                     layoutDecorator = null; 
                 page.setDefaultDecorator(layoutDecorator, Fragment.LAYOUT);
             }
             String portletDecorator = getActionParameter(requestContext, "portlet-decorator");
-            if (isFieldModified(portletDecorator, page.getDefaultDecorator(Fragment.PORTLET)))
+            if (portletDecorator != null && isFieldModified(portletDecorator, page.getDefaultDecorator(Fragment.PORTLET)))
             {
                 if (isBlank(portletDecorator))
                     portletDecorator = null;                 
                 page.setDefaultDecorator(portletDecorator, Fragment.PORTLET);
             }
             String theme = getActionParameter(requestContext, "theme");
-            if (isFieldModified(theme, page.getSkin()))
+            if (theme != null && isFieldModified(theme, page.getSkin()))
             {
                 if (isBlank(theme))
                     theme = null;                 
                 page.setSkin(theme);
             }
             String hidden = getActionParameter(requestContext, "hidden");
-            if (isBooleanModified(hidden, page.isHidden()))
+            if (hidden != null && isBooleanModified(hidden, page.isHidden()))
                 page.setHidden(!page.isHidden());                                    
             count++;
         }
