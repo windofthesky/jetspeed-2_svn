@@ -111,14 +111,24 @@ jetspeed.callPageLoaded = function()
 	}
 };
 
-jetspeed.printobj = function( obj, omitLineBreaks )
+jetspeed.printobj = function( obj, omitLineBreaks, omitEmptyValsProperties, arrayLengthsOnly )
 {
     var props = [];
     for( var prop in obj )
     {
         try
         {
-            props.push( prop + ': ' + obj[prop] );
+            var propVal = obj[prop];
+            if ( arrayLengthsOnly )
+            {
+                if ( dojo.lang.isArray( propVal ) )
+                {
+                    propVal = "[" + propVal.length + "]";
+                }
+            }
+            propVal = propVal + "";
+            if ( ! omitEmptyValsProperties || propVal.length > 0 )
+                props.push( prop + ': ' + propVal );
         }
         catch(E)
         {
