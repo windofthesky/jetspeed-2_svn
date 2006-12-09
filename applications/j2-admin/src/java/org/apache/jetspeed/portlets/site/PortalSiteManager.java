@@ -143,7 +143,11 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
     protected void includeHeaderContent(HeaderResource headerResource)
     {
         headerResource.dojoAddCoreLibraryRequire("dojo.lang.*");
-        headerResource.dojoAddCoreLibraryRequire("dojo.dnd.*");
+        //headerResource.dojoAddCoreLibraryRequire("dojo.dnd.*");
+        headerResource.dojoAddCoreLibraryRequire("dojo.dnd.HtmlDragManager");
+        headerResource.dojoAddCoreLibraryRequire("dojo.dnd.DragAndDrop");
+        headerResource.dojoAddCoreLibraryRequire("dojo.dnd.HtmlDragAndDrop");
+        
         headerResource.dojoAddCoreLibraryRequire("dojo.event.*");
         headerResource.dojoAddCoreLibraryRequire("dojo.io");
                 
