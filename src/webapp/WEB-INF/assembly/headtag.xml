@@ -104,6 +104,7 @@
                         <value>minimized</value>
                         <value>normal</value>
                         <value>maximized</value>
+                        <value>removeportlet</value>   <!-- activated only when in page edit mode -->
                     </list>
                 </entry>
                 <entry key="desktop.window.action.button.maximum">
@@ -231,6 +232,10 @@
                 <value>dojo.lang.*</value>
                 <value>dojo.event.*</value>
                 <value>dojo.io.*</value>
+                <value>dojo.dnd.HtmlDragManager</value>
+                <value>dojo.dnd.DragAndDrop</value>
+                <value>dojo.dnd.HtmlDragAndDrop</value>
+                <value>dojo.dnd.HtmlDragMove</value>
                 <value>dojo.widget.*</value>
                 <value>dojo.collections.ArrayList</value>
                 <value>dojo.collections.Set</value>
@@ -242,6 +247,7 @@
                 <value>dojo.widget.Checkbox</value>
                 <value>dojo.widget.Dialog</value>
                 <value>dojo.widget.Button</value>
+                <value>dojo.widget.Select</value>
                 <value>dojo.widget.LayoutContainer</value>
                 <value>dojo.widget.ContentPane</value>
                 <value>dojo.widget.LinkPane</value>
@@ -249,8 +255,6 @@
                 <value>dojo.widget.Tree</value>
                 <value>dojo.widget.Tooltip</value>
                 <value>dojo.lfx.html</value>
-                <value>dojo.dnd.HtmlDragMove</value>
-                <value>dojo.dnd.HtmlDragAndDrop</value>
             </list>
         </constructor-arg>
     </bean>
