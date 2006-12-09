@@ -171,7 +171,7 @@ jetspeed.debug =
     initializeWindowState: false,
     submitChangedWindowState: false,
 
-    windowThemeRandom: true,
+    windowThemeRandom: false,
 
     debugContainerId: ( djConfig.debugContainerId ? djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId )
 };
