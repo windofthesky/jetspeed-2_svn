@@ -447,6 +447,7 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
 // ... jetspeed.widget.UpdateFragmentContentManager
 jetspeed.widget.UpdatePageInfoContentManager = function( layoutDecorator, portletDecorator, desktopTheme, pageEditorWidget )
 {
+    this.refreshPage = false;
     this.layoutDecorator = layoutDecorator;
     this.portletDecorator = portletDecorator;
     this.desktopTheme = desktopTheme;
@@ -462,7 +463,10 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
         if ( this.portletDecorator != null )
             queryString += "&portlet-decorator=" + escape( this.portletDecorator );
         if ( this.desktopTheme != null )
+        {
             queryString += "&theme=" + escape( this.desktopTheme );
+            this.refreshPage = true;
+        }
         var updatePageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
         var ajaxApiContext = new jetspeed.om.Id( "updatepage-info", { } );
         var bindArgs = {};
@@ -474,7 +478,8 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
     {
         if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-info" ) )
         {
-            this.pageEditorWidget.refreshPage();
+            if ( this.refreshPage )
+                this.pageEditorWidget.refreshPage();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
