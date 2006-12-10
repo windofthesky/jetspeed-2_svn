@@ -628,6 +628,7 @@ jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds, content
     if ( contentListener == null )
         contentListener = new jetspeed.om.PortletActionsContentListener();
     var queryString = "?action=getactions";
+    queryString += "&path=" + escape( jetspeed.page.getPath() );
     if ( portletEntityIds == null )
         portletEntityIds = jetspeed.page.getPortletIds();
     for ( var i = 0 ; i < portletEntityIds.length ; i++ )
@@ -649,6 +650,7 @@ jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* Str
         queryString += "&state=" + changeActionState;
     if ( changeActionMode != null )
         queryString += "&mode=" + changeActionMode;
+    queryString += "&path=" + escape( jetspeed.page.getPath() );
     var changeActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
     var mimetype = "text/xml";
     var ajaxApiContext = new jetspeed.om.Id( "changeaction", { } );

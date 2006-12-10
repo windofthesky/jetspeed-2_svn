@@ -329,6 +329,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
     getContent: function()
     {
         var queryString = "?action=updatepage&method=remove";
+        queryString += "&path=" + escape( jetspeed.page.getPath() );
         var removePageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
         var ajaxApiContext = new jetspeed.om.Id( "updatepage-remove-page", { } );
         var bindArgs = {};
@@ -423,6 +424,7 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
                 queryString += "&layout=" + escape( this.layoutName );
             if ( this.layoutSizes != null )
                 queryString += "&sizes=" + escape( this.layoutSizes );
+            queryString += "&path=" + escape( jetspeed.page.getPath() );
             var updatePageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
             var ajaxApiContext = new jetspeed.om.Id( "updatepage-update-fragment", { } );
             var bindArgs = {};
@@ -467,6 +469,7 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
             queryString += "&theme=" + escape( this.desktopTheme );
             this.refreshPage = true;
         }
+        queryString += "&path=" + escape( jetspeed.page.getPath() );
         var updatePageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
         var ajaxApiContext = new jetspeed.om.Id( "updatepage-info", { } );
         var bindArgs = {};
@@ -501,6 +504,7 @@ jetspeed.widget.RemovePortletContentManager.prototype =
         if ( this.portletEntityId != null )
         {
             var queryString = "?action=remove&id=" + this.portletEntityId;
+            queryString += "&path=" + escape( jetspeed.page.getPath() );
             var removePortletUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
             var ajaxApiContext = new jetspeed.om.Id( "removeportlet", { } );
             var bindArgs = {};
