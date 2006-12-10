@@ -1953,22 +1953,38 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
             var offsetWidthHalf = this.domNode.offsetWidth / 2;
             var offsetHeightHalf = this.domNode.offsetHeight / 2;
             var noOfCols = jetspeed.page.columns.length;
-            for ( var i = 0 ; i < noOfCols ; i++ )
+            for ( var tries = 1 ; tries <= 2 ; tries++ )
             {
-                var colDims = this.columnDimensions[ i ];
-                if ( colDims != null )
+                for ( var i = 0 ; i < noOfCols ; i++ )
                 {
-                    var xTest = x + offsetWidthHalf;
-                    if ( xTest >= colDims.left && xTest <= colDims.right )
+                    var colDims = this.columnDimensions[ i ];
+                    if ( colDims != null )
                     {
-                        var yTest = y + offsetHeightHalf;
-                        if ( yTest >= colDims.top && yTest <= colDims.bottom )
+                        var xTest = x + offsetWidthHalf;
+                        if ( xTest >= colDims.left && xTest <= colDims.right )
                         {
-                            colIndex = i;
-                            break;
+                            var yTest = y + offsetHeightHalf;
+                            if ( tries == 1 )
+                            {
+                                if ( yTest >= colDims.top && yTest <= colDims.bottom )
+                                {
+                                    colIndex = i;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if ( yTest >= (colDims.top - 30) && yTest <= (colDims.bottom + 200) )
+                                {
+                                    colIndex = i;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+                if ( colIndex != -1 )
+                    break ;
             }
             var col = ( colIndex >= 0 ? jetspeed.page.columns[ colIndex ] : null );
             //if ( col != null )
