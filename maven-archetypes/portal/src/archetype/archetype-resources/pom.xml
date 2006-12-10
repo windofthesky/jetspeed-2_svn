@@ -118,7 +118,7 @@ limitations under the License.
         <portlet-api.version>1.0</portlet-api.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.0.6</taglibs-standard.version>
-        <velocity-tools.version>1.1</velocity-tools.version>
+        <velocity-tools.version>1.2</velocity-tools.version>
         <velocity.version>1.4</velocity.version>
 
     </properties>
