@@ -172,11 +172,11 @@
                 </entry>
                 <entry key="dojo.parameter.isDebug">
                     <!-- value for djConfig variable isDebug -->
-                    <value>true</value>
+                    <value>false</value>
                 </entry>
                 <entry key="dojo.parameter.debugAtAllCosts">
                     <!-- value for djConfig variable debugAtAllCosts -->
-                    <value>true</value>
+                    <value>false</value>
                 </entry>
                 <entry key="dojo.parameters">
                     <!-- additional djConfig variables expressed as a json object fragment: -->
