@@ -628,14 +628,13 @@ jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds, content
     if ( contentListener == null )
         contentListener = new jetspeed.om.PortletActionsContentListener();
     var queryString = "?action=getactions";
-    queryString += "&path=" + escape( jetspeed.page.getPath() );
     if ( portletEntityIds == null )
         portletEntityIds = jetspeed.page.getPortletIds();
     for ( var i = 0 ; i < portletEntityIds.length ; i++ )
     {
         queryString += "&id=" + portletEntityIds[i];
     }
-    var getActionsUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
+    var getActionsUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString;
     var mimetype = "text/xml";
     var ajaxApiContext = new jetspeed.om.Id( "getactions", { } );
     jetspeed.url.retrieveContent( { url: getActionsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
@@ -650,8 +649,7 @@ jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* Str
         queryString += "&state=" + changeActionState;
     if ( changeActionMode != null )
         queryString += "&mode=" + changeActionMode;
-    queryString += "&path=" + escape( jetspeed.page.getPath() );
-    var changeActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
+    var changeActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
     var mimetype = "text/xml";
     var ajaxApiContext = new jetspeed.om.Id( "changeaction", { } );
     jetspeed.url.retrieveContent( { url: changeActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
@@ -2766,7 +2764,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
     {
         var queryString = "?action=" + action + "&id=" + this.entityId + queryStringFragment;
 
-        var psmlMoveActionUrl = jetspeed.page.getPsmlUrl() + queryString;
+        var psmlMoveActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString;
         var mimetype = "text/xml";
 
         var ajaxApiContext = new jetspeed.om.Id( action, this.entityId );
