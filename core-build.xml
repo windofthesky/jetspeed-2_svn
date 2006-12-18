@@ -359,7 +359,7 @@ limitations under the License.
 	      </properties>          
 	    </dependency>	
 	    <dependency>
-	      <id>DdlUtils</id>
+	      <id>ddlutils</id>
 	      <version>1.0-RC1-PATCHED</version>
 	      <properties>
 	         <war.bundle>true</war.bundle>
