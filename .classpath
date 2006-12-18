@@ -116,7 +116,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/random-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jmx/jars/jmxri-1.2.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/javolution/jars/javolution-4.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/ddlutils/jars/DdlUtils-1.0-RC1-PATCHED.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ddlutils/jars/ddlutils-1.0-RC1-PATCHED.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-20061115.jar"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
