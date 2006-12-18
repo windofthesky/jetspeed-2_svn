@@ -384,7 +384,7 @@ maven j2:portal.genapp]]>
 					to be done before we can build the portal. Review
 					the definition of the configuration properties
 					described in
-					<a href="configuration-properties.html">
+					<a href="guide/guide-properties.html">
 						Basic Configuration Parameters
 					</a>
 					.
@@ -415,7 +415,7 @@ org.apache.jetspeed.portal.currentVersion = 1.0
 					parameters in the
 					<code>${basedir}build.properties</code>
 					file. Refer to the
-					<a href="guide-database.html">Database Configuration</a>
+					<a href="guides/guide-database.html">Database Configuration</a>
 					section for a description of the variables required.
 				</p>
 			</subsection>
@@ -492,7 +492,7 @@ maven war:install]]>
 					database, you need to make sure that it is running
 					and that the user that will own the Jetspeed tables
 					is setup and ready for use. Refer to the
-					<a href="guide-database.html">Database Configuration</a>
+					<a href="guides/guide-database.html">Database Configuration</a>
 					section for more information. If you are using the
 					default HSQLDB database you need to start it before
 					deploying the portal.
