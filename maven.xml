@@ -349,11 +349,45 @@
 	<goal name='mht'>
 		<attainGoal name='j2:portal.conf.sql'/>
 		<attainGoal name='j2:db.create.test'/>
+        <attainGoal name='test.register'/>
 		<echo>and the holy ghost...run your test... dont forget -Dmaven.test.skip=false</echo>
 	</goal>
 	
     <goal name='unzip-javascript'>
        <unzip src="src/javascript/dojo/dojo.zip" dest="${maven.build.dir}/jetspeed/javascript/dojo/"/> 
     </goal>
-    
+
+    <goal name='test.register'>
+        <filterset id="dbSet" begintoken="$" endtoken="}">
+          <filter token="{org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+          <filter token="{org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>      
+          <filter token="{org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>            
+          <filter token="{org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>            
+        </filterset>            
+        <copy file="./etc/import/assembly/repository-datasource-spring.xml"
+              tofile="${maven.build.dir}/classes/repository-datasource-spring.xml"
+              overwrite="true"
+              failonerror="true">
+          <filterset refid="dbSet"/>
+        </copy>        
+        <copy todir='${maven.build.dir}/classes'
+          file="./etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'>
+          <fileset dir="./etc/db-ojb/"/>
+        </copy>              
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
+        <copy todir="${maven.build.dir}/classes"
+              file="./etc/registration/assembly/registry.xml"/>                
+        <java classname="org.apache.jetspeed.tools.registration.RegistrationTool" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>            
+          </classpath>
+          <sysproperty key="org.apache.jetspeed.portletregistry.configuration" 
+                       value="./etc/registration/registration.properties"/>       
+        </java>
+    </goal>
+        
 </project>
