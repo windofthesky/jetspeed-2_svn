@@ -66,8 +66,11 @@ limitations under the License.
 <tag id='td'>
     <attribute id='background' rule='base'/>
 </tag>
+<tag id='td'>
+    <attribute id='onclick' rule='base'/>
+</tag>
 
-<!-- sample rules -->
+    <!-- sample rules -->
 <rule id='portal-popup' popup='true' use-base='true' suffix='/portal' ignore-prefixes='javascript:,mailto:'/>
 <rule id='test' use-base='false' suffix='/whatever&amp;xxx=1' popup='1'/>
 

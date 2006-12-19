@@ -14,7 +14,7 @@
  */
 package org.apache.jetspeed.rewriter;
 
-import java.net.URL;
+import java.util.StringTokenizer;
 
 import javax.portlet.PortletURL;
 
@@ -26,6 +26,13 @@ import javax.portlet.PortletURL;
  */
 public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
 {
+    /* (non-Javadoc)
+    * @see org.apache.jetspeed.syndication.services.crawler.rewriter.Rewriter#convertTagEvent(java.lang.String, org.xml.sax.Attributes)
+    */
+    public void enterConvertTagEvent(String tagid, MutableAttributes attributes) {
+        super.enterConvertTagEvent(tagid, attributes);
+    }
+
     /** parameters that need to be propagated in the action URL (since HTTP request parameters will not be available) */
     public static final String ACTION_PARAMETER_URL    = "_AP_URL";
     public static final String ACTION_PARAMETER_METHOD = "_AP_METHOD";
@@ -62,21 +69,8 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
     public String rewriteUrl(String url, String tag, String attribute, MutableAttributes otherAttributes)
     {
          String modifiedURL = url;
-        
-        // Any relative URL needs to be converted to a full URL
-        if (url.startsWith("/") || (!url.startsWith("http:") && !url.startsWith("https:"))) 
-        {
-            if (this.getBaseUrl() != null)
-            {
-                modifiedURL = getBaseRelativeUrl(url) ;
-                // System.out.println("WebContentRewriter.rewriteUrl() - translated URL relative to base URL - result is: "+modifiedURL);
-  	        }
-            else
-            {
-                modifiedURL = url; // leave as is
-	        }
-        }
-         
+        modifiedURL = getModifiedURL(url);
+
         // translate "submit" URL's as actions
         //  <A href="..."/>
         //  <FORM submit="..."/>
@@ -98,10 +92,67 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
                     modifiedURL = actionURL.toString();
                 }
         }
+
+        // Deal with links in an "onclick".
+        if (attribute.equalsIgnoreCase("onclick"))
+        {
+            // Check for onclick with location change
+            for (int i=0; i < otherAttributes.getLength(); i++) {
+
+                String name = otherAttributes.getQName(i);
+
+                if (name.equalsIgnoreCase("onclick")) {
+
+                    String value = otherAttributes.getValue(i);
+
+                    int index = value.indexOf(".location=");
+                    if (index >= 0) {
+                        String oldLocation = value.substring(index + ".location=".length());
+                        StringTokenizer tokenizer = new StringTokenizer(oldLocation, "\'\"");
+                        oldLocation = tokenizer.nextToken();
+
+                        modifiedURL = oldLocation;
+                        url = oldLocation;
+                        modifiedURL = getModifiedURL(url);
+
+                        // Regular URL just add a portlet action
+                        if (this.actionURL != null)
+                        {
+                            // create Action URL
+                            actionURL.setParameter(ACTION_PARAMETER_URL, modifiedURL);
+                            modifiedURL = actionURL.toString();
+                        }
+
+
+                        modifiedURL = value.replaceAll(oldLocation, modifiedURL);
+                    }
+                }
+            }
+
+
+        }
         
         // if ( !url.equalsIgnoreCase( modifiedURL ))
         //     System.out.println("WebContentRewriter.rewriteUrl() - In tag: "+tag+", for attribute: "+attribute+", converted url: "+url+", to: "+modifiedURL+", base URL was: "+getBaseUrl());
 
+        return modifiedURL;
+    }
+
+    private String getModifiedURL(String url) {
+        String modifiedURL = url;
+        // Any relative URL needs to be converted to a full URL
+        if (url.startsWith("/") || (!url.startsWith("http:") && !url.startsWith("https:")))
+        {
+            if (this.getBaseUrl() != null)
+            {
+                modifiedURL = getBaseRelativeUrl(url) ;
+                // System.out.println("WebContentRewriter.rewriteUrl() - translated URL relative to base URL - result is: "+modifiedURL);
+  	        }
+            else
+            {
+                modifiedURL = url; // leave as is
+	        }
+        }
         return modifiedURL;
     }
 }
