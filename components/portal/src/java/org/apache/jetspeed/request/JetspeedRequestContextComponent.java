@@ -47,6 +47,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
 
     public JetspeedRequestContextComponent(String contextClassName)
     {
+        this.contextClassName = contextClassName;
     }
 
     public JetspeedRequestContextComponent(String contextClassName, 
