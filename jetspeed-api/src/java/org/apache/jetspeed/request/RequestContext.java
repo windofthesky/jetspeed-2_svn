@@ -56,6 +56,16 @@ public interface RequestContext
     public HttpServletRequest getRequest();
 
     /**
+     * Sets the HTTP Servlet Request.  This is the Servlet
+     * containers raw request object.  This request should
+     * be wrapped using <code>getPortletRequestForWindow()</code> before
+     * being processed by the portlet container.
+     *
+     * @return HttpServletRequest
+     */    
+    public void setRequest(HttpServletRequest request);
+    
+    /**
      * Gets the HTTP Servlet Response.  This is the Servlet
      * containers raw response object.  This response should
      * be wrapped using <code>getPortletResponseForWindow()</code> before
@@ -64,6 +74,15 @@ public interface RequestContext
      */
     public HttpServletResponse getResponse();
 
+    /**
+     * Sets the HTTP Servlet Response.  This is the Servlet
+     * containers raw response object.  This response should
+     * be wrapped using <code>getPortletResponseForWindow()</code> before
+     * being processed by the portlet container.
+     * @return HttpServletResponse
+     */    
+    public void setResponse(HttpServletResponse response);
+    
     /**
      * Gets the HTTP Servlet Config
      *
