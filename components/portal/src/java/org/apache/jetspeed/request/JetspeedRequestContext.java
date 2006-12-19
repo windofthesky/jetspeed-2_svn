@@ -615,6 +615,22 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.pipeline = pipeline;
     }
+
     
+    /**
+     * @param request The request to set.
+     */
+    public void setRequest(HttpServletRequest request)
+    {
+        this.request = request;
+    }
+    
+    /**
+     * @param response The request to set.
+     */
+    public void setResponse(HttpServletResponse response)
+    {
+        this.response = response;
+    }
 
 }
