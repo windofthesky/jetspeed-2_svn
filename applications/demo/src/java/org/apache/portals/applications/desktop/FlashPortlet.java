@@ -46,6 +46,7 @@ public class FlashPortlet extends GenericVelocityPortlet
         {
             context.put(HEIGHT, prefs.getValue(MAX_HEIGHT, "800"));
             context.put(WIDTH, prefs.getValue(MAX_WIDTH, "600"));
+            context.put("windowState", "max");
             String src = prefs.getValue(MAX_SRC, "");
             if (src.equals(""))
             {
@@ -56,6 +57,7 @@ public class FlashPortlet extends GenericVelocityPortlet
         }
         else
         {
+            context.put("windowState", "normal");
             context.put(HEIGHT, prefs.getValue(HEIGHT, "250"));
             context.put(WIDTH, prefs.getValue(WIDTH, "250"));
             context.put(SRC, prefs.getValue(SRC, ""));

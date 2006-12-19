@@ -1,3 +1,8 @@
+<javascript>
+function getWindowState() {
+  return "$!windowState";
+}
+</javascript>
 <center>
     <object width="$!WIDTH" height="$!HEIGHT">
         <param name="movie" value="$!SRC"/>
