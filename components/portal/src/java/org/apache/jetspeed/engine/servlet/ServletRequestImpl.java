@@ -42,6 +42,8 @@ import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -213,10 +215,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
         Thread ct = Thread.currentThread();
 
-        if (ct instanceof Map) 
+        if (ct instanceof Worker)
         {
-            Map workerAsMap = (Map) ct;
-            value = workerAsMap.get(name);
+            value = CurrentWorkerContext.getAttribute(name);
         }
 
         // If no attribute found, then look up from the request
@@ -374,17 +375,15 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
         Thread ct = Thread.currentThread();
 
-        if (ct instanceof Map) 
+        if (ct instanceof Worker) 
         {
-            Map workerAsMap = (Map) ct;
-
             if (null == value) 
             {
-                workerAsMap.remove(name);
+                CurrentWorkerContext.removeAttribute(name);
             } 
             else 
             {
-                workerAsMap.put(name, value);
+                CurrentWorkerContext.setAttribute(name, value);
             }
         }
 

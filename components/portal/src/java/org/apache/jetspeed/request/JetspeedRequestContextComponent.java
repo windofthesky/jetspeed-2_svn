@@ -16,7 +16,6 @@
 package org.apache.jetspeed.request;
 
 import java.lang.reflect.Constructor;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.userinfo.UserInfoManager;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 
 /**
  * JetspeedRequestContextComponent
@@ -118,10 +119,9 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         RequestContext rc = null;
 
         Thread ct = Thread.currentThread();
-        if (ct instanceof Map)
+        if (ct instanceof Worker)
         {
-            Map workerAsMap = (Map) ct;
-            rc = (RequestContext) workerAsMap.get(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            rc = (RequestContext) CurrentWorkerContext.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         }
         else
         {

@@ -18,10 +18,6 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.security.AccessControlContext;
 import java.security.PrivilegedAction;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.security.auth.Subject;
 
@@ -36,10 +32,11 @@ import org.apache.jetspeed.aggregator.WorkerMonitor;
  * When no work is available, the worker simply sets itself in a waiting mode
  * pending reactivation by the WorkerMonitor
  *
- * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Raphael Luta</a>
+ * @author <a>Woonsan Ko</a>
  * @version $Id$
  */
-public class WorkerImpl extends Thread implements Worker, Map
+public class WorkerImpl extends Thread implements Worker
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(WorkerImpl.class);
@@ -60,9 +57,6 @@ public class WorkerImpl extends Thread implements Worker, Map
     /** Monitor for this Worker */
     private WorkerMonitor monitor = null;
 
-    /** Attributes for this Worker **/
-    private Map attributes = null;    
-    
     public WorkerImpl(WorkerMonitor monitor)
     {
         super();
@@ -207,82 +201,5 @@ public class WorkerImpl extends Thread implements Worker, Map
             monitor.release(this);
         }
     }
-
-    // map implementations
-
-    public int size() 
-    {
-        return (null == this.attributes ? 0 : this.attributes.size());
-    }
-
-    public boolean isEmpty() 
-    {
-        return (null == this.attributes ? true : this.attributes.isEmpty());
-    }
-
-    public boolean containsKey(Object key) 
-    {
-        return (null == this.attributes ? false : this.attributes.containsKey(key));
-    }
-
-    public boolean containsValue(Object value) 
-    {
-        return (null == this.attributes ? false : this.attributes.containsValue(value));
-    }
-
-    public Object get(Object key) 
-    {
-        return (null == this.attributes ? null : this.attributes.get(key));
-    }
-
-    public Object put(Object key, Object value) 
-    {
-        if (null == this.attributes) {
-            this.attributes = new HashMap();
-        }
-
-        return this.attributes.put(key, value);
-    }
-
-    public Object remove(Object key) 
-    {
-        if (null != this.attributes) {
-            return this.attributes.remove(key);
-        } else {
-            return null;
-        }
-    }
-
-    public void putAll(Map t) 
-    {
-        if (null == this.attributes) {
-            this.attributes = new HashMap();
-        }
-
-        this.attributes.putAll(t);
-    }
-
-    public void clear() 
-    {
-        if (null != this.attributes) {
-            this.attributes.clear();
-        }
-    }
-
-    public Set keySet() 
-    {
-        return (null == this.attributes ? null : this.attributes.keySet());
-    }
-
-    public Collection values() 
-    {
-        return (null == this.attributes ? null : this.attributes.values());
-    }
-
-    public Set entrySet() 
-    {
-        return (null == this.attributes ? null : this.attributes.entrySet());
-    }
-
     
 }

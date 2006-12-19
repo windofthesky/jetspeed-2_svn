@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,6 +44,8 @@ import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 
 /**
  * Jetspeed Container entry point.
@@ -204,18 +205,15 @@ public class JetspeedContainerServlet extends HttpServlet
         Integer method = ContainerConstants.METHOD_NOOP;
         Portlet portlet = null;
         boolean destroyPortlet = false;
-        Map workerAsMap = null;
+        boolean isParallelMode = false;
         
         try
         {
-            Thread ct = Thread.currentThread();
-            if (ct instanceof Map)
+            isParallelMode = (Thread.currentThread() instanceof Worker);
+
+            if (isParallelMode)
             {
-                workerAsMap = (Map) ct;
-            }
-            if (workerAsMap != null)
-            {
-                method = (Integer) workerAsMap.get(ContainerConstants.METHOD_ID);
+                method = (Integer) CurrentWorkerContext.getAttribute(ContainerConstants.METHOD_ID);
             }
             else
             {
@@ -225,10 +223,10 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 return;
             }
-            if (workerAsMap != null)
+            if (isParallelMode)
             {
-                portlet = (Portlet) workerAsMap.get(ContainerConstants.PORTLET);
-                portletName = (String) workerAsMap.get(ContainerConstants.PORTLET_NAME);
+                portlet = (Portlet) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
+                portletName = (String) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_NAME);
             }
             else
             {
@@ -251,10 +249,10 @@ public class JetspeedContainerServlet extends HttpServlet
                 RenderRequest renderRequest = null;
                 RenderResponse renderResponse =  null;
 
-                if (workerAsMap != null)
+                if (isParallelMode)
                 {
-                    renderRequest = (RenderRequest) workerAsMap.get(ContainerConstants.PORTLET_REQUEST);
-                    renderResponse = (RenderResponse) workerAsMap.get(ContainerConstants.PORTLET_RESPONSE);
+                    renderRequest = (RenderRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    renderResponse = (RenderResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
                 }
                 else
                 {

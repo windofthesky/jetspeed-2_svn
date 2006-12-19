@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.UnavailableException;
@@ -25,17 +26,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * The RenderingJob is responsible for storing all necessary objets for
@@ -132,8 +134,7 @@ public class RenderingJobImpl implements RenderingJob
     public void execute()
     {
         long start = System.currentTimeMillis();
-
-        Map workerAsMap = null;
+        boolean isParallelMode = false;
 
         try
         {
@@ -142,24 +143,31 @@ public class RenderingJobImpl implements RenderingJob
             // if the current thread is worker, then store attribues in that.
             if (this.workerAttributes != null)
             {
-                Thread ct = Thread.currentThread();
-                if (ct instanceof Map)
+                isParallelMode = (Thread.currentThread() instanceof Worker);                
+                if (isParallelMode)
                 {
-                    workerAsMap = (Map) ct;
-                    workerAsMap.putAll(this.workerAttributes);
-
-                    // Sometimes, the portlet definition of some portlet entities are replaced.
-                    // I could not find why it happens.
-                    // If the portlet definition of portlet entity is not same as an attribute of worker's, then
-                    // reset the portlet definition of portlet entity. (by Woonsan Ko)
-                    // TODO: Investigate more and find why it happens.
-                    PortletDefinition portletDefinition = 
-                        (PortletDefinition) workerAsMap.get(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
-                    PortletWindow window = 
-                        (PortletWindow) workerAsMap.get(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE);
+                    Iterator itAttrNames = this.workerAttributes.keySet().iterator();
+                    while (itAttrNames.hasNext()) 
+                    {
+                        String name = (String) itAttrNames.next();
+                        CurrentWorkerContext.setAttribute(name, this.workerAttributes.get(name));
+                   }
+                   
+                   // The portletEntity stores its portletDefinition into the ThreadLocal member,
+                   // before the worker starts doing a rendering job.
+                   // So the thread contexts are different from each other.
+                   // Therefore, in parallel mode, we have to clear threadlocal fragmentPortletDefinition cache
+                   // of portletEntity and to replace the portletDefinition with one of current worker context.
+                   // Refer to org.apache.jetspeed.components.portletentity.PortletEntityImpl class
+                    
+                    PortletWindow window = (PortletWindow)
+                        CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE); 
+                        
                     PortletEntityImpl portletEntityImpl = (PortletEntityImpl) window.getPortletEntity();
                     PortletDefinition oldPortletDefinition = portletEntityImpl.getPortletDefinition();
-
+                    PortletDefinition portletDefinition = (PortletDefinition)
+                        CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
+                    
                     if (!oldPortletDefinition.getId().equals(portletDefinition.getId())) {
                         portletEntityImpl.setPortletDefinition(portletDefinition);
                     }
@@ -189,9 +197,9 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
-            if (workerAsMap != null)
+            if (isParallelMode)
             {
-                workerAsMap.clear();
+                CurrentWorkerContext.removeAllAttributes();
             }
 
             portletContent.complete();

@@ -16,15 +16,49 @@
 package org.apache.jetspeed.aggregator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl;
 import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl;
+import org.apache.jetspeed.aggregator.impl.AsyncPageAggregatorImpl;
 import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
+import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
+import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
+
+import com.mockrunner.mock.web.MockServletConfig;
+import com.mockrunner.mock.web.MockServletContext;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
 
 /**
  * <P>Test the aggregation service</P>
@@ -35,9 +69,15 @@ import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
  */
 public class TestAggregator extends TestRenderer
 {
+    private SpringEngineHelper engineHelper;
+    private Engine engine;
     private PortletAggregator portletAggregator;
     private PageAggregator pageAggregator;
-    
+    private PageAggregator asyncPageAggregator;
+    private Profiler profiler;
+    private Capabilities capabilities;
+    private NavigationalStateComponent navComponent;
+
     /**
      * Start the tests.
      *
@@ -52,6 +92,11 @@ public class TestAggregator extends TestRenderer
     {
         super.setUp();
         
+        HashMap context = new HashMap();
+        engineHelper = new SpringEngineHelper(context);
+        engineHelper.setUp();
+        engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
+
         ArrayList paths = new ArrayList(4);
         paths.add("portlet/{mediaType}/jetspeed");
         paths.add("portlet/{mediaType}");
@@ -61,9 +106,18 @@ public class TestAggregator extends TestRenderer
         HeaderResourceFactory headerFactory = new HeaderResourceFactoryImpl();
         ContentServerAdapter contentServer = new ContentServerAdapterImpl(headerFactory, paths);
         
-        pageAggregator = new PageAggregatorImpl(renderer, contentServer);
-        portletAggregator = new PortletAggregatorImpl(renderer);
+        //pageAggregator = new PageAggregatorImpl(renderer, contentServer);
+        //asyncPageAggregator = new AsyncPageAggregatorImpl(renderer, contentServer);
+        //portletAggregator = new PortletAggregatorImpl(renderer);
+        pageAggregator = (PageAggregator) engine.getComponentManager().getComponent(PageAggregator.class);
+        asyncPageAggregator = 
+            (PageAggregator) engine.getComponentManager().getComponent("org.apache.jetspeed.aggregator.AsyncPageAggregator");
+        portletAggregator = (PortletAggregator) engine.getComponentManager().getComponent(PortletAggregator.class);
         
+        profiler = (Profiler) engine.getComponentManager().getComponent(Profiler.class);
+        capabilities = (Capabilities) engine.getComponentManager().getComponent(Capabilities.class);
+        navComponent = 
+            (NavigationalStateComponent) engine.getComponentManager().getComponent(NavigationalStateComponent.class);
     }
 
     public static Test suite()
@@ -74,18 +128,94 @@ public class TestAggregator extends TestRenderer
 
     public void testBasic() throws Exception
     {
+        doAggregation(false);
+    }
+
+    public void testParallelMode() throws Exception
+    {
+        doAggregation(true);
+    }
+
+    protected void tearDown() throws Exception
+    {
+        engineHelper.tearDown();
+        super.tearDown();
+    }
+
+    private void doAggregation(final boolean isParallelMode) throws Exception
+    {
         assertNotNull("portlet aggregator is null", portletAggregator);
         assertNotNull("page aggregator is null", pageAggregator);
-        /*
-        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
+        assertNotNull("async page aggregator is null", asyncPageAggregator);
+        assertNotNull("profiler is null", profiler);
+        assertNotNull("capabilities is null", capabilities);
+        assertNotNull("navigational state component is null", navComponent);
 
-        RequestContext request = RequestContextFactory.getInstance(null, null, null);
+        final RequestContext requestContext = initRequestContext();
+        final Subject subject = SecurityHelper.createSubject("user");
+        requestContext.getRequest().getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+        requestContext.setSubject(subject);
+        
+        ProfileLocator locator = profiler.createLocator(requestContext);
+        HashMap locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext.setProfileLocators(locators);
 
-        ProfileLocator locator = profiler.getProfile(request);
-        request.setProfileLocator(locator);
+        requestContext.setCapabilityMap(capabilities.getCapabilityMap("Mozilla/5"));
+        requestContext.setPortalURL(navComponent.createURL(requestContext.getRequest(), requestContext.getCharacterEncoding()));
 
-        pageAggregator.build(request);
-        */
+        Exception ex = (Exception) Subject.doAsPrivileged(subject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try {
+                        PageManager pageManager = 
+                            (PageManager) engine.getComponentManager().getComponent(PageManager.class);
+                        Page page = pageManager.getPage("/default-page.psml");
+                        assertNotNull(page);
+                        requestContext.setPage(new ContentPageImpl(page));
+
+                        if (!isParallelMode) {
+                            pageAggregator.build(requestContext);
+                        } else {
+                            asyncPageAggregator.build(requestContext);
+                        }
+                    } catch (Exception e) {
+                        return e;
+                    }
+                    return null;
+                }
+            }, null);
+
+        if (ex != null)
+            throw ex;
+    }
+
+    private RequestContext initRequestContext()
+    {
+        ServletConfig config = engine.getServletConfig();
+        ServletContext context = config.getServletContext();
+        MockHttpSession session = new MockHttpSession();
+        session.setupServletContext(context);
+        assertEquals(context, session.getServletContext());
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        request.setSession(session);
+
+        Principal p = new UserPrincipalImpl("user");
+        request.setUserPrincipal(p);
+
+        request.setScheme("http");
+        request.setContextPath("/jetspeed");
+        request.setServletPath("/portal/default-page.psml");
+        request.setMethod("GET");
+
+        RequestContext rc = 
+            new JetspeedRequestContext(request, response, config, null);
+
+        return rc;
     }
 
 }
