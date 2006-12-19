@@ -60,6 +60,15 @@
             OpenXava distribution is bundled with Jetspeed-2 installation and its web site is powered by Jetspeed-2. </td>
           </tr>
           <tr>
+            <td><a href="http://www.portalu.de/"><img src="images/users/portalu.gif" border="0" /></a></td>
+            <td><a href="http://www.portalu.de/">PortalU</a>is the German Environmental
+            Information Portal! It offers a comfortable and central access to over
+            1.000.000 web-pages and database entries from public agencies in
+            Germany. We also guide you directly to up-to-date environmental news,
+            upcoming and past environmental events, environmental monitoring data,
+            and interesting background information on many environmental topics.</td>
+          </tr>                        
+          <tr>
             <td><a href="http://www.rosa.com"><img src="images/users/rosa.jpg" border="0" /></a></td>
             <td><a href="http://www.rosa.com">R.O.S.A. Creation. Technology. Intelligence. AG</a> deploys collaborative portals using 
 			Jetspeed-2 and provides services in portal development.</td>
@@ -68,6 +77,14 @@
             <td><a href="http://www.ugs.com"><img src="images/users/ugs.gif" border="0" /></a></td>
             <td><a href="http://www.ugs.com">UGS</a> provides portals for its global sales partners using Jetspeed 2.</td>
           </tr>
+          <tr>
+            <td><a href="http://wemove.com"><img src="images/users/wemove.gif" border="0" /></a></td>
+            <td>The german company <a href="http://www.wemove.com/">wemove digital
+            solutions</a> creates portal solutions for various customers. The
+            current project <a href="http://www.portalu.de/">"PortalU"</a> uses
+            Jetspeed2 to provide an interface to a powerful search-engine for
+            enviromental data.</td>
+          </tr>            
           <tr>
             <td><a href="http://wfmopen.sf.net">WfMOpen</a></td>
             <td>In its 1.4 version, <a href="http://wfmopen.sf.net">WfMOpen</a> provides resource management for the 
