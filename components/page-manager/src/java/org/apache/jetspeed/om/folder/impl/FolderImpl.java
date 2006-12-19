@@ -338,25 +338,28 @@ public class FolderImpl extends NodeImpl implements Folder
         if (cached)
         {
             // populate node caches
-            Iterator nodeIter = accessAll().iterator();
-            while (nodeIter.hasNext())
+            synchronized(all)
             {
-                Node node = (Node)nodeIter.next();
-                if (node instanceof PageImpl)
+                Iterator nodeIter = accessAll().iterator();
+                while (nodeIter.hasNext())
                 {
-                    pages.add(node);
-                }
-                else if (node instanceof FolderImpl)
-                {
-                    folders.add(node);
-                }
-                else if (node instanceof LinkImpl)
-                {
-                    links.add(node);
-                }
-                else if (node instanceof PageSecurityImpl)
-                {
-                    pageSecurity = (PageSecurityImpl)node;
+                    Node node = (Node)nodeIter.next();
+                    if (node instanceof PageImpl)
+                    {
+                        pages.add(node);
+                    }
+                    else if (node instanceof FolderImpl)
+                    {
+                        folders.add(node);
+                    }
+                    else if (node instanceof LinkImpl)
+                    {
+                        links.add(node);
+                    }
+                    else if (node instanceof PageSecurityImpl)
+                    {
+                        pageSecurity = (PageSecurityImpl)node;
+                    }
                 }
             }
         }
@@ -1014,7 +1017,12 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             if ((all != null) && !all.isEmpty())
             {
-                allNodeSet = new NodeSetImpl(all, createDocumentOrderComparator());
+                List allCopy = new java.util.ArrayList();
+                synchronized(all)
+                {
+                    allCopy.addAll(all); 
+                }
+                allNodeSet = new NodeSetImpl(allCopy, createDocumentOrderComparator());
             }
             else
             {

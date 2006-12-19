@@ -45,12 +45,12 @@ public class DatabasePageManagerUtils
      */
     public static final Collection createCollection()
     {
-        return new RemovalAwareCollection();
+        return java.util.Collections.synchronizedCollection(new RemovalAwareCollection());
     }
     
     public static final List createList()
     {
-        return new RemovalAwareList();
+        return java.util.Collections.synchronizedList(new RemovalAwareList());
     }
     
 }
