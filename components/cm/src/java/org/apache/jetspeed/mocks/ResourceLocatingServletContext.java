@@ -17,7 +17,8 @@ public class ResourceLocatingServletContext extends BaseMockServletContext
     private final Map pathOverrides;
     
     public ResourceLocatingServletContext(File rootPath)
-    {   
+    {
+        super();        
         this.rootPath = rootPath;
         this.pathOverrides = new HashMap();
     }

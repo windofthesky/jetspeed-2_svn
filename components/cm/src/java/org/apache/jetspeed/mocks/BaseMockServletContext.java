@@ -1,27 +1,27 @@
 package org.apache.jetspeed.mocks;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
-public abstract class BaseMockServletContext implements ServletContext
+import com.mockrunner.mock.web.MockServletContext;
+
+
+public abstract class BaseMockServletContext extends MockServletContext implements ServletContext
 {
     private final Map attributes = new HashMap();
 
+    public BaseMockServletContext()
+    {
+        super();
+    }
     public Object getAttribute(String arg0)
     {
         return attributes.get(arg0);
     }
 
+    /*
     public Enumeration getAttributeNames()
     {
         unsupported();
@@ -145,7 +145,7 @@ public abstract class BaseMockServletContext implements ServletContext
         unsupported();
         
     }
-
+*/
     public void removeAttribute(String arg0)
     {
         attributes.remove(arg0);

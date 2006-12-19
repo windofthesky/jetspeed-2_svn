@@ -15,10 +15,11 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.security.Principal;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -27,35 +28,23 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl;
-import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl;
-import org.apache.jetspeed.aggregator.impl.AsyncPageAggregatorImpl;
-import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
+import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
-import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.ContentPageImpl;
-import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
-import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.capabilities.Capabilities;
-import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
 
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
