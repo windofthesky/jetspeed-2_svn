@@ -682,14 +682,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             // return filteredFragments fragments if generated
             if (filteredFragments != null)
             {
-                if (!filteredFragments.isEmpty())
-                {
-                    return new FilteredFragmentList(this, filteredFragments);
-                }
-                else
-                {
-                    return null;
-                }
+                // patch for JS2-633, security filtered (permission) lists
+                // were returning null, we need an empty fragment list 
+                return new FilteredFragmentList(this, filteredFragments);
             }
         }
         return fragments;
