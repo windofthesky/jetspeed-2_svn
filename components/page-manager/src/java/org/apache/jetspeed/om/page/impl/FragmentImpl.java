@@ -1041,7 +1041,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
                 }
                 else
                 {
-                    return null;
+                    return new FilteredFragmentList(this, filteredFragments);
                 }
             }
         }
