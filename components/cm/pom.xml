@@ -65,6 +65,11 @@ limitations under the License.
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+        <dependency>
+            <groupId>mockrunner</groupId>
+            <artifactId>mockrunner</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!--
             Note: junit is normally required only for test, but 
             in this case, abstract test cases are included in the
