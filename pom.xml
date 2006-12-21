@@ -192,7 +192,7 @@ limitations under the License.
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
-        <rome.version>0.4</rome.version>
+        <rome.version>0.8</rome.version>
         <saxpath.version>1.0-FCS</saxpath.version>
         <spring2.version>2.0</spring2.version>
         <taglibs-random.version>1.0.2</taglibs-random.version>
