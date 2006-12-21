@@ -46,7 +46,7 @@ import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
 import org.apache.jetspeed.statistics.UserStats;
-import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
  * <p>

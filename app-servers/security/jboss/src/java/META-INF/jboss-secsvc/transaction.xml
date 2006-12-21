@@ -7,7 +7,7 @@
 <beans>
   
 	<!-- Transaction manager for a single OJB PersistenceBroker (alternative to JTA) -->
-	<bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager">
+	<bean id="transactionManager" class="org.springmodules.orm.ojb.PersistenceBrokerTransactionManager">
           <property name="jcdAlias"><value>JetspeedSecurityServiceDS</value></property>
     </bean>
 

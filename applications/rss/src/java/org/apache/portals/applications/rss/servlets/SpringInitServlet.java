@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
-
+import org.springframework.web.context.support.ServletContextResourceLoader;
 
 /**
  * SpringInitServlet
@@ -61,9 +61,8 @@ public class SpringInitServlet extends HttpServlet
             {
                 if (null == springFactory)
                 {
-                    InputStream is = this.getServletContext().getResourceAsStream(springConfig);                    
-                    springFactory = new XmlBeanFactory(is);
-                    is.close();
+                    ServletContextResourceLoader resourceLoader = new ServletContextResourceLoader(this.getServletContext());
+                    springFactory = new XmlBeanFactory(resourceLoader.getResource(springConfig));
                 }
             }
          } 

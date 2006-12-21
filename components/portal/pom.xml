@@ -223,6 +223,9 @@ limitations under the License.
             <testResource>
                 <directory>test/assembly</directory>
             </testResource>                                            
+            <testResource>
+                <directory>test/testdata/pages</directory>
+            </testResource>                                                        
         </testResources>
 
         <plugins>

@@ -145,6 +145,12 @@ limitations under the License.
                 </executions>
             </plugin>
         </plugins>
+
+        <testResources>
+            <testResource>
+                <directory>etc/assembly</directory>                
+             </testResource>
+        </testResources>
     </build>
 
     <!-- Project Information -->

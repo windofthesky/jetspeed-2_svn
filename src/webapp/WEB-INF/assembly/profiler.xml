@@ -17,7 +17,7 @@
 -->
 <beans>
     <!-- Profiler -->
-    <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" name="profilerImpl" init-method="init">
+    <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
         <constructor-arg index="0">
             <value>JETSPEED-INF/ojb/profiler_repository.xml</value>
         </constructor-arg>

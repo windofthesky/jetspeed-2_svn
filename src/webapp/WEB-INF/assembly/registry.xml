@@ -95,8 +95,7 @@
         - but this is cleaner as there is no need to ever access the unwrapped object.
     -->
 
-    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess"
-        name="portletEntityAccessImpl">
+    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
         <constructor-arg>
             <ref bean="portletRegistry" />
         </constructor-arg>

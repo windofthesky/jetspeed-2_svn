@@ -297,11 +297,11 @@ interface PageManagerTestShared
                             portlet.setSecurityConstraints(fragmentConstraints);
                             root.getFragments().add(portlet);
                             pageManager.updatePage(page);
-                            test.assertNotNull(page.getRootFragment());
-                            test.assertNotNull(page.getRootFragment().getFragments());
-                            test.assertEquals(2, page.getRootFragment().getFragments().size());
-                            test.assertEquals("some-app::SomePortlet", ((Fragment)page.getRootFragment().getFragments().get(1)).getName());
-                            test.assertFalse("0".equals(((Fragment)page.getRootFragment().getFragments().get(1)).getId()));
+                            TestCase.assertNotNull(page.getRootFragment());
+                            TestCase.assertNotNull(page.getRootFragment().getFragments());
+                            TestCase.assertEquals(2, page.getRootFragment().getFragments().size());
+                            TestCase.assertEquals("some-app::SomePortlet", ((Fragment)page.getRootFragment().getFragments().get(1)).getName());
+                            TestCase.assertFalse("0".equals(((Fragment)page.getRootFragment().getFragments().get(1)).getId()));
                             somePortletId[0] = ((Fragment)page.getRootFragment().getFragments().get(1)).getId();
                         
                             page = pageManager.newPage("/user-page.psml");
@@ -353,19 +353,19 @@ interface PageManagerTestShared
                         {
                             // test view access
                             Folder folder = pageManager.getFolder("/");
-                            test.assertNotNull(folder.getPageSecurity());
-                            test.assertNotNull(folder.getPages());
-                            test.assertEquals(2, folder.getPages().size());
-                            test.assertNotNull(pageManager.getPages(folder));
-                            test.assertEquals(2, pageManager.getPages(folder).size());
+                            TestCase.assertNotNull(folder.getPageSecurity());
+                            TestCase.assertNotNull(folder.getPages());
+                            TestCase.assertEquals(2, folder.getPages().size());
+                            TestCase.assertNotNull(pageManager.getPages(folder));
+                            TestCase.assertEquals(2, pageManager.getPages(folder).size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            test.assertNotNull(page0.getRootFragment());
-                            test.assertNotNull(page0.getRootFragment().getFragments());
-                            test.assertEquals(2, page0.getRootFragment().getFragments().size());
-                            test.assertNotNull(page0.getFragmentById(somePortletId[0]));
-                            test.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
-                            test.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
+                            TestCase.assertNotNull(page0.getRootFragment());
+                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
+                            TestCase.assertEquals(2, page0.getRootFragment().getFragments().size());
+                            TestCase.assertNotNull(page0.getFragmentById(somePortletId[0]));
+                            TestCase.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                            TestCase.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                             Page page1 = pageManager.getPage("/user-page.psml");
                             Link link = pageManager.getLink("/default.link");
                             // test edit access
@@ -396,24 +396,24 @@ interface PageManagerTestShared
                         {
                             // test view access
                             Folder folder = pageManager.getFolder("/");
-                            test.assertNotNull(folder.getPageSecurity());
-                            test.assertNotNull(folder.getPages());
-                            test.assertEquals(2, folder.getPages().size());
+                            TestCase.assertNotNull(folder.getPageSecurity());
+                            TestCase.assertNotNull(folder.getPages());
+                            TestCase.assertEquals(2, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            test.assertNotNull(page0.getRootFragment());
-                            test.assertNotNull(page0.getRootFragment().getFragments());
-                            test.assertEquals(2, page0.getRootFragment().getFragments().size());
-                            test.assertNotNull(page0.getFragmentById(somePortletId[0]));
-                            test.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
-                            test.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
+                            TestCase.assertNotNull(page0.getRootFragment());
+                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
+                            TestCase.assertEquals(2, page0.getRootFragment().getFragments().size());
+                            TestCase.assertNotNull(page0.getFragmentById(somePortletId[0]));
+                            TestCase.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                            TestCase.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
                             Page page1 = pageManager.getPage("/user-page.psml");
                             Link link = pageManager.getLink("/default.link");
                             // test edit access
                             try
                             {
                                 pageManager.updateFolder(folder);
-                                test.assertTrue("Folder / not editable for user", false);
+                                TestCase.assertTrue("Folder / not editable for user", false);
                             }
                             catch (SecurityException se)
                             {
@@ -421,7 +421,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updatePageSecurity(pageSecurity);
-                                test.assertTrue("PageSecurity not editable for user", false);
+                                TestCase.assertTrue("PageSecurity not editable for user", false);
                             }
                             catch (SecurityException se)
                             {
@@ -429,7 +429,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updatePage(page0);
-                                test.assertTrue("Page /default-page.psml not editable for user", false);
+                                TestCase.assertTrue("Page /default-page.psml not editable for user", false);
                             }
                             catch (SecurityException se)
                             {
@@ -438,7 +438,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updateLink(link);
-                                test.assertTrue("Page /default.link not editable for user", false);
+                                TestCase.assertTrue("Page /default.link not editable for user", false);
                             }
                             catch (SecurityException se)
                             {
@@ -465,21 +465,21 @@ interface PageManagerTestShared
                         {
                             // test view access
                             Folder folder = pageManager.getFolder("/");
-                            test.assertNotNull(folder.getPageSecurity());
-                            test.assertNotNull(folder.getPages());
-                            test.assertEquals(1, folder.getPages().size());
+                            TestCase.assertNotNull(folder.getPageSecurity());
+                            TestCase.assertNotNull(folder.getPages());
+                            TestCase.assertEquals(1, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            test.assertNotNull(page0.getRootFragment());
-                            test.assertNotNull(page0.getRootFragment().getFragments());
-                            test.assertEquals(1, page0.getRootFragment().getFragments().size());
-                            test.assertNull(page0.getFragmentById(somePortletId[0]));
-                            test.assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                            TestCase.assertNotNull(page0.getRootFragment());
+                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
+                            TestCase.assertEquals(1, page0.getRootFragment().getFragments().size());
+                            TestCase.assertNull(page0.getFragmentById(somePortletId[0]));
+                            TestCase.assertTrue(page0.getFragmentsByName("some-app::SomePortlet").isEmpty());
                             Link link = pageManager.getLink("/default.link");
                             try
                             {
                                 Page page1 = pageManager.getPage("/user-page.psml");
-                                test.assertTrue("Page /user-page.psml not viewable for manager", false);
+                                TestCase.assertTrue("Page /user-page.psml not viewable for manager", false);
                             }
                             catch (SecurityException se)
                             {
@@ -488,7 +488,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updateFolder(folder);
-                                test.assertTrue("Folder / not editable for manager", false);
+                                TestCase.assertTrue("Folder / not editable for manager", false);
                             }
                             catch (SecurityException se)
                             {
@@ -496,7 +496,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updatePageSecurity(pageSecurity);
-                                test.assertTrue("PageSecurity not editable for manager", false);
+                                TestCase.assertTrue("PageSecurity not editable for manager", false);
                             }
                             catch (SecurityException se)
                             {
@@ -525,21 +525,21 @@ interface PageManagerTestShared
                         {
                             // test view access
                             Folder folder = pageManager.getFolder("/");
-                            test.assertNotNull(folder.getPageSecurity());
-                            test.assertNotNull(folder.getPages());
-                            test.assertEquals(1, folder.getPages().size());
+                            TestCase.assertNotNull(folder.getPageSecurity());
+                            TestCase.assertNotNull(folder.getPages());
+                            TestCase.assertEquals(1, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            test.assertNotNull(page0.getRootFragment());
-                            test.assertNotNull(page0.getRootFragment().getFragments());
-                            test.assertEquals(1, page0.getRootFragment().getFragments().size());
-                            test.assertNull(page0.getFragmentById(somePortletId[0]));
-                            test.assertNull(page0.getFragmentsByName("some-app::SomePortlet"));
+                            TestCase.assertNotNull(page0.getRootFragment());
+                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
+                            TestCase.assertEquals(1, page0.getRootFragment().getFragments().size());
+                            TestCase.assertNull(page0.getFragmentById(somePortletId[0]));
+                            TestCase.assertTrue(page0.getFragmentsByName("some-app::SomePortlet").isEmpty());
                             Link link = pageManager.getLink("/default.link");
                             try
                             {
                                 Page page1 = pageManager.getPage("/user-page.psml");
-                                test.assertTrue("Page /user-page.psml not viewable for guest", false);
+                                TestCase.assertTrue("Page /user-page.psml not viewable for guest", false);
                             }
                             catch (SecurityException se)
                             {
@@ -548,7 +548,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updateFolder(folder);
-                                test.assertTrue("Folder / not editable for guest", false);
+                                TestCase.assertTrue("Folder / not editable for guest", false);
                             }
                             catch (SecurityException se)
                             {
@@ -556,7 +556,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updatePageSecurity(pageSecurity);
-                                test.assertTrue("PageSecurity not editable for guest", false);
+                                TestCase.assertTrue("PageSecurity not editable for guest", false);
                             }
                             catch (SecurityException se)
                             {
@@ -564,7 +564,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updatePage(page0);
-                                test.assertTrue("Page /default-page.psml not editable for guest", false);
+                                TestCase.assertTrue("Page /default-page.psml not editable for guest", false);
                             }
                             catch (SecurityException se)
                             {
@@ -572,7 +572,7 @@ interface PageManagerTestShared
                             try
                             {
                                 pageManager.updateLink(link);
-                                test.assertTrue("Page /default.link not editable for guest", false);
+                                TestCase.assertTrue("Page /default.link not editable for guest", false);
                             }
                             catch (SecurityException se)
                             {
@@ -604,12 +604,12 @@ interface PageManagerTestShared
                             try
                             {
                                 Folder remove = pageManager.getFolder("/");
-                                test.assertEquals("/", remove.getPath());
+                                TestCase.assertEquals("/", remove.getPath());
                                 pageManager.removeFolder(remove);
                             }
                             catch (FolderNotFoundException e)
                             {
-                                test.assertTrue("Folder / NOT FOUND", false);
+                                TestCase.assertTrue("Folder / NOT FOUND", false);
                             }
 
                             return null;

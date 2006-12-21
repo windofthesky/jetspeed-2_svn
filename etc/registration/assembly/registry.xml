@@ -50,8 +50,7 @@
         </property>
     </bean>
 
-    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess"
-        name="portletEntityAccessImpl">
+    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
         <constructor-arg>
             <ref bean="portletRegistry" />
         </constructor-arg>

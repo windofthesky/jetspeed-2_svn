@@ -5,9 +5,9 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.orm.ojb.PersistenceBrokerTransactionManager;
-import org.springframework.orm.ojb.support.LocalOjbConfigurer;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
+import org.springmodules.orm.ojb.PersistenceBrokerTransactionManager;
+import org.springmodules.orm.ojb.support.LocalOjbConfigurer;
 
 public class OJBHelper extends DatasourceHelper
 {
@@ -55,13 +55,18 @@ public class OJBHelper extends DatasourceHelper
      */
     public Object getTxProxiedObject(Object object, String[] interfacesToProxyAs) throws Exception
     {
+        Class[] ifaces = new Class[interfacesToProxyAs.length];
+        for(int i = 0; i < interfacesToProxyAs.length; i++) {
+                ifaces[i] = Class.forName(interfacesToProxyAs[i]);
+        }
+
         TransactionProxyFactoryBean txfb = new TransactionProxyFactoryBean();
         txfb.setTransactionManager(new PersistenceBrokerTransactionManager());
         Properties txProps = new Properties();
         txProps.setProperty("*", "PROPAGATION_REQUIRED");
         txfb.setTransactionAttributes(txProps);
         txfb.setTarget(object);
-        txfb.setProxyInterfaces(interfacesToProxyAs);
+        txfb.setProxyInterfaces(ifaces);
         txfb.afterPropertiesSet();
         return txfb.getObject();
     }

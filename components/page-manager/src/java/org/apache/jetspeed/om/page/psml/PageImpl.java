@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -37,6 +36,7 @@ import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * @version $Id$
@@ -252,7 +252,7 @@ public class PageImpl extends DocumentImpl implements Page
 
     public List getFragmentsByName( String name )
     {
-        List fragments = null;
+        List fragments = DatabasePageManagerUtils.createList();
 
         Stack stack = new Stack();
         if (getRootFragment() != null)
@@ -266,10 +266,6 @@ public class PageImpl extends DocumentImpl implements Page
         {
             if ((f.getName() != null) && f.getName().equals(name))
             {
-                if (fragments == null)
-                {
-                    fragments = new ArrayList(1);
-                }
                 fragments.add(f);
             }
 

@@ -188,13 +188,13 @@ limitations under the License.
         <org.apache.portals.bridges.perl.version>1.0</org.apache.portals.bridges.perl.version>
         <org.apache.portals.bridges.php.version>1.0</org.apache.portals.bridges.php.version>
         <org.apache.portals.bridges.velocity.version>1.0.1-dev</org.apache.portals.bridges.velocity.version>
-        <org.springframework.version>1.1.5</org.springframework.version>
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
         <rome.version>0.8</rome.version>
         <saxpath.version>1.0-FCS</saxpath.version>
-        <spring2.version>2.0</spring2.version>
+        <spring.version>2.0</spring.version>
+        <spring.modules.version>0.6</spring.modules.version>
         <taglibs-random.version>1.0.2</taglibs-random.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.0.6</taglibs-standard.version>
@@ -523,11 +523,6 @@ limitations under the License.
 
             <!-- Spring Framework -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring</artifactId>
-                <version>${org.springframework.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib-full</artifactId>
                 <version>${cglib.version}</version>
@@ -539,45 +534,56 @@ limitations under the License.
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
+                <artifactId>spring</artifactId>
+                <version>${spring.version}</version>
+            </dependency>            
+            <dependency>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring-portlet</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-mock</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-support</artifactId>
-                <version>${spring2.version}</version>
+                <version>${spring.version}</version>
             </dependency>
-
+            <!-- Spring Framework Modules -->
+            <dependency>
+                <groupId>org.springmodules</groupId>
+                <artifactId>spring-modules-ojb</artifactId>
+                <version>${spring.modules.version}</version>
+            </dependency>
+            
             <!-- Jakarta -->
             <dependency>
                 <groupId>lucene</groupId>

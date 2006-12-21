@@ -70,7 +70,7 @@
     	</constructor-arg>                                                            
 </bean>
     
-<bean id="PortalAdministration" name="PortalAdministration" parent="baseTransactionProxy">
+<bean id="PortalAdministration" parent="baseTransactionProxy">
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.administration.PortalAdministration</value>
         </property>

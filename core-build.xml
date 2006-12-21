@@ -75,12 +75,19 @@ limitations under the License.
 
         <!-- Spring Framework and dependencies -->
 	    <dependency>
-	      <id>springframework:spring</id>
+          <id>springframework:spring</id>
 	      <version>${spring.version}</version>
 	      <properties>
 	        <war.bundle>true</war.bundle>
 	      </properties>
 	    </dependency>   
+        <dependency>
+            <id>springmodules:spring-modules-ojb</id>        
+            <version>${spring.modules.version}</version>
+  	        <properties>
+	          <war.bundle>true</war.bundle>
+ 	         </properties>            
+        </dependency>            
 	    <dependency>
 	      <id>cglib</id>
 	      <version>full-2.0.2</version>
