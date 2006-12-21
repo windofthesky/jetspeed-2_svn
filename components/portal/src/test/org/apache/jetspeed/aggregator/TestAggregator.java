@@ -15,32 +15,37 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.io.File;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl;
 import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.headerresource.HeaderResourceFactory;
-import org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
@@ -48,6 +53,7 @@ import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
+import com.mockrunner.mock.web.MockServletConfig;
 
 /**
  * <P>Test the aggregation service</P>
@@ -56,7 +62,7 @@ import com.mockrunner.mock.web.MockHttpSession;
  * @version $Id$
  * 
  */
-public class TestAggregator extends TestRenderer
+public class TestAggregator extends TestCase
 {
     private SpringEngineHelper engineHelper;
     private Engine engine;
@@ -66,6 +72,12 @@ public class TestAggregator extends TestRenderer
     private Profiler profiler;
     private Capabilities capabilities;
     private NavigationalStateComponent navComponent;
+    private PortletFactory portletFactory;
+    private ServletConfig servletConfig;
+    private ServletContext servletContext;
+    private PortletRegistry portletRegistry;
+    private RequestContextComponent rcc;
+    
 
     /**
      * Start the tests.
@@ -79,25 +91,21 @@ public class TestAggregator extends TestRenderer
 
     protected void setUp() throws Exception
     {
-        super.setUp();
+        try
+        {
+            super.setUp();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
         
         HashMap context = new HashMap();
         engineHelper = new SpringEngineHelper(context);
         engineHelper.setUp();
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
 
-        ArrayList paths = new ArrayList(4);
-        paths.add("portlet/{mediaType}/jetspeed");
-        paths.add("portlet/{mediaType}");
-        paths.add("generic/{mediaType}");
-        paths.add("/{mediaType}");
-        
-        HeaderResourceFactory headerFactory = new HeaderResourceFactoryImpl();
-        ContentServerAdapter contentServer = new ContentServerAdapterImpl(headerFactory, paths);
-        
-        //pageAggregator = new PageAggregatorImpl(renderer, contentServer);
-        //asyncPageAggregator = new AsyncPageAggregatorImpl(renderer, contentServer);
-        //portletAggregator = new PortletAggregatorImpl(renderer);
         pageAggregator = (PageAggregator) engine.getComponentManager().getComponent(PageAggregator.class);
         asyncPageAggregator = 
             (PageAggregator) engine.getComponentManager().getComponent("org.apache.jetspeed.aggregator.AsyncPageAggregator");
@@ -107,6 +115,35 @@ public class TestAggregator extends TestRenderer
         capabilities = (Capabilities) engine.getComponentManager().getComponent(Capabilities.class);
         navComponent = 
             (NavigationalStateComponent) engine.getComponentManager().getComponent(NavigationalStateComponent.class);
+
+        servletConfig = engine.getServletConfig();
+        servletContext = servletConfig.getServletContext();
+
+        portletRegistry = (PortletRegistry) engine.getComponentManager().getComponent("portletRegistry");
+        portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
+        rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
+
+        File paRootDir = new File("../../applications/j2-admin/src/webapp");
+        //File paRootDir = new File("../../applications/j2-admin/target/j2-admin");
+        ResourceLocatingServletContext j2adminContext = new ResourceLocatingServletContext(paRootDir);
+        MockServletConfig j2adminConfig = new MockServletConfig();
+        j2adminConfig.setServletContext(j2adminContext);
+        ((ResourceLocatingServletContext) servletContext).setContext("/j2-admin", j2adminContext);
+
+        paRootDir = new File("../../applications/demo/src/webapp");
+        //paRootDir = new File("../../applications/demo/target/demo");
+        ResourceLocatingServletContext demoContext = new ResourceLocatingServletContext(paRootDir);
+        MockServletConfig demoConfig = new MockServletConfig();
+        demoConfig.setServletContext(demoContext);
+        ((ResourceLocatingServletContext) servletContext).setContext("/demo", demoContext);
+
+        Iterator it = portletRegistry.getPortletApplications().iterator();
+        while (it.hasNext()) {
+            PortletApplication pa = (PortletApplication) it.next();
+            if (!portletFactory.isPortletApplicationRegistered(pa)) {
+                portletFactory.registerPortletApplication(pa, pa.getClass().getClassLoader());
+            }
+        }
     }
 
     public static Test suite()
@@ -115,10 +152,10 @@ public class TestAggregator extends TestRenderer
         return new TestSuite(TestAggregator.class);
     }
 
-    public void testBasic() throws Exception
-    {
-        doAggregation(false);
-    }
+//    public void testBasic() throws Exception
+//    {
+//        doAggregation(false);
+//    }
 
     public void testParallelMode() throws Exception
     {
@@ -182,11 +219,9 @@ public class TestAggregator extends TestRenderer
 
     private RequestContext initRequestContext()
     {
-        ServletConfig config = engine.getServletConfig();
-        ServletContext context = config.getServletContext();
         MockHttpSession session = new MockHttpSession();
-        session.setupServletContext(context);
-        assertEquals(context, session.getServletContext());
+        session.setupServletContext(servletContext);
+        assertEquals(servletContext, session.getServletContext());
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -201,10 +236,27 @@ public class TestAggregator extends TestRenderer
         request.setServletPath("/portal/default-page.psml");
         request.setMethod("GET");
 
-        RequestContext rc = 
-            new JetspeedRequestContext(request, response, config, null);
-
+//        RequestContext rc = 
+//            new JetspeedRequestContext(request, response, servletConfig, null);
+        RequestContext rc = rcc.create(request, response, servletConfig);
         return rc;
     }
 
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "boot/datasource.xml"};
+    }
+    
+    protected String[] getConfigurations()
+    {
+        //String[] confs = super.getConfigurations();
+        //List confList = new ArrayList(Arrays.asList(confs));
+        List confList = new ArrayList();
+        confList.add("registry.xml");
+        confList.add("transaction.xml");
+        confList.add("prefs.xml");
+        return (String[]) confList.toArray(new String[1]);
+    }
+    
 }
