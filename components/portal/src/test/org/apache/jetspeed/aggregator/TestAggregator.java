@@ -16,11 +16,11 @@
 package org.apache.jetspeed.aggregator;
 
 import java.io.File;
-import java.security.Principal;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -31,6 +31,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -47,7 +48,7 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -77,6 +78,7 @@ public class TestAggregator extends TestCase
     private ServletContext servletContext;
     private PortletRegistry portletRegistry;
     private RequestContextComponent rcc;
+    private UserManager userManager;
     
 
     /**
@@ -123,27 +125,14 @@ public class TestAggregator extends TestCase
         portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
         rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
 
-        File paRootDir = new File("../../applications/j2-admin/src/webapp");
-        //File paRootDir = new File("../../applications/j2-admin/target/j2-admin");
-        ResourceLocatingServletContext j2adminContext = new ResourceLocatingServletContext(paRootDir);
-        MockServletConfig j2adminConfig = new MockServletConfig();
-        j2adminConfig.setServletContext(j2adminContext);
-        ((ResourceLocatingServletContext) servletContext).setContext("/j2-admin", j2adminContext);
+        initPA("demo", "/demo", new File("../../applications/demo/target/demo"));
+        ServletContext paContext = 
+            initPA("j2-admin", "/j2-admin", new File("../../applications/j2-admin/target/j2-admin"));
 
-        paRootDir = new File("../../applications/demo/src/webapp");
-        //paRootDir = new File("../../applications/demo/target/demo");
-        ResourceLocatingServletContext demoContext = new ResourceLocatingServletContext(paRootDir);
-        MockServletConfig demoConfig = new MockServletConfig();
-        demoConfig.setServletContext(demoContext);
-        ((ResourceLocatingServletContext) servletContext).setContext("/demo", demoContext);
-
-        Iterator it = portletRegistry.getPortletApplications().iterator();
-        while (it.hasNext()) {
-            PortletApplication pa = (PortletApplication) it.next();
-            if (!portletFactory.isPortletApplicationRegistered(pa)) {
-                portletFactory.registerPortletApplication(pa, pa.getClass().getClassLoader());
-            }
-        }
+        // j2-admin portlet needs user manager component, but the followings does not effect..
+        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);
+        paContext.setAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT, userManager);
+        assertEquals(userManager, paContext.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT));
     }
 
     public static Test suite()
@@ -176,6 +165,10 @@ public class TestAggregator extends TestCase
         assertNotNull("profiler is null", profiler);
         assertNotNull("capabilities is null", capabilities);
         assertNotNull("navigational state component is null", navComponent);
+        assertNotNull("portal servlet config is null", servletConfig);
+        assertNotNull("portal servlet context is null", servletContext);
+        assertNotNull("portlet registry is null", portletRegistry);
+        assertNotNull("request context component is null", rcc);
 
         final RequestContext requestContext = initRequestContext();
         final Subject subject = SecurityHelper.createSubject("user");
@@ -228,8 +221,8 @@ public class TestAggregator extends TestCase
 
         request.setSession(session);
 
-        Principal p = new UserPrincipalImpl("user");
-        request.setUserPrincipal(p);
+        //Principal p = new UserPrincipalImpl("user");
+        //request.setUserPrincipal(p);
 
         request.setScheme("http");
         request.setContextPath("/jetspeed");
@@ -240,6 +233,22 @@ public class TestAggregator extends TestCase
 //            new JetspeedRequestContext(request, response, servletConfig, null);
         RequestContext rc = rcc.create(request, response, servletConfig);
         return rc;
+    }
+
+    private ServletContext initPA(String paName, String paContextPath, File paRootDir) {
+        ResourceLocatingServletContext paContext = new ResourceLocatingServletContext(paRootDir);
+        MockServletConfig paConfig = new MockServletConfig();
+        paConfig.setServletContext(paContext);
+
+        ClassLoader paCl = createLocalPAClassLoader(paRootDir);
+        PortletApplication pa = portletRegistry.getPortletApplication(paName);
+        if (!portletFactory.isPortletApplicationRegistered(pa)) {
+            portletFactory.registerPortletApplication(pa, paCl);
+        }
+
+        ((ResourceLocatingServletContext) servletContext).setContext(paContextPath, paContext);
+
+        return paContext;
     }
 
     protected String[] getBootConfigurations()
@@ -258,5 +267,40 @@ public class TestAggregator extends TestCase
         confList.add("prefs.xml");
         return (String[]) confList.toArray(new String[1]);
     }
-    
+
+    protected ClassLoader createLocalPAClassLoader(File paDir)
+    {
+        ClassLoader localPAClassLoader = null;
+
+        ArrayList urls = new ArrayList();
+        File webInfClasses = null;
+
+        try {
+            webInfClasses = new File(paDir, ("WEB-INF/classes/"));
+            if (webInfClasses.exists())
+            {
+                urls.add(webInfClasses.toURL());
+            }
+            
+            File webInfLib = new File(paDir, "WEB-INF/lib");
+
+            if (webInfLib.exists())
+            {
+                File[] jars = webInfLib.listFiles();
+                
+                for (int i = 0; i < jars.length; i++)
+                {
+                    File jar = jars[i];
+                    urls.add(jar.toURL());
+                }
+            }
+            
+            localPAClassLoader = 
+                new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
+        } catch (Exception e) {
+        }
+
+        return localPAClassLoader;
+    }
+
 }
