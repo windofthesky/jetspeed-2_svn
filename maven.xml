@@ -390,4 +390,16 @@
         </java>
     </goal>
         
+    <goal name='test.eclipse'>
+        <copy todir="./bin">
+            <fileset dir="./src/webapp/WEB-INF/assembly/"/>
+        </copy>
+        <mkdir dir="./bin/boot/"/>
+        <copy todir="./bin/boot/">
+            <fileset dir="./src/webapp/WEB-INF/assembly/boot/"/>
+        </copy>
+        <copy todir="./bin">
+            <fileset dir="./etc/db-ojb/"/>
+        </copy>        
+    </goal>
 </project>

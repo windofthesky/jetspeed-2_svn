@@ -24,6 +24,7 @@ import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.WebApplicationDescriptor;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +57,7 @@ public class RegistrationTool
             System.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRootDir.getAbsolutePath());            
             configuration.load(fileName);        
             String [] bootAssemblies = configuration.getStringArray("boot.assemblies");
-            String [] assemblies = configuration.getStringArray("assemblies");
+            String [] assemblies = configuration.getStringArray("assemblies");            
             ClassPathXmlApplicationContext ctx;            
             
             if (bootAssemblies != null)
@@ -74,7 +75,7 @@ public class RegistrationTool
             String[] appNames = configuration.getStringArray("apps");
             String[] appDescriptors = configuration.getStringArray("descriptors");
             String[] webappDescriptors = configuration.getStringArray("webapp.descriptors");
-            
+            String[] extendedDescriptors = configuration.getStringArray("extended.descriptors");
             PortletRegistry registry = (PortletRegistry)ctx.getBean(registryBean);
             RegistrationTool tool = new RegistrationTool(registry, overwriteApps);
             
@@ -84,7 +85,7 @@ public class RegistrationTool
                 {
                     tool.unregister(appNames[ix]);
                 }
-                tool.register(appNames[ix], appDescriptors[ix], webappDescriptors[ix]);
+                tool.register(appNames[ix], appDescriptors[ix], webappDescriptors[ix], extendedDescriptors[ix]);
             }
         }
         catch (Exception e)
@@ -114,14 +115,16 @@ public class RegistrationTool
         }
     }
     
-    public void register(String appName, String appDescriptor, String webappDescriptor)
+    public void register(String appName, String appDescriptor, String webappDescriptor, String extendedDescriptor)
     throws Exception
     {
         WebApplicationDescriptor wad = new WebApplicationDescriptor(new FileReader(webappDescriptor), "/" + appName);
         MutableWebApplication webapp = wad.createWebApplication();
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(appDescriptor), appName);        
-        MutablePortletApplication app = pad.createPortletApplication();        
+        MutablePortletApplication app = pad.createPortletApplication();                
         app.setWebApplicationDefinition(webapp);
+        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(extendedDescriptor), app);
+        extMetaData.load();        
         registry.registerPortletApplication(app);
     }
 }

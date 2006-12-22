@@ -125,14 +125,14 @@ public class TestAggregator extends TestCase
         portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
         rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
 
+        initPA("jetspeed-layouts", "/jetspeed-layouts", new File("../../layout-portlets/target/jetspeed-layout-portlets"));
         initPA("demo", "/demo", new File("../../applications/demo/target/demo"));
-        ServletContext paContext = 
-            initPA("j2-admin", "/j2-admin", new File("../../applications/j2-admin/target/j2-admin"));
+        initPA("j2-admin", "/j2-admin", new File("../../applications/j2-admin/target/j2-admin"));
 
         // j2-admin portlet needs user manager component, but the followings does not effect..
-        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);
-        paContext.setAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT, userManager);
-        assertEquals(userManager, paContext.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT));
+//        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);
+//        paContext.setAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT, userManager);
+//        assertEquals(userManager, paContext.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT));
     }
 
     public static Test suite()
@@ -249,23 +249,6 @@ public class TestAggregator extends TestCase
         ((ResourceLocatingServletContext) servletContext).setContext(paContextPath, paContext);
 
         return paContext;
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "boot/datasource.xml"};
-    }
-    
-    protected String[] getConfigurations()
-    {
-        //String[] confs = super.getConfigurations();
-        //List confList = new ArrayList(Arrays.asList(confs));
-        List confList = new ArrayList();
-        confList.add("registry.xml");
-        confList.add("transaction.xml");
-        confList.add("prefs.xml");
-        return (String[]) confList.toArray(new String[1]);
     }
 
     protected ClassLoader createLocalPAClassLoader(File paDir)
