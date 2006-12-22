@@ -324,9 +324,9 @@ public class DecorationValve extends AbstractValve implements Valve
             {
                 // switch back to VIEW mode and NORMAL state.
                 PortalURL portalURL = requestContext.getPortalURL();
-                String action = (isAjaxRequest)
+                String action = requestContext.getResponse().encodeURL( (isAjaxRequest)
                   ? portalURL.createNavigationalEncoding(window, PortletMode.VIEW, WindowState.NORMAL)                          
-                  : portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString();
+                  : portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString() );
                 String actionName = PortletMode.VIEW.toString();
                 pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action,DecoratorActionTemplate.ACTION_TYPE_MODE));
             }
@@ -339,9 +339,9 @@ public class DecorationValve extends AbstractValve implements Valve
                 parameters.put("pageMode",paramValues);
 
                 // Use an ActionURL to set the oposite pageMode and always set VIEW mode and state NORMAL 
-                String action = (isAjaxRequest)
+                String action = requestContext.getResponse().encodeURL( (isAjaxRequest)
                     ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true)                                              
-                    : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString();
+                    : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString() );
                 pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 
                 if (content.supportsPortletMode(PortletMode.HELP))
@@ -350,16 +350,16 @@ public class DecorationValve extends AbstractValve implements Valve
                     {
                         // force it back to VIEW mode first with an ActionURL, as well as setting HELP mode and MAXIMIZED state
                         paramValues[0] = PortletMode.VIEW.toString();
-                        action = (isAjaxRequest)
+                        action = requestContext.getResponse().encodeURL( (isAjaxRequest)
                             ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true)                                                  
-                            : portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString();
+                            : portalURL.createPortletURL(window, parameters, PortletMode.HELP, WindowState.MAXIMIZED, true, portalURL.isSecure()).toString() );
                     }
                     else
                     {
                         // switch to mode HELP and state MAXIMIZED
-                        action = (isAjaxRequest)
+                        action = requestContext.getResponse().encodeURL( (isAjaxRequest)
                             ? portalURL.createNavigationalEncoding(window, PortletMode.HELP, WindowState.MAXIMIZED)                        
-                            : portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString();
+                            : portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString() );
                     }
                     String actionName = PortletMode.HELP.toString();
                     pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
