@@ -30,9 +30,22 @@
             <th>Description</th>
           </tr>
           <tr>
+            <td><a href="http://www.appliedjapan.com/"><img src="images/users/applied.gif" border="0" /></a></td>
+            <td><a href="http://www.appliedjapan.com/">APPLIED Co.,Ltd.</a> is a Japanese company providing services
+            to develop IT business applications and Web sites, having many customized J1 and J2 based actual results.  </td>
+          </tr>            
+          <tr>
             <td><a href="http://www.bluesunrise.com"><img src="images/users/bluesunrise.gif" border="0" /></a></td>
             <td><a href="http://www.bluesunrise.com">BlueSunrise</a> provides services to help companies implement Jetspeed-2 solutions.</td>
           </tr>
+          <tr>
+            <td><a href="http://www.cardinis.com/"><img src="images/users/CardinisSolutions.jpg" border="0" /></a></td>
+            <td><a href="http://www.cardinis.com/">CARDINIS Solutions S.p.A.</a> is leader in providing solutions for the governance of innovation and companies, leveraging on enterprise project portofilo management and strategy management. Cardinis Suite, the flagship product of CARDINIS Solutions, is based on international standards and methodologies, and on from-the-field experiences from our consulting activities and a continuous synergy with leading analysts and universities. It deploys technologies that enable communication and information sharing, through a collaborative platform for project, program, portfolio and demand management. To satisfy our clients' requests about capability of accessing critical information about projects and other business initiatives, we decided to adopt Jetspeed2 as the portal reference, providing custom portlets that respond to specific needs.</td>
+          </tr>            
+          <tr>
+            <td><a href="http://www.chikpea.com/"><img src="images/users/chikpea.jpg" border="0" /></a></td>
+            <td><a href="http://www.chikpea.com/">Chikpea</a>provides a self-service portal, where Business can register as a Service Provider to serve their own customers to manage Sales and Services. It allows the Business to represent its own self-service website to capture sales and service requests, as well as provides complete solution to manage those requests.</td>
+          </tr>                                    
           <tr>
             <td><a href="http://www.convergys.com/"><img src="images/users/convergys.gif" border="0" /></a></td>
             <td><a href="http://www.convergys.com/">Convergys</a> uses Jetspeed-2 as a B2B Business Intelligence 
@@ -90,15 +103,6 @@
             <td>In its 1.4 version, <a href="http://wfmopen.sf.net">WfMOpen</a> provides resource management for the 
 			workflow engines (BPE) and uses Jetspeed-2 as a container for the engine's administrative portlets.</td>
           </tr>
-          <tr>
-            <td><a href="http://www.appliedjapan.com/"><img src="images/users/applied.gif" border="0" /></a></td>
-            <td><a href="http://www.appliedjapan.com/">APPLIED Co.,Ltd.</a> is a Japanese company providing services
-            to develop IT business applications and Web sites, having many customized J1 and J2 based actual results.  </td>
-          </tr>
-          <tr>
-            <td><a href="http://www.cardinis.com/"><img src="images/users/CardinisSolutions.jpg" border="0" /></a></td>
-            <td><a href="http://www.cardinis.com/">CARDINIS Solutions S.p.A.</a> is leader in providing solutions for the governance of innovation and companies, leveraging on enterprise project portofilo management and strategy management. Cardinis Suite, the flagship product of CARDINIS Solutions, is based on international standards and methodologies, and on from-the-field experiences from our consulting activities and a continuous synergy with leading analysts and universities. It deploys technologies that enable communication and information sharing, through a collaborative platform for project, program, portfolio and demand management. To satisfy our clients' requests about capability of accessing critical information about projects and other business initiatives, we decided to adopt Jetspeed2 as the portal reference, providing custom portlets that respond to specific needs.</td>
-          </tr>            
 		</table>
 		</section>
 	</body>
