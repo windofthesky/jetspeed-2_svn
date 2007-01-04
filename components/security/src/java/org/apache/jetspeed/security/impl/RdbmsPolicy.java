@@ -77,10 +77,10 @@ public class RdbmsPolicy extends Policy
      */
     public void refresh()
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug("RdbmsPolicy refresh called.");
-        }
+//        if (log.isDebugEnabled())
+//        {
+//            log.debug("RdbmsPolicy refresh called.");
+//        }
     }
 
     /**

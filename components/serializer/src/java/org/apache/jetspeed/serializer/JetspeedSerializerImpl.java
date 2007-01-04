@@ -2241,7 +2241,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      */
     private void logMe(String text)
     {
-        if (log.isDebugEnabled()) log.debug(text);
+        if (log.isDebugEnabled()) 
+            log.debug(text);
     }
 
     /**

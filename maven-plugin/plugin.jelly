@@ -188,6 +188,16 @@
         <attainGoal name="j2:_copy.rdbms.sql.scripts"/>
       </j:if>
     </j:if>  
+    
+    <j:set var="portal.sql.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
+    <j:set var="portal.sql.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/sql"/>    
+    <mkdir dir="${portal.sql.target.dir}"/>          
+    <copy todir="${portal.sql.target.dir}" overwrite="true" verbose="true" failonerror="false" flatten="true">
+      <fileset dir="${portal.sql.src.dir}">
+        <include name="*seed.xml"/>
+      </fileset>
+    </copy>        
+    
   </goal>
   
   <goal name="j2:portal.conf.ldap" prereqs="j2:_check.required.properties">
@@ -283,6 +293,7 @@
     <attainGoal name="j2:_db.test.properties"/>
     <attainGoal name="j2:_db.drop"/>
     <attainGoal name="j2:_db.create"/>
+    <attainGoal name="j2:_db.entities"/>    
   </goal>
 
   <goal name="j2:db.create.production" >
@@ -304,19 +315,17 @@
      <attainGoal name="j2:_process.all.scripts.in.path"/>   
   </goal>    
     
-  <goal name="j2:db.entities">
-    <attainGoal name="j2:_db.production.properties"/>
-    <j:set var="org.apache.jetspeed.target.rdbms" value="${org.apache.jetspeed.production.database.default.name}"/>
-    <attainGoal name="j2:_set.rdbms.props"/>
-    <j:set var="portal.sql.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}"/>
-    <j:set var="database.arg.script" value="${portal.sql.dir}/populate-userinfo-for-default-psml.sql"/>
-    <util:available file="${portal.sql.dir}/${org.apache.jetspeed.target.rdbms}/populate-userinfo-for-default-psml.sql">
-      <j:set var="database.arg.script"
-             value="${portal.sql.dir}/${org.apache.jetspeed.target.rdbms}/populate-userinfo-for-default-psml.sql"/>
-    </util:available>
-     <j:set var="database.arg.onerror" value="abort"/> 
-    <attainGoal name="j2:_db.execute"/>
-  </goal>
+	<goal name="j2:db.entities">
+		<attainGoal name="j2:_db.production.properties"/>
+		<attainGoal name="j2:_db.entities"/>
+	</goal>
+
+	<goal name="j2:_db.entities">
+		<echo>Running JETSPEED seed scripts...</echo> 
+		<!-- if there is an order file, use it -->
+		<j:set var="DATAFILE" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}/${org.apache.jetspeed.portal.seed.data}"/>
+		<attainGoal name="j2:_db.seed"/>
+	</goal>
     
   <!-- =========================================== -->
   <!-- ============== DATABASE DROP ============== -->
@@ -911,15 +920,6 @@
     <j:set var="database.arg.onerror" value="abort"/> 
     <j:set var="process.database.script.goal" value="j2:_db.execute"/>
     <attainGoal name="j2:_process.all.scripts.in.path"/>
-
-    <j:set var="database.arg.script" value="${portal.sql.dir}/populate-db-default.sql"/>
-    <attainGoal name="j2:_db.execute"/>
-
-     <!-- process user custom SQL -->
-    <echo>Running user-defined SQL scripts...</echo>   
-    <j:set var="sql.src.path" value="${basedir}/src/sql"/>
-    <j:set var="process.database.script.goal" value="j2:_db.execute"/>
-    <attainGoal name="j2:_process.all.scripts.in.path"/>
   </goal>
     
   <goal name="j2:_db.drop">
@@ -1040,6 +1040,51 @@
      <ant:delete file="${basedir}/installer2/antinstall-config.xml" />
      <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="clean" />
   </goal>
+
+    <!-- ============== Data-Serializer for seed data============== -->
+    <goal name='j2:_db.seed'>
+    	<!-- ensure we have valid ojb properties -->
+	   <j:set var="portal.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}"/>      
+		<j:set var="portal.webapp.dir.assembly" value="${portal.target.dir}/WEB-INF/assembly/"/>      
+
+     <j:set var="temp.assembly.dir" value="${org.apache.jetspeed.portal.sql.dir}/assembly"/>      
+
+	<echo> j2:_db.seed with -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ </echo>
+
+
+    <mkdir dir="${temp.assembly.dir}"/>
+
+	<copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
+      <fileset dir="${portal.webapp.dir.assembly}">
+        <include name="security*.xml"/>
+		<include name="capabilities.xml"/>           
+		<include name="prefs.xml"/>           
+		<include name="profiler.xml"/>           
+		<include name="transaction.xml"/>           
+      </fileset>
+     </copy>
+
+    <mkdir dir="${temp.assembly.dir}/boot"/>
+
+	<copy todir="${temp.assembly.dir}/boot" overwrite="true" failonerror="true">
+      <fileset dir="${portal.webapp.dir.assembly}/boot">
+        <include name="*.xml"/>
+      </fileset>
+    </copy>
+
+	<echo> running _db.seed with data: ${DATAFILE}  arguments: -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/  database-url: ${org.apache.jetspeed.database.url}</echo>
+    	
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${portal.target.dir}/WEB-INF/classes"/>
+        <pathelement path="${maven.build.dest}"/>
+        <pathelement path="${org.apache.jetspeed.plugin.root}"/>
+        <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
+      </classpath>
+        <arg line="-I ${DATAFILE} -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>  
+    </java>
+    </goal>
 
 </project>
 

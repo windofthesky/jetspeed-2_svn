@@ -100,7 +100,7 @@ limitations under the License.
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <ant target="populate-db-userinfo" antfile="build.xml" dir="\${basedir}" inheritRefs="on">
+                                <ant target="create-populate-db" antfile="build.xml" dir="${basedir}" inheritRefs="on">
                                     <property name="org.apache.jetspeed.database.enable"
                                               value="${org.apache.jetspeed.env.deploy.db}"/>
                                     <property name="org.apache.jetspeed.database.skip"
@@ -123,6 +123,14 @@ limitations under the License.
                                               value="${ant.version}"/>
                                     <property name="hsqldb.version"
                                               value="${hsqldb.version}"/>
+                                    <property name="org.apache.jetspeed.deploy.groupid"
+                                              value="${pom.groupId}"/>
+                                    <property name="org.apache.jetspeed.deploy.artifactid"
+                                              value="${pom.artifactId}"/>
+                                    <property name="org.apache.jetspeed.deploy.version"
+                                              value="${pom.version}"/>
+                                    <property name="portlet-api.version"
+                                              value="${portlet-api.version}"/>                                    
                                 </ant>
                             </tasks>
                         </configuration>
@@ -130,7 +138,6 @@ limitations under the License.
                             <goal>run</goal>
                         </goals>
                     </execution>
-
                 </executions>
             </plugin>
         </plugins>

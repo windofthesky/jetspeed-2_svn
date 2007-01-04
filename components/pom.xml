@@ -145,7 +145,7 @@ limitations under the License.
                 <directory>../../etc/db-ojb</directory>
             </testResource>
             <testResource>
-                <directory>../../src/webapp/WEB-INF/assembly</directory>
+                <directory>../../src/webapp/WEB-INF/assembly/boot</directory>
             </testResource>
         </testResources>
 

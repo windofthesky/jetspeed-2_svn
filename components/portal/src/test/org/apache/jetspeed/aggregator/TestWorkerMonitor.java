@@ -30,7 +30,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * <P>Test the aggregation service</P>
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
- * @version $Id: TestAggregator.java 279463 2005-09-07 23:45:24Z taylor $
+ * @version $Id: $
  * 
  */
 public class TestWorkerMonitor extends TestCase

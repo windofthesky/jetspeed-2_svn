@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.serializer;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,15 +30,16 @@ import org.apache.log4j.Logger;
  * Jetspeed Serializer Application
  * 
  * invoke with mandatory 
- * <p>-E filename or -I filename to denote the export or the import file
- *   
- * invoke with (optional) parameters as
- * <p>-p propertyFilename : overwrite the default filename defined in System.getProperty JetSpeed.Serializer.Configuration 
- * <p>-a ApplicationPath : overwrite the default ./ or ApplicationPath property in properties file)
- * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)  
- * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)
+ * <p>-E filename or -I filename to denote the export or the import file</p>
+ * <p>-I filename | directory, if a directory will process all XML files of pattern "*seed.xml"</p>
  * 
- * <p>-o optionstring : overwrite defrault "ALL,REPLACE"
+ * invoke with (optional) parameters as
+ * <p>-p propertyFilename : overwrite the default filename defined in System.getProperty JetSpeed.Serializer.Configuration</p> 
+ * <p>-a ApplicationPath : overwrite the default ./ or ApplicationPath property in properties file)</p>
+ * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)</p>  
+ * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)</p>
+ * 
+ * <p>-o optionstring : overwrite defrault "ALL,REPLACE"</p>
  * <p>optionstring: 
  *      ALL - extract/import all 
  *      USER - extract/import users
@@ -45,7 +48,7 @@ import org.apache.log4j.Logger;
  *      PROFILE = extract/import profile settings (for export requires USER) 
  *      NOOVERWRITE = don't overwrite existing file (for export)
  *      BACKUP = backup before process
-
+ * </p>
  * <p>
  * -dc driverClass, for example com.mysql.jdbc.Driver
  * </p>
@@ -75,8 +78,7 @@ public class JetspeedSerializerApplication
     {
         String propertyFileName = null;
         
-        String fileName = null; // XML filename - mandatory on command line
-        
+        String fileName = null; // XML filename - mandatory on command line        
         String applicationPath = null; // configuration.getProperties("applicationPath");
         String bootConfigFiles = null; // configuration.getProperties("bootConfigFiles");
         String configFiles = null; // configuration.getProperties("configFiles");
@@ -104,28 +106,64 @@ public class JetspeedSerializerApplication
 
         
         // Parse all the command-line arguments
-        for(int n = 0; n < args.length; n++) 
+        for (int n = 0; n < args.length; n++)
         {
-          if (args[n].equals("-p")) propertyFileName = args[++n];
-          else if (args[n].equals("-a")) applicationPath = args[++n];
-          else if (args[n].equals("-b")) bootConfigFiles = args[++n];
-          else if (args[n].equals("-c")) configFiles = args[++n];
-          else if (args[n].equals("-E")) { doExport = true; fileName = args[++n];}
-          else if (args[n].equals("-I")) { doImport = true; fileName = args[++n];}
-          else if (args[n].equals("-N")) name = args[++n];
-          else if (args[n].equals("-l")) logLevel = args[++n];
-            else if (args[n].equals("-O")) options = args[++n];
-  		else if (args[n].equals("-dc"))
-			driverClass = args[++n];
-		else if (args[n].equals("-ds"))
-			url = args[++n];
-		else if (args[n].equals("-du"))
-			user = args[++n];
-		else if (args[n].equals("-dp"))
-			password = args[++n];
-          else throw new IllegalArgumentException("Unknown argument: " + args[n]);
+            if (args[n].equals("-p"))
+                propertyFileName = args[++n];
+            else if (args[n].equals("-a"))
+                applicationPath = args[++n];
+            else if (args[n].equals("-b"))
+                bootConfigFiles = args[++n];
+            else if (args[n].equals("-c"))
+                configFiles = args[++n];
+            else if (args[n].equals("-E"))
+            {
+                doExport = true;
+                fileName = args[++n];
+            } 
+            else if (args[n].equals("-I"))
+            {
+                doImport = true;
+                fileName = args[++n];
+            } 
+            else if (args[n].equals("-N"))
+            {
+                name = args[++n];
+            }
+            else if (args[n].equals("-l"))
+                logLevel = args[++n];
+            else if (args[n].equals("-O"))
+                options = args[++n];
+            else if (args[n].equals("-dc"))
+                driverClass = args[++n];
+            else if (args[n].equals("-ds"))
+                url = args[++n];
+            else if (args[n].equals("-du"))
+            {
+                if (((n + 1) >= args.length) || args[n + 1].startsWith("-d"))
+                {
+                    user = "";
+                } else
+                {
+                    user = args[++n];
+                }
+            } 
+            else if (args[n].equals("-dp"))
+            {
+                if (((n + 1) >= args.length) || args[n + 1].startsWith("-d"))
+                {
+                    password = "";
+                } else
+                {
+                    password = args[++n];
+                }
+            } 
+            else
+            {
+                throw new IllegalArgumentException("Unknown argument: "
+                        + args[n]);
+            }
         }
-
         
         /** The only required argument is the filename for either export or import*/
         if ((!doImport) && (!doExport))
@@ -158,11 +196,16 @@ public class JetspeedSerializerApplication
             {
                 /** only read what was not defined on the command line */
             
-                if (applicationPath == null) applicationPath = configuration.getString("applicationPath");
-                if (bootConfigFiles == null) applicationPath = configuration.getString("bootConfigFiles");
-                if (configFiles == null) applicationPath = configuration.getString("configFiles");
-                if (options == null) applicationPath = configuration.getString("options");
-                if (defaultIndent == null) applicationPath = configuration.getString("defaultIndent");
+                if (applicationPath == null) 
+                    applicationPath = configuration.getString("applicationPath");
+                if (bootConfigFiles == null)  
+                    bootConfigFiles = configuration.getString("bootConfigFiles");
+                if (configFiles == null) 
+                    configFiles = configuration.getString("configFiles");
+                if (options == null) 
+                    options = configuration.getString("options");
+                if (defaultIndent == null) 
+                    defaultIndent = configuration.getString("defaultIndent");
 
         		if (driverClass == null)
     				driverClass = configuration.getString("driverClass");
@@ -180,10 +223,14 @@ public class JetspeedSerializerApplication
         }
 
         // if we still miss some settings, use hardoced defaults
-        if (applicationPath == null) applicationPath = "./";
-        if (bootConfigFiles == null) bootConfigFiles = "assembly/boot/";
-        if (configFiles == null) configFiles = "assembly/";
-		if (logLevel == null) logLevel = "ERROR";
+        if (applicationPath == null) 
+            applicationPath = "./";
+        if (bootConfigFiles == null) 
+            bootConfigFiles = "assembly/boot/";
+        if (configFiles == null) 
+            configFiles = "assembly/";
+		if (logLevel == null) 
+            logLevel = "ERROR";
       
 
         bootConfigFiles = bootConfigFiles + "*.xml";
@@ -297,44 +344,123 @@ public class JetspeedSerializerApplication
             e.printStackTrace();
             System.exit(1);
         }
-            
         System.out.println("starter framework established " + starter);
-               
+        String[] importList = null;
+
+        if (doImport)
+        	importList = parseFiles(fileName);
+    	
+        if ((doImport) && (importList != null) && (importList.length > 0))
+        {
+			for (int i = 0; i < importList.length; i++)
+			{
+				try
+			    {
+			        System.out.println("processing import  " + importList[i]);
+			        serializer = new JetspeedSerializerImpl(starter.getComponentManager());
+			        serializer.importData(importList[i], settings);
+			        System.out.println("processing import  " + importList[i] + " done");
+			        
+			    } 
+			    catch (Exception e)
+			    {
+			        System.err.println("Failed to process XML import for " + importList[i] + ":" + e);
+			        e.printStackTrace();
+			    }
+			    finally
+			    {
+			        if (serializer != null)
+			            serializer.closeUp();
+			    }
+			 }
+        }
+        if (doExport)
+        {
+        	try
+	        {
+	            serializer = new JetspeedSerializerImpl(starter.getComponentManager());
+	                serializer.exportData(name, fileName, settings);
+	        } 
+	        catch (Exception e)
+	        {
+	            System.err.println("Failed to process XML export of " + fileName + ": " + e);
+	            e.printStackTrace();
+	        }
+	        finally
+	        {
+	            if (serializer != null)
+	                serializer.closeUp();
+	        }
+
+        }
         try
         {
-            serializer = new JetspeedSerializerImpl(starter.getComponentManager());     
-            if (doExport)
-                serializer.exportData(name, fileName, settings);
-            else
-                serializer.importData(fileName, settings);
+           starter.tearDown();
+           logger.setLevel(level);;
+        }
+        catch (Exception e1)
+        {
+            System.out.println("starter framework teardown caused exception "  + e1.getLocalizedMessage());
+            e1.printStackTrace();
             
-        } 
-        catch (Exception e)
-        {
-            System.err.println("Failed to process XML " + (doExport?"export":"import")+ ":" + e);
-            e.printStackTrace();
-        }
-        finally
-        {
-            if (serializer != null)
-                serializer.closeUp();
-            try
-            {
-               starter.tearDown();
-               logger.setLevel(level);;
-            }
-            catch (Exception e1)
-            {
-                System.out.println("starter framework teardown caused exception "  + e1.getLocalizedMessage());
-                e1.printStackTrace();
-                
-            }            
-            System.out.println("DONE performing " + (doExport?"export":"import")+ " with " + fileName);
-        }
-
+        }            
+        System.out.println("DONE performing " + (doExport?"export":"import")+ " with " + fileName);
     }
+    
         
        
+	/**
+	 * process provided filename or directory name
+	 * 
+	 * @return one or more files to be processed
+	 */
+	static private String[] parseFiles(String schemaDirectory)
+	{
+		String[] fileList = null;
+		try
+		{
+			File dir = new File(schemaDirectory);
+			if (!(dir.exists()))
+            {
+				return fileList;
+            }
+			if (!(dir.isDirectory()))
+			{
+				fileList = new String[1];
+				fileList[0] = schemaDirectory;
+				return fileList;
+			}
+			// 	Handling a directory
+			File[] files = dir.listFiles(
+				    new FilenameFilter() {
+				        public boolean accept(File dir, String name) 
+				        			{String n = name.toLowerCase();
+	   								return n.endsWith("seed.xml");
+				        }
+				    });
+			if (files == null)
+				return fileList;
+
+			fileList = new String[files.length];
+			for (int i = 0; i < files.length; i++)
+            {
+				fileList[i] = files[i].getAbsolutePath();
+            }
+			return fileList;
+		} 
+        catch (Exception e)
+		{
+			e.printStackTrace(); 
+			throw new IllegalArgumentException(
+					"Processing the schema-directory " + schemaDirectory
+							+ " caused exception "
+							+ e.getLocalizedMessage());
+		}
+
+		
+	}
+
+    
         private static  String[] getTokens(String _line)
         {
             if ((_line == null) || (_line.length() == 0))
@@ -351,4 +477,5 @@ public class JetspeedSerializerApplication
             return s;
         }
 
+        
 }

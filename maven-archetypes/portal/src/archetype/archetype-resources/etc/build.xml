@@ -31,17 +31,18 @@ limitations under the License.
     <property name="org.apache.derby.version" value=""/>
     <property name="ant.version" value=""/>
     <property name="hsqldb.version" value=""/>
+    <property name="portlet-api.version" value=""/>
 
-    <property name="org.apache.jetspeed.source.sql" value="\${basedir}/sql"/>
+    <property name="org.apache.jetspeed.source.sql" value="${basedir}/sql"/>
     <property name="org.apache.jetspeed.database.source.sql" value="${org.apache.jetspeed.source.sql}/${org.apache.jetspeed.database.default.name}"/>
-    <property name="org.apache.jetspeed.database.target.sql.root" value="\${basedir}/target/sql"/>
+    <property name="org.apache.jetspeed.database.target.sql.root" value="${basedir}/target/sql"/>
     <property name="org.apache.jetspeed.database.target.sql" value="${org.apache.jetspeed.database.target.sql.root}/${org.apache.jetspeed.database.default.name}"/>
 
     <property name="torque.contextProperties" value=""/>
     <property name="torque.runOnlyOnSchemaChange" value="true"/>
     <property name="torque.idTableXMLFile" value=""/>
     <property name="torque.project" value="phase1"/>
-    <property name="torque.schema.dir" value="\${basedir}/schema"/>
+    <property name="torque.schema.dir" value="${basedir}/schema"/>
     <property name="torque.schema.sql.excludes" value=""/>
     <property name="torque.schema.sql.includes" value="*-schema.xml"/>
     <property name="torque.template.sql" value="sql/base/Control.vm"/>
@@ -53,12 +54,13 @@ limitations under the License.
 
     <target name="help">
         <echo message="Buildfile for the etc maven POM."/>
-        <echo message="Usage: ant [ clean-schema | schema | populate-db | populate-db-userinfo ]"/>
+        <echo message="Usage: ant [ clean-schema | schema | populate-db ]"/>
         <echo message="Where:"/>
         <echo message="    clean-schema - clean schemas for all databases."/>
         <echo message="    schema - build schema for database if not already built."/>
-        <echo message="    populate-db - build and minimally populate database instance."/>
-        <echo message="    populate-db-userinfo - build and populate database instance with default users."/>
+        <echo message="    create-db - drops and recreates databases, no population."/>        
+        <echo message="    create-populate-db - drop, recreate database and populate database instance."/>        
+        <echo message="    populate-db - populate database instance."/>
         <echo message="Configuration:"/>
         <echo message="    org.apache.jetspeed.database.enable=${org.apache.jetspeed.database.enable}"/>
         <echo message="    org.apache.jetspeed.database.skip=${org.apache.jetspeed.database.skip}"/>
@@ -271,9 +273,10 @@ limitations under the License.
 
     <!-- Populate Database -->
 
-    <target name="populate-db" depends="test-populate-skip" unless="org.apache.jetspeed.skip">
-
-        <!-- execute drop scripts -->
+    <target name="create-db" depends="test-populate-skip" unless="org.apache.jetspeed.skip">
+    	<echo message ="START-CREATE-DB" />        
+        
+      <!-- execute drop scripts -->
         <antcall target="sql-execute" inheritall="on" inheritrefs="on">
             <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
             <param name="database.arg.scripts" value="drop.sql"/>
@@ -286,25 +289,22 @@ limitations under the License.
             <param name="database.arg.scripts" value="*.sql"/>
             <param name="database.arg.onerror" value="abort"/>
         </antcall>
+    	<echo message ="END CREATE-DB" />        
+    </target>
 
-        <!-- execute default population scripts -->
-        <antcall target="sql-execute" inheritall="on" inheritrefs="on">
-            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
-            <param name="database.arg.scripts" value="populate-db-default.sql"/>
-            <param name="database.arg.onerror" value="abort"/>
+    <target name="create-populate-db">
+        <antcall target="create-db" inheritall="on" inheritrefs="on"/>
+        <antcall target="populate-db" inheritall="on" inheritrefs="on"/>
+    </target>        
+    
+    <target name="populate-db" depends="test-populate-skip" unless="org.apache.jetspeed.skip">
+       <echo message ="START-POPULATE-DB" />                       
+       <antcall target="populate-seed-data" inheritall="on" inheritrefs="on">
         </antcall>
-
+    	<echo message ="END POPULATE-DB" />
     </target>
 
     <target name="populate-db-userinfo" depends="populate-db" unless="org.apache.jetspeed.skip">
-
-        <!-- execute default userinfo population scripts -->
-        <antcall target="sql-execute" inheritall="on" inheritrefs="on">
-            <param name="database.arg.scripts.dir" value="${org.apache.jetspeed.database.target.sql}"/>
-            <param name="database.arg.scripts" value="populate-userinfo-for-default-psml.sql"/>
-            <param name="database.arg.onerror" value="abort"/>
-        </antcall>
-
     </target>
 
     <!-- SQL Execution -->
@@ -355,7 +355,7 @@ limitations under the License.
             the subsequent test database access in forked JVMs.
         -->
         <!-- write out temporary ant build file for forked execution -->
-        <echo file="\${basedir}/derby-sql-build.xml">
+        <echo file="${basedir}/derby-sql-build.xml">
             &lt;project name="etc-derby-sql-build"&gt;
                 &lt;target name="forked-sql-execute-derby"&gt;
                     &lt;sql url="${org.apache.jetspeed.database.url};create=true" driver="${org.apache.jetspeed.database.driver}" 
@@ -383,15 +383,15 @@ limitations under the License.
                         version="${ant.version}"/>
         </dependencies>
         <!-- fork and execute temporary ant build file -->
-        <java classname="org.apache.tools.ant.Main" fork="on" append="on" failonerror="on" dir="\${basedir}">
+        <java classname="org.apache.tools.ant.Main" fork="on" append="on" failonerror="on" dir="${basedir}">
             <classpath>
                 <fileset refid="ant.dependencies.id"/>
                 <fileset refid="derby.embedded.db.dependencies.id"/>
             </classpath>
-            <arg line="-f \${basedir}/derby-sql-build.xml forked-sql-execute-derby"/>
+            <arg line="-f ${basedir}/derby-sql-build.xml forked-sql-execute-derby"/>
         </java>
         <!-- cleanup temporary ant build file -->
-        <delete file="\${basedir}/derby-sql-build.xml"/>
+        <delete file="${basedir}/derby-sql-build.xml"/>
     </target>
 
     <target name="sql-execute-hsql" if="org.apache.jetspeed.database.is.hsql.embedded">
@@ -437,4 +437,107 @@ limitations under the License.
         </condition>
     </target>
 
+    <target name="populate-seed-data">
+    	<echo message = "called seed data with directory ${basedir} " />
+        <!-- prepare a classes directory with resources and libraries to execute import -->
+        <delete dir="${basedir}/target/seed"/>
+        <mkdir dir="${basedir}/target/seed"/>
+        <mkdir dir="${basedir}/target/seed/data"/>
+
+        <!-- copy seed -->
+        <copy todir="${basedir}/target/seed/data" overwrite="on" verbose="on" failonerror="off">
+            <fileset dir="${org.apache.jetspeed.source.sql}">
+                <include name="*seed.xml"/>
+            </fileset>
+        </copy>
+    	
+    	<mkdir dir="${basedir}/target/seed/classes"/>
+        <copy todir="${basedir}/target/seed/classes" flatten="on">
+            <fileset dir="${basedir}" >
+                <include name="log4j/log4j.properties"/>
+                <include name="db-ojb/*"/>
+            </fileset>
+        </copy>
+        <!-- prepare spring assemblies (TODO: why not use a Spring classpath loader?) -->
+        <property name="temp.assembly.dir" value="${basedir}/target/seed/assembly/"/>      
+        <mkdir dir="${temp.assembly.dir}"/>
+ 	    <echo message="Running Jetspeed Seed Importer with -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ "/>
+        <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
+          <fileset dir="${basedir}/../src/webapp/WEB-INF/assembly">
+            <include name="security*.xml"/>
+            <include name="capabilities.xml"/>           
+            <include name="prefs.xml"/>           
+            <include name="profiler.xml"/>           
+            <include name="transaction.xml"/>           
+          </fileset>
+         </copy>
+         <mkdir dir="${temp.assembly.dir}/boot/"/>             
+         <copy todir="${temp.assembly.dir}/boot/" overwrite="true" failonerror="true">
+         	<fileset dir="${basedir}/../src/webapp/WEB-INF/assembly/boot">
+            <include name="*.xml"/>
+          </fileset>
+         </copy>
+        
+
+        <!-- construct serializer component classpath -->
+        <dependencies filesetId="serializer-id" useScope="test">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-api"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-commons"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-components"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-cm"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-rdbms"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+                <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                            artifactId="jetspeed-capability"
+                            version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-security"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-serializer"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-profiler"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="portlet-api"
+                 		artifactId="portlet-api"
+                 		version="${portlet-api.version}"/>
+
+            <dependency groupId="tyrex"
+                        artifactId="tyrex"
+                        version="1.0.1"/>
+        </dependencies>
+
+        <!-- create sysproperty set to configure import utility -->
+        <propertyset id="import.syspropertyset.id">
+            <propertyref name="org.apache.jetspeed.database.driver"/>
+            <propertyref name="org.apache.jetspeed.database.url"/>
+            <propertyref name="org.apache.jetspeed.database.user"/>
+            <propertyref name="org.apache.jetspeed.database.password"/>
+        </propertyset>
+    	<echo message="calling serializer with data in ${basedir}/target/seed/data , assembly and b oot:${temp.assembly.dir}/ database:-dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}" />              
+
+        <!-- execute import utility within the page manager component -->
+        <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication"  fork="on" append="on" dir="${basedir}">
+            <classpath>
+<!--                <fileset refid="maven.dependency.classpath"/> 
+-->
+                <fileset refid="serializer-id"/> 
+                <pathelement path="${org.apache.jetspeed.database.jdbc.drivers.path}"/>
+                <pathelement path="${basedir}/target/seed/classes"/>
+            </classpath>
+          <arg line="-I ${basedir}/target/seed/data/ -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>                           
+        </java>
+     
+   </target>
+    
 </project>

@@ -50,6 +50,9 @@
             <includes>
                 <include>**/Test*</include>
             </includes>
+            <excludes>
+                <exclude>**/TestAggregator.java</exclude>
+            </excludes>
             <resources>
                 <resource>
                     <directory>${basedir}/src/java</directory>

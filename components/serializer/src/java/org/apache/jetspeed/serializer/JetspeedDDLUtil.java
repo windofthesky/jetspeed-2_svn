@@ -36,11 +36,10 @@ import org.apache.ddlutils.PlatformUtils;
 import org.apache.ddlutils.io.DataReader;
 import org.apache.ddlutils.io.DataToDatabaseSink;
 import org.apache.ddlutils.io.DatabaseIO;
+import org.apache.ddlutils.model.Column;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.model.JdbcTypeCategoryEnum;
 import org.apache.ddlutils.model.Table;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 /**
  * Jetspeed DDLUtil
@@ -53,6 +52,7 @@ import org.apache.log4j.Logger;
  */
 public class JetspeedDDLUtil
 {
+	public static final String DATASOURCE_DATABASENAME = "DATABASENAME".intern();
 	public static final String DATASOURCE_CLASS = "DATASOURCE_CLASS".intern();
 	public static final String DATASOURCE_DRIVER = "driverClassName".intern();
 	public static final String DATASOURCE_URL = "url".intern();
@@ -145,7 +145,9 @@ public class JetspeedDDLUtil
 	 */
 	protected Database createDatabaseSchemaFromXML(String fileName)
 	{
-		return new DatabaseIO().read(fileName);
+		DatabaseIO io = new DatabaseIO();
+		io.setValidateXml(false);
+		return io.read(fileName);
 	}
 
 	/**
@@ -223,6 +225,8 @@ public class JetspeedDDLUtil
 				}
 				catch (Exception aEX)
 				{
+					System.out.println("Error in ALTER DATABASE");
+					aEX.printStackTrace();
 					log.error(aEX);
 				}
 			} else
@@ -235,10 +239,11 @@ public class JetspeedDDLUtil
 //						String s = platform.getDropTablesSql(model, true);
 //						log.debug(s);
 //					}
-				platform.dropTables(model, true);
-				
-				
-				
+                    if (model == null)
+                    {
+                        model = targetModel;
+                    }
+                    platform.dropTables(model, true);				
 				}
 				catch (Exception aEX)
 				{
@@ -246,14 +251,30 @@ public class JetspeedDDLUtil
 				}
 				try
 				{
-				platform.createTables(targetModel, false, true);
+				    platform.createTables(model, false, true);
+                    if (this._databaseName.startsWith("oracle"))
+                    {
+                        model = this.readModelFromDatabase(null);
+                        modifyVarBinaryColumn(model, "PA_METADATA_FIELDS", "COLUMN_VALUE");
+                        modifyVarBinaryColumn(model, "PD_METADATA_FIELDS", "COLUMN_VALUE");
+                        modifyVarBinaryColumn(model, "LANGUAGE", "KEYWORDS");
+                        modifyVarBinaryColumn(model, "PORTLET_CONTENT_TYPE", "MODES");
+                        modifyVarBinaryColumn(model, "PARAMETER", "PARAMETER_VALUE");
+                        modifyVarBinaryColumn(model, "LOCALIZED_DESCRIPTION", "DESCRIPTION");
+                        modifyVarBinaryColumn(model, "LOCALIZED_DISPLAY_NAME", "DISPLAY_NAME");
+                        modifyVarBinaryColumn(model, "CUSTOM_PORTLET_MODE", "DESCRIPTION");
+                        modifyVarBinaryColumn(model, "CUSTOM_WINDOW_STATE", "DESCRIPTION");
+                        modifyVarBinaryColumn(model, "MEDIA_TYPE", "DESCRIPTION");
+                        platform.alterTables(model, true);                        
+                    }
 				}
 				catch (Exception aEX)
 				{
+                    aEX.printStackTrace();
 					log.error(aEX);
 				}
 			}
-			model = this.readModelFromDatabase(null);
+			// TODO: DST: REMOVE, AINT WORKING IN ORACLE model = this.readModelFromDatabase(null);
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
@@ -263,6 +284,14 @@ public class JetspeedDDLUtil
 		}
 	}
 
+    private void modifyVarBinaryColumn(Database targetModel, String tableName, String columnName)
+    {
+        Table table = targetModel.findTable(tableName);
+        Column c = table.findColumn(columnName);
+        c.setType("VARCHAR");        
+        c.setSize("2000");
+        System.out.println("updating column " + c.getName() + " for table " + table.getName());
+    }
 	/**
 	 * Alter an existing database from the given model. Data is preserved as
 	 * much as possible
@@ -386,24 +415,45 @@ public class JetspeedDDLUtil
 		{
 			throw new DatabaseOperationException(ex);
 		}
-
-		_databaseName = new PlatformUtils().determineDatabaseType(dataSource);
+		String databaseName = null;
+		_databaseName = null;        
+		try
+		{
+			databaseName = (String) parameters.get(DATASOURCE_DATABASENAME);
+			if (databaseName != null)
+			{
+				platform = PlatformFactory.createNewPlatformInstance(databaseName);
+				if (platform != null)
+					_databaseName = databaseName;
+			}
+		} catch (Exception ex)
+		{
+			log.warn("Exception in trying to establish connection to " + databaseName + " : " + ex.getLocalizedMessage());
+			log.warn(ex);
+		}
 		if (_databaseName == null)
 		{
-			throw new DatabaseOperationException(
+			_databaseName = new PlatformUtils().determineDatabaseType(dataSource);
+			if (_databaseName == null)
+			{
+				throw new DatabaseOperationException(
 					"Could not determine platform from datasource, please specify it in the jdbc.properties via the ddlutils.platform property");
+			}
+			else
+			{
+				try
+				{
+					platform = PlatformFactory.createNewPlatformInstance(_databaseName);
+				} catch (Exception ex)
+				{
+					throw new DatabaseOperationException(
+					"Could not establish connection to " + _databaseName + " : " + ex.getLocalizedMessage(),ex);
+				}
+			}
 		}
-
 //		com.mysql.jdbc.Driver
 		
 		writer = new StringWriter();
-		try
-		{
-			platform = PlatformFactory.createNewPlatformInstance(_databaseName);
-		} catch (Exception ex)
-		{
-			throw new DatabaseOperationException(ex);
-		}
 		platform.getSqlBuilder().setWriter(writer);
 //		if (platform.getPlatformInfo().isDelimitedIdentifiersSupported())
 //		{
@@ -412,8 +462,9 @@ public class JetspeedDDLUtil
 
 	
 		platform.setDataSource(dataSource);
-
+        System.out.println("reading model...");
 		model = this.readModelFromDatabase(null);
+        System.out.println("done reading model...");
 /**		
 		JdbcModelReader reader = platform.getModelReader();		
 		try
