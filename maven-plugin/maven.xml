@@ -70,6 +70,7 @@
         <filter token="SERVLET_API_VERSION" value="${servlet.api.version}" />
         <filter token="MYFACES_VERSION" value="${myfaces.version}" />
         <filter token="SPRING_VERSION" value="${spring.version}" />
+        <filter token="SPRING_MODULES_VERSION" value="${spring.modules.version}" />
         <filter token="BRIDGES_GROUPID" value="${bridges.groupId}" />
         <filter token="PORTALS_BRIDGES_VERSION" value="${portals.bridges.version}" />
         <filter token="PORTALS_BRIDGES_COMMON_VERSION" value="${portals.bridges.common.version}" />
