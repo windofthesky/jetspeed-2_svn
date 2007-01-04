@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Hello World</title>
+    <subtitle>Hello World Portlet</subtitle>
+	<authors>
+		<person name="David Sean Taylor" email="taylor@apache.org" />
+	</authors>
+  </properties>
+  <body>
+    <section name="Hello World Portlet">
+    <p>      
+    We are going to create a portlet using the Eclipse Java perspective.    
+    Go to the <i>express-demo</i> project, click on the <i>com.bluesunrise.portal.portlets.tutorial</i> package, and create a new Java class:
+	</p>      
+	<img src="../images/new-portlet.png"/>
+	<p>
+	You will see a new portlet in Eclipse named BonjourWorld.
+	Go ahead Override and Implement the following methods:	
+	</p>
+	<img src="../images/override-impl.png"/>
+	<p>
+	Each one of these methods is associated with a portlet mode.
+	Lets make these methods actually do something.
+	Since we are in the render phase when doView/doEdit/doHelp are called,
+	its probably best to render something. The RenderResponse 
+	renders content to the output stream of the portlet. 
+	Set the content type on the response, and then print
+	a <i>hello world</i> message using a Java Writer:	
+	</p>	
+	 <source>	
+	 <![CDATA[
+    protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        response.setContentType("text/html"); 
+        response.getWriter().println("<b>Bonjour: View Mode</b>");
+    }
+	     ]]>
+	</source> 	
+	<p>
+	Repeat the same process for Edit and Help modes.
+	Now lets edit the portlet.xml, and create a portlet descriptor entry 
+	for our portlet. Notice that the &lt;supports&gt; element contains
+	that same portlet modes that we support in our <i>do</i> methods.
+	</p>
+	 <source>	
+	 <![CDATA[
+    <portlet>
+        <description>Bonjour Monde Portlet</description>		
+        <portlet-name>BonjourMonde</portlet-name>	
+        <display-name>Bonjour Monde</display-name>
+        <portlet-class>com.bluesunrise.portal.portlets.tutorial.BonjourWorld</portlet-class>	        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>            
+        </supports>
+        <supported-locale>en</supported-locale>      	
+	    <portlet-info>
+        <title>Bonjour Monde</title>
+          <short-title>Bonjour</short-title>
+          <keywords>tutorial,bonjour,hello</keywords>
+       </portlet-info>
+	</portlet>	 
+	     ]]>
+	</source> 		
+	  <p>
+	    <a href='overview.html'>Previous</a> <a href='tutorial-psml.html'>Next</a>
+	  </p>            
+    </section>
+  </body>
+</document>
+

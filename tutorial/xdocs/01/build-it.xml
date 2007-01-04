@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Build the Custom Portal</title>
+    <subtitle>Building a Custom Jetspeed Portal</subtitle>
+	<authors>
+		<person name="David Sean Taylor" email="taylor@apache.org" />
+	</authors>
+  </properties>
+  <body>
+    <section name="Building and Deploying a Custom Jetspeed Portal">
+      <p>      
+       Now that you have generated a custom portal named <b>jetexpress</b>, we are ready to build the portal.
+       We are going to build the portal from the command line:
+      </p>
+	 <source>
+	 <![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress  	 
+
+# Windows
+cd \JetspeedTraining\workspace\jetexpress  	 
+
+mvn -P tomcat,min
+     ]]>
+	</source> 
+      <p>
+      <i>Please take note that there is no space between the comma and the word <b>min</b></i>
+      </p>
+      <p>
+      We are building a <b>min</b> (minimal) deployment. The Min deployment only creates a Jetspeed core portal and a Jetspeed Admin portlet application (j2-admin).
+      When the build process completes, you should see the message <b>BUILD SUCCESSFUL</b> at the end of a large amount of build logging information      
+      The portal is built into a temp directory named <i>target</i> found directory under your <i>jetexpress</i> project directory.
+      As well as building, the <i>tomcat,min</i> goals also:
+      </p>
+      <ul>
+       <li>deploys Jetspeed to the Tomcat application server. If you are following the training material,
+      the Tomcat directory is located under <i>/JetspeedTraining/tomcat-express/</i></li>
+      <li>creates the Jetspeed core schema tables in the Derby database</li>
+      <li>populates the database with a minimal set of portal information, including default roles, groups, profiles, and administrative users</li>
+      </ul>
+      <p>
+      Now that we've built and deployed the portal, lets start up the application server...
+      </p>	
+	  <p>
+	    <a href='genapp.html'>Previous</a> <a href='run-it.html'>Next</a>
+	  </p>            
+    </section>
+  </body>
+</document>
+

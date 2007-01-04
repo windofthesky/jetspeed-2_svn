@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<!--
+	Copyright 2004 The Apache Software Foundation
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Page Themes</title>
+		<subtitle>Desktop Page Themes</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+    <section name="Desktop Page Themes">
+      <p> 
+      The Jetspeed Desktop has its own kinds of decorations.
+      These decorations are called <b>Desktop Themes</b>
+
+      Each Jetspeed Desktop page can be associated with a different theme. Themes
+      control some important aspect of a desktop page:
+      <ul>
+      <li>The colors, images, CSS styles that skin this page</li>
+      <li>The header portion of the page</li>
+      <li>The page margins</li>
+      <li>The footer portion of the page</li>
+      <li>Menus displayed on the page</li>
+      <li>Action buttons displayed on the window</li>            
+      </ul>
+      Themes do not control the placement of portlets. That is handled by the Jetspeed Desktop engine,
+      which follows the layout plan provided by the stuctured page markup (PSML). This is the same
+      layout instructions applied to a portal page. You will see that themes are much simpler
+      content than decorators. That is because most of the content in a theme is populated by the
+      Jetspeed Desktop engine at runtime.
+      Jetspeed comes with a few desktop themes out of the box. The default desktop theme for 
+      most pages is called <i>blue</i>. It looks like this:
+      </p>
+      <img src="../images/theme.png"/>
+      <p>
+      We are going to create a new desktop theme for this tutorial.
+      This new theme can be copied into our project from the <i>/JetspeedTutorial/resources/themes/express/</i> directory.
+      This will save you the trouble of creating all the logo images and CSS definitions.
+      </p>
+	 <source>
+	 <![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress
+mkdir portal/src/webapp/desktop-themes/express
+cp -r ../../resources/desktop-themes/express/* portal/src/webapp/desktop-themes/express/
+
+# Windows
+cd \JetspeedTraining\workspace\jetexpress
+mkdir portal\src\webapp\desktop-themes\express
+xcopy /s ..\..\resources\desktop-themes\express\* portal\src\webapp\desktop-themes\express\
+     ]]>
+     </source>	  	  
+    <subsection name="The Theme template">
+    <p>
+    Have a look at the <i>express</i> theme directory. 
+    Notice that there are two theme files: <i>express.jsp</i> and <i>express.vm</i>
+    Since there were so many complaints about no JSP support in templates, with the Desktop we 
+    decided to require support for both. The <i>theme.properties</i> determines which templates
+    is active. Lets look at the Velocity template. We have macros to display-theme relative resources:
+    </p>
+	 <source>
+	 <![CDATA[    
+        <img src="$jetspeedDesktop.getDesktopThemeResourceUrl('images/logo.gif')" alt="Logo" border="0"/>
+     ]]>
+     </source>	  	  
+    </subsection>
+    <subsection name="Theme Variables">    
+    <p>
+    JSP and Velocity make several variables about the context of a theme available for dynamic substition of menus and content:
+    </p>
+    <table>
+    <tr>
+    <th>Variable</th>
+    <th>Desc</th>    
+    <th>Usage</th>
+    </tr>
+    <tr>
+    <td>$jetspeedDesktop</td>
+    <td>Retrieve theme resources, and the name of the theme</td>
+    <td>${jetspeedDesktop.getDesktopTheme()</td>
+    </tr>
+    </table>
+    </subsection>
+    <subsection name="Content Divs">   
+     <p>
+     The remainder of the page is HTML DIV markup with special widget types and identifiers.
+     The desktop will populate these Divs with various content such as the portlets and menus.
+     <i>Jetspeed Menus</i> are build from a collection of portal resources
+     known as the <i>Portal Site</i>. The portal site is a content tree (like a file system) of portal
+     resources. The site can be stored in the file system or in a database. Resources can be a page,
+     folder, or link.  Lets look at some of the available macros for displaying menus on your page.
+     </p>	     
+    <p>
+    <table>
+    <tr>
+    <th>Widget</th>
+    <th>Type</th>
+    <th>Desc</th>
+    </tr>
+    <tr>
+    <td>jetspeed-menu-pages</td>
+    <td>jetspeed:PortalTabContainer</td>
+    <td>relative pages menu of pages in the current folder. Used to define the page tabs above the portal.</td>
+    </tr>
+    <tr>
+    <td>jetspeed-menu-breadcrumbs</td>
+    <td>jetspeed:PortalBreadcrumbContainer</td>
+    <td>paths to page used to provide history links below the page tabs</td>
+    </tr>
+    <tr>
+    <td>jetspeed-menu-navigations</td>
+    <td>jetspeed:PortalAccordionContainer</td>
+    <td>relative subfolders and root level links menu used to define the navigation pane beside the portal.</td>
+    </tr>
+    </table>
+    You can also define your own menus (not covered in this tutorial).
+    </p>
+	<p>
+	Finally, the Div to hold the portlet content must be defined. It is just a plain HTML DIV:
+	 <source>
+	 <![CDATA[
+<div class="layout-${jetspeedDesktop.getDesktopTheme()}" id="jetspeedDesktop"></div>	
+     ]]>
+     </source>	  	  
+	Notice that while decorators require two templates, desktops only require one template.
+	This makes for a much simpler page.
+	</p>
+	</subsection>
+	  <p>
+	    <a href='portlet-decoration.html'>Previous</a> <a href='default-page.html'>Next</a>
+	  </p>	      
+ </section>	  
+</body>
+</document>

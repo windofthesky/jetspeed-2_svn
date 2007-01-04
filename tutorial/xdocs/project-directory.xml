@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Project Directory</title>
+    <subtitle>Overview of the Custom Project Directory Structure</subtitle>
+	<authors>
+		<person name="David Sean Taylor" email="taylor@apache.org" />
+	</authors>
+  </properties>
+  <body>
+ <section name="Overview of the Custom Project Directory Structure">
+ <p>      
+ The <b>portal-archetype</b> generates a complete Maven-2 project directory structure for developing
+ a custom Jetspeed portal as well as JSR 168 portlet applications.
+ Here is an overview of directories created by the portal-archetype (directories are relative to the custom portal root):
+ </p>
+ <div>
+<table>
+<tr>
+<td>
+<strong><tt>directory</tt></strong>
+</td>
+<td>
+<strong><tt>explanation</tt></strong>
+</td>
+</tr>
+<tr>
+<td>/applications
+</td>
+<td>conventional subdirectory location for one or more portal application projects
+</td>
+</tr>
+<tr>
+<td>/app-servers
+</td>
+<td>contains portal deployment builds and resources.
+</td>
+</tr>
+<tr>
+<td>/components 
+</td>
+<td>conventional subdirectory for one or more portal component projects 
+</td>
+</tr>
+<tr>
+<td>enterprise
+</td>
+<td>maven-2 build to create an J2EE enterprise archive (EAR) deployable file
+</td>
+</tr>
+<tr>
+<td>etc/assembly
+</td>
+<td>custom portal application component Spring assemblies
+</td>
+</tr>
+<tr>
+<td>etc/conf
+</td>
+<td>portal application context configuration files
+</td>
+</tr>
+<tr>
+<td>etc/decorations
+</td>
+<td>custom decorations in images, layout, and portlet subdirectories
+</td>
+</tr>
+<tr>
+<td>etc/pages
+</td>
+<td>custom portal PSML pages to augment/override minimal defaults, (e.g. /Administrative/**, /default-page.psml, /myaccount.psml, /page.security, and /system/**)
+</td>
+</tr>
+<tr>
+<td>etc/schema
+</td>
+<td>Jetspeed2 database schema definitions
+</td>
+</tr>
+<tr>
+<td>etc/sql
+</td>
+<td>Jetspeed base database configuration scripts
+</td>
+</tr>
+<tr>
+<td>etc/templates
+</td>
+<td>custom overrides for Jetspeed2 layout portlet templates
+</td>
+</tr>
+<tr>
+<td>etc/webapp
+</td>
+<td>
+</td>custom content reaources to be packaged with portal application
+</tr>
+<tr>
+<td>portal
+</td>
+<td>portal application war build scripts and webapp resource overrides
+</td>
+</tr>
+<tr>
+<td>src
+</td>
+<td>these directories are an artifact of archetype expansion and should be deleted
+</td>
+</tr>
+</table>
+</div>
+ </section>
+</body>
+</document>
+
