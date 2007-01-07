@@ -198,7 +198,16 @@
         <include name="*seed.xml"/>
       </fileset>
     </copy>        
-    
+    <!-- Copy over custom build seed data -->
+	<util:file var="customExists" name="./src/sql/"/> 
+	<j:if test="${customExists.exists()}">
+		<copy todir="${portal.sql.target.dir}" 		   
+		      overwrite="true" verbose="true" failonerror="false" flatten="true">
+		  <fileset dir="./src/sql/">
+		    <include name="*seed.xml"/>
+		  </fileset>
+		</copy>                	
+    </j:if>    
   </goal>
   
   <goal name="j2:portal.conf.ldap" prereqs="j2:_check.required.properties">
