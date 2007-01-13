@@ -21,7 +21,6 @@ import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
@@ -31,7 +30,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -47,6 +45,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
@@ -183,7 +182,7 @@ public class TestAggregator extends TestCase
         requestContext.setCapabilityMap(capabilities.getCapabilityMap("Mozilla/5"));
         requestContext.setPortalURL(navComponent.createURL(requestContext.getRequest(), requestContext.getCharacterEncoding()));
 
-        Exception ex = (Exception) Subject.doAsPrivileged(subject, new PrivilegedAction()
+        Exception ex = (Exception) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
             {
                 public Object run()
                 {

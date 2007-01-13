@@ -33,6 +33,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.i18n.KeyedMessage;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
@@ -504,8 +505,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
     {
         try
         {
-            //Subject.doAs(subject, new PrivilegedAction()
-            Subject.doAsPrivileged(subject, new PrivilegedAction()                
+            //JSSubject.doAs(subject, new PrivilegedAction()
+            JSSubject.doAsPrivileged(subject, new PrivilegedAction()                
             {
                 public Object run()
                 {

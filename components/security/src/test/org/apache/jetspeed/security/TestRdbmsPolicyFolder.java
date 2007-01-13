@@ -101,7 +101,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
 
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -119,7 +119,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         // Should be denied.
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -144,7 +144,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
 
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -162,7 +162,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -179,7 +179,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -197,7 +197,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -215,7 +215,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -232,7 +232,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            Subject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {

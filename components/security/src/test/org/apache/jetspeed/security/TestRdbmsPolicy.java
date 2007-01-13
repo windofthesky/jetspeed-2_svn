@@ -160,7 +160,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         // InternalPermission should be granted.
         try
         {
-            Subject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -180,7 +180,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         // Should be denied.
         try
         {
-            Subject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
             {
                 public Object run()
                 {

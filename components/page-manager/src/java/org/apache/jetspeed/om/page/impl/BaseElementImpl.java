@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.PortalResourcePermission;
 import org.apache.jetspeed.security.RolePrincipal;
@@ -351,10 +352,10 @@ public abstract class BaseElementImpl implements BaseElement
         }
 
         // get current request context subject
-        Subject subject = Subject.getSubject(AccessController.getContext());
+        Subject subject = JSSubject.getSubject(AccessController.getContext());
         if (subject == null)
         {
-            throw new SecurityException("BaseElementImpl.checkConstraints(): Missing Subject.");
+            throw new SecurityException("BaseElementImpl.checkConstraints(): Missing JSSubject.");
         }
 
         // get user/group/role principal names

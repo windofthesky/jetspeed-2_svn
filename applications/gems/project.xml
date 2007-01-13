@@ -73,6 +73,15 @@ $Id$
             <version>1.0</version>
             <type>jar</type>
         </dependency>
+            <dependency>
+        <id>org.apache.portals.jetspeed-2:jetspeed-commons</id> 
+        <version>${jetspeed.version}</version>
+        <type>jar</type>
+        <properties>
+            <war.bundle>false</war.bundle>
+        </properties>
+    </dependency>    
+        
 		<dependency>
 		  <id>org.apache.pluto:pluto</id>
 		  <version>${pluto.version}</version>

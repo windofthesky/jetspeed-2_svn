@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 
-import javax.security.auth.Subject;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -29,7 +27,9 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
@@ -221,7 +221,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
     private Subject getSubject()
     {
         AccessControlContext context = AccessController.getContext();
-        return Subject.getSubject(context);         
+        return JSSubject.getSubject(context);         
     }
     
 }

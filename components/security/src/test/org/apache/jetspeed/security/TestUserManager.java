@@ -129,7 +129,7 @@ public class TestUserManager extends AbstractSecurityTestcase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         assertNotNull("user is null", user);
-        // Test the User Subject.
+        // Test the User JSSubject
         Subject subject = user.getSubject();
         assertNotNull("subject is null", subject);
         // Asset user principal.

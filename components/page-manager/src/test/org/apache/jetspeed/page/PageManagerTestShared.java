@@ -61,7 +61,7 @@ import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.FragmentPermission;
-import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -219,7 +219,7 @@ interface PageManagerTestShared
             Subject guestSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
             // setup test as admin user
-            Exception setup = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            Exception setup = (Exception)JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {
@@ -345,7 +345,7 @@ interface PageManagerTestShared
             pageManager.reset();
 
             // access test as admin user
-            Exception adminAccess = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            Exception adminAccess = (Exception)JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {
@@ -388,7 +388,7 @@ interface PageManagerTestShared
             }
 
             // access test as user user
-            Exception userAccess = (Exception)Subject.doAsPrivileged(userSubject, new PrivilegedAction()
+            Exception userAccess = (Exception)JSSubject.doAsPrivileged(userSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {
@@ -457,7 +457,7 @@ interface PageManagerTestShared
             }
 
             // access test as manager user
-            Exception managerAccess = (Exception)Subject.doAsPrivileged(managerSubject, new PrivilegedAction()
+            Exception managerAccess = (Exception)JSSubject.doAsPrivileged(managerSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {
@@ -517,7 +517,7 @@ interface PageManagerTestShared
             }
 
             // access test as guest user
-            Exception guestAccess = (Exception)Subject.doAsPrivileged(guestSubject, new PrivilegedAction()
+            Exception guestAccess = (Exception)JSSubject.doAsPrivileged(guestSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {
@@ -594,7 +594,7 @@ interface PageManagerTestShared
             pageManager.reset();
 
             // cleanup test as admin user
-            Exception cleanup = (Exception)Subject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            Exception cleanup = (Exception)JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
                 {
                     public Object run()
                     {

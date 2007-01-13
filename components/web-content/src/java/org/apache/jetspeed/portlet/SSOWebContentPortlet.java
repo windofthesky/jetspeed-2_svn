@@ -44,6 +44,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
@@ -241,7 +242,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
     private Subject getSubject()
     {
         AccessControlContext context = AccessController.getContext();
-        return Subject.getSubject(context);         
+        return JSSubject.getSubject(context);         
     }
     
     protected byte[] doPreemptiveAuthentication(HttpClient client,HttpMethod method, RenderRequest request, RenderResponse response)

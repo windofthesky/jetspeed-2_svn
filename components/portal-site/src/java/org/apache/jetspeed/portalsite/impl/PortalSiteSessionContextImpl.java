@@ -40,13 +40,13 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 import org.apache.jetspeed.portalsite.view.SiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.UserPrincipal;
 
 /**
@@ -679,7 +679,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // get current user principal; ignore derivative
             // changes in role and group principals
             String currentUserPrincipal = null;
-            Subject subject = Subject.getSubject(AccessController.getContext());
+            Subject subject = JSSubject.getSubject(AccessController.getContext());
             if (subject != null)
             {
                 Iterator principals = subject.getPrincipals().iterator();

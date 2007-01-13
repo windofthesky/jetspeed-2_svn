@@ -43,6 +43,7 @@ import javax.security.auth.Subject;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.portals.bridges.util.PreferencesHelper;
@@ -368,6 +369,6 @@ public class DatabaseBrowserPortlet
     private Subject getSubject()
     {
         AccessControlContext context = AccessController.getContext();
-        return Subject.getSubject(context);         
+        return JSSubject.getSubject(context);         
     }
 }

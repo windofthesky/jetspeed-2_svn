@@ -17,6 +17,7 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.JSSubject;
 
 /**
  * <p>
@@ -77,7 +78,7 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      * 
      * <p>
      * Uses <code>getSubject()</code> to call <code>ValveContext.invokeNext()</code> via 
-     * <code>Subject.doAsPrivileged()</code>.  This method also takes care of setting the value of
+     * <code>JSSubjectdoAsPrivileged()</code>.  This method also takes care of setting the value of
      * the <code>RequestContext.subject</code> property and the session attribute 
      * <code>org.apache.jetspeed.PortalReservedParameters.SESSION_KEY_SUBJECT</code>
      * </p>
@@ -108,7 +109,7 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
             // the current subject
             final ValveContext vc = context;
             final RequestContext rc = request;            
-            PipelineException pe = (PipelineException) Subject.doAsPrivileged(subject, new PrivilegedAction()
+            PipelineException pe = (PipelineException) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
             {
                 public Object run() 
                 {

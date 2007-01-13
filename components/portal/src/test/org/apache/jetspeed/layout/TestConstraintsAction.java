@@ -38,6 +38,7 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.velocity.app.VelocityEngine;
@@ -267,7 +268,7 @@ public class TestConstraintsAction extends TestCase
         principals.add(new RolePrincipalImpl("admin"));
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
         
-        PipelineException pe = (PipelineException) Subject.doAsPrivileged(subject, new PrivilegedAction()
+        PipelineException pe = (PipelineException) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
                 {
                     public Object run() 
                     {

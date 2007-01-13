@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
+import org.apache.jetspeed.security.JSSubject;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -162,11 +163,11 @@ public class WorkerImpl extends Thread implements Worker
                 Subject subject = null;
                 if (this.context != null)
                 {
-                    subject = Subject.getSubject(this.context);
+                    subject = JSSubject.getSubject(this.context);
                 }
                 if (subject != null)
                 {
-                    Subject.doAsPrivileged(subject, new PrivilegedAction()
+                    JSSubject.doAsPrivileged(subject, new PrivilegedAction()
                         {
                             public Object run()
                             {

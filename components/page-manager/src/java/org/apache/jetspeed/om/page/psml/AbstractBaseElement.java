@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -39,11 +40,11 @@ import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.PortalResourcePermission;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.JetspeedActions;
 
 
 /**
@@ -258,10 +259,10 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         }
 
         // get current request context subject
-        Subject subject = Subject.getSubject(AccessController.getContext());
+        Subject subject = JSSubject.getSubject(AccessController.getContext());
         if (subject == null)
         {
-            throw new SecurityException("AbstractBaseElement.checkConstraints(): Missing Subject.");
+            throw new SecurityException("AbstractBaseElement.checkConstraints(): Missing JSSubject");
         }
 
         // get user/group/role principal names

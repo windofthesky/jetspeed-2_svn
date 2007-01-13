@@ -28,7 +28,6 @@ import java.util.Map;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.security.auth.Subject;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -40,7 +39,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
@@ -48,6 +46,7 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
@@ -249,7 +248,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             final PageManager innerPageManager = pageManager;
             final String innerUser = userName;
             User powerUser = userManager.getUser(this.adminUser);
-            JetspeedException pe = (JetspeedException) Subject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
+            JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
                 {
                     public Object run() 
                     {

@@ -20,8 +20,6 @@ package org.apache.jetspeed.portlet.sso;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.StringTokenizer;
@@ -36,6 +34,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.portals.bridges.common.ScriptPostProcess;
@@ -213,7 +212,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     private Subject getSubject()
     {
         AccessControlContext context = AccessController.getContext();
-        return Subject.getSubject(context);         
+        return JSSubject.getSubject(context);         
     }
     
     private String getContentCharSet(InputStream is) throws IOException
