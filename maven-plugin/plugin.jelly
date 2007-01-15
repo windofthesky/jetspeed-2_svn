@@ -1092,7 +1092,7 @@
         <pathelement path="${org.apache.jetspeed.plugin.root}"/>
         <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
       </classpath>
-        <arg line="-I ${DATAFILE} -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>  
+        <arg line="-I &quot;${DATAFILE}&quot; -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>  
     </java>
     </goal>
 
