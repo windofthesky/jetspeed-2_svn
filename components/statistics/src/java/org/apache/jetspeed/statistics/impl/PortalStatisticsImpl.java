@@ -362,8 +362,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
             if (!"guest".equals(userName))
             {
-                currentUserCount = currentUserCount - 1;
-
                 synchronized (currentUsers)
                 {
                     UserStats userStats = (UserStats) currentUsers
@@ -374,6 +372,10 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                         userStats.setNumberOfSession(0);
                         userStats.setUsername(userName);
                         currentUsers.put(userName, userStats);
+                    }else
+                    {
+                    	// only decrement if user has been logged in
+                    	currentUserCount = currentUserCount - 1;
                     }
                     userStats.setNumberOfSession(userStats
                             .getNumberOfSessions() - 1);
