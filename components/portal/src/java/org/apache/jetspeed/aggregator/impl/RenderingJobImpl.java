@@ -65,6 +65,9 @@ public class RenderingJobImpl implements RenderingJob
     protected PortalStatistics statistics;
 
     protected Map workerAttributes;
+
+    protected long startTimeMillis = 0;
+    protected long timeout;
     
     public RenderingJobImpl(PortletContainer container, 
                             PortletContent portletContent, 
@@ -102,6 +105,31 @@ public class RenderingJobImpl implements RenderingJob
     }
 
     /**
+     * Sets portlet timout in milliseconds.
+     */
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * Gets portlet timout in milliseconds.
+     */
+    public long getTimeout() {
+        return this.timeout;
+    }
+
+    /**
+     * Checks if the portlet rendering is timeout
+     */
+    public boolean isTimeout() {
+        if ((this.timeout > 0) && (this.startTimeMillis > 0)) {
+            return (System.currentTimeMillis() - this.startTimeMillis > this.timeout);
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if queue is empty, if not try to empty it by calling
      * the WorkerMonitor. When done, pause until next scheduled scan.
      */
@@ -109,6 +137,10 @@ public class RenderingJobImpl implements RenderingJob
     {       
         try
         {
+            if (this.timeout > 0) {
+                this.startTimeMillis = System.currentTimeMillis();
+            }
+
             // A little baby hack to make sure the worker thread has PortletContent to write too.
             fragment.setPortletContent(portletContent);
             execute();                     
@@ -183,11 +215,10 @@ public class RenderingJobImpl implements RenderingJob
         }
         catch (Throwable t)
         {
-            // this will happen is request is prematurely aborted
-            if ( t instanceof UnavailableException)
+            if (t instanceof UnavailableException)
             {
                 // no need to dump a full stack trace to the log
-                log.error("Error rendering portlet OID "+this.window.getId()+": "+t.toString());
+                log.error("Error rendering portlet OID " + this.window.getId() + ": " + t.toString());
             }
             else
             {

@@ -21,14 +21,20 @@ import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.util.Queue;
 import org.apache.jetspeed.util.FIFOQueue;
+
+import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.om.common.ObjectID;
 
 /**
  * The WorkerMonitor is responsible for dispatching jobs to workers
@@ -81,10 +87,19 @@ public class WorkerMonitorImpl implements WorkerMonitor
     /** Job queue */
     protected Queue queue;
 
+    /** Workers to be monitored for timeout checking */
+    protected List workersMonitored = Collections.synchronizedList(new LinkedList());
+
+    /** Renering Job Timeout monitor */
+    protected RenderingJobTimeoutMonitor jobMonitor;
+
     public void start()
     {
         addWorkers(this.minWorkers);
         setQueue(new FIFOQueue());
+
+        jobMonitor = new RenderingJobTimeoutMonitor(1000);
+        jobMonitor.start();
     }
 
     public void stop()
@@ -170,6 +185,11 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 synchronized (worker)
                 {
                     worker.setJob(job, context);
+
+                    if (job.getTimeout() > 0) {
+                        workersMonitored.add(worker);
+                    }
+
                     worker.notify();
                     runningJobs++;
                 }
@@ -191,6 +211,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
         // backlog job to this worker, else reset job count and put
         // it on the idle queue.
 
+        long jobTimeout = ((RenderingJob) worker.getJob()).getTimeout();
+
         synchronized (worker)
         {
             if ((worker.getJobCount()<this.maxJobsPerWorker)&&(queue.size()>0))
@@ -207,6 +229,10 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 worker.resetJobCount();
                 runningJobs--;
             }
+        }
+
+        if (jobTimeout > 0) {
+            workersMonitored.remove(worker);
         }
 
         synchronized (this.workers)
@@ -234,4 +260,78 @@ public class WorkerMonitorImpl implements WorkerMonitor
         return this.tg.activeCount();
     }
     
+    class RenderingJobTimeoutMonitor extends Thread {
+
+        long interval = 1000;
+
+        RenderingJobTimeoutMonitor(long interval) {
+            super("RenderingJobTimeoutMonitor");
+
+            if (interval > 0) {
+                this.interval = interval;
+            }
+        }
+
+        public void run() {
+            while (true) {
+                try {
+                    int size = workersMonitored.size();
+
+                    for (int i = 0; i < size; i++) {
+                        WorkerImpl worker = (WorkerImpl) workersMonitored.get(i);
+
+                        if (null == worker) {
+                            break;
+                        }
+
+                        RenderingJob job = (RenderingJob) worker.getJob();
+
+                        if (null != job) {
+                            if (job.isTimeout()) {
+                                killJob(worker, job);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception during job monitoring.", e);
+                }
+               
+                try {
+                    synchronized (this) {
+                        wait(this.interval);
+                    }
+                } catch (InterruptedException e) {
+                    ;
+                }
+            }
+        }
+
+        public void killJob(WorkerImpl worker, RenderingJob job) {
+            try {
+                if (log.isWarnEnabled()) {
+                    PortletWindow window = job.getWindow();
+                    ObjectID windowId = (null != window ? window.getId() : null);
+                    log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId);
+                }
+
+                int waitCount = 0;
+                PortletContent content = job.getPortletContent();
+
+                while (!content.isComplete()) {
+                    if (++waitCount > 10) {
+                        break;
+                    }
+
+                    worker.interrupt();
+
+                    synchronized (content) {
+                        content.wait();
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Exceptiong during job killing.", e);
+            }
+        }
+
+    }
 }

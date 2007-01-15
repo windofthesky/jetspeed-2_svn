@@ -17,6 +17,8 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +39,9 @@ import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredExcept
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
@@ -65,6 +70,22 @@ public class PortletRendererImpl implements PortletRenderer
     protected PortletWindowAccessor windowAccessor;
     protected PortalStatistics statistics;
     protected DynamicTitleService addTitleService;
+    protected long defaultPortletTimeout;
+
+    public PortletRendererImpl(PortletContainer container, 
+                               PortletWindowAccessor windowAccessor,
+                               WorkerMonitor workMonitor,
+                               PortalStatistics statistics,
+                               DynamicTitleService addTitleService,
+                               long defaultPortletTimeout)
+    {
+        this.container = container;
+        this.windowAccessor = windowAccessor;
+        this.workMonitor = workMonitor;
+        this.statistics = statistics;
+        this.addTitleService = addTitleService;
+        this.defaultPortletTimeout = defaultPortletTimeout;
+    }
 
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
@@ -72,11 +93,7 @@ public class PortletRendererImpl implements PortletRenderer
                                PortalStatistics statistics,
                                DynamicTitleService addTitleService)
     {
-        this.container = container;
-        this.windowAccessor = windowAccessor;
-        this.workMonitor = workMonitor;
-        this.statistics = statistics;
-        this.addTitleService = addTitleService;
+        this( container, windowAccessor, workMonitor, statistics, null, 0 );
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -197,8 +214,17 @@ public class PortletRendererImpl implements PortletRenderer
             portletWindow = getPortletWindow(fragment);
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
-            rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, true);                
-            workMonitor.process(rJob);
+            rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, true);
+
+            if (rJob.getTimeout() > 0) 
+            {
+                workMonitor.process(rJob);
+            } 
+            else 
+            {
+                rJob.execute();
+            }
+
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
         catch (Exception e1)
@@ -250,13 +276,15 @@ public class PortletRendererImpl implements PortletRenderer
     }
 
     protected RenderingJob buildRenderingJob( ContentFragment fragment, HttpServletRequest request,
-        HttpServletResponse response, RequestContext requestContext, boolean isParallel ) 
-    throws FailedToRetrievePortletWindow, FailedToRenderFragmentException, PortletEntityNotStoredException
+                                              HttpServletResponse response, RequestContext requestContext, boolean isParallel ) 
+        throws FailedToRetrievePortletWindow, FailedToRenderFragmentException, PortletEntityNotStoredException
     {
         RenderingJob rJob = null;
         ContentDispatcher dispatcher = null;
         
         PortletWindow portletWindow = getPortletWindow(fragment);
+        PortletDefinitionComposite portletDefinition = 
+            (PortletDefinitionComposite) portletWindow.getPortletEntity().getPortletDefinition();
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
         dispatcher = getDispatcher(requestContext, true);        
         request = requestContext.getRequestForWindow(portletWindow);
@@ -271,7 +299,7 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
         PortletContent portletContent = dispatcher.getPortletContent(fragment);
         fragment.setPortletContent(portletContent);
-        
+
         // In case of parallel mode, store attributes in a map to be refered by worker.
         if (isParallel)
         {
@@ -285,8 +313,7 @@ public class PortletRendererImpl implements PortletRenderer
 
             // the portlet invoker is not thread safe; it stores current portlet definition as a member variable.
             // so, store portlet definition as an attribute of worker
-            workerAttrs.put(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, 
-                            portletWindow.getPortletEntity().getPortletDefinition());
+            workerAttrs.put(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, portletDefinition);
 
             rJob = new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics, workerAttrs);
         }
@@ -295,6 +322,37 @@ public class PortletRendererImpl implements PortletRenderer
             rJob = new RenderingJobImpl(container, portletContent, fragment, request, response, requestContext, portletWindow, statistics);
         }
 
+        long timeoutMetadata = 0;
+
+        Collection timeoutFields = portletDefinition.getMetadata().getFields("timeout");
+
+        if (timeoutFields != null) 
+        {
+            Iterator it = timeoutFields.iterator();
+
+            if (it.hasNext()) 
+            {
+                LocalizedField timeoutField = (LocalizedField) timeoutFields.iterator().next();
+
+                try 
+                {
+                    timeoutMetadata = Long.parseLong(timeoutField.getValue());
+                }
+                catch (NumberFormatException nfe) 
+                {
+                    log.warn("Invalid timeout metadata: " + nfe.getMessage());
+                }
+            }
+        }
+
+        if (timeoutMetadata > 0) 
+        {
+            rJob.setTimeout(timeoutMetadata);
+        } 
+        else if (this.defaultPortletTimeout > 0) 
+        {
+            rJob.setTimeout(this.defaultPortletTimeout);
+        }
 
         return rJob;
         

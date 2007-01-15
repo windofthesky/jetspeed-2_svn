@@ -45,6 +45,15 @@
         <constructor-arg>
             <ref bean="PortalStatistics" />
         </constructor-arg>                        
+        <constructor-arg>
+            <null/>
+        </constructor-arg>
+        <!-- Default portlet timeout in milliseconds:
+        Zero means no portlet timeout option by default.
+        -->
+        <constructor-arg>
+            <value>0</value>
+        </constructor-arg>        
     </bean>
 
     <!-- Portlet Renderer w/title in http response header -->

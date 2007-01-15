@@ -33,6 +33,11 @@ public interface RenderingJob extends Runnable
     PortletWindow getWindow(); 
 
     PortletContent getPortletContent();
-        
+
+    void setTimeout(long portletTimeout);
+
+    long getTimeout();
+
+    boolean isTimeout();
 }
 

@@ -188,8 +188,12 @@ public class AsyncPageAggregatorImpl implements PageAggregator
                     {
                         // kick off render thread
                         // and store the portlet rendering job into the portlet jobs list.
-                        RenderingJob job = renderer.render(child, context); 
-                        portletJobs.add(job);
+                        RenderingJob job = renderer.render(child, context);
+
+                        if (job.getTimeout() > 0) 
+                        {
+                            portletJobs.add(job);
+                        }
                     }
                     else
                     {
