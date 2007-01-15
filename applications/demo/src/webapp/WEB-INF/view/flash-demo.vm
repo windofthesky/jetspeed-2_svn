@@ -1,4 +1,5 @@
-<javascript>
+<script type="text/javascript">
+<!--
 function getWindowState() {
   return "$!windowState";
 }
