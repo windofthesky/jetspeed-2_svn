@@ -132,6 +132,7 @@ limitations under the License.
         
         <org.apache.portals.portal.version>${version}</org.apache.portals.portal.version>
         <org.apache.portals.portal.name>${artifactId}</org.apache.portals.portal.name>
+        <org.apache.jetspeed.env.deploy.type>full</org.apache.jetspeed.env.deploy.type>
 
     </properties>
 
