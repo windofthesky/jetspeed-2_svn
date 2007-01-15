@@ -121,6 +121,8 @@ limitations under the License.
             </fileset>
         </copy>
 
+        <!-- Add support for dbpsml -->
+                	
         <!-- Configure runtime portal properties resource -->
         <replace file="\${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
             <replacefilter token="@AUTODEPLOYMENT_SERVER@"
