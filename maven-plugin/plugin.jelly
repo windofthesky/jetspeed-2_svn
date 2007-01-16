@@ -1034,14 +1034,14 @@
   </goal>
 
   <goal name="j2:buildDerbyInstaller">
-    <ant:property name="install.name" value="Jetspeed2.0-derby" /> 
+    <ant:property name="install.name" value="Jetspeed2.1-derby" /> 
     <ant:copy file="${basedir}/installer2/antinstall-config-derby.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
   </goal> 
  
   <goal name="j2:buildMultiInstaller">
     <attainGoal name="j2:buildMultiDbSQL" />
-    <ant:property name="install.name" value="Jetspeed2.0-MultiDB" />
+    <ant:property name="install.name" value="Jetspeed2.1-MultiDB" />
     <ant:copy file="${basedir}/installer2/antinstall-config-multi.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
   </goal>

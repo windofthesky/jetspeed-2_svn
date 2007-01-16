@@ -28,13 +28,13 @@ the installer script should put the locations of these resources on the classpat
 -->
 <installer ui="swing,text" verbose="false"
     lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
-    name="Jetspeed 2.0 Installer" windowIcon="/resources/feather-small.png"
+    name="Jetspeed 2.1 Installer" windowIcon="/resources/feather-small.png"
     defaultImageResource="/resources/apache-portals.gif" minJavaVersion="1.4">
     <!--  each page element represents a page of the installer -->
-    <page type="input" name="intro" displayText="Jetspeed 2.0">
-        <comment displayText="Welcome to Jetspeed 2.0!" title="true"/>
+    <page type="input" name="intro" displayText="Jetspeed 2.1 (Pre-release)">
+        <comment displayText="Welcome to Jetspeed 2.1 (Pre-release)!" title="true"/>
         <comment
-            displayText="This installer program will guide you through an install of Jetspeed 2.0 Portal."/>
+            displayText="This installer program will guide you through an install of Jetspeed 2.1 Portal."/>
     </page>
     <!--  type="license" shows a license page to click through -->
     <page type="license" name="license" displayText="License conditions"
@@ -43,8 +43,8 @@ the installer script should put the locations of these resources on the classpat
     <!--  type="input" shows a list of editable options for the installer -->
     <page type="input" name="properties" displayText="Required install options">
         <directory property="installDir" 
-            defaultValue="/usr/local/ApacheJetspeed2.0"
-            defaultValueWin="${env.ProgramFiles}\Apache Jetspeed 2.0"
+            defaultValue="/usr/local/ApacheJetspeed-2.1-prerelease"
+            defaultValueWin="c:/ApacheJetspeed-2.1-prerelease"
             displayText="Select an installation directory" create="true"/>
     </page>
     <page type="input" name="requiredComponents" displayText="Required Components">
