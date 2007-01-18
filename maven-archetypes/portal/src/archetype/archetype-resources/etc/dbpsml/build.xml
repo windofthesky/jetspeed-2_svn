@@ -37,8 +37,8 @@ limitations under the License.
     <property name="org.apache.pluto.version" value=""/>
     <property name="portlet-api.version" value=""/>
 
-	<property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import.properties"/>
-	<property name="org.apache.jetspeed.page.import.pages" value="${basedir}/target/data/pages"/>
+	<property name="org.apache.jetspeed.page.import.configuration" value="\${basedir}/import.properties"/>
+	<property name="org.apache.jetspeed.page.import.pages" value="\${basedir}/target/data/pages"/>
 
     <!-- Usage -->
 
@@ -75,15 +75,15 @@ limitations under the License.
     <target name="populate-db-psml" depends="test-populate-skip" unless="org.apache.jetspeed.skip.psml">
 
         <!-- aggregate PSML to merge -->
-        <delete dir="${basedir}/target/data/pages"/>
-        <mkdir dir="${basedir}/target/data/pages"/>
+        <delete dir="\${basedir}/target/data/pages"/>
+        <mkdir dir="\${basedir}/target/data/pages"/>
         <antcall target="aggregate-pages"/>
 
         <!-- prepare a classes directory with resources and libraries to execute import -->
-        <delete dir="${basedir}/target/classes"/>
-        <mkdir dir="${basedir}/target/classes"/>
-        <copy todir="${basedir}/target/classes" flatten="on">
-            <fileset dir="${basedir}/../.." >
+        <delete dir="\${basedir}/target/classes"/>
+        <mkdir dir="\${basedir}/target/classes"/>
+        <copy todir="\${basedir}/target/classes" flatten="on">
+            <fileset dir="\${basedir}/../.." >
                 <include name="etc/log4j/log4j.properties"/>
                 <include name="etc/db-ojb/*"/>
                 <include name="etc/import/assembly/import-page-manager.xml"/>
@@ -132,23 +132,23 @@ limitations under the License.
     <target name="aggregate-pages" depends="test-deploy-type, aggregate-pages-min, aggregate-pages-full"/>
 
     <target name="aggregate-pages-min" if="org.apache.jetspeed.deploy.min">
-        <copy todir="${basedir}/target/data/pages">
-            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages">
+        <copy todir="\${basedir}/target/data/pages">
+            <fileset dir="\${basedir}/../../src/webapp/WEB-INF/pages">
                 <include name="Administrative/**"/>
                 <include name="my-account.psml"/>
                 <include name="page.security"/>
                 <include name="system/**"/>
             </fileset>
         </copy>
-        <copy file="${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
-              tofile="${basedir}/target/data/pages/default-page.psml"/>
-        <replace file="${basedir}/target/data/pages/default-page.psml"
+        <copy file="\${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+              tofile="\${basedir}/target/data/pages/default-page.psml"/>
+        <replace file="\${basedir}/target/data/pages/default-page.psml"
                  token=" hidden=&quot;true&quot;"/>
     </target>
 
     <target name="aggregate-pages-full" if="org.apache.jetspeed.deploy.full">
-        <copy todir="${basedir}/target/data/pages">
-            <fileset dir="${basedir}/../../src/webapp/WEB-INF/pages"/>
+        <copy todir="\${basedir}/target/data/pages">
+            <fileset dir="\${basedir}/../../src/webapp/WEB-INF/pages"/>
         </copy>
     </target>
 
@@ -157,11 +157,11 @@ limitations under the License.
     <target name="execute-import-drivers-path" if="org.apache.jetspeed.database.use.drivers.path">
 
         <!-- execute import utility with drivers path in classpath -->
-        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="\${basedir}">
             <classpath>
                 <fileset refid="page.manager.dependencies.id"/>
                 <pathelement path="${org.apache.jetspeed.database.jdbc.drivers.path}"/>
-                <pathelement path="${basedir}/target/classes"/>
+                <pathelement path="\${basedir}/target/classes"/>
             </classpath>
 		    <syspropertyset>
                 <propertyset refid="import.syspropertyset.id"/>
@@ -180,11 +180,11 @@ limitations under the License.
         </dependencies>
 
         <!-- execute import utility with drivers path in classpath -->
-        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="\${basedir}">
             <classpath>
                 <fileset refid="page.manager.dependencies.id"/>
                 <fileset refid="derby.embedded.db.dependencies.id"/>
-                <pathelement path="${basedir}/target/classes"/>
+                <pathelement path="\${basedir}/target/classes"/>
             </classpath>
 		    <syspropertyset>
                 <propertyset refid="import.syspropertyset.id"/>
@@ -203,11 +203,11 @@ limitations under the License.
         </dependencies>
 
         <!-- execute import utility with drivers path in classpath -->
-        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+        <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="\${basedir}">
             <classpath>
                 <fileset refid="page.manager.dependencies.id"/>
                 <fileset refid="hsql.embedded.db.dependencies.id"/>
-                <pathelement path="${basedir}/target/classes"/>
+                <pathelement path="\${basedir}/target/classes"/>
             </classpath>
 		    <syspropertyset>
                 <propertyset refid="import.syspropertyset.id"/>
