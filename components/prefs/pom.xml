@@ -75,6 +75,36 @@ limitations under the License.
     <!-- Build Configuration -->
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                    <exclude>repository_database.xml</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>../../etc/log4j</directory>
+            </testResource>
+            <testResource>
+                <directory>../../etc/db-ojb</directory>
+            </testResource>
+            <testResource>
+                <directory>../../src/webapp/WEB-INF/assembly</directory>
+            </testResource>
+            <testResource>
+                <directory>test/assembly</directory>
+            </testResource>                                            
+            <testResource>
+                <directory>test/testdata/pages</directory>
+            </testResource>                                                        
+        </testResources>        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
