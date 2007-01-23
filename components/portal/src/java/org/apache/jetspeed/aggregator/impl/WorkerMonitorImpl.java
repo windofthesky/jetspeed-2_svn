@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.security.AccessControlContext;
 import java.security.AccessController;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -211,7 +212,13 @@ public class WorkerMonitorImpl implements WorkerMonitor
         // backlog job to this worker, else reset job count and put
         // it on the idle queue.
 
-        long jobTimeout = ((RenderingJob) worker.getJob()).getTimeout();
+        long jobTimeout = 0;
+
+        RenderingJob oldJob = (RenderingJob) worker.getJob();
+        if (oldJob != null)
+        {
+            jobTimeout = oldJob.getTimeout();
+        }
 
         synchronized (worker)
         {
@@ -274,33 +281,55 @@ public class WorkerMonitorImpl implements WorkerMonitor
 
         public void run() {
             while (true) {
-                try {
-                    int size = workersMonitored.size();
+                try 
+                {
+                    // Because a timeout worker can be removed 
+                    // in the workersMonitored collection during iterating,
+                    // copy timeout workers in the following collection to kill later.
 
-                    for (int i = 0; i < size; i++) {
-                        WorkerImpl worker = (WorkerImpl) workersMonitored.get(i);
+                    List timeoutWorkers = new ArrayList();
 
-                        if (null == worker) {
-                            break;
-                        }
-
-                        RenderingJob job = (RenderingJob) worker.getJob();
-
-                        if (null != job) {
-                            if (job.isTimeout()) {
-                                killJob(worker, job);
+                    synchronized (workersMonitored) 
+                    {
+                        for (Iterator it = workersMonitored.iterator(); it.hasNext(); )
+                        {
+                            WorkerImpl worker = (WorkerImpl) it.next();
+                            RenderingJob job = (RenderingJob) worker.getJob();
+                            
+                            if ((null != job) && (job.isTimeout()))
+                            {
+                                timeoutWorkers.add(worker);
                             }
                         }
                     }
-                } catch (Exception e) {
+
+                    // Now, we can kill the timeout worker(s).
+                    for (Iterator it = timeoutWorkers.iterator(); it.hasNext(); )
+                    {
+                        WorkerImpl worker = (WorkerImpl) it.next();
+                        RenderingJob job = (RenderingJob) worker.getJob();
+
+                        // If the job is just completed, then do not kill the worker.
+                        if ((null != job) && (job.isTimeout()))
+                        {
+                            killJob(worker, job);
+                        }
+                    }
+                } 
+                catch (Exception e) 
+                {
                     log.error("Exception during job monitoring.", e);
                 }
                
-                try {
-                    synchronized (this) {
+                try 
+                {
+                    synchronized (this) 
+                    {
                         wait(this.interval);
                     }
-                } catch (InterruptedException e) {
+                } 
+                catch (InterruptedException e) 
+                {
                     ;
                 }
             }

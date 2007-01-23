@@ -323,8 +323,12 @@ public class PortletRendererImpl implements PortletRenderer
         }
 
         long timeoutMetadata = 0;
+        Collection timeoutFields = null;
 
-        Collection timeoutFields = portletDefinition.getMetadata().getFields("timeout");
+        if (portletDefinition != null)
+        {
+            timeoutFields = portletDefinition.getMetadata().getFields("timeout");
+        }
 
         if (timeoutFields != null) 
         {

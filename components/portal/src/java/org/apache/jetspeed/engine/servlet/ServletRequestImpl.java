@@ -386,10 +386,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 CurrentWorkerContext.setAttribute(name, value);
             }
         }
-
-        // put attribute into request also.
-
-        setAttributeInternal(name, value);
+        else
+        {
+            // put attribute into request.
+            setAttributeInternal(name, value);
+        }
     }
 
     private void setAttributeInternal( String name, Object value )

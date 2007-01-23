@@ -30,6 +30,9 @@ public class MockRenderJob  implements RenderingJob
     private long mockTime;
     private String jobName;
     private PortletWindow window;
+
+    protected long startTimeMillis = 0;
+    protected long timeout;
     
     public MockRenderJob(String jobName, long mockTime, PortletWindow window)
     {
@@ -37,9 +40,38 @@ public class MockRenderJob  implements RenderingJob
         this.jobName = jobName;
         this.window = window;
     }
+
+    /**
+     * Sets portlet timout in milliseconds.
+     */
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * Gets portlet timout in milliseconds.
+     */
+    public long getTimeout() {
+        return this.timeout;
+    }
+
+    /**
+     * Checks if the portlet rendering is timeout
+     */
+    public boolean isTimeout() {
+        if ((this.timeout > 0) && (this.startTimeMillis > 0)) {
+            return (System.currentTimeMillis() - this.startTimeMillis > this.timeout);
+        }
+
+        return false;
+    }
     
     public void run()
     {       
+        if (this.timeout > 0) {
+            this.startTimeMillis = System.currentTimeMillis();
+        }
+
         execute();
     }
     
