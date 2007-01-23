@@ -70,6 +70,10 @@ limitations under the License.
             <artifactId>portals-bridges-jsf</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-portletfilter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed2-taglib-treecontrol</artifactId>
         </dependency>

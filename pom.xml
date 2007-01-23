@@ -188,6 +188,7 @@ limitations under the License.
         <org.apache.portals.bridges.perl.version>1.0</org.apache.portals.bridges.perl.version>
         <org.apache.portals.bridges.php.version>1.0</org.apache.portals.bridges.php.version>
         <org.apache.portals.bridges.velocity.version>1.0.1-dev</org.apache.portals.bridges.velocity.version>
+        <org.apache.portals.bridges.portletfilter.version>1.0.1-dev</org.apache.portals.bridges.portletfilter.version>
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
@@ -889,6 +890,11 @@ limitations under the License.
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-jsf</artifactId>
                 <version>${org.apache.portals.bridges.jsf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-portletfilter</artifactId>
+                <version>${org.apache.portals.bridges.portletfilter.version}</version>
             </dependency>
 
             <!-- Portals Bridges Applications -->

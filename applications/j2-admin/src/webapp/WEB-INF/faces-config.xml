@@ -28,6 +28,7 @@ limitations under the License.
       <supported-locale>de</supported-locale>
       <supported-locale>fr</supported-locale>
       <supported-locale>es</supported-locale>
+      <supported-locale>ja</supported-locale>
     </locale-config>
   </application>
 
@@ -44,6 +45,31 @@ limitations under the License.
     <navigation-case>
       <from-outcome>returnFromCriterion</from-outcome>
       <to-view-id>/WEB-INF/view/profiler-admin.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <!-- RPAD -->
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>deployer_displayPortlets</from-outcome>
+      <to-view-id>/WEB-INF/view/deployer/displayPortlets.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+  
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>deployer_displayRepositories</from-outcome>
+      <to-view-id>/WEB-INF/view/deployer/displayRepositories.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+  
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>deployer_editRepository</from-outcome>
+      <to-view-id>/WEB-INF/view/deployer/editRepository.jsp</to-view-id>
     </navigation-case>
   </navigation-rule>
 
@@ -82,6 +108,35 @@ limitations under the License.
     <managed-bean-name>criterion</managed-bean-name>
     <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileCriterionForm</managed-bean-class>
     <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+
+  <!-- RPAD -->
+  <managed-bean>
+    <managed-bean-name>deployer_displayPortlets</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.rpad.portlet.web.deployer.DisplayPortletsPage</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+    <managed-property>
+      <property-name>portletDeployer</property-name>
+      <value>#{portletDeployer}</value>
+    </managed-property>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>deployer_displayRepositories</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.rpad.portlet.web.deployer.DisplayRepositoriesPage</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>deployer_editRepository</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.rpad.portlet.web.deployer.EditRepositoryPage</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>portletDeployer</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.rpad.portlet.deployer.impl.JetspeedPortletDeployer</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
   </managed-bean>
 
 </faces-config>

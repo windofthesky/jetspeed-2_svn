@@ -15,6 +15,7 @@
   <document-order>site.psml</document-order>
   <document-order>palm.psml</document-order>
   <document-order>profiler.psml</document-order>
+  <document-order>rpad.psml</document-order>
 
   <menu name="page-navigations">
     <separator>

@@ -1,0 +1,104 @@
+Remote Portlet Application Deployer
+
+Overview
+--------
+
+Remote Portlet Application Deployer(RPAD) deploys a portlet from remote
+portlet repositories into a Portal server, such as Jetspeed2, directly. RPAD
+consists of 2 parts: RPAD API and RPAD Portlet. RPAD API defines the
+programing interface to access to remote portlet repositories. RPAD Portlet
+provides JSR 168 compliant portlet to deploy a target portlet from remote
+repositories.
+
++---------------------------+
+|   Portal Server(J2,...)   |
++---------------------------+
+|       RPAD Portlet        |
++---------------------------+
+|         RPAD API          |
++---------------------------+
+             A Download
+             V Access
++---------------------------+
+| Remote Portlet Repository |
++---------------------------+
+| Portlet | Portlet | ...   |
++---------------------------+
+
+
+Design
+------
+
+        +-----------------------------------+
+        |           RPAD Portlet            |
+        | (RPADPortletFilter + JSF Portlet) |
+        +-----------------------------------+
+                       V Call RPAD API
++---------------------------------------------------+
+|                RepositoryManager                  |
++---------------------------------------------------+
+         V                      V                V
++------------------+ +----------------------+ +-----+
+| SimpleRepository | | WebServiceRepository | | ... |
++------------------+ |        (TBD)         | +-----+
+                     +----------------------+ 
+
+
+Class Description
+-----------------
+
+ RPAD API:
+
+  Class org.apache.jetspeed.portlets.rpad.RepositoryManager
+
+   RepositoryManager manages Repository instances. Portal, such as Jetspeed2,
+   calls methods of this class to access remote portlet repositories.
+
+  Interface org.apache.jetspeed.portlets.rpad.Repository
+
+   RPAD supports a variety of kinds of portlet repositories. A portlet
+   repository needs to implement this interface. Repository manages
+   PortletApplication instances for a remote portlet repository.
+   Portal can access portlet information in a remote portlet repository via
+   this class.
+
+  Class org.apache.jetspeed.portlets.rpad.PortletApplication
+
+   This class has properties of a portlet application, such as a portlet name,
+   url to download war file.
+
+  Class org.apache.jetspeed.portlets.rpad.simple.SimpleRepository
+
+   SimpleRepository is a file-based repository. If a portlet provider puts
+   a repository site descriptor for a remote portlet repository, using
+   SimpleRepository, the provider delivers portlets to a Portal server.
+   The syntax of the repository site descriptor is under discussion with
+   PRP(https://prp.dev.java.net/). We will define it by the first week of 
+   Feb.
+
+ RPAD Portlet:
+
+  The current implementation is JSF-based portlet.
+
+  Class org.apache.jetspeed.portlets.rpad.portlet.RPADPortletFilter
+
+   RPADPortletFilter initializes RepositoryManager instance. 
+
+  Interface org.apache.jetspeed.portlets.rpad.portlet.deployer.PortletDeployer
+
+   RPAD Portlet calls PortletDeployer#deploy(PortletApplication) to deploy
+   the target portlet into your Portal. If you implements PortletDeployer
+   class for your Portal, RPAD works on your Portal.
+
+  Class
+   org.apache.jetspeed.portlets.rpad.portlet.deployer.impl.JetspeedPortletDeployer
+
+    This class is PortletDeployer implementation for Jetspeed2.
+
+TODO
+----
+
+ - Manage a portlet version in J2
+ - Store portlet information to DB, not memory
+ - Move RPAD into under Apache Portals sub-project for other portals to use RPAD
+

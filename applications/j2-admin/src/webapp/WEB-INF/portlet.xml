@@ -1477,6 +1477,42 @@ limitations under the License.
         </preference>                        
     </portlet-preferences>
 </portlet>    
-                 
+
+  <portlet>
+    <description>Remote Portlet Application Deployer for Jetspeed.</description>
+    <portlet-name>RPADPortlet</portlet-name>
+    <display-name>Remote Portlet Application Deployer</display-name>
+    <portlet-class>org.apache.portals.bridges.portletfilter.FilterPortlet</portlet-class>
+    <init-param>
+      <name>portlet-class</name>
+      <value>org.apache.portals.bridges.jsf.FacesPortlet</value>
+    </init-param>
+    <init-param>
+      <name>portlet-filters</name>
+      <value>org.apache.jetspeed.portlets.rpad.portlet.RPADPortletFilter</value>
+    </init-param>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/view/deployer/displayPortlets.jsp</value>
+    </init-param>
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/view/deployer/displayRepositories.jsp</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <!-- resource-bundle></resource-bundle -->
+    <portlet-info>
+      <title>RPAD</title>
+      <short-title>RPAD</short-title>
+      <keywords>RPAD,Portlet Repository</keywords>
+    </portlet-info>
+  </portlet>
+
 </portlet-app>
 
