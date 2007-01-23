@@ -48,6 +48,7 @@ import com.mockrunner.mock.web.MockHttpSession;
  */
 public class TestStatistics extends DatasourceEnabledSpringTestCase
 {
+	String USERNAME = "anotherFaker";
 
     private PortalStatistics statistics = null;
 
@@ -185,7 +186,9 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         assertNotNull("list returned is null", l);
         assertEquals("wrong number of users in list", 1, l.size());
 
-        statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+//        statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+//                elapsedTime);
+        statistics.logUserLogout("123.234.145.156", USERNAME,
                 elapsedTime);
 
         statistics.forceFlush();
@@ -232,7 +235,9 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
             assertNotNull("list returned is null", l);
             assertEquals("wrong number of users in list", 1, l.size());
 
-            statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+//            statistics.logUserLogout("123.234.145.156", "SuperFakeyUser",
+//                    elapsedTime);
+            statistics.logUserLogout("123.234.145.156", USERNAME,
                     elapsedTime);
             try
             {
@@ -300,7 +305,8 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockHttpSession session = new MockHttpSession();
 
-        Principal p = new UserPrincipalImpl("anotherFaker");
+//        Principal p = new UserPrincipalImpl("anotherFaker");
+        Principal p = new UserPrincipalImpl(USERNAME);
 
         request.setUserPrincipal(p);
 
