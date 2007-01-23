@@ -869,6 +869,17 @@
   </goal>
     
   <goal name="j2:_db.execute">
+  
+   	<j:set var="useAntSQL" value = "true"/>
+    <!-- For Derby we need special handling to avoid locking of the database by the main ant process --> 
+  
+	<j:if test="${dbase == 'derby'}">
+	    <attainGoal name="j2:_db.executeDerby"/>
+	    <j:set var="useAntSQL" value = "false"/>
+     </j:if>
+	
+	<j:if test="${useAntSQL}">
+  
     <!-- Ugly hack (or sound fix) setting the parentScope to an empty String because
          with maven project inheritance the size of this property is killing
          performance when the sql task is trying to interpose property values.
@@ -904,6 +915,27 @@
         <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
       </classpath>
     </sql>
+     </j:if> 
+  </goal>
+    
+  <goal name="j2:_db.executeDerby">
+	<echo> executeDerby </echo>
+  
+     <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+      <classpath>
+    	<path refid="maven.dependency.classpath"/>
+        <pathelement path="${maven.build.dest}"/>
+        <pathelement path="${plugin.getDependencyPath('org.apache.derby:derby')}"/>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+      </classpath>
+      <arg line="driver=${org.apache.jetspeed.database.driver} 
+      url=${org.apache.jetspeed.database.url}
+      userid=${org.apache.jetspeed.database.user} 
+      password=${org.apache.jetspeed.database.password} 
+      src=&quot;${database.arg.script}&quot; autocommit=true
+      onerror=${database.arg.onerror}"/>
+    </java>
+ 
   </goal>
     
   <goal name="j2:_db.test.properties">

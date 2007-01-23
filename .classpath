@@ -103,7 +103,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-2.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-portlet-2.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-webmvc-2.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/springmodules/jars/spring-modules-ojb-0.6.jar"/>	
+	<classpathentry kind="var" path="MAVEN_REPO/springmodules/jars/spring-modules-ojb-0.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-common-1.0.1-dev.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-frameworks-1.0.1-dev.jar"/>
@@ -118,5 +118,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/ddlutils/jars/ddlutils-1.0-RC1-PATCHED.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-20061115.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

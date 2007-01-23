@@ -372,5 +372,14 @@ limitations under the License.
 	         <war.bundle>true</war.bundle>
 	      </properties>          
 	    </dependency>
+	    <dependency>
+	      <id>ant</id>
+	      <version>1.6.5</version>
+	      <properties>
+	         <war.bundle>true</war.bundle>
+	      </properties>          
+	    </dependency>
+    
+	 
 	  </dependencies>     
 </project>

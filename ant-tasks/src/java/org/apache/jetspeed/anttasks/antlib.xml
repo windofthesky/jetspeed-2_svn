@@ -16,4 +16,8 @@ limitations under the License.
 -->
 <antlib>
     <typedef name="archetypedescriptor" classname="org.apache.jetspeed.anttasks.ArchetypeDescriptor"/>
+    <typedef name="startderby" classname="org.apache.jetspeed.anttasks.StartDerby"/>
+    <typedef name="stopDatabase" classname="org.apache.jetspeed.anttasks.StopDatabase"/>
+    <typedef name="stopDerby" classname="org.apache.jetspeed.anttasks.StopDerby"/>
+    <typedef name="executeSQL" classname="org.apache.jetspeed.anttasks.ExecuteSQL"/>
 </antlib>
