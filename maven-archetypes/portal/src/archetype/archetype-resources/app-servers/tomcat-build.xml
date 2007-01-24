@@ -119,7 +119,7 @@ limitations under the License.
                 <include name="jetspeed-tomcat-5.5.xml" if="org.apache.jetspeed.tomcat.5.5"/> 
             </fileset>
             <filterset begintoken="@" endtoken="@">
-                <filter token="CONTEXT" value="jetspeed"/>
+                <filter token="CONTEXT" value="${artifactId}"/>
                 <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
                 <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
                 <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
