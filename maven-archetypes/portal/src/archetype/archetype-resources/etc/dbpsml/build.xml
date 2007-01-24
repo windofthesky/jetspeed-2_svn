@@ -84,12 +84,12 @@ limitations under the License.
         <mkdir dir="\${basedir}/target/classes"/>
         <copy todir="\${basedir}/target/classes" flatten="on">
             <fileset dir="\${basedir}/../.." >
-                <include name="etc/log4j/log4j.properties"/>
-                <include name="etc/db-ojb/*"/>
-                <include name="etc/import/assembly/import-page-manager.xml"/>
-                <include name="etc/import/assembly/repository-datasource-spring.xml"/>
-                <include name="src/webapp/WEB-INF/assembly/transaction.xml"/>
-                <include name="src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>
+                <include name="etc/serilaizer/log4j/log4j.properties"/>
+                <include name="etc/serializer/db-ojb/*"/>
+                <include name="etc/dbpsml/assembly/import-page-manager.xml"/>
+                <include name="etc/dbpsml/assembly/repository-datasource-spring.xml"/>
+                <include name="etc/serializer/assembly/transaction.xml"/>
+                <include name="etc/dbpsml/assembly/alternate/interceptors.xml"/>
             </fileset>
         </copy>
 
@@ -133,14 +133,14 @@ limitations under the License.
 
     <target name="aggregate-pages-min" if="org.apache.jetspeed.deploy.min">
         <copy todir="\${basedir}/target/data/pages">
-            <fileset dir="\${basedir}/../../src/webapp/WEB-INF/pages">
+            <fileset dir="\${basedir}/../../portal/target/webapp/WEB-INF/pages">
                 <include name="Administrative/**"/>
                 <include name="my-account.psml"/>
                 <include name="page.security"/>
                 <include name="system/**"/>
             </fileset>
         </copy>
-        <copy file="\${basedir}/../../src/webapp/WEB-INF/pages/minimal-default-page.psml"
+        <copy file="\${basedir}/../../portal/target/webapp/WEB-INF/pages/minimal-default-page.psml"
               tofile="\${basedir}/target/data/pages/default-page.psml"/>
         <replace file="\${basedir}/target/data/pages/default-page.psml"
                  token=" hidden=&quot;true&quot;"/>
@@ -148,7 +148,7 @@ limitations under the License.
 
     <target name="aggregate-pages-full" if="org.apache.jetspeed.deploy.full">
         <copy todir="\${basedir}/target/data/pages">
-            <fileset dir="\${basedir}/../../src/webapp/WEB-INF/pages"/>
+            <fileset dir="\${basedir}/../../portal/target/webapp/WEB-INF/pages"/>
         </copy>
     </target>
 

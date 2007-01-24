@@ -462,7 +462,8 @@ limitations under the License.
 -->
     	<!-- prepare spring assemblies (TODO: why not use a Spring classpath loader?) -->
 <!--        <property name="temp.assembly.dir" value="\${basedir}/target/seed/assembly/"/> -->
-        <property name="temp.assembly.dir" value="\${basedir}/serializer/assembly/"/>
+        <property name="assembly.dir" value="serializer/assembly/"/>
+        <property name="temp.assembly.dir" value="\${basedir}/${assembly.dir}"/>
         <mkdir dir="${temp.assembly.dir}"/>
  	    <echo message="Running Jetspeed Seed Importer with -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ "/>
 <!--        <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
@@ -544,7 +545,7 @@ limitations under the License.
                 <pathelement path="\${basedir}/serializer/db-ojb"/>
                 <pathelement path="\${basedir}/serializer/log4j"/>
             </classpath>
-          <arg line="-I \${basedir}/target/seed/data/ -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>                           
+          <arg line="-I \${basedir}/target/seed/data/ -b ${assembly.dir}/boot/ -c ${assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>                           
         </java>
      
    </target>
