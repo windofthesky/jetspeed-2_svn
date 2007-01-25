@@ -136,7 +136,7 @@ function addPortletToPage(theNewPortlet)
    //dojo.widget.byId("AddPortletDialog").hide();   
    var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
    var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + getReturnPagePath();
-   jetspeed.addNewPortletDefinition( portletDef, null, pagePath );
+   jetspeed.addNewPortletDefinition( portletDef, null, pagePath, getAddToLayoutId() );
    selectorPortlets[theNewPortlet].count = selectorPortlets[theNewPortlet].count + 1;
    var cell = document.getElementById(theNewPortlet);
    if (cell != null)
@@ -226,6 +226,11 @@ function getReturnPagePath()
    if ( jsPagePath == null )
       jsPagePath = "";
    return jsPagePath;
+}
+function getAddToLayoutId()
+{
+   var jsLayoutId = jetspeed.url.getQueryParameter( document.location.href, "jslayoutid" );
+   return jsLayoutId;
 }
 function getReturnURL()
 {
