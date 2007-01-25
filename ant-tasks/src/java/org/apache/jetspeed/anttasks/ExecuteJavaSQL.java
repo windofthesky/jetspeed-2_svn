@@ -3,11 +3,11 @@
  */
 package org.apache.jetspeed.anttasks;
 
+import java.io.File;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.SQLExec;
-import java.util.StringTokenizer;
-import java.io.File;
 
 /**
  * @author hajo
@@ -81,7 +81,7 @@ public class ExecuteJavaSQL
 									String s = args[n].substring("src=".length());
 									try
 									{
-										autocommit = Boolean.parseBoolean(s);
+										autocommit = Boolean.valueOf(s).booleanValue();
 									}
 									catch (Exception e)
 									{
