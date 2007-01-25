@@ -51,6 +51,7 @@ limitations under the License.
             <value>user</value>
          </list>
        </constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.cluster.NodeManager"/></constructor-arg>                     
 
    <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
        <property name="autoCreateRoles"><value>true</value></property>

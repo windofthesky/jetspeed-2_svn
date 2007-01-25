@@ -15,9 +15,17 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.Permission;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.jetspeed.cluster.NodeManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotDeletedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -31,24 +39,15 @@ import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.jetspeed.security.SecurityException;
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.security.Permission;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * PortletApplicationManager
@@ -74,13 +73,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected DescriptorChangeMonitor monitor;
     protected boolean started;
 
+    protected NodeManager nodeManager;
+    
     /**
 	 * Creates a new PortletApplicationManager object.
 	 */
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
-        RoleManager roleManager, List permissionRoles)
+        RoleManager roleManager, List permissionRoles, NodeManager nodeManager)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
@@ -90,6 +91,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.searchEngine       = searchEngine;
         this.roleManager        = roleManager;        
         this.permissionRoles    = permissionRoles;
+        this.nodeManager		= nodeManager;
 	}
     
     public void start()
@@ -217,6 +219,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 // ignore errors during portal shutdown
             }
 
+            
             if (pa != null)
             {
                 if (portletFactory.isPortletApplicationRegistered(pa))
@@ -225,6 +228,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
 
                 unregisterPortletApplication(pa, true);
+                try
+                {
+                	nodeManager.removeNode(paName);
+                }
+                catch (Exception ee)
+                {
+                	// we actually do not care about an exception in the remove operation...
+                }
             }
         }
         finally
@@ -337,12 +348,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			log.info("Registered the portlet application " + paName);
 
 			// add to search engine result
-			if (searchEngine != null)
-			{
-				searchEngine.add(pa);
-				searchEngine.add(pa.getPortletDefinitions());
-				log.info("Registered the portlet application in the search engine... " + paName);
-			}
+			this.updateSearchEngine(false, pa);
+			
+			// and add to the current node info
+			nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
             
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
@@ -451,17 +460,85 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
                 portletFactory.unregisterPortletApplication(pa);                        
             }
-            if (register && (pa == null || checksum != pa.getChecksum()))
+//            if (register && (pa == null || checksum != pa.getChecksum()))
+            if (register)
             {
-                try
-                {
-                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
-                }
-                catch (Exception e)
-                {
-                    // don't register the pa
-                    register = false;
-                }
+            	if (pa == null)
+            	{ 
+            		// new
+	                try
+	                {
+	                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
+	                }
+	                catch (Exception e)
+	                {
+	                    // don't register the pa
+	                    register = false;
+	                }
+            	}
+            	else
+            	{
+            		int status = nodeManager.checkNode(new Long(pa.getId().toString()), pa.getName());
+        			boolean reregister = false;
+        			boolean deploy = false;
+        			switch (status)
+        			{
+        				case  NodeManager.NODE_NEW:
+        				{
+            				//only reason is that the file got somehow corrupted 
+            				// so we really do not know what is going on here...
+            				// the best chance at this point is to reregister (which might be the absolute wrong choice)
+            				log.warn("The portlet application " + pa.getName() + " is registered in the database but not locally .... we will reregister");
+            				reregister = true;
+        					if (checksum != pa.getChecksum())
+        					{
+                				log.warn("The provided portlet application " + pa.getName() + " is a different version than in the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will redeploy (also to the database)");
+    							deploy = true;
+        					}
+        					break;
+        				}
+        				case  NodeManager.NODE_SAVED:
+        				{
+        					if (checksum != pa.getChecksum())
+                    		{	
+                				log.warn("The provided portlet application " + pa.getName() + " is a different version than in the local node info and the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will reregister AND redeploy (also to the database)");
+        						//database and local node info are in synch, so we assume that this is a brand new
+        						// war .... let's deploy
+        						reregister = true;
+        						deploy = true;
+                    		}
+        					break;
+        				}
+        				case  NodeManager.NODE_OUTDATED:
+        				{
+            				//database version is older (determined by id) than the database 
+        					//let's deploy and reregister
+        					if (checksum != pa.getChecksum())
+                				log.error("The portlet application " + pa.getName() + " provided for the upgrade IS WRONG. The database checksum= " + pa.getChecksum() + ", but the local=" + checksum + "....THIS NEEDS TO BE CORRECTED");
+       						reregister = true;
+        					break;
+        				}
+        			}
+        			if (deploy)
+	                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
+        			else
+        				if (reregister)
+        				{
+        					// add to search engine result
+        					this.updateSearchEngine(false, pa);
+        					
+        					// and add to the current node info
+        					try
+        					{
+        						nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+        					} catch (Exception e)
+        					{
+        						log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
+        					}
+        				}
+        				
+            	
+            	}
             }
             if (register)
             {
@@ -525,16 +602,32 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
+	
+	protected void updateSearchEngine(boolean remove,MutablePortletApplication pa )
+	{
+		if (searchEngine != null)
+		{
+			if (remove)
+			{
+				searchEngine.remove(pa);
+				searchEngine.remove(pa.getPortletDefinitions());
+					log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
+			}
+			else
+			{
+					searchEngine.add(pa);
+					searchEngine.add(pa.getPortletDefinitions());
+					log.info("Registered the portlet application in the search engine... " + pa.getName());
+			}
+		}
+		
+	}
 	protected void unregisterPortletApplication(MutablePortletApplication pa,
 		boolean purgeEntityInfo)
 		throws RegistryException
 	{
-		if (searchEngine != null)
-		{
-			searchEngine.remove(pa);
-			searchEngine.remove(pa.getPortletDefinitions());
-		}
 
+		updateSearchEngine(true,pa);
 		log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
 		Iterator portlets = pa.getPortletDefinitions().iterator();
