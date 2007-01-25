@@ -48,7 +48,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @version $Id: $
  */
 public class AddPortletAction 
-    extends BasePortletAction 
+    extends MovePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(AddPortletAction.class);
@@ -56,6 +56,7 @@ public class AddPortletAction
     protected boolean allowDuplicatePortlets = true;
 
     public AddPortletAction(String template, String errorTemplate, GetPortletsAction getPortletsAction)
+        throws AJAXException
     {
         this(template, errorTemplate, null, null, getPortletsAction, true);
     }
@@ -65,6 +66,7 @@ public class AddPortletAction
                             PageManager pageManager,
                             PortletActionSecurityBehavior securityBehavior,
                             GetPortletsAction getPortletsAction)
+        throws AJAXException
     {
         this(template, errorTemplate, pageManager, securityBehavior, getPortletsAction, true);
     }
@@ -75,24 +77,14 @@ public class AddPortletAction
                             PortletActionSecurityBehavior securityBehavior,
                             GetPortletsAction getPortletsAction,
                             boolean allowDuplicatePortlets)
+        throws AJAXException
     {
         super(template, errorTemplate, pageManager, securityBehavior); 
         this.getPortletsAction = getPortletsAction;
         this.allowDuplicatePortlets = allowDuplicatePortlets;
     }
-
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
-    {
-        return runAction(requestContext, resultMap, true);
-    }    
     
-    public boolean run(RequestContext requestContext, Map resultMap)
-            throws AJAXException
-    {
-        return runAction(requestContext, resultMap, false);
-    }
-    
-    protected boolean runAction(RequestContext requestContext, Map resultMap, boolean batch) throws AJAXException
+    protected boolean runAction( RequestContext requestContext, Map resultMap, boolean batch ) throws AJAXException
     {
         boolean success = true;
         String status = "success";
@@ -126,43 +118,37 @@ public class AddPortletAction
                 }
                 status = "refresh";
             }           
-            // These are optional parameters
-            String col = getActionParameter(requestContext, COL);
-            String row = getActionParameter(requestContext, ROW);
-            // Convert the col and row into integers
-            int iCol = 0;
-            int iRow = 0;
-            if (col != null)
-            {
-                iCol = Integer.parseInt(col);
-                resultMap.put(NEWCOL, new Integer(iCol));
-            }
-            if (row != null)
-            {
-                iRow = Integer.parseInt(row);
-                resultMap.put(NEWROW, new Integer(iRow));
-            }
-            // Use the Portlet Placement Manager to accomplish the removal
-            PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
+            
+            Page page = requestContext.getPage();
+            String layoutId = getActionParameter(requestContext, LAYOUTID);
             Fragment fragment = pageManager.newFragment();
             fragment.setType(Fragment.PORTLET);
             fragment.setName(portletId);
-            fragment.setLayoutColumn(iCol);
-            fragment.setLayoutRow(iRow);            
-            Coordinate coordinate = placement.add(fragment, new CoordinateImpl(iCol, iRow, iCol, iRow));
-            Page page = placement.syncPageFragments();                                                            
-            // TODO: this does not handle nested layouts            
-            Fragment root = requestContext.getPage().getRootFragment();
-            root.getFragments().add(fragment);    
-            if (!batch)
+            //fragment.setLayoutColumn(iCol);
+            //fragment.setLayoutRow(iRow);
+            
+            Fragment placeInLayoutFragment = null;
+            if ( layoutId != null && layoutId.length() > 0 )
             {
-                pageManager.updatePage(page);
+                placeInLayoutFragment = page.getFragmentById( layoutId );
+                if ( placeInLayoutFragment == null )
+                {
+                    throw new Exception( "layout id not found: " + layoutId );
+                }
             }
+            else
+            {
+                placeInLayoutFragment = page.getRootFragment();
+            }
+
+            success = placeFragment( requestContext,
+                                     pageManager,
+                                     batch,
+                                     resultMap,
+                                     fragment,
+                                     placeInLayoutFragment ) ;
+
             resultMap.put(STATUS, status);
-            resultMap.put(NEWCOL, String.valueOf(coordinate
-                    .getNewCol()));
-            resultMap.put(NEWROW, String.valueOf(coordinate
-                    .getNewRow()));
             resultMap.put(PORTLETENTITY, fragment.getId());            
         } 
         catch (Exception e)
