@@ -46,6 +46,7 @@ limitations under the License.
 .layoutRootEditPane .detail .operationSpacer { float: left; width: 28px; visibility: hidden }
 
 .layoutRootEditPane .detail .dojoButton { float: left; margin-right: 5px }
+.layoutRootEditPane .detail .buttonContainerRight .dojoButton { float: right; margin-right: 5px }
 
 
 .dojoComboBoxOptions { font-size: xx-small; }

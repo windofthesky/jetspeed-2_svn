@@ -32,6 +32,6 @@ limitations under the License.
 .layoutEditPane .detail .selectSpacer { float: left; width: 20px; visibility: hidden }
 .layoutEditPane .detail .operationSpacer { float: left; width: 28px; visibility: hidden }
 .layoutEditPane .detail .dojoButton { float: left; margin-right: 5px }
-
+.layoutEditPane .detail .buttonContainerRight .dojoButton { float: right; margin-right: 5px }
 
 .dojoComboBoxOptions { font-size: xx-small; }

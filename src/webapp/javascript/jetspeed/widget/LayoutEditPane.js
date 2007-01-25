@@ -109,6 +109,10 @@ dojo.widget.defineWidget(
         openColumnSizeEditor: function()
         {
             this.pageEditorWidget.openColumnSizesEditor( this.layoutId );
+        },
+        addPortlet: function()
+        {
+            jetspeed.page.addPortletInitiate( this.layoutId );
         }
 	}
 );
