@@ -655,18 +655,28 @@ jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* Str
     jetspeed.url.retrieveContent( { url: changeActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
 };
 
-jetspeed.addNewPortletDefinition = function( /* jetspeed.om.PortletDef */ portletDef, windowWidgetId, /* String */ psmlUrl )
+jetspeed.addNewPortletDefinition = function( /* jetspeed.om.PortletDef */ portletDef, windowWidgetId, /* String */ psmlUrl, /* String */ layoutId )
 {
     var addToCurrentPage = true;
     if ( psmlUrl != null )
+    {
         addToCurrentPage = false;
+    }
     var contentListener = new jetspeed.om.PortletAddAjaxApiCallbackContentListener( portletDef, windowWidgetId, addToCurrentPage );
     var queryString = "?action=add&id=" + escape( portletDef.getPortletName() );
+    if ( layoutId != null && layoutId.length > 0 )
+    {
+        queryString += "&layoutid=" + escape( layoutId );
+    }
     var addPortletUrl = null;
     if ( psmlUrl != null )
+    {
         addPortletUrl = psmlUrl + queryString;   //  psmlUrl example: http://localhost:8080/jetspeed/ajaxapi/google-maps.psml
+    }
     else
+    {
         addPortletUrl = jetspeed.page.getPsmlUrl() + queryString;
+    }
     var mimetype = "text/xml";
     var ajaxApiContext = new jetspeed.om.Id( "addportlet", { } );
     jetspeed.url.retrieveContent( { url: addPortletUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
@@ -2142,9 +2152,11 @@ dojo.lang.extend( jetspeed.om.Page,
     },
 
     // ... add portlet
-    addPortletInitiate: function()
+    addPortletInitiate: function( /* String */ layoutId )
     {
-        var addportletPageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.DESKTOP + "/system/customizer/selector.psml?jspage=" + this.getPath();
+        var addportletPageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.DESKTOP + "/system/customizer/selector.psml?jspage=" + escape( this.getPath() );
+        if ( layoutId != null )
+            addportletPageUrl += "&jslayoutid=" + escape( layoutId );
         jetspeed.changeActionForPortlet( this.rootFragmentId, null, jetspeed.id.ACTION_NAME_EDIT, new jetspeed.om.PageChangeActionContentListener( addportletPageUrl ) );
     },
 
