@@ -19,15 +19,16 @@ import java.io.FileReader;
 import java.util.Collection;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 
 /**
@@ -38,12 +39,13 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  * @version $Id$
  */
 public class TestJetspeedPortletDescriptor
-    extends AbstractPrefsSupportedTestCase {
+    extends TestCase { 
+    //extends AbstractPrefsSupportedTestCase {
     
-    private static final String PORTLET_01 = "HelloWorld Portlet";
-    private static final String PORTLET_02 = "Display the Portlet Request Information";
-    private static final String PORTLET_03 = "Pick a number game";
-    private static final String PORTLET_04 = "Attribute Scope Demo";
+    private static final String PORTLET_01 = "HelloPortlet";
+    private static final String PORTLET_02 = "DisplayRequestPortlet";
+    private static final String PORTLET_03 = "PickANumberPortlet";
+    private static final String PORTLET_04 = "AttributeScopePortlet";
     
     /**
      * Start the tests.
@@ -96,6 +98,7 @@ public class TestJetspeedPortletDescriptor
         Collection def4Field1 = def4.getMetadata().getFields("field1");
         Collection def4Fiels2 = def4.getMetadata().getFields("field2");
         
+        String securityRef = app.getJetspeedSecurityConstraint();
         assertEquals(titles.size(), 3);
         assertEquals(def1Titles.size(), 4);
         assertEquals(def2Subjects.size(), 5);
@@ -103,13 +106,20 @@ public class TestJetspeedPortletDescriptor
         assertEquals(def4Field1.size(), 3);
         assertEquals(def4Fiels2.size(), 2);
         
+        // Security Constraints tests
+        assertEquals(securityRef, "admin-only");
+        assertEquals(def1.getJetspeedSecurityConstraint(), "users-1");
+        assertEquals(def2.getJetspeedSecurityConstraint(), "users-2");
+        assertEquals(def3.getJetspeedSecurityConstraint(), "users-4");
+        assertNull(def4.getJetspeedSecurityConstraint());
+        
         Collection servicesCollection = app.getJetspeedServices();
         assertNotNull("Metadata services is null", servicesCollection);
         assertEquals("Expected 2 service definitions", servicesCollection.size(), 2);
         Object[] services = servicesCollection.toArray();
         JetspeedServiceReference service = (JetspeedServiceReference)services[0];
         System.out.println("**** service = " + service.getName());
-        
+                
         assertEquals( ((JetspeedServiceReference)services[0]).getName(), "PortletRegistryComponent");
         assertEquals( ((JetspeedServiceReference)services[1]).getName(), "PortletEntityAccessComponent");
     }

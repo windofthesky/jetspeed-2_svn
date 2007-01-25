@@ -14,18 +14,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<portlet-app id="TestRegistry" version="1.0">
+<portlet-app id="TestRegistry" 
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" version="1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">        
  <portlet id="HelloPortlet">
+    <description xml:lang="en">This is a description of the HelloWorld portlet</description>      
+    <portlet-name>HelloPortlet</portlet-name>
+    <display-name xml:lang="en">HelloWorld Portlet Wrapper</display-name>       
+    <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>       
     <init-param>
 			<description xml:lang="en">test init param</description>
 			<description xml:lang="es">prueba parámetros iniciales</description>
 			<name>hello</name>
 			<value>Hello Portlet</value>
-     </init-param>  
-    <portlet-name>HelloWorld Portlet</portlet-name>
-    <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
-    <display-name xml:lang="en">HelloWorld Portlet Wrapper</display-name>  
-    <description xml:lang="en">This is a description of the HelloWorld portlet</description>
+     </init-param>       
     <expiration-cache>-1</expiration-cache>
     <supports id="Minimal support">
       <mime-type>text/html</mime-type>
@@ -38,6 +41,7 @@ limitations under the License.
       <short-title>This is the short title</short-title>
       <keywords>Test,David</keywords>
     </portlet-info>
+     
     <portlet-preferences>
       <preference> 
         <name>time-server</name>
@@ -59,7 +63,7 @@ limitations under the License.
   </portlet>
  
   <portlet id="DisplayRequestPortlet">
-    <portlet-name>Display the Portlet Request Information</portlet-name>
+    <portlet-name>DisplayRequestPortlet</portlet-name>
     <portlet-class>org.apache.jetspeed.demo.simple.DisplayRequestServlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -73,7 +77,7 @@ limitations under the License.
   </portlet>
   
   <portlet id="PickANumberPortlet">
-    <portlet-name>Pick a number game</portlet-name>
+    <portlet-name>PickANumberPortlet</portlet-name>
     <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -87,7 +91,7 @@ limitations under the License.
   </portlet>
   
   <portlet id="AttributeScopePortlet">
-    <portlet-name>Attribute Scope Demo</portlet-name>
+    <portlet-name>AttributeScopePortlet</portlet-name>
     <portlet-class>org.apache.jetspeed.demo.simple.AttributeScopeServlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>

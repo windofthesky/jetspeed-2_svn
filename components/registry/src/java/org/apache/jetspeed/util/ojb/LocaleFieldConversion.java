@@ -80,25 +80,23 @@ public class LocaleFieldConversion implements FieldConversion
     {
         if (arg0 instanceof String)
         {
-
             String localeString = (String) arg0;
             StringTokenizer tokenizer = new StringTokenizer(localeString, DELIM);
-
-            
+            if(tokenizer.hasMoreTokens() == false)            
+            {
+                return JetspeedLocale.getDefaultLocale();    
+            }
             String language = tokenizer.nextToken().trim();
             String country = null;
             String variant = null;
             if(tokenizer.hasMoreTokens())
             {
                 country = tokenizer.nextToken().trim();
-            }
-            
+            }           
             if(tokenizer.hasMoreTokens())
             {
                 variant = tokenizer.nextToken().trim();
             }
-            
-
             if (country != null && language != null && variant != null)
             {
                 return new Locale (language, country, variant);

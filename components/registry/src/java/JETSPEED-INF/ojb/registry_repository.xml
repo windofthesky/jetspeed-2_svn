@@ -161,6 +161,12 @@ limitations under the License.
          column="APP_TYPE"
          jdbc-type="INTEGER"
       />
+      <field-descriptor
+         name="jetspeedSecurityConstraint"
+         column="SECURITY_REF"
+         jdbc-type="VARCHAR"
+      />
+      
       <collection-descriptor
          name="metadataFields"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
@@ -367,6 +373,12 @@ limitations under the License.
          column="PREFERENCE_VALIDATOR"
          jdbc-type="VARCHAR"
       />
+       
+      <field-descriptor
+         name="jetspeedSecurityConstraint"
+         column="SECURITY_REF"
+         jdbc-type="VARCHAR"
+      />       
 
       <collection-descriptor
          name="metadataFields"

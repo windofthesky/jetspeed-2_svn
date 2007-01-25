@@ -192,4 +192,10 @@ public class PortletApplicationBean implements PortletApplication
     {
         return pa.getCustomWindowState(state);
     }
+    
+    public String getJetspeedSecurityConstraint()
+    {
+        return pa.getJetspeedSecurityConstraint();
+    }
+    
 }

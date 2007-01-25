@@ -42,5 +42,5 @@ public class PortletRule extends Rule
     {
         PortletDefinitionComposite def = (PortletDefinitionComposite) app.getPortletDefinitionByName(text);
         digester.push(def);
-    }
+    }                                                        
 }

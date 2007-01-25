@@ -205,4 +205,39 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     
     SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink);
 
+    /**
+     * <p>
+     * Get the Jetspeed Security Constraint reference for this portlet.
+     * This security constraint name references a Jetspeed-specific Security Constraint.
+     * Security Constraints are not Java Security Permissions, but a 
+     * Jetspeed specific way of securing portlets, also known as PSML constraints.
+     * See the <i>page.security</i> file for examples of defining security constraint definitions.
+     * If a Jetspeed Security Constraint is not defined for a portlet, the constraint 
+     * applied will then fallback to the constraint defined for the portlet application.
+     * If the portlet application does not define a constraint, then no security constraints
+     * will be applied to this portlet. Security constraints for a portlet are normally
+     * checking during the render process of a portlet.
+     * </p>
+     * 
+     * @return The name of the Security Definition applied to this portlet, defined in 
+     *                  the Jetspeed Security Constraints 
+     */    
+    String getJetspeedSecurityConstraint();
+    
+    /**
+     * <p>
+     * Set the Jetspeed Security Constraint reference for this portlet.
+     * This security constraint name references a Jetspeed-specific Security Constraint.
+     * Security Constraints are not Java Security Permissions, but a 
+     * Jetspeed specific way of securing portlets, also known as PSML constraints.
+     * See the <i>page.security</i> file for examples of defining security constraint definitions.
+     * If the portlet application does not define a constraint, then no security constraints
+     * will be applied to this portlet. Security constraints for a portlet are normally
+     * checking during the render process of a portlet.
+     * </p>
+     * 
+     * @param constraint The name of the Security Definition defined in 
+     *                  the Jetspeed Security Constraints 
+     */
+    void setJetspeedSecurityConstraint(String constraint);
 }

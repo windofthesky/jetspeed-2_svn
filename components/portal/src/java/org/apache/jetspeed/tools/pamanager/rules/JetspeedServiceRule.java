@@ -32,20 +32,11 @@ public class JetspeedServiceRule extends Rule
     public JetspeedServiceRule(MutablePortletApplication app)
     {
         this.app = app;
-
     }
 
     public void end(String namespace, String name) throws Exception
     {
-        Object o = digester.peek(0);
-        System.out.println("namespace = " + namespace);
-        System.out.println("name = " + name);
-        System.out.println("object = " + o);
-        
         JetspeedServiceReference service = (JetspeedServiceReference) digester.peek(0);
-        System.out.println("service = " + service);
-        
         app.addJetspeedService(service);
     }
-
 }

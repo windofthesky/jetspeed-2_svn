@@ -136,6 +136,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     private Collection metadataFields = null;
     private PrefsPreferenceSetImpl preferenceSet;
 
+    private String jetspeedSecurityConstraint = null;
+    
     public PortletDefinitionImpl()
     {
         super();
@@ -951,5 +953,21 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
             return portletFactory.getPreferencesValidator(this);
         }
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getJetspeedSecurityConstraint()
+     */
+    public String getJetspeedSecurityConstraint()
+    {
+        return this.jetspeedSecurityConstraint;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setJetspeedSecurityConstraint(java.lang.String)
+     */
+    public void setJetspeedSecurityConstraint(String constraint)
+    {
+        this.jetspeedSecurityConstraint = constraint;
     }
 }

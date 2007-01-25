@@ -338,4 +338,15 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
     {
         portletDefinition.store();
     }
+    
+    public String getJetspeedSecurityConstraint()
+    {
+        return portletDefinition.getJetspeedSecurityConstraint();
+    }
+
+    public void setJetspeedSecurityConstraint(String constraint)
+    {
+        portletDefinition.setJetspeedSecurityConstraint(constraint);
+    }
+    
 }

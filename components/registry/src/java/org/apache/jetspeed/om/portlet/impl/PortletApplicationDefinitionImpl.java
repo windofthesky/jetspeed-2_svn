@@ -103,6 +103,8 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     private List customPortletModes;
     private List customWindowStates;
     
+    private String jetspeedSecurityConstraint = null;
+    
     private transient Map supportedCustomModes;
     private transient Map supportedCustomStates;
     private transient Map mappedCustomModes;
@@ -588,4 +590,21 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
         }
         return supportedWindowStates;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getJetspeedSecurityConstraint()
+     */
+    public String getJetspeedSecurityConstraint()
+    {
+        return this.jetspeedSecurityConstraint;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setJetspeedSecurityConstraint(java.lang.String)
+     */
+    public void setJetspeedSecurityConstraint(String constraint)
+    {
+        this.jetspeedSecurityConstraint = constraint;
+    }
+    
 }

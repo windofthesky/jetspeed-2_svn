@@ -30,10 +30,10 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-
 import org.apache.jetspeed.tools.pamanager.rules.JetspeedServicesRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
+import org.apache.jetspeed.tools.pamanager.rules.SecurityConstraintRefRule;
 import org.apache.jetspeed.tools.pamanager.rules.UserAttributeRefRuleSet;
 import org.xml.sax.Attributes;
 
@@ -100,10 +100,13 @@ public class ExtendedPortletMetadata
 
             digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
             digester.addRuleSet(new JetspeedServicesRuleSet(portletApp));
+            digester.addRule("portlet-app/security-constraint-ref", new SecurityConstraintRefRule(portletApp));                        
             
             digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(portletApp));
             digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
-
+            
+            digester.addRule("portlet-app/portlet/security-constraint-ref", new SecurityConstraintRefRule(portletApp));        
+            
             digester.addRuleSet(new UserAttributeRefRuleSet(portletApp));
             
             ArrayList mappedPortletModes = new ArrayList();
@@ -113,7 +116,7 @@ public class ExtendedPortletMetadata
             digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/name", "customName");
             digester.addBeanPropertySetter("portlet-app/custom-portlet-mode/mapped-name", "mappedName");
             digester.addSetNext("portlet-app/custom-portlet-mode", "add");
-
+            
             ArrayList mappedWindowStates = new ArrayList();
             digester.addRule("portlet-app/custom-window-state",new CollectionRule(mappedWindowStates));
             digester.addObjectCreate("portlet-app/custom-window-state",CustomWindowStateImpl.class);
