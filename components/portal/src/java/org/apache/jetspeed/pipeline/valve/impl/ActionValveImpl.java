@@ -16,6 +16,7 @@
 package org.apache.jetspeed.pipeline.valve.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,8 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.messaging.PortletMessagingImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -84,6 +86,22 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {
+                // If portlet entity is null, try to refresh the actionWindow.
+                // Under some clustered environments, a cached portlet window could have null entity.
+                if (null == actionWindow.getPortletEntity())
+                {
+                    try 
+                    {
+                        Fragment fragment = request.getPage().getFragmentById(actionWindow.getId().toString());
+                        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
+                        actionWindow = this.windowAccessor.getPortletWindow(contentFragment);
+                    } 
+                    catch (Exception e)
+                    {
+                        log.error("Failed to refresh action window.", e);
+                    }
+                }
+
                 initWindow(actionWindow, request);
                 HttpServletResponse response = request.getResponseForWindow(actionWindow);
                 HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
