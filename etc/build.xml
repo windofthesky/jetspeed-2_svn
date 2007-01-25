@@ -19,7 +19,9 @@ limitations under the License.
 <project name="etc" default="help">
 
     <!-- Properties -->
-
+    <property name="org.apache.jetspeed.database.is.derby" value="" />
+    <property name="org.apache.jetspeed.database.is.derby.embedded" value="" /> 
+    
     <property name="org.apache.jetspeed.database.enable" value="true"/>
     <property name="org.apache.jetspeed.database.skip" value="false"/>
     <property name="org.apache.jetspeed.database.default.name" value=""/>
