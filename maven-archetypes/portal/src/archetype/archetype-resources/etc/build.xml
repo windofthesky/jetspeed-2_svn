@@ -322,13 +322,15 @@ limitations under the License.
         <condition property="org.apache.jetspeed.database.is.derby.embedded">
             <and>
                 <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="derby"/>
-                <equals arg1="${org.apache.jetspeed.database.jdbc.drivers.path}" arg2=""/>
+                <equals arg1="${org.apache.jetspeed.database.driver}" arg2="org.apache.derby.jdbc.EmbeddedDriver"/>
             </and>
         </condition>
         <condition property="org.apache.jetspeed.database.is.hsql.embedded">
             <and>
                 <equals arg1="${org.apache.jetspeed.database.default.name}" arg2="hsql"/>
-                <equals arg1="${org.apache.jetspeed.database.jdbc.drivers.path}" arg2=""/>
+            	<!--
+            	                <equals arg1="${org.apache.jetspeed.database.jdbc.drivers.path}" arg2=""/>
+            	 -->
             </and>
         </condition>
     </target>
