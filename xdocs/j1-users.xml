@@ -58,34 +58,34 @@
 			in some cases significantly:
 				</p>
 			<ul>
-			<li>1.	PSML – Portlet Structured Markup Language. 
+			<li>1.	PSML  -  Portlet Structured Markup Language. 
 				    Defines the layout of portlets on a page. 
 				    While the purpose is still the same, the XML format has changed. 
 				    Porting is possible, requires a migration tool. 
 				    PSML now fits into an overall Jetspeed Navigation Site as a page-type resource.
 				    No PSML porting tool is currently available. However, an XSLT transform could be a good choice.
 			</li>	
-			<li>2.	Portal Wide Security Policy and Constraints – Jetspeed-2 has two kinds of security 
+			<li>2.	Portal Wide Security Policy and Constraints  -  Jetspeed-2 has two kinds of security 
 				    mechanisms: JAAS-based security policies, and declarative security constraints 
 				    much like Jetspeed-1 constraints. Where as Jetspeed-1 constraints were limited
 				    to PSML, Jetspeed-2 declarative security constraints are also applied to folders
 				    and links.</li>
-			<li>3.	Portlets – Portlets now must adhere to the new Portlet API. 
+			<li>3.	Portlets  -  Portlets now must adhere to the new Portlet API. 
 				    No porting tool is currently available. 
 				    The Jetspeed-1 Portlet API will not be continued in Jetspeed-2.
 				    </li>
 			<li>4.  Turbine Services are out (Fulcrum). Jetspeed-2 is based on Spring components.</li>	
-			<li>5.  Registries – The Jetspeed-1 Registries are discontinued in Jetspeed-2. 
+			<li>5.  Registries  -  The Jetspeed-1 Registries are discontinued in Jetspeed-2. 
 				    All portlets are now stored in a Registry database in Jetspeed-2. 
 				    No porting tool is available. 
 				    Recommend converting your portlets to JSR-168 portlets, 
 				   packaging all portlets in a portlet application, 
 				   and deploying as standard WAR file. 
 				   Other registries are all deprecated.</li>
-			<li>6. JSP and Velocity Templates – Templates can be re-used to some extend. 
+			<li>6. JSP and Velocity Templates  -  Templates can be re-used to some extend. 
 				   Any references to Rundata or any other Turbine or Jetspeed-1 tools or 
 				   tags must be converted.</li>				
-			<li>7. Controls and Controllers – These concepts have changed, and are now called 
+			<li>7. Controls and Controllers  -  These concepts have changed, and are now called 
 				   decorators and layouts. The Turbine module concept, which backed controls 
 				   and controllers, is no longer supported. Layouts and decorators are now 
 				   only implemented as portlets, or as just plain markup. Layouts and templates 
