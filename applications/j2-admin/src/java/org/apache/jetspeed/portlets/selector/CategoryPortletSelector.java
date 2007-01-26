@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +50,11 @@ import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portlets.CategoryInfo;
 import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.search.ParsedObject;
@@ -78,10 +84,14 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     protected final static String PORTLETS = "category.selector.portlets";
     protected final static String CATEGORIES = "category.selector.categories";
     protected final static String PAGE = "category.selector.page";
-    public final static String JSPAGE = "jspage";
+    private final  String JSPAGE = "jspage";
+	private final String CATEGORY = "category";
+	private final String PAGENUMNER = "pageNumber";
+	private final String FILTER = "filter";
     
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
+    protected PageManager pageManager;
     protected Random rand;
     
     public void init(PortletConfig config)
@@ -99,16 +109,39 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         {
             throw new PortletException("Failed to find the Search Engine on portlet initialization");
         }
+        pageManager = (PageManager)context.getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
+        if (null == pageManager)
+        {
+            throw new PortletException("Failed to find the Page Manager on portlet initialization");
+        }        
         rand = new Random( 19580427 );
     }
     
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        PortletPreferences prefs = request.getPreferences();
-        this.getContext(request).put("Columns", prefs.getValue("Columns", "4"));
-        this.getContext(request).put("Rows", prefs.getValue("Rows", "6"));
-        this.getContext(request).put("portlets", retrievePortlets(request, null));
+    	String category = "All";
+    	String pageNumber = "";	
+		String row = "";		
+		String columns = "";
+		int portletPerPages=0;
+    	PortletPreferences prefs = request.getPreferences();
+		category = request.getParameter(CATEGORY);
+		pageNumber = request.getParameter(PAGENUMNER);
+		String filter = request.getParameter(FILTER);
+		columns = prefs.getValue("Columns", "4");
+		row = prefs.getValue("Rows", "6");
+		portletPerPages = Integer.parseInt(columns) * Integer.parseInt(row);
+		if (category == null || category.equals("")) category = "All";
+		if (pageNumber == null || pageNumber.equals("")) pageNumber = "1";
+		if (filter == null ||  filter.equals("")) filter = null;
+		CategoryResult result = getPortlets(request, category, pageNumber, portletPerPages, filter);
+        this.getContext(request).put("Columns", columns);
+        this.getContext(request).put("Rows", row);
+        this.getContext(request).put("pageNumber", pageNumber);
+        this.getContext(request).put("category", category);
+        this.getContext(request).put("portlets", mergePortletCount(result.getList(),request));
+        this.getContext(request).put("Count", new Integer(result.getResultSize()));
         this.getContext(request).put("categories", retrieveCategories(request));
         processPage(request);
         super.doView(request, response);
@@ -125,8 +158,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         {
             request.getPortletSession().setAttribute(PAGE, page);
         }
-        this.getContext(request).put(JSPAGE, page);
-        
+        this.getContext(request).put(JSPAGE, page);        
     }
     
     public List retrieveCategories(RenderRequest request)
@@ -191,7 +223,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     public List retrievePortlets(RenderRequest request, String filter)
     {
         List portletsList = (List)request.getPortletSession().getAttribute(PORTLETS);
-        if (portletsList != null)
+        if (filter == null && portletsList != null)
         {
             return portletsList;
         }        
@@ -218,11 +250,41 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
             }
         }            
         Collections.sort(list, this);
-        request.getPortletSession().setAttribute(PORTLETS, list);
+        if(filter == null ) request.getPortletSession().setAttribute(PORTLETS, list);
         return list;
     }
-
     
+
+    private List mergePortletCount(List sysPortlets,
+			RenderRequest request) {
+		List list = new ArrayList();
+		int sPortletCnt = 0;
+		Iterator iterator;
+		String usrPortletName = null;
+		PortletInfo tmpPortletInfo = null;
+		String portletName;
+		try {
+			Map usrPortlet = getUserPortlet(getPage(request));
+			sPortletCnt = sysPortlets.size();
+			for (int si = 0; si < sPortletCnt; si++) {
+				tmpPortletInfo = (PortletInfo)((PortletInfo)sysPortlets.get(si)).clone(); 
+				portletName = tmpPortletInfo.getName();
+				iterator = usrPortlet.keySet().iterator();
+				while (iterator.hasNext()) {
+					usrPortletName = (String) iterator.next();
+					if (usrPortletName.equalsIgnoreCase(portletName)) {
+						tmpPortletInfo.setCount(((Integer)usrPortlet.get(usrPortletName)).intValue());
+					}
+				}
+				list.add(tmpPortletInfo);
+				tmpPortletInfo = null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
     
     /**
      * Filters portlets being added to the based on security checks and layout criteria
@@ -437,8 +499,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
             actionResponse.setRenderParameter(JSPAGE, page);
         }
         else
-        {
-            String reset = request.getParameter("reset");        
+        {            
+        	String reset = request.getParameter("reset");        
             if (reset != null && reset.equals("true"))
             {
                 PortletSession session = request.getPortletSession();
@@ -572,4 +634,130 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         processPage(request);
         super.doEdit(request, response);
     }
+    
+    private CategoryResult getPortlets(RenderRequest request,
+			String category, String pageNumber, int portletPerPages,String filter) {
+		List list = new ArrayList();
+		List tmpList = null;
+		List catList = null;
+		Iterator iterator = null;
+		int portletCount = 0;
+		CategoryInfo catInfo = null;
+		int strtCnt = getStartRow(pageNumber, portletPerPages);
+		int endCnt = getEndRow(pageNumber, portletPerPages);
+		try {			
+			if (category.equalsIgnoreCase("all")) {				
+				tmpList = retrievePortlets(request, filter);
+				portletCount = tmpList.size();
+				if (endCnt > portletCount)
+					endCnt = portletCount;
+				for (int index = strtCnt; index < endCnt; index++) {
+					list.add(tmpList.get(index));
+				}
+			} else if (category.equalsIgnoreCase("search")) {
+				tmpList = retrievePortlets(request, filter);
+				portletCount = tmpList.size();
+				if (endCnt > portletCount)
+					endCnt = portletCount;
+				for (int index = strtCnt; index < endCnt; index++) {
+					list.add(tmpList.get(index));
+				}
+			} else {
+				tmpList =  retrieveCategories(request);
+				iterator = tmpList.iterator();
+				while (iterator.hasNext()) {
+					catInfo = (CategoryInfo) iterator.next();
+					if (catInfo.getName().equalsIgnoreCase(category)) {
+						catList = catInfo.getPortlets();
+						break;
+					}
+				}
+				portletCount = catList.size();
+				if (endCnt > portletCount)
+					endCnt = portletCount;
+				for (int index = strtCnt; index < endCnt; index++) {
+					list.add(catList.get(index));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new CategoryResult(list, portletCount);
+	}
+    
+    
+	private int getStartRow(String sPageNumber, int portletPerPages) {
+		int iPageNumber = Integer.parseInt(sPageNumber);
+		return (iPageNumber - 1) * portletPerPages;
+	}
+
+	private int getEndRow(String sPageNumber,int portletPerPages) {
+		int iPageNumber = Integer.parseInt(sPageNumber);
+		return iPageNumber * portletPerPages;
+	}
+	private Map getUserPortlet(Page page) {
+		int portletCount = 0;
+		Map map = new HashMap();
+		try {
+			Fragment fragment;
+			Iterator it = page.getRootFragment().getFragments().iterator();
+			while (it.hasNext()) {
+				fragment = (Fragment) it.next();
+				if (map.containsKey(fragment.getName())) {
+					portletCount =((Integer) map.get(fragment.getName())).intValue();				
+					map.put(fragment.getName(), new Integer(portletCount + 1));					
+				} else {
+					map.put(fragment.getName(), new Integer(1));
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return map;
+	}
+	private Page getPage(RenderRequest request) throws Exception
+	{
+		String user = request.getUserPrincipal().getName();
+		String page = request.getParameter("jspage");
+		String path;
+		if (page.equals("/")) page= Node.PATH_SEPARATOR + Folder.FALLBACK_DEFAULT_PAGE;
+		if (user.equals("admin"))
+		{
+			path  = page;
+		}else
+		{
+			path  = Folder.USER_FOLDER  + user + page;
+		}
+		return pageManager.getPage(path);                 
+
+	}
+	class CategoryResult {
+		List list;
+
+		int resultSize;
+
+		/**
+		 * @param list
+		 * @param resultSize
+		 */
+		public CategoryResult(List list, int resultSize) {
+			this.list = list;
+			this.resultSize = resultSize;
+		}
+
+		/**
+		 * @return the list
+		 */
+		public List getList() {
+			return list;
+		}
+
+		/**
+		 * @return the resultSize
+		 */
+		public int getResultSize() {
+			return resultSize;
+		}
+	}
 }

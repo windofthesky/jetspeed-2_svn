@@ -31,8 +31,9 @@ public class PortletInfo implements Serializable
     String displayName;
     String description;
     String image;
+    int count;
     
-    public PortletInfo(String name, String displayName, String description)
+	public PortletInfo(String name, String displayName, String description)
     {
         this.name = name;
         this.displayName = displayName;
@@ -46,6 +47,16 @@ public class PortletInfo implements Serializable
         this.description = description;
         this.image = image;
     }
+    
+    public PortletInfo(String name, String displayName, String description, String image,int count)
+    {
+        this.name = name;
+        this.displayName = displayName;
+        this.description = description;
+        this.image = image;
+        this.count = count;
+    }
+    
     
     /**
      * @return Returns the description.
@@ -86,4 +97,23 @@ public class PortletInfo implements Serializable
     {
         this.image = image;
     }
+    /**
+	 * @return the count
+	 */
+	public int getCount() {
+		return count;
+	}
+
+	/**
+	 * @param count the count to set
+	 */
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return new PortletInfo(this.name,this.displayName,this.description,this.image,this.count);
+	}
+	
+	
 }
