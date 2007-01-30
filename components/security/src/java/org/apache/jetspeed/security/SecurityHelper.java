@@ -58,15 +58,19 @@ public class SecurityHelper
     public static Principal getPrincipal(Subject subject, Class classe)
     {
         Principal principal = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext())
-        {
-            Principal p = (Principal) principals.next();
-            if (classe.isInstance(p))
-            {
-                principal = p;
-                break;
-            }
+        Set principalList = subject.getPrincipals();
+        if (principalList != null)
+        { 
+        	Iterator principals = subject.getPrincipals().iterator();
+	        while (principals.hasNext())
+	        {
+	            Principal p = (Principal) principals.next();
+	            if (classe.isInstance(p))
+	            {
+	                principal = p;
+	                break;
+	            }
+	        }
         }
         return principal;
     }

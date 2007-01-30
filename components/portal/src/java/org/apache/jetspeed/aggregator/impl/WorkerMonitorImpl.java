@@ -92,7 +92,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     protected List workersMonitored = Collections.synchronizedList(new LinkedList());
 
     /** Renering Job Timeout monitor */
-    protected RenderingJobTimeoutMonitor jobMonitor;
+    protected RenderingJobTimeoutMonitor jobMonitor = null;
 
     public void start()
     {
@@ -104,7 +104,11 @@ public class WorkerMonitorImpl implements WorkerMonitor
     }
 
     public void stop()
-    {        
+    {    
+    	if (jobMonitor != null)
+    		jobMonitor.endThread();
+    	jobMonitor = null;
+    	
     }
     
     public void setQueue(Queue queue)
@@ -270,7 +274,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
     class RenderingJobTimeoutMonitor extends Thread {
 
         long interval = 1000;
-
+        boolean shouldRun = true;
+        
         RenderingJobTimeoutMonitor(long interval) {
             super("RenderingJobTimeoutMonitor");
 
@@ -278,9 +283,20 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 this.interval = interval;
             }
         }
-
+        /**
+         * Thread.stop() is deprecated.
+         * This method achieves the same by setting the run varaible "shouldRun" to false and interrupting the Thread, 
+         * effectively causing the thread to shutdown correctly.
+         *
+         */
+        public void endThread()
+        {
+        	shouldRun = false;
+        	this.interrupt();
+        }
+        
         public void run() {
-            while (true) {
+            while (shouldRun) {
                 try 
                 {
                     // Because a timeout worker can be removed 
