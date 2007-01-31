@@ -160,7 +160,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     {
         // Portlet Name
         assertNotNull("Portlet.Name is null", portlet.getName());
-        assertTrue("Portlet.Name invalid: " + portlet.getName(), portlet.getName().equals("HelloWorld Portlet"));
+        assertTrue("Portlet.Name invalid: " + portlet.getName(), portlet.getName().equals("HelloPortlet"));
 
         // Portlet Class
         assertNotNull("Portlet.Class is null", portlet.getClassName());
