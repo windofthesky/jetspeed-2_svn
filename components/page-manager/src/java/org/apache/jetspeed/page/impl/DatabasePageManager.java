@@ -73,6 +73,7 @@ import org.apache.jetspeed.page.LinkNotRemovedException;
 import org.apache.jetspeed.page.LinkNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
+import org.apache.jetspeed.page.PageManagerSecurityUtils;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
@@ -554,6 +555,28 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
     }
 
+    /**
+     * Given a securityConstraintName definition and a set of actions,
+     * run a security constraint checks
+     */
+    public boolean checkConstraint(String securityConstraintName, String actions)
+    {
+        try
+        {
+            PageSecurity security = this.getPageSecurity();
+            SecurityConstraintsDef def = security.getSecurityConstraintsDef(securityConstraintName);
+            if (def != null)
+            {
+                return PageManagerSecurityUtils.checkConstraint(def, actions);
+            }            
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }           
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
      */

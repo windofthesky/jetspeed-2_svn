@@ -43,6 +43,7 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
+
 /**
  * This service is responsible for loading and saving Pages into
  * the selected persistent store.
@@ -682,4 +683,14 @@ public interface PageManager
      */
     public int addPages(Page[] pages)
     throws NodeException;
+    
+    /**
+     * For a given security constraint definition name, and the given action(s),
+     * make a constraint check for the current user subject
+     * 
+     * @param securityConstraintName the name of the security constraint definition
+     * @param actions one or more portlet actions (view,edit,help,..)
+     * @return
+     */
+    public boolean checkConstraint(String securityConstraintName, String actions);    
 }

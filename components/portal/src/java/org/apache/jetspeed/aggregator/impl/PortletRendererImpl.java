@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +30,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
+import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
@@ -38,16 +39,18 @@ import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -70,14 +73,30 @@ public class PortletRendererImpl implements PortletRenderer
     protected PortletWindowAccessor windowAccessor;
     protected PortalStatistics statistics;
     protected DynamicTitleService addTitleService;
-    protected long defaultPortletTimeout;
-
+    /**
+     * when rendering a portlet, the default timeout period in milliseconds
+     * setting to zero will disable (no timeout) the timeout
+     *  
+     */
+    protected long defaultPortletTimeout; 
+    /**
+     *  flag indicating whether to check jetspeed-portlet.xml security constraints 
+     *  before rendering a portlet. If security check fails, do not display portlet content
+     */
+    protected boolean checkSecurityConstraints;   
+    /**
+     * For security constraint checks
+     */
+    protected PageManager pageManager;
+    
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics,
                                DynamicTitleService addTitleService,
-                               long defaultPortletTimeout)
+                               long defaultPortletTimeout,
+                               boolean checkSecurityConstraints,
+                               PageManager pageManager)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
@@ -85,6 +104,8 @@ public class PortletRendererImpl implements PortletRenderer
         this.statistics = statistics;
         this.addTitleService = addTitleService;
         this.defaultPortletTimeout = defaultPortletTimeout;
+        this.checkSecurityConstraints = checkSecurityConstraints;
+        this.pageManager = pageManager;
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -93,7 +114,7 @@ public class PortletRendererImpl implements PortletRenderer
                                PortalStatistics statistics,
                                DynamicTitleService addTitleService)
     {
-        this( container, windowAccessor, workMonitor, statistics, null, 0 );
+        this(container, windowAccessor, workMonitor, statistics, null, 0, false, null);
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -144,13 +165,17 @@ public class PortletRendererImpl implements PortletRenderer
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
 
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, false);
+            RenderingJob rJob = buildRenderingJob(portletWindow, fragment, servletRequest, servletResponse, requestContext, false);
             rJob.execute();
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
+        catch (PortletAccessDeniedException e)
+        {
+            fragment.overrideRenderedContent(e.getLocalizedMessage());                        
+        }        
         catch (Exception e)
         {
-            fragment.overrideRenderedContent(e.toString());
+            fragment.overrideRenderedContent(e.getLocalizedMessage());
             log.error(e.toString(), e);
         }
     }
@@ -178,13 +203,17 @@ public class PortletRendererImpl implements PortletRenderer
             HttpServletRequest servletRequest = requestContext.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
 
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, false);
+            RenderingJob rJob = buildRenderingJob(portletWindow, fragment, servletRequest, servletResponse, requestContext, false);
             rJob.execute();
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
+        catch (PortletAccessDeniedException e)
+        {
+            fragment.overrideRenderedContent(e.getLocalizedMessage());                        
+        }        
         catch (Exception e)
         {
-            fragment.overrideRenderedContent(e.toString());
+            fragment.overrideRenderedContent(e.getLocalizedMessage());
             log.error(e.toString(), e);
         }
     }
@@ -214,7 +243,7 @@ public class PortletRendererImpl implements PortletRenderer
             portletWindow = getPortletWindow(fragment);
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
-            rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext, true);
+            rJob = buildRenderingJob(portletWindow, fragment, servletRequest, servletResponse, requestContext, true);
 
             if (rJob.getTimeout() > 0) 
             {
@@ -227,14 +256,16 @@ public class PortletRendererImpl implements PortletRenderer
 
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse );
         }
+        catch (PortletAccessDeniedException e)
+        {
+            fragment.overrideRenderedContent(e.getLocalizedMessage());                        
+        }
         catch (Exception e1)
         {
             servletRequest = requestContext.getRequest();
             servletResponse = dispatcherCtrl.getResponseForFragment(fragment, requestContext);
             log.error("render() failed: " + e1.toString(), e1);
-            fragment.overrideRenderedContent(e1.toString());            
-//            ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-        //    ((ContentDispatcherImpl) dispatcherCtrl).notify(oid);
+            fragment.overrideRenderedContent(e1.getLocalizedMessage());            
         }
         return rJob;
     }
@@ -274,17 +305,20 @@ public class PortletRendererImpl implements PortletRenderer
             return portletWindow;
 
     }
-
-    protected RenderingJob buildRenderingJob( ContentFragment fragment, HttpServletRequest request,
+    
+    protected RenderingJob buildRenderingJob( PortletWindow portletWindow, ContentFragment fragment, HttpServletRequest request,
                                               HttpServletResponse response, RequestContext requestContext, boolean isParallel ) 
-        throws FailedToRetrievePortletWindow, FailedToRenderFragmentException, PortletEntityNotStoredException
+        throws PortletAccessDeniedException, FailedToRetrievePortletWindow, FailedToRenderFragmentException, PortletEntityNotStoredException
     {
         RenderingJob rJob = null;
         ContentDispatcher dispatcher = null;
-        
-        PortletWindow portletWindow = getPortletWindow(fragment);
+                
         PortletDefinitionComposite portletDefinition = 
             (PortletDefinitionComposite) portletWindow.getPortletEntity().getPortletDefinition();
+        if (checkSecurityConstraints && !checkSecurityConstraint(portletDefinition, fragment))
+        {
+            throw new PortletAccessDeniedException("Access Denied.");
+        }
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
         dispatcher = getDispatcher(requestContext, true);        
         request = requestContext.getRequestForWindow(portletWindow);
@@ -382,4 +416,28 @@ public class PortletRendererImpl implements PortletRenderer
             }
         }
     }
+    
+    protected boolean checkSecurityConstraint(PortletDefinitionComposite portlet, ContentFragment fragment)
+    {
+        // TODO: check all kinds of fragments, or at least make this optional
+        if (fragment.getType().equals(ContentFragment.PORTLET))
+        {
+            String constraintRef = portlet.getJetspeedSecurityConstraint();
+            if (constraintRef == null)
+            {
+                constraintRef = ((MutablePortletApplication)portlet.getPortletApplicationDefinition()).getJetspeedSecurityConstraint();                
+                if (constraintRef == null)
+                {
+                    return true; // allow access
+                }
+            }
+            return pageManager.checkConstraint(constraintRef, "view");                
+            //log.info("Portlet " + portlet.getName() + " failed security check.");        
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
 }

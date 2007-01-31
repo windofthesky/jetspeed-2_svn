@@ -54,6 +54,15 @@
         <constructor-arg>
             <value>0</value>
         </constructor-arg>        
+        <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
+             before rendering a portlet. If security check fails, do not display portlet content
+          -->
+        <constructor-arg type="boolean">
+            <value>true</value>
+        </constructor-arg>           
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.page.PageManager" />
+        </constructor-arg>             
     </bean>
 
     <!-- Portlet Renderer w/title in http response header -->

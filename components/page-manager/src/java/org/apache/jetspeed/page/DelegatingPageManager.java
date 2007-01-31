@@ -89,6 +89,11 @@ public class DelegatingPageManager extends AbstractPageManager
         return null;
     }
 
+    public boolean checkConstraint(String securityConstraintName, String actions)
+    {
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getFolder(java.lang.String)
      */

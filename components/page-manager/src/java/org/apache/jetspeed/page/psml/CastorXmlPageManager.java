@@ -19,7 +19,6 @@ package org.apache.jetspeed.page.psml;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +28,6 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -46,6 +44,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.FragmentPreferenceImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
@@ -53,10 +52,10 @@ import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
-import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.AbstractPageManager;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageManagerSecurityUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -448,6 +447,24 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
     }
 
+    public boolean checkConstraint(String securityConstraintName, String actions)
+    {
+        try
+        {
+            PageSecurity security = this.getPageSecurity();
+            SecurityConstraintsDef def = security.getSecurityConstraintsDef(securityConstraintName);
+            if (def != null)
+            {
+                return PageManagerSecurityUtils.checkConstraint(def, actions);
+            }
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+    
     /**
      * <p>
      * getPageSecurity
