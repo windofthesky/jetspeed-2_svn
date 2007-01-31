@@ -30,7 +30,7 @@ limitations under the License.
     </portlet>
 
     <portlet>
-        <portlet-name>LocaleSelectorPortlet</portlet-name>
+        <portlet-name>LocaleSelector</portlet-name>
         <dc:title>Locale Selector Portlet</dc:title>
         <dc:creator>J2 Team</dc:creator>
     </portlet>
