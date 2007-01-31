@@ -45,7 +45,7 @@ limitations under the License.
     </portlet>
 
     <portlet>
-        <portlet-name>LocaleSelectorPortlet</portlet-name>
+        <portlet-name>LocaleSelector</portlet-name>
         <js:security-constraint-ref>users-1</js:security-constraint-ref>                                        
         <dc:creator>J2 Team</dc:creator>        
         <dc:title>Locale Selector Portlet</dc:title>
