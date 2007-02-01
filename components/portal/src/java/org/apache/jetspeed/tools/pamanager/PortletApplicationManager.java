@@ -525,6 +525,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         				if (reregister)
         				{
         					// add to search engine result
+        					this.updateSearchEngine(true, pa);
         					this.updateSearchEngine(false, pa);
         					
         					// and add to the current node info
