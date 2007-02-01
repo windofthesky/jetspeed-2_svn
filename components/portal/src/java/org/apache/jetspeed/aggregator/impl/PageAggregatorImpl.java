@@ -21,8 +21,6 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.aggregator.ContentServerAdapter;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -49,19 +47,17 @@ public class PageAggregatorImpl implements PageAggregator
 
     private int strategy = STRATEGY_SEQUENTIAL;
     private PortletRenderer renderer;
-    private ContentServerAdapter contentServer;
 
 
-    public PageAggregatorImpl( PortletRenderer renderer, int strategy, ContentServerAdapter contentServer)
+    public PageAggregatorImpl( PortletRenderer renderer, int strategy)
     {
         this.renderer = renderer;
         this.strategy = strategy;
-        this.contentServer = contentServer;
     }
 
-    public PageAggregatorImpl( PortletRenderer renderer, ContentServerAdapter contentServer)
+    public PageAggregatorImpl( PortletRenderer renderer)
     {
-        this(renderer, STRATEGY_SEQUENTIAL, contentServer);
+        this(renderer, STRATEGY_SEQUENTIAL);
     }
 
     /**
@@ -76,24 +72,11 @@ public class PageAggregatorImpl implements PageAggregator
         {
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
-
         ContentFragment root = page.getRootContentFragment();
-
         if (root == null)
         {
             throw new JetspeedException("No root ContentFragment found in ContentPage");
         }
-
-        String layoutDecorator = root.getDecorator();
-        if (layoutDecorator == null)
-        {
-            layoutDecorator = page.getEffectiveDefaultDecorator(root.getType());
-        }
-
-        contentServer.prepareContentPaths(context, page);
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
         // handle maximized state
         NavigationalState nav = context.getPortalURL().getNavigationalState();
         PortletWindow window = nav.getMaximizedWindow();
@@ -104,11 +87,8 @@ public class PageAggregatorImpl implements PageAggregator
         else
         {
             aggregateAndRender(root, context, page);
-        }
-        
-        //dispatcher.include(root);
+        }        
         context.getResponse().getWriter().write(root.getRenderedContent());
-
         if (null != window)
         {
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
@@ -132,7 +112,6 @@ public class PageAggregatorImpl implements PageAggregator
     protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment,
             PortletWindow window ) throws FailedToRenderFragmentException
     {
-        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
         ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
         if (maxedContentFragment != null)
         {
@@ -140,17 +119,6 @@ public class PageAggregatorImpl implements PageAggregator
             context.getRequest().setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, maxedContentFragment);
             context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
 
-            if (maxedContentFragment.getDecorator() != null)
-            {
-                log.debug("decorator=" + layoutContentFragment.getDecorator());
-                contentServer.addStyle(context, maxedContentFragment.getDecorator(), ContentFragment.PORTLET);
-            }
-            else
-            {
-                log.debug("no decorator for defined for portlet fragement," + layoutContentFragment.getId()
-                        + ".  So using page default, " + defaultPortletDecorator);
-                contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
-            }
             try
             {
                 renderer.renderNow(maxedContentFragment, context);
@@ -174,7 +142,6 @@ public class PageAggregatorImpl implements PageAggregator
     protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
             throws FailedToRenderFragmentException
     {
-
         if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
         {
             Iterator children = f.getContentFragments().iterator();
@@ -187,17 +154,6 @@ public class PageAggregatorImpl implements PageAggregator
                 }
             }
         }
-
-        // Start the actual rendering process
-        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
-        if (log.isDebugEnabled())
-        {
-            log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
-        }
-        
-       
-
-        
         if (strategy == STRATEGY_SEQUENTIAL)
         {
             renderer.renderNow(f, context);
@@ -205,18 +161,6 @@ public class PageAggregatorImpl implements PageAggregator
         else
         {
             renderer.render(f, context);
-        }
-
-        if (f.getDecorator() != null && f.getType().equals(ContentFragment.PORTLET))
-        {
-            log.debug("decorator=" + f.getDecorator());
-            contentServer.addStyle(context, f.getDecorator(), ContentFragment.PORTLET);
-        }
-        else if (f.getDecorator() == null && f.getType().equals(ContentFragment.PORTLET))
-        {
-            log.debug("no decorator for defined for portlet fragement," + f.getId() + ".  So using page default, "
-                    + defaultPortletDecorator);
-            contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
         }
     }
 }

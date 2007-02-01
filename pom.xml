@@ -216,7 +216,6 @@ limitations under the License.
         <!-- Base Modules -->
         <module>commons</module>
         <module>jetspeed-api</module>
-        <module>content-server</module>
 
         <!-- J2 Database -->
         <module>etc</module>
@@ -317,11 +316,6 @@ limitations under the License.
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>jetspeed-commons</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>content-server</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>

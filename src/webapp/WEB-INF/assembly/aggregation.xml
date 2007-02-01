@@ -97,9 +97,6 @@
         <constructor-arg index="1">
             <value>0</value>
         </constructor-arg>
-        <constructor-arg index='2'>
-            <ref bean="org.apache.jetspeed.aggregator.ContentServerAdapter" />
-        </constructor-arg>
     </bean>
 
 <!-- REFACTORING: this bean is not currently used, experimental -->
@@ -110,24 +107,6 @@
         <constructor-arg index='0'>
             <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
         </constructor-arg>
-        <constructor-arg index='1'>
-            <ref bean="org.apache.jetspeed.aggregator.ContentServerAdapter" />
-        </constructor-arg>        
-    </bean>
-
-    <bean id="org.apache.jetspeed.aggregator.ContentServerAdapter" 
-          class="org.apache.jetspeed.aggregator.impl.ContentServerAdapterImpl">
-        <constructor-arg index="0">
-            <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
-        </constructor-arg>          
-        <constructor-arg index="1">
-            <list>
-                <value>portlet/{mediaType}</value>
-                <value>layout/{mediaType}</value>
-                <value>generic/{mediaType}</value>
-                <value>{mediaType}</value>
-            </list>
-        </constructor-arg>          
     </bean>
     
     <bean id="org.apache.jetspeed.aggregator.WorkerMonitor"

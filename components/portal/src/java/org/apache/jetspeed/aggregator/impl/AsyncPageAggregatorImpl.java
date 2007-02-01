@@ -16,20 +16,18 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.aggregator.ContentServerAdapter;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -51,15 +49,12 @@ public class AsyncPageAggregatorImpl implements PageAggregator
     protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
 
     protected PortletRenderer renderer;
-    protected ContentServerAdapter contentServer;
 
     protected List fallBackContentPathes;
 
-    public AsyncPageAggregatorImpl(PortletRenderer renderer, 
-                                   ContentServerAdapter contentServer)
+    public AsyncPageAggregatorImpl(PortletRenderer renderer)
     {
         this.renderer = renderer;
-        this.contentServer = contentServer;
     }
 
     /**
@@ -74,19 +69,11 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         {
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
-
         ContentFragment root = page.getRootContentFragment();
-
         if (root == null)
         {
             throw new JetspeedException("No root ContentFragment found in ContentPage");
         }
-
-        contentServer.prepareContentPaths(context, page);
-        
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        ContentDispatcher dispatcher = renderer.getDispatcher(context, true);
         // handle maximized state
         NavigationalState nav = context.getPortalURL().getNavigationalState();
         PortletWindow window = nav.getMaximizedWindow();
@@ -97,11 +84,9 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         else
         {
             aggregateAndRender(root, context, page, true, null, null);
-        }
-        
+        }        
         //dispatcher.include(root);
         context.getResponse().getWriter().write(root.getRenderedContent());
-
         if (null != window)
         {
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
@@ -125,38 +110,22 @@ public class AsyncPageAggregatorImpl implements PageAggregator
     protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment,
             PortletWindow window ) throws FailedToRenderFragmentException
     {
-        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
         ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
         if (maxedContentFragment != null)
         {
             context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
             context.getRequest().setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, maxedContentFragment);
             context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
-
-            if (maxedContentFragment.getDecorator() != null)
-            {
-                log.debug("decorator=" + layoutContentFragment.getDecorator());
-                contentServer.addStyle(context, maxedContentFragment.getDecorator(), ContentFragment.PORTLET);
-            }
-            else
-            {
-                log.debug("no decorator for defined for portlet fragement," + layoutContentFragment.getId()
-                        + ".  So using page default, " + defaultPortletDecorator);
-                contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
-            }
             try
             {
                 renderer.renderNow(maxedContentFragment, context);
-                renderer.renderNow(layoutContentFragment, context);              
-                
+                renderer.renderNow(layoutContentFragment, context);                              
             }
             catch (Exception e)
             {
                 log.error(e.getMessage(), e);
                 maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
             }
-
-
         }
     }
 
@@ -249,22 +218,8 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         if (log.isDebugEnabled())
         {
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
-        }
-        
+        }        
         renderer.renderNow(f, context);
-        
-        
-        if (f.getDecorator() != null && f.getType().equals(ContentFragment.PORTLET))
-        {
-            log.debug("decorator=" + f.getDecorator());
-            contentServer.addStyle(context, f.getDecorator(), ContentFragment.PORTLET);
-        }
-        else if (f.getDecorator() == null && f.getType().equals(ContentFragment.PORTLET))
-        {
-            log.debug("no decorator for defined for portlet fragement," + f.getId() + ".  So using page default, "
-                      + defaultPortletDecorator);
-            contentServer.addStyle(context, defaultPortletDecorator, ContentFragment.PORTLET);
-        }
     }
     
 

@@ -240,11 +240,6 @@ limitations under the License.
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>content-server</artifactId>
-                <version>${org.apache.portals.jetspeed-2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
                 <artifactId>jetspeed-cm</artifactId>
                 <version>${org.apache.portals.jetspeed-2.version}</version>
             </dependency>

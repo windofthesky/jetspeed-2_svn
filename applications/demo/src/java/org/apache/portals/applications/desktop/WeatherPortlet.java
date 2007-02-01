@@ -58,7 +58,7 @@ public class WeatherPortlet extends GenericVelocityPortlet
 
         String style = prefs.getValue(WEATHER_STYLE, "infobox");
         context.put(WEATHER_STYLE, style);
-
+        response.setProperty("david", "taylor");
         super.doView(request, response);
     }
     

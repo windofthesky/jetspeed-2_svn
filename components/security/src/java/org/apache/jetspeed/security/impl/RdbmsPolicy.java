@@ -111,17 +111,17 @@ public class RdbmsPolicy extends Policy
             }
             else
             {
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Implying permission [class, " + permission.getClass().getName() + "], " + "[name, "
-                            + permission.getName() + "], " + "[actions, " + permission.getActions() + "] for: ");
-                    log.debug("\tCodeSource:" + protectionDomain.getCodeSource().getLocation().getPath());
-                    for (int i = 0; i < principals.length; i++)
-                    {
-                        log.debug("\tPrincipal[" + i + "]: [name, " + principals[i].getName() + "], [class, "
-                                + principals[i].getClass() + "]");
-                    }
-                }
+//                if (log.isDebugEnabled())
+//                {
+//                    log.debug("Implying permission [class, " + permission.getClass().getName() + "], " + "[name, "
+//                            + permission.getName() + "], " + "[actions, " + permission.getActions() + "] for: ");
+//                    log.debug("\tCodeSource:" + protectionDomain.getCodeSource().getLocation().getPath());
+//                    for (int i = 0; i < principals.length; i++)
+//                    {
+//                        log.debug("\tPrincipal[" + i + "]: [name, " + principals[i].getName() + "], [class, "
+//                                + principals[i].getClass() + "]");
+//                    }
+//                }
                 perms = pms.getPermissions(Arrays.asList(principals));
             }
         }
@@ -162,10 +162,10 @@ public class RdbmsPolicy extends Policy
      */
     public PermissionCollection getPermissions(CodeSource codeSource)
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug("getPermissions called for '" + codeSource + "'.");
-        }
+//        if (log.isDebugEnabled())
+//        {
+//            log.debug("getPermissions called for '" + codeSource + "'.");
+//        }
         PermissionCollection otherPerms = getOtherPoliciesPermissions(codeSource);
 
         return otherPerms;
@@ -181,10 +181,10 @@ public class RdbmsPolicy extends Policy
      */
     private PermissionCollection getOtherPoliciesPermissions(CodeSource codeSource)
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug("Checking other policies permissions.");
-        }
+//        if (log.isDebugEnabled())
+//        {
+//            log.debug("Checking other policies permissions.");
+//        }
         log.debug("CodeSource: " + codeSource.getLocation().getPath());
 
         List securityPolicies = SecurityPolicies.getInstance().getUsedPolicies();
