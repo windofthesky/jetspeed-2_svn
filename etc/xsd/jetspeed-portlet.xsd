@@ -21,14 +21,10 @@ limitations under the License.
 	xmlns:js="http://portals.apache.org/jetspeed" 
 	xmlns:p="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
 
-  <!-- <xs:import namespace="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd"/>
-  -->
   <xs:import namespace="http://www.purl.org/dc" schemaLocation="dublin-core.xsd"/>
   <xs:import namespace="http://www.w3.org/XML/1998/namespace"
              schemaLocation="http://www.w3.org/2001/xml.xsd"/>
              
-                  
-   
   <xs:element name="portlet-app">
     <xs:complexType mixed="true">
       <xs:sequence>
@@ -52,6 +48,7 @@ limitations under the License.
         <xs:element name="security-constraint-ref" minOccurs="0" type="xs:string"/>
         <xs:group ref="tns:metadataGroup" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="optional"/>
     </xs:complexType>
   </xs:element>  
 

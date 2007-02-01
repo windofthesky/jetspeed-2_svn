@@ -18,8 +18,8 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:js="http://portals.apache.org/jetspeed"
     xmlns:dc="http://www.purl.org/dc"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed jetspeed-portlet.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd">
      
     <js:security-constraint-ref>admin-only</js:security-constraint-ref>      
 
