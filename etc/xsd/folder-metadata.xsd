@@ -21,46 +21,77 @@ limitations under the License.
   <xs:element name="folder">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:title"/>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:short-title" minOccurs="0"/>
+        <xs:element ref="tns:default-page" minOccurs="0"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata"/>
         <xs:element minOccurs="0" ref="tns:defaults"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:document-order"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:menu"/>
         <xs:element minOccurs="0" ref="tns:security-constraints"/>
       </xs:sequence>
+      <xs:attribute name="hidden" type="xs:boolean" use="optional"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="title" type="xs:string"/>
+  <xs:element name="default-page" type="xs:string"/>
   <xs:element name="defaults">
     <xs:complexType>
       <xs:attribute name="layout-decorator" use="required" type="xs:string"/>
       <xs:attribute name="portlet-decorator" use="required" type="xs:string"/>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="document-order" type="xs:string"/>
   <xs:element name="menu">
     <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="tns:options"/>
-        <xs:element ref="tns:separator"/>
-      </xs:choice>
-      <xs:attribute name="depth" type="xs:integer"/>
-      <xs:attribute name="name" use="required" type="xs:string"/>
-      <xs:attribute name="options"/>
-      <xs:attribute name="regexp" type="xs:boolean"/>
+      <xs:sequence>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:short-title" minOccurs="0"/>
+        <xs:element ref="tns:metadata" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="tns:menu" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="tns:options"/>
+	      <xs:element ref="tns:separator"/>
+	      <xs:element ref="tns:exclude"/>
+	      <xs:element ref="tns:include"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name"    use="optional" type="xs:string"/>
+      <xs:attribute name="depth"   use="optional" type="xs:integer"/>
+      <xs:attribute name="options" use="optional" type="xs:string"/>
+      <xs:attribute name="regexp"  use="optional" type="xs:boolean"/>
+      <xs:attribute name="skin"    use="optional" type="xs:string"/>
+      <xs:attribute name="profile" use="optional" type="xs:string"/>
+      <xs:attribute name="order"   use="optional" type="xs:string"/>
+      <xs:attribute name="paths"   use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
+  <xs:element name="exclude" type="xs:string"/>
+  <xs:element name="include">
+    <xs:complexType mixed="true">
+      <xs:attribute name="nest" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="short-title" type="xs:string"/>
   <xs:element name="options">
     <xs:complexType mixed="true">
-      <xs:attribute name="regexp" type="xs:boolean"/>
+      <xs:attribute name="profile" use="optional" type="xs:string"/>
+      <xs:attribute name="regexp"  use="optional" type="xs:boolean"/>
+      <xs:attribute name="depth"   use="optional" type="xs:integer"/>
+      <xs:attribute name="order"   use="optional" type="xs:string"/>
+      <xs:attribute name="skin"    use="optional" type="xs:string"/>
+      <xs:attribute name="paths"   use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="separator">
-    <xs:complexType>
+    <xs:complexType mixed="true">
       <xs:sequence>
-        <xs:element ref="tns:text"/>
-        <xs:element maxOccurs="unbounded" ref="tns:metadata"/>
+        <xs:element ref="tns:text" minOccurs="0"/>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:metadata" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="text" type="xs:string"/>
