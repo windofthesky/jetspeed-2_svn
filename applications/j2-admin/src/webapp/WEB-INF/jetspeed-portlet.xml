@@ -15,9 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <portlet-app id="j2-admin" version="1.0"
-    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd"
+    xmlns="http://portals.apache.org/jetspeed"
     xmlns:js="http://portals.apache.org/jetspeed"
-    xmlns:dc="http://www.purl.org/dc">
+    xmlns:dc="http://www.purl.org/dc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd">
 
     <dc:title>Jetspeed-2 Administration Portlets</dc:title>
     <dc:title xml:lang="en">Jetspeed-2 Administration Portlets</dc:title>

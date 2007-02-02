@@ -15,11 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <portlet-app id="HW_App" version="1.0" 
-    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
+    xmlns="http://portals.apache.org/jetspeed" 
     xmlns:js="http://portals.apache.org/jetspeed" 
-    xmlns:dc="http://www.purl.org/dc">
+    xmlns:dc="http://www.purl.org/dc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd">
     
-    <js:security-constraint-ref>admin-only</js:security-constraint-ref>    
+    <js:security-constraint-ref>admin-only</js:security-constraint-ref>
     
     <dc:title>Title 1</dc:title>
     <dc:title xml:lang="en">Eng Title</dc:title>
@@ -86,6 +88,12 @@ limitations under the License.
         <js:metadata name="field2" xml:lang="en">Value 2</js:metadata>
     </portlet>
     
+    
+    <js:services>
+    	<js:service name='PortletRegistryComponent' />
+    	<js:service name='PortletEntityAccessComponent'/>		
+    </js:services>
+    
     <js:user-attribute-ref>
 		<js:name>user-name-given</js:name>
 		<js:name-link>user.name.given</js:name-link>
@@ -94,10 +102,5 @@ limitations under the License.
 		<js:name>user-name-family</js:name>
 		<js:name-link>user.name.family</js:name-link>
   	</js:user-attribute-ref>
-
-    <js:services>
-    	<js:service name='PortletRegistryComponent' />
-    	<js:service name='PortletEntityAccessComponent'/>		
-    </js:services>
 
 </portlet-app>
