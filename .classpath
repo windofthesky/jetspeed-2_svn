@@ -49,7 +49,6 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
 	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="content-server/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="taglibs/treecontrol/src/java"/>
