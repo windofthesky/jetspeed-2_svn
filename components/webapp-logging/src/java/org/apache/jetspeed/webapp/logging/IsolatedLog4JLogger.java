@@ -97,7 +97,7 @@ public class IsolatedLog4JLogger implements Log
 {
     private static Hierarchy hierarchy;
     private static HashMap notIsolatedLoggers = new HashMap();
-
+    
     private Log4JLogger logger; // the wrapped Log4JLogger 
     
     public static void setHierarchy(Hierarchy hierarchy)
@@ -163,82 +163,138 @@ public class IsolatedLog4JLogger implements Log
 
     public void debug(Object arg0)
     {
-        getLogger().debug(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.debug(arg0);
+        }
     }
     public void debug(Object arg0, Throwable arg1)
     {
-        getLogger().debug(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.debug(arg0,arg1);
+        }
     }
     public boolean equals(Object obj)
     {
-        return getLogger().equals(obj);
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.equals(obj) : false;
     }
     public void error(Object arg0)
     {
-        getLogger().error(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.error(arg0);
+        }
     }
     public void error(Object arg0, Throwable arg1)
     {
-        getLogger().error(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.error(arg0, arg1);
+        }
     }
     public void fatal(Object arg0)
     {
-        getLogger().fatal(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.fatal(arg0);
+        }
     }
     public void fatal(Object arg0, Throwable arg1)
     {
-        getLogger().fatal(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.fatal(arg0, arg1);
+        }
     }
     public void info(Object arg0)
     {
-        getLogger().info(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.info(arg0);
+        }
     }
     public void info(Object arg0, Throwable arg1)
     {
-        getLogger().info(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.info(arg0, arg1);
+        }
     }
     public boolean isDebugEnabled()
     {
-        return getLogger().isDebugEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isDebugEnabled() : false;
     }
     public boolean isErrorEnabled()
     {
-        return getLogger().isErrorEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isErrorEnabled() : false;
     }
     public boolean isFatalEnabled()
     {
-        return getLogger().isFatalEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isFatalEnabled() : false;
     }
     public boolean isInfoEnabled()
     {
-        return getLogger().isInfoEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isInfoEnabled() : false;
     }
     public boolean isTraceEnabled()
     {
-        return getLogger().isTraceEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isTraceEnabled() : false;
     }
     public boolean isWarnEnabled()
     {
-        return getLogger().isWarnEnabled();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.isWarnEnabled() : false;
     }
     public String toString()
     {
-        return getLogger().toString();
+        Log4JLogger logger = getLogger();
+        return logger != null ? logger.toString() : null;
     }
     public void trace(Object arg0)
     {
-        getLogger().trace(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.trace(arg0);
+        }
     }
     public void trace(Object arg0, Throwable arg1)
     {
-        getLogger().trace(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.trace(arg0, arg1);
+        }
     }
     public void warn(Object arg0)
     {
-        getLogger().warn(arg0);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.warn(arg0);
+        }
     }
     public void warn(Object arg0, Throwable arg1)
     {
-        getLogger().warn(arg0, arg1);
+        Log4JLogger logger = getLogger();
+        if ( logger != null )
+        {
+            logger.warn(arg0, arg1);
+        }
     }
 }
