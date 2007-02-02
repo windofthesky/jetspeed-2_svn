@@ -116,20 +116,18 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 			//String savedPassword = String.valueOf(getPassword(uid));
 			String oldCredential = (String)env.get(Context.SECURITY_CREDENTIALS);
 			String oldUsername = (String)env.get(Context.SECURITY_PRINCIPAL);
-			
-			
-			String principal = getEntryPrefix() + "=" + uid;
-			
-			if (!StringUtils.isEmpty(getUserFilterBase()))
-				principal+="," + getUserFilterBase();
-			if (!StringUtils.isEmpty(getRootContext()))
-				principal+="," + getRootContext();
-			
-			if (lookupByUid(uid)==null)
+						
+			String dn = lookupByUid(uid);
+            if ( dn == null )
 				throw new SecurityException(new KeyedMessage("User " + uid + " not found"));
+            
+            // Build user dn using lookup value, just appending the user filter after the uid won't work when users
+            // are/can be stored in a subtree (searchScope sub-tree)
+            // The looked up dn though is/should always be correct, just need to append the root context.
+            if (!StringUtils.isEmpty(getRootContext()))
+                dn +="," + getRootContext();
 			
-			
-			env.put(Context.SECURITY_PRINCIPAL,principal);
+			env.put(Context.SECURITY_PRINCIPAL,dn);
 			env.put(Context.SECURITY_CREDENTIALS,password);
 			new InitialContext(env);
 			env.put(Context.SECURITY_PRINCIPAL,oldUsername);
@@ -244,25 +242,34 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      */
     private char[] convertRawPassword(Attribute attr) throws NamingException
     {
-        byte[] rawPass = (byte[]) attr.getAll().next();
-        char[] charPass = new char[rawPass.length];
-
-        for (int i = 0; i < rawPass.length; i++)
+        char[] charPass = null;
+        
+        if ( attr != null )
         {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug(new String("password byte[" + i + "]:" + rawPass[i]));
-            }
+            byte[] rawPass = (byte[]) attr.getAll().next();
+            charPass = new char[rawPass.length];
 
-            Byte passByte = new Byte(rawPass[i]);
-
-            logger.debug("password byte[" + i + "] short value:" + passByte.shortValue());
-            // I know I lose the sign and this is only good for ascii text.
-            charPass[i] = (char) rawPass[i];           
-            if (logger.isDebugEnabled())
+            for (int i = 0; i < rawPass.length; i++)
             {
-                logger.debug("passchar char[" + i + "]:" + charPass[i]);
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug(new String("password byte[" + i + "]:" + rawPass[i]));
+                }
+
+                Byte passByte = new Byte(rawPass[i]);
+
+                logger.debug("password byte[" + i + "] short value:" + passByte.shortValue());
+                // I know I lose the sign and this is only good for ascii text.
+                charPass[i] = (char) rawPass[i];           
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug("passchar char[" + i + "]:" + charPass[i]);
+                }
             }
+        }
+        else
+        {
+            charPass = new char[0];
         }
         return charPass;
     }
