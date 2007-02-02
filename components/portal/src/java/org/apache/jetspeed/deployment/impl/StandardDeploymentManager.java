@@ -16,6 +16,7 @@
 package org.apache.jetspeed.deployment.impl;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +47,14 @@ import org.apache.jetspeed.deployment.DeploymentStatus;
  */
 public class StandardDeploymentManager implements DeploymentManager
 {
+    private static final FileFilter readmeIgnoringFileFilter = new FileFilter()
+    {
+        public boolean accept(File file)
+        {
+            return !file.getName().equalsIgnoreCase("README.txt");
+        }
+    };
+    
     protected Log               log = LogFactory.getLog("deployment");
     protected FileSystemScanner scanner;
     protected PortletRegistry   registry;
@@ -192,9 +201,6 @@ public class StandardDeploymentManager implements DeploymentManager
             File aFile = stagedFiles[i];
             if (aFile.isFile() && !ignoreFile(aFile))
             {
-                boolean failed = false;
-                boolean unknown = false;
-
                 DeploymentStatus status = null;
                 Exception de = null;
                 try
@@ -305,7 +311,7 @@ public class StandardDeploymentManager implements DeploymentManager
         ArrayList fileList = new ArrayList();
         for (int i = 0; i < stagingDirectoriesAsFiles.length; i++)
         {
-            fileList.addAll(Arrays.asList(stagingDirectoriesAsFiles[i].listFiles()));
+            fileList.addAll(Arrays.asList(stagingDirectoriesAsFiles[i].listFiles(readmeIgnoringFileFilter)));
         }
 
         return (File[]) fileList.toArray(new File[fileList.size()]);
