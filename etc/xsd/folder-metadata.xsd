@@ -98,11 +98,24 @@ limitations under the License.
   <xs:element name="security-constraints">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:security-constraints-ref"/>
+        <xs:element minOccurs="0" ref="tns:owner"/>
+        <xs:element minOccurs="0" ref="tns:security-constraints-ref"/>
+        <xs:element minOccurs="0" ref="tns:security-constraint"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="owner" type="xs:string"/>
   <xs:element name="security-constraints-ref" type="xs:string"/>
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:roles"/>
+        <xs:element ref="tns:permissions"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="roles" type="xs:string"/>
+  <xs:element name="permissions" type="xs:string"/>
   <xs:element name="metadata">
     <xs:complexType mixed="true">
       <xs:attribute name="name" use="required" type="xs:string"/>
