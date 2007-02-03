@@ -25,7 +25,9 @@ limitations under the License.
         <xs:element ref="tns:url"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata"/>
       </xs:sequence>
-      <xs:attribute name="target" use="required" type="xs:string"/>
+      <xs:attribute name="target" use="optional" type="xs:string"/>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
+      <xs:attribute name="hidden" use="optional" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="title" type="xs:string"/>
