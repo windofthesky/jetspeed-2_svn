@@ -17,7 +17,7 @@ limitations under the License.
 <link target="top"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed link.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd">
  <title>Jetspeed 2 Home Page</title>
  <url>http://portals.apache.org/jetspeed-2/</url>
  <metadata name="title" xml:lang="ja">Jetspeed 2 ホームページ</metadata>
