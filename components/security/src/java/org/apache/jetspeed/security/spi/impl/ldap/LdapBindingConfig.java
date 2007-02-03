@@ -33,8 +33,12 @@ public class LdapBindingConfig
     private static final Log logger = LogFactory.getLog(LdapBindingConfig.class);
 
     private String initialContextFactory;
+    private String ldapSocketFactory;
+    private String ldapScheme = "ldap";
     private String ldapServerName;
     private String ldapServerPort;
+    private String ldapSecurityLevel = "simple";
+    private String ldapSecurityProtocol;
     private String rootDn;
     private String rootPassword;
     private String rootContext;
@@ -88,17 +92,11 @@ public class LdapBindingConfig
 
 	private String[] knownAttributes;
 
-    /**
-     * @param factory The initial context factory.
-     * @param name The ldap server name.
-     * @param port The ldap server port.
-     * @param suffix The default dn suffix.
-     * @param context The root context.
-     * @param dn The root dn.
-     * @param password The root password.
-     * @param uou The users organization unit.
-     * @param gou The groups organization unit.
-     */
+    public LdapBindingConfig()
+    {
+        // allow for properties setting configuration instead of through one big ugly constructor call or external properties file
+    }
+    
     public LdapBindingConfig(String factory, 
     		String name, 
     		String port, 
@@ -275,6 +273,38 @@ public class LdapBindingConfig
     {
         this.initialContextFactory = initialContextFactory;
     }
+    
+    /**
+     * @return the ldapScheme
+     */
+    public String getLdapScheme()
+    {
+        return ldapScheme;
+    }
+
+    /**
+     * @param ldapScheme the ldapScheme to set
+     */
+    public void setLdapScheme(String ldapScheme)
+    {
+        this.ldapScheme = ldapScheme;
+    }
+
+    /**
+     * @return the ldapSocketFactory
+     */
+    public String getLdapSocketFactory()
+    {
+        return ldapSocketFactory;
+    }
+
+    /**
+     * @param ldapSocketFactory the ldapSocketFactory to set
+     */
+    public void setLdapSocketFactory(String ldapSocketFactory)
+    {
+        this.ldapSocketFactory = ldapSocketFactory;
+    }
 
     /**
      * @return Returns the ldapServerName.
@@ -306,6 +336,38 @@ public class LdapBindingConfig
     public void setLdapServerPort(String ldapServerPort)
     {
         this.ldapServerPort = ldapServerPort;
+    }
+
+    /**
+     * @return the ldapSecurityLevel
+     */
+    public String getLdapSecurityLevel()
+    {
+        return ldapSecurityLevel;
+    }
+
+    /**
+     * @param ldapSecurityLevel the ldapSecurityLevel to set
+     */
+    public void setLdapSecurityLevel(String ldapSecurityLevel)
+    {
+        this.ldapSecurityLevel = ldapSecurityLevel;
+    }
+
+    /**
+     * @return the ldapSecurityProtocol
+     */
+    public String getLdapSecurityProtocol()
+    {
+        return ldapSecurityProtocol;
+    }
+
+    /**
+     * @param ldapSecurityProtocol the ldapSecurityProtocol to set
+     */
+    public void setLdapSecurityProtocol(String ldapSecurityProtocol)
+    {
+        this.ldapSecurityProtocol = ldapSecurityProtocol;
     }
 
     /**

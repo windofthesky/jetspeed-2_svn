@@ -96,11 +96,19 @@ public abstract class AbstractLdapDao
         {
             Properties env = new Properties();
             env.put(Context.INITIAL_CONTEXT_FACTORY, this.ldapBindingConfig.getInitialContextFactory());
-            env.put(Context.PROVIDER_URL, "ldap://" + this.ldapBindingConfig.getLdapServerName() + ":"
+            env.put(Context.PROVIDER_URL, this.ldapBindingConfig.getLdapScheme() + "://" + this.ldapBindingConfig.getLdapServerName() + ":"
                     + this.ldapBindingConfig.getLdapServerPort() + "/" + this.ldapBindingConfig.getRootContext());
             env.put(Context.SECURITY_PRINCIPAL, rootDn);
             env.put(Context.SECURITY_CREDENTIALS, rootPassword);
-            env.put(Context.SECURITY_AUTHENTICATION, "simple");
+            env.put(Context.SECURITY_AUTHENTICATION, this.ldapBindingConfig.getLdapSecurityLevel());
+            if ( !StringUtils.isEmpty(this.ldapBindingConfig.getLdapSecurityProtocol()) )
+            {
+                env.put(Context.SECURITY_PROTOCOL, this.ldapBindingConfig.getLdapSecurityProtocol());
+            }
+            if ( !StringUtils.isEmpty(this.ldapBindingConfig.getLdapSocketFactory()) )
+            {
+                env.put("java.naming.ldap.factory.socket", this.ldapBindingConfig.getLdapSocketFactory());
+            }
             ctx = new InitialLdapContext(env, null);
         }
         catch (NamingException ne)
