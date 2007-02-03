@@ -21,20 +21,22 @@ limitations under the License.
   <xs:element name="page">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:defaults"/>
+        <xs:element minOccurs="0" ref="tns:defaults"/>
         <xs:element ref="tns:title"/>
-        <xs:element ref="tns:fragment"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata"/>
-        <xs:element ref="tns:security-constraints"/>
+        <xs:element ref="tns:fragment"/>
+        <xs:element minOccurs="0" ref="tns:security-constraints"/>
       </xs:sequence>
       <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="hidden" use="optional" type="xs:boolean"/>
+      <xs:attribute name="version" use="optional" type="xs:double"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="defaults">
     <xs:complexType>
       <xs:attribute name="layout-decorator" use="required" type="xs:string"/>
       <xs:attribute name="portlet-decorator" use="required" type="xs:string"/>
-      <xs:attribute name="skin" use="required" type="xs:string"/>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="title" type="xs:string"/>
@@ -44,9 +46,11 @@ limitations under the License.
       <xs:attribute ref="xml:lang" use="required"/>
     </xs:complexType>
   </xs:element>
+  <xs:element name="owner" type="xs:string"/>
   <xs:element name="security-constraints">
     <xs:complexType>
       <xs:sequence>
+        <xs:element ref="tns:owner"/>
         <xs:element ref="tns:security-constraints-ref"/>
       </xs:sequence>
     </xs:complexType>
@@ -54,13 +58,15 @@ limitations under the License.
   <xs:element name="security-constraints-ref" type="xs:string"/>
   <xs:element name="fragment">
     <xs:complexType>
-      <xs:sequence minOccurs="0">
-        <xs:element minOccurs="0" ref="tns:fragment" />
+      <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:property"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:fragment" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:preference"/>
       </xs:sequence>
       <xs:attribute name="id" use="required" type="xs:ID"/>
       <xs:attribute name="name" use="required" type="xs:string"/>
       <xs:attribute name="type" use="required" type="xs:string"/>
+      <xs:attribute name="decorator" use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="property">
@@ -68,6 +74,15 @@ limitations under the License.
       <xs:attribute name="layout" use="required" type="xs:string"/>
       <xs:attribute name="name" use="required" type="xs:string"/>
       <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value" type="xs:string"/>
+  <xs:element name="preference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:value"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>
