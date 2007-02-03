@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 Copyright 2005 The Apache Software Foundation
 
@@ -16,7 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<link>
+<link
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd">
 
   <title>/link0.link</title>
 
