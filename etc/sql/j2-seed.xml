@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Snapshot name="standard-jetspeed2.xml">
+<Snapshot name="standard-jetspeed2.xml"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/j2-seed.xsd">
 	<softwareVersion value="1"/>
 	<softwareSubVersion value="0"/>
 	<default_rule value="j2"/>
@@ -15,35 +18,35 @@
 	<MediaTypes>
 		<MediaType name="html">
 			<charcterSet value="UTF-8"/>
-			<titel value="HTML"/>
+			<title value="HTML"/>
 			<description value="Rich HTML for HTML 4.0 compliants browsers"/>
 			<capabilities></capabilities>
 			<mimeTypes>text/html</mimeTypes>
 		</MediaType>
 		<MediaType name="vxml">
 			<charcterSet value="UTF-8"/>
-			<titel value="VoiceXML"/>
+			<title value="VoiceXML"/>
 			<description value="Format suitable for use with an audio VoiceXML server"/>
 			<capabilities></capabilities>
 			<mimeTypes>text/vxml</mimeTypes>
 		</MediaType>
 		<MediaType name="wml">
 			<charcterSet value="UTF-8"/>
-			<titel value="WML"/>
+			<title value="WML"/>
 			<description value="Format for mobile phones and PDAs compatible with WML 1.1"/>
 			<capabilities></capabilities>
 			<mimeTypes>text/vnd.wap.wml</mimeTypes>
 		</MediaType>
 		<MediaType name="xhtml-basic">
 			<charcterSet value="UTF-8"/>
-			<titel value="XHTML"/>
+			<title value="XHTML"/>
 			<description value="XHTML Basic"/>
 			<capabilities></capabilities>
 			<mimeTypes>application/xhtml+xml</mimeTypes>
 		</MediaType>
 		<MediaType name="xml">
 			<charcterSet value=""/>
-			<titel value="XML"/>
+			<title value="XML"/>
 			<description value="XML 1.0"/>
 			<capabilities></capabilities>
 			<mimeTypes>text/xml</mimeTypes>

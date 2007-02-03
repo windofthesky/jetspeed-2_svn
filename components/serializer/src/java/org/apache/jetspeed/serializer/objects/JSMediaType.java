@@ -35,7 +35,7 @@ public class JSMediaType
 
 	private String characterSet;
 
-	private String titel;
+	private String title;
 
 	private String description;
 
@@ -59,7 +59,7 @@ public class JSMediaType
 		this.name = c.getName();
 
 		this.characterSet = c.getCharacterSet();
-		this.titel = c.getTitle();
+		this.title = c.getTitle();
 		this.description = c.getDescription();
         capabilities = new ArrayList();
         mimeTypes = new ArrayList();
@@ -85,7 +85,7 @@ public class JSMediaType
                 /** named fields HERE */
 
                 xml.add( g.characterSet, "charcterSet",String.class);
-				xml.add(g.titel,"titel", String.class);
+				xml.add(g.title,"title", String.class);
 				xml.add(g.description, "description", String.class);
 
                 /** implicitly named (through binding) fields here */
@@ -114,7 +114,7 @@ public class JSMediaType
                 Object o1 = xml.get("charcterSet",String.class); //characterSet
                 if ((o1 != null) && (o1 instanceof String))
                 	g.characterSet = StringEscapeUtils.unescapeHtml((String)o1);
-                g.titel = StringEscapeUtils.unescapeHtml((String)xml.get("titel", String.class)); //titel;
+                g.title = StringEscapeUtils.unescapeHtml((String)xml.get("title", String.class)); //title;
                 g.description  = StringEscapeUtils.unescapeHtml((String)xml.get("description", String.class)); //description;
 
                 while (xml.hasNext())
@@ -200,19 +200,19 @@ public class JSMediaType
 	}
 
 	/**
-	 * @return Returns the titel.
+	 * @return Returns the title.
 	 */
-	public String getTitel()
+	public String getTitle()
 	{
-		return titel;
+		return title;
 	}
 
 	/**
-	 * @param titel The titel to set.
+	 * @param title The title to set.
 	 */
-	public void setTitel(String titel)
+	public void setTitle(String titel)
 	{
-		this.titel = titel;
+		this.title = titel;
 	}
     private String append(JSCapability capability)
     {

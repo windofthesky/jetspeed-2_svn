@@ -16,8 +16,8 @@ limitations under the License.
 -->
 <Snapshot name="standard-jetspeed2.xml" 
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed j2-seed.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/j2-seed.xsd">
 	<softwareVersion value="1"/>
 	<softwareSubVersion value="0"/>
 	<default_rule value="j2"/>

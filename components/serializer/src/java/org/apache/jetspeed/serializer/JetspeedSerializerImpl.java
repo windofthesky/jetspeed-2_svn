@@ -668,7 +668,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     				{
 //    					 set object fields               
     			        mediaType.setCharacterSet(_c.getCharacterSet());
-    			        mediaType.setTitle(_c.getTitel());
+    			        mediaType.setTitle(_c.getTitle());
     			        mediaType.setDescription(_c.getDescription());
     			       
     			        try
