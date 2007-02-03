@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<folder>
+<folder
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
 
   <title>Subsite2 Root Folder</title>  
+  <default-page>subsite2-default-page.psml</default-page>
   <metadata name="title" xml:lang="ja">サブサイト２ルートフォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpeta raiz de subportal 2</metadata>
   <metadata name="title" xml:lang="zh">子站点2根文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">子站點2根文件夾</metadata>
-
-  <default-page>subsite2-default-page.psml</default-page>
 
   <security-constraints>
     <owner>subsite2</owner>
