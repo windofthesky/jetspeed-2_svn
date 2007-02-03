@@ -201,7 +201,7 @@
               <i>
                 <a
                   href="http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/security/etc/security-spi-ldap-atz.xml?content-type=text/plain&amp;view=co">
-                  security-spi-atz.xml
+                  security-spi-ldap-atz.xml
                 </a>
                 :
               </i>
