@@ -22,7 +22,8 @@ limitations under the License.
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" ref="tns:defaults"/>
-        <xs:element ref="tns:title"/>
+        <xs:element minOccurs="0" ref="tns:title"/>
+        <xs:element minOccurs="0" ref="tns:short-title"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata"/>
         <xs:element ref="tns:fragment"/>
         <xs:element minOccurs="0" ref="tns:security-constraints"/>
@@ -40,6 +41,7 @@ limitations under the License.
     </xs:complexType>
   </xs:element>
   <xs:element name="title" type="xs:string"/>
+  <xs:element name="short-title" type="xs:string"/>
   <xs:element name="metadata">
     <xs:complexType mixed="true">
       <xs:attribute name="name" use="required" type="xs:string"/>
@@ -51,10 +53,19 @@ limitations under the License.
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="tns:owner"/>
+        <xs:element maxOccurs="unbounded" ref="tns:security-constraint"/>
         <xs:element ref="tns:security-constraints-ref"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:users"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="users" type="xs:string"/>
   <xs:element name="security-constraints-ref" type="xs:string"/>
   <xs:element name="fragment">
     <xs:complexType>
