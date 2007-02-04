@@ -16,7 +16,33 @@ limitations under the License.
 
 <portlet-app id="jetspeed" version="1.0">
 
-<portlet id="VelocityOneColumn">
+  <portlet id="SimpleLayoutPortlet">
+    <description>The SimpleLayoutPortlet requires a ViewPage layout template set through the portlet preferences
+      which provides its own layout algorithm</description>
+    <portlet-name>SimpleLayout</portlet-name>
+    <display-name>Simple readonly fixed Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.LayoutPortlet</portlet-class>
+    <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>SimpleLayoutPortlet</title>
+      <short-title>SimpleLayout</short-title>
+    </portlet-info>
+  </portlet>
+  
+  <portlet id="VelocityOneColumn">
     <portlet-name>VelocityOneColumn</portlet-name>
     <display-name>One Column Layout Using Velocity</display-name>
     <display-name xml:lang="ja">Velocityを利用した 1 列レイアウト</display-name>
