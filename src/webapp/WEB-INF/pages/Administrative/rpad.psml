@@ -11,7 +11,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="rpad">
+<page id="rpad"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <defaults skin="blue" layout-decorator="tigris" portlet-decorator="tigris"/>
   <title>RPAD</title>
   <metadata name="short-title" xml:lang="es">RPAD</metadata>

@@ -16,8 +16,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<page>
+<page id="_user-user-folder1-page0"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
   <title>/folder1/page0.psml</title>
+  <fragment id="fake" name="fake" type="fake"/>
 
 </page>

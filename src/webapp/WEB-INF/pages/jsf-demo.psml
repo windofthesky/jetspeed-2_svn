@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2004 The Apache Software Foundation
+Copyright 2007 The Apache Software Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,13 +14,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="JSFPortlets">
-    <defaults
+<page id="JSFPortlets"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+  <defaults
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
 
    <title>JSF Demo</title>
+   <metadata name="title" xml:lang="ja">JSF デモ</metadata>
+   <metadata name="title" xml:lang="es">Demo Java Server Faces</metadata>
+   <metadata name="short-title" xml:lang="es">Demo JSF</metadata>
+   <metadata name="title" xml:lang="hu">JSF Demo</metadata>
+   <metadata name="title" xml:lang="zh">JSF 示例</metadata>
+  
    <fragment id="jsfportletspage" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="jsfGuessNumber1" type="portlet" name="jsf-demo::guessNumber">
       <property layout="TwoColumns" name="row" value="0" />
@@ -31,11 +40,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
      </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">JSF デモ</metadata>
-  <metadata name="title" xml:lang="es">Demo Java Server Faces</metadata>
-  <metadata name="short-title" xml:lang="es">Demo JSF</metadata>
-  <metadata name="title" xml:lang="hu">JSF Demo</metadata>
-  <metadata name="title" xml:lang="zh">JSF 示例</metadata>
+  
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

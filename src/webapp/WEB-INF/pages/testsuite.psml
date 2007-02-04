@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2004 The Apache Software Foundation
+Copyright 2007 The Apache Software Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,14 +14,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="testsuite_page">
+<page id="testsuite_page"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <defaults
      skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
-
+  
   <title>Test Suite Page</title>
+  <metadata name="title" xml:lang="ja">テストスイートページ</metadata>
+  <metadata name="title" xml:lang="es">Página de casos de prueba</metadata>
+  <metadata name="short-title" xml:lang="es">Pruebas</metadata>
+  <metadata name="title" xml:lang="hu">Teszt gyűjtemény</metadata>
+  <metadata name="title" xml:lang="zh">测试页面</metadata>
+  <metadata name="title" xml:lang="zh-TW">測試頁面</metadata>
+  
   <fragment id="ts-0" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ts-1" type="portlet" name="testsuite::TestPortlet1">
       <property layout="TwoColumns" name="row" value="0" />
@@ -31,13 +42,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
-  <metadata name="title" xml:lang="ja">テストスイートページ</metadata>
-  <metadata name="title" xml:lang="es">Página de casos de prueba</metadata>
-  <metadata name="short-title" xml:lang="es">Pruebas</metadata>
-  <metadata name="title" xml:lang="hu">Teszt gyűjtemény</metadata>
-  <metadata name="title" xml:lang="zh">测试页面</metadata>
-  <metadata name="title" xml:lang="zh-TW">測試頁面</metadata>
-
+  
   <security-constraints>
     <security-constraint>
       <groups>accounting, marketing</groups>

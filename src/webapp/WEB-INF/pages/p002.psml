@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2004 The Apache Software Foundation
+Copyright 2007 The Apache Software Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,27 +14,26 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page >
+<page id="p002" 
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <defaults
      skin="blue"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
   <title>My Second PSML page</title>
-  <fragment id="xx2.0" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-  
-	  <fragment id="xx2.1" type="portlet" name="demo::SSOIFramePortlet"/>
-	   <fragment id="wcp2.0" type="portlet" name="demo::SSOWebContentPortlet"/>
-
-  </fragment>
-   
   <metadata name="title" xml:lang="ja">PSML ページ 2</metadata>
   <metadata name="title" xml:lang="es">Mi 2ª página PSML</metadata>
   <metadata name="short-title" xml:lang="es">Otra página</metadata>
   <metadata name="title" xml:lang="hu">A második PSML oldalam</metadata>
   <metadata name="title" xml:lang="zh">第二个PSML页面</metadata>
   <metadata name="title" xml:lang="zh-TW">第二個PSML頁面</metadata>
-
+  <fragment id="xx2.0" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="xx2.1" type="portlet" name="demo::SSOIFramePortlet"/>
+    <fragment id="wcp2.0" type="portlet" name="demo::SSOWebContentPortlet"/>
+  </fragment>
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>
   </security-constraints>
