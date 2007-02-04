@@ -45,15 +45,15 @@ limitations under the License.
   <xs:element name="metadata">
     <xs:complexType mixed="true">
       <xs:attribute name="name" use="required" type="xs:string"/>
-      <xs:attribute ref="xml:lang" use="required"/>
+      <xs:attribute ref="xml:lang" use="optional"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="owner" type="xs:string"/>
   <xs:element name="security-constraints">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:owner"/>
-        <xs:element maxOccurs="unbounded" ref="tns:security-constraint"/>
+        <xs:element minOccurs="0" ref="tns:owner"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:security-constraint"/>
         <xs:element ref="tns:security-constraints-ref"/>
       </xs:sequence>
     </xs:complexType>
@@ -61,11 +61,15 @@ limitations under the License.
   <xs:element name="security-constraint">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:users"/>
+        <xs:element minOccurs="0" ref="tns:users"/>
+        <xs:element minOccurs="0" ref="tns:groups"/>
+        <xs:element minOccurs="0" ref="tns:roles"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="users" type="xs:string"/>
+  <xs:element name="groups" type="xs:string"/>
+  <xs:element name="roles" type="xs:string"/>
   <xs:element name="security-constraints-ref" type="xs:string"/>
   <xs:element name="fragment">
     <xs:complexType>
@@ -82,7 +86,7 @@ limitations under the License.
   </xs:element>
   <xs:element name="property">
     <xs:complexType>
-      <xs:attribute name="layout" use="required" type="xs:string"/>
+      <xs:attribute name="layout" use="optional" type="xs:string"/>
       <xs:attribute name="name" use="required" type="xs:string"/>
       <xs:attribute name="value" use="required" type="xs:string"/>
     </xs:complexType>
