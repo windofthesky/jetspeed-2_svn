@@ -251,20 +251,8 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
             for (int i = 0; i < rawPass.length; i++)
             {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug(new String("password byte[" + i + "]:" + rawPass[i]));
-                }
-
-                Byte passByte = new Byte(rawPass[i]);
-
-                logger.debug("password byte[" + i + "] short value:" + passByte.shortValue());
                 // I know I lose the sign and this is only good for ascii text.
                 charPass[i] = (char) rawPass[i];           
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("passchar char[" + i + "]:" + charPass[i]);
-                }
             }
         }
         else
