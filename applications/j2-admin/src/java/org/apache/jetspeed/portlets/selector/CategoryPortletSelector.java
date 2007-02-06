@@ -16,8 +16,6 @@
 package org.apache.jetspeed.portlets.selector;
 
 import java.io.IOException;
-import java.security.AccessControlException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,21 +43,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portlets.CategoryInfo;
 import org.apache.jetspeed.portlets.PortletInfo;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
 import org.apache.velocity.context.Context;
@@ -84,7 +83,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     protected final static String PORTLETS = "category.selector.portlets";
     protected final static String CATEGORIES = "category.selector.categories";
     protected final static String PAGE = "category.selector.page";
-    private final  String JSPAGE = "jspage";
+    
+    private final String JSPAGE = "jspage";
 	private final String CATEGORY = "category";
 	private final String PAGENUMNER = "pageNumber";
 	private final String FILTER = "filter";
@@ -92,6 +92,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
     protected PageManager pageManager;
+    protected Profiler profiler;
+    protected SecurityAccessController securityAccessController;
     protected Random rand;
     
     public void init(PortletConfig config)
@@ -113,6 +115,16 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         if (null == pageManager)
         {
             throw new PortletException("Failed to find the Page Manager on portlet initialization");
+        }        
+        securityAccessController = (SecurityAccessController)context.getAttribute(CommonPortletServices.CPS_SECURITY_ACCESS_CONTROLLER);
+        if (null == securityAccessController)
+        {
+            throw new PortletException("Failed to find the Security Access Controller on portlet initialization");
+        }
+        profiler = (Profiler)context.getAttribute(CommonPortletServices.CPS_PROFILER_COMPONENT);
+        if (null == profiler)
+        {
+            throw new PortletException("Failed to find the Profiler on portlet initialization");
         }        
         rand = new Random( 19580427 );
     }
@@ -146,7 +158,15 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         processPage(request);
         super.doView(request, response);
     }
-
+    
+    protected Page getPage(RenderRequest request) throws Exception
+    {
+        String path = request.getParameter(JSPAGE);
+        RequestContext requestContext = (RequestContext) 
+            request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);        
+        return requestContext.locatePage(profiler, path);
+    }    
+    
     protected void processPage(RenderRequest request)
     {
         String page = request.getParameter(JSPAGE);
@@ -297,16 +317,15 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         if (portlet == null)
             return null;
         
-        MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-        String appName = muta.getName();
-        if (appName != null && appName.equals("jetspeed-layouts"))
-            return null;                
+        // Do not display Jetspeed Layout Applications
+        MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+        if (pa.isLayoutApplication())
+            return null;
         
         // SECURITY filtering
-        String uniqueName = appName + "::" + portlet.getName();
-        try
+        String uniqueName = pa.getName() + "::" + portlet.getName();
+        if (securityAccessController.checkPortletAccess(portlet, JetspeedActions.MASK_VIEW))
         {
-            AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
             Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);
             String image;
             if (param != null)
@@ -333,11 +352,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
             }
             return new PortletInfo(uniqueName, cleanup(portlet.getDisplayNameText(locale)), cleanup(portlet.getDescriptionText(locale)), image);
         }
-        catch (AccessControlException ace)
-        {
-            return null;
-        }
-        
+        return null;
     }
     
     protected String cleanup(String str)
@@ -716,23 +731,8 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
 		}
 		return map;
 	}
-	private Page getPage(RenderRequest request) throws Exception
-	{
-		String user = request.getUserPrincipal().getName();
-		String page = request.getParameter("jspage");
-		String path;
-		if (page.equals("/")) page= Node.PATH_SEPARATOR + Folder.FALLBACK_DEFAULT_PAGE;
-		if (user.equals("admin"))
-		{
-			path  = page;
-		}else
-		{
-			path  = Folder.USER_FOLDER  + user + page;
-		}
-		return pageManager.getPage(path);                 
 
-	}
-	class CategoryResult {
+    class CategoryResult {
 		List list;
 
 		int resultSize;

@@ -40,7 +40,13 @@ import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.userinfo.UserInfoManager;
@@ -632,5 +638,35 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.response = response;
     }
+    
+    public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
+    {
+        try
+        {
+            String pathSave = this.getPath();           
+            this.setPath(nonProfiledPath);
+            ContentPage realPage = this.getPage();
+            this.setPage(null);                
+            Map locators = null;
+            ProfileLocator locator = profiler.getProfile(this, ProfileLocator.PAGE_LOCATOR);
+            if ( locator != null )
+            {
+                locators = new HashMap();
+                locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+            }               
+            PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)getSessionAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
+            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, true, true);
+            ContentPage cpage = new ContentPageImpl(requestContext.getManagedPage());
+            System.out.println("page is " + cpage.getPath());
+            this.setPage(realPage);            
+            this.setPath(pathSave);
+            return cpage;
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+        }
+        return null;
+    }    
 
 }

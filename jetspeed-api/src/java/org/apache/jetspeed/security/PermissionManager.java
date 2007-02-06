@@ -18,8 +18,6 @@ import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Iterator;
-
 import javax.security.auth.Subject;
 
 /**
@@ -133,7 +131,7 @@ public interface PermissionManager
      * <p>
      * Check permission for the given subject's access to the resource protected by the permission
      * This is an abstraction introduced in M4 for Permission Manager implementations NOT
-     * founded upon the a Java security policy.
+     * founded upon the a Java security policy.</p>
      * 
      * @param subject The Java subject.
      * @param permission The permission, usually a portlet, page or folder type permission.
@@ -141,7 +139,7 @@ public interface PermissionManager
      *         if the subject does not have access.
      */
     boolean checkPermission(Subject subject, Permission permission);
-    
+       
     /**
      * Retrieve a collection of all Permissions in the system ordered by Permission Type, resource
      * Note that we return a collection of <code>InternalPrincipal</code>

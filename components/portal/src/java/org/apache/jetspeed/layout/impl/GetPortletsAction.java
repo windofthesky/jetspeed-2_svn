@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.security.AccessControlException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,8 +37,7 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.common.Parameter;
 
 /**
@@ -60,6 +57,8 @@ public class GetPortletsAction
     protected Log log = LogFactory.getLog(GetPortletsAction.class);
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
+    private SecurityAccessController securityAccessController;
+    
     public final static String PORTLET_ICON = "portlet-icon";
     
     public GetPortletsAction(String template, String errorTemplate)
@@ -72,12 +71,13 @@ public class GetPortletsAction
                              PageManager pageManager,
                              PortletRegistry registry,
                              SearchEngine searchEngine,
-                             PermissionManager permissionManager,
+                             SecurityAccessController securityAccessController,
                              PortletActionSecurityBehavior securityBehavior)
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.registry = registry;
         this.searchEngine = searchEngine;
+        this.securityAccessController = securityAccessController;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -136,17 +136,15 @@ public class GetPortletsAction
             if (portlet == null)
                 continue;
             
-            MutablePortletApplication muta = 
-                (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-            String appName = muta.getName();
-            if (appName != null && appName.equals("jetspeed-layouts"))
-                continue;                
-            
+            // Do not display Jetspeed Layout Applications
+            MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            if (pa.isLayoutApplication())
+                continue;
+                 
             // SECURITY filtering
-            String uniqueName = appName + "::" + portlet.getName();
-            try
+            String uniqueName = pa.getName() + "::" + portlet.getName();
+            if (securityAccessController.checkPortletAccess(portlet, JetspeedActions.MASK_VIEW))
             {
-                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
                 Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);
                 String image;
                 if (param != null)
@@ -161,10 +159,6 @@ public class GetPortletsAction
                     image = "images/portlets/applications-internet.png";
                 }                
                 list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale), image));
-            }
-            catch (AccessControlException ace)
-            {
-                //continue
             }
         }            
         Collections.sort(list, this);

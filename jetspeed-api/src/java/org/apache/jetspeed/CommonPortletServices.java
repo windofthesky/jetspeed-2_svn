@@ -45,4 +45,5 @@ public interface CommonPortletServices
     public final static String CPS_PREFERENCES_PROVIDER = "cps:PreferencesProvider";
     public final static String CPS_DECORATION_FACTORY = "cps:DecorationFactory";
     public final static String CPS_PASSWORD_ENCODER_COMPONENT = "cps:PasswordEncodingService";
+    public final static String CPS_SECURITY_ACCESS_CONTROLLER = "cps:SecurityAccessController";
 }

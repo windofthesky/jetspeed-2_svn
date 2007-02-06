@@ -212,7 +212,7 @@
         <ref bean="org.apache.jetspeed.search.SearchEngine"/>        
     </constructor-arg>              
     <constructor-arg index='5'>
-        <ref bean="org.apache.jetspeed.security.PermissionManager"/>        
+        <ref bean="org.apache.jetspeed.security.SecurityAccessController"/>        
     </constructor-arg>       
     <constructor-arg index='6'>
         <ref bean="PortletActionSecurityBehavior"/>        

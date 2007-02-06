@@ -30,6 +30,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -429,5 +430,13 @@ public interface RequestContext
      */
     Principal getUserPrincipal();
     
+    /**
+     * Locates a specific page using the profiler and site manager location algorithms
+     * from a generalized non-profiled path to the first page matching the path
+     * 
+     *  @param profiler The profiler component to use in the search
+     *  @return A Content Page located by the profiler, or null if not found
+     */
+    ContentPage locatePage(Profiler profiler, String nonProfiledPath);
 }
 

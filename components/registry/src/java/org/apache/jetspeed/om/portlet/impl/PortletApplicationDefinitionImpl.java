@@ -607,4 +607,19 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
         this.jetspeedSecurityConstraint = constraint;
     }
     
+    public boolean isLayoutApplication()
+    {
+        if (this.getMetadata() != null)
+        {
+            Collection c = this.getMetadata().getFields("layout-app");
+            if (c != null)
+            {
+                if (!c.isEmpty())
+                {
+                   return true;
+                }
+            }
+        }
+        return false;
+     }
 }

@@ -16,8 +16,6 @@
 package org.apache.jetspeed.decoration;
 
 import java.io.Serializable;
-import java.security.AccessControlException;
-import java.security.AccessController;
 import java.util.HashMap;
 
 import javax.portlet.PortletMode;
@@ -27,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.security.PortletPermission;
 
 /**
  * PageActionAccess
@@ -133,36 +130,7 @@ public class PageActionAccess implements PageEditAccess, Serializable
             return false;
         }
     }
-    
-    /**
-     * Determines whether the access request indicated by the specified
-     * permission should be allowed or denied, based on the security policy
-     * currently in effect.
-     * 
-     * @param resource
-     *                  The fully qualified resource name of the portlet
-     *                  (PA::portletName)
-     * @param action
-     *                  The action to perform on this resource (i.e. view, edit, help,
-     *                  max, min...)
-     * @return true if the action is allowed, false if it is not
-     */
-    protected boolean checkPermission( String resource, String action )
-    {
-        try
-        {
-            // TODO: it may be better to check the PagePermission for the outer
-            // most
-            // fragment (i.e. the PSML page)
-            AccessController.checkPermission(new PortletPermission(resource, action));
-        }
-        catch (AccessControlException e)
-        {
-            return false;
-        }
-        return true;
-    }
-    
+        
     protected boolean checkEditPage(Page page)
     {
         boolean allowed = false;

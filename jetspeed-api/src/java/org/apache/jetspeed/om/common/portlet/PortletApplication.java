@@ -133,4 +133,14 @@ public interface PortletApplication extends PortletApplicationDefinition
      *                  the Jetspeed Security Constraints 
      */    
     String getJetspeedSecurityConstraint();    
+    
+    /**
+     * Returns true if the portlet application is a layout application
+     * Layouts are not "general" portlets, but instead used to group together
+     * other layouts and portlet fragments
+     * 
+     * @return true when this app is a Jetspeed layout application
+     */
+    boolean isLayoutApplication();
+    
 }

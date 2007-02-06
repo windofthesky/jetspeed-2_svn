@@ -23,11 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
  * JetspeedRequestContextComponent
@@ -68,7 +67,6 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
                 contextClass = Class.forName(contextClassName);
             }
 
-            // TODO: we could use a pooled object implementation here
             Constructor constructor =
                 contextClass.getConstructor(
                     new Class[] {

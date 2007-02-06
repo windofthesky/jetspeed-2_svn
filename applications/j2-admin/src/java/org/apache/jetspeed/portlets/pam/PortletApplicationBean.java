@@ -196,4 +196,8 @@ public class PortletApplicationBean implements PortletApplication
     {
         return pa.getJetspeedSecurityConstraint();
     }    
+    public boolean isLayoutApplication()
+    {
+        return pa.isLayoutApplication();
+    }
 }

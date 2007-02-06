@@ -15,8 +15,6 @@
 package org.apache.jetspeed.portlets.selector;
 
 import java.io.IOException;
-import java.security.AccessControlException;
-import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +42,7 @@ import org.apache.jetspeed.portlets.PortletInfo;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
 import org.apache.portals.gems.util.StatusMessage;
@@ -62,7 +60,7 @@ public class PortletSelector extends BrowserPortlet
     protected static final String CHECKEDSET = "checkedSet";
     protected static final String UNCHECKEDSET = "unCheckedSet";
    
-
+    protected SecurityAccessController securityAccessController;
     protected PortletRegistry registry;
     protected SearchEngine searchEngine;
     
@@ -81,7 +79,11 @@ public class PortletSelector extends BrowserPortlet
         {
             throw new PortletException("Failed to find the Search Engine on portlet initialization");
         }        
-        
+        securityAccessController = (SecurityAccessController)context.getAttribute(CommonPortletServices.CPS_SECURITY_ACCESS_CONTROLLER);
+        if (null == securityAccessController)
+        {
+            throw new PortletException("Failed to find the Security Access Controller on portlet initialization");
+        }        
     }
           
     public void doView(RenderRequest request, RenderResponse response)
@@ -112,7 +114,6 @@ public class PortletSelector extends BrowserPortlet
         this.getContext(request).put("selectedPortlets",selectedCheckBoxes);
         String selectedPortletsString = getAsString(selectedCheckBoxes);
         this.getContext(request).put("selectedPortletsString", selectedPortletsString);
-        
         
         super.doView(request, response);
     }
@@ -240,26 +241,21 @@ public class PortletSelector extends BrowserPortlet
                 if (portlet == null)
                     continue;
                 
-                MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-                String appName = muta.getName();
-                if (appName != null && appName.equals("jetspeed-layouts"))
-                    continue;                
-                
+                // Do not display Jetspeed Layout Applications
+                MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+                if (pa.isLayoutApplication())
+                    continue;
+                         
                 // SECURITY filtering
-                String uniqueName = appName + "::" + portlet.getName();
-                try
+                String uniqueName = pa.getName() + "::" + portlet.getName();
+                if (securityAccessController.checkPortletAccess(portlet, JetspeedActions.MASK_VIEW))
                 {
-                    AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), JetspeedActions.MASK_VIEW));
                     String name = portlet.getDisplayNameText(locale);
                     if (name == null)
                     {
                         name = portlet.getName();
                     }
                     list.add(new PortletInfo(uniqueName, name, portlet.getDescriptionText(locale)));
-                }
-                catch (AccessControlException ace)
-                {
-                    //continue
                 }
             }            
             BrowserIterator iterator = new PortletIterator(

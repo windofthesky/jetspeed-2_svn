@@ -84,5 +84,20 @@
             </props>
         </property>
 </bean>
+
+<bean id="org.apache.jetspeed.security.SecurityAccessController"
+      class='org.apache.jetspeed.security.impl.SecurityAccessControllerImpl'>
+    	<constructor-arg index='0'>
+    		<ref bean="org.apache.jetspeed.page.PageManager"/> 
+    	</constructor-arg>
+    	<!--
+    	   Security Mode:
+    	      1 = Permissions = use Jetspeed Java Security Policy
+    	      2 = Constraints = use Jetspeed (PageManager) Constraint-based Security  
+    	 -->
+    	 <constructor-arg index="1">
+            <value>2</value>
+        </constructor-arg>
+</bean>
     
 </beans>

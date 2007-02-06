@@ -32,6 +32,7 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -549,5 +550,9 @@ public class MockRequestContext implements RequestContext
     {
         this.response = response;
     }
-    
+
+    public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
+    {
+        return null;
+    }
 }
