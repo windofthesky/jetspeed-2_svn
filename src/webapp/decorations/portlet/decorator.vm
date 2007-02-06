@@ -28,7 +28,8 @@ the root of your decortaion.  This will be used instead of the default.
 
 <div id="${f.id}" class="portlet ${decoration.baseCSSClass}">
   #set($solo = $jetspeed.MappedWindowState.toString()=="solo")
-  #if (!$solo)
+   #set($hidePortlet = $renderRequest.getAttribute("js_${jetspeed.CurrentFragment.Id}_HideDecorator")) 
+ #if (!$solo && !$hidePortlet)
     <div class="PTitle" >
       <div class="PTitleContent">	
         #set ($ws=$jetspeed.MappedWindowState)
@@ -39,8 +40,8 @@ the root of your decortaion.  This will be used instead of the default.
       #PortletActionBar($decoration)
 	
     </div>
-  #end    
-  #if (!$jetspeed.isHidden($f) && $jetspeed.WindowState.toString() != "minimized")
+ #end    
+ #if (!$jetspeed.isHidden($f) && !$hidePortlet && $jetspeed.WindowState.toString() != "minimized")
     #if (!$solo)
       <div class="PContentBorder">
     #end
