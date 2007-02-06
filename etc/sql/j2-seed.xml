@@ -314,7 +314,7 @@
 		</User>
 		<User name="subsite">
 			<credentials password="subsite" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>subsite,subsite2</roles>
+			<roles>user,subsite,subsite2</roles>
 			<groups></groups>
 			<preferences/>
 			<userinfo/>
@@ -324,7 +324,7 @@
 		</User>
 		<User name="subsite2">
 			<credentials password="subsite2" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>subsite,subsite2</roles>
+			<roles>user,subsite,subsite2</roles>
 			<groups></groups>
 			<preferences/>
 			<userinfo/>
