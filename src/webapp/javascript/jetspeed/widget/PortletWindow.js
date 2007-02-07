@@ -1492,9 +1492,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             if ( ! resizeWidget )
                 dojo.raise( "PortletWindow cannot find its resize widget" );
         
-            if ( resizeWidget.isSizing )
+            if ( resizeWidget._isSizing )
             {
-                dojo.event.connect( resizeWidget, "endSizing", this, "endSizing" );
+                dojo.event.connect( resizeWidget, "_endSizing", this, "endSizing" );
                 // NOTE: connecting directly to document.body onmouseup results in notification for second and subsequent onmouseup
                 this.windowIsSizing = true;
             }
@@ -1627,6 +1627,37 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             }
         }
         return cWinState;
+    },
+    getCurrentWindowStateForPersistence: function( /* boolean */ volatileOnly )
+    {
+        var currentState = null;
+        if ( volatileOnly )
+            currentState = this.getCurrentVolatileWindowState();
+        else
+            currentState = this.getCurrentWindowState();
+
+        // get rid of units text
+        this._purifyWindowStatePropertyAsNumber( currentState, "left" );
+        this._purifyWindowStatePropertyAsNumber( currentState, "top" );
+        this._purifyWindowStatePropertyAsNumber( currentState, "width" );
+        this._purifyWindowStatePropertyAsNumber( currentState, "height" );
+
+        return currentState;
+    },
+    _purifyWindowStatePropertyAsNumber: function( windowState, propName )
+    {
+        var source = windowState[ propName ];
+        if ( source != null )
+        {
+            var sourceNum = "";
+            for ( var i = 0 ; i < source.length ; i++ )
+            {
+                var sourceCh = source.charAt(i);
+                if ( ( sourceCh >= "0" && sourceCh <= "9" ) || sourceCh == "." )
+                    sourceNum += sourceCh.toString();
+            }
+            windowState[ propName ] = sourceNum;
+        }
     },
     setPortletContent: function( html, url )
     {
