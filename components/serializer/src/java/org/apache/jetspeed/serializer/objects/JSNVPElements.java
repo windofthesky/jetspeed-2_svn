@@ -34,7 +34,7 @@ import javolution.xml.stream.XMLStreamException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.pluto.om.common.Preference;
 
-public class JSNameValuePairs
+public class JSNVPElements
 {
 
     private HashMap myMap = new HashMap();
@@ -44,7 +44,7 @@ public class JSNameValuePairs
     	return myMap.size();
     	
     }
-    public JSNameValuePairs()
+    public JSNVPElements()
     {
     }
     
@@ -62,7 +62,7 @@ public class JSNameValuePairs
 	/**
      * @param arg0
      */
-    public JSNameValuePairs(Preferences preferences)
+    public JSNVPElements(Preferences preferences)
     {
         try
         {
@@ -83,7 +83,7 @@ public class JSNameValuePairs
     /***************************************************************************
      * SERIALIZER
      */
-    private static final XMLFormat XML = new XMLFormat(JSNameValuePairs.class)
+    private static final XMLFormat XML = new XMLFormat(JSNVPElements.class)
     {
 
         public void write(Object o, OutputElement xml)
@@ -91,13 +91,13 @@ public class JSNameValuePairs
         {
             try
             {
-                JSNameValuePairs g = (JSNameValuePairs) o;
+                JSNVPElements g = (JSNVPElements) o;
                 Iterator _it = g.myMap.keySet().iterator();
                 while (_it.hasNext())
                 {
                     String _key = (String) _it.next();
-                    // xml.add((String) g.get(_key), _key, String.class);
-                    xml.setAttribute(_key, (String) g.myMap.get(_key));
+                    JSNVPElement elem = new JSNVPElement(_key,(String)g.myMap.get(_key));
+                    xml.add(elem,"preference",JSNVPElement.class);
                 }
             } catch (Exception e)
             {
@@ -110,31 +110,26 @@ public class JSNameValuePairs
 
             try
             {
-                JSNameValuePairs g = (JSNameValuePairs) o;
-                Attributes attribs = xml.getAttributes();
-                int len = attribs.getLength();
+                JSNVPElements g = (JSNVPElements) o;
+                Object o1 = null;
+                
 
-                for (int i = 0; i < len; i++)
-                {
-                    try
-                    {
-                        String _key = StringEscapeUtils.unescapeHtml(attribs.getLocalName(i).toString());
-                        String _value = StringEscapeUtils.unescapeHtml(attribs.getValue(i).toString());
-                        g.myMap.put(_key, _value);
-                    } catch (Exception e)
-                    {
-                        /**
-                         * while annoying invalid entries in the file should be
-                         * just disregarded
-                         */
-                        e.printStackTrace();
-                    }
-                }
+				while (xml.hasNext())
+				{
+					JSNVPElement elem = (JSNVPElement)xml.get("preference",JSNVPElement.class);
+                    g.myMap.put(elem.getKey(), elem.getValue());
+				}
             } catch (Exception e)
             {
+                /**
+                 * while annoying invalid entries in the file should be
+                 * just disregarded
+                 */
                 e.printStackTrace();
             }
         }
     };
 
+    
+    
 }

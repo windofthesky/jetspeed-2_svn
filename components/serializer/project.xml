@@ -73,6 +73,71 @@ limitations under the License.
          <war.bundle>true</war.bundle>
       </properties>                            
     </dependency>            
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-registry</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+
+  <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-profiler</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-locator</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-security</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-prefs</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+
+
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-portlet-factory</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+
+
+<!--  UNCOMMENT IF RUNNING TEST CASE right from the serilizer directory (e.g. "maven export")  !!!!!
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-portal</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
+-->
+
+        
   </dependencies>
   
   

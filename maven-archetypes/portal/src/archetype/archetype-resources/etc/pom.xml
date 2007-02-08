@@ -129,6 +129,8 @@ limitations under the License.
                                               value="${pom.artifactId}"/>
                                     <property name="org.apache.jetspeed.deploy.version"
                                               value="${org.apache.portals.jetspeed-2.version}"/>
+                                   <property name="org.apache.pluto.version"
+                                              value="${org.apache.pluto.version}"/>
                                     <property name="portlet-api.version"
                                               value="${portlet-api.version}"/>                                    
                                 </ant>

@@ -15,38 +15,25 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
 
 import javolution.xml.XMLBinding;
-import javolution.xml.XMLObjectReader;
-import javolution.xml.XMLObjectWriter;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.Client;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
@@ -77,6 +64,7 @@ import org.apache.jetspeed.serializer.objects.JSMediaType;
 import org.apache.jetspeed.serializer.objects.JSMediaTypes;
 import org.apache.jetspeed.serializer.objects.JSMimeType;
 import org.apache.jetspeed.serializer.objects.JSMimeTypes;
+import org.apache.jetspeed.serializer.objects.JSNVPElements;
 import org.apache.jetspeed.serializer.objects.JSNameValuePairs;
 import org.apache.jetspeed.serializer.objects.JSPWAttributes;
 import org.apache.jetspeed.serializer.objects.JSPermission;
@@ -89,6 +77,7 @@ import org.apache.jetspeed.serializer.objects.JSRole;
 import org.apache.jetspeed.serializer.objects.JSRoles;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
+import org.apache.jetspeed.serializer.objects.JSSeedData;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
@@ -114,14 +103,10 @@ import org.apache.jetspeed.serializer.objects.JSUsers;
  * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-public class JetspeedSerializerImpl implements JetspeedSerializer
+public class JetspeedSerializerImpl extends JetspeedSerializerBase implements JetspeedSerializer
 {
 
-    /** Logger */
-    private static final Log log = LogFactory.getLog(JetspeedSerializer.class);
-
-    private ComponentManager cm = null;
-
+ 
     private HashMap roleMap = new HashMap();
 
     private HashMap groupMap = new HashMap();
@@ -144,24 +129,24 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
     int refCouter = 0;
 
-    /** the main wrapper class for an XML file */
-    private JSSnapshot snapshot;
-
-    /** processing flags */
-    /** export/import instructions */
-
-    private HashMap processSettings = new HashMap();
-
-    private boolean initialized = false;
-
-    /** current indent for XML files - defaults to tab */
-    private String currentIndent = null;
-
+ 
     private static String ENCODING_STRING = "JETSPEED 2.1 - 2006";
     private static String JETSPEED = "JETSPEED";
     
+    
+    protected Class getSerializerDataClass()
+    {
+    	return JSSeedData.class;
+    }    
+
+    protected String getSerializerDataTag()
+    {
+    	return TAG_SNAPSHOT;
+    }    
+    
     public JetspeedSerializerImpl()
     {
+    	super();
     }
 
     /**
@@ -171,8 +156,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      */
     public JetspeedSerializerImpl(ComponentManager cm)
     {
-        this.setComponentManager(cm);
-        this.initialized = true;
+    	super(cm);
     }
 
     /**
@@ -195,388 +179,47 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     public JetspeedSerializerImpl(String appRoot, String[] bootConfig,
             String[] appConfig) throws SerializerException
     {
-        this.initializeComponentManager(appRoot, bootConfig, appConfig);
-        this.initialized = true;
+    	super(appRoot,bootConfig,appConfig);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#nitializeComponentManager(String,String[],String[])
-     */
-    public void initializeComponentManager(String appRoot, String[] bootConfig,
-            String[] appConfig) throws SerializerException
-    {
+ 
+ 
 
-    	
-    	
-    	if (this.initialized)
-            throw new SerializerException(
-                    SerializerException.COMPONENT_MANAGER_EXISTS.create(""));
-        SpringComponentManager cm = new SpringComponentManager(bootConfig,
-                appConfig, appRoot);
-        cm.start();
-        Configuration properties = (Configuration) new PropertiesConfiguration();
-        properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY,
-                appRoot);
-        this.setComponentManager(cm);
-    }
+ 
+  
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#setComponentManager(ComponentManager)
-     */
-    public void setComponentManager(ComponentManager cm)
-    {
-        this.cm = cm;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#closeUp()
-     */
-    public void closeUp()
-    {
-        if (cm != null) cm.stop();
-        cm = null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#setDefaultIndent(String)
-     */
-    public void setDefaultIndent(String indent)
-    {
-        this.currentIndent = indent;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#getDefaultIndent()
-     */
-    public String getDefaultIndent()
-    {
-        return this.currentIndent;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#importData(String,
-     *      Map)
-     */
-    public void importData(String importFileName, Map settings)
-            throws SerializerException
-    {
-        /** pre-processing homework... */
-        XMLBinding binding = new XMLBinding();
-        setupAliases(binding);
-        checkSettings(settings);
-
-        /** determine if we need to backup the current data source*/
-        //TODO: HJB, implement logic for backup prior to XML import
-        
-        
-        this.snapshot = readFile(importFileName, binding);
-
-        if (this.snapshot == null)
-            throw new SerializerException(
-                    SerializerException.FILE_PROCESSING_ERROR
-                            .create(new String[]
-                            { importFileName, "Snapshot is NULL"}));
-
-        if (!(this.snapshot.checkVersion()))
-            throw new SerializerException(
-                    SerializerException.INCOMPETIBLE_VERSION
-                            .create(new String[]
-                            {
-                                    importFileName,
-                                    String.valueOf(this.snapshot
-                                            .getSoftwareVersion()),
-                                    String.valueOf(this.snapshot
-                                            .getSavedSubversion())}));
-
-        /** ok, now we have a valid snapshot and can start processing it */
-
-        /** ensure we can work undisturbed */
-        synchronized (cm)
-        {
-            logMe("*********Reading data*********");
-            this.processImport();
-        }
-        return;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#exportData(String,String,Map)
-     */
-    public void exportData(String name, String exportFileName, Map settings)
-            throws SerializerException
-    {
-        /** pre-processing homework... */
-        XMLBinding binding = new XMLBinding();
-        setupAliases(binding);
-        checkSettings(settings);
-
-        /** ensure we can work undisturbed */
-        synchronized (cm)
-        {
-            /** get the snapshot construct */
-            this.processExport(name, binding);
-            XMLObjectWriter writer = openWriter(exportFileName);
-            writer.setBinding(binding);
-
-            if (this.getDefaultIndent() != null)
-                writer.setIndentation(this.getDefaultIndent());
-
-            try
-            {
-                logMe("*********Writing data*********");
-                writer.write(this.snapshot, JetspeedSerializer.TAG_SNAPSHOT,
-                        JSSnapshot.class);
-
-            } catch (Exception e)
-            {
-                throw new SerializerException(
-                        SerializerException.FILE_PROCESSING_ERROR
-                                .create(new String[]
-                                { exportFileName, e.getMessage()}));
-            } finally
-            {
-                /** ensure the writer is closed */
-                try
-                {
-                    logMe("*********closing up********");
-                    writer.close();
-                } catch (Exception e)
-                {
-                    logMe("Error in closing writer " + e.getMessage());
-                    /**
-                     * don't do anything with this exception - never let the
-                     * bubble out of the finally block
-                     */
-                }
-            }
-        }
-        return;
-    }
-
-    /**
-     * create a backup of the current environment in case the import fails
-     * 
-     */
-    private void doBackupOfCurrent(String importFileName, Map currentSettings)
-    {
-        // TODO: HJB create backup of current content
-    }
-
-    /**
-     * read a snapshot and return the reconstructed class tree
-     * 
-     * @param importFileName
-     * @throws SerializerException
-     */
-
-    private JSSnapshot readFile(String importFileName, XMLBinding binding)
-            throws SerializerException
-    {
-        XMLObjectReader reader = null;
-        JSSnapshot snap = null;
-        try
-        {
-            reader = XMLObjectReader.newInstance(new FileInputStream(
-                    importFileName));
-        } catch (Exception e)
-        {
-            throw new SerializerException(SerializerException.FILE_READER_ERROR
-                    .create(new String[]
-                    { importFileName, e.getMessage()}));
-        }
-        try
-        {
-            if (binding != null) reader.setBinding(binding);
-            snap = (JSSnapshot) reader.read(JetspeedSerializer.TAG_SNAPSHOT,
-                    JSSnapshot.class);
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            new SerializerException(SerializerException.FILE_PROCESSING_ERROR
-                    .create(new String[]
-                    { importFileName, e.getMessage()}));
-        } finally
-        {
-            /** ensure the reader is closed */
-            try
-            {
-                logMe("*********closing up reader ********");
-                reader.close();
-            } catch (Exception e1)
-            {
-                logMe("Error in closing reader " + e1.getMessage());
-                /**
-                 * don't do anything with this exception - never let the bubble
-                 * out of the finally block
-                 */
-                return null;
-            }
-        }
-        return snap;
-    }
-
-    /**
-     * create or open a given file for writing
-     */
-    private XMLObjectWriter openWriter(String filename)
-            throws SerializerException
-    {
-        File f;
-
-        try
-        {
-            f = new File(filename);
-        } catch (Exception e)
-        {
-            throw new SerializerException(
-                    SerializerException.FILE_PROCESSING_ERROR
-                            .create(new String[]
-                            { filename, e.getMessage()}));
-        }
-        boolean exists = f.exists();
-
-        if (exists)
-        {
-            if (!(this.getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING)))
-                throw new SerializerException(
-                        SerializerException.FILE_ALREADY_EXISTS
-                                .create(filename));
-            if (this.getSetting(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS))
-            {
-                String backName = createUniqueBackupFilename(f.getName());
-                if (backName == null)
-                    throw new SerializerException(
-                            SerializerException.FILE_BACKUP_FAILED
-                                    .create(filename));
-                File ftemp = new File(backName);
-                f.renameTo(ftemp);
-            }
-        }
-        try
-        {
-            XMLObjectWriter writer = XMLObjectWriter
-                    .newInstance(new FileOutputStream(filename));
-            return writer;
-        } catch (Exception e)
-        {
-            throw new SerializerException(SerializerException.FILE_WRITER_ERROR
-                    .create(new String[]
-                    { filename, e.getMessage()}));
-        }
-    }
-
-    /**
-     * returns the key for a particular process setting. False if the key
-     * doesn't exist.
-     * 
-     * @param key
-     * @return
-     */
-    public boolean getSetting(String key)
-    {
-        Object o = processSettings.get(key);
-        if ((o == null) || (!(o instanceof Boolean))) return false;
-        return ((Boolean) o).booleanValue();
-    }
-
-    /**
-     * set a process setting for a given key
-     * 
-     * @param key
-     *            instruction to set
-     * @param value
-     *            true or false
-     */
-    private void setSetting(String key, boolean value)
-    {
-        processSettings.put(key, (value ? Boolean.TRUE : Boolean.FALSE));
-    }
 
     /**
      * reset instruction flags to default settings (all true)
      * 
      */
-    private void resetSettings()
+    protected void resetSettings()
     {
         setSetting(JetspeedSerializer.KEY_PROCESS_USERS, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_PROFILER, true);
-        setSetting(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, true);
         setSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING, true);
         setSetting(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, true);
     }
 
-    /**
-     * set instruction flags to new settings
-     * 
-     * @param settings
-     */
-    private void checkSettings(Map settings)
-    {
-        /** ensure we don't have settings from a previous run */
-        resetSettings();
-        /** process the new isntructionSet */
-        if ((settings == null) || (settings.size() == 0)) return;
-        Iterator _it = settings.keySet().iterator();
-        while (_it.hasNext())
-        {
-            try
-            {
-                String key = (String) _it.next();
-                Object o = settings.get(key);
-                if ((o != null) && (o instanceof Boolean))
-                    setSetting(key, ((Boolean) o).booleanValue());
-            } catch (Exception e)
-            {
-                log.error("checkSettings", e);
-            }
-        }
-    }
-
+ 
     /**
      * On import, get the basic SnapShot data
      * 
      */
-    private void getSnapshotData()
+    protected void getSnapshotData()
     {
-        logMe("date created : " + snapshot.getDateCreated());
-        logMe("software Version : " + snapshot.getSavedVersion());
-        logMe("software SUbVersion : " + snapshot.getSavedSubversion());
+        logMe("date created : " + getSnapshot().getDateCreated());
+        logMe("software Version : " + getSnapshot().getSavedVersion());
+        logMe("software SUbVersion : " + getSnapshot().getSavedSubversion());
     }
 
-    /**
-     * On export, set the basic SnapShot data
-     * 
-     */
-    private void setSnapshotData()
-    {
-    	java.util.Date d1 = new java.util.Date();
-        Date d = new Date(d1.getTime());
-        snapshot.setDateCreated(d.toString());
-        snapshot.setSavedVersion(JSSnapshot.softwareVersion);
-        snapshot.setSavedSubversion(JSSnapshot.softwareSubVersion);
-    }
-
+  
     
     private void recreateCapabilities (Capabilities caps) throws SerializerException
     {
     	logMe("recreateCapabilities - processing");
-    	JSCapabilities capabilities = this.snapshot.getCapabilities();
+    	JSCapabilities capabilities = ((JSSeedData)getSnapshot()).getCapabilities();
     	if ((capabilities != null) && (capabilities.size() > 0))
     	{
     		Iterator _it = capabilities.iterator();
@@ -611,7 +254,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void recreateMimeTypes (Capabilities caps) throws SerializerException
     {
     	logMe("recreateMimeTypes - processing");
-    	JSMimeTypes mimeTypes = this.snapshot.getMimeTypes();
+    	JSMimeTypes mimeTypes = ((JSSeedData)getSnapshot()).getMimeTypes();
     	if ((mimeTypes != null) && (mimeTypes.size() > 0))
     	{
     		Iterator _it = mimeTypes.iterator();
@@ -650,7 +293,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     	 String _line;
     	 
     	logMe("recreateMediaTypes - processing");
-    	JSMediaTypes mediaTypes = this.snapshot.getMediaTypes();
+    	JSMediaTypes mediaTypes = ((JSSeedData)getSnapshot()).getMediaTypes();
     	if ((mediaTypes != null) && (mediaTypes.size() > 0))
     	{
     		Iterator _it = mediaTypes.iterator();
@@ -739,7 +382,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     	 String _line;
     	 
     	logMe("recreateClients - processing");
-    	JSClients clients = this.snapshot.getClients();
+    	JSClients clients = ((JSSeedData)getSnapshot()).getClients();
     	if ((clients != null) && (clients.size() > 0))
     	{
     		Iterator _it = clients.iterator();
@@ -837,7 +480,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void importCapabilitiesInfrastructure() throws SerializerException
     {
     	logMe("importCapabilitiesInfrastructure - processing");
-        Capabilities caps = (Capabilities) cm
+        Capabilities caps = (Capabilities) getCM()
         .getComponent("org.apache.jetspeed.capabilities.Capabilities");
         if (caps == null)
         	throw new SerializerException(
@@ -862,19 +505,19 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void recreateRolesGroupsUsers() throws SerializerException
     {
     	logMe("recreateRolesGroupsUsers");
-        GroupManager groupManager = (GroupManager) cm
+        GroupManager groupManager = (GroupManager) getCM()
                 .getComponent("org.apache.jetspeed.security.GroupManager");
         if (groupManager == null)
             throw new SerializerException(
                     SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
                             .create("org.apache.jetspeed.security.GroupManager"));
-        RoleManager roleManager = (RoleManager) cm
+        RoleManager roleManager = (RoleManager) getCM()
         .getComponent("org.apache.jetspeed.security.RoleManager");
         if (roleManager == null)
             throw new SerializerException(
                     SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
                             .create("org.apache.jetspeed.security.RoleManager"));
-        UserManager userManager = (UserManager) cm
+        UserManager userManager = (UserManager) getCM()
         .getComponent("org.apache.jetspeed.security.UserManager");
         if (userManager == null)
         	throw new SerializerException(
@@ -887,7 +530,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         JSGroups groups = null;
         JSRoles roles = null;
 
-        groups = this.snapshot.getGroups();
+        groups = ((JSSeedData)getSnapshot()).getGroups();
         
         Iterator _it = groups.iterator();
         while (_it.hasNext())
@@ -911,7 +554,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     	logMe("recreateGroups - done");
     	logMe("processing roles");
 
-        roles = this.snapshot.getRoles();
+        roles = ((JSSeedData)getSnapshot()).getRoles();
         
         _it = roles.iterator();
         while (_it.hasNext())
@@ -936,9 +579,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     	logMe("processing users");
 
     	/** determine whether passwords can be reconstructed or not */
-    	int passwordEncoding = compareCurrentSecurityProvider(snapshot);
+    	int passwordEncoding = compareCurrentSecurityProvider((JSSeedData)getSnapshot());
         JSUsers users = null;
-        users = this.snapshot.getUsers();
+        users = ((JSSeedData)getSnapshot()).getUsers();
         
         _it = users.iterator();
         while (_it.hasNext())
@@ -1043,7 +686,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 						
 					}
     				
-					JSNameValuePairs jsNVP = jsuser.getPreferences();
+					JSNVPElements jsNVP = jsuser.getPreferences();
 					if ((jsNVP != null) && (jsNVP.getMyMap() != null))
 					{
     					Preferences preferences = user.getPreferences();	
@@ -1080,14 +723,14 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     {
     	logMe("recreateUserPrincipalRules - started");
     	
-        Profiler pm = (Profiler) cm
+        Profiler pm = (Profiler) getCM()
         .getComponent("org.apache.jetspeed.profiler.Profiler");
         if (pm == null)
 
         	throw new SerializerException(
             SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
                     .create("org.apache.jetspeed.profiler.Profiler"));
-        UserManager userManager = (UserManager) cm
+        UserManager userManager = (UserManager) getCM()
         .getComponent("org.apache.jetspeed.security.UserManager");
         if (userManager == null)
         	throw new SerializerException(
@@ -1096,7 +739,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
         // get Rules for each user
 
-        Iterator _itUsers = snapshot.getUsers().iterator();
+        Iterator _itUsers = ((JSSeedData)getSnapshot()).getUsers().iterator();
         while (_itUsers.hasNext())
         {
             JSUser _user = (JSUser) _itUsers.next();
@@ -1145,7 +788,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     {
     	logMe("recreatePermissions - started");
         Object o = null;
-        PermissionManager pm = (PermissionManager) cm
+        PermissionManager pm = (PermissionManager) getCM()
                 .getComponent("org.apache.jetspeed.security.PermissionManager");
         if (pm == null)
             throw new SerializerException(
@@ -1155,7 +798,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         Iterator list = null;
         try
         {
-        	list = snapshot.getPermissions().iterator();
+        	list = ((JSSeedData)getSnapshot()).getPermissions().iterator();
         } catch (Exception e)
         {
             throw new SerializerException(
@@ -1283,7 +926,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * @return
      * @throws SerializerException
      */
-    private void processImport() throws SerializerException
+    protected void processImport() throws SerializerException
     {
         this.logMe("*********reinstalling data*********");
         
@@ -1329,13 +972,13 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * @return
      * @throws SerializerException
      */
-    private void processExport(String name, XMLBinding binding)
+    protected void processExport(String name, XMLBinding binding)
             throws SerializerException
     {
         this.logMe("*********collecting data*********");
         /** first create the snapshot file */
 
-        this.snapshot = new JSSnapshot(name);
+       setSnapshot(new JSSeedData(name));
 
         setSnapshotData();
 
@@ -1370,7 +1013,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * 
      * @param binding
      */
-    private void setupAliases(XMLBinding binding)
+    protected void setupAliases(XMLBinding binding)
     {
         binding.setAlias(JSRole.class, "Role");
         binding.setAlias(JSRoles.class, "Roles");
@@ -1378,7 +1021,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSGroups.class, "Groups");
         binding.setAlias(JSUser.class, "User");
         binding.setAlias(JSUsers.class, "Users");
-        binding.setAlias(JSNameValuePairs.class, "preferences");
+        binding.setAlias(JSNVPElements.class, "preferences");
         binding.setAlias(JSUserAttributes.class, "userinfo");
         binding.setAlias(JSSnapshot.class, "snapshot");
         binding.setAlias(JSUserRoles.class, "roles");
@@ -1426,16 +1069,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         return getObjectBehindPath(map, _principal.getFullPath());
     }
 
-    /**
-     * simple lookup for object from a map
-     * @param map
-     * @param _fullPath
-     * @return
-     */
-    private Object getObjectBehindPath(Map map, String _fullPath)
-    {
-        return map.get(_fullPath);
-    }
+
 
 	/**
 	 * create a serializable wrapper for role 
@@ -1457,7 +1091,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 	 */
     private void exportRoles() throws SerializerException
     {
-        RoleManager roleManager = (RoleManager) cm
+        RoleManager roleManager = (RoleManager) getCM()
                 .getComponent("org.apache.jetspeed.security.RoleManager");
         if (roleManager == null)
             throw new SerializerException(
@@ -1487,7 +1121,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 {
                     _tempRole = createJSRole(role);
                     roleMap.put(_tempRole.getName(), _tempRole);
-                    snapshot.getRoles().add(_tempRole);
+                    ((JSSeedData)getSnapshot()).getRoles().add(_tempRole);
                 }
 
             } catch (Exception e)
@@ -1519,7 +1153,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      */
     private void exportGroups() throws SerializerException
     {
-        GroupManager groupManager = (GroupManager) cm
+        GroupManager groupManager = (GroupManager) getCM()
                 .getComponent("org.apache.jetspeed.security.GroupManager");
         if (groupManager == null)
             throw new SerializerException(
@@ -1549,7 +1183,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 {
                     _tempGroup = createJSGroup(group);
                     groupMap.put(_tempGroup.getName(), _tempGroup);
-                    snapshot.getGroups().add(_tempGroup);
+                    ((JSSeedData)getSnapshot()).getGroups().add(_tempGroup);
                 }
 
             } catch (Exception e)
@@ -1673,14 +1307,14 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void exportUsers() throws SerializerException
     {
         /** set the security provider info in the snapshot file */
-        this.snapshot.setEncryption(getEncryptionString());
+        ((JSSeedData)getSnapshot()).setEncryption(getEncryptionString());
         /** get the roles */
         exportRoles();
         /** get the groups */
         exportGroups();
 
         /** users */
-        UserManager userManager = (UserManager) cm
+        UserManager userManager = (UserManager) getCM()
                 .getComponent("org.apache.jetspeed.security.UserManager");
         if (userManager == null)
             throw new SerializerException(
@@ -1706,7 +1340,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 User _user = (User) list.next();
                 JSUser _tempUser = createJSUser(_user);
                 userMap.put(_tempUser.getName(), _tempUser);
-                snapshot.getUsers().add(_tempUser);
+                ((JSSeedData)getSnapshot()).getUsers().add(_tempUser);
             } catch (Exception e)
             {
                 throw new SerializerException(
@@ -1742,7 +1376,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 _jsC.setName(_cp.getName());
                 this.capabilityMap.put(_jsC.getName(), _jsC);
                 this.capabilityMapInt.put(new Integer(_cp.getCapabilityId()), _jsC);
-                this.snapshot.getCapabilities().add(_jsC);
+                ((JSSeedData)getSnapshot()).getCapabilities().add(_jsC);
             } catch (Exception e)
             {
                 throw new SerializerException(
@@ -1777,7 +1411,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 this.mimeMap.put(_jsM.getName(), _jsM);
                 this.mimeMapInt.put(new Integer(_mt.getMimetypeId()), _jsM);
 
-                this.snapshot.getMimeTypes().add(_jsM);
+                ((JSSeedData)getSnapshot()).getMimeTypes().add(_jsM);
             } catch (Exception e)
             {
                 throw new SerializerException(
@@ -1870,7 +1504,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                                 .create(new String[]
                                 { "Client", "createClient returned NULL"}));
             this.clientMap.put(jsC.getName(), jsC);
-            this.snapshot.getClients().add(jsC);
+            ((JSSeedData)getSnapshot()).getClients().add(jsC);
         }
         return;
     }
@@ -1912,7 +1546,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                     if (_ct != null) _jsM.getCapabilities().add(_ct);
                 }
                 this.mediaMap.put(_jsM.getName(), _jsM);
-                this.snapshot.getMediaTypes().add(_jsM);
+                ((JSSeedData)getSnapshot()).getMediaTypes().add(_jsM);
             } catch (Exception e)
             {
                 // do whatever
@@ -1934,7 +1568,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
     private void exportCapabilitiesInfrastructure() throws SerializerException
     {
-        Capabilities caps = (Capabilities) cm
+        Capabilities caps = (Capabilities) getCM()
                 .getComponent("org.apache.jetspeed.capabilities.Capabilities");
         if (caps == null)
             throw new SerializerException(
@@ -1961,7 +1595,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     private void getPermissions() throws SerializerException
     {
         Object o = null;
-        PermissionManager pm = (PermissionManager) cm
+        PermissionManager pm = (PermissionManager) getCM()
                 .getComponent("org.apache.jetspeed.security.PermissionManager");
         if (pm == null)
             throw new SerializerException(
@@ -2039,7 +1673,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                     }
                 }
                 this.permissionMap.put(_js.getType(), _js);
-                this.snapshot.getPermissions().add(_js);
+                ((JSSeedData)getSnapshot()).getPermissions().add(_js);
 
             } catch (Exception e)
             {
@@ -2091,7 +1725,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     {
         getPermissions();
         Object o = null;
-        Profiler pm = (Profiler) cm
+        Profiler pm = (Profiler) getCM()
                 .getComponent("org.apache.jetspeed.profiler.Profiler");
         if (pm == null)
 
@@ -2134,7 +1768,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 {
                     JSProfilingRule rule = createProfilingRule(p, (standardRuleClass == p.getClass()));
                     rulesMap.put(rule.getId(), rule);
-                    snapshot.getRules().add(rule);
+                    ((JSSeedData)getSnapshot()).getRules().add(rule);
 
                 }
             } catch (Exception e)
@@ -2149,7 +1783,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         // determine the defualt rule
         ProfilingRule defaultRule = pm.getDefaultRule();
         if (defaultRule != null)
-        	snapshot.setDefaultRule(defaultRule.getId());
+        	((JSSeedData)getSnapshot()).setDefaultRule(defaultRule.getId());
 
         // get Rules for each user
 
@@ -2183,7 +1817,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * 
      * @return
      */
-    protected int compareCurrentSecurityProvider(JSSnapshot file)
+    protected int compareCurrentSecurityProvider(JSSeedData file)
     {
         String _fileEncryption = file.getEncryption();
         if ((_fileEncryption == null) || (_fileEncryption.length() == 0))
@@ -2197,7 +1831,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
     private String getEncryptionString()
     {
-        PasswordCredentialProvider provider = (PasswordCredentialProvider) cm
+        PasswordCredentialProvider provider = (PasswordCredentialProvider) getCM()
         .getComponent("org.apache.jetspeed.security.spi.PasswordCredentialProvider");
 		if (provider == null)
 		{
@@ -2225,65 +1859,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * +++++++++++++++++++++++++++++++++++++++++++++
      */
 
-    /**
-     * remove a given sequence from the beginning of a string
-     */
-    private String removeFromString(String base, String excess)
-    {
-        return base.replaceFirst(excess, "").trim();
-    }
+  
 
-    /**
-     * 
-     * just a Simple helper to make code more readable
-     * 
-     * @param text
-     */
-    private void logMe(String text)
-    {
-        if (log.isDebugEnabled()) 
-            log.debug(text);
-    }
-
-    /**
-     * Helper routine to create a unique filename for a backup of an existing
-     * filename....not intended to be rocket science...
-     * 
-     * @param name
-     * @return
-     */
-    private String createUniqueBackupFilename(String name)
-    {
-        String newName = name + ".bak";
-
-        File f = new File(newName);
-        int counter = 0;
-        if (!(f.exists())) return newName;
-        while (counter < 100)
-        {
-            String newName1 = newName + counter;
-            if (!(new File(newName1).exists())) return newName1;
-            counter++;
-        }
-        return null;
-    }
-
- /**
-  * convert a list of elements in a string, seperated by ',' into an arraylist of strings
-  * @param _line Strinbg containing one or more elements seperated by ','
-  * @return list of elements of null
-  */    
-    private ArrayList getTokens(String _line)
-    {
-        if ((_line == null) || (_line.length() == 0)) return null;
-
-        StringTokenizer st = new StringTokenizer(_line, ",");
-        ArrayList list = new ArrayList();
-
-        while (st.hasMoreTokens())
-            list.add(st.nextToken());
-        return list;
-    }
 
     /**
      * recreate a rule criterion object from the deserialized wrapper
@@ -2372,13 +1949,13 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 	   private void recreateProfilingRules () throws SerializerException
 	    {
 	    	logMe("recreateProfilingRules - processing");
-	        Profiler pm = (Profiler) cm
+	        Profiler pm = (Profiler) getCM()
             .getComponent("org.apache.jetspeed.profiler.Profiler");
 	        if (pm == null)
 	        	throw new SerializerException(
 	        			SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST
                         	.create("org.apache.jetspeed.profiler.Profiler"));
-	    	JSProfilingRules rules = this.snapshot.getRules();
+	    	JSProfilingRules rules = ((JSSeedData)getSnapshot()).getRules();
 	    	if ((rules != null) && (rules.size() > 0))
 	    	{
 	    		Iterator _it = rules.iterator();
@@ -2405,7 +1982,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 	 			}
 	    		}
 	    		/** reset the default profiling rule */
-	    		String defaultRuleID = snapshot.getDefaultRule();
+	    		String defaultRuleID = ((JSSeedData)getSnapshot()).getDefaultRule();
 	    		if (defaultRuleID != null)
 	    		{
 	    			ProfilingRule defaultRule = pm.getRule(defaultRuleID);
@@ -2419,10 +1996,5 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 	    }	
 
 
-	private String recreatePassword(char[] savedPassword)
-	{
-		if (savedPassword == null)
-			return null;
-		return new String(savedPassword);
-	}
+
 }

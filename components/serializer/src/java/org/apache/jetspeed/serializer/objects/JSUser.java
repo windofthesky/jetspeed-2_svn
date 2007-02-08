@@ -47,7 +47,7 @@ public class JSUser
 
     private JSUserAttributes userInfo = null;
 
-    private JSNameValuePairs preferences = null;
+    private JSNVPElements preferences = null;
 
     private ArrayList publicCredentials = null;
 
@@ -230,7 +230,7 @@ public class JSUser
     /**
      * @return Returns the preferences.
      */
-    public JSNameValuePairs getPreferences()
+    public JSNVPElements getPreferences()
     {
         return preferences;
     }
@@ -241,7 +241,7 @@ public class JSUser
      */
     public void setPreferences(Preferences preferences)
     {
-        this.preferences = new JSNameValuePairs(preferences);
+        this.preferences = new JSNVPElements(preferences);
     }
 
     /**
@@ -363,8 +363,8 @@ public class JSUser
                             if (o1 instanceof JSUserAttributes)
 	                            g.userInfo  = (JSUserAttributes) o1;
 	                            else
-		                        if (o1 instanceof JSNameValuePairs)
-		                        	g.preferences  = (JSNameValuePairs) o1;
+		                        if (o1 instanceof JSNVPElements)
+		                        	g.preferences  = (JSNVPElements) o1;
 		                        else
 	                                if (o1 instanceof JSPrincipalRules)
 	                                g.rules  = (JSPrincipalRules) o1;

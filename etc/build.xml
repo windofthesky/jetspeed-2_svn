@@ -29,6 +29,7 @@ limitations under the License.
     <property name="org.apache.jetspeed.database.user" value=""/>
     <property name="org.apache.jetspeed.database.password" value=""/>
     <property name="org.apache.derby.version" value=""/>
+    <property name="org.apache.pluto.version" value=""/>
     <property name="ant.version" value=""/>
     <property name="hsqldb.version" value=""/>
     <property name="portlet-api.version" value=""/>
@@ -71,6 +72,7 @@ limitations under the License.
         <echo message="    org.apache.jetspeed.database.user=${org.apache.jetspeed.database.user}"/>
         <echo message="    org.apache.jetspeed.database.password=${org.apache.jetspeed.database.password}"/>
         <echo message="    org.apache.derby.version=${org.apache.derby.version}"/>
+        <echo message="    org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    ant.version=${ant.version}"/>
         <echo message="    hsqldb.version=${hsqldb.version}"/>
     </target>
@@ -472,8 +474,14 @@ limitations under the License.
             <include name="security*.xml"/>
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
-            <include name="profiler.xml"/>           
+            <include name="profiler.xml"/>        
+			<include name="registry.xml"/>   
             <include name="transaction.xml"/>           
+          </fileset>
+         </copy>
+        <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
+          <fileset dir="${basedir}/../src/webapp/WEB-INF/assembly/alternate">
+            <include name="request-context.xml"/>
           </fileset>
          </copy>
          <mkdir dir="${temp.assembly.dir}/boot/"/>             
@@ -483,6 +491,8 @@ limitations under the License.
           </fileset>
          </copy>
         
+        <echo message=" IN SEED establishing dependency to org.apache.pluto.version=${org.apache.pluto.version}"/>
+    	
 
         <!-- construct serializer component classpath -->
         <dependencies filesetId="serializer-id" useScope="test">
@@ -513,9 +523,18 @@ limitations under the License.
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
                         artifactId="jetspeed-profiler"
                         version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-registry"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-portal"
+                        version="${org.apache.jetspeed.deploy.version}"/>
             <dependency groupId="portlet-api"
                  		artifactId="portlet-api"
                  		version="${portlet-api.version}"/>
+            <dependency groupId="org.apache.pluto"
+                        artifactId="pluto"
+                        version="${org.apache.pluto.version}"/>
 
             <dependency groupId="tyrex"
                         artifactId="tyrex"

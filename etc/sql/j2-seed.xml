@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Snapshot name="standard-jetspeed2.xml"
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/j2-seed.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<softwareVersion value="1"/>
 	<softwareSubVersion value="0"/>
 	<default_rule value="j2"/>
@@ -260,8 +259,22 @@
 			<credentials password="admin" enabled="TRUE" requiresUpdate="TRUE"/>
 			<roles>user,manager,admin</roles>
 			<groups></groups>
-			<preferences org.apache.jetspeed.prefered.locale="en,,"/>
-			<userinfo user.name.given="Test Dude" user.name.family="Dudley"/>
+			<preferences>
+				<preference>
+					<name value="org.apache.jetspeed.prefered.locale"/>
+					<value value="en,,"/>
+				</preference>
+			</preferences>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Test Dude"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="Dudley"/>
+				</preference>
+			</userinfo>
 			<Rules/>
 		</User>
 		<User name="manager">

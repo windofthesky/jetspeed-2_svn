@@ -210,13 +210,16 @@ limitations under the License.
   </xs:element>
   <xs:element name="preferences">
     <xs:complexType>
-      <xs:attribute name="org.apache.jetspeed.prefered.locale"/>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="tns:preference"/>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="userinfo">
     <xs:complexType>
-      <xs:attribute name="user.name.family" type="xs:string"/>
-      <xs:attribute name="user.name.given" type="xs:string"/>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:preference"/>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="Rules">
@@ -316,4 +319,18 @@ limitations under the License.
   <xs:element name="mimeTypes" type="xs:string"/>
   <xs:element name="roles" type="xs:string"/>
   <xs:element name="groups" type="xs:string"/>
+    <xs:element name="preference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:name"/>
+        <xs:element ref="tns:value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
 </xs:schema>

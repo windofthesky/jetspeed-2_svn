@@ -917,10 +917,17 @@ PLEASE CONTACT taylor@apache.org for more information
 		        <include name="security*.xml"/>
 				<include name="capabilities.xml"/>           
 				<include name="prefs.xml"/>           
-				<include name="profiler.xml"/>           
+				<include name="profiler.xml"/>   
+				<include name="registry.xml"/>       
 				<include name="transaction.xml"/>           
 		      </fileset>
 		     </copy>
+			<copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
+		      <fileset dir="${portal.webapp.dir.assembly}/alternate/">
+		        <include name="request-context.xml"/>
+		      </fileset>
+		     </copy>
+
 		
 		    <mkdir dir="${temp.assembly.dir}/boot"/>
 		
@@ -1770,10 +1777,18 @@ Index: maven-plugin/plugin.jelly
 +		        <include name="security*.xml"/>
 +				<include name="capabilities.xml"/>           
 +				<include name="prefs.xml"/>           
-+				<include name="profiler.xml"/>           
-+				<include name="transaction.xml"/>           
++				<include name="profiler.xml"/>         
++	            <include name="registry.xml"/>       
++  				<include name="transaction.xml"/>           
 +		      </fileset>
 +		     </copy>
++
++		<copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
++   	   <fileset dir="${portal.webapp.dir.assembly}/alternate/">
++       	 <include name="request-context.xml"/>
++	      </fileset>
++   	  </copy>
++
 +		
 +		    <mkdir dir="${temp.assembly.dir}/boot"/>
 +		

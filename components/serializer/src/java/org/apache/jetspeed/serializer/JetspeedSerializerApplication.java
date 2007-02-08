@@ -39,13 +39,14 @@ import org.apache.log4j.Logger;
  * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)</p>  
  * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)</p>
  * 
- * <p>-o optionstring : overwrite defrault "ALL,REPLACE"</p>
+ * <p>-O optionstring : overwrite defrault "ALL,REPLACE"</p>
  * <p>optionstring: 
- *      ALL - extract/import all 
+ *      ALL - extract/import all (with exception of PREFERENCES)
  *      USER - extract/import users
- *      USERPREFS - extract/import user preferences (for export requires USER)
  *      CAPABILITIES - extract/import capabilities
  *      PROFILE = extract/import profile settings (for export requires USER) 
+ *      PREFS = extract/import  portlet preferences (ignored if any of the above is set)
+ *      
  *      NOOVERWRITE = don't overwrite existing file (for export)
  *      BACKUP = backup before process
  * </p>
@@ -241,6 +242,7 @@ public class JetspeedSerializerApplication
         /** create the instruction map */
         
         Map settings = null;
+        int processHelper = 1; // default process SEED
         if (options != null)
         {
             settings = new HashMap();
@@ -252,6 +254,7 @@ public class JetspeedSerializerApplication
             settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, Boolean.FALSE);            
             String[] optionSet = getTokens(options);
             
+            processHelper = 0;
             
             for (int i = 0; i < optionSet.length; i++)
             {
@@ -261,20 +264,33 @@ public class JetspeedSerializerApplication
                     settings.put(JetspeedSerializer.KEY_PROCESS_USERS, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
-                    settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.TRUE);
+                    settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.FALSE);
+                    processHelper = 1;
                 }
                 else
                 if (o.equalsIgnoreCase("user"))
+                {
                     settings.put(JetspeedSerializer.KEY_PROCESS_USERS, Boolean.TRUE);
+                    processHelper = 1;
+                }
                 else 
-                    if (o.equalsIgnoreCase("USERPREFS"))
+                    if (o.equalsIgnoreCase("PREFS"))
+                    {
                         settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.TRUE);
+                		processHelper = 2;
+                    }
                     else 
                         if (o.equalsIgnoreCase("CAPABILITIES"))
+                        {
                             settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.TRUE);
+                            processHelper = 1;
+                        }
                         else 
                             if (o.equalsIgnoreCase("PROFILE"))
+                            {
                                 settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
+                                processHelper = 1;
+                            }
                             else 
                                 if (o.equalsIgnoreCase("NOOVERWRITE"))
                                     settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING, Boolean.FALSE);
@@ -283,6 +299,7 @@ public class JetspeedSerializerApplication
                                         settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, Boolean.TRUE);
                 
             }
+            
         }
         JetspeedSerializer serializer = null;
 
@@ -329,7 +346,11 @@ public class JetspeedSerializerApplication
 			else
 				logger.setLevel(Level.ERROR);
 				
-
+/**
+ * set the application root
+ */
+		System.setProperty("applicationRoot",applicationPath);
+		System.setProperty("portal.name","jetspped");
         SpringJNDIStarter starter = new SpringJNDIStarter(context,applicationPath,getTokens(bootConfigFiles),getTokens(configFiles));
         
         System.out.println("starter framework created " + starter);
@@ -357,7 +378,12 @@ public class JetspeedSerializerApplication
 				try
 			    {
 			        System.out.println("processing import  " + importList[i]);
-			        serializer = new JetspeedSerializerImpl(starter.getComponentManager());
+			        if (processHelper == 2)
+			        {
+			        	serializer = new JetspeedSerializerSecondaryImpl(starter.getComponentManager());
+			        }
+			        else
+			        	serializer = new JetspeedSerializerImpl(starter.getComponentManager());
 			        serializer.importData(importList[i], settings);
 			        System.out.println("processing import  " + importList[i] + " done");
 			        
@@ -378,8 +404,15 @@ public class JetspeedSerializerApplication
         {
         	try
 	        {
-	            serializer = new JetspeedSerializerImpl(starter.getComponentManager());
-	                serializer.exportData(name, fileName, settings);
+		        System.out.println("processing export to  " + fileName);
+		        if (processHelper == 2)
+		        {
+		        	serializer = new JetspeedSerializerSecondaryImpl(starter.getComponentManager());
+		        }
+		        else
+		        	serializer = new JetspeedSerializerImpl(starter.getComponentManager());
+
+		        serializer.exportData(name, fileName, settings);
 	        } 
 	        catch (Exception e)
 	        {
@@ -390,7 +423,7 @@ public class JetspeedSerializerApplication
 	        {
 	            if (serializer != null)
 	                serializer.closeUp();
-	        }
+ 	        }
 
         }
         try

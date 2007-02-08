@@ -74,6 +74,8 @@ public interface JetspeedSerializer
 
     public final static String KEY_PROCESS_USER_PREFERENCES = "process_user_preferences"
             .intern();
+    public final static String KEY_PROCESS_PORTAL_PREFERENCES = "process_portal_preferences"
+        .intern();
 
     public final static String KEY_OVERWRITE_EXISTING = "overwrite_existing"
             .intern();
@@ -81,8 +83,15 @@ public interface JetspeedSerializer
     public final static String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process"
             .intern();
 
+    /** export/import instructions secondary*/
+    public final static String KEY_PROCESS_ENTITIES = "process_entities".intern();
+    public final static String KEY_PROCESS_PREFERENCES = "process_preferences".intern();
+    
+    
+    
     /**<p> the main tag in the XML file */
     public final static String TAG_SNAPSHOT = "Snapshot"; 
+    public final static String TAG_SECONDARYSNAPSHOT = "SecondaryData"; 
     
     /**
      * hand the serializer an existing component manager to access the

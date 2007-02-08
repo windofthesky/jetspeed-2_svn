@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.*;
 
-public class JSUserAttributes extends JSNameValuePairs
+public class JSUserAttributes extends JSNVPElements
 {
 
 

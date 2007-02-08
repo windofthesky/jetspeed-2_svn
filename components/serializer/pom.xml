@@ -73,6 +73,10 @@ limitations under the License.
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-registry</artifactId>
+        </dependency>
 
         <!-- Runtime Dependencies -->
         <dependency>

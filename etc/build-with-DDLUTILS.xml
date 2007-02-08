@@ -583,7 +583,9 @@ limitations under the License.
             <include name="security*.xml"/>
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
-            <include name="profiler.xml"/>           
+            <include name="profiler.xml"/>  
+            <include name="jetspeed-spring.xml"/>  
+            <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
           </fileset>
          </copy>
@@ -1683,6 +1685,8 @@ Index: etc/build.xml
 +            <include name="capabilities.xml"/>           
 +            <include name="prefs.xml"/>           
 +            <include name="profiler.xml"/>           
++            <include name="jetspeed-spring.xml"/>  
++            <include name="registry.xml"/>       
 +            <include name="transaction.xml"/>           
 +          </fileset>
 +         </copy>

@@ -113,11 +113,17 @@ limitations under the License.
             <include name="security*.xml"/>
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
-            <include name="profiler.xml"/>            
+            <include name="profiler.xml"/>    
+           <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
           </fileset>
             </copy>
-    	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/log4j"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/assembly">
+           <fileset dir="${basedir}/../../src/webapp/WEB-INF/assembly/alternate">
+             <include name="request-context.xml"/>
+           </fileset>
+          </copy>
+      	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/log4j"/>
         <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/log4j">
             <fileset dir="${basedir}/../../etc/log4j" >
                 <include name="log4j.properties"/>
