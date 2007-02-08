@@ -14,9 +14,6 @@
  */
 package org.apache.jetspeed.security.spi.impl.ldap;
 
-import java.util.Properties;
-
-import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
@@ -24,7 +21,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.lang.StringUtils;
@@ -89,31 +85,12 @@ public abstract class AbstractLdapDao
      */
     protected void bindToServer(String rootDn, String rootPassword) throws SecurityException
     {
-        validateDn(rootDn);
-        validatePassword(rootPassword);
+        if ( ctx == null )
+        {
+            validateDn(rootDn);
+            validatePassword(rootPassword);
 
-        try
-        {
-            Properties env = new Properties();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, this.ldapBindingConfig.getInitialContextFactory());
-            env.put(Context.PROVIDER_URL, this.ldapBindingConfig.getLdapScheme() + "://" + this.ldapBindingConfig.getLdapServerName() + ":"
-                    + this.ldapBindingConfig.getLdapServerPort() + "/" + this.ldapBindingConfig.getRootContext());
-            env.put(Context.SECURITY_PRINCIPAL, rootDn);
-            env.put(Context.SECURITY_CREDENTIALS, rootPassword);
-            env.put(Context.SECURITY_AUTHENTICATION, this.ldapBindingConfig.getLdapSecurityLevel());
-            if ( !StringUtils.isEmpty(this.ldapBindingConfig.getLdapSecurityProtocol()) )
-            {
-                env.put(Context.SECURITY_PROTOCOL, this.ldapBindingConfig.getLdapSecurityProtocol());
-            }
-            if ( !StringUtils.isEmpty(this.ldapBindingConfig.getLdapSocketFactory()) )
-            {
-                env.put("java.naming.ldap.factory.socket", this.ldapBindingConfig.getLdapSocketFactory());
-            }
-            ctx = new InitialLdapContext(env, null);
-        }
-        catch (NamingException ne)
-        {
-            throw new SecurityException(ne);
+            ctx = LdapContextProxy.createProxy(ldapBindingConfig);
         }
     }
 

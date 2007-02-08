@@ -14,6 +14,8 @@
  */
 package org.apache.jetspeed.security.spi.impl.ldap;
 
+import javax.naming.ldap.LdapContext;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +33,8 @@ public class LdapBindingConfig
 {
     /** The logger. */
     private static final Log logger = LogFactory.getLog(LdapBindingConfig.class);
+    
+    private LdapContext context;
 
     private String initialContextFactory;
     private String ldapSocketFactory;
@@ -256,6 +260,16 @@ public class LdapBindingConfig
         {
             logger.error("Could not configure LdapBindingConfig: " + ce);
         }
+    }
+    
+    LdapContext getContext()
+    {
+        return context;
+    }
+    
+    void setContext(LdapContext context)
+    {
+        this.context = context;
     }
 
     /**
