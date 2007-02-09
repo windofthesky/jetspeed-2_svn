@@ -823,7 +823,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     public SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink)
     {
         SecurityRoleRefImpl ref = new SecurityRoleRefImpl();
-        ref.setRoleName(name);
+        ref.setRoleName(roleName);
         ref.setRoleLink(roleLink);
         
         addSecurityRoleRef(ref);
