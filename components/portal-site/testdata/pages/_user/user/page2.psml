@@ -22,7 +22,7 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
   <title>/page2.psml</title>
-
+  <menu name="top" options="/" depth="1" skin="dhtml-pull-down"/>
   <fragment id="fake" name="fake" type="fake"/>
 
 </page>
