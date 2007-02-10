@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.portlets.pam;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,6 +48,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
+import org.apache.jetspeed.search.SearchEngine;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
@@ -75,6 +74,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
 
     private PortletContext context;
     private PortletRegistry registry;
+    private SearchEngine searchEngine;
     private LinkedHashMap paTabMap = new LinkedHashMap();
     private LinkedHashMap pdTabMap = new LinkedHashMap();
     
@@ -84,6 +84,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
         super.init(config);
         context = getPortletContext();
         registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
+        searchEngine = (SearchEngine) context.getAttribute(CommonPortletServices.CPS_SEARCH_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
@@ -159,11 +160,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
             }
             
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
-            
         }
 
         super.doView(request, response);
-
     }
 
     
@@ -196,92 +195,63 @@ public class PortletApplicationDetail extends GenericServletPortlet
         String action = actionRequest.getParameter(PORTLET_ACTION);
         if(action != null)
         {
-            
+            MutablePortletApplication pa = registry.getPortletApplication(paName);
             if(isAppAction(action))
             {
                 action = getAction(PORTLET_APP_ACTION_PREFIX, action);
                 
                 if(action.endsWith("metadata"))
                 {
-                    processMetadataAction(actionRequest, actionResponse, paName, null, action);
+                    processMetadataAction(actionRequest, actionResponse, pa, null, action);
                 }
                 else if(action.endsWith("user_attribute"))
                 {
-                    processUserAttributeAction(actionRequest, actionResponse, paName, action);
+                    processUserAttributeAction(actionRequest, actionResponse, pa, action);
                 }
+                searchEngine.update(pa);
             }
             else if(isPortletAction(action))
             {
-                
                 action = getAction(PORTLET_ACTION_PREFIX, action);
                 String pdefName = (String) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
                 
                 try
                 {
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
                     if(action.endsWith("metadata"))
                     {
-                        processMetadataAction(actionRequest, actionResponse, paName, pdefName, action);
+                        processMetadataAction(actionRequest, actionResponse, null, pdef, action);
                     }
                     else if(action.endsWith("portlet"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processPortletAction(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("preference"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("language"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processLanguage(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("parameter"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processParameter(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("security"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processSecurity(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("content_type"))
                     {
-
-                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-
-                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                        
                         processContentType(actionRequest, actionResponse, pa, pdef, action);
                     }
+                    searchEngine.update(pdef);
                 }
                 catch (RegistryException e)
                 {                    
                     throw new PortletException("A Registry action has failed.  "+e.getMessage());                    
                 }
-                
             }
         }
     }
@@ -307,39 +277,26 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param action
      */
-    private void processUserAttributeAction(ActionRequest actionRequest, ActionResponse actionResponse, String paName, String action) 
+    private void processUserAttributeAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication mpa, String action) 
     throws PortletException, IOException
     {
-        
+        boolean modified = false;
         if(action.equals("edit_user_attribute"))
         {
             String userAttrName = "";
-            try
+            
+            Iterator userAttrIter = mpa.getUserAttributes().iterator();
+            while (userAttrIter.hasNext())
             {
-                MutablePortletApplication mpa = registry.getPortletApplication(paName);
-                boolean modified = false;
-                Iterator userAttrIter = mpa.getUserAttributes().iterator();
-                while (userAttrIter.hasNext())
-                {
-                    UserAttribute userAttr = (UserAttribute) userAttrIter.next();
-                    
-                    userAttrName = userAttr.getName();
-                    String description = actionRequest.getParameter(userAttrName + ":description");
-                    if(!userAttr.getDescription().equals(description))
-                    {
-                        userAttr.setDescription(description);
-                        modified = true;
-                    }
-                }
-                if (modified)
-                {
-                    registry.updatePortletApplication(mpa);
-                }
-            }
-            catch (RegistryException e)
-            {
-                throw new PortletException("Failed update user attribute: " + userAttrName, e);
+                UserAttribute userAttr = (UserAttribute) userAttrIter.next();
                 
+                userAttrName = userAttr.getName();
+                String description = actionRequest.getParameter(userAttrName + ":description");
+                if(!userAttr.getDescription().equals(description))
+                {
+                    userAttr.setDescription(description);
+                    modified = true;
+                }
             }
         }
         else if(action.equals("add_user_attribute"))
@@ -348,57 +305,45 @@ public class PortletApplicationDetail extends GenericServletPortlet
             String userAttrDesc = actionRequest.getParameter("user_attr_desc");
             if (userAttrName != null && userAttrName.trim().length() > 0)                
             {
-                try
-                {
-                    MutablePortletApplication mpa = registry.getPortletApplication(paName);
-                    
-                    mpa.addUserAttribute(userAttrName.trim(), userAttrDesc);                
-                    
-                    registry.updatePortletApplication(mpa);
-                }
-                catch (RegistryException e)
-                {
-                    throw new PortletException("Failed add user attribute: " + userAttrName, e);                    
-                }
+                mpa.addUserAttribute(userAttrName.trim(), userAttrDesc);
+                modified = true;
             }
         }
         else if(action.equals("remove_user_attribute"))
         {
             String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
-            
             if(userAttrNames != null)
             {
                 String userAttrName = "";
-                try
+                int count = 0;
+                Iterator userAttrIter = mpa.getUserAttributes().iterator();
+                while (userAttrIter.hasNext())
                 {
-                    int count = 0;
-                    MutablePortletApplication mpa = registry.getPortletApplication(paName);
-                    Iterator userAttrIter = mpa.getUserAttributes().iterator();
-                    while (userAttrIter.hasNext())
+                    UserAttribute userAttr = (UserAttribute) userAttrIter.next();
+                    for(int ix = 0; ix < userAttrNames.length; ix++)
                     {
-                        UserAttribute userAttr = (UserAttribute) userAttrIter.next();
-                        for(int ix = 0; ix < userAttrNames.length; ix++)
+                        userAttrName = userAttrNames[ix];
+                        if(userAttr.getName().equals(userAttrName))
                         {
-                            userAttrName = userAttrNames[ix];
-                            if(userAttr.getName().equals(userAttrName))
-                            {
-                                userAttrIter.remove();
-                                count++;                                
-                                break;
-                            }
+                            userAttrIter.remove();
+                            count++;                                
+                            break;
                         }
-                    }                    
-                    if (count > 0)
-                    {
-
-                        registry.updatePortletApplication(mpa);
                     }
-                }
-                catch (RegistryException e)
-                {
-                    throw new PortletException("Failed remove user attribute: " + userAttrName, e);
-                    
-                }                
+                }                    
+                modified = count > 0;
+            }
+        }
+        
+        if(modified) 
+        {
+            try 
+            {
+                registry.updatePortletApplication(mpa);
+            } 
+            catch(RegistryException e)
+            {
+                throw new PortletException("Failed to update portlet application while performing action " + action, e);
             }
         }
     }
@@ -413,120 +358,70 @@ public class PortletApplicationDetail extends GenericServletPortlet
      */
     private void processMetadataAction(ActionRequest actionRequest, 
                                        ActionResponse actionResponse, 
-                                       String  paName, 
-                                       String  pdName,
+                                       MutablePortletApplication pa, 
+                                       PortletDefinitionComposite  pd,
                                        String action)
     throws PortletException, IOException
     {
-        MutablePortletApplication pa = registry.getPortletApplication(paName);
-        if (pa == null)
-        {
-            return;
-        }        
-        PortletDefinitionComposite pd = null;
         GenericMetadata meta = null;                
-        if (pdName != null)
+
+        if (pd != null)
         {
-            pd = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdName);
-            if (pd != null)
-            {
-                meta = pd.getMetadata();
-            }
-            else
-            {
-                return;
-            }
+            meta = pd.getMetadata();
         }
-        else
+        else if(pa != null)
         {
             meta = pa.getMetadata();
         }
+        
         if (meta == null)
         {
             return;
         }
         
+        boolean modified = false;
         if(action.equals("edit_metadata"))
         {               
-            try
-            {                
-                boolean modified = false;
-                Iterator fieldsIter = meta.getFields().iterator();            
-                while (fieldsIter.hasNext())
+            Iterator fieldsIter = meta.getFields().iterator();            
+            while (fieldsIter.hasNext())
+            {
+                LocalizedField field = (LocalizedField) fieldsIter.next();
+                String id = field.getId().toString();
+                String value = actionRequest.getParameter(id + ":value");
+                if (value != null)
                 {
-                    LocalizedField field = (LocalizedField) fieldsIter.next();
-                    String id = field.getId().toString();
-                    String value = actionRequest.getParameter(id + ":value");
-                    if (value != null)
+                    if (!value.equals(field.getValue()))
                     {
-                        if (!value.equals(field.getValue()))
-                        {
-                            field.setValue(value);
-                            modified = true;
-                        }
+                        field.setValue(value);
+                        modified = true;
                     }
-                }
-                if (modified)
-                {
-                    if (pd == null)
-                    {                        
-                        registry.updatePortletApplication(pa);
-                    }
-                    else
-                    {                        
-                        registry.savePortletDefinition(pd);
-                    }                                         
                 }
             }
-            catch (RegistryException e)
-            {
-                throw new PortletException("Failed update meta data attributes: " 
-                        + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
-            }            
         }
         else if (action.equals("remove_metadata"))
         {
             String[] ids = actionRequest.getParameterValues("metadata_id");            
             if (ids != null)
             {
-                try
+                Iterator fieldsIter = meta.getFields().iterator();
+                int count = 0;                        
+                while (fieldsIter.hasNext())
                 {
-                    Iterator fieldsIter = meta.getFields().iterator();
-                    int count = 0;                        
-                    while (fieldsIter.hasNext())
+                    LocalizedField field = (LocalizedField) fieldsIter.next();
+                    String id = field.getId().toString();
+
+                    for(int i=0; i<ids.length; i++)
                     {
-                        LocalizedField field = (LocalizedField) fieldsIter.next();
-                        String id = field.getId().toString();
-    
-                        for(int i=0; i<ids.length; i++)
+                        String mid = ids[i];
+                        if(mid.equals(id))
                         {
-                            String mid = ids[i];
-                            if(mid.equals(id))
-                            {
-                                fieldsIter.remove();
-                                count++;
-                                break;
-                            }
+                            fieldsIter.remove();
+                            count++;
+                            break;
                         }
                     }
-                    if (count > 0)
-                    {
-                        if (pd == null)
-                        {                            
-                            registry.updatePortletApplication(pa);
-                        }
-                        else
-                        {                                
-                            registry.savePortletDefinition(pd);
-                        }   
-                    
-                    }                        
                 }
-                catch (RegistryException e)
-                {
-                    throw new PortletException("Failed remove meta data attributes: " 
-                            + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
-                }                                            
+                modified = count > 0;
             }
         }
         else if(action.equals("add_metadata"))
@@ -543,28 +438,33 @@ public class PortletApplicationDetail extends GenericServletPortlet
             
             if (name != null && name.trim().length() > 0)                
             {
-                try
-                {
-                    meta.addField(locale, name, value);   
-                    if (pd == null)
-                    {
-                        registry.updatePortletApplication(pa);
-                    }
-                    else
-                    {
-                        registry.savePortletDefinition(pd);                      
-                    }                                      
-                  
-                }
-                catch (RegistryException e)
-                {
-                    throw new PortletException("Failed add meta data attribute: " + paName + ", " + name, e);                    
-                }                                                                
+                meta.addField(locale, name, value);   
+                modified = true;                             
+            }
+        }
+        
+        if (modified)
+        {
+        	try {
+	            if (pd == null)
+	            {                        
+	                registry.updatePortletApplication(pa);
+	            }
+	            else
+	            {                        
+	                registry.savePortletDefinition(pd);
+	            }    
+            }
+            catch(RegistryException e)
+            {
+        	    throw new PortletException("Failed to perform action " + action + " on " 
+        	    		+ (pd == null ? "portlet definition " + pa.getName() : "portlet application " + pa.getName()) );
             }
         }
     }
         
-    private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws RegistryException
+    private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, 
+    		PortletDefinitionComposite portlet, String action) throws RegistryException
     {
         if(action.equals("edit_portlet"))
         {
@@ -598,9 +498,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 String locale = actionRequest.getParameter("locale");
                 portlet.addDisplayName(new Locale(locale), displayNameParam);
             }            
-            
-            registry.savePortletDefinition(portlet);
-        
         }
         else if(action.equals("remove_portlet"))
         {
@@ -610,6 +507,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
         {
             
         }
+        registry.savePortletDefinition(portlet);
     }
     
     /**
@@ -636,8 +534,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
             {
                 pref.addValue(value);
             }
-            
-            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("edit_preference"))
         {
@@ -657,8 +553,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }
                 }
             }
-            
-            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_preference"))
         {
@@ -680,9 +574,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }
                 }
             }
-            
          // registry.getPersistenceStore().getTransaction().commit();
         }
+        registry.savePortletDefinition(portlet);
     }
     
     /**
@@ -703,13 +597,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
              String locale = actionRequest.getParameter("locale");
 
              portlet.addLanguage(title, shortTitle, keywords, new Locale(locale));
-
-             registry.savePortletDefinition(portlet);
          }
          else if(action.equals("remove_language"))
          {
              String[] removeIds = actionRequest.getParameterValues("language_remove_id");
-
              if(removeIds != null)
              {
                  int id = 0;
@@ -730,14 +621,11 @@ public class PortletApplicationDetail extends GenericServletPortlet
                          }
                      }
                  }
-
-                 registry.savePortletDefinition(portlet);
              }
          }
          else if(action.equals("edit_language"))
          {
              String[] editIds = actionRequest.getParameterValues("language_edit_id");
-
              if(editIds != null)
              {
                  //technically, the size and set of edit ids should be 
@@ -767,7 +655,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                      
                      while (keywordIter.hasNext())
                      {
-                         String keyword = (String) keywordIter.next();
+                         keywordIter.next(); //retrieve the next keyword
                          String keywordParam = actionRequest.getParameter("keyword:" + id + ":" + keywordIndex);
 
                          if(keywordParam != null && keywordParam.length() > 0)
@@ -779,18 +667,16 @@ public class PortletApplicationDetail extends GenericServletPortlet
                      }
 
                      lang.setKeywords(keywordList);
-                     
                      if(!lang.getShortTitle().equals(shortTitle))
                      {
                          lang.setShortTitle(shortTitle);
                      }
-
-                     registry.savePortletDefinition(portlet);
-                     
                      index++;
                  }
              }
          }
+         
+         registry.savePortletDefinition(portlet);
     }
     
     /**
@@ -821,8 +707,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 {
                     parameter.addDescription(new Locale(locale), description);
                 }
-                
-                registry.savePortletDefinition(portlet);
             }
         }
         else if(action.equals("edit_parameter"))
@@ -858,14 +742,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
                                 description.setDescription(descParam);
                             }
                         }
-                        
                         index++;
                     }
-                    
                 }
             }
-            
-            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_parameter"))
         {
@@ -889,9 +769,8 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }
                 }
             }
-            
-            registry.savePortletDefinition(portlet);
         }
+        registry.savePortletDefinition(portlet);
     }
     
     /**
@@ -931,7 +810,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                         securityRoleRef.addDescription(new Locale(locale), description);
                     }
                 }
-                registry.savePortletDefinition(portlet);
             }
         }
         else if(action.equals("edit_security"))
@@ -943,7 +821,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 String name = secRef.getRoleName();
                 
                 //TODO:  should this be editable
-                String newName = actionRequest.getParameter(name + ":name");
+//                String newName = actionRequest.getParameter(name + ":name");
                 String link = actionRequest.getParameter(name + ":link");
                 
                 if(!secRef.getRoleLink().equals(link))
@@ -974,8 +852,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     index++;
                 }
             }
-            
-            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_security"))
         {
@@ -1005,9 +881,8 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
                 */
             }
-            
-            registry.savePortletDefinition(portlet);
         }
+        registry.savePortletDefinition(portlet);
     }
     
     /**
@@ -1018,7 +893,8 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param action
      * @throws FailedToStorePortletDefinitionException
      */
-    private void processContentType(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws FailedToStorePortletDefinitionException
+    private void processContentType(ActionRequest actionRequest, ActionResponse actionResponse, 
+    		MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws FailedToStorePortletDefinitionException
     {
         if(action.equals("add_content_type"))
         {
@@ -1026,8 +902,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
             if(contentType != null)
             {
                 ArrayList allModes = new ArrayList();
-                
-                
                 String[] modes = actionRequest.getParameterValues("mode");
                 if(modes != null)
                 {
@@ -1048,14 +922,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
                 
                 portlet.addContentType(contentType, allModes);
-                
-                //registry.getPersistenceStore().getTransaction().commit();
-                registry.savePortletDefinition(portlet);
             }
-        }
-        else if(action.equals("edit_content_type"))
-        {
-            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_content_type"))
         {
@@ -1076,10 +943,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
                         }
                     }
                 }
-                
-                registry.savePortletDefinition(portlet);
             }
         }
+        registry.savePortletDefinition(portlet);
+//      registry.getPersistenceStore().getTransaction().commit();
     }
     
     private String createXml(MutablePortletApplication pa)

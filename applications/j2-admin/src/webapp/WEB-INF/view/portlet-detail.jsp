@@ -379,12 +379,9 @@ limitations under the License.
                 <input type="text" name="<c:out value="${theparam.name}"/>:value" value="<c:out value="${theparam.value}"/>"  class="portlet-form-field-label"/>
             </td>
             <td class="portlet-section-body">
-                <%
-                    ParameterComposite param = (ParameterComposite)pageContext.findAttribute("theparam");
-                    pageContext.setAttribute("description_set", param.getDescriptionSet());
-                %>
+                <c:set var="descSet" value="${theparam.descriptionSet}"/>
                 <table>
-                <c:forEach var="description" items="${description_set.innerCollection}" varStatus="descStatus">
+                <c:forEach var="description" items="${descSet.innerCollection}" varStatus="descStatus">
                     <tr>
                         <td class="portlet-section-alternate">
                             <c:out value="${description.locale}"/>
@@ -488,12 +485,9 @@ limitations under the License.
                     <input type="text" name="<c:out value="${therole.roleName}"/>:link" value="<c:out value="${therole.roleLink}"/>"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
-                    <%
-                        SecurityRoleRefComposite ref = (SecurityRoleRefComposite)pageContext.findAttribute("therole");
-                        pageContext.setAttribute("description_set", ref.getDescriptionSet());
-                    %>
+                    <c:set var="descSet" value="${therole.descriptionSet}"/>
                     <table>
-                    <c:forEach var="description" items="${description_set.innerCollection}" varStatus="descStatus">
+                    <c:forEach var="description" items="${descSet.innerCollection}" varStatus="descStatus">
                         <tr>
                             <td class="portlet-section-alternate">
                                 <c:out value="${description.locale}"/>
