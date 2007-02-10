@@ -205,6 +205,10 @@ public class ParameterImpl implements ParameterComposite, Serializable
      */
     public DescriptionSet getDescriptionSet()
     {
+        if (descriptions != null)
+        {
+            descCollWrapper.setInnerCollection(descriptions);
+        }        
         return descCollWrapper;
     }
 

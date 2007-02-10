@@ -183,6 +183,10 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
      */
     public DescriptionSet getDescriptionSet()
     {
+        if (descriptions != null)
+        {
+            descCollWrapper.setInnerCollection(descriptions);
+        }         
         return descCollWrapper;
     }
 }
