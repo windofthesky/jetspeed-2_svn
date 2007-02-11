@@ -560,6 +560,29 @@ limitations under the License.
         </table>
         <input type="submit" value="<fmt:message key="pam.details.add_security"/>"  class="portlet-form-button"/>
     </form>
+    
+    <br />
+    <portlet:actionURL var="edit_security_constraint" >
+    </portlet:actionURL>
+    <form action="<c:out value="${edit_security_constraint}"/>" method="post">
+      <input type="hidden" name="portlet_action" value="portlet.edit_security_constraint"/>
+      <table>
+        <tr>
+          <td class="portlet-section-alternate"><fmt:message key="pam.security_constraint"/></td>
+          <td>
+		    <select name="security-constraint-ref">
+			  <option value="" <c:if test="${empty currentSecurityConstraintRef}">selected</c:if> >No Constraint</option>
+			  <c:forEach var="secRef" items="${securityContraintRefList}">
+			    <option value="<c:out value="${secRef.name}"/>"  <c:if test="${secRef.name == currentSecurityConstraintRef}">selected</c:if>  ><c:out value="${secRef.name}"/></option>
+			  </c:forEach>
+			</select>
+		  </td>
+		  <td>
+		    <input type="submit" value="<fmt:message key="pam.details.update"/>" class="portlet-form-button"/>
+  	      </td>
+	    </tr>
+	  </table>
+    </form>
 
 </c:if>
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -47,6 +48,7 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -74,6 +76,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
 
     private PortletContext context;
     private PortletRegistry registry;
+    private PageManager pageManager;
     private SearchEngine searchEngine;
     private LinkedHashMap paTabMap = new LinkedHashMap();
     private LinkedHashMap pdTabMap = new LinkedHashMap();
@@ -85,6 +88,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
         context = getPortletContext();
         registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
         searchEngine = (SearchEngine) context.getAttribute(CommonPortletServices.CPS_SEARCH_COMPONENT);
+        pageManager = (PageManager) context.getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
@@ -117,9 +121,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
         pdTabMap.put(tb_7.getId(), tb_7);
     }
     
-    public void doView(RenderRequest request, RenderResponse response)
-
-    throws PortletException, IOException
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
 
     {
         response.setContentType("text/html");
@@ -155,6 +157,19 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 if(selectedPortletTab == null)
                 {
                     selectedPortletTab = (TabBean) pdTabMap.values().iterator().next();
+                }
+                if(selectedPortletTab.getId().equals("pd_security")) {
+                    try
+                    {
+                        List securityContraintRefList = pageManager.getPageSecurity().getSecurityConstraintsDefs();
+                        request.setAttribute("securityContraintRefList", securityContraintRefList);
+                        request.setAttribute("currentSecurityConstraintRef", pdef.getJetspeedSecurityConstraint());
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException("Failed to retrieve security constraint references.");
+                    }
+                    
                 }
                 request.setAttribute("selected_portlet_tab", selectedPortletTab);
             }
@@ -246,6 +261,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     {
                         processContentType(actionRequest, actionResponse, pa, pdef, action);
                     }
+                    else if(action.endsWith("edit_security_constraint")) {
+                        processSecurityRef(actionRequest, actionResponse, pa, pdef, action);
+                    }
                     searchEngine.update(pdef);
                 }
                 catch (RegistryException e)
@@ -255,7 +273,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
             }
         }
     }
-    
+
     private boolean isAppAction(String action)
     {
         return action.startsWith(PORTLET_APP_ACTION_PREFIX);
@@ -883,6 +901,29 @@ public class PortletApplicationDetail extends GenericServletPortlet
             }
         }
         registry.savePortletDefinition(portlet);
+    }
+    
+    private void processSecurityRef(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite pdef, String action) throws PortletException
+    {
+        String ref = actionRequest.getParameter("security-constraint-ref");
+        String currentRef = pdef.getJetspeedSecurityConstraint();
+        if(currentRef == null) {
+            currentRef = "";
+        }
+        if(!currentRef.equals(ref)) {
+            if(ref.length() == 0) {
+                ref = null;
+            }
+            pdef.setJetspeedSecurityConstraint(ref);
+            try
+            {
+                registry.savePortletDefinition(pdef);
+            }
+            catch (FailedToStorePortletDefinitionException e)
+            {
+                throw new PortletException("Failed to update portlet " + pdef.getName());
+            }
+        }
     }
     
     /**
