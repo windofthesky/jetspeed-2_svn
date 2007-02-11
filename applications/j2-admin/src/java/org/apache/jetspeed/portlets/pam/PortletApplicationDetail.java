@@ -159,25 +159,41 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     selectedPortletTab = (TabBean) pdTabMap.values().iterator().next();
                 }
                 if(selectedPortletTab.getId().equals("pd_security")) {
-                    try
-                    {
-                        List securityContraintRefList = pageManager.getPageSecurity().getSecurityConstraintsDefs();
-                        request.setAttribute("securityContraintRefList", securityContraintRefList);
-                        request.setAttribute("currentSecurityConstraintRef", pdef.getJetspeedSecurityConstraint());
-                    }
-                    catch (Exception e)
-                    {
-                        throw new PortletException("Failed to retrieve security constraint references.");
-                    }
-                    
+                    setupSecurityContraintContext(request, null, pdef);
                 }
                 request.setAttribute("selected_portlet_tab", selectedPortletTab);
+            }
+            else if(selectedTab.getId().equals("pa_details"))
+            {
+                setupSecurityContraintContext(request, pa, null);
             }
             
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
         }
 
         super.doView(request, response);
+    }
+
+    private void setupSecurityContraintContext(RenderRequest request, MutablePortletApplication pa, PortletDefinitionComposite pdef) throws PortletException
+    {
+        try
+        {
+            List securityContraintRefList = pageManager.getPageSecurity().getSecurityConstraintsDefs();
+            request.setAttribute("securityContraintRefList", securityContraintRefList);
+            if(pdef == null)
+            {
+                request.setAttribute("currentSecurityConstraintRef", pa.getJetspeedSecurityConstraint());
+            }
+            else
+            {
+                request.setAttribute("currentSecurityConstraintRef", pdef.getJetspeedSecurityConstraint());
+            }
+        }
+        catch (Exception e)
+        {
+            throw new PortletException("Failed to retrieve security constraint references from "
+                    + (pdef == null ? "portlet application " + pa.getName() : "portlet definition " + pdef.getName()));
+        }
     }
 
     
@@ -223,6 +239,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 {
                     processUserAttributeAction(actionRequest, actionResponse, pa, action);
                 }
+                else if(action.endsWith("edit_security_constraint"))
+                {
+                    processSecurityRef(actionRequest, actionResponse, pa, null, action);
+                }
                 searchEngine.update(pa);
             }
             else if(isPortletAction(action))
@@ -262,7 +282,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                         processContentType(actionRequest, actionResponse, pa, pdef, action);
                     }
                     else if(action.endsWith("edit_security_constraint")) {
-                        processSecurityRef(actionRequest, actionResponse, pa, pdef, action);
+                        processSecurityRef(actionRequest, actionResponse, null, pdef, action);
                     }
                     searchEngine.update(pdef);
                 }
@@ -476,7 +496,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
             catch(RegistryException e)
             {
         	    throw new PortletException("Failed to perform action " + action + " on " 
-        	    		+ (pd == null ? "portlet definition " + pa.getName() : "portlet application " + pa.getName()) );
+        	    		+ (pd == null ? "portlet application " + pa.getName() : "portlet definition " + pd.getName()) );
             }
         }
     }
@@ -906,7 +926,15 @@ public class PortletApplicationDetail extends GenericServletPortlet
     private void processSecurityRef(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite pdef, String action) throws PortletException
     {
         String ref = actionRequest.getParameter("security-constraint-ref");
-        String currentRef = pdef.getJetspeedSecurityConstraint();
+        String currentRef = "";
+        if(pa != null)
+        {
+            currentRef = pa.getJetspeedSecurityConstraint();
+        }
+        else
+        {
+            currentRef = pdef.getJetspeedSecurityConstraint();
+        }
         if(currentRef == null) {
             currentRef = "";
         }
@@ -914,15 +942,25 @@ public class PortletApplicationDetail extends GenericServletPortlet
             if(ref.length() == 0) {
                 ref = null;
             }
-            pdef.setJetspeedSecurityConstraint(ref);
+            
             try
             {
-                registry.savePortletDefinition(pdef);
+                if(pa != null)
+                {
+                    pa.setJetspeedSecurityConstraint(ref);
+                    registry.updatePortletApplication(pa);
+                }
+                else
+                {
+                    pdef.setJetspeedSecurityConstraint(ref);
+                    registry.savePortletDefinition(pdef);
+                }
             }
-            catch (FailedToStorePortletDefinitionException e)
+            catch(RegistryException e)
             {
-                throw new PortletException("Failed to update portlet " + pdef.getName());
-            }
+                throw new PortletException("Failed to perform action " + action + " on " 
+                        + (pdef == null ? "portlet application " + pa.getName() : "portlet definition " + pdef.getName()) );
+            }            
         }
     }
     
