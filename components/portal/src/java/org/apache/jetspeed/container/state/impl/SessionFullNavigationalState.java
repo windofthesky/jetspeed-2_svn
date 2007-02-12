@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import org.apache.jetspeed.cache.JetspeedCache;
+
 
 /**
  * SessionFullNavigationalState, stores all nav parameters in the session, including render parameters
@@ -24,9 +26,9 @@ package org.apache.jetspeed.container.state.impl;
  */
 public class SessionFullNavigationalState extends SessionNavigationalState
 {    
-    public SessionFullNavigationalState(NavigationalStateCodec codec)
+    public SessionFullNavigationalState(NavigationalStateCodec codec, JetspeedCache cache)
     {
-        super(codec);
+        super(codec, cache);
     }
 
     public boolean isRenderParameterStateFull()

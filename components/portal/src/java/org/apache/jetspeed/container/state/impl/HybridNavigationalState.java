@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -22,9 +23,9 @@ public class HybridNavigationalState extends SessionNavigationalState
 {
     protected String prefix;
     
-    public HybridNavigationalState(NavigationalStateCodec codec, String prefix)
+    public HybridNavigationalState(NavigationalStateCodec codec, String prefix, JetspeedCache cache)
     {
-        super(codec);
+        super(codec, cache);
         this.prefix = prefix;
     }
     

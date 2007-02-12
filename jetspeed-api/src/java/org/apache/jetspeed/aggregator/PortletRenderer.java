@@ -63,4 +63,11 @@ public interface PortletRenderer
      */
     public ContentDispatcher getDispatcher(RequestContext request, boolean isParallel);
 
+    /**
+     * Notify that content completed by worker jobs 
+     * So that renderer can update its state
+     * 
+     * @param content
+     */
+    public void notifyContentComplete(PortletContent content);
 }

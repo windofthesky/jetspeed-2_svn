@@ -28,13 +28,8 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
  * @version $Id$
  */
-public interface ContentDispatcherCtrl
+public interface ContentDispatcherCtrl extends ContentDispatcher
 {
-    /** Notify ContentDispatcher that the content for the specified OID is
-     * completely generated and is available for inclusion in other content
-     */
-//    public void notify(ObjectID oid);
-
     /**
      * Return the HttpServletResponse to use for a given PortletWindow
      * in order to be able to capture parallel rendering portlets

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -79,30 +78,9 @@ public class PortletAggregatorImpl implements PortletAggregator
             fragment.setType(Fragment.PORTLET);
             fragment.setName(name);
         }
-        //String decorator = fragment.getDecorator();
-        ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
         ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
         renderer.renderNow(contentFragment, context);
-//        dispatcher.include(fragment);
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
     }
     
-    private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
-    {
-        /*        
-        log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
-
-        HeaderResourceFactory headerResourceFactory=(HeaderResourceFactory)Jetspeed.getComponentManager().getComponent(HeaderResourceFactory.class);
-        HeaderResource headerResource=headerResourceFactory.getHeaderResouce(context);
-        
-        if(decoratorType.equals(Fragment.LAYOUT))
-        {
-            headerResource.addStyleSheet("content/css/styles.css");
-        }
-        else
-        {
-            headerResource.addStyleSheet("content/"+decoratorName+"/css/styles.css");
-        }
-*/
-    }
 }

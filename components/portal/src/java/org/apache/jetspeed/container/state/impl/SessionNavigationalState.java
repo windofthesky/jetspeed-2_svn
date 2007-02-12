@@ -19,6 +19,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -30,9 +31,9 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class SessionNavigationalState extends AbstractNavigationalState
 {    
-    public SessionNavigationalState(NavigationalStateCodec codec)
+    public SessionNavigationalState(NavigationalStateCodec codec, JetspeedCache cache)
     {
-        super(codec);
+        super(codec, cache);
     }
 
     public synchronized void sync(RequestContext context)
@@ -64,7 +65,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
                 sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
                 session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
             }
-            sessionStates.sync(context.getPage(), requestStates);
+            sessionStates.sync(context, context.getPage(), requestStates, cache);
         }
     }
     

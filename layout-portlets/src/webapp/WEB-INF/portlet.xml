@@ -31,7 +31,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.LayoutPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -70,7 +70,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -111,7 +111,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -152,7 +152,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -193,7 +193,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -235,7 +235,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -276,7 +276,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -317,7 +317,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -356,7 +356,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -395,7 +395,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -433,7 +433,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -472,7 +472,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -513,7 +513,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -552,7 +552,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
@@ -592,7 +592,7 @@ limitations under the License.
     </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>

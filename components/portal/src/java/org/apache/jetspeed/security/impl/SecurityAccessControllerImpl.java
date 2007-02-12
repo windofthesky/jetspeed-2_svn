@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.impl;
 import java.security.AccessControlException;
 import java.security.AccessController;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
@@ -61,8 +62,8 @@ public class SecurityAccessControllerImpl implements SecurityAccessController
                     return true; // allow access
                 }
             }
-            // TODO: mask to list
-            return pageManager.checkConstraint(constraintRef, "view");                
+            String actions = JetspeedActions.getContainerActions(mask);
+            return pageManager.checkConstraint(constraintRef, actions);                
         }
         else
         {

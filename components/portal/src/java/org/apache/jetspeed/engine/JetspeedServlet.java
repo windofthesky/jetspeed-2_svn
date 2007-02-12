@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -354,6 +355,8 @@ implements JetspeedEngineConstants, HttpSessionListener
         PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
         String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);
-        statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);        
+        statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
+        JetspeedCache portletContentCache = (JetspeedCache)engine.getComponentManager().getComponent("portletContentCache");
+        portletContentCache.evictContentForUser(subjectUserPrincipal.getName());
     }
 }

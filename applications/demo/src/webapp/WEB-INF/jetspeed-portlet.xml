@@ -222,6 +222,22 @@ limitations under the License.
         -->
     </portlet>
 
+    <portlet>
+        <portlet-name>WebContentPortlet</portlet-name>
+        <!--  this portlet was wrongly coded to submit actions when it should be submitting renders
+              to compensate, I have changed its action behavior to non-standard so that other
+              cached portlets are not required to refresh while navigating around -->
+        <js:metadata name="nonStandardAction">true</js:metadata>
+    </portlet>
+
+    <portlet>
+        <portlet-name>SSOWebContent</portlet-name>
+        <!--  this portlet was wrongly coded to submit actions when it should be submitting renders
+              to compensate, I have changed its action behavior to non-standard so that other
+              cached portlets are not required to refresh while navigating around -->
+        <js:metadata name="nonStandardAction">true</js:metadata>
+    </portlet>
+
 	<js:services>
 	    <js:service name='SSO'/>
 	</js:services>

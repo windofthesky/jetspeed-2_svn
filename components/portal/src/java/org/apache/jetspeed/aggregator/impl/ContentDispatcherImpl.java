@@ -15,20 +15,12 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -40,75 +32,26 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta </a>
  * @version $Id$
  */
-public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatcherCtrl
+public class ContentDispatcherImpl implements ContentDispatcherCtrl
 {
-    /** Commons logging */
-    protected final static Log log = LogFactory.getLog(ContentDispatcherImpl.class);
+    private PortletContent content = null;
 
-    private Map contents = new Hashtable();
-
-    private boolean isParallel = true;
-
-    private static int debugLevel = 1;
-
+    private ContentDispatcherImpl() 
+    {}
     
-
-    public ContentDispatcherImpl( boolean isParallel )
-    {        
-        this.isParallel = isParallel;
+    public ContentDispatcherImpl(PortletContent content)
+    {
+        this.content = content;
     }
-
-//    public void notify( ObjectID oid )
-//    {
-//        PortletContentImpl content = (PortletContentImpl) contents.get(oid);
-//
-//        if (content != null)
-//        {
-//            synchronized (content)
-//            {
-//                if ((debugLevel > 0) && log.isDebugEnabled())
-//                {
-//                    log.debug("Notifying complete OID " + oid);
-//                }
-//                content.complete();
-//                content.notifyAll();
-//            }
-//        }
-//    }
 
     public HttpServletResponse getResponseForWindow( PortletWindow window, RequestContext request )
     {
-        PortletContentImpl myContent = new PortletContentImpl();
-
-        return getResponseForId(request, myContent, window.getId());
+        return new HttpBufferedResponse(request.getResponse(), this.content.getWriter());
     }
     
     public HttpServletResponse getResponseForFragment( Fragment fragment, RequestContext request )
     {
-        PortletContentImpl myContent = new PortletContentImpl();
-        ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-        
-        return getResponseForId(request, myContent, oid);
-    }
-
-    /**
-     * <p>
-     * getResponseForId
-     * </p>
-     *
-     * @param request
-     * @param myContent
-     * @param oid
-     * @return
-     */
-    protected HttpServletResponse getResponseForId( RequestContext request, PortletContentImpl myContent, ObjectID oid )
-    {
-        synchronized (contents)
-        {
-            contents.put(oid, myContent);
-        }
-
-        return new HttpBufferedResponse(request.getResponse(), myContent.getWriter());
+        return new HttpBufferedResponse(request.getResponse(), this.content.getWriter());
     }
 
     /**
@@ -122,8 +65,6 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
      */
     public PortletContent getPortletContent( Fragment fragment )
     {       
-        ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-        PortletContentImpl content = (PortletContentImpl) contents.get(oid);
-        return content;
+        return this.content;
     }
 }

@@ -53,7 +53,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>internet-news-reader.png</value>
     </init-param>    
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -100,7 +100,7 @@ limitations under the License.
 		</preference>	
 		<preference>
 			<name>minrefresh</name>
-			<value>3600</value>		
+			<value>900</value>		
 		</preference>	
 	</portlet-preferences>				
 </portlet>
@@ -132,7 +132,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>internet-news-reader.png</value>
     </init-param>
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -212,7 +212,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>bbcnews.png</value>
     </init-param>    
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -259,7 +259,7 @@ limitations under the License.
 		</preference>	
 		<preference>
 			<name>minrefresh</name>
-			<value>3600</value>		
+			<value>900</value>		
 		</preference>	
 	</portlet-preferences>				
 </portlet>
@@ -297,7 +297,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>nfl.png</value>
     </init-param>    
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -344,7 +344,7 @@ limitations under the License.
 		</preference>	
 		<preference>
 			<name>minrefresh</name>
-			<value>3600</value>		
+			<value>900</value>		
 		</preference>	
 	</portlet-preferences>				
 </portlet>
@@ -382,7 +382,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>bbcnews.png</value>
     </init-param>    
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -429,7 +429,7 @@ limitations under the License.
 		</preference>	
 		<preference>
 			<name>minrefresh</name>
-			<value>3600</value>		
+			<value>900</value>		
 		</preference>	
 	</portlet-preferences>				
 </portlet>
@@ -459,7 +459,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>utilities-system-monitor.png</value>
     </init-param>
-    <expiration-cache>15</expiration-cache>
+    <expiration-cache>1200</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>

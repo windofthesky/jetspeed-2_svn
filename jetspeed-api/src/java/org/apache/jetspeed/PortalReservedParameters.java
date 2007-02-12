@@ -65,4 +65,22 @@ public interface PortalReservedParameters
     public static final String PAGE_THEME_OVERRIDE_ATTRIBUTE = "org.apache.jetspeed.theme.override";
     public static final String PORTAL_FILTER_ATTRIBUTE = "org.apache.jetspeed.login.filter.PortalFilter";
     
+    //
+    // Settings for Metadata on jetspeed-portlet.xml
+    //
+    /**
+     * Actions can be marked as non-standard if they don't participate in
+     * JSR-168 standard action behavior. By default, actions are supposed
+     * to clear the cache of all other portlets on the page.
+     * By setting this parameter, we can ignore the standard behavior
+     * and not clear the cache on actions. This is useful for portlets
+     * which never participate with other portlets.
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_NON_STANDARD_ACTION = "nonStandardAction";
+    /**
+     * A portlet can have a specific setting for the timeout duration that the portal will wait
+     * before it gives up on rendering the portlet. This value overrides the system setting.
+     * The timeout value is in milliseconds 
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT = "timeout";
 }

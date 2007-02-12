@@ -20,18 +20,34 @@ import java.io.PrintWriter;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 
-
 public class PortletContentImpl implements PortletContent
 {
     private CharArrayWriter cw;
     private PrintWriter writer;
     private boolean complete = false;
-
+    private String cacheKey;
+    private int expiration = 0;
+    private String title;
+ 
     public PortletContentImpl()
     {
         init();
     }
 
+    PortletContentImpl(String cacheKey, int expiration, String title, boolean complete)
+    {
+        this.cacheKey = cacheKey;
+        this.expiration = expiration;
+        this.title = title;
+        this.complete = complete;
+        init();
+    }
+
+    PortletContentImpl(String cacheKey, int expiration)
+    {
+        this(cacheKey, expiration, "no title", false);
+    }
+   
     public PrintWriter getWriter()
     {
         return writer;
@@ -92,4 +108,25 @@ public class PortletContentImpl implements PortletContent
     {
        setComplete(true);
     }
+        
+    public String getCacheKey()
+    {
+        return cacheKey;
+    }
+    
+    public int getExpiration()
+    {
+        return expiration;
+    }
+    
+    public String getTitle()
+    {
+        return title;
+    }
+    
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+   
 }

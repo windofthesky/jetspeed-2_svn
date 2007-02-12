@@ -19,6 +19,7 @@ import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.aggregator.PortletRenderer;
 
 
 public class PortletContentImpl implements PortletContent
@@ -26,12 +27,30 @@ public class PortletContentImpl implements PortletContent
     private CharArrayWriter cw;
     private PrintWriter writer;
     private boolean complete = false;
-
+    private String cacheKey;
+    private int expiration = 0;
+    private String title;
+    private PortletRenderer renderer = null;
+    
     PortletContentImpl()
     {
         init();
     }
+    
+    PortletContentImpl(PortletRenderer renderer, String cacheKey, int expiration, String title)
+    {
+        this.renderer = renderer;
+        this.cacheKey = cacheKey;
+        this.expiration = expiration;
+        this.title = title;
+        init();
+    }
 
+    PortletContentImpl(PortletRenderer renderer, String cacheKey, int expiration)
+    {
+        this(renderer, cacheKey, expiration,"no title");
+    }
+   
     public PrintWriter getWriter()
     {
         return writer;
@@ -73,6 +92,8 @@ public class PortletContentImpl implements PortletContent
 
     void setComplete( boolean state )
     {
+        if (renderer != null)
+            renderer.notifyContentComplete(this);
         this.complete = state;
     }
     
@@ -92,4 +113,25 @@ public class PortletContentImpl implements PortletContent
     {
        setComplete(true);
     }
+    
+    public String getCacheKey()
+    {
+        return cacheKey;
+    }
+   
+    public int getExpiration()
+    {
+        return expiration;
+    }
+    
+    public String getTitle()
+    {
+        return title;
+    }
+    
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+        
 }

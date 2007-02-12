@@ -73,7 +73,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>bookmark-new.png</value>
         </init-param>
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>-1</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -129,7 +129,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>bookmark-new.png</value>
         </init-param>
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>360</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -215,7 +215,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>internet-web-browser.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -255,7 +255,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>applications-games.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>600</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -301,7 +301,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>preferences-system-windows.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -339,7 +339,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>x-office-spreadsheet.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -376,7 +376,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>x-office-spreadsheet.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -413,7 +413,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>x-office-spreadsheet.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -453,7 +453,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>preferences-system.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -506,7 +506,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>system-users.png</value>
         </init-param>
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -540,7 +540,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>applications-internet.png</value>
         </init-param>        
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>EDIT</portlet-mode>
@@ -602,7 +602,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>system-software-update.png</value>
         </init-param>                
-        <expiration-cache>-1</expiration-cache>
+        <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>EDIT</portlet-mode>
@@ -782,7 +782,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>system-file-manager.png</value>
         </init-param>                                
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>1800</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -840,7 +840,7 @@ limitations under the License.
             </preference>
             <preference>
                 <name>sql</name>
-                <value>select * from CLUBS</value>
+                <value>select * from CLIENT</value>
             </preference>
         </portlet-preferences>
     </portlet>
@@ -977,7 +977,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>weather-showers.png</value>
         </init-param>                                                        
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -1026,7 +1026,7 @@ limitations under the License.
             <name>portlet-icon</name>
             <value>applications-multimedia.png</value>
         </init-param>                                                        
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>120</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>

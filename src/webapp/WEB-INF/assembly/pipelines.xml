@@ -128,7 +128,10 @@ limitations under the License.
    </constructor-arg>
    <constructor-arg>   
        <ref bean="PortletWindowAccessor" />    
-   </constructor-arg>   
+   </constructor-arg>
+   <constructor-arg>
+    	<ref bean="portletContentCache"/>
+   </constructor-arg>      
     <!-- 
          Setting to true will force Action response isCommitted to true
          as there is a bug in Websphere 5 where request.isCommitted always returns false
@@ -136,7 +139,7 @@ limitations under the License.
     <constructor-arg type="boolean">
         <value>false</value>
     </constructor-arg>                
-        -->       
+        -->          	
   </bean> 
 
   <bean id="desktopActionValve"
@@ -149,6 +152,17 @@ limitations under the License.
    <constructor-arg>   
        <ref bean="PortletWindowAccessor" />    
    </constructor-arg>   
+   <constructor-arg>
+    	<ref bean="portletContentCache"/>
+   </constructor-arg>      
+    <!-- 
+         Setting to true will force Action response isCommitted to true
+         as there is a bug in Websphere 5 where request.isCommitted always returns false
+         Set this boolean to TRUE if running on Websphere 5 pre-cumulative fix 5.1.1.9  
+    <constructor-arg type="boolean">
+        <value>false</value>
+    </constructor-arg>                
+        -->          	
   </bean> 
       
   <bean id="portletValve"

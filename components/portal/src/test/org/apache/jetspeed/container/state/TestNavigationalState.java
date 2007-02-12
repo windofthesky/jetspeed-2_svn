@@ -20,18 +20,14 @@ import java.util.Iterator;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec;
-import org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.state.impl.NavigationalStateCodec;
 import org.apache.jetspeed.container.state.impl.PathNavigationalState;
 import org.apache.jetspeed.container.state.impl.SessionFullNavigationalState;
@@ -46,8 +42,6 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -61,9 +55,7 @@ import org.jmock.core.stub.ReturnStub;
 import org.jmock.core.stub.VoidStub;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
 
 /**
  * TestPortletContainer
@@ -84,6 +76,7 @@ public class TestNavigationalState extends TestCase
     private Engine engine;
     private NavigationalStateCodec codec;
     private PortalContext portalContext;
+    private JetspeedCache cache;
 
     /**
      * Defines the testcase name for JUnit.
@@ -134,7 +127,8 @@ public class TestNavigationalState extends TestCase
         portletFactory.registerPortletApplication((PortletApplication)portletApplicationMock.proxy(),Thread.currentThread().getContextClassLoader());
         
         codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
-        portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");        
+        portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");  
+        cache = (JetspeedCache) engine.getComponentManager().getComponent("portletContentCache");
     }
 
     public static Test suite()
@@ -146,10 +140,10 @@ public class TestNavigationalState extends TestCase
     
     public void testSessionFullStateAndQuery()
     {        
-        SessionFullNavigationalState navState = new SessionFullNavigationalState(codec);
+        SessionFullNavigationalState navState = new SessionFullNavigationalState(codec, cache);
         QueryStringEncodingPortalURL portalUrl = new QueryStringEncodingPortalURL(navState, portalContext);
         HttpServletRequest request = buildRequest(portalUrl, true);
-        navState = new SessionFullNavigationalState(codec);
+        navState = new SessionFullNavigationalState(codec, cache);
         portalUrl = new QueryStringEncodingPortalURL(navState, portalContext);
         doTestUrl(portalUrl, request);
         
@@ -157,20 +151,20 @@ public class TestNavigationalState extends TestCase
     
     public void testSessionStateAndPathInfo()
     {        
-        SessionNavigationalState navState = new SessionNavigationalState(codec);
+        SessionNavigationalState navState = new SessionNavigationalState(codec, cache);
         PathInfoEncodingPortalURL portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
         HttpServletRequest request = buildRequest(portalUrl, false);
-        navState = new SessionNavigationalState(codec);
+        navState = new SessionNavigationalState(codec, cache);
         portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
         doTestUrl(portalUrl, request);
     }
     
     public void testPathStateAndPathInfo()
     {        
-        PathNavigationalState navState = new PathNavigationalState(codec);
+        PathNavigationalState navState = new PathNavigationalState(codec, cache);
         PathInfoEncodingPortalURL portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
         HttpServletRequest request = buildRequest(portalUrl, false);
-        navState = new PathNavigationalState(codec);
+        navState = new PathNavigationalState(codec, cache);
         portalUrl = new PathInfoEncodingPortalURL(navState, portalContext);
         doTestUrl(portalUrl, request);
     }

@@ -163,6 +163,7 @@ limitations under the License.
         <commons-pool.version>1.2</commons-pool.version>
         <ddlutils.version>1.0-RC1-PATCHED</ddlutils.version>        
         <directory.version>0.9.3</directory.version>      
+        <ehcache.version>1.2.4</ehcache.version>
         <hsqldb.version>1.8.0.2</hsqldb.version>
         <javolution.version>4.0.2</javolution.version>        
         <javax.activation.version>1.0.2</javax.activation.version>
@@ -660,7 +661,12 @@ limitations under the License.
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+			
             <!-- Test -->
             <dependency>
                 <groupId>junit</groupId>

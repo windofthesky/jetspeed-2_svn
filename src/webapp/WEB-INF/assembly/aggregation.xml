@@ -46,7 +46,7 @@
             <ref bean="PortalStatistics" />
         </constructor-arg>                        
         <constructor-arg>
-            <null/>
+            <ref bean="org.apache.pluto.services.title.DynamicTitleService" />
         </constructor-arg>
         <!-- Default portlet timeout in milliseconds:
         Zero means no portlet timeout option by default.
@@ -61,8 +61,11 @@
             <value>true</value>
         </constructor-arg>           
         <constructor-arg>
-            <ref bean="org.apache.jetspeed.page.PageManager" />
+            <ref bean="org.apache.jetspeed.security.SecurityAccessController" />
         </constructor-arg>             
+        <constructor-arg>
+        	<ref bean="portletContentCache"/>
+        </constructor-arg>
     </bean>
 
     <!-- Portlet Renderer w/title in http response header -->
@@ -83,6 +86,27 @@
         <constructor-arg>
             <ref bean="org.apache.pluto.services.title.DynamicTitleService" />
         </constructor-arg>
+        <!-- Default portlet timeout in milliseconds:
+        Zero means no portlet timeout option by default.
+        -->
+        <constructor-arg>
+            <value>0</value>
+        </constructor-arg>        
+        <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
+             before rendering a portlet. If security check fails, do not display portlet content
+          -->
+        <constructor-arg type="boolean">
+            <value>true</value>
+        </constructor-arg>           
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.security.SecurityAccessController" />
+        </constructor-arg>             
+        <constructor-arg>
+        	<ref bean="portletContentCache"/>
+        </constructor-arg>
+        <constructor-arg type="boolean">
+            <value>true</value>   
+        </constructor-arg>       
     </bean>
 
     <!-- Aggregation: Page Leave in place until new development completed -->

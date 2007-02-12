@@ -135,7 +135,8 @@ public class PageAggregatorImpl implements PageAggregator
         {
             String message = "Maximized fragment not found."; 
             log.error(message);
-            maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  message);            
+            if (maxedContentFragment != null)
+                maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  message);            
         }
     }
 

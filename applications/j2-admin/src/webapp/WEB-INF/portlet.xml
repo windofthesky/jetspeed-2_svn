@@ -67,8 +67,9 @@ limitations under the License.
     <init-param>
         <name>portlet-icon</name>
         <value>system-lock-screen.png</value>
-    </init-param>            
-    <expiration-cache>-1</expiration-cache>
+    </init-param>      
+    <!--  expiration cache must be zero (disabled) since we bypass normal portlet api -->      
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
@@ -99,7 +100,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>system-lock-screen.png</value>
     </init-param>                    
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
@@ -432,7 +433,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>preferences-system-network-proxy.png</value>
     </init-param>                                                                           
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
@@ -470,7 +471,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>system-users.png</value>
     </init-param>                                                                                   
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>EDIT</portlet-mode>
@@ -512,7 +513,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>system-users.png</value>
     </init-param>                                                                                           
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>EDIT</portlet-mode>
@@ -554,7 +555,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>preferences-desktop-theme.png</value>
     </init-param>                                                                    
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>EDIT</portlet-mode>
@@ -596,7 +597,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>preferences-desktop-theme.png</value>
     </init-param>                                                                            
-  <expiration-cache>-1</expiration-cache>
+  <expiration-cache>0</expiration-cache>
   <supports>
     <mime-type>text/html</mime-type>
     <portlet-mode>EDIT</portlet-mode>
@@ -638,7 +639,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>network-workgroup.png</value>
     </init-param>                                                    
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>EDIT</portlet-mode>
@@ -877,50 +878,7 @@ limitations under the License.
       <keywords>admin,profiler,profile</keywords>
     </portlet-info>
 </portlet>
-    
- <!-- TODO: deprecate this -->
-<portlet id="PortletSelector">
-    <description>Portlet Selector for adding portlets to your page. This portlet displays in a popup.</description>        
-    <description xml:lang="ja">カスタマイザから１つ以上のポートレットを選択します。</description>
-    <description xml:lang="zh">选择一个或多个Portlet。</description>
-    <description xml:lang="zh-TW">選擇一個或多個Portlet。</description>    
-    <portlet-name>PortletSelector</portlet-name>
-    <display-name>Portlet Selector (popup)</display-name>
-    <display-name xml:lang="ja">ポートレット選択</display-name>
-    <display-name xml:lang="zh">Portlet选择</display-name>
-    <display-name xml:lang="zh-TW">Portlet選擇</display-name>
-    <portlet-class>org.apache.jetspeed.portlets.selector.PortletSelector</portlet-class>
-    <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/view/selectors/portlet-selector.vm</value>
-     </init-param>   
-    <init-param>
-        <name>portlet-icon</name>
-        <value>preferences-system.png</value>
-    </init-param>                  
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
-    </supports>
-    <supported-locale>en</supported-locale>
-    <resource-bundle>org.apache.jetspeed.portlets.site.resources.SiteResources</resource-bundle>            
-    <portlet-info>
-      <title>Portlet Selector</title>
-      <short-title>Portlets</short-title>
-      <keywords>portlet,selector,customizer,chooser,popup</keywords>
-    </portlet-info>    
-    <portlet-preferences>
-      <preference>                            
-        <name>WindowSize</name>                    
-        <value>100</value>    
-      </preference>                               		    
-    </portlet-preferences>            
-</portlet>
-    
+     
 <portlet id="PortletEntityBrowserPortlet">    
     <description>Administrative portlet for browsing over all Portlet Entities by portlet. Place this portlet on the same page as the Portlet Entity Editor</description>    
     <description xml:lang="ja">ポートレットエンティティを一覧する機能を提供します。</description>
@@ -1007,7 +965,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>x-office-spreadsheet.png</value>
     </init-param>                      
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -1292,7 +1250,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>appointment-new.png</value>
     </init-param>                                            
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -1447,6 +1405,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>user-home.png</value>
     </init-param>              
+    <expiration-cache>300</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>view</portlet-mode>
@@ -1499,6 +1458,7 @@ limitations under the License.
       <name>EditPage</name>
       <value>/WEB-INF/view/deployer/displayRepositories.jsp</value>
     </init-param>
+    <expiration-cache>300</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>

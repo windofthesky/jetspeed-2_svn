@@ -24,8 +24,10 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 public class PortletWindowSessionNavigationalStates implements Serializable
@@ -37,7 +39,6 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     }
     
     private final boolean storeParameters;
-    
     private Map pageStates = new HashMap();
 
     public PortletWindowSessionNavigationalStates(boolean storeParameters)
@@ -45,7 +46,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         this.storeParameters = storeParameters;
     }
     
-    public void sync(Page page, PortletWindowRequestNavigationalStates requestStates)
+    public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedCache cache)
     {
         PageState pageState = (PageState)pageStates.get(page.getId());
         if ( pageState == null )
@@ -121,7 +122,6 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         Iterator iter = requestStates.getWindowIdIterator();
         String actionWindowId = requestStates.getActionWindow() != null ? requestStates.getActionWindow().getId().toString() : null;
         boolean actionRequestState = false;
-        
         // now synchronize requestStates and sessionStates
         while ( iter.hasNext() )
         {
@@ -141,7 +141,11 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             }
 
             actionRequestState = actionWindowId != null && actionWindowId.equals(requestState.getWindowId());
-            syncStates(actionRequestState, requestState, sessionState);            
+            boolean changed = syncStates(actionRequestState, requestState, sessionState);      
+            if (changed)
+            {
+                removeFromCache(context, requestState.getWindowId(), cache);
+            }
         }
         
         // now copy missing requestStates from the pageState
@@ -155,14 +159,65 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             if ( requestState == null )
             {
                 requestState = new PortletWindowRequestNavigationalState(windowId);
-                syncStates(false, requestState,(PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
+                boolean changed = syncStates(false, requestState,(PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
                 requestStates.addPortletWindowNavigationalState(windowId, requestState);
+                if (changed)
+                {
+                    removeFromCache(context, requestState.getWindowId(), cache);
+                }
             }
         }        
     }
     
-    private void syncStates(boolean actionRequestState, PortletWindowRequestNavigationalState requestState, PortletWindowBaseNavigationalState sessionState)
+    private boolean modeChanged(PortletMode req, PortletMode ses)
     {
+        if (req == null)
+        {
+            if (ses != null && !ses.equals(PortletMode.VIEW))
+                return true;
+            return false;
+        }
+        else
+        {
+            if (ses == null)
+            {
+                if (req.equals(PortletMode.VIEW))
+                    return false;
+                return true;
+            }
+        }
+        return !req.equals(ses);
+    }
+    
+    private boolean stateChanged(WindowState req, WindowState ses)
+    {
+        if (req == null)
+        {
+            if (ses != null && !ses.equals(WindowState.NORMAL))
+                return true;
+            return false;
+        }
+        else
+        {
+            if (ses == null)
+            {
+                if (req.equals(WindowState.NORMAL))
+                    return false;
+                return true;
+            }
+        }
+        return !req.equals(ses);
+    }
+
+    
+    private boolean syncStates(boolean actionRequestState, PortletWindowRequestNavigationalState requestState, PortletWindowBaseNavigationalState sessionState)
+    {
+        boolean changed = false;
+        
+        if (modeChanged(requestState.getPortletMode(), sessionState.getPortletMode())
+                || stateChanged(requestState.getWindowState(), sessionState.getWindowState()))
+            changed = true;
+                       
         if ( requestState.getPortletMode() != null )
         {
             if ( requestState.getPortletMode().equals(PortletMode.VIEW) )
@@ -215,6 +270,10 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 }
                 else 
                 {
+                    if (changedParameters(requestState.getParametersMap(), extendedSessionState.getParametersMap()))
+                    {
+                        changed = true;
+                    }
                     extendedSessionState.setParametersMap(new HashMap(requestState.getParametersMap()));
                 }
             }
@@ -222,11 +281,48 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             {
                 extendedSessionState.setParametersMap(null);
                 requestState.setClearParameters(false);
+                changed = true;
             }            
             else if ( extendedSessionState.getParametersMap() != null )
             {
                 requestState.setParametersMap(new HashMap(extendedSessionState.getParametersMap()));
             }
         }
+        return changed;
     }    
+
+    protected boolean changedParameters(Map requestMap, Map sessionMap)
+    {
+        if (sessionMap == null || requestMap == null)
+            return true;
+        if (requestMap.size() != sessionMap.size())
+            return true;
+        Iterator ri = requestMap.entrySet().iterator();
+        Iterator si = sessionMap.entrySet().iterator();
+        while (ri.hasNext() && si.hasNext())
+        {
+            Map.Entry r = (Map.Entry)ri.next();
+            Map.Entry s = (Map.Entry)si.next();
+            if (!r.getKey().equals(s.getKey()))
+                return true;
+            String[] rvals = (String[])r.getValue();
+            String[] svals = (String[])s.getValue();            
+            for (int ix = 0; ix < rvals.length; ix++)
+            {
+                if (!rvals[ix].equals(svals[ix]))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    protected void removeFromCache(RequestContext context, String id, JetspeedCache cache)
+    {
+        String cacheKey = cache.createCacheKey(context.getUserPrincipal().getName(), id);
+        if (cache.isKeyInCache(cacheKey))
+        {
+            cache.remove(cacheKey);
+        }
+        
+    }
 }
