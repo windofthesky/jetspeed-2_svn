@@ -1,0 +1,18 @@
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    <folders>
+		#foreach($f in $folders)    
+			<folder name="$f.Name" path="$f.Path"/>
+		#end        
+		#foreach($p in $pages)    
+			<page name="$p.Name" path="$p.Path"/>
+		#end        
+		#foreach($l in $links)    
+			<link name="$l.Name" path="$l.Path"/>
+		#end        
+	</folders>    
+</js>
+
+ 
+ 

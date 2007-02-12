@@ -44,7 +44,6 @@ public class DesktopValveImpl extends AbstractValve
     {
         try
         {
-            System.out.println("dispatching desktop now " + request.getRequest().getPathInfo());
             desktop.render(request);
         }
         catch (Exception e)

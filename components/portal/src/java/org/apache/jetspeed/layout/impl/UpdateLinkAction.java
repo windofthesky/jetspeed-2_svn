@@ -140,6 +140,23 @@ public class UpdateLinkAction
                 link.setUrl(getActionParameter(requestContext, "url"));
                 count++;
             }
+            else if (method.equals("copy"))
+            {            	
+            	String destination = getActionParameter(requestContext, "destination");
+            	destination = destination + Folder.PATH_SEPARATOR + link.getName();
+            	Link newLink = pageManager.copyLink(link, destination);
+            	pageManager.updateLink(newLink);
+            }
+            else if (method.equals("move"))
+            {            	
+            	String destination = getActionParameter(requestContext, "destination");
+            	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
+            	destination = destination + Folder.PATH_SEPARATOR + name;
+            	Link newLink = pageManager.copyLink(link, destination);            	
+            	pageManager.updateLink(newLink);
+            	pageManager.removeLink(link);
+            	
+            } 
             else if (method.equals("remove"))
             {
                 pageManager.removeLink(link);

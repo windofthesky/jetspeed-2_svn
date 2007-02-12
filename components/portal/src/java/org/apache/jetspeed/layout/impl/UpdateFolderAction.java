@@ -25,7 +25,6 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
@@ -140,6 +139,20 @@ public class UpdateFolderAction
                     folder.setShortTitle(s);
                 count++;                
             }
+            else if (method.equals("copy"))
+            {            	   
+            	String destination = getActionParameter(requestContext, "destination");
+            	destination = destination + Folder.PATH_SEPARATOR + folder.getName();
+            	pageManager.deepCopyFolder(folder,destination,null);
+            }
+            else if (method.equals("move"))
+            {            	
+            	String destination = getActionParameter(requestContext, "destination");
+            	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
+            	destination = destination + Folder.PATH_SEPARATOR + name;
+            	pageManager.deepCopyFolder(folder,destination,null);            	
+            	pageManager.removeFolder(folder);
+            }            
             else if (method.equals("remove"))
             {
                 pageManager.removeFolder(folder);

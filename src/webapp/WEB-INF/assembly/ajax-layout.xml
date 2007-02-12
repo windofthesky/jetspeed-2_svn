@@ -304,6 +304,21 @@
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		        
 </bean>
+<bean id="AjaxGetFoldersList"
+    class="org.apache.jetspeed.layout.impl.GetFoldersListAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/getfolders.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.page.PageManager"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    		        
+</bean>
         
 <bean id="AjaxGetThemes"
     class="org.apache.jetspeed.layout.impl.GetThemesAction">
@@ -523,6 +538,9 @@
             <entry key="getfolderlist">
                 <ref bean="AjaxGetFolderList"/>
             </entry>			                        
+            <entry key="getfolders">
+                <ref bean="AjaxGetFoldersList"/>
+            </entry>			      						
             <entry key="getthemes">
                 <ref bean="AjaxGetThemes"/>
             </entry>

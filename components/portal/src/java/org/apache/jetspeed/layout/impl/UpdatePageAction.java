@@ -28,6 +28,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
@@ -164,6 +165,22 @@ public class UpdatePageAction
                 page.getRootFragment().setName(getActionParameter(requestContext, DEFAULT_LAYOUT));
                 count++;                
             }
+            else if (method.equals("copy"))
+            {            	
+            	String destination = getActionParameter(requestContext, "destination");
+            	destination = destination + Folder.PATH_SEPARATOR + page.getName();           	
+            	Page newPage = pageManager.copyPage(page,destination);
+            	pageManager.updatePage(newPage);
+            }
+            else if (method.equals("move"))
+            {            	
+            	String destination = getActionParameter(requestContext, "destination");
+            	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
+            	destination = destination + Folder.PATH_SEPARATOR + name;
+            	Page newPage = pageManager.copyPage(page, destination);
+            	pageManager.updatePage(newPage);
+            	pageManager.removePage(page);
+            } 
             else if (method.equals("remove"))
             {
                 pageManager.removePage(page);

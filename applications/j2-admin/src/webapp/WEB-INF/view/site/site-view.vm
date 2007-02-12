@@ -3,6 +3,62 @@
 #set($app = $renderRequest.getContextPath())
 #set($rooturl = "${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}/")
 
+  <div dojoType="dialog" id="CopyResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250" >
+    <form onsubmit="return false;">
+    <table>
+      <tr>
+        <td>Select Destination Folder for &nbsp;<br><b><span  id='c.name'></span></b></td><td>&nbsp;</td>
+      </tr>
+	  <tr>
+		<td>
+			<table id="cfolderpath"></table>
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+			<table id="cfolderlist"></table>
+		</td>
+	  </tr>
+      <tr>
+        <td colspan="2" align="right" class="buttonboxright">
+          <button dojoType="Button" onClick="dojo.widget.byId( 'CopyResourceDialog' ).hide();" >Cancel</button>
+          <button dojoType="Button" widgetId='copy.save' onClick="dojo.widget.byId( 'CopyResourceDialog' ).hide(); copyAction();">Copy</button>
+		  <input type="hidden" id="cType" value="">
+        </td>
+      </tr>
+    </table>
+    </form>
+  </div>
+
+    <div dojoType="dialog" id="MoveResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250" >
+    <form onsubmit="return false;">
+    <table>
+      <tr>
+        <td>Select Destination Folder for &nbsp;<br><b><span id='m.name'></span></b></td><td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><b>New Name</b>&nbsp;<input class="medium" type="text" maxlength="20" id="mName"></td>&nbsp;<td></td>
+      </tr>
+	  <tr>
+		<td>
+			<table id="mfolderpath"></table>
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+			<table id="mfolderlist"></table>
+		</td>
+	  </tr>
+      <tr>
+        <td colspan="2" align="right" class="buttonboxright">
+          <button dojoType="Button" onClick="dojo.widget.byId( 'MoveResourceDialog' ).hide();" >Cancel</button>
+          <button dojoType="Button" widgetId='move.save' onClick="dojo.widget.byId( 'MoveResourceDialog' ).hide(); moveAction();">Move</button>
+		  <input type="hidden" id="mType" value="">
+        </td>
+      </tr>
+    </table>
+    </form>
+  </div>
   <div dojoType="dialog" id="DeleteResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
     <form onsubmit="return false;">
     <table>
@@ -103,7 +159,257 @@
   <div dojoType="TreeMenuItem" treeActions="move" iconSrc="$app/images/move.gif" caption="Move" widgetId="treeContextMenuMove"></div>
 </div>
 
+<input type="hidden" id="path">
+<input type="hidden" id="action">
+<input type="hidden" id="destination">
+<input type="hidden" id="destinationName">
 <script type="text/javascript">
+function folder(name, path)
+{
+  this.name = name;
+  this.path = path;
+}
+function isDupeObject(name,type)
+{
+	var list;
+	if (type == 'Link'){
+		list = links;
+	}else if (type == 'Folder'){
+		list = folders;
+	}else if (type == 'Page'){
+		list = pages;
+	}
+    for(var i=0; i<list.length; i++) 
+    {
+		if (list[i].folderName == name)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function setDestination(path,name)
+{
+	document.getElementById('destination').value = path;
+	getSelectedFolders(path);
+}
+
+   var pages = new Array();
+   var links = new Array();
+   var folders = new Array();
+   var rootfolders = new Array();   
+
+  #set($count = 0)
+  rootfolders[$count] = new folder('$folders.Path','$folders.Name');
+  #set($count = $count + 1)
+  #foreach($subf in $folders.Folders.iterator())
+		rootfolders[$count] = new folder('$subf.Name','$subf.Path');	
+		#set($count = $count + 1)
+  #end  
+
+  function createpopUpTable(action)
+{
+    document.getElementById('path').value = '/'; 
+	var foldersTable;
+	createAddressBar(action);	
+	if (action == 'copy')
+	{	
+		dojo.widget.byId("copy.save").setDisabled(true);    		
+		foldersTable = document.getElementById('cfolderlist');   
+	}
+	else
+	{	
+		dojo.widget.byId("move.save").setDisabled(true);    		
+		foldersTable = document.getElementById('mfolderlist');   
+	}
+	var folder_len = rootfolders.length;	
+    while (foldersTable.hasChildNodes())
+    {
+		foldersTable.removeChild(foldersTable.lastChild);
+    }	
+	var pgRoww = null;
+    var pgCol=null;
+    var img = null;    
+	var frmObj = null;    
+	var a = null;
+
+	for ( var i = 0 ; i < folder_len ; i++ )
+	{   
+		pgRoww = foldersTable.insertRow(i);
+		pgCol = pgRoww.insertCell(0);
+		frmObj = document.createElement("input");
+		frmObj.type = "radio";
+		frmObj.name = "fDestination";
+		frmObj.id = "fDestination";
+		//frmObj.setAttribute("dojoType","Radio");
+		//frmObj.value = rootfolders[i].path;
+		frmObj.setAttribute("onChange","javascript:setDestination('"+ rootfolders[i].path+"','" +rootfolders[i].name + "')");
+		pgCol.appendChild(frmObj);        
+		pgCol = pgRoww.insertCell(1);
+		img = document.createElement("img");
+        img.src = '$app/images/folder.gif';
+        pgCol.appendChild(img);        
+		pgCol = pgRoww.insertCell(2);
+		a = document.createElement("a");
+		a.innerHTML =rootfolders[i].name;
+		a.href = "javascript:getFolders('" +  rootfolders[i].path + "')";
+		pgCol.appendChild(a);              
+	}   
+}
+function createAddressBar(action)
+{
+	var foldersTable;
+	if (action =='copy')
+	{
+		foldersTable= document.getElementById('cfolderpath');   
+	}else
+	{
+		foldersTable= document.getElementById('mfolderpath');   
+	}
+	
+	var address = document.getElementById('path').value;
+	while (foldersTable.hasChildNodes())
+    {
+      foldersTable.removeChild(foldersTable.lastChild);
+    }
+	var paths = address.split('/');
+	var pgRoww = null;
+    var pgCol=null;
+	var a = null;
+	pgRoww = foldersTable.insertRow(0);
+	var cnt = 0;
+	pgCol = pgRoww.insertCell(cnt);
+	a = document.createElement("a");
+	a.innerHTML ='/';
+	a.href = "javascript:getFolders('/')";
+	pgCol.appendChild(a);
+	cnt = cnt + 1;	
+	for ( var i = 0 ; i < paths.length ; i++ )
+	{
+		if (paths[i] != '')
+		{	
+			pgCol = pgRoww.insertCell(cnt);
+			pgCol.innerHTML = ' >> ';			
+			cnt = cnt + 1;
+			pgCol = pgRoww.insertCell(cnt);
+			a = document.createElement("a");
+			a.innerHTML =paths[i];
+			a.href = "javascript:getFolders('" + getPath(address,i) + "')";
+			pgCol.appendChild(a);
+			cnt = cnt + 1;
+		}
+	}	
+}
+function getPath(address,index)
+{
+	var paths = address.split('/');
+	var path =''; 
+	for(i = 0;i<=index;i++)
+	{
+		if (paths[i] != "")
+			{
+				path=  path + "/" + paths[i];
+			}
+	}
+	return path;
+}
+function getSelectionResult(domainObjects, folderList,pagesList,linksList)
+{
+    pages = pagesList;
+	links = linksList;
+	folders = folderList;	
+	document.getElementById('destinationName').value = name;	 	
+	var selector = dojo.widget.byId('treeSelector');
+	var objectType = selector.selectedNode.object;
+	var name;
+	var status;
+	if (document.getElementById('action').value == 'copy')
+	{
+		name = document.getElementById('c.name').innerHTML;		
+	}
+	else{
+		name = document.getElementById('mName').value;		
+	}
+	status = isDupeObject(name,objectType);
+	if (status == true) 		
+	{
+		alert(objectType+ " name " + name + " is already in use. Please chose another name.");
+		if (document.getElementById('action').value == 'copy')
+		{
+			dojo.widget.byId("copy.save").setDisabled(true);
+		}else{
+			dojo.widget.byId("move.save").setDisabled(true);
+		}
+	}
+	else
+	{
+		if (document.getElementById('action').value == 'copy')
+		{
+			dojo.widget.byId("copy.save").setDisabled(false);
+		}else{
+			dojo.widget.byId("move.save").setDisabled(false);
+		}
+	}
+}
+function getFoldersResult(domainObjects, folderList,pagesList,linksList)
+{
+    pages = pagesList;
+	links = linksList;
+	createAddressBar(document.getElementById("action").value);	
+	document.getElementById('destination').value = '';
+	dojo.widget.byId("copy.save").setDisabled(true);
+    var folder_len = folderList.length
+    var foldersTable;
+	if (document.getElementById("action").value =='copy')
+	{
+		foldersTable = document.getElementById('cfolderlist');   
+	}else{
+		foldersTable = document.getElementById('mfolderlist');   
+	}
+    while (foldersTable.hasChildNodes())
+    {
+      foldersTable.removeChild(foldersTable.lastChild);
+    }	
+	var pgRoww = null;
+    var pgCol=null;
+    var img = null;    
+	var frmObj = null;    
+	var a = null;
+	for ( var i = 0 ; i < folder_len ; i++ )
+	{   
+		pgRoww = foldersTable.insertRow(i);
+		pgCol = pgRoww.insertCell(0);
+		frmObj = document.createElement("input");
+		frmObj.type = "radio";
+		frmObj.name = "fDestination";
+		//frmObj.setAttribute("dojoType","Radio");
+		//frmObj.value = folderList[i].folderPath
+		frmObj.setAttribute("onChange","javascript:setDestination('"+ folderList[i].folderPath+"','" + folderList[i].folderName +"')");
+		pgCol.appendChild(frmObj);   
+		pgCol = pgRoww.insertCell(1);
+		img = document.createElement("img");
+        img.src = '$app/images/folder.gif';
+        pgCol.appendChild(img);        
+		pgCol = pgRoww.insertCell(2);
+		a = document.createElement("a");
+		a.innerHTML =folderList[i].folderName;
+		a.href = "javascript:getFolders('" + folderList[i].folderPath + "')";
+		pgCol.appendChild(a);              
+	}   
+}
+function getSelectedFolders(folder)
+{
+   document.getElementById('path').value = folder;
+	//alert(' getting folder 4 ' +folder);
+   jetspeed.getFolders(folder,getSelectionResult);
+}
+
+function getFolders(folder)
+{
+   document.getElementById('path').value = folder; 
+   jetspeed.getFolders(folder,getFoldersResult);
+}
 function getNewMetaPrototype()
 {
     return { name: "", language: "", value: "" };
@@ -180,6 +486,22 @@ var LinkHandler = function()
   this.failure = function(data)
   {
   }
+}
+function showPopUpfolderTree(node)
+{
+    if (node == null)
+    {
+       alert("Please select a resource in the portal site tree.");
+       return;
+    }    
+    determineSave();
+    if ( node.object == "Folder" )
+    {   
+        var names = new Array("folder");
+        var values = new Array(node.widgetId);
+		//alert(' i m her');
+        ajaxInvoke("getfolder", names, values, new popFolderHandler() );     
+    }
 }
 function editResource(node)
 {
@@ -337,6 +659,194 @@ function createResource()
     }
     ajaxInvoke(action, names, values, new ResourceAddHandler(parent, node) );     
 }
+function copyResource()
+{
+    var selector = dojo.widget.manager.getWidgetById('treeSelector');
+	document.getElementById("action").value = 'copy';
+    if (selector.selectedNode == null)
+    {
+        alert("Please select a resource");
+        return;
+    }
+    var node = selector.selectedNode;
+    var parent = selector.selectedNode.parent;
+    if (node.title == "/")
+    {
+        alert("Please do not copy the root folder!");
+        return;
+    }
+	document.getElementById("c.name").innerHTML = node.title
+	document.getElementById("cType").value = node.object	
+	createpopUpTable('copy');
+    dojo.widget.byId( "CopyResourceDialog" ).show();	
+}
+
+function copyAction()
+{
+	var selector = dojo.widget.byId('treeSelector');
+    if (selector.selectedNode == null)
+    {
+        alert("Please select a resource");
+        return;
+    }
+    var parent = selector.selectedNode;
+    if (selector.selectedNode.isFolder == false)
+        parent = selector.selectedNode.parent;
+    
+    var node = new dojo.widget.TreeNode();
+    node.isFolder = false;
+    node.object = document.getElementById("cType").value;
+    var sep = "/";
+    if (parent.widgetId.substring(parent.widgetId.length-1) == "/")
+       sep = "";
+	var source; 
+	//alert('dest ' + document.getElementById('destination').value);	
+	var nd = new dojo.widget.TreeNode();
+    if (node.object != "Folder")
+	{		
+		source = parent.widgetId + sep + document.getElementById("c.name").innerHTML;
+	}
+	else{
+		source = parent.widgetId;
+
+	}
+	var name = document.getElementById("c.name").innerHTML;
+	//nd.title = name;
+    //nd.childIconSrc = "$app/images/" + node.object.toLowerCase() + ".gif";
+	
+	//alert(' nd ' +  nd );
+	
+	var par= dojo.widget.byId(document.getElementById('destination').value);
+	//alert(' par ' + par);    
+    var action = "update" + node.object.toLowerCase();
+    var names = new Array();
+    var values = new Array();
+    names[0] = "method";
+    values[0] = "copy";
+    names[1] = "path";
+    values[1] = escape(source);
+    names[2] = "name";
+    values[2] = escape(name);
+    names[3] = "destination";
+    values[3] = document.getElementById('destination').value ;
+	this.parent = parent;
+	this.node = node;
+    ajaxInvoke(action, names, values, new ResourceCopyHandler(parent, node) );     
+}
+
+function moveResource()
+{
+    var selector = dojo.widget.manager.getWidgetById('treeSelector');
+	document.getElementById("action").value = 'move';
+    if (selector.selectedNode == null)
+    {
+        alert("Please select a resource");
+        return;
+    }
+    var node = selector.selectedNode;
+    var parent = selector.selectedNode.parent;
+    if (node.title == "/")
+    {
+        alert("Please do not move the root folder!");
+        return;
+    }	
+	document.getElementById("m.name").value = node.title
+	document.getElementById("mName").value = node.title
+	document.getElementById("mType").value = node.object	
+	createpopUpTable('move');
+    dojo.widget.byId( "MoveResourceDialog" ).show();	
+}
+
+function moveAction()
+{
+    var selector = dojo.widget.byId('treeSelector');
+    if (selector.selectedNode == null)
+    {
+        alert("Please select a resource");
+        return;
+    }
+    var parent = selector.selectedNode;
+    if (selector.selectedNode.isFolder == false)
+        parent = selector.selectedNode.parent;
+    
+    var node = new dojo.widget.TreeNode();
+    node.isFolder = false;
+    node.object = document.getElementById("mType").value;
+    var sep = "/";
+    if (parent.widgetId.substring(parent.widgetId.length-1) == "/")
+       sep = "";
+	if (node.object != "Folder")
+	{		
+		node.widgetId = parent.widgetId + sep + document.getElementById("mName").innerHTML;
+	}
+	else{
+		node.widgetId = selector.selectedNode.widgetId;
+	}
+	//node.widgetId = parent.widgetId + sep + document.getElementById("mName").value;
+    node.title = document.getElementById("res.name").value;
+	var name = document.getElementById("mName").value;
+    node.childIconSrc = "$app/images/" + node.object.toLowerCase() + ".gif";
+    node.isFolder = (node.object == "Folder");
+    // create new Node
+    var action = "update" + node.object.toLowerCase();
+    var names = new Array();
+    var values = new Array();
+    names[0] = "method";
+    values[0] = "move";
+    names[1] = "path";
+    values[1] = escape(node.widgetId+name);
+    names[2] = "name";
+    values[2] = escape(name);
+    names[3] = "destination";
+    values[3] = document.getElementById('destination').value;
+    ajaxInvoke(action, names, values, new ResourceMoveHandler(parent, node) );     
+}
+var ResourceMoveHandler = function(parent, node)
+{
+  var selector = dojo.widget.byId('treeSelector');
+  var node = selector.selectedNode;
+  //alert('node '  + node);
+  var controller = dojo.widget.byId('treeController');
+  var res = controller.removeNode(node);
+  parent= dojo.widget.byId(document.getElementById('destination').value);
+  var node1 = new dojo.widget.TreeNode();
+  node1.object = document.getElementById("mType").value;
+  node1.title = document.getElementById('mName').value;		
+  node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("mName").value;
+  node1.childIconSrc = "$app/images/" + node1.object.toLowerCase() + ".gif";
+  this.populate = function(data) 
+  { 
+    // insert in sorted order
+    for(var i=0; i<parent.children.length; i++) 
+    {
+        var child = parent.children[i];
+        if (child.object == node1.object)
+        {
+             if (child.title > node1.title)
+             {
+                break;
+             }
+        }
+        else
+        {
+            if (node1.object == "Folder")
+                break;
+            if (node1.object == "Page" && child.object == "Link")
+                break;
+        }
+    }
+    var controller = dojo.widget.byId('treeController');
+	if(parent.isExpanded == true) {
+		var res = controller.createChild(parent, i, node1);
+	}
+    var selector = dojo.widget.byId('treeSelector');
+    selector.select({ source: parent, event: {} });
+    editResource(parent);
+  }
+  this.failure = function(data)
+  {
+  }
+}
 function deleteResource()
 {
     var selector = dojo.widget.manager.getWidgetById('treeSelector');
@@ -362,6 +872,67 @@ function deleteResource()
     names[1] = "path";
     values[1] = escape(node.widgetId);
     ajaxInvoke(action, names, values, new ResourceDeleteHandler(parent, node) );     
+}
+var ResourceCopyHandler = function(parent, node)
+{
+  //this.parent = parent;
+  //this.node = node;  
+  var action = document.getElementById("action").value;
+  parent= dojo.widget.byId(document.getElementById('destination').value);
+  var node1 = new dojo.widget.TreeNode();
+  node1.isFolder = false;
+  if (action == 'copy')
+  {
+	//alert(' obj ' + document.getElementById("cType").value);
+	//alert(' title ' + document.getElementById('c.name').innerHTML);
+	//alert(' ID ' + document.getElementById('destination').value + "/" + document.getElementById("c.name").innerHTML);
+	node1.object = document.getElementById("cType").value;	
+	node1.title = document.getElementById('c.name').innerHTML;		
+	node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("c.name").innerHTML;
+	node1.childIconSrc = "$app/images/" + node1.object.toLowerCase() + ".gif";
+  }
+  else
+  {
+	node1.object = document.getElementById("mType").value;
+	node1.title = document.getElementById('mName').value;		
+	node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("mName").value;
+  }
+  this.populate = function(data) 
+  { 
+    // insert in sorted order
+	//alert(' p c 1 ' + parent);
+	//alert(' p c 2 ' + node1);
+	//alert(' p c 3 ' + parent.children.length);
+    for(var i=0; i<parent.children.length; i++) 
+    {
+        var child = parent.children[i];
+        if (child.object == node1.object)
+        {
+             if (child.title > node1.title)
+             {
+                break;
+             }
+        }
+        else
+        {
+            if (node1.object == "Folder")
+                break;
+            if (node1.object == "Page" && child.object == "Link")
+                break;
+        }
+    }
+    var controller = dojo.widget.byId('treeController');
+	if(parent.isExpanded == true) {
+		//alert('node is exp ' );
+		var res = controller.createChild(parent, i, node1);
+	}
+    var selector = dojo.widget.byId('treeSelector');
+    selector.select({ source: parent, event: {} });
+    editResource(parent);
+  }
+  this.failure = function(data)
+  {
+  }
 }
 var ResourceAddHandler = function(parent, node)
 {
@@ -413,24 +984,6 @@ var ResourceDeleteHandler = function(parent, node)
   this.failure = function(data)
   {
   }
-}
-function moveResource(node)
-{
-    if (node == null)
-    {
-       alert("Please select a resource in the portal site tree.");
-       return;
-    }    
-    alert("MOVE not implemented");
-}
-function copyResource(node)
-{
-    if (node == null)
-    {
-       alert("Please select a resource in the portal site tree.");
-       return;
-    }    
-    alert("COPY not implemented");
 }
 function removeResource(xnode)
 {
@@ -562,13 +1115,29 @@ dojo.addOnLoad(function()
   <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$f.Path" title="$f.Name" childIconSrc="$app/images/folder.gif">
   #foreach($subf in $f.Folders.iterator())
 ##    #TraverseFolders($subf) 
+	#if($userTree == 'false')
+		#if($subf.Name != '_user')
     <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$subf.Path" title="$subf.Name" childIconSrc="$app/images/folder.gif"></div>
+   		#end
+	#else
+		<div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$subf.Path" title="$subf.Name" 	childIconSrc="$app/images/folder.gif"></div>
+	#end          
   #end  
   #foreach($p in $f.Pages.iterator())
     <div object='Page' dojoType="TreeNode" widgetId="$p.Path" title="$p.Name" childIconSrc="$app/images/page.gif" actionsDisabled="newPage,newFolder,newLink"></div>
   #end  
   #foreach($link in $f.Links.iterator())
     <div object='Link' dojoType="TreeNode" widgetId="$link.Path" title="$link.Name" childIconSrc="$app/images/link.gif" actionsDisabled="newPage,newFolder,newLink,customize"></div>
+  #end  
+  </div>
+#end
+
+#macro (TraverseUserFolder $f)
+  <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$f.Path" title="$f.Name" childIconSrc="$app/images/folder.gif">
+  #foreach($subf in $f.Folders.iterator())
+	#if($subf.Name == '_user')
+    <div isFolder='true' object='Folder' dojoType="TreeNode" widgetId="$subf.Path" title="$subf.Name" childIconSrc="$app/images/folder.gif"></div>
+	 #end
   #end  
   </div>
 #end
@@ -580,6 +1149,12 @@ dojo.addOnLoad(function()
 </div>
 #end
 
+#macro (UserTreeView $f)
+<div dojoType="Tree"  widgetId="userTree" DNDMode="between" selector="treeSelector" 
+      actionsDisabled="customize,move,delete" toggler="fade" DNDAcceptTypes="userTree" controller="treeController" menu='treeContextMenu'>
+	#TraverseUserFolder($f)
+</div>
+#end
 <!-- state -->
 <input type="hidden" id="site.path"/>
 <input type="hidden" id="site.kind"/>
@@ -590,9 +1165,15 @@ dojo.addOnLoad(function()
 
 <!-- Start LHS -->    
 <div dojoType="LayoutContainer" widgetId="lhs" layoutAlign="left" style="width: 32%; border: 1px solid gray; ">
-
-<div dojoType="ContentPane" widgetId="lhs2" style="width: 100%; height: 100%; overflow:auto;">
+<div id="lmainTabContainer" dojoType="TabContainer" selectedChild="fullTree" doLayout="false">
+<div dojoType="ContentPane" widgetId="fullTree" style="width: 100%; height: 100%; overflow:auto;" label="Portal Tree">
 #FolderTreeView($folders)
+</div>
+   #if($userTree == 'false')
+		<div dojoType="ContentPane" widgetId="userTree" label="User Tree">
+			#UserTreeView($folders)
+		</div>
+   #end
 </div>
 </div>
 <!-- Start RHS -->    
@@ -1101,6 +1682,11 @@ dojo.addOnLoad(function()
    var tree = dojo.widget.byId("siteTree");
    if (tree.children[0])
        tree.children[0].expand();
+   #if($userTree == 'false')
+   var uTree = dojo.widget.byId("userTree");
+   if (uTree.children[0])
+       uTree.children[0].expand();	          
+   #end	   
 }); 
 // General Table Functions
 function processTableRowEvent(e, tableName)

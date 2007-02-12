@@ -1423,6 +1423,10 @@ limitations under the License.
             <value>jetspeed-layouts::VelocityTwoColumns</value>
         </preference>
         <preference>
+            <name>displayUserTree</name>
+            <value>false</value>
+        </preference>        
+        <preference>
             <name>root</name>
             <value>/</value>
         </preference>

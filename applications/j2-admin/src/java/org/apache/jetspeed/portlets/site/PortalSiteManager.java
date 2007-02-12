@@ -102,6 +102,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
             this.getContext(request).put("page-decorations", decorationFactory.getPageDecorations(requestContext));
             this.getContext(request).put("portlet-decorations", decorationFactory.getPortletDecorations(requestContext));
             this.getContext(request).put("themes", decorationFactory.getDesktopThemes(requestContext));
+            this.getContext(request).put("userTree", determineuserTree(request));
             this.getContext(request).put("defaultLayout", request.getPreferences().getValue("defaultLayout", "jetspeed-layouts::VelocityTwoColumns"));            
             this.getContext(request).put(FOLDERS, retrieveFolders(request, jsroot));
             this.getContext(request).put(ALL_SECURITY_REFS, pageManager.getPageSecurity().getSecurityConstraintsDefs());                    
@@ -124,7 +125,12 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         this.getContext(request).put(JSROOT, jsroot);
         return jsroot;
     }
-    
+    protected String determineuserTree(RenderRequest request)
+    {
+    	String userTree;
+    	userTree = request.getPreferences().getValue("displayUserTree","false");
+    	return userTree;
+    }
     public Folder retrieveFolders(RenderRequest request, String root)
     throws PortletException
     {

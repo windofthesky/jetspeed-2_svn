@@ -52,7 +52,8 @@ public interface Constants
     public static final String OLD_WIDTH = "oldwidth";
     public static final String OLD_HEIGHT = "oldheight";
     public static final String OLD_DESKTOP_EXTENDED = "oldjsdesktop";
-    
+    public final static String SOURCE = "source";
+    public final static String DESTINATION = "destination";
     public static final String FILTER = "filter";
     public static final String PORTLETS = "portlets";
     public static final String PAGES = "pages";
@@ -60,6 +61,7 @@ public interface Constants
     public static final String FOLDER = "folder";
     public static final String FOLDERS = "folders";
     public static final String SIZES = "sizes";
+    public static final String RESOURCE_NAME = "name";
 
     public static final String STANDARD_MENUS = "standardMenus";
     public static final String CUSTOM_MENUS = "customMenus";
