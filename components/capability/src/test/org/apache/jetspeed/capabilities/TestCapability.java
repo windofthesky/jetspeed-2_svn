@@ -146,6 +146,13 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         assertTrue("IE 6 Windows", cm.getClient().getName().equals("ie6"));
         capabilityMapReport(cm);
 
+        userAgent = "SonyEricssonK800i/R1CB Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1";
+        System.out.println("Find pattern: " + userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        assertTrue("Ericsson", cm.getClient().getName().equals("sonyericsson"));
+        capabilityMapReport(cm);        
+        
     }
 
     private void capabilityMapReport(CapabilityMap cm)
