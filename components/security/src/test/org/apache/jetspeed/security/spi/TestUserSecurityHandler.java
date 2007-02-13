@@ -48,8 +48,8 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         destroyUsers();
+        super.tearDown();
     }
 
     /**

@@ -33,7 +33,7 @@ public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestC
     protected String[] getConfigurations()
     {
         return new String[]
-        { "prefs.xml", "transaction.xml" };
+        { "prefs.xml", "transaction.xml", "cache.xml" };
     }
 
     protected String[] getBootConfigurations()

@@ -18,6 +18,6 @@
 
     <!-- Target of maven test:single test -->
 <!--    <property name="testcase" value="org.apache.jetspeed.security.spi.ldap.TestLdapUserSecurityHandler" /> -->
-       <property name="testcase" value="org.apache.jetspeed.security.TestPermissionManager" />    
+       <property name="testcase" value="org.apache.jetspeed.security.spi.TestUserSecurityHandler" />    
 
 </project>

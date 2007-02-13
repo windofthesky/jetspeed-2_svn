@@ -79,8 +79,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         cleanUp();
+        super.tearDown();
     }
 
     public static Test suite()
@@ -249,6 +249,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         confList.add("registry.xml");
         confList.add("rc3.xml");
         confList.add("JETSPEED-INF/spring/user-info.xml");
+        confList.add("prefs.xml");
+        confList.add("cache.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 }

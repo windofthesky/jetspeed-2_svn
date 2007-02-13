@@ -81,6 +81,6 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "prefs.xml", "transaction.xml" };
+        { "prefs.xml", "transaction.xml", "cache.xml" };
     }
 }

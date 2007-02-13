@@ -38,7 +38,7 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        
+      
         // Make sure we are starting with a clean slate
         clearChildren(Preferences.userRoot());
         clearChildren(Preferences.systemRoot());
@@ -289,6 +289,6 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "prefs.xml", "transaction.xml" };
+        { "prefs.xml", "transaction.xml", "cache.xml" };
     }
 }

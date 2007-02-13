@@ -476,7 +476,8 @@ limitations under the License.
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>        
 			<include name="registry.xml"/>   
-            <include name="transaction.xml"/>           
+            <include name="transaction.xml"/> 
+          	<include name="cache.xml" />
           </fileset>
          </copy>
         <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
@@ -559,7 +560,7 @@ limitations under the License.
                 <pathelement path="${org.apache.jetspeed.database.jdbc.drivers.path}"/>
                 <pathelement path="${basedir}/target/seed/classes"/>
             </classpath>
-          <arg line="-l DEBUG -I ${basedir}/target/seed/data/ -b ${assembly.dir}/boot/ -c ${assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>                           
+          <arg line="-l DEBUG -I ${basedir}/target/seed/data/ -a ${basedir} -b ${assembly.dir}/boot/ -c ${assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>                           
         </java>
      
    </target>

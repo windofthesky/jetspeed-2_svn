@@ -18,7 +18,9 @@ limitations under the License.
 <beans>
 
 <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+  <!--  get it through the class path
         <property name="configLocation" value="${applicationRoot}/WEB-INF/conf/ehcache.xml"/>
+         -->
 </bean>
 
 <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding

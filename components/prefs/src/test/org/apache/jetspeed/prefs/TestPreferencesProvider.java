@@ -129,6 +129,6 @@ public class TestPreferencesProvider extends DatasourceEnabledSpringTestCase
      */
     protected String[] getConfigurations()
     {
-        return new String[] { "prefs.xml", "transaction.xml" };
+        return new String[] { "prefs.xml", "transaction.xml", "cache.xml" };
     }
 }

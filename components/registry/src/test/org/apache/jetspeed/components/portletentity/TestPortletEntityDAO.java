@@ -292,6 +292,6 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "prefs.xml" };
+        { "transaction.xml", "registry-test.xml", "prefs.xml", "cache.xml" };
     }
 }
