@@ -349,6 +349,7 @@ public class JetspeedSerializerApplication
 /**
  * set the application root
  */
+        System.out.println("APP ROOT is " + applicationPath);
 		System.setProperty("applicationRoot",applicationPath);
 		System.setProperty("portal.name","jetspped");
         SpringJNDIStarter starter = new SpringJNDIStarter(context,applicationPath,getTokens(bootConfigFiles),getTokens(configFiles));

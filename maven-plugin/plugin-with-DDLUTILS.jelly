@@ -947,7 +947,7 @@ PLEASE CONTACT taylor@apache.org for more information
 			        <pathelement path="${org.apache.jetspeed.plugin.root}"/>
 		            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
 		          </classpath>
-		            <arg line="-I ${DATAFILE} -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>  
+		            <arg line="-I ${DATAFILE} -a ./target/${org.apache.jetspeed.portal.artifactId} -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ -dc ${org.apache.jetspeed.database.driver} -ds ${org.apache.jetspeed.database.url} -du ${org.apache.jetspeed.database.user} -dp ${org.apache.jetspeed.database.password}"/>  
 		        </java>
 		    </goal>
 

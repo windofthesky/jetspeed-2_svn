@@ -18,7 +18,7 @@ limitations under the License.
 <beans>
 
 <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <property name="configLocation" value="/WEB-INF/conf/ehcache.xml"/>
+        <property name="configLocation" value="${applicationRoot}/WEB-INF/conf/ehcache.xml"/>
 </bean>
 
 <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
@@ -35,5 +35,19 @@ configuration in cacheManager.xml -->
      	<ref bean="ehPortletContentCache"/>
     </constructor-arg>       
 </bean>
+
+<bean id="ehPreferencesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+<property name="cacheManager">
+<ref local="cacheManager"/>
+</property>
+        <property name="cacheName" value="preferencesCache"/>
+</bean>
+
+<bean id="preferencesCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <constructor-arg>
+     	<ref bean="ehPreferencesCache"/>
+    </constructor-arg>       
+</bean>
+
 
 </beans>

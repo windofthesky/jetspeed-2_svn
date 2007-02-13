@@ -704,7 +704,8 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 				}    					
 	        } catch (Exception e)
 	        {
-	            throw new SerializerException(
+	            e.printStackTrace();
+                throw new SerializerException(
 	                    SerializerException.CREATE_OBJECT_FAILED
 	                            .create(new String[]
 	                            { "User", e.getMessage()}));

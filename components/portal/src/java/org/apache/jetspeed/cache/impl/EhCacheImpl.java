@@ -96,10 +96,9 @@ public class EhCacheImpl implements JetspeedCache
     {
         CacheElement element = this.get(key);
         boolean removed = false;
-        if (element != null)
-        {
-            removed = ehcache.remove(key);
-        }
+        if (element == null)
+            return false;
+        removed = ehcache.remove(key);
         EhCacheElementImpl impl = (EhCacheElementImpl)element;
         Element ehl = impl.getImplElement();
         String userKey = impl.getUserKey();

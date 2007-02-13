@@ -22,6 +22,9 @@
         <constructor-arg index="0">
             <value>JETSPEED-INF/ojb/prefs_repository.xml</value>
         </constructor-arg>
+        <constructor-arg index="1">
+            <ref bean="preferencesCache" />
+        </constructor-arg>
     </bean>
 
     <bean id="org.apache.jetspeed.prefs.PreferencesProvider" parent="baseTransactionProxy" name="prefsProvider">

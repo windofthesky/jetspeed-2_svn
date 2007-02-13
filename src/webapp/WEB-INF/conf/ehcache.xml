@@ -329,6 +329,16 @@
            memoryStoreEvictionPolicy="LFU"
             />
 
+   <cache name="preferencesCache"
+           maxElementsInMemory="10000"
+           maxElementsOnDisk="1000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="28800"
+           timeToLiveSeconds="28800"
+           memoryStoreEvictionPolicy="LFU"
+            />
+
     <!--
     Sample distributed cache named sampleDistributedCache1.
     This cache replicates using defaults.

@@ -17,10 +17,9 @@ package org.apache.jetspeed.prefs.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
@@ -61,6 +60,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
         public NodeCache(Node node)
         {
+  // System.out.println(this.getClass().getName() + "-" + "NodeCache (node)" + node.getFullPath());
             this.node = node;
             this.fullpath = node.getFullPath();
             this.type = node.getNodeType();
@@ -68,48 +68,57 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
         public NodeCache(String fullpath, int type)
         {
-            this.fullpath = fullpath;
+            // System.out.println(this.getClass().getName() + "-" + "NodeCache - fullpath=" + fullpath);
+                        this.fullpath = fullpath;
             this.type = type;
         }
 
         public boolean isChildrenLoaded()
         {
+            // System.out.println(this.getClass().getName() + "-" + "isChildrenLoaded");
             return childrenLoaded;
         }
 
         public void setChildrenLoaded(boolean childrenLoaded)
         {
+            // System.out.println(this.getClass().getName() + "-" + "setChildrenLoaded");
             this.childrenLoaded = childrenLoaded;
         }
 
         public String getFullpath()
         {
-            return fullpath;
+            // System.out.println(this.getClass().getName() + "-" + "getFullpath=" + fullpath);
+           return fullpath;
         }
 
         public Node getNode()
         {
+            // System.out.println(this.getClass().getName() + "-" + "getNode=" + node.getFullPath());
             return node;
         }
 
         public void setNode(Node node)
         {
+            // System.out.println(this.getClass().getName() + "-" + "setFullpath=" + node.getFullPath());
             this.node = node;
         }
 
         public int getType()
         {
+            // System.out.println(this.getClass().getName() + "-" + "getType=" );
             return type;
         }
 
         public Collection getChildren()
         {
+            // System.out.println(this.getClass().getName() + "-" + "getCHildren=" );
             return children;
         }
 
         public void setChildren(Collection children)
         {
-            this.children = children;
+            // System.out.println(this.getClass().getName() + "-" + "setChildren=" );
+                       this.children = children;
         }
 
         public boolean equals(Object obj)
@@ -126,10 +135,16 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         {
             return fullpath.hashCode() + type;
         }
+        
+        public String getCacheKey()
+        {
+            return fullpath +  "-" +  type;
+        }
     }
 
-    private Map nodeMap = Collections.synchronizedMap(new HashMap());
-
+    private JetspeedCache preferenceCache;
+    
+    
     /**
      * @param repository
      *            Location of repository mapping file. Must be available within the classpath.
@@ -148,12 +163,47 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     }
 
     /**
+     * @param repository
+     *            Location of repository mapping file. Must be available within the classpath.
+     * @param prefsFactoryImpl
+     *            <code>java.util.prefs.PreferencesFactory</code> implementation to use.
+     * @param enablePropertyManager
+     *            Whether or not we chould be suing the property manager.
+     * @throws ClassNotFoundException
+     *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
+     *             current classPath.
+     */
+    public PersistenceBrokerPreferencesProvider(String repositoryPath, JetspeedCache preferenceCache)
+            throws ClassNotFoundException
+    {
+        super(repositoryPath);
+        this.preferenceCache = preferenceCache;
+    }
+
+    protected void addToCache(NodeCache content)
+    {
+        CacheElement cachedElement = preferenceCache.createElement(content.getCacheKey(), content);
+        cachedElement.setTimeToIdleSeconds(preferenceCache.getTimeToIdleSeconds());
+        cachedElement.setTimeToLiveSeconds(preferenceCache.getTimeToLiveSeconds());
+        preferenceCache.put(cachedElement);        
+    }    
+  
+    private NodeCache getNode(String cacheKey)
+    {
+        CacheElement cachedElement = preferenceCache.get(cacheKey);
+        if (cachedElement != null)
+         return (NodeCache)cachedElement.getContent();  
+        return null;
+    }
+    
+    /**
      * @see org.apache.jetspeed.prefs.PreferencesProvider#getNode(java.lang.String, int)
      */
     public Node getNode(String fullPath, int nodeType) throws NodeDoesNotExistException
     {
+        
         NodeCache key = new NodeCache(fullPath, nodeType);
-        NodeCache hit = (NodeCache) nodeMap.get(key);
+        NodeCache hit = getNode(key.getCacheKey());
         if (hit != null)
         {
             return hit.getNode();
@@ -167,8 +217,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         Node nodeObj = (Node) getPersistenceBrokerTemplate().getObjectByQuery(query);
         if (null != nodeObj)
         {
-            key.setNode(nodeObj);
-            nodeMap.put(key, key);
+            addToCache(new NodeCache(nodeObj));
             return nodeObj;
         }
         else
@@ -216,8 +265,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             try
             {
                 getPersistenceBrokerTemplate().store(nodeObj);
-                NodeCache key = new NodeCache(nodeObj);
-                nodeMap.put(key, key);
+                addToCache(new NodeCache(nodeObj));
                 return nodeObj;
             }
             catch (Exception e)
@@ -235,11 +283,12 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public Collection getChildren(Node parentNode)
     {
         NodeCache key = new NodeCache(parentNode);
-        NodeCache hit = (NodeCache) nodeMap.get(key);
+        NodeCache hit = getNode(key.getCacheKey());
         if (hit == null)
         {
+            
             key.setNode(parentNode);
-            nodeMap.put(key, key);
+            addToCache(key);
             hit = key;
         }
         if (hit.isChildrenLoaded())
@@ -263,7 +312,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public void storeNode(Node node)
     {
         NodeCache key = new NodeCache(node);
-        nodeMap.remove(key);
+        preferenceCache.remove(key.getCacheKey()); // not sure we should actually do that, could also just update the node
         getPersistenceBrokerTemplate().store(node);
     }
 
@@ -273,14 +322,14 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public void removeNode(Node parentNode, Node node)
     {
         NodeCache key = new NodeCache(node);
-        nodeMap.remove(key);
+        preferenceCache.remove(key.getCacheKey());
         if ( parentNode != null )
         {
             key = new NodeCache(parentNode);
-            key = (NodeCache)nodeMap.get(key);
-            if ( key != null && key.isChildrenLoaded() )
+            NodeCache hit = getNode(key.getCacheKey());
+            if ( hit != null && hit.isChildrenLoaded() )
             {
-                key.getChildren().remove(node);
+                hit.getChildren().remove(node);
             }
         }
         getPersistenceBrokerTemplate().delete(node);        
