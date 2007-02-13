@@ -141,6 +141,9 @@ public class PickANumberPortlet extends GenericServletPortlet
         Long targetValue = null;
         Long lastGuess = null;
         
+        // get the current value in the prefs
+        long range = getHighRange(request);
+        System.out.println("cheater: top range  = " + range);
         // Get target value
         lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.APPLICATION_SCOPE);
         if (lastGuess == null)
@@ -154,7 +157,7 @@ public class PickANumberPortlet extends GenericServletPortlet
         targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, PortletSession.APPLICATION_SCOPE);
         if (targetValue == null)
         {            
-            targetValue = new Long(Math.round(Math.random() * getHighRange(request)));
+            targetValue = new Long(Math.round(Math.random() * range));
             System.out.println("cheater: target value = " + targetValue);
             guessCount = new Long(0);
             session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
@@ -170,9 +173,9 @@ public class PickANumberPortlet extends GenericServletPortlet
         }
 
         Long highRange = (Long)session.getAttribute(TOP_RANGE_NAME, PortletSession.APPLICATION_SCOPE);
-        if (highRange == null)
+        
+        if ((highRange == null) || (highRange.longValue() != range))
         {
-            long range = getHighRange(request);
             session.setAttribute( TOP_RANGE_NAME, new Long(range), PortletSession.APPLICATION_SCOPE);
         }
         

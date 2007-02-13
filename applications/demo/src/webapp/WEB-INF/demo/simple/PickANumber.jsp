@@ -28,36 +28,36 @@ limitations under the License.
 <%
     PortletSession portletSession = renderRequest.getPortletSession(true);
     Long value = (Long)portletSession.getAttribute("LastGuess", PortletSession.APPLICATION_SCOPE);    
-    long lastGuess = 0;
+    long LastGuess = 0;
     if (value != null)
     {
-    	lastGuess = value.longValue();
+    	LastGuess = value.longValue();
     }       	
 %>
 
-<c:set var="guessCount" scope="session" value="${GuessCount}"/>
-<c:set var="targetValue" scope="session" value="${TargetValue}"/>
-<c:set var="lastGuess" scope="session" value="${LastGuess}"/>
-<c:set var="topRange" scope="session" value="${TopRange}"/>
+<c:set var="GuessCount" scope="session" value="${GuessCount}"/>
+<c:set var="TargetValue" scope="session" value="${TargetValue}"/>
+<c:set var="LastGuess" scope="session" value="${LastGuess}"/>
+<c:set var="TopRange" scope="session" value="${TopRange}"/>
 
 <h2>
 <fmt:message key="pickanumber.label.pickanumberguess"/>
 </h2>
 
 <c:choose>
-<c:when test="${empty guessCount}">
+<c:when test="${empty GuessCount}">
 </c:when>
-<c:when test="${targetValue == lastGuess}">
+<c:when test="${TargetValue == LastGuess}">
 </c:when>
 <c:otherwise>
 <fmt:message key="pickanumber.label.guessthusfar">
-	<fmt:param><c:out value="${guessCount}"/></fmt:param>
+	<fmt:param><c:out value="${GuessCount}"/></fmt:param>
 </fmt:message>
 </c:otherwise>
 </c:choose>
 
 <c:choose>
-<c:when test="${targetValue == lastGuess}">
+<c:when test="${TargetValue == LastGuess}">
 <p>
 <fmt:message key="pickanumber.label.startnewgame"/><br/><fmt:message key="pickanumber.label.enternumber"><fmt:param><c:out value="${TopRange}"/></fmt:param></fmt:message>
 </p>
@@ -71,20 +71,20 @@ limitations under the License.
 
 <p>
   <c:choose>
-    <c:when test="${empty targetValue}">
+    <c:when test="${empty TargetValue}">
        <fmt:message key="pickanumber.label.readytostartanewgame"/>
     </c:when>  
-    <c:when test="${empty lastGuess}">
+    <c:when test="${empty LastGuess}">
        <fmt:message key="pickanumber.label.readytostartanewgame"/>
     </c:when>      
-    <c:when test="${targetValue == lastGuess}">
-      <center><strong><fmt:message key="pickanumber.label.guessiscorrect"><fmt:param><%=lastGuess%></fmt:param><fmt:param><c:out value="${guessCount}"/></fmt:param></fmt:message></strong></center>
-      <c:remove var="targetValue" scope="session"/> 
+    <c:when test="${TargetValue == LastGuess}">
+      <center><strong><fmt:message key="pickanumber.label.guessiscorrect"><fmt:param><%=LastGuess%></fmt:param><fmt:param><c:out value="${GuessCount}"/></fmt:param></fmt:message></strong></center>
+      <c:remove var="TargetValue" scope="session"/> 
     </c:when>
-    <c:when test="${targetValue < lastGuess}">
+    <c:when test="${TargetValue < LastGuess}">
       <fmt:message key="pickanumber.label.guessedtohigh"/>
     </c:when>
-    <c:when test="${targetValue > lastGuess}">
+    <c:when test="${TargetValue > LastGuess}">
       <fmt:message key="pickanumber.label.guessedtolow"/>
     </c:when>
     <c:otherwise>
@@ -94,7 +94,7 @@ limitations under the License.
 </p>
 <p>
   <form action="<%=myAction%>" method="POST">
-    <input type="text" name="Guess" value="<%=lastGuess%>"/>
+    <input type="text" name="Guess" value="<%=LastGuess%>"/>
     <input type="submit" value='<fmt:message key="pickanumber.label.guess"/>'/>
   </form>
 </p>
