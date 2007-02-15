@@ -337,15 +337,19 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
 
     public void removePortletEntity( PortletEntity portletEntity ) throws PortletEntityNotDeletedException
     {
-        PrefsPreferenceSetImpl prefsSet  = (PrefsPreferenceSetImpl) portletEntity.getPreferenceSet();
+        PreferenceSet prefsSet  = portletEntity.getPreferenceSet();
         getPersistenceBrokerTemplate().delete(portletEntity);
-        try
+        
+        if(prefsSet instanceof PrefsPreferenceSetImpl)
         {
-            prefsSet.clear();
-        }
-        catch (BackingStoreException e)
-        {
-            throw new PortletEntityNotDeletedException("Failed to remove preferences for portlet entity "+portletEntity.getId()+".  "+e.getMessage(), e);
+            try
+            {
+                ((PrefsPreferenceSetImpl)prefsSet).clear();
+            }
+            catch (BackingStoreException e)
+            {
+                throw new PortletEntityNotDeletedException("Failed to remove preferences for portlet entity "+portletEntity.getId()+".  "+e.getMessage(), e);
+            }
         }
     }
 
@@ -405,13 +409,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      */
     public void storePreferenceSet( PreferenceSet prefSet, PortletEntity entity ) throws IOException
     {
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) prefSet;
         try
         {            
             getPersistenceBrokerTemplate().store(entity);
-            if (preferenceSet != null)
+            if (prefSet != null && prefSet instanceof PrefsPreferenceSetImpl)
             {
-                preferenceSet.flush();
+                ((PrefsPreferenceSetImpl)prefSet).flush();
             }            
 
         }
