@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +56,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
     public static final String JAVAX_PORTLET_SHORT_TITLE = "javax.portlet.short-title";
     public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
 
-    private HashSet keys;
+    private Set keys;
     private String title;
     private String shortTitle;
     private Locale locale;
@@ -72,7 +73,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
 
     public LanguageImpl()
     {
-        keys = new HashSet(3);
+        keys = Collections.synchronizedSet(new HashSet(3));
         keys.add(JAVAX_PORTLET_TITLE);
         keys.add(JAVAX_PORTLET_SHORT_TITLE);
         keys.add(JAVAX_PORTLET_KEYWORDS);
