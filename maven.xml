@@ -349,7 +349,7 @@
 	<goal name='mht'>
 		<attainGoal name='j2:portal.conf.sql'/>
 		<attainGoal name='j2:db.create.test'/>
-        <attainGoal name='test.register'/>
+        <!-- <attainGoal name='test.register'/> -->
 		<echo>and the holy ghost...run your test... dont forget -Dmaven.test.skip=false</echo>
 	</goal>
 	
@@ -379,7 +379,9 @@
               file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
         <copy todir="${maven.build.dir}/classes"
               file="./etc/registration/assembly/registry.xml"/>                
-        <java classname="org.apache.jetspeed.tools.registration.RegistrationTool" fork="yes">
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/cache.xml"/>                
+    	<java classname="org.apache.jetspeed.tools.registration.RegistrationTool" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>

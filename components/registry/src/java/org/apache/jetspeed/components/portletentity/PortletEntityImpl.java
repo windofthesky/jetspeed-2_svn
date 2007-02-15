@@ -75,8 +75,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
-    protected List originalPreferences;
-
     protected Map perPrincipalPrefs = new HashMap();
 
     protected Map originalValues;

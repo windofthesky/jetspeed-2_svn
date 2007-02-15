@@ -29,6 +29,12 @@
         <constructor-arg index="1">
             <ref bean="portletFactory" />
         </constructor-arg>
+        <constructor-arg index="2">
+            <ref bean="portletApplicationOidCache" />
+        </constructor-arg>
+        <constructor-arg index="3">
+            <ref bean="portletDefinitionOidCache" />
+        </constructor-arg>
     </bean>
 
     <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">

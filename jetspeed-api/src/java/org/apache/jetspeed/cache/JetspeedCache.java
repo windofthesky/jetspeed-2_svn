@@ -18,7 +18,7 @@ package org.apache.jetspeed.cache;
 /**
  * <p>
  *  Provides interface to Jetspeed for cache related activities
- *  Abstraction around atual cache implementation
+ *  Abstraction around actual cache implementation
  * </p>
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -33,6 +33,12 @@ public interface JetspeedCache
      * @return the found object or null
      */
     CacheElement get(Object key);
+    
+    /**
+     * clear all content in the cache
+     *
+     */
+    void clear();
     
     /**
      * Put an object into the cache, adding it, or replacing if exists
@@ -85,4 +91,13 @@ public interface JetspeedCache
      * @return
      */
     String createCacheKey(String primary, String secondary);
+    
+    /**
+     * Add a cache listener for supported cache events
+     * 
+     * @param listener
+     */         
+    void addEventListener(JetspeedCacheEventListener listener);
+    
+    void removeEventListener(JetspeedCacheEventListener listener);
 }

@@ -16,11 +16,15 @@
 package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -50,29 +54,42 @@ import org.springframework.dao.DataAccessException;
  * @version $Id$
  *  
  */
-public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerDaoSupport implements PortletRegistry
+public class PersistenceBrokerPortletRegistry 
+    extends InitablePersistenceBrokerDaoSupport 
+    implements PortletRegistry, JetspeedCacheEventListener
 {
-    
     /**
      * The separator used to create a unique portlet name as
      * {portletApplication}::{portlet}
      */
     static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
 
+    private JetspeedCache applicationOidCache = null;
+    private JetspeedCache portletOidCache = null;
+    private Map nameCache = new HashMap();
+    
     // for testing purposes only: no need for the portletFactory then
     public PersistenceBrokerPortletRegistry(String repositoryPath)
     {
-        this(repositoryPath,null);
+        this(repositoryPath, null, null, null);
     }
     
     /**
      *  
      */
-    public PersistenceBrokerPortletRegistry(String repositoryPath, PortletFactory portletFactory)
+    public PersistenceBrokerPortletRegistry(String repositoryPath, PortletFactory portletFactory, 
+            JetspeedCache applicationOidCache, JetspeedCache portletOidCache)
     {
         super(repositoryPath);
         PortletDefinitionImpl.setPortletRegistry(this);
         PortletDefinitionImpl.setPortletFactory(portletFactory);
+        this.applicationOidCache = applicationOidCache;
+        this.portletOidCache = portletOidCache;
+        MutablePortletApplicationProxy.setRegistry(this);
+        RegistryApplicationCache.cacheInit(this, applicationOidCache);
+        RegistryPortletCache.cacheInit(this, applicationOidCache);
+        this.applicationOidCache.addEventListener(this);
+        this.portletOidCache.addEventListener(this);
     }
 
     public Language createLanguage( Locale locale, String title, String shortTitle, String description,
@@ -92,7 +109,7 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
             throw new RegistryException("Unable to create language object.");
         }
     }
-
+    
     public Collection getAllPortletDefinitions()
     {
         Criteria c = new Criteria();
@@ -112,7 +129,7 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         return app;
     }
 
-    public MutablePortletApplication getPortletApplication( String name )
+    public MutablePortletApplication getPortletApplication(String name)
     {
         Criteria c = new Criteria();
         c.addEqualTo("name", name);
@@ -127,7 +144,7 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         Criteria c = new Criteria();
         c.addEqualTo("applicationIdentifier", identifier);
         MutablePortletApplication app = (MutablePortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
-                QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
+            QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoad(app);
         return app;
     }
@@ -304,9 +321,31 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         c.addEqualTo("id", new Long(id.toString()));
         PortletDefinitionComposite portlet = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
+        
         postLoad(portlet);
         return portlet;
     }
     
+    public void notifyElementRemoved(JetspeedCache cache, Object o)
+    {
+        System.out.println("--- Registry: notification element is a " + o);
+        // update nameCache
+    }
+    
+    protected MutablePortletApplication getProxiedObject(MutablePortletApplication app)
+    {
+        PortletApplicationProxy cached = (PortletApplicationProxy)nameCache.get(app.getName());
+        if (cached != null)
+        {
+            cached.setRealApplication(app);
+            return (MutablePortletApplication)cached;            
+        }
+        else
+        {
+            MutablePortletApplication proxy = MutablePortletApplicationProxy.createProxy(app);
+            nameCache.put(app.getName(), proxy);
+            return (MutablePortletApplication)cached;
+        }
+    }
     
 }

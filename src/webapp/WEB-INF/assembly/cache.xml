@@ -32,7 +32,7 @@ configuration in cacheManager.xml -->
         <property name="cacheName" value="portletContentCache"/>
 </bean>
 
-<bean id="portletContentCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+<bean id="portletContentCache" class="org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl">
     <constructor-arg>
      	<ref bean="ehPortletContentCache"/>
     </constructor-arg>       
@@ -51,5 +51,52 @@ configuration in cacheManager.xml -->
     </constructor-arg>       
 </bean>
 
+<bean id="ehPortletApplicationOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+<property name="cacheManager">
+<ref local="cacheManager"/>
+</property>
+        <property name="cacheName" value="portletApplicationOidCache"/>
+</bean>
+<bean id="ehPortletApplicationNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+<property name="cacheManager">
+<ref local="cacheManager"/>
+</property>
+        <property name="cacheName" value="portletApplicationNameCache"/>
+</bean>
+
+<bean id="portletApplicationOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <constructor-arg>
+     	<ref bean="ehPortletApplicationOidCache"/>
+    </constructor-arg>       
+</bean>
+<bean id="portletApplicationNameCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <constructor-arg>
+     	<ref bean="ehPortletApplicationNameCache"/>
+    </constructor-arg>       
+</bean>
+
+<bean id="ehPortletDefinitionOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+<property name="cacheManager">
+<ref local="cacheManager"/>
+</property>
+        <property name="cacheName" value="portletDefinitionOidCache"/>
+</bean>
+<bean id="ehPortletDefinitionNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+<property name="cacheManager">
+<ref local="cacheManager"/>
+</property>
+        <property name="cacheName" value="portletDefinitionNameCache"/>
+</bean>
+
+<bean id="portletDefinitionOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <constructor-arg>
+     	<ref bean="ehPortletDefinitionOidCache"/>
+    </constructor-arg>       
+</bean>
+<bean id="portletDefinitionNameCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <constructor-arg>
+     	<ref bean="ehPortletDefinitionNameCache"/>
+    </constructor-arg>       
+</bean>
 
 </beans>

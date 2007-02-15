@@ -51,6 +51,8 @@ public class SecurityAccessControllerImpl implements SecurityAccessController
     
     public boolean checkPortletAccess(PortletDefinitionComposite portlet, int mask)
     {
+        if (portlet == null)
+            return false;
         if (securityMode == SecurityAccessController.CONSTRAINTS)
         {
             String constraintRef = portlet.getJetspeedSecurityConstraint();

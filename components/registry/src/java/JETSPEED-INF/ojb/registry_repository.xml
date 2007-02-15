@@ -104,6 +104,7 @@ limitations under the License.
       class="org.apache.jetspeed.om.common.portlet.MutablePortletApplication"
 
    >
+      <object-cache class="org.apache.jetspeed.components.portletregistry.RegistryApplicationCache"/>      
       <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl" />
    </class-descriptor>
 
@@ -112,6 +113,7 @@ limitations under the License.
       class="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
       table="PORTLET_APPLICATION"
    >
+      <object-cache class="org.apache.jetspeed.components.portletregistry.RegistryApplicationCache"/>      
 
       <field-descriptor
          name="id"
@@ -321,7 +323,7 @@ limitations under the License.
       table="PORTLET_DEFINITION"
 
    >
-
+      <object-cache class="org.apache.jetspeed.components.portletregistry.RegistryPortletCache"/>
 
       <field-descriptor
          name="id"
