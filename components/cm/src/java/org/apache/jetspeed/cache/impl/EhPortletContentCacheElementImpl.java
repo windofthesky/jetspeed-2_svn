@@ -25,12 +25,12 @@ import org.apache.jetspeed.cache.CacheElement;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class EhCacheElementImpl implements CacheElement
+public class EhPortletContentCacheElementImpl implements CacheElement
 {
     Element element;
     public static final String KEY_SEPARATOR = "/";
     
-    public EhCacheElementImpl(Element element)
+    public EhPortletContentCacheElementImpl(Element element)
     {
         this.element = element;
     }

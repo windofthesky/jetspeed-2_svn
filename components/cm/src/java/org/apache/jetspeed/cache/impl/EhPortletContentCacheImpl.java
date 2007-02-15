@@ -32,13 +32,12 @@ import org.apache.jetspeed.cache.JetspeedCache;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class EhCacheImpl implements JetspeedCache
+public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCache
 {
-    private Cache ehcache;
-    
-    public EhCacheImpl(Cache ehcache)
+   
+    public EhPortletContentCacheImpl(Cache ehcache)
     {
-        this.ehcache = ehcache;
+        super(ehcache);
     }
 
     public CacheElement get(Object key)
@@ -46,7 +45,7 @@ public class EhCacheImpl implements JetspeedCache
         Element element = ehcache.get(key);
         if (element == null)
             return null;
-        return new EhCacheElementImpl(element);
+        return new EhPortletContentCacheElementImpl(element);
     }
 
     public int getTimeToIdleSeconds()
@@ -66,7 +65,7 @@ public class EhCacheImpl implements JetspeedCache
 
     public void put(CacheElement element)
     {
-        EhCacheElementImpl impl = (EhCacheElementImpl)element;
+        EhPortletContentCacheElementImpl impl = (EhPortletContentCacheElementImpl)element;
         Element ehl = impl.getImplElement();
         String userKey = impl.getUserKey();
         String entity = impl.getEntityKey();
@@ -89,7 +88,7 @@ public class EhCacheImpl implements JetspeedCache
     public CacheElement createElement(Object key, Object content)
     {
         Element cachedElement = new Element(key, content);        
-        return new EhCacheElementImpl(cachedElement);
+        return new EhPortletContentCacheElementImpl(cachedElement);
     }
 
     public boolean remove(Object key)
@@ -99,7 +98,7 @@ public class EhCacheImpl implements JetspeedCache
         if (element == null)
             return false;
         removed = ehcache.remove(key);
-        EhCacheElementImpl impl = (EhCacheElementImpl)element;
+        EhPortletContentCacheElementImpl impl = (EhPortletContentCacheElementImpl)element;
         Element ehl = impl.getImplElement();
         String userKey = impl.getUserKey();
         String entity = impl.getEntityKey();
@@ -135,9 +134,14 @@ public class EhCacheImpl implements JetspeedCache
         }
     }
     
+    public void clear()
+    {
+        ehcache.removeAll();
+    }
+    
     public String createCacheKey(String primary, String secondary)
     {
-        return primary + EhCacheElementImpl.KEY_SEPARATOR + secondary;
+        return primary + EhPortletContentCacheElementImpl.KEY_SEPARATOR + secondary;
     }
 
 }
