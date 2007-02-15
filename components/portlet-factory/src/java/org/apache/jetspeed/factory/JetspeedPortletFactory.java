@@ -67,9 +67,9 @@ public class JetspeedPortletFactory implements PortletFactory
         {
             synchronized (classLoaderMap)
             {
-        unregisterPortletApplication(pa);
-        classLoaderMap.put(pa.getId(), cl);
-        }
+                unregisterPortletApplication(pa);
+                classLoaderMap.put(pa.getId(), cl);
+            }
     }
     
     public void unregisterPortletApplication(PortletApplication pa)

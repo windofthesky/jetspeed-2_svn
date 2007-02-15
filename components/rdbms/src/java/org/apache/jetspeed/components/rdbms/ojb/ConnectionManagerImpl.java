@@ -17,7 +17,9 @@ package org.apache.jetspeed.components.rdbms.ojb;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.ojb.broker.OJBRuntimeException;
 import org.apache.ojb.broker.PBKey;
@@ -71,7 +73,7 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
     private boolean batchMode;
     private BatchConnection batchCon = null;
 
-    private static HashMap connectionFactories = new HashMap();
+    private static Map connectionFactories = Collections.synchronizedMap(new HashMap());
     
     public ConnectionManagerImpl(PersistenceBroker broker)
     {

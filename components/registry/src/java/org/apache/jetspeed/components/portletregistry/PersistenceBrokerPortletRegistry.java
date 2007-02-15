@@ -66,7 +66,7 @@ public class PersistenceBrokerPortletRegistry
 
     private JetspeedCache applicationOidCache = null;
     private JetspeedCache portletOidCache = null;
-    private Map nameCache = new HashMap();
+    private Map nameCache = new HashMap(); // work in progress (switch to JetspeedCache)
     
     // for testing purposes only: no need for the portletFactory then
     public PersistenceBrokerPortletRegistry(String repositoryPath)
@@ -328,7 +328,7 @@ public class PersistenceBrokerPortletRegistry
     
     public void notifyElementRemoved(JetspeedCache cache, Object o)
     {
-        System.out.println("--- Registry: notification element is a " + o);
+        //System.out.println("--- Registry: notification element is a " + o);
         // update nameCache
     }
     

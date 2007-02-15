@@ -57,7 +57,7 @@ public class FileCache implements java.util.Comparator
      */
     public FileCache()
     {
-        cache = new HashMap();
+        cache = Collections.synchronizedMap(new HashMap());
         this.scanner = new FileCacheScanner();
         this.scanner.setDaemon(true);
     }
@@ -71,7 +71,8 @@ public class FileCache implements java.util.Comparator
     public FileCache(long scanRate, 
                      int maxSize)
     {
-        cache = new HashMap();
+        
+        cache = Collections.synchronizedMap(new HashMap());
 
         this.scanRate = scanRate;
         this.maxSize = maxSize;
@@ -92,7 +93,7 @@ public class FileCache implements java.util.Comparator
                      long scanRate, 
                      int maxSize)
     {
-        cache = new HashMap(initialCapacity, loadFactor);
+        cache = Collections.synchronizedMap(new HashMap(initialCapacity, loadFactor));
 
         this.scanRate = scanRate;
         this.maxSize = maxSize;

@@ -15,8 +15,10 @@
  */
 package org.apache.jetspeed.container.session;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -32,21 +34,21 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     {
         long portalSessionKey;
         PortalSessionMonitor psm;
-        HashMap sessionMonitors;
+        Map sessionMonitors;
         
         PortalSessionRegistry()
         {
-            sessionMonitors = new HashMap();
+            sessionMonitors = Collections.synchronizedMap(new HashMap());
         }
     }
     
-    private long       portalSessionKeySequence;
-    private HashMap portalSessionsRegistry;
+    private long portalSessionKeySequence;
+    private Map portalSessionsRegistry;
     
     public PortalSessionsManagerImpl()
     {
         portalSessionKeySequence = System.currentTimeMillis();
-        portalSessionsRegistry = new HashMap();
+        portalSessionsRegistry = Collections.synchronizedMap(new HashMap());
     }
     
     /* (non-Javadoc)

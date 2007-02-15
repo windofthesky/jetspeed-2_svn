@@ -15,31 +15,21 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.container.state.MutableNavigationalState;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.decoration.DecorationValve;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * Get Portlet Actions retrieves the current set of valid actions for one or more portlet windows

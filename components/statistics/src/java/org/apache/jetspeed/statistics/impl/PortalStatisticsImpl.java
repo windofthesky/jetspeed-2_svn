@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -139,39 +140,13 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         this.maxTimeMsToFlush_User = maxTimeMsToFlush_User;
         this.maxTimeMsToFlush_Page = maxTimeMsToFlush_Page;
         //this.jetspeedDSEntry = jetspeedDSEntry;
-        this.ds = dataSource;
-        currentUsers = new TreeMap();
+        this.ds = dataSource;        
+        currentUsers = Collections.synchronizedMap(new TreeMap());
     }
 
     public void springInit() throws NamingException
     {
         formatter = new SimpleDateFormat("dd/MM/yyyy:hh:mm:ss z");
-
-        //if (jetspeedDSEntry != null)
-//        if (dataSource != null)
-//        {
-//            if (jndiLocator.getJndiName() != null)
-//            {
-//                try
-//                {
-//                    Context initialContext = new InitialContext();
-//                    ds = (DataSource) initialContext.lookup(jndiLocator
-//                            .getJndiName());
-//                } catch (NamingException e)
-//                {
-//                    e.printStackTrace();
-//                    throw e;
-//                }
-//            } else
-//            {
-//                BasicDataSource bds = new BasicDataSource();
-//                bds.setDriverClassName(jetspeedDSEntry.getDriverClassName());
-//                bds.setUrl(jetspeedDSEntry.getUrl());
-//                bds.setUsername(jetspeedDSEntry.getUsername());
-//                bds.setPassword(jetspeedDSEntry.getPassword());
-//                ds = (DataSource) bds;
-//            }
-//        }
         currentUserCount = 0;
     }
 

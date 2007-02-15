@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -48,8 +49,8 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     
     // maps containing allowed PortletMode and WindowState objects on their lowercase name
     // ensuring only allowed, and always the same objects are returned and allowing comparision by value
-    private final HashMap supportedPortletModes = new HashMap();
-    private final HashMap supportedWindowStates = new HashMap();
+    private final HashMap supportedPortletModes = Collections.synchronizedMap(new HashMap());
+    private final HashMap supportedWindowStates = Collections.synchronizedMap(new HashMap());
 
     private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
     private BeanFactory beanFactory;

@@ -17,10 +17,9 @@ package org.apache.jetspeed.rewriter;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class JetspeedRewriterController implements RewriterController
     protected Mapping mapper = null;
 
     /** Collection of rulesets in the system */
-    protected Map rulesets = new HashMap();
+    protected Map rulesets = Collections.synchronizedMap(new HashMap());
 
     /** configured basic rewriter class */
     protected Class basicRewriterClass = BasicRewriter.class;

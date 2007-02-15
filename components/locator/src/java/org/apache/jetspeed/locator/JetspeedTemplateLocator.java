@@ -17,6 +17,7 @@ package org.apache.jetspeed.locator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -357,7 +358,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
 
     public void start()
     {        
-        this.templateMap = new HashMap();
+        this.templateMap = Collections.synchronizedMap(new HashMap());
 
         for (int ix = 0; ix < roots.size(); ix++)
         {

@@ -35,7 +35,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.common.DisplayName;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format

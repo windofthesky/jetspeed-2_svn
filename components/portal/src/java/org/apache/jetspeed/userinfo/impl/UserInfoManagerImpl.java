@@ -16,29 +16,28 @@ package org.apache.jetspeed.userinfo.impl;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-
 import org.apache.pluto.om.common.ObjectID;
 
 /**
@@ -254,7 +253,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     {
         if (null == userInfoMapCache)
         {
-            userInfoMapCache = new HashMap();
+            userInfoMapCache = Collections.synchronizedMap(new HashMap());
         }
     }
 

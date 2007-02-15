@@ -20,7 +20,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -41,7 +41,6 @@ import org.apache.ojb.broker.metadata.MetadataManager;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
  * A JavaBean that configures an entry in OJB's ConnectionRepository
@@ -293,7 +292,7 @@ public class ConnectionRepositoryEntry
                 connectionFactoryClass = ConnectionFactoryDBCPImpl.class.getName ();
             }
             jcd.setDriver(driverClassName);
-            HashMap conData = jdbcMetadataUtils.parseConnectionUrl(url);
+            Map conData = jdbcMetadataUtils.parseConnectionUrl(url);
             jcd.setDbms(platform);
             jcd.setProtocol((String)conData.get(JdbcMetadataUtils.PROPERTY_PROTOCOL));
             jcd.setSubProtocol((String)conData.get(JdbcMetadataUtils.PROPERTY_SUBPROTOCOL));
