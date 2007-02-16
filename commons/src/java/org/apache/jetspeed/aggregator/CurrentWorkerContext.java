@@ -41,7 +41,7 @@ public final class CurrentWorkerContext
      * Returns an Enumeration containing the names of the attributes available to this Thread. 
      * This method returns an empty Enumeration  if the thread has no attributes available to it.
      */
-    public Enumeration getAttributeNames()
+    public static Enumeration getAttributeNames()
     {
         return ((Hashtable) currentWorkerContext.get()).keys();
     }

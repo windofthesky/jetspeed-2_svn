@@ -371,6 +371,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
      */
     public void setAttribute( String name, Object value )
     {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Attribute name == null");
+        }
+        
         // In parallel mode, put attribute into worker.
 
         Thread ct = Thread.currentThread();
@@ -385,6 +390,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             {
                 CurrentWorkerContext.setAttribute(name, value);
             }
+
+            if (name.startsWith("org.apache.jetspeed"))
+            {
+                setAttributeInternal(name, value);
+            }
         }
         else
         {
@@ -395,11 +405,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
     private void setAttributeInternal( String name, Object value )
     {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("Attribute name == null");
-        }
-
         // This allows us to make jetpseed objects avaiable to portlets
         // This makes the portlet non-portable but is a must admin portlets
         if (name.startsWith("org.apache.jetspeed"))

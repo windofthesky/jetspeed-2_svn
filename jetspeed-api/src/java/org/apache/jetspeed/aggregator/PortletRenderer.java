@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * <h4>PortletRendererService<br />
@@ -38,6 +39,8 @@ public interface PortletRenderer
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
+     * @throws UnknownPortletDefinitionException
+     * @throws PortletAccessDeniedException
      */
     public void renderNow(ContentFragment fragment, RequestContext request) ;
 
@@ -46,6 +49,8 @@ public interface PortletRenderer
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
+     * @throws UnknownPortletDefinitionException
+     * @throws PortletAccessDeniedException
      */
     public void renderNow(ContentFragment fragment, HttpServletRequest request, HttpServletResponse response) ;
 
@@ -58,6 +63,26 @@ public interface PortletRenderer
      */
     public RenderingJob render(ContentFragment fragment, RequestContext request);
 
+    /** 
+     * 
+     * Create a rendering job for the specified Page fragment.
+     * The method returns a rendering job which should be passed to 'processRenderingJob(RenderingJob job)' method.
+     * @return portlet rendering job to pass to render(RenderingJob job) method
+     * @throws FailedToRetrievePortletWindow
+     * @throws UnknownPortletDefinitionException
+     * @throws PortletAccessDeniedException
+     */
+    public RenderingJob createRenderingJob(ContentFragment fragment, RequestContext request);
+
+    /** 
+     * 
+     * Render the specified rendering job.
+     * The method returns before rendering is complete when the job is processed in parallel mode.
+     * When the job is not parallel mode, it returns after rendering is complete.
+     * @throws FailedToRenderFragmentException
+     */
+    public void processRenderingJob(RenderingJob job);
+        
     /**
      * Retrieve the ContentDispatcher for the specified request
      */
@@ -70,4 +95,19 @@ public interface PortletRenderer
      * @param content
      */
     public void notifyContentComplete(PortletContent content);
+
+    /**
+     * Set title of portlet window. 
+     * 
+     * @param portletWindow
+     * @param fragment
+     * @param request
+     * @param response
+     * @param dispatcher
+     * @param isCacheTitle
+     */
+    public void addTitleToHeader( PortletWindow portletWindow, ContentFragment fragment, 
+                                  HttpServletRequest request, HttpServletResponse response, 
+                                  ContentDispatcherCtrl dispatcher, boolean isCacheTitle );
+
 }

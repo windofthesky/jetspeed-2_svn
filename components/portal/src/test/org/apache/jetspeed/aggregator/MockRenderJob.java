@@ -15,6 +15,12 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 
@@ -108,6 +114,54 @@ public class MockRenderJob  implements RenderingJob
     {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public ContentDispatcherCtrl getDispatcher()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public int getExpirationCache()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public ContentFragment getFragment()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PortletDefinition getPortletDefinition()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public HttpServletRequest getRequest()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public RequestContext getRequestContext()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public HttpServletResponse getResponse()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isContentCached()
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

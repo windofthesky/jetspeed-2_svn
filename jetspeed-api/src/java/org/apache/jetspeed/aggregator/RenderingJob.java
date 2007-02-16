@@ -15,8 +15,13 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.jetspeed.aggregator.PortletContent;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -39,5 +44,22 @@ public interface RenderingJob extends Runnable
     long getTimeout();
 
     boolean isTimeout();
+    
+    PortletDefinition getPortletDefinition();
+
+    HttpServletRequest getRequest();
+
+    HttpServletResponse getResponse();
+
+    ContentFragment getFragment();
+
+    RequestContext getRequestContext();
+
+    int getExpirationCache();
+
+    ContentDispatcherCtrl getDispatcher();
+
+    boolean isContentCached();
+    
 }
 

@@ -78,7 +78,7 @@ public class TestAggregator extends TestCase
     private PortletRegistry portletRegistry;
     private RequestContextComponent rcc;
     private UserManager userManager;
-    
+    private String testPage = "/default-page.psml";
 
     /**
      * Start the tests.
@@ -124,10 +124,19 @@ public class TestAggregator extends TestCase
         portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
         rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
 
-        initPA("jetspeed-layouts", "/jetspeed-layouts", new File("../../layout-portlets/target/jetspeed-layout-portlets"));
-        initPA("demo", "/demo", new File("../../applications/demo/target/demo"));
-        initPA("j2-admin", "/j2-admin", new File("../../applications/j2-admin/target/j2-admin"));
+        ResourceLocatingServletContext paContext = null;
+        File paRootDir = null;
+        File paWebInfDir = null;
+        
+        paRootDir = new File("../../layout-portlets/target/jetspeed-layout-portlets");
+        paContext = initPA("jetspeed-layouts", "/jetspeed-layouts", paRootDir);
 
+        paRootDir = new File("../../applications/demo/target/demo");
+        paContext = initPA("demo", "/demo", paRootDir);
+
+        paRootDir = new File("../../applications/j2-admin/target/j2-admin");
+        paContext = initPA("j2-admin", "/j2-admin", paRootDir);
+ 
         // j2-admin portlet needs user manager component, but the followings does not effect..
 //        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);
 //        paContext.setAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT, userManager);
@@ -189,7 +198,7 @@ public class TestAggregator extends TestCase
                     try {
                         PageManager pageManager = 
                             (PageManager) engine.getComponentManager().getComponent(PageManager.class);
-                        Page page = pageManager.getPage("/default-page.psml");
+                        Page page = pageManager.getPage(testPage);
                         assertNotNull(page);
                         requestContext.setPage(new ContentPageImpl(page));
 
@@ -198,6 +207,9 @@ public class TestAggregator extends TestCase
                         } else {
                             asyncPageAggregator.build(requestContext);
                         }
+
+                        MockHttpServletResponse rsp = (MockHttpServletResponse) requestContext.getResponse();
+                        System.out.println(">>>> " + rsp.getOutputStreamContent());
                     } catch (Exception e) {
                         return e;
                     }
@@ -225,7 +237,7 @@ public class TestAggregator extends TestCase
 
         request.setScheme("http");
         request.setContextPath("/jetspeed");
-        request.setServletPath("/portal/default-page.psml");
+        request.setServletPath("/portal" + testPage);
         request.setMethod("GET");
 
 //        RequestContext rc = 
@@ -234,42 +246,46 @@ public class TestAggregator extends TestCase
         return rc;
     }
 
-    private ServletContext initPA(String paName, String paContextPath, File paRootDir) {
-        ResourceLocatingServletContext paContext = new ResourceLocatingServletContext(paRootDir);
+    private ResourceLocatingServletContext initPA(String paName, String paContextPath, File paRootDir) 
+    {
+        ResourceLocatingServletContext paContext = new ResourceLocatingServletContext(paRootDir, true);   
         MockServletConfig paConfig = new MockServletConfig();
         paConfig.setServletContext(paContext);
+        ((ResourceLocatingServletContext) servletContext).setContext(paContextPath, paContext);
 
-        ClassLoader paCl = createLocalPAClassLoader(paRootDir);
-        PortletApplication pa = portletRegistry.getPortletApplication(paName);
-        if (!portletFactory.isPortletApplicationRegistered(pa)) {
+        try
+        {
+            ClassLoader paCl = createPAClassLoader(new File(paRootDir, "WEB-INF"));
+            PortletApplication pa = portletRegistry.getPortletApplication(paName);        
             portletFactory.registerPortletApplication(pa, paCl);
         }
-
-        ((ResourceLocatingServletContext) servletContext).setContext(paContextPath, paContext);
+        catch (Exception e)
+        {
+            System.out.println("Failed to register portlet application, " + paName + ": " + e);
+        }        
 
         return paContext;
     }
 
-    protected ClassLoader createLocalPAClassLoader(File paDir)
+    protected ClassLoader createPAClassLoader(File webInfDir)
     {
         ClassLoader localPAClassLoader = null;
 
         ArrayList urls = new ArrayList();
-        File webInfClasses = null;
+        File webInfClassesDir = null;
 
-        try {
-            webInfClasses = new File(paDir, ("WEB-INF/classes/"));
-            if (webInfClasses.exists())
+        try 
+        {
+            webInfClassesDir = new File(webInfDir, "classes");            
+            if (webInfClassesDir.isDirectory())
             {
-                urls.add(webInfClasses.toURL());
+                urls.add(webInfClassesDir.toURL());
             }
             
-            File webInfLib = new File(paDir, "WEB-INF/lib");
-
-            if (webInfLib.exists())
+            File webInfLibDir = new File(webInfDir, "lib");
+            if (webInfLibDir.isDirectory())
             {
-                File[] jars = webInfLib.listFiles();
-                
+                File [] jars = webInfLibDir.listFiles();           
                 for (int i = 0; i < jars.length; i++)
                 {
                     File jar = jars[i];
@@ -279,7 +295,9 @@ public class TestAggregator extends TestCase
             
             localPAClassLoader = 
                 new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
-        } catch (Exception e) {
+        } catch (Exception e) 
+        {
+            throw new RuntimeException("Failed to create classloader for PA.", e);
         }
 
         return localPAClassLoader;

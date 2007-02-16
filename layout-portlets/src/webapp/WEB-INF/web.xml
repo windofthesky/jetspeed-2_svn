@@ -25,6 +25,10 @@ limitations under the License.
     <display-name>Jetspeed Container</display-name>
     <description>MVC Servlet for Jetspeed Portlet Applications</description>
     <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
+    <init-param>
+      <param-name>contextName</param-name>
+      <param-value>jetspeed-layouts</param-value>
+    </init-param>    
   </servlet>
 
   <servlet-mapping>

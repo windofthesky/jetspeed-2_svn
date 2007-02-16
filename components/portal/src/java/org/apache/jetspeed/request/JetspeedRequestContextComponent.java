@@ -109,6 +109,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         }
         else
         {
+            log.error("Cannot call getRequestContext(HttpServletRequest request) before it has been created and set for this thread.");
             throw new IllegalStateException("Cannot call getRequestContext(HttpServletRequest request) before it has been created and set for this thread.");
         }
     }
@@ -133,6 +134,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         }
         else
         {
+            log.error("Cannot call getRequestContext() before it has been created and set for this thread.");
             throw new IllegalStateException("Cannot call getRequestContext() before it has been created and set for this thread.");
         }
     }

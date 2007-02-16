@@ -83,7 +83,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         }
         else
         {
-            aggregateAndRender(root, context, page, true, null, null);
+            aggregateAndRender(root, context, page, true, null, null, null);
         }        
         //dispatcher.include(root);
         context.getResponse().getWriter().write(root.getRenderedContent());
@@ -130,19 +130,23 @@ public class AsyncPageAggregatorImpl implements PageAggregator
     }
 
     protected void aggregateAndRender(ContentFragment f, RequestContext context, ContentPage page, boolean isRoot,
-                                      List portletJobs, List layoutFragments)
+                                      List sequentialJobs, List parallelJobs, List layoutFragments)
             throws FailedToRenderFragmentException
     {
         // First Pass, kick off async render threads for all portlets on page 
         // Store portlet rendering jobs in the list to wait later.
         // Store layout fragment in the list to render later.
-        if (portletJobs == null) 
+        if (sequentialJobs == null) 
         {
-            portletJobs = new ArrayList(16);
+            sequentialJobs = new ArrayList();
         }
+        if (parallelJobs == null) 
+        {
+            parallelJobs = new ArrayList();
+        }        
         if (layoutFragments == null)
         {
-            layoutFragments = new ArrayList(4);
+            layoutFragments = new ArrayList();
         }
 
         if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
@@ -155,21 +159,23 @@ public class AsyncPageAggregatorImpl implements PageAggregator
                 {
                     if (child.getType().equals(ContentFragment.PORTLET))
                     {
-                        // kick off render thread
-                        // and store the portlet rendering job into the portlet jobs list.
-                        RenderingJob job = renderer.render(child, context);
+                        // create and store the portlet rendering job into the jobs lists.
+                        RenderingJob job = renderer.createRenderingJob(child, context);
 
                         // The returned job can be null for some reason, such as invalid portlet entity.
-                        if ((job != null) && (job.getTimeout() > 0)) 
+                        if (job != null) 
                         {
-                            portletJobs.add(job);
+                            if (job.getTimeout() > 0)
+                                parallelJobs.add(job);
+                            else
+                                sequentialJobs.add(job);
                         }
                     }
                     else
                     {
                         // walk thru layout 
                         // and store the layout rendering job into the layout jobs list.
-                        aggregateAndRender(child, context, page, false, portletJobs, layoutFragments);
+                        aggregateAndRender(child, context, page, false, sequentialJobs, parallelJobs, layoutFragments);
                         layoutFragments.add(child);
                     }
                 }
@@ -180,15 +186,29 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         if (!isRoot)
             return;
 
+        // kick off the parallel rendering jobs
+        Iterator iter = parallelJobs.iterator();
+        while (iter.hasNext())
+        {
+            RenderingJob job = (RenderingJob) iter.next();
+            renderer.processRenderingJob(job);
+        }
+
+        // kick off the sequential rendering jobs
+        iter = sequentialJobs.iterator();
+        while (iter.hasNext())
+        {
+            RenderingJob job = (RenderingJob) iter.next();
+            renderer.processRenderingJob(job);
+        }
 
         // synchronize on completion of all jobs
-        Iterator it = portletJobs.iterator();
-        
+        iter = parallelJobs.iterator();
         try 
         {
-            while (it.hasNext()) 
+            while (iter.hasNext()) 
             {
-                RenderingJob job = (RenderingJob) it.next();
+                RenderingJob job = (RenderingJob) iter.next();
                 PortletContent portletContent = job.getPortletContent();
                 
                 if (!portletContent.isComplete()) 
@@ -206,10 +226,10 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         }
         
         // render layout fragments.
-        it = layoutFragments.iterator();
-        while (it.hasNext()) 
+        iter = layoutFragments.iterator();
+        while (iter.hasNext()) 
         {
-            ContentFragment child = (ContentFragment) it.next();
+            ContentFragment child = (ContentFragment) iter.next();
             renderer.renderNow(child, context);
         }
         
@@ -219,6 +239,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         {
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
         }        
+        
         renderer.renderNow(f, context);
     }
     

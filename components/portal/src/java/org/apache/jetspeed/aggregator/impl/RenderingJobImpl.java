@@ -30,6 +30,8 @@ import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
+import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -58,49 +60,70 @@ public class RenderingJobImpl implements RenderingJob
     protected HttpServletResponse response = null;
     
     protected PortletContainer container = null;
+    protected PortletRenderer renderer = null;
     protected ContentFragment fragment = null;
     protected RequestContext requestContext = null;
 
+    protected PortletDefinition portletDefinition;
     protected PortletContent portletContent;
     protected PortalStatistics statistics;
+    protected ContentDispatcherCtrl dispatcher;
+    protected boolean contentIsCached;
+    
+    protected int expirationCache = 0;
 
     protected Map workerAttributes;
 
     protected long startTimeMillis = 0;
     protected long timeout;
     
-    public RenderingJobImpl(PortletContainer container, 
+    public RenderingJobImpl(PortletContainer container,
+                            PortletRenderer renderer,
+                            PortletDefinition portletDefinition,
                             PortletContent portletContent, 
                             ContentFragment fragment, 
+                            ContentDispatcherCtrl dispatcher,
                             HttpServletRequest request, 
                             HttpServletResponse response, 
                             RequestContext requestContext, 
                             PortletWindow window,
-                            PortalStatistics statistics)
+                            PortalStatistics statistics,
+                            int expirationCache,
+                            boolean contentIsCached)
     {
         this.container = container;
+        this.renderer = renderer;
         this.statistics = statistics;
+        this.portletDefinition = portletDefinition;
         this.fragment = fragment;
+        this.dispatcher = dispatcher;
         this.request = request;
         this.response = response;
         this.requestContext = requestContext; 
         this.window = window;
         this.portletContent = portletContent; 
         ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
-        
+        this.expirationCache = expirationCache;
+        this.contentIsCached = contentIsCached;
     }
 
     public RenderingJobImpl(PortletContainer container, 
+                            PortletRenderer renderer,
+                            PortletDefinition portletDefinition,
                             PortletContent portletContent, 
-                            ContentFragment fragment, 
+                            ContentFragment fragment,
+                            ContentDispatcherCtrl dispatcher,
                             HttpServletRequest request, 
                             HttpServletResponse response, 
                             RequestContext requestContext, 
                             PortletWindow window,
                             PortalStatistics statistics,
+                            int expirationCache,
+                            boolean contentIsCached,
                             Map workerAttributes)
     {
-        this(container, portletContent, fragment, request, response, requestContext, window, statistics);
+        this(container, renderer, portletDefinition, portletContent, fragment, dispatcher,
+                        request, response, requestContext, window, statistics, expirationCache, contentIsCached);
         this.workerAttributes = workerAttributes;
     }
 
@@ -167,7 +190,8 @@ public class RenderingJobImpl implements RenderingJob
     {
         long start = System.currentTimeMillis();
         boolean isParallelMode = false;
-
+        PortletWindow curWindow = null;
+        
         try
         {
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
@@ -183,25 +207,24 @@ public class RenderingJobImpl implements RenderingJob
                     {
                         String name = (String) itAttrNames.next();
                         CurrentWorkerContext.setAttribute(name, this.workerAttributes.get(name));
-                   }
-                   
-                   // The portletEntity stores its portletDefinition into the ThreadLocal member,
-                   // before the worker starts doing a rendering job.
-                   // So the thread contexts are different from each other.
-                   // Therefore, in parallel mode, we have to clear threadlocal fragmentPortletDefinition cache
-                   // of portletEntity and to replace the portletDefinition with one of current worker context.
-                   // Refer to org.apache.jetspeed.components.portletentity.PortletEntityImpl class
+                    }
                     
-                    PortletWindow window = (PortletWindow)
+                    // The portletEntity stores its portletDefinition into the ThreadLocal member,
+                    // before the worker starts doing a rendering job.
+                    // So the thread contexts are different from each other.
+                    // Therefore, in parallel mode, we have to clear threadlocal fragmentPortletDefinition cache
+                    // of portletEntity and to replace the portletDefinition with one of current worker context.
+                    // Refer to org.apache.jetspeed.components.portletentity.PortletEntityImpl class
+                    
+                    curWindow = (PortletWindow) 
                         CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE); 
-                        
-                    PortletEntityImpl portletEntityImpl = (PortletEntityImpl) window.getPortletEntity();
-                    PortletDefinition oldPortletDefinition = portletEntityImpl.getPortletDefinition();
-                    PortletDefinition portletDefinition = (PortletDefinition)
+                    PortletEntityImpl curEntity = (PortletEntityImpl) curWindow.getPortletEntity();
+                    PortletDefinition oldPortletDefinition = curEntity.getPortletDefinition();
+                    PortletDefinition curPortletDefinition = (PortletDefinition)
                         CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
                     
-                    if (!oldPortletDefinition.getId().equals(portletDefinition.getId())) {
-                        portletEntityImpl.setPortletDefinition(portletDefinition);
+                    if (!oldPortletDefinition.getId().equals(curPortletDefinition.getId())) {
+                        curEntity.setPortletDefinition(curPortletDefinition);
                     }
                 }
             }
@@ -228,12 +251,17 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
+            portletContent.complete();
+
             if (isParallelMode)
             {
+                this.renderer.addTitleToHeader(curWindow, fragment,
+                                               this.request, this.response,
+                                               this.dispatcher, this.contentIsCached);
+            
                 CurrentWorkerContext.removeAllAttributes();
             }
-
-            portletContent.complete();
+            
             if (fragment.getType().equals(ContentFragment.PORTLET))
             {
                 long end = System.currentTimeMillis();            
@@ -268,5 +296,44 @@ public class RenderingJobImpl implements RenderingJob
     public PortletContent getPortletContent()
     {
         return portletContent;
+    }
+
+    public PortletDefinition getPortletDefinition()
+    {
+        return this.portletDefinition;
+    }
+
+    public HttpServletRequest getRequest()
+    {
+        return this.request;
+    }
+
+    public HttpServletResponse getResponse()
+    {
+        return this.response;
+    }
+
+    public ContentFragment getFragment()
+    {
+        return this.fragment;
+    }
+
+    public RequestContext getRequestContext()
+    {
+        return this.requestContext;
+    }
+
+    public int getExpirationCache()
+    {
+        return this.expirationCache;
+    }
+
+    public ContentDispatcherCtrl getDispatcher()
+    {
+        return this.dispatcher;
+    }
+
+    public boolean isContentCached() {
+        return this.contentIsCached;
     }
 }
