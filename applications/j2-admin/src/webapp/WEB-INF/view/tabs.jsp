@@ -12,7 +12,7 @@ limitations under the License.
 --%>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-  	<c:forEach var="tab" items="${tab_items}">
+  	<c:forEach var="tab" items="${tab_items}" varStatus="tabStatus">
   		<td <c:if test="${tab == currentTab}"> class="LTabLeft" </c:if>
   		    <c:if test="${tab != currentTab}"> class="LTabLeftLow" </c:if>
   		     style="font-size:1pt;" nowrap="true">
@@ -47,6 +47,10 @@ limitations under the License.
   	        style="font-size:1pt;" nowrap="true">
   	        &nbsp;
   	    </td>
+  	    <c:if test="${tabStatus.count % 4 == 0}">
+          </tr>
+          <tr>
+        </c:if>
   	</c:forEach>
   </tr>
 </table>
