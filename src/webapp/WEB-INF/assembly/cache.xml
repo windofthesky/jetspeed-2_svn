@@ -45,7 +45,7 @@ configuration in cacheManager.xml -->
         <property name="cacheName" value="preferencesCache"/>
 </bean>
 
-<bean id="preferencesCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+<bean id="preferencesCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
     <constructor-arg>
      	<ref bean="ehPreferencesCache"/>
     </constructor-arg>       

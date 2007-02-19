@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -214,17 +215,13 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
     {
         try
         {
-            if (prefsRootNode.nodeExists(key))
-            {
-                Preferences nodeToRemove = prefsRootNode.node(key);
-                PrefsPreference pref = new PrefsPreference(nodeToRemove, key);
-                nodeToRemove.removeNode();
-                return pref;
-            }
-            else
-            {
-                return null;
-            }
+        	Preferences nodeToRemove = prefsRootNode.node(key);
+        	
+            if (nodeToRemove == null)
+            	return null;
+            PrefsPreference pref = new PrefsPreference(nodeToRemove, key);
+            nodeToRemove.removeNode();
+            return pref;
         }
         catch (BackingStoreException e)
         {
@@ -305,7 +302,7 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
 
     protected class PortletPrefsIterator implements Iterator
     {
-        int beginSize;
+        int beginSize = 0;
         int pointer;
         String[] childrenNames;
         protected PrefsPreference currentPref;
@@ -315,25 +312,35 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             super();
             try
             {
-                beginSize = size();
                 childrenNames = prefsRootNode.childrenNames();
+                if (childrenNames != null)
+                	beginSize =  childrenNames.length;
+                
                 if(defaults != null)
                 {
+                    Vector v = new Vector();
+
                     Iterator itr = defaults.getNames().iterator();
                     while( itr.hasNext())
                     {
                         String name = (String) itr.next();
                         if(!arrayContains(childrenNames, name))
                         {
-                            String[] tempArray = new String[childrenNames.length+1];
-                            System.arraycopy(childrenNames, 0, tempArray, 0, childrenNames.length);
-                            tempArray[(tempArray.length-1)] = name;
-                            childrenNames = tempArray;
-                        }                       
+                        	v.add(name);
+                        }
+                    }
+                    int j = v.size();
+                    if (j>0)
+                    {
+                    	int i = childrenNames.length;
+                        String[] tempArray = new String[j+i];
+                        System.arraycopy(childrenNames, 0, tempArray, 0, i);
+                        for (int x = 0; x < j; x++)
+                            tempArray[i+x] = (String)v.get(x);
+                        childrenNames = tempArray;
+                        beginSize = i+j;
                     }
                 }
-               
-                
                 pointer = 0;
             }
             catch (IllegalStateException ise)
@@ -361,11 +368,14 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
          */
         public boolean hasNext()
         {
-            if (beginSize != size())
-            {
-                throw new ConcurrentModificationException("Underlying PreferenceSet has changed.");
-            }
-            return pointer < beginSize;
+        	try
+        	{
+        		return pointer < beginSize;
+        	}
+        	catch (Exception e)
+        	{
+            	throw new ConcurrentModificationException("Underlying PreferenceSet has changed.");
+        	}
         }
 
         /**
@@ -378,14 +388,16 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
          */
         public Object next()
         {
-            if (beginSize != size())
-            {
-                throw new ConcurrentModificationException("Underlying PreferenceSet has changed.");
-            }
-
-            currentPref = (PrefsPreference) get(childrenNames[pointer]);
-            pointer++;
-            return currentPref;
+			try
+			{
+	            currentPref = (PrefsPreference) get(childrenNames[pointer]);
+	            pointer++;
+	            return currentPref;
+	    	}
+	    	catch (Exception e)
+	    	{
+	        	throw new ConcurrentModificationException("Underlying PreferenceSet has changed.");
+	    	}
         }
 
         /**
@@ -404,7 +416,7 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             }
 
             PrefsPreferenceSetImpl.this.remove(currentPref);
-            beginSize = size();
+            beginSize--;
 
         }
     }

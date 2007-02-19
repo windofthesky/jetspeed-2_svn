@@ -329,15 +329,21 @@
            memoryStoreEvictionPolicy="LFU"
             />
 
-   <cache name="preferencesCache"
+    <cache name="preferencesCache"
            maxElementsInMemory="10000"
            maxElementsOnDisk="1000"
            eternal="false"
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
-            />
+           memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=false, replicatePuts=false,
+                            replicateUpdates=true, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
+   </cache>
+
 
    <cache name="portletApplicationOidCache"
            maxElementsInMemory="500"
