@@ -29,6 +29,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Portlets de Google</metadata>
   <metadata name="title" xml:lang="hu">Google kereső portlet</metadata>
   <metadata name="title" xml:lang="zh">Google Portlets</metadata>
+  <metadata name="title" xml:lang="ko">Google 포틀릿들</metadata>
 
   <fragment id="goo-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="googlePortlet1" type="portlet" name="GooglePortlet::GooglePortlet">

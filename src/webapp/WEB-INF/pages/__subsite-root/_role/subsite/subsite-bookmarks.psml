@@ -29,6 +29,7 @@ limitations under the License.
   <metadata name="title" xml:lang="hu">Portálon belüli könyvjelzők</metadata>
   <metadata name="title" xml:lang="zh">子站点书签</metadata>
   <metadata name="title" xml:lang="zh-TW">子站點書簽</metadata>
+  <metadata name="title" xml:lang="ko">서브사이트 북마크</metadata>
 
   <fragment id="sub-20" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="sub-21" type="portlet" name="demo::BookmarkPortlet">

@@ -20,5 +20,6 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Otra Carpeta [USUARIO]</metadata>
   <metadata name="title" xml:lang="zh">[用户] 另一个文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">[用戶] 另一個檔夾</metadata>
+  <metadata name="title" xml:lang="ko">[사용자] 별도 폴더</metadata>
 
 </folder>

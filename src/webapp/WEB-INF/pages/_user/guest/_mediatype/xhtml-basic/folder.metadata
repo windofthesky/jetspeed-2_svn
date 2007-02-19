@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Carpeta raiz</metadata>
   <metadata name="title" xml:lang="zh">根文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">根文件夾</metadata>
+  <metadata name="title" xml:lang="ko">루트 폴더</metadata>
 
   <document-order>Jetspeed2.link</document-order>
   <document-order>Jetspeed2Wiki.link</document-order>
@@ -35,6 +36,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Páginas más populares</metadata>
       <metadata name="text" xml:lang="zh">顶层页</metadata>
       <metadata name="text" xml:lang="zh-TW">頂層頁</metadata>
+      <metadata name="text" xml:lang="ko">최상위 페이지</metadata>
     </separator>
     <options>/Administrative</options>
   </menu>

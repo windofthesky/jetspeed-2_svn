@@ -22,11 +22,13 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Carpeta raiz [USUARIO]</metadata>
   <metadata name="title" xml:lang="zh">[用户] 根文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">[用戶] 根檔夾</metadata>
+  <metadata name="title" xml:lang="ko">[사용자] 루트 폴더</metadata>
   <metadata name="short-title" xml:lang="fr">[USER] Racine</metadata>
   <metadata name="short-title" xml:lang="ja">[ユーザー] ルート</metadata>
   <metadata name="short-title" xml:lang="es">Raiz [USUARIO]</metadata>
   <metadata name="short-title" xml:lang="zh">[用户] 根</metadata>
   <metadata name="short-title" xml:lang="zh-TW">[用戶] 根</metadata>
+  <metadata name="short-title" xml:lang="ko">[사용자] 루트</metadata>
 
   <document-order>Google.link</document-order>
   <document-order>Jetspeed2.link</document-order>
@@ -52,6 +54,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Páginas populates [USUARIO]</metadata>
       <metadata name="text" xml:lang="zh">[用户] 顶层页</metadata>
       <metadata name="text" xml:lang="zh-TW">[用戶] 頂層頁</metadata>
+      <metadata name="text" xml:lang="ko">[사용자] 최상위 페이지</metadata>
     </separator>
     <options regexp="true" profile="menu">/top-links/*.*</options>
     <menu regexp="true" profile="menu" options="/top-links/more/*.*">
@@ -60,6 +63,7 @@ limitations under the License.
       <metadata name="title" xml:lang="es">Más páginas [USUARIO]</metadata>
       <metadata name="title" xml:lang="zh">[用户] 追加页</metadata>
       <metadata name="title" xml:lang="zh-TW">[用戶] 追加頁</metadata>
+      <metadata name="title" xml:lang="ko">[사용자] 추가 페이지</metadata>
     </menu>
     <separator>
       <text>Profiled Pages</text>
@@ -67,6 +71,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Páginas de perfil</metadata>
       <metadata name="text" xml:lang="zh">Profiled 页</metadata>
       <metadata name="text" xml:lang="zh-TW">Profiled 頁</metadata>
+      <metadata name="text" xml:lang="ko">프로파일 페이지</metadata>
     </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
     <separator>
@@ -75,6 +80,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Portlets sin Java</metadata>
       <metadata name="text" xml:lang="zh">非Java Portlets页</metadata>
       <metadata name="text" xml:lang="zh-TW">非Java Portlets頁</metadata>
+      <metadata name="text" xml:lang="ko">Non-Java 페이지</metadata>
     </separator>
     <options>/non-java</options>
   </menu>

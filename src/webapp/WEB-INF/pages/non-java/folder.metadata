@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">Non-Javaポートレット</metadata>
   <metadata name="title" xml:lang="es">Portlets sin Java</metadata>
   <metadata name="title" xml:lang="zh">非Java Portlets</metadata>
+  <metadata name="title" xml:lang="ko">Non-Java 포틀릿들</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

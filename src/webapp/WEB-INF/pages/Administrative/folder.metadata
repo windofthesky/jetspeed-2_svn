@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">Jetspeed 管理ポートレット</metadata>
   <metadata name="title" xml:lang="es">Administración de Jetspeed</metadata>
   <metadata name="title" xml:lang="zh">Jetspeed 管理Portlets</metadata>
+  <metadata name="title" xml:lang="ko">Jetspeed 관리 포틀릿들</metadata>
 
   <document-order>user-mgt.psml</document-order>
   <document-order>role-mgt.psml</document-order>
@@ -39,6 +40,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Administración de usuarios</metadata>
       <metadata name="text" xml:lang="zh">用户管理页</metadata>
       <metadata name="text" xml:lang="zh-TW">用戶管理頁</metadata>
+      <metadata name="text" xml:lang="ko">사용자 관리 페이지</metadata>
     </separator>
     <options>/Administrative/user-mgt.psml</options>
     <options>/Administrative/users-jsf.psml</options>
@@ -48,6 +50,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Su perfil...</metadata>
       <metadata name="text" xml:lang="zh">Profiled页</metadata>
       <metadata name="text" xml:lang="zh-TW">Profiled頁</metadata>
+      <metadata name="text" xml:lang="ko">프로파일 페이지</metadata>
     </separator>
     <options regexp="true">/p[0-9][0-9][0-9].psml</options>
     <separator>
@@ -56,6 +59,7 @@ limitations under the License.
       <metadata name="text" xml:lang="es">Páginas sin java</metadata>
       <metadata name="text" xml:lang="zh">非Java Portlets页</metadata>
       <metadata name="text" xml:lang="zh-TW">非Java Portlets頁</metadata>
+      <metadata name="text" xml:lang="ko">Non-Java 포틀릿들</metadata>
     </separator>
     <options>/non-java</options>
   </menu>

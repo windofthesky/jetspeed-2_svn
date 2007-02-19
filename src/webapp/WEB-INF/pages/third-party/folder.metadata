@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">サードパーティポートレット</metadata>
   <metadata name="title" xml:lang="es">Portlets aportados por terceros</metadata>
   <metadata name="title" xml:lang="zh">第三方Portlets</metadata>
+  <metadata name="title" xml:lang="ko">써드파티 포틀릿들</metadata>
 
   <security-constraints>
     <security-constraints-ref>users</security-constraints-ref>

@@ -20,6 +20,7 @@ limitations under the License.
   <metadata name="title" xml:lang="es">Carpetas públicas</metadata>
   <metadata name="title" xml:lang="zh">公开文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">公開文件夾</metadata>
+  <metadata name="title" xml:lang="ko">공용 폴더</metadata>
 
   <document-order>public.psml</document-order>
   <document-order>db-browser.psml</document-order>

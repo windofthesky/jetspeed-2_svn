@@ -21,6 +21,7 @@ limitations under the License.
   <metadata name="title" xml:lang="fr">Directorio raiz [USUARIO]</metadata>
   <metadata name="title" xml:lang="zh">[用户] 根文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">[用戶] 根檔夾</metadata>
+  <metadata name="title" xml:lang="ko">[사용자] 루트 폴더</metadata>
 
   <document-order>Google.link</document-order>
   <document-order>Jetspeed2.link</document-order>

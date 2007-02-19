@@ -24,4 +24,5 @@ limitations under the License.
  <metadata name="title" xml:lang="es">Sitio web de Apache Portals [USUARIO]</metadata>
  <metadata name="title" xml:lang="zh">[用户] Apache 门户项目</metadata>
  <metadata name="title" xml:lang="zh-TW">[用戶] Apache 門戶項目</metadata>
+ <metadata name="title" xml:lang="ko">[사용자] Apache Portals 웹사이트</metadata>
 </link>
