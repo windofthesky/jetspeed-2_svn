@@ -34,6 +34,7 @@ import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
@@ -63,6 +64,8 @@ import org.apache.pluto.om.window.PortletWindow;
  * </p>
  * 
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a>Woonsan Ko</a>
  * @version $Id: PortletRendererImpl.java,v 1.30 2005/05/20 14:54:22 ate Exp $
  */
 public class PortletRendererImpl implements PortletRenderer
@@ -74,12 +77,9 @@ public class PortletRendererImpl implements PortletRenderer
     protected PortletWindowAccessor windowAccessor;
     protected PortalStatistics statistics;
     protected DynamicTitleService addTitleService;
-    /**
-     * when rendering a portlet, the default timeout period in milliseconds
-     * setting to zero will disable (no timeout) the timeout
-     *  
-     */
-    protected long defaultPortletTimeout; 
+
+    protected PortletTrackingManager portletTracking;
+    
     /**
      *  flag indicating whether to check jetspeed-portlet.xml security constraints 
      *  before rendering a portlet. If security check fails, do not display portlet content
@@ -95,14 +95,19 @@ public class PortletRendererImpl implements PortletRenderer
      */
     protected JetspeedCache portletContentCache;
     
+    /**
+     * OutOfService Cache
+     */
+    protected Map outOfService = new HashMap(); // todo
     protected boolean overrideTitles = false;
+    public static final String OUT_OF_SERVICE_MESSAGE = "Portlet is not responding and has been taken out of service.";
     
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics,
                                DynamicTitleService addTitleService,
-                               long defaultPortletTimeout,
+                               PortletTrackingManager portletTracking,
                                boolean checkSecurityConstraints,
                                SecurityAccessController accessController,
                                JetspeedCache portletContentCache,
@@ -113,7 +118,7 @@ public class PortletRendererImpl implements PortletRenderer
         this.workMonitor = workMonitor;
         this.statistics = statistics;
         this.addTitleService = addTitleService;
-        this.defaultPortletTimeout = defaultPortletTimeout;
+        this.portletTracking = portletTracking;
         this.checkSecurityConstraints = checkSecurityConstraints;
         this.accessController = accessController;
         this.portletContentCache = portletContentCache;
@@ -125,13 +130,13 @@ public class PortletRendererImpl implements PortletRenderer
             WorkerMonitor workMonitor,
             PortalStatistics statistics,
             DynamicTitleService addTitleService,
-            long defaultPortletTimeout,
+            PortletTrackingManager portletTracking,
             boolean checkSecurityConstraints,
             SecurityAccessController accessController,
             JetspeedCache portletContentCache)
     {
         this(container, windowAccessor, workMonitor, statistics, 
-             addTitleService, defaultPortletTimeout, checkSecurityConstraints,
+             addTitleService, portletTracking, checkSecurityConstraints,
              accessController, portletContentCache, false);
     }
     
@@ -141,7 +146,7 @@ public class PortletRendererImpl implements PortletRenderer
                                PortalStatistics statistics,
                                DynamicTitleService addTitleService)
     {
-        this(container, windowAccessor, workMonitor, statistics, null, 0, false, null, null, true);
+        this(container, windowAccessor, workMonitor, statistics, null, null, false, null, null, true);
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -192,6 +197,14 @@ public class PortletRendererImpl implements PortletRenderer
             {
                 throw new PortletAccessDeniedException("Access Denied.");
             }
+            if (portletTracking.isOutOfService(portletWindow))
+            {
+                log.info("Taking portlet out of service: " + portletDefinition.getUniqueName() + " for window " + fragment.getId());
+                fragment.overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
+                return;
+            }
+            long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
+            portletTracking.setExpiration(portletWindow, timeoutMetadata);            
             int expirationCache = getExpirationCache(portletDefinition);
             if (expirationCache != 0)
             {
@@ -208,7 +221,7 @@ public class PortletRendererImpl implements PortletRenderer
             RenderingJob rJob = 
                 buildRenderingJob(portletWindow, fragment, servletRequest, servletResponse,
                                   requestContext, false, portletDefinition, dispatcher, null, 
-                                  expirationCache, contentIsCached);
+                                  expirationCache, contentIsCached, timeoutMetadata);
             rJob.execute();
             addTitleToHeader( portletWindow, fragment, servletRequest, servletResponse, dispatcher, contentIsCached);
         }
@@ -296,15 +309,23 @@ public class PortletRendererImpl implements PortletRenderer
             PortletWindow portletWindow = getPortletWindow(fragment);
             PortletDefinitionComposite portletDefinition = 
                 (PortletDefinitionComposite) portletWindow.getPortletEntity().getPortletDefinition();     
+
+            long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
+            portletTracking.setExpiration(portletWindow, timeoutMetadata);            
             
             if (checkSecurityConstraints && !checkSecurityConstraint(portletDefinition, fragment))
             {
                 throw new PortletAccessDeniedException("Access Denied.");
             }
-            
+            if (portletTracking.isOutOfService(portletWindow))
+            {
+                fragment.overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
+                return null;
+            }
             int expirationCache = getExpirationCache(portletDefinition);
             if (expirationCache != 0)
             {
+                portletTracking.setExpiration(portletWindow, (long)expirationCache);
                 contentIsCached = retrieveCachedContent(requestContext, fragment, portletWindow, 
                                                         expirationCache, portletDefinition);
                 if (contentIsCached)
@@ -313,7 +334,7 @@ public class PortletRendererImpl implements PortletRenderer
                 }
             }
             job = buildRenderingJob( portletWindow, fragment, requestContext, true, 
-                                     portletDefinition, null, contentIsCached );
+                                     portletDefinition, null, contentIsCached, timeoutMetadata );
         }
         catch (Exception e)
         {
@@ -425,7 +446,7 @@ public class PortletRendererImpl implements PortletRenderer
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, ContentFragment fragment, 
                                               RequestContext requestContext, boolean isParallel,
                                               PortletDefinitionComposite portletDefinition, 
-                                              PortletContent portletContent, boolean contentIsCached )
+                                              PortletContent portletContent, boolean contentIsCached, long timeoutMetadata)
         throws PortletAccessDeniedException, FailedToRetrievePortletWindow, PortletEntityNotStoredException        
     {
         int expirationCache = getExpirationCache(portletDefinition);
@@ -436,7 +457,7 @@ public class PortletRendererImpl implements PortletRenderer
         return buildRenderingJob( portletWindow, fragment, request, response,
                                   requestContext, isParallel,
                                   portletDefinition, dispatcher,
-                                  portletContent, expirationCache, contentIsCached );        
+                                  portletContent, expirationCache, contentIsCached, timeoutMetadata );        
     }
 
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, ContentFragment fragment, 
@@ -445,7 +466,7 @@ public class PortletRendererImpl implements PortletRenderer
                                               PortletDefinitionComposite portletDefinition, 
                                               ContentDispatcherCtrl dispatcher, 
                                               PortletContent portletContent, 
-                                              int expirationCache, boolean contentIsCached )
+                                              int expirationCache, boolean contentIsCached, long timeoutMetadata)
              throws PortletAccessDeniedException, FailedToRetrievePortletWindow, PortletEntityNotStoredException
    {    
         RenderingJob rJob = null;
@@ -489,11 +510,11 @@ public class PortletRendererImpl implements PortletRenderer
                                                          statistics, expirationCache, contentIsCached );
             
         }
-        setTimeoutOnJob(portletDefinition, rJob);
+        setTimeoutOnJob(timeoutMetadata, rJob);
         return rJob;
     }
-        
-    protected void setTimeoutOnJob(PortletDefinitionComposite portletDefinition, RenderingJob rJob)
+ 
+    protected long getTimeoutOnJob(PortletDefinitionComposite portletDefinition)
     {
         long timeoutMetadata = 0;
         Collection timeoutFields = null;
@@ -520,15 +541,20 @@ public class PortletRendererImpl implements PortletRenderer
                     log.warn("Invalid timeout metadata: " + nfe.getMessage());
                 }
             }
-        }
-
+        }       
+        return timeoutMetadata;
+    }
+    
+    protected void setTimeoutOnJob(long timeoutMetadata, RenderingJob rJob)
+    {
+        
         if (timeoutMetadata > 0) 
         {
             rJob.setTimeout(timeoutMetadata);
         }
-        else if (this.defaultPortletTimeout > 0) 
+        else if (this.portletTracking.getDefaultPortletTimeout() > 0) 
         {
-            rJob.setTimeout(this.defaultPortletTimeout);
+            rJob.setTimeout(this.portletTracking.getDefaultPortletTimeout());
         }        
     }
     
@@ -611,5 +637,10 @@ public class PortletRendererImpl implements PortletRenderer
     {
         if (content.getExpiration() != 0)
             addToCache(content);
+    }
+    
+    public PortletTrackingManager getPortletTrackingManager()
+    {
+        return this.portletTracking;
     }
 }

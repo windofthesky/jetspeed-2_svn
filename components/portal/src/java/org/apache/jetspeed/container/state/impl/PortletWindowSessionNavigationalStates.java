@@ -281,7 +281,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             {
                 extendedSessionState.setParametersMap(null);
                 requestState.setClearParameters(false);
-                changed = true;
+                //changed = true;
             }            
             else if ( extendedSessionState.getParametersMap() != null )
             {

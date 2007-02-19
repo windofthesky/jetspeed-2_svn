@@ -18,9 +18,9 @@ package org.apache.jetspeed.container.window.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -284,5 +284,10 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
                 && pe.getPortletDefinition().getPortletApplicationDefinition() != null
                 && portletFactory.isPortletApplicationRegistered((PortletApplication) pe.getPortletDefinition()
                         .getPortletApplicationDefinition());
+    }
+    
+    public Set getPortletWindows()
+    {
+        return this.windows.entrySet();
     }
 }

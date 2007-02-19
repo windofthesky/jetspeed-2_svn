@@ -30,6 +30,8 @@ import org.apache.pluto.om.window.PortletWindow;
  * container to generate the resulting markup</p>
  *
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a>Woonsan Ko</a>
  * @version $Id$
  */
 public interface PortletRenderer 
@@ -110,4 +112,6 @@ public interface PortletRenderer
                                   HttpServletRequest request, HttpServletResponse response, 
                                   ContentDispatcherCtrl dispatcher, boolean isCacheTitle );
 
+    PortletTrackingManager getPortletTrackingManager();
+    
 }

@@ -119,6 +119,11 @@ public class PortletContentImpl implements PortletContent
         return expiration;
     }
     
+    public void setExpiration(int e)
+    {
+        this.expiration = e;
+    }
+    
     public String getTitle()
     {
         return title;

@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.container.window;
 
+import java.util.Set;
+
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -103,5 +105,10 @@ public interface PortletWindowAccessor
      */
     void removeWindow(PortletWindow window);
     
-    
+    /**
+     *  Get a list of all windows
+     *  
+     * @return
+     */
+    Set getPortletWindows();
 }

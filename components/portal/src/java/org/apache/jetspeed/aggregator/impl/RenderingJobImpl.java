@@ -26,12 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
-import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
-import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -47,6 +48,8 @@ import org.apache.pluto.om.window.PortletWindow;
  * in its Runnable method.
  *
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a>Woonsan Ko</a>
  * @version $Id$
  */
 public class RenderingJobImpl implements RenderingJob
@@ -63,6 +66,7 @@ public class RenderingJobImpl implements RenderingJob
     protected PortletRenderer renderer = null;
     protected ContentFragment fragment = null;
     protected RequestContext requestContext = null;
+    protected PortletTrackingManager portletTracking = null;
 
     protected PortletDefinition portletDefinition;
     protected PortletContent portletContent;
@@ -93,6 +97,7 @@ public class RenderingJobImpl implements RenderingJob
     {
         this.container = container;
         this.renderer = renderer;
+        this.portletTracking = renderer.getPortletTrackingManager();        
         this.statistics = statistics;
         this.portletDefinition = portletDefinition;
         this.fragment = fragment;
@@ -251,6 +256,8 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
+            long end = System.currentTimeMillis();            
+            boolean exceededTimeout = portletTracking.exceededTimeout(end - start, window);
             portletContent.complete();
 
             if (isParallelMode)
@@ -264,14 +271,24 @@ public class RenderingJobImpl implements RenderingJob
             
             if (fragment.getType().equals(ContentFragment.PORTLET))
             {
-                long end = System.currentTimeMillis();            
                 if (statistics != null)
+                {
                     statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
+                }
+                if (exceededTimeout)
+                {
+                    // took too long to render
+                    log.info("Portlet Exceeded timeout: " + window.getPortletEntity().getPortletDefinition().getName() + " for window " + window.getId());
+                    portletTracking.incrementRenderTimeoutCount(window);
+                }
+                else
+                {
+                    portletTracking.success(window);
+                }
             }
         }
-
     }
-
+ 
     /**
      * 
      * <p>

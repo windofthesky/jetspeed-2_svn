@@ -42,6 +42,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * and synchronization of worker threads.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a>Woonsan Ko</a>
  * @version $Id: $
  */
 public class AsyncPageAggregatorImpl implements PageAggregator

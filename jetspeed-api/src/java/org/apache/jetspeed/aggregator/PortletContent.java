@@ -53,6 +53,7 @@ public interface PortletContent
      * @return
      */
     int getExpiration();
+    void setExpiration(int expiration);
     
     /**
      * Get the cache key used to cache this content 

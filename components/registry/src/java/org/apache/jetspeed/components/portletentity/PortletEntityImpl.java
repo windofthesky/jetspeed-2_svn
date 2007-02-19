@@ -29,6 +29,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
 import org.apache.jetspeed.components.persistence.store.RemovalAware;
@@ -60,39 +61,28 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityImpl.java,v 1.9 2005/04/29 13:59:08 weaver Exp $
  */
-public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RemovalAware
-{
-
+public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RemovalAware, RenderTrackable
+{   
     private long oid;
-
     private JetspeedObjectID id;
-
-    protected static PortletEntityAccessComponent pac;
-    
+    protected static PortletEntityAccessComponent pac;    
     protected static PortletRegistry registry;
     protected static RequestContextComponent rcc;
     
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
-
     protected Map perPrincipalPrefs = new HashMap();
-
     protected Map originalValues;
-
     private PortletApplicationEntity applicationEntity = null;
-
     private PortletWindowList portletWindows = new PortletWindowListImpl();
-
-    private PortletDefinitionComposite portletDefinition = null;
-    
+    private PortletDefinitionComposite portletDefinition = null;  
     protected String portletName;
-    
     protected String appName;
-
     private boolean dirty = false;
-    
     private Fragment fragment;
-    
     private ThreadLocal fragmentPortletDefinition = new ThreadLocal();
+    
+    protected transient int timeoutCount = 0;
+    protected transient long expiration = 0;
     
     public PortletEntityImpl(Fragment fragment)
     {
@@ -569,5 +559,36 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         this.fragment = fragment;
         // if the fragment is set, clear threadlocal fragmentPortletDefinition cache
         fragmentPortletDefinition.set(null);
-    }   
+    }
+
+    public int getRenderTimeoutCount()
+    {
+        return timeoutCount;
+    }
+    
+    public synchronized void incrementRenderTimeoutCount()
+    {
+        timeoutCount++;
+    }
+    
+    public synchronized void setExpiration(long expiration)
+    {
+        this.expiration = expiration;
+    }
+    
+    public long getExpiration()
+    {
+        return this.expiration;
+    }
+    
+    public void success()
+    {
+        timeoutCount = 0;
+    }
+    
+    public void setRenderTimeoutCount(int timeoutCount)
+    {
+        this.timeoutCount = timeoutCount;
+    }
+
 }

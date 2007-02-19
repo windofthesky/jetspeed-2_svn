@@ -41,23 +41,11 @@ import org.apache.pluto.om.window.PortletWindow;
 public class PageAggregatorImpl implements PageAggregator
 {
     private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
-
-    public final static int STRATEGY_SEQUENTIAL = 0;
-    public final static int STRATEGY_PARALLEL = 1;
-
-    private int strategy = STRATEGY_SEQUENTIAL;
     private PortletRenderer renderer;
-
-
-    public PageAggregatorImpl( PortletRenderer renderer, int strategy)
-    {
-        this.renderer = renderer;
-        this.strategy = strategy;
-    }
 
     public PageAggregatorImpl( PortletRenderer renderer)
     {
-        this(renderer, STRATEGY_SEQUENTIAL);
+        this.renderer = renderer;
     }
 
     /**
@@ -155,13 +143,6 @@ public class PageAggregatorImpl implements PageAggregator
                 }
             }
         }
-        if (strategy == STRATEGY_SEQUENTIAL)
-        {
-            renderer.renderNow(f, context);
-        }
-        else
-        {
-            renderer.render(f, context);
-        }
+        renderer.renderNow(f, context);
     }
 }
