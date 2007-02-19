@@ -58,6 +58,11 @@ public interface PortletTrackingManager
     void takeOutOfService(PortletWindow window);
     
     void putIntoService(PortletWindow window);
+    /**
+     * 
+     * @param fullPortletNames a list of Strings of full portlet names
+     */
+    void putIntoService(List fullPortletNames);
     
     List getOutOfServiceList(String fullPortletName);
     

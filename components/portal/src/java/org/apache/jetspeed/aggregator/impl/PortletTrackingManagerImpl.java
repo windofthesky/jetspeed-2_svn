@@ -110,7 +110,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     public void setExpiration(PortletWindow window, long expiration)
     {
         RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
-        trackable.setExpiration(expiration * 1000);                
+        trackable.setExpiration(expiration); // * 1000);                
     }
         
     public void takeOutOfService(PortletWindow window)
@@ -125,13 +125,32 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         trackable.setRenderTimeoutCount(0);        
     }
     
+    public void putIntoService(List fullPortletNames)
+    {
+        Iterator windows = this.windowAccessor.getPortletWindows().iterator();
+        while (windows.hasNext())
+        {
+            Map.Entry entry = (Map.Entry)windows.next();
+            PortletWindow window = (PortletWindow)entry.getValue();
+            PortletDefinitionComposite pd = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();          
+            for (int ix = 0; ix < fullPortletNames.size(); ix++)
+            {
+                if (pd.getUniqueName().equals(fullPortletNames.get(ix)))
+                {
+                    putIntoService(window);
+                }
+            }
+        }        
+    }
+    
     public List getOutOfServiceList(String fullPortletName)
     {
         List outs = new ArrayList();
         Iterator windows = this.windowAccessor.getPortletWindows().iterator();
         while (windows.hasNext())
         {
-            PortletWindow window = (PortletWindow)windows.next();
+            Map.Entry entry = (Map.Entry)windows.next();
+            PortletWindow window = (PortletWindow)entry.getValue();
             PortletDefinitionComposite pd = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();
             if (pd.getUniqueName().equals(fullPortletName) && isOutOfService(window))
             {
@@ -147,10 +166,11 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         Iterator windows = this.windowAccessor.getPortletWindows().iterator();
         while (windows.hasNext())
         {
-            PortletWindow window = (PortletWindow)windows.next();
+            Map.Entry entry = (Map.Entry)windows.next();
+            PortletWindow window = (PortletWindow)entry.getValue();
             if (isOutOfService(window))
             {
-                outs.add(window);
+                outs.add(window);                
             }
         }
         return outs;

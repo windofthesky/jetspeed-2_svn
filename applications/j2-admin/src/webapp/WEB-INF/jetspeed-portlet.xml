@@ -79,7 +79,8 @@ limitations under the License.
         <js:service name="SSO" />                 
         <js:service name='UserManager'/>     
         <js:service name='DecorationFactory'/> 
-        <js:service name='SecurityAccessController'/>       
+        <js:service name='SecurityAccessController'/>  
+        <js:service name='PortletTrackingManager'/>     
 	</js:services>
 
 </portlet-app>

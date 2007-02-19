@@ -1478,5 +1478,28 @@ limitations under the License.
     </portlet-info>
   </portlet>
 
+  <portlet>
+    <description>Portlet Tracking Manager</description>
+    <portlet-name>PortletTracking</portlet-name>
+    <display-name>Portlet Tracking Manager</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.tracking.PortletTrackingPortlet</portlet-class>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/view/tracking/tracking.vm</value>
+    </init-param>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <!-- resource-bundle></resource-bundle -->
+    <portlet-info>
+      <title>Portlet Tracking</title>
+      <short-title>Tracking</short-title>
+      <keywords>admin,tracking,out of service</keywords>
+    </portlet-info>
+  </portlet>
+
 </portlet-app>
 
