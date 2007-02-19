@@ -35,10 +35,12 @@ import org.apache.pluto.om.common.Description;
 public class PrefsPreference implements PreferenceComposite
 {
     protected static final String VALUES_PATH = "values";
+    protected static final String VALUES_SIZE = "size";
   
     public static final String PORTLET_PREFERENCES_ROOT = "preferences";
     protected static final String LOCALE_TOKEN = "_";
     protected Preferences prefValueNode;
+    protected Preferences prefValueSizeNode;
     protected Preferences prefNode;
     protected String name;
     public static final String[] DEFAULT_OPEN_NODES = new String[] {MutablePortletEntity.PORTLET_ENTITY_ROOT, PortletDefinitionComposite.PORTLETS_PREFS_ROOT};
@@ -61,6 +63,7 @@ public class PrefsPreference implements PreferenceComposite
         }
         
         this.prefValueNode = prefNode.node(VALUES_PATH);
+        this.prefValueSizeNode = prefNode.node(VALUES_SIZE);
     }
     
     public PrefsPreference(PortletDefinitionComposite portlet, String name)
@@ -68,6 +71,33 @@ public class PrefsPreference implements PreferenceComposite
         this(createPrefenceNode(portlet).node(name), name);
     }
 
+    
+    private int getPrefValueSize(boolean store)
+    {
+        int size = prefValueSizeNode.getInt(VALUES_SIZE, -1);
+        if ( size == -1 )
+        {
+            // prefSizeNode doesn't exist
+            // if values exists (upgrading issue), determine from number of values keys
+            try
+            {
+                size = prefValueNode.keys().length;
+            }
+            catch (BackingStoreException e)
+            {
+                String msg = "Preference backing store failed: "+e.toString();
+                IllegalStateException ise = new IllegalStateException(msg);
+                ise.initCause(e);
+                throw ise;
+            }
+            if (store)
+            {
+                prefValueSizeNode.putInt(VALUES_SIZE,size);
+            }
+        }
+        return size;
+    }
+    
     /**
      * <p>
      * addDescription
@@ -120,7 +150,22 @@ public class PrefsPreference implements PreferenceComposite
     
     public void removeValueAt(int index)
     {
-        prefValueNode.remove(String.valueOf(index));
+        int size;
+        if (index > -1 && index < (size = getPrefValueSize(true)) )
+        {
+            String[] values = new String[size-1];
+            for (int i = 0; i < index; i++)
+            {
+                values[i] = prefValueNode.get(String.valueOf(i),null);
+            }
+            for ( int i = index+1; i < size; i++)
+            {
+                values[i] = prefValueNode.get(String.valueOf(i),null);
+            }
+            setValues(values);
+        }
+        else
+            throw new IndexOutOfBoundsException();
     }
 
     /**
@@ -135,8 +180,32 @@ public class PrefsPreference implements PreferenceComposite
      */
     public void setValueAt( int index, String value )
     {
-        prefValueNode.put(String.valueOf(index), value);
-
+        if ( index > -1 )
+        {
+            int size = getPrefValueSize(true);
+            if ( index < size )
+            {
+                if ( value != null )
+                {
+                    prefValueNode.put(String.valueOf(index), value);
+                }
+                else
+                {
+                    prefValueNode.remove(String.valueOf(index));
+                }
+            }
+            else
+            {
+                prefValueSizeNode.putInt(VALUES_SIZE, index+1);
+                if ( value != null )
+                {
+                    prefValueNode.put(String.valueOf(index),value);
+                }
+            }
+            
+        }
+        else
+            throw new IndexOutOfBoundsException();
     }
 
     /**
@@ -149,33 +218,12 @@ public class PrefsPreference implements PreferenceComposite
      */
     public void addValue( String value )
     {
-       String stringKey = null;
-        try
-        {
-            String[] keys = prefValueNode.keys();
-            if (keys.length > 0)
-            {
-                Arrays.sort(keys);
-                stringKey = keys[keys.length - 1];
-                int nextIndex = Integer.parseInt(stringKey) + 1;
-                setValueAt(nextIndex, value);
-            }
-            else
-            {
-                setValueAt(0, value);
-            }
-        }
-        catch (NumberFormatException e)
-        {
-            throw new IllegalArgumentException("Could not convert preference key "+stringKey+" to an int.");
-        }
-        catch (BackingStoreException e)
-        {            
-            String msg = "Preference backing store failed: "+e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
-        }
+       int size = getPrefValueSize(true);
+       prefValueSizeNode.putInt(VALUES_SIZE, size+1);
+       if ( value != null )
+       {
+           prefValueNode.put(String.valueOf(size),value);
+       }
     }
 
     /**
@@ -188,31 +236,13 @@ public class PrefsPreference implements PreferenceComposite
      */
     public String[] getValueArray()
     {
-        try
+        int size = getPrefValueSize(false);
+        String[] values = new String[size];
+        for (int i = 0; i < size; i++)
         {
-            String[] keys = prefValueNode.keys();
-            if (keys.length > 0)
-            {
-                String[] values = new String[keys.length];
-                Arrays.sort(keys);
-                for (int i = 0; i < keys.length; i++)
-                {
-                    values[i] = prefValueNode.get(String.valueOf(i), null);
-                }
-                return values;
-            }
-            else
-            {
-                return new String[0];
-            }
+            values[i] = prefValueNode.get(String.valueOf(i),null);
         }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: "+e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
-        }
+        return values;
     }
 
     /**
@@ -227,12 +257,14 @@ public class PrefsPreference implements PreferenceComposite
     {
         try
         {
-            if (stringValues != null)
+            prefValueNode.clear();
+            int size = stringValues != null ? stringValues.length : 0;
+            prefValueSizeNode.putInt(VALUES_SIZE, size);
+            for (int i = 0; i < size; i++)
             {
-                prefValueNode.clear();
-                for (int i = 0; i < stringValues.length; i++)
+                if (stringValues[i] != null)
                 {
-                    setValueAt(i, stringValues[i]);
+                    prefValueNode.put(String.valueOf(i), stringValues[i]);
                 }
             }
         }
@@ -380,7 +412,7 @@ public class PrefsPreference implements PreferenceComposite
      */
     public boolean isValueSet()
     {
-        return getValueArray().length > 0;
+        return getPrefValueSize(false) > 0;
     }
 
     protected Locale parseLocal( String localString )

@@ -18,17 +18,11 @@ package org.apache.jetspeed.components.portletentity;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.decoration.Decoration;
-import org.apache.jetspeed.om.common.SecurityConstraint;
-import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -196,6 +190,32 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
             count++;
         }
         assertEquals(2, count);
+
+        // testing preferences null values assignments fix, issue JS2-607
+        pref2.setValueAt(0, null);        
+        assertNull("pref2.value[0] should be null", pref2.getValueAt(0));        
+        String[] values = pref2.getValueArray();
+        assertEquals(2, values.length);
+        assertNull("pref2.value[0] should be null", values[0]);
+        assertEquals("3", values[1]);
+        pref2.setValues(new String[]{"2",null,"3"});
+        assertNull("pref2.value[1] should be null", pref2.getValueAt(1));
+        values = pref2.getValueArray();
+        assertEquals(3, values.length);
+        assertEquals("2", values[0]);
+        assertNull("pref2.value[1] should be null", values[1]);
+        assertEquals("3", values[2]);
+        assertTrue(pref2.isValueSet());
+        pref2.setValues((String[])null);
+        assertFalse(pref2.isValueSet());
+        assertTrue(pref2.getValueArray().length == 0);
+        entity.reset();
+        assertTrue(pref2.getValueArray().length == 2);
+        pref2.setValues(new String[]{});
+        assertFalse(pref2.isValueSet());
+        assertTrue(pref2.getValueArray().length == 0);
+        entity.reset();
+        assertTrue(pref2.getValueArray().length == 2);
 
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
