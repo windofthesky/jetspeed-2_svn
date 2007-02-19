@@ -177,6 +177,7 @@ public class PickANumberPortlet extends GenericServletPortlet
         {
             session.setAttribute( TOP_RANGE_NAME, new Long(range), PortletSession.APPLICATION_SCOPE);
         }
+        super.doView(request, response);        
     }
     
     /**
