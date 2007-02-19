@@ -124,7 +124,10 @@ limitations under the License.
         	<groupId>ehcache</groupId>
         	<artifactId>ehcache</artifactId>
         </dependency>
-
+         <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+	    </dependency>       
     </dependencies>
 
     <!-- Build Configuration -->
