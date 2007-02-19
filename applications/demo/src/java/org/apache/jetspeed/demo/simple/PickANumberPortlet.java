@@ -143,7 +143,6 @@ public class PickANumberPortlet extends GenericServletPortlet
         
         // get the current value in the prefs
         long range = getHighRange(request);
-        System.out.println("cheater: top range  = " + range);
         // Get target value
         lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.APPLICATION_SCOPE);
         if (lastGuess == null)
@@ -158,7 +157,7 @@ public class PickANumberPortlet extends GenericServletPortlet
         if (targetValue == null)
         {            
             targetValue = new Long(Math.round(Math.random() * range));
-            System.out.println("cheater: target value = " + targetValue);
+//            System.out.println("cheater: target value = " + targetValue);
             guessCount = new Long(0);
             session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
             long highRange = getHighRange(request);
@@ -178,8 +177,6 @@ public class PickANumberPortlet extends GenericServletPortlet
         {
             session.setAttribute( TOP_RANGE_NAME, new Long(range), PortletSession.APPLICATION_SCOPE);
         }
-        
-        super.doView(request, response);
     }
     
     /**
@@ -225,7 +222,7 @@ public class PickANumberPortlet extends GenericServletPortlet
                 random = 1; // don;t allow 0
             }
             targetValue = new Long(random);
-            System.out.println("cheater: target value = " + targetValue);
+//            System.out.println("cheater: target value = " + targetValue);
             guessCount = new Long(0);
             session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
         }
