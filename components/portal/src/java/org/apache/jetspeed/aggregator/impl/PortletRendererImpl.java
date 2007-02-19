@@ -98,7 +98,6 @@ public class PortletRendererImpl implements PortletRenderer
     /**
      * OutOfService Cache
      */
-    protected Map outOfService = new HashMap(); // todo
     protected boolean overrideTitles = false;
     public static final String OUT_OF_SERVICE_MESSAGE = "Portlet is not responding and has been taken out of service.";
     
@@ -254,6 +253,8 @@ public class PortletRendererImpl implements PortletRenderer
     
     protected int getExpirationCache(PortletDefinitionComposite portletDefinition)
     {
+        if (portletDefinition == null)
+            return 0;
         String expiration = portletDefinition.getExpirationCache();
         if (expiration == null)
             return 0;
