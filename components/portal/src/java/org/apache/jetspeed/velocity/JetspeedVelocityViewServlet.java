@@ -52,8 +52,9 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.Constants;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.app.event.NullSetEventHandler;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.generic.log.LogSystemCommonsLog;
@@ -124,6 +125,9 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
 
     /** default velocity engine */
     private VelocityEngine defaultVelocityEngine;
+    
+    /** Velocity EventCartridge for handling event */
+    EventCartridge eventCartridge;
 
     /**
      * Initialize servlet, BridgesVelocityViewServlet, and VelocityViewServlet.
@@ -160,6 +164,13 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         int cacheSize = (int) getLongInitParameter(config, CACHE_SIZE_PARAMETER, DEFAULT_CACHE_SIZE);
         velocityEngineConfigCache = new LRUMap(cacheSize);
         velocityEngineCache = new LRUMap(cacheSize/2);
+        
+        eventCartridge = new EventCartridge();
+        // setup NullSetEventHandler to ignore those pesky "ERROR velocity - RHS of #set statement is null. Context will not be modified."
+        eventCartridge.addEventHandler(new NullSetEventHandler()
+        {
+            public boolean shouldLogOnNullSet(String lhs, String rhs) { return false; }
+        });
 
         // initialize velocity engine cache validation interval
         cacheValidationInterval = getLongInitParameter(config, CACHE_VALIDATION_INTERVAL_PARAMETER, DEFAULT_CACHE_VALIDATION_INTERVAL);
@@ -232,6 +243,9 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no RequestContext in "+
                    "the HttpServletRequest.");
         }
+        
+        // hook up eventHandlers to the context, specifically our own IgnoringNullSetEventHandling
+        eventCartridge.attachToContext(ctx);
         
         JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);        
         if (desktopContext != null)
