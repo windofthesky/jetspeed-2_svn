@@ -100,6 +100,8 @@ ${__delimiter}</span>
 </div>
 #end
 
+#* "forward" reference definition of the real includeNestedLinksWithIconNavigation($_menu $_orientation) macro *#
+#macro (includeNestedLinksWithIconNavigation) #end
 #* include nested menu links navigation component *#
 #macro (includeNestedLinksWithIconNavigation $_menu $_orientation)
 #set($menuTitle = $_menu.getTitle($preferedLocale))

@@ -119,6 +119,12 @@
       </div>
 #end
 
+#* dummy "forward" reference definition of the real includeNestedLinksWithIconNavigation($_menu $_orientation) macro
+   to prevent "ERROR velocity - VM #includeNestedLinksWithIconNavigation: error : too few arguments to macro. Wanted 2 got 0".
+   Seemingly the Velocity macro parser is doing a lookup call during parsing for the self-calling includeNestedLinksWithIconNavigation macro
+*#
+#macro (includeNestedLinksWithIconNavigation) #end
+
 #* include nested menu links navigation component *#
 #macro (includeNestedLinksWithIconNavigation $_menu $_orientation)
   #set($menuTitle = $_menu.getTitle($preferedLocale))
