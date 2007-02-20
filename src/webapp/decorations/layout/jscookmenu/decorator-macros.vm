@@ -59,11 +59,12 @@ DEALINGS IN THE SOFTWARE.
 
 #* include links navigation component *#
 #macro (includeLinksNavigation $_menu $_orientation $_title $_style $_delimiter)
+  #set($__delimiter = $_delimiter)
   #if(!$_delimiter || $_delimiter == "")
     #if($_style != $BREADCRUMBS_STYLE)
-      #set($_delimiter = "&nbsp;")
+      #set($__delimiter = "&nbsp;")
     #else
-      #set($_delimiter = "&nbsp;&gt;&gt;&nbsp;")
+      #set($__delimiter = "&nbsp;&gt;&gt;&nbsp;")
     #end
   #end
   #set($menuTitle = $_menu.getTitle($preferedLocale))
@@ -97,7 +98,7 @@ DEALINGS IN THE SOFTWARE.
           <a href="$linkUrl" title="$!linkTitle">${linkName}</a>
         #end
         #if($_orientation == $LEFT_TO_RIGHT)
-        ${_delimiter}</span>
+        ${__delimiter}</span>
         #elseif($_orientation == $TOP_TO_BOTTOM)
         </div>
         #end
@@ -112,7 +113,7 @@ DEALINGS IN THE SOFTWARE.
       #set($separatorTitle = $element.getTitle($preferedLocale))
       #set($separatorText = $element.getText($preferedLocale))
       #if($_orientation == $LEFT_TO_RIGHT)
-        <span title="$!separatorTitle">${separatorText}${_delimiter}</span>              
+        <span title="$!separatorTitle">${separatorText}${__delimiter}</span>              
       #elseif($_orientation == $TOP_TO_BOTTOM)
         <div class="PageTitle" title="$!separatorTitle">${separatorText}</div>              
       #end
