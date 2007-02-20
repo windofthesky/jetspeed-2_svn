@@ -272,9 +272,12 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         ctx.put("windowStateNormal", WindowState.NORMAL);
         ctx.put("windowStateMinimized", WindowState.MINIMIZED);
         ctx.put("windowStateMaximized", WindowState.MAXIMIZED);
-        StringBuffer appRoot = new StringBuffer(request.getScheme()).append("://")
-                                   .append(request.getServerName()).append(":")
-                                   .append(request.getServerPort()).append(renderRequest.getContextPath());
+        StringBuffer appRoot = new StringBuffer();
+        if (!requestContext.getPortalURL().isRelativeOnly())
+        {
+            appRoot.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(request.getServerPort());
+        }
+        appRoot.append(renderRequest.getContextPath());
         ctx.put("appRoot", appRoot.toString());        
         
         

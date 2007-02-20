@@ -127,16 +127,40 @@ public class HeaderResourceLib
      */
     public static String getPortalBaseUrl( RequestContext requestContext, BasePortalURL baseUrlAccessOverride )
     {
+        return getPortalBaseUrl(requestContext, baseUrlAccessOverride, false);
+    }
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * The optional BasePortalURL argument is provided to allow the common BasePortalURL usage by various jetspeed components 
+     * to be properly supported in this url generation
+     * 
+     * When the fullUrl parameter is true, the scheme, servername and port will be provided in the baseUrl,
+     * regardless if global property portalurl.relative.only is set to true in jetspeed.properties.
+     * This is needed for HeaderResourceImpl.jetspeedGenerateBasetag() for rendering a valid base tag (for which IE requires an absolute url to work).
+     * <br/>
+     * Note: if portalurl.relative.only is set to true to support a Proxy based front end, better remove de (default) "header.basetag" rendering setting
+     * from assembly/headtag.xml, otherwise the desktop still won't work properly behind the Proxy.
+     * 
+     * @return portal base url
+     */
+    public static String getPortalBaseUrl( RequestContext requestContext, BasePortalURL baseUrlAccessOverride, boolean fullUrl )
+    {
         HttpServletRequest request = requestContext.getRequest();
         StringBuffer baseurl = new StringBuffer();
-        if ( baseUrlAccessOverride == null )
+        if ( fullUrl || !requestContext.getPortalURL().isRelativeOnly() )
         {
-            baseurl.append( request.getScheme() ).append( "://" ).append( request.getServerName() ).append( ":" ).append( request.getServerPort() ).append( request.getContextPath() );
+            if ( baseUrlAccessOverride == null )
+            {
+                baseurl.append( request.getScheme() ).append( "://" ).append( request.getServerName() ).append( ":" ).append( request.getServerPort() );
+            }
+            else
+            {
+                baseurl.append( baseUrlAccessOverride.getServerScheme() ).append( "://" ).append( baseUrlAccessOverride.getServerName() ).append( ":" ).append( baseUrlAccessOverride.getServerPort() );
+            }
         }
-        else
-        {
-            baseurl.append( baseUrlAccessOverride.getServerScheme() ).append( "://" ).append( baseUrlAccessOverride.getServerName() ).append( ":" ).append( baseUrlAccessOverride.getServerPort() ).append( request.getContextPath() );
-        }
+        baseurl.append(request.getContextPath());
         return baseurl.toString();
     }
     

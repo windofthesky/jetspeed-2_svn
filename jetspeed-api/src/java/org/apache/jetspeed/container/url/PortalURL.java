@@ -45,6 +45,11 @@ public interface PortalURL
     public static final String HTTPS = "https";
     
     /**
+     * @return true if only relative urls should be generated (without scheme, servername, port)
+     */
+    boolean isRelativeOnly();
+    
+    /**
      * Gets the Base URL for this portal.
      * 
      * @return The Base URL of the portal.

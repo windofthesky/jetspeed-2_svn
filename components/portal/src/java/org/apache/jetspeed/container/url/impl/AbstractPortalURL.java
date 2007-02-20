@@ -47,6 +47,7 @@ public abstract class AbstractPortalURL implements PortalURL
     protected NavigationalState navState;
     protected BasePortalURL base = null;
     
+    protected boolean relativeOnly;
     protected String contextPath;
     protected String basePath;
     protected String path;
@@ -70,8 +71,8 @@ public abstract class AbstractPortalURL implements PortalURL
                 portalContext.getConfigurationProperty("portalurl.navigationalstate.parameter.name", 
                         DEFAULT_NAV_STATE_PARAMETER);
         }
-        
         this.navState = navState;        
+        relativeOnly = Boolean.valueOf(portalContext.getConfigurationProperty("portalurl.relative.only", "false")).booleanValue();
     }
     
     
@@ -85,6 +86,11 @@ public abstract class AbstractPortalURL implements PortalURL
     {
         this(characterEncoding, navState, portalContext);
         setRequest(request);
+    }
+    
+    public boolean isRelativeOnly()
+    {
+        return relativeOnly;
     }
     
     public static String getNavigationalStateParameterName()
@@ -127,24 +133,31 @@ public abstract class AbstractPortalURL implements PortalURL
             base.setServerName(request.getServerName());
             base.setServerPort(request.getServerPort());
             base.setSecure(request.isSecure());            
-        }        
-        StringBuffer buffer;
-	
-        buffer = new StringBuffer(HTTPS);
-        buffer.append("://").append(base.getServerName());
-        if (base.getServerPort() != 443 && base.getServerPort() != 80)
-	    {
-            buffer.append(":").append(base.getServerPort());
         }
-        this.secureBaseURL = buffer.toString();
-	    
-        buffer = new StringBuffer(HTTP);
-        buffer.append("://").append(base.getServerName());
-        if (base.getServerPort() != 443 && base.getServerPort() != 80)
+        if ( relativeOnly )
         {
-             buffer.append(":").append(base.getServerPort());
+            this.secureBaseURL = this.nonSecureBaseURL = "";
         }
-        this.nonSecureBaseURL = buffer.toString();
+        else
+        {
+            StringBuffer buffer;
+            
+            buffer = new StringBuffer(HTTPS);
+            buffer.append("://").append(base.getServerName());
+            if (base.getServerPort() != 443 && base.getServerPort() != 80)
+            {
+                buffer.append(":").append(base.getServerPort());
+            }
+            this.secureBaseURL = buffer.toString();
+            
+            buffer = new StringBuffer(HTTP);
+            buffer.append("://").append(base.getServerName());
+            if (base.getServerPort() != 443 && base.getServerPort() != 80)
+            {
+                 buffer.append(":").append(base.getServerPort());
+            }
+            this.nonSecureBaseURL = buffer.toString();
+        }
     }
     
     protected void decodeBasePath(HttpServletRequest request)

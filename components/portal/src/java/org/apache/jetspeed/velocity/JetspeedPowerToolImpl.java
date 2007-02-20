@@ -789,18 +789,19 @@ public class JetspeedPowerToolImpl implements JetspeedPowerTool
         {
             HttpServletRequest request = getRequestContext().getRequest();
             StringBuffer path = new StringBuffer();
-            if (this.baseUrlAccess == null)
+            if ( !getRequestContext().getPortalURL().isRelativeOnly() )
             {
-                return renderResponse.encodeURL(path.append(request.getScheme()).append("://").append(
-                request.getServerName()).append(":").append(request.getServerPort()).append(
-                request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                
+                if (this.baseUrlAccess == null)
+                {
+                    path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(request.getServerPort());
+                }
+                else
+                {
+                    path.append(baseUrlAccess.getServerScheme()).append("://").append(baseUrlAccess.getServerName()).append(":").append(baseUrlAccess.getServerPort());
+                }
             }
-            else
-            {
-                return renderResponse.encodeURL(path.append(baseUrlAccess.getServerScheme()).append("://").append(
-                        baseUrlAccess.getServerName()).append(":").append(baseUrlAccess.getServerPort()).append(
-                        request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());                                
-            }
+            return renderResponse.encodeURL(path.append(request.getContextPath()).append(request.getServletPath()).append(relativePath).toString());
+              
         }
         else
         {

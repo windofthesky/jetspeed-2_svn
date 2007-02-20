@@ -877,7 +877,9 @@ public class HeaderResourceImpl implements HeaderResource
         StringBuffer basetagOut = new StringBuffer();
         // <script type="text/javascript" src='http://localhost:8080/jetspeed/javascript/dojo/dojo.js'></script>
         // src='$jetspeedDesktop.getPortalResourceUrl("/javascript/dojo/dojo.js")'
-        basetagOut.append( "<base href=\"" ).append( getPortalResourceUrl( "/", false ) ).append( "\">" );
+        String fullPortalBaseUrl = HeaderResourceLib.getPortalBaseUrl( this.requestContext, this.baseUrlAccess, true );
+        String href = HeaderResourceLib.getPortalResourceUrl( "/", fullPortalBaseUrl, false, this.requestContext );
+        basetagOut.append( "<base href=\"" ).append( href ).append( "\">" );
         return basetagOut.toString();
     }
     
