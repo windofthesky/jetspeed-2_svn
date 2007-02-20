@@ -705,7 +705,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                      }
 
                      lang.setKeywords(keywordList);
-                     if(!lang.getShortTitle().equals(shortTitle))
+                     if(lang.getShortTitle() == null || !lang.getShortTitle().equals(shortTitle))
                      {
                          lang.setShortTitle(shortTitle);
                      }
