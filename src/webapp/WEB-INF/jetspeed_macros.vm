@@ -60,7 +60,7 @@
 #macro (IncludeStylesheets)
  #foreach($style in $theme.styleSheets)        
     
-    <link rel="stylesheet" type="text/css" media="screen, projection" href="$style"  />
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="$request.contextPath/$style"  />
  #end
 #end
 
@@ -105,7 +105,7 @@ $resourceHeader.getContent()
  * Returns the fully-qualified path the specified resources using
  * $decorator
  *#    
-#macro (GetResource $_decorator $_path)$!{_decorator.getResource($_path)}#end
+#macro (GetResource $_decorator $_path)$request.contextPath/$!{_decorator.getResource($_path)}#end
 
 #**
  * Returns the fully-qualified path the specified resources using
@@ -122,7 +122,7 @@ $resourceHeader.getContent()
   <div id="portal-page-actions" >        
     #if($_actions.size() >0)
     #foreach ($_action in $_actions)   
-     <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="${_action.Link}" alt="${_action.Alt}" border="0" /></a>
+     <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" ><img src="$request.contextPath/${_action.Link}" alt="${_action.Alt}" border="0" /></a>
     #end   
     #end
  </div>
@@ -133,7 +133,7 @@ $resourceHeader.getContent()
   
  <div class="PActionBar">
     #foreach ($_action in $_actions)
-     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="${_action.link}" alt="${_action.Alt}" border="0" /></a>
+     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="$request.contextPath/${_action.link}" alt="${_action.Alt}" border="0" /></a>
     #end    
  </div>
 #end
