@@ -17,12 +17,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
 <html>
 <head>
-## include header resources immdiately after head and before base is reset to the portal
-## web application context path root; this implies that header resources can not reliably
-## employ relative urls to locate content
 #includeHeaderResource()
 <meta http-equiv="Content-Type" content="$response.contentType"/>
-<base href="#BaseHref()">
 #IncludeStylesheets()
 <title>#PageTitle()</title>
 </head>

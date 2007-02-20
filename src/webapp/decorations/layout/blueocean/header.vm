@@ -35,12 +35,8 @@ limitations under the License.
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    ## include header resources immdiately after head and before base is reset to the portal
-    ## web application context path root; this implies that header resources can not reliably
-    ## employ relative urls to locate content
     #includeHeaderResource()
 
-	<base href="#BaseHref()" />
     <meta http-equiv="Content-type" content="#ContentType()" />
     <meta http-equiv="Content-style-type" content="text/css" />   
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
