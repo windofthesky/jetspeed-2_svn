@@ -264,22 +264,7 @@ body.layout-blueocean
     padding: 0px;
 }
 
-.layout-blueocean #breadcrumbs {
-    margin:0px;
-    padding:3px;
-    position:absolute;
-    top:140px;
-    left:0px;
-    width:100%;
-    height:30px;
-    vertical-align:middle;
-
-    background-color: #ffffff;
-    font-family:Verdana,Helvetica,Arial,sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: 10pt;
-}
+/* .layout-blueocean #breadcrumbs located in portal.css and desktop.css */
 
 .layout-blueocean #breadcrumbs a {
     text-decoration: none;
@@ -289,12 +274,7 @@ body.layout-blueocean
     font-size: 10pt;
 }
 
-.layout-blueocean #masthead {
-    margin:0px;
-    padding:0px;
-    width:100%;
-    height:175px;
-}
+/* .layout-blueocean #masthead located in portal.css and omitted from desktop.css */
 
 .layout-blueocean #main {
     margin:0px;
