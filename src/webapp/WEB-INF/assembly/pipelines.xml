@@ -443,8 +443,8 @@ limitations under the License.
             <entry key='/fileserver'>
                 <value>fileserver-pipeline</value>
             </entry>                        
-            <entry key='/desktop'>   <!-- the key "/desktop" cannot be changed without editing core.js (at least) -->
-                <value>desktop-pipeline</value>
+            <entry key='/desktop'>                <!-- the key "/desktop" cannot be changed without editing core.js (at least) -->
+                <value>desktop-pipeline</value>   <!--    must be set in third argument in JetspeedDesktop bean initialization -->
             </entry>                                    
             <entry key='/action'>
                 <value>desktop-action-pipeline</value>
