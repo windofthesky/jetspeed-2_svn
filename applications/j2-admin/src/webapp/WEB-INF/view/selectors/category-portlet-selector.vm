@@ -15,7 +15,7 @@ limitations under the License.
 *#
 #set ($refreshLink = $renderResponse.createActionURL())
 $refreshLink.setParameter("reset","true")
-#set ($renderLink = $renderResponse.createRenderURL())
+#set ($renderLink = $renderResponse.createActionURL())
 #set ($pagePath = $renderRequest.getParameter("jspage"))
 <!-- Search Form -->
 <form id='jsSelectorForm' onSubmit='return false;' style="height:21px; padding: 2px; margin:10px">
