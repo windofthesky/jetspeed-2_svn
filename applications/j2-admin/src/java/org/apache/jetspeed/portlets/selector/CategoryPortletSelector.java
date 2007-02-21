@@ -522,18 +522,6 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
                 session.removeAttribute(PORTLETS);
                 session.removeAttribute(CATEGORIES);
             }
-            String category = request.getParameter(CATEGORY);
-            if (category != null)
-                actionResponse.setRenderParameter(CATEGORY, category);
-            String pageNumber = request.getParameter(PAGENUMNER);
-            if (pageNumber != null)
-                actionResponse.setRenderParameter(PAGENUMNER, pageNumber);                
-            String filter = request.getParameter(FILTER);
-            if (filter != null)
-                actionResponse.setRenderParameter(FILTER, filter);
-            String pagePath = request.getParameter(JSPAGE);
-            if (pagePath != null)
-                actionResponse.setRenderParameter(JSPAGE, pagePath);
         }
     }
 

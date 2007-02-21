@@ -59,6 +59,8 @@ limitations under the License.
     <portlet>
          <portlet-name>CategoryPortletSelector</portlet-name>
          <js:security-constraint-ref>AEUV</js:security-constraint-ref>
+         <js:metadata name="merge.portal.parameters.with.portlet.parameters">true</js:metadata>
+         <js:metadata name="merge.portal.parameters.before.portlet.parameters">true</js:metadata>
     </portlet>   
 	
 	<js:services>        
