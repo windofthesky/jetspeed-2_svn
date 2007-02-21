@@ -141,13 +141,13 @@ public class MovePortletAction
         {
             resultMap.put(ACTION, sMoveType);
             // Get the necessary parameters off of the request
-            String portletId = getActionParameter(requestContext, PORTLETID);
+            String moveFragmentId = getActionParameter(requestContext, FRAGMENTID);
             String layoutId = getActionParameter(requestContext, LAYOUTID);
-            if (portletId == null) 
-            { 
-                throw new Exception("portlet id not provided"); 
+            if ( moveFragmentId == null ) 
+            {
+                throw new Exception( FRAGMENTID + " not provided; must specify portlet or layout id" ); 
             }
-            resultMap.put(PORTLETID, portletId);
+            resultMap.put(FRAGMENTID, moveFragmentId);
             
             Fragment currentLayoutFragment = null;
             Fragment moveToLayoutFragment = null;
@@ -170,7 +170,7 @@ public class MovePortletAction
                         Fragment childFrag = (Fragment)layoutChildIter.next();
                         if ( childFrag != null )
                         {
-                            if ( portletId.equals( childFrag.getId() ) )
+                            if ( moveFragmentId.equals( childFrag.getId() ) )
                             {
                                 moveToLayoutFragment = null;
                                 break;
@@ -182,20 +182,20 @@ public class MovePortletAction
                         // figure out the current layout fragment - must know to be able to find the portlet
                         //    fragment by row/col when a new page is created
                         Fragment root = requestContext.getPage().getRootFragment();
-                        currentLayoutFragment = getParentFragmentById(portletId, root);
+                        currentLayoutFragment = getParentFragmentById(moveFragmentId, root);
                     }
                 }
                 if ( currentLayoutFragment == null )
                 {
                     // report error
-                    throw new Exception("parent layout id not found for portlet id:" + portletId );
+                    throw new Exception("parent layout id not found for portlet id:" + moveFragmentId );
                 }
             }
             
             if (false == checkAccess(requestContext, JetspeedActions.EDIT))
             {
                 Page page = requestContext.getPage();
-                Fragment fragment = page.getFragmentById(portletId);
+                Fragment fragment = page.getFragmentById(moveFragmentId);
                 if (fragment == null)
                 {
                     success = false;
@@ -234,10 +234,10 @@ public class MovePortletAction
                 if (newFragment == null)
                 {
                     success = false;
-                    resultMap.put( REASON, "Failed to find new fragment for portlet id: " + portletId );
+                    resultMap.put( REASON, "Failed to find new fragment for portlet id: " + moveFragmentId );
                     return success;                    
                 }
-                portletId = newFragment.getId();
+                moveFragmentId = newFragment.getId();
                 
                 if ( currentLayoutFragment != null )
                 {
@@ -245,7 +245,7 @@ public class MovePortletAction
                     if (newFragment == null)
                     {
                         success = false;
-                        resultMap.put( REASON, "Failed to find new parent layout fragment id: " + currentLayoutFragment.getId() + " for portlet id: " + portletId );
+                        resultMap.put( REASON, "Failed to find new parent layout fragment id: " + currentLayoutFragment.getId() + " for portlet id: " + moveFragmentId );
                         return success;
                     }
                     currentLayoutFragment = newFragment;
@@ -255,7 +255,7 @@ public class MovePortletAction
                         if (newFragment == null)
                         {
                             success = false;
-                            resultMap.put( REASON, "Failed to find new move-to layout fragment id: " + moveToLayoutFragment.getId() + " for portlet id: " + portletId );
+                            resultMap.put( REASON, "Failed to find new move-to layout fragment id: " + moveToLayoutFragment.getId() + " for portlet id: " + moveFragmentId );
                             return success;
                         }
                         moveToLayoutFragment = newFragment;
@@ -269,7 +269,7 @@ public class MovePortletAction
                                         pageManager,
                                         batch,
                                         resultMap,
-                                        portletId,
+                                        moveFragmentId,
                                         moveToLayoutFragment,
                                         currentLayoutFragment ) ;
             }
@@ -282,11 +282,11 @@ public class MovePortletAction
                 {
                     placement = new PortletPlacementContextImpl(requestContext);
                 }
-                Fragment fragment = placement.getFragmentById(portletId);
+                Fragment fragment = placement.getFragmentById(moveFragmentId);
                 if (fragment == null)
                 {
                     success = false;
-                    resultMap.put(REASON, "Failed to find fragment for portlet id: " + portletId );
+                    resultMap.put(REASON, "Failed to find fragment for portlet id: " + moveFragmentId );
                     return success;
                 }
                 Coordinate returnCoordinate = null;
@@ -301,7 +301,7 @@ public class MovePortletAction
                     if ( fragmentProperties == null )
                     {
                         success = false;
-                        resultMap.put(REASON, "Failed to acquire fragment properties map for portlet id: " + portletId );
+                        resultMap.put(REASON, "Failed to acquire fragment properties map for portlet id: " + moveFragmentId );
                         return success;
                     }
                     String oldDeskExt = (String)fragmentProperties.get( DESKTOP_EXTENDED );
@@ -412,7 +412,7 @@ public class MovePortletAction
                 }
             }
             resultMap.put(STATUS, status);
-            resultMap.put(PORTLETID, portletId);
+            resultMap.put(FRAGMENTID, moveFragmentId);
         } 
         catch (Exception e)
         {
@@ -426,17 +426,6 @@ public class MovePortletAction
         return success;
     }
 
-    /*
-
-        Fragment placeFragment = placement.getFragmentById(portletId);
-        if (placeFragment == null)
-        {
-            success = false;
-            resultMap.put(REASON, "Failed to find fragment to move to another layout for portlet id: " + portletId );
-            return success;                
-        }
-
-    */
     protected boolean moveFragment( RequestContext requestContext,
                                     PageManager pageManager,
                                     boolean batch,
@@ -459,6 +448,9 @@ public class MovePortletAction
                 resultMap.put( REASON, "Failed to find fragment to move to another layout for fragment id: " + moveFragmentId );
                 return success;
             }
+            placement.remove( placeFragment );
+            Page page = placement.syncPageFragments();
+            page.removeFragmentById( moveFragmentId );
         }
         if ( placeFragment != null )
         {

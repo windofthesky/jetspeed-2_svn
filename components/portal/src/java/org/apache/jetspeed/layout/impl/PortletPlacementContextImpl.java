@@ -119,27 +119,26 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         this.containerFragment = container;
         
         // Recursively process each fragment
-        processFragment(container, maxdepth);
+        processFragment( container, maxdepth, 0 );
 
         // The final step is to populate the array with the fragments
 		populateArray();
         
-        //debugFragments("init");
+        //debugFragments( "init" );
 	}
 	
 	/**
 	 * Evaluate each portlet fragment and populate the internal data
 	 * structures
 	 */
-	protected void processFragment(Fragment fragment, int remainingDepth) 
+	protected int processFragment( Fragment fragment, int remainingDepth, int rowCount ) 
     throws PortletPlacementException 
     {
-        int rowCount = 0;
-		// Process this fragment, then its children
+        // Process this fragment, then its children
 		if(fragment != null) 
         {
 			// Only process portlet fragments
-			if(fragment.getType().equalsIgnoreCase("portlet")) 
+			//if(fragment.getType().equalsIgnoreCase("portlet")) 
             {
 				// Get the column and row of this fragment
 				int col = getFragmentCol(fragment);
@@ -158,38 +157,40 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
             {
                 // Process the children
                 List children = fragment.getFragments();
+                int childRowCount = 0;
                 for(int ix = 0; ix < children.size(); ix++) 
                 {
                     Fragment childFrag = (Fragment)children.get(ix);
 				
                     if(childFrag != null) 
                     {
-                        processFragment(childFrag, ((remainingDepth == NO_DEPTH_LIMIT) ? NO_DEPTH_LIMIT : remainingDepth-1) );
+                        childRowCount = processFragment(childFrag, ((remainingDepth == NO_DEPTH_LIMIT) ? NO_DEPTH_LIMIT : remainingDepth-1), childRowCount );
                     }
                 }
 			}
-		}		
+		}
+        return rowCount;
 	}
     
     public Fragment debugFragments(String debug)
     {       
-        System.out.println("*** " + debug);
+        StringBuffer out = new StringBuffer();
+        out.append( "PortletPlacementContext - " ).append( debug ).append( " - container: " ).append( containerFragment == null ? "<null>" : ( containerFragment.getId() + " / " + containerFragment.getType() ) ).append( "\n" );
         for (int ix = 0; ix < this.columnsList.length; ix++)
         {
             Vector column = this.columnsList[ix];
-            System.out.println("+++ Column " + ix);
+            out.append( "   column " ).append( ix ).append( "\n" );
             Iterator frags = column.iterator();
-            while (frags.hasNext())
+            while ( frags.hasNext() )
             {
                 Fragment f = (Fragment)frags.next();
-                System.out.println("\tportlet = " 
-                        + f.getId() 
-                        + ", [" + f.getLayoutColumn()
-                        + "," + f.getLayoutRow()
-                        + "]");                        
-                //root.getFragments().add(fragment);
+                out.append( "      frag " ).append( f == null ? "<null>" : f.getId() );
+                if ( f != null )
+                    out.append( " / " ).append( f.getType() ).append( " col=" ).append( f.getLayoutColumn() ).append( " row=" ).append( f.getLayoutRow() );
+                out.append( "\n" );
             }
         }
+        log.debug( out.toString() );
         return containerFragment;
     }
 
@@ -216,6 +217,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 row++;
             }
         }
+        //debugFragments( "syncPageFragments" );
         return page;
     }
     
