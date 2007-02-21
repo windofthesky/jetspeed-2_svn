@@ -31,9 +31,9 @@ public class LayoutDecorationImpl extends BaseDecoration implements LayoutDecora
 {
     private DecorationFactory  decorationFactory;
     
-    public LayoutDecorationImpl(Properties config, ResourceValidator validator, Path basePath, PathResolverCache cache)
+    public LayoutDecorationImpl(Properties config, ResourceValidator validator, Path basePath, Path baseClientPath, PathResolverCache cache)
     {
-        super(config, validator, basePath, cache);
+        super(config, validator, basePath, baseClientPath, cache);
     }
     
     public void setDecorationFactory(DecorationFactory decorationFactory)

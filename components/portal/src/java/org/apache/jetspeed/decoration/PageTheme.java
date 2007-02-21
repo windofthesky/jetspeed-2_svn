@@ -19,8 +19,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -41,6 +44,7 @@ public class PageTheme implements Theme
     private final Set styleSheets;
     private final LayoutDecoration layoutDecoration;
     private final Map fragmentDecorations;
+    private final Collection portletDecorationNames;
     
     public PageTheme(Page page, DecorationFactory decorationFactory, RequestContext requestContext)
     {
@@ -49,7 +53,23 @@ public class PageTheme implements Theme
         this.requestContext = requestContext;
         this.styleSheets = new LinkedHashSet();
         this.fragmentDecorations = new HashMap();
-        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations(page.getRootFragment());
+        
+        boolean isDesktopEnabled = decorationFactory.isDesktopEnabled( requestContext );
+        HashMap portletDecorationNames = new HashMap();
+        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations( page.getRootFragment(), portletDecorationNames, isDesktopEnabled );
+        
+        if ( isDesktopEnabled )
+        {
+            String defaultDesktopPortletDecoration = decorationFactory.getDefaultDesktopPortletDecoration();
+            if ( defaultDesktopPortletDecoration != null && defaultDesktopPortletDecoration.length() > 0 )
+            {
+                if ( portletDecorationNames.get( defaultDesktopPortletDecoration ) == null )
+                {
+                    portletDecorationNames.put( defaultDesktopPortletDecoration, defaultDesktopPortletDecoration );
+                }
+            }
+        }
+        this.portletDecorationNames = Collections.unmodifiableCollection( new ArrayList( portletDecorationNames.keySet() ) );
     }
 
     /**
@@ -61,25 +81,47 @@ public class PageTheme implements Theme
      * @param fragment page fragment
      * @return fragment decoration
      */
-    private Decoration setupFragmentDecorations(Fragment fragment)
+    private Decoration setupFragmentDecorations( Fragment fragment, HashMap portletDecorationNames, boolean isDesktopEnabled )
     {
         // setup fragment decorations
-        Decoration decoration = decorationFactory.getDecoration(page, fragment, requestContext);
-        String styleSheet = decoration.getStyleSheet();
-        if (styleSheet != null)
+        Decoration decoration = decorationFactory.getDecoration( page, fragment, requestContext );
+        
+        String commonStyleSheet = decoration.getStyleSheet();
+        if ( commonStyleSheet != null )
         {
-            styleSheets.add(styleSheet);
+            styleSheets.add( commonStyleSheet );
         }
-        fragmentDecorations.put(fragment.getId(), decoration);
-
+        if ( isDesktopEnabled )
+        {
+            String desktopStyleSheet = decoration.getStyleSheetDesktop();
+            if ( desktopStyleSheet != null )
+            {
+                styleSheets.add( desktopStyleSheet );
+            }
+        }
+        else
+        {
+            String portalStyleSheet = decoration.getStyleSheetPortal();
+            if ( portalStyleSheet != null )
+            {
+                styleSheets.add( portalStyleSheet );
+            }
+        }
+        
+        fragmentDecorations.put( fragment.getId(), decoration );
+        if ( fragment.getType().equals( Fragment.PORTLET ) )
+        {
+            portletDecorationNames.put( decoration.getName(), decoration.getName() );
+        }
+        
         // setup nested fragment decorations
         List fragments = fragment.getFragments();
-        if ((fragments != null) && !fragments.isEmpty())
+        if ( ( fragments != null ) && ! fragments.isEmpty() )
         {
             Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            while ( fragmentsIter.hasNext() )
             {
-                setupFragmentDecorations((Fragment)fragmentsIter.next());
+                setupFragmentDecorations( (Fragment)fragmentsIter.next(), portletDecorationNames, isDesktopEnabled );
             }
         }
 
@@ -92,9 +134,14 @@ public class PageTheme implements Theme
         return styleSheets;
     }
 
-    public Decoration getDecoration(Fragment fragment)
+    public Decoration getDecoration( Fragment fragment )
     {
-        return (Decoration) fragmentDecorations.get(fragment.getId());
+        return (Decoration) fragmentDecorations.get( fragment.getId() );
+    }
+    
+    public Collection getPortletDecorationNames()
+    {
+        return portletDecorationNames;    // is unmodifiable
     }
     
     public LayoutDecoration getPageLayoutDecoration()

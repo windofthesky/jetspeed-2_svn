@@ -33,6 +33,7 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.headerresource.HeaderResource;
@@ -54,6 +55,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * 
  * @author <a href="mailto:raphael@apache.org">Rapha�l Luta </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: HeaderAggregatorImpl.java 359125 2005-12-26 23:16:39Z rwatler $
  */
 public class HeaderAggregatorImpl implements PageAggregator
@@ -64,6 +66,7 @@ public class HeaderAggregatorImpl implements PageAggregator
     private PortletFactory factory;
     private PortletWindowAccessor windowAccessor;
     private HeaderResourceFactory headerResourceFactory;
+    private DecorationFactory decorationFactory;
     
     private boolean isDesktop;
     
@@ -82,9 +85,10 @@ public class HeaderAggregatorImpl implements PageAggregator
                                  HeaderResourceFactory headerResourceFactory,
                                  boolean isDesktop,
                                  Map headerConfiguration,
-                                 Map headerResourceRegistry )
+                                 Map headerResourceRegistry,
+                                 DecorationFactory decorationFactory )
     {
-        this( factory, windowAccessor, headerResourceFactory, isDesktop, headerConfiguration, headerResourceRegistry, null );
+        this( factory, windowAccessor, headerResourceFactory, isDesktop, headerConfiguration, headerResourceRegistry, decorationFactory, null );
     }
     
     public HeaderAggregatorImpl( PortletFactory factory,
@@ -93,6 +97,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                                  boolean isDesktop,
                                  Map headerConfiguration,
                                  Map headerResourceRegistry,
+                                 DecorationFactory decorationFactory,
                                  BasePortalURL baseUrlAccess )
     {
         this.factory = factory;
@@ -100,6 +105,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         this.headerResourceFactory = headerResourceFactory;
         this.isDesktop = isDesktop;
         this.baseUrlAccess = baseUrlAccess;
+        this.decorationFactory = decorationFactory;
         initializeHeaderConfiguration( headerConfiguration, headerResourceRegistry );   
     }
     
@@ -429,12 +435,14 @@ public class HeaderAggregatorImpl implements PageAggregator
         if ( headerName != null )
         {
             int headerTypeId = HeaderResourceLib.getHeaderTypeId( headerType );
-            if ( headerTypeId < 0 )
+            
+            boolean headerRefFlagSpecified = ( headerReqFlag != null && headerReqFlag.length() > 0 );
+            if ( headerTypeId < 0 && ! headerRefFlagSpecified )
             {
                 log.error( "HeaderAggregatorImpl.registerAndOrderNamedHeaderResource() ignoring specification of unknown header section type; header-section-name=" + headerName + " header-section-type=" + headerType );
             }
             
-            if ( ( headerTypeId >= 0 ) || ( headerReqFlag != null && headerReqFlag.length() > 0 ) )
+            if ( ( headerTypeId >= 0 ) || headerRefFlagSpecified )
             {
                 Map headerTypes = (Map)headerDynamicConfigurationDefault.get( HeaderResource.HEADER_CONFIG_TYPES );
                 if ( headerTypes == null )
@@ -483,104 +491,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         }
         return false;
     }
-    
-    protected String makeJavascriptStatement( String statement, String indent, boolean addEOL )
-    {
-        StringBuffer statementOut = new StringBuffer();
-        if ( statement != null )
-        {
-            statement = statement.trim();
-            if ( statement.length() > 0 )
-            {
-                if ( indent != null )
-                {
-                    statementOut.append( indent );
-                }
-                statementOut.append( statement );
-                if ( statement.charAt( statement.length()-1 ) != ';' )
-                {
-                    statementOut.append( ";" );
-                }
-                if ( addEOL )
-                {
-                    statementOut.append( EOL );
-                }
-            }
-        }
-        return statementOut.toString();
-    }
-    protected String makeJSONStringArray( List stringList )
-    {
-        return makeJSONStringArray( stringList, null );
-    }
-    protected String makeJSONStringArray( List stringList, List compiledUniqueValues )
-    {
-        if ( stringList != null && stringList.size() > 0 )
-        {
-            StringBuffer stringListContent = new StringBuffer();
-            Iterator stringListIter = stringList.iterator();
-            while ( stringListIter.hasNext() )
-            {
-                String value = (String)stringListIter.next();
-                if ( value != null && value.length() > 0 )
-                {
-                    if ( stringListContent.length() > 0 )
-                    {
-                        stringListContent.append( ", " );
-                    }
-                    else
-                    {
-                        stringListContent.append( "[ " );
-                    }
-                    stringListContent.append( "\"" ).append( value ).append( "\"" );
-                    if ( compiledUniqueValues != null )
-                    {
-                        if ( ! compiledUniqueValues.contains( value ) )
-                        {
-                            compiledUniqueValues.add( value );
-                        }
-                    }
-                }
-            }
-            if ( stringListContent.length() > 0 )
-            {
-                stringListContent.append( " ]" );
-                return stringListContent.toString();
-            }
-        }
-        return null;
-    }
-    protected String makeJSONInteger( Object source, boolean quote )
-    {
-        String sourceStr = ( ( source == null ) ? (String)null : source.toString() );
-        if ( sourceStr != null )
-        {
-            try
-            {
-                Integer.parseInt( sourceStr );
-                if ( quote )
-                {
-                    sourceStr = "\"" + sourceStr + "\"";
-                }
-            }
-            catch ( NumberFormatException nex )
-            {
-                sourceStr = null;
-            }
-        }
-        return sourceStr;
-    }
-    
-    protected String makeJSONBoolean( Object source )
-    {
-        String boolStr = ( ( source == null ) ? (String)null : source.toString() );
-        if ( boolStr != null && ( ! boolStr.equals( "false" ) ) && ( ! boolStr.equals( "true" ) ) )
-        {
-            boolStr = null;
-        }
-        return boolStr;
-    }
-    
+        
     protected void initializeDesktopHeaderConfigurationDefaults( Map desktopConfigMap, HashMap namedResourcesDefault, HashMap namedResourcesAddedFragmentsDefault, HashMap headerDynamicConfigurationDefault )
     {
         if ( desktopConfigMap == null )
@@ -590,29 +501,51 @@ public class HeaderAggregatorImpl implements PageAggregator
         
         StringBuffer desktopDojoConfigContent = new StringBuffer();
         
+        String layoutDecorationDefaultName = HeaderResource.HEADER_CONFIG_DESKTOP_LAYOUT_DECORATION_DEFAULT;
+        String layoutDecoration = (String)desktopConfigMap.get( layoutDecorationDefaultName );
+        if ( layoutDecoration != null && layoutDecoration.length() > 0 )
+        {
+            decorationFactory.setDefaultDesktopLayoutDecoration( layoutDecoration );
+        }
+        
+        String portletDecorationDefaultName = HeaderResource.HEADER_CONFIG_DESKTOP_PORTLET_DECORATION_DEFAULT;
+        String portletDecoration = (String)desktopConfigMap.get( portletDecorationDefaultName );
+        if ( portletDecoration == null || portletDecoration.length() == 0 )
+        {
+            portletDecoration = decorationFactory.getDefaultDesktopPortletDecoration();
+        }
+        if ( portletDecoration != null && portletDecoration.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( portletDecorationDefaultName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowDecoration = \"" ).append( portletDecoration ).append( "\";" ).append( EOL );
+            }
+            decorationFactory.setDefaultDesktopPortletDecoration( portletDecoration );
+        }
+        
         String desktopWindowTilingName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_TILING;
-        String desktopWindowTiling = makeJSONBoolean( desktopConfigMap.get( desktopWindowTilingName ) );
+        String desktopWindowTiling = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( desktopWindowTilingName ) );
         if ( desktopWindowTiling != null && canAddHeaderNamedResourceFragment( desktopWindowTilingName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowTiling = " ).append( desktopWindowTiling ).append( ";" ).append( EOL );
         }
         
         String desktopWindowHeightExpandName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND;
-        String desktopWindowHeightExpand = makeJSONBoolean( desktopConfigMap.get( desktopWindowHeightExpandName ) );
+        String desktopWindowHeightExpand = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( desktopWindowHeightExpandName ) );
         if ( desktopWindowHeightExpand != null && canAddHeaderNamedResourceFragment( desktopWindowHeightExpandName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowHeightExpand = " ).append( desktopWindowHeightExpand ).append( ";" ).append( EOL );
         }
 
         String desktopWindowHeightName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT;
-        String desktopWindowHeight = makeJSONInteger( desktopConfigMap.get( desktopWindowHeightName ), true );
+        String desktopWindowHeight = HeaderResourceLib.makeJSONInteger( desktopConfigMap.get( desktopWindowHeightName ), true );
         if ( desktopWindowHeight != null && canAddHeaderNamedResourceFragment( desktopWindowHeightName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowHeight = " ).append( desktopWindowHeight ).append( ";" ).append( EOL );
         }
         
         String desktopWindowWidthName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_WIDTH;
-        String desktopWindowWidth = makeJSONInteger( desktopConfigMap.get( desktopWindowWidthName ), true );
+        String desktopWindowWidth = HeaderResourceLib.makeJSONInteger( desktopConfigMap.get( desktopWindowWidthName ), true );
         if ( desktopWindowWidth != null && canAddHeaderNamedResourceFragment( desktopWindowWidthName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowWidth = " ).append( desktopWindowWidth ).append( ";" ).append( EOL );
@@ -621,7 +554,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         List actionList = new ArrayList();
         
         String windowActionButtonOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER;
-        String actionButtonOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionButtonOrderName ), actionList );
+        String actionButtonOrderContent = HeaderResourceLib.makeJSONStringArray( (List)desktopConfigMap.get( windowActionButtonOrderName ), actionList );
         if ( actionButtonOrderContent != null && actionButtonOrderContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionButtonOrderName, namedResourcesAddedFragmentsDefault, null ) )
@@ -631,7 +564,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         }
         
         String windowActionNoImageName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE;
-        String actionNoImageContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionNoImageName ), actionList );
+        String actionNoImageContent = HeaderResourceLib.makeJSONStringArray( (List)desktopConfigMap.get( windowActionNoImageName ), actionList );
         if ( actionNoImageContent != null && actionNoImageContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionNoImageName, namedResourcesAddedFragmentsDefault, null ) )
@@ -641,7 +574,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         }
         
         String windowActionMenuOrderName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER;
-        String actionMenuOrderContent = makeJSONStringArray( (List)desktopConfigMap.get( windowActionMenuOrderName ), actionList );
+        String actionMenuOrderContent = HeaderResourceLib.makeJSONStringArray( (List)desktopConfigMap.get( windowActionMenuOrderName ), actionList );
         if ( actionMenuOrderContent != null && actionMenuOrderContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowActionMenuOrderName, namedResourcesAddedFragmentsDefault, null ) )
@@ -654,28 +587,28 @@ public class HeaderAggregatorImpl implements PageAggregator
 
 
         String windowActionButtonHideName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE;
-        String windowActionButtonHide = makeJSONBoolean( desktopConfigMap.get( windowActionButtonHideName ) );
+        String windowActionButtonHide = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowActionButtonHideName ) );
         if ( windowActionButtonHide != null && canAddHeaderNamedResourceFragment( windowActionButtonHideName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonHide = " ).append( windowActionButtonHide ).append( ";" ).append( EOL );
         }
         
         String windowActionButtonTooltipName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP;
-        String windowActionButtonTooltip = makeJSONBoolean( desktopConfigMap.get( windowActionButtonTooltipName ) );
+        String windowActionButtonTooltip = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowActionButtonTooltipName ) );
         if ( windowActionButtonTooltip != null && canAddHeaderNamedResourceFragment( windowActionButtonTooltipName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonTooltip = " ).append( windowActionButtonTooltip ).append( ";" ).append( EOL );
         }
 
         String windowActionButtonMaxName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
-        String windowActionButtonMax = makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
+        String windowActionButtonMax = HeaderResourceLib.makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
         if ( windowActionButtonMax != null && canAddHeaderNamedResourceFragment( windowActionButtonMaxName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
         }
         
         String windowIconEnabledName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED;
-        String iconEnabledContent = makeJSONBoolean( desktopConfigMap.get( windowIconEnabledName ) );
+        String iconEnabledContent = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowIconEnabledName ) );
         if ( iconEnabledContent != null && iconEnabledContent.length() > 0 )
         {
             if ( canAddHeaderNamedResourceFragment( windowIconEnabledName, namedResourcesAddedFragmentsDefault, null ) )
@@ -694,25 +627,8 @@ public class HeaderAggregatorImpl implements PageAggregator
             }
         }
         
-        String windowThemeName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_THEME;
-        String windowTheme = (String)desktopConfigMap.get( windowThemeName );
-        if ( windowTheme != null && windowTheme.length() > 0 && canAddHeaderNamedResourceFragment( windowThemeName, namedResourcesAddedFragmentsDefault, null ) )
-        {
-            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowTheme = \"" ).append( windowTheme ).append( "\";" ).append( EOL );
-        }
-        
-        String windowThemesAllowedName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_THEME_ALLOWED;
-        String windowThemesAllowedContent = makeJSONStringArray( (List)desktopConfigMap.get( windowThemesAllowedName ) );
-        if ( windowThemesAllowedContent != null && windowThemesAllowedContent.length() > 0 )
-        {
-            if ( canAddHeaderNamedResourceFragment( windowThemesAllowedName, namedResourcesAddedFragmentsDefault, null ) )
-            {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowThemesAllowed = " ).append( windowThemesAllowedContent ).append( ";" ).append( EOL );
-            }
-        }
-        
         String pageActionButtonTooltipName = HeaderResource.HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP;
-        String pageActionButtonTooltip = makeJSONBoolean( desktopConfigMap.get( pageActionButtonTooltipName ) );
+        String pageActionButtonTooltip = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( pageActionButtonTooltipName ) );
         if ( pageActionButtonTooltip != null && canAddHeaderNamedResourceFragment( pageActionButtonTooltipName, namedResourcesAddedFragmentsDefault, null ) )
         {
             desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".pageActionButtonTooltip = " ).append( pageActionButtonTooltip ).append( ";" ).append( EOL );
@@ -845,7 +761,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                     {
                         if ( registryContent[0] != null )
                         {
-                            String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
+                            String dojoReqFromRegistry = HeaderResourceLib.makeJavascriptStatement( registryContent[0], "    ", true );
                             if ( dojoReqFromRegistry.length() > 0 )
                             {
                                 dojoRequiresContent.append( registryContent[0] );
@@ -885,7 +801,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                         {
                             dojoModuleContent = dojoModule;
                         }
-                        dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
+                        dojoModuleContent = HeaderResourceLib.makeJavascriptStatement( dojoModuleContent, "    ", true );
                         if ( dojoModuleContent.length() > 0 )
                         {
                             dojoModulesPathContent.append( dojoModuleContent );
@@ -924,7 +840,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                         {
                             dojoModuleContent = dojoModuleWidget;
                         }
-                        dojoModuleContent = makeJavascriptStatement( dojoModuleContent, "    ", true );
+                        dojoModuleContent = HeaderResourceLib.makeJavascriptStatement( dojoModuleContent, "    ", true );
                         if ( dojoModuleContent.length() > 0 )
                         {
                             dojoModulesNamespaceContent.append( dojoModuleContent );
@@ -955,7 +871,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                     {
                         if ( registryContent[0] != null )
                         {
-                            String dojoReqFromRegistry = makeJavascriptStatement( registryContent[0], "    ", true );
+                            String dojoReqFromRegistry = HeaderResourceLib.makeJavascriptStatement( registryContent[0], "    ", true );
                             if ( dojoReqFromRegistry.length() > 0 )
                             {
                                 dojoRequiresContent.append( registryContent[0] );

@@ -247,11 +247,11 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         // hook up eventHandlers to the context, specifically our own IgnoringNullSetEventHandling
         eventCartridge.attachToContext(ctx);
         
-        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);        
+        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE);
         if (desktopContext != null)
         {
             // standard render request and response also available in context
-            ctx.put(JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext);
+            ctx.put(JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE, desktopContext);
             ctx.put("JS2RequestContext", requestContext);
             
             // setup TLS for Context propagation
@@ -374,7 +374,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
     private VelocityEngine getVelocityEngine(Context ctx)
     {
         RequestContext requestContext = (RequestContext) ctx.get("JS2RequestContext");        
-        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)requestContext.getRequest().getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);        
+        JetspeedDesktopContext desktopContext = (JetspeedDesktopContext)requestContext.getRequest().getAttribute(JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE);        
         if (desktopContext != null)
         {
             if (defaultVelocityEngine == null)

@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * Default implementation for HeaderResource
  * 
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: HeaderResourceImpl.java 188569 2005-05-13 13:35:18Z weaver $
  */
 public class HeaderResourceImpl implements HeaderResource

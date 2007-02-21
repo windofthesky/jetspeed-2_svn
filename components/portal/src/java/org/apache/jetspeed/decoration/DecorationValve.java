@@ -344,6 +344,8 @@ public class DecorationValve extends AbstractValve implements Valve
                     : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString() );
                 pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 
+                window.getPortletEntity().getPortletDefinition().getInitParameterSet().get( "xxxx" );
+                
                 if (content.supportsPortletMode(PortletMode.HELP))
                 {
                     if ( pageActionAccess.isEditing() )

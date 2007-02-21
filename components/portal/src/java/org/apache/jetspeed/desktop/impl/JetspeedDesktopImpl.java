@@ -16,12 +16,9 @@
 package org.apache.jetspeed.desktop.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.List;
-import java.util.Properties;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 
@@ -32,10 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
+import org.apache.jetspeed.headerresource.HeaderResourceLib;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.springframework.web.context.ServletContextAware;
@@ -44,19 +44,16 @@ import org.springframework.web.context.ServletContextAware;
  * Desktop Valve
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: JetspeedDesktopImpl.java $
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
-{    
-    private static final String TEMPLATE_EXTENSION_ATTR = "template.extension";
-
-    private static final String ID_ATTR = "id";
-    
-    private static final String RESOURCE_FILE_ATTR =  "resource.file";
-
+{
     private final static String EOL = "\r\n";   // html eol
-    private final static String DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopThemeRootUrl";
-    private final static String DOJO_CONFIG_THEME_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopTheme";
+    private final static String DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutDecorationPath";
+    private final static String DOJO_CONFIG_LAYOUT_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutName";
+    private final static String DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsPath";
+    private final static String DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsAllowed";
     private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
 
     private final static String[] DESKTOP_ACTIONS = new String[] { "menu", "tile", "untile", "heightexpand", "heightnormal", "restore", "removeportlet", "addportlet", "editpage" };
@@ -64,18 +61,14 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
-    /** the webapp relative root of all themes */
-    private String themesRoot;
+    private DecorationFactory decorationFactory;
+        
+    /** desktop pipeline servlet path */
+    private String desktopServletPath;
     
-    /** default theme when no theme supplied in desktop page */
-    private String defaultTheme;
+    /** default extension for layout templates */
+    private String defaultLayoutTemplateExtension;
     
-    /** default extension for theme templates */
-    private String defaultExtension;
-    
-    /** property settings for each theme available */
-    private Map themesProperties = new HashMap();
-
     /** spring-fed servlet context property */
     private ServletContext servletContext;
     
@@ -85,60 +78,125 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     /** base portal URL to override default URL server info from servlet */
     private BasePortalURL baseUrlAccess = null;
     
-    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension, HeaderResourceFactory headerResourceFactory )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension )
     {
-        this( themesRoot, defaultTheme, defaultExtension, headerResourceFactory, null );
+        this( decorationFactory, headerResourceFactory, desktopServletPath, defaultLayoutTemplateExtension, null, null, null );
     }
-
-    public JetspeedDesktopImpl(String themesRoot, String defaultTheme, String defaultExtension, HeaderResourceFactory headerResourceFactory, BasePortalURL baseUrlAccess)
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration )
     {
-        this.themesRoot = themesRoot;
-        this.defaultTheme = defaultTheme;
-        this.defaultExtension = defaultExtension;
+        this( decorationFactory, headerResourceFactory, desktopServletPath, defaultLayoutTemplateExtension, defaultDesktopLayoutDecoration, defaultDesktopPortletDecoration, null );
+    }
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration, BasePortalURL baseUrlAccess )
+    {
+        this.decorationFactory = decorationFactory;
         this.headerResourceFactory = headerResourceFactory;
+        
+        if ( desktopServletPath != null && desktopServletPath.length() > 0 )
+        {
+            if ( desktopServletPath.charAt( 0 ) != '/' )
+                desktopServletPath = "/" + desktopServletPath;
+        }
+        this.desktopServletPath = desktopServletPath;
+        if ( this.desktopServletPath == null || this.desktopServletPath.length() == 0 )
+        {
+            log.warn( "JetspeedDesktopImpl initialization is incomplete due to undefined desktop servlet path." );
+            this.desktopServletPath = null;
+        }
+        
+        this.defaultLayoutTemplateExtension = defaultLayoutTemplateExtension;
+        
+        // set default layout and portlet decorations only if they are not currently undefined
+        if ( defaultDesktopLayoutDecoration != null && defaultDesktopLayoutDecoration.length() > 0 )
+        {
+            String existingDefaultDesktopLayoutDecoration = decorationFactory.getDefaultDesktopLayoutDecoration();
+            if ( existingDefaultDesktopLayoutDecoration == null || existingDefaultDesktopLayoutDecoration.length() == 0 )
+            {
+                decorationFactory.setDefaultDesktopLayoutDecoration( defaultDesktopLayoutDecoration );
+            }
+        }
+        if ( defaultDesktopPortletDecoration != null && defaultDesktopPortletDecoration.length() > 0 )
+        {
+            String existingDefaultDesktopPortletDecoration = decorationFactory.getDefaultDesktopPortletDecoration();
+            if ( existingDefaultDesktopPortletDecoration == null || existingDefaultDesktopPortletDecoration.length() == 0 )
+            {
+                decorationFactory.setDefaultDesktopPortletDecoration( defaultDesktopPortletDecoration );
+            }
+        }
+        
         this.baseUrlAccess = baseUrlAccess;
     }
     
-    public void render(RequestContext request)    
+    public void render( RequestContext request )    
     {
-        Page page = request.getPage();
-        String theme = page.getSkin();
-        if (theme == null)
-        {
-            theme = defaultTheme;
-        }        
-        String path = getThemePath(theme);               
+        String layoutDecorationTemplatePath = null;
+        boolean layoutDecorationTemplatePathWasAssigned = false;
         try
         {
-            RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(path);
+            Page page = request.getPage();
+            
+            // enable desktop
+            request.setAttribute( JetspeedDesktop.DESKTOP_ENABLED_REQUEST_ATTRIBUTE, Boolean.TRUE );
+            
+            // get decorations
+            Theme theme = decorationFactory.getTheme( page, request );
             
             HeaderResource hr = getHeaderResourceFactory().getHeaderResouce( request );
+            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl( request, this.baseUrlAccess, theme, hr, defaultLayoutTemplateExtension );
+            
+            layoutDecorationTemplatePath = desktopContext.getLayoutTemplatePath();
+            layoutDecorationTemplatePathWasAssigned = true;
+            
+            RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher( layoutDecorationTemplatePath );
             
             hr.dojoEnable();
             
-            JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl(
-                    request, this.baseUrlAccess, theme, getThemeRootPath( theme ), getResourceName( theme ), hr );
-            request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_ATTRIBUTE, desktopContext );
-            request.getRequest().setAttribute( "JS2RequestContext", request );
-            request.getRequest().setAttribute( "JS2ComponentManager", Jetspeed.getComponentManager() );
+            request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE, desktopContext );
+            request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_REQUEST_CONTEXT_ATTRIBUTE, request );
+            request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_COMPONENT_MANAGER_ATTRIBUTE, Jetspeed.getComponentManager() );
             
-            StringBuffer dojoConfigAddOn = new StringBuffer();
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_ROOT_URL_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopThemeRootUrl() ).append( "\";" ).append( EOL );
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_THEME_VAR_NAME ).append( " = \"" ).append( desktopContext.getDesktopTheme() ).append( "\";" );
-            hr.addHeaderSectionFragment( DOJO_CONFIG_THEME_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
-            
-            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME ) )
+            String portletDecorationsBasePath = decorationFactory.getPortletDecorationsBasePath();
+            String portletDecorationsBaseRelative = portletDecorationsBasePath;
+            if ( portletDecorationsBaseRelative != null && portletDecorationsBaseRelative.length() > 1 && portletDecorationsBaseRelative.indexOf( '/' ) == 0 )
             {
-                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, HeaderResource.HEADER_TYPE_LINK_TAG );
+                portletDecorationsBaseRelative = portletDecorationsBaseRelative.substring( 1 );
+            }
+            StringBuffer dojoConfigAddOn = new StringBuffer();
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutDecorationName() ).append( "\";" ).append( EOL );
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
+            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( theme.getPortletDecorationNames() );
+            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME ).append( " = " ).append( portletDecorationNamesContent ).append( ";" );
+            hr.addHeaderSectionFragment( DOJO_CONFIG_LAYOUT_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
+            
+            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT ) )
+            {
+                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, HeaderResource.HEADER_TYPE_LINK_TAG );
                 StringBuffer desktopThemeStyleLink = new StringBuffer();
-                desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" );
-                desktopThemeStyleLink.append( desktopContext.getDesktopThemeRootUrl() ).append( "/css/styles.css\"/>" );
-                hr.addHeaderSectionFragment( "desktop.style.desktoptheme", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME, desktopThemeStyleLink.toString() );
+                int stylesheetCount = 0;
+                Iterator stylesheetIter = theme.getStyleSheets().iterator();
+                while ( stylesheetIter.hasNext() )
+                {
+                    String stylesheetHref = (String)stylesheetIter.next();
+                    if ( stylesheetHref != null && stylesheetHref.length() > 0 )
+                    {
+                        if ( ! stylesheetHref.startsWith( portletDecorationsBaseRelative ) )
+                        {   // exclude portlet decorations - in desktop these are loaded via javascript
+                            if ( stylesheetCount > 0 )
+                            {
+                                desktopThemeStyleLink.append( EOL );
+                            }
+                            desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" );
+                            desktopThemeStyleLink.append( desktopContext.getPortalResourceUrl( stylesheetHref ) ).append( "\"/>" );
+                            stylesheetCount++;
+                        }
+                    }
+                }
+                hr.addHeaderSectionFragment( "desktop.style.layout", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, desktopThemeStyleLink.toString() );
             }
             
             // desktop action labels
             StringBuffer desktopActionLabels = new StringBuffer();
-            ResourceBundle messages = desktopContext.getResourceBundle( request.getLocale() );
+            ResourceBundle messages = desktopContext.getLayoutResourceBundle( request.getLocale() );
             for ( int i = 0 ; i < DESKTOP_ACTIONS.length ; i++ )
             {
                 String actionLabel = messages.getString( DESKTOP_ACTION_RESOURCE_NAME_PREFIX + DESKTOP_ACTIONS[ i ] );
@@ -164,127 +222,39 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             
             dispatcher.include( request.getRequest(), request.getResponse() );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             try
             {
-                log.error("Failed to include Desktop theme " + path, e);
-                request.getResponse().getWriter().println("Desktop theme " + theme + " is not available");
-            }
-            catch (IOException ioe)
-            {
-                log.error("Failed to write exception information to servlet output writer", ioe);
-            }
-        
-        }
-    }
-    
-    public String getDefaultTheme()
-    {
-        return defaultTheme;
-    }
-
-    
-    protected void setDefaultTheme(String defaultTheme)
-    {
-        this.defaultTheme = defaultTheme;
-    }
-
-    protected String getThemeConfigurationPath(String theme)
-    {
-        return this.themesRoot + "/" +  theme + "/" + JetspeedDesktop.CONFIG_FILE_NAME;
-    }
-    
-    protected String getResourceName(String theme)
-    {
-        Properties themeConfiguration = (Properties)themesProperties.get(theme);
-        if (themeConfiguration == null)
-        {
-            themeConfiguration = getConfiguration(theme);
-        }
-        return themeConfiguration.getProperty(RESOURCE_FILE_ATTR);
-    }
-    
-    protected String getThemePath(String theme)
-    {
-        Properties themeConfiguration = (Properties)themesProperties.get(theme);
-        if (themeConfiguration == null)
-        {
-            themeConfiguration = getConfiguration(theme);
-        }
-        String id = themeConfiguration.getProperty(ID_ATTR);
-        if (id == null)
-            id = theme;
-        String ext = themeConfiguration.getProperty(TEMPLATE_EXTENSION_ATTR);
-        if (ext == null)
-            ext = this.defaultExtension;
-        return getThemeRootPath(theme) + "/" + id + ext;
-    }
-
-    protected String getThemeRootPath(String theme)
-    {
-        if (this.themesRoot.endsWith("/"))
-            return this.themesRoot + theme;
-        else
-            return this.themesRoot + "/" + theme;
-    }
-    
-    protected Properties getConfiguration(String theme)
-    {
-        Properties props = (Properties)this.themesProperties.get(theme);
-        if (props != null)
-        {
-            return props;
-        }
-        
-        props = new Properties();
-        InputStream is = null;
-        try
-        {
-            is = this.servletContext.getResourceAsStream(getThemeConfigurationPath(theme));
-            if (is != null)
-            {                
-                props.load(is);
-            }
-            else
-            {
-                log.warn("Could not locate the theme.properties configuration file for theme \""
-                        + theme +
-                     "\".  This theme may not exist.");
-                props.setProperty(ID_ATTR, theme);
-                props.setProperty("extension", this.defaultExtension);
-            }                
-        }
-        catch (Exception e)
-        {
-            log.warn("Failed to load theme configuration.", e);
-            props.setProperty(ID_ATTR, theme);
-        }
-        finally
-        {
-            if (is != null)
-            {
-                try
+                if ( layoutDecorationTemplatePathWasAssigned )
                 {
-                    is.close();
+                    layoutDecorationTemplatePath = ( layoutDecorationTemplatePath == null || layoutDecorationTemplatePath.length() == 0 ? "null" : layoutDecorationTemplatePath );
+                    log.error( "Failed to include desktop layout decoration at path " + layoutDecorationTemplatePath, e );
+                    request.getResponse().getWriter().println( "Desktop layout decoration " + layoutDecorationTemplatePath + " is not available" );
                 }
-                catch (IOException e)
+                else
                 {
-                    log.warn("Failed to close them configuration.", e);
+                    log.error( "Failed to initialize for inclusion of desktop layout decoration", e );
+                    request.getResponse().getWriter().println( "Failed to initialize for inclusion of desktop layout decoration" );
                 }
             }
+            catch ( IOException ioe )
+            {
+                log.error( "Failed to write desktop layout decoration exception information to servlet output writer", ioe );
+            }
         }
-        this.themesProperties.put(theme, props);
-        return props;
     }
-
+    
+    public boolean isDesktopEnabled( RequestContext requestContext )
+    {
+        return this.decorationFactory.isDesktopEnabled( requestContext );
+    }
     
     public ServletContext getServletContext()
     {
         return servletContext;
     }
 
-    
     public void setServletContext(ServletContext servletContext)
     {
         this.servletContext = servletContext;
@@ -293,6 +263,106 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     public HeaderResourceFactory getHeaderResourceFactory()
     {
         return this.headerResourceFactory;
+    }
+    
+    // get portal urls - each of these methods is copied from HeaderResourceImpl.java
+ 
+    /**
+     * Desktop servlet path ( e.g. /desktop )
+     * 
+     * @return portal base url
+     */
+    public String getDesktopServletPath()
+    {
+        return this.desktopServletPath;
+    }
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( RequestContext context )
+    {
+        return HeaderResourceLib.getPortalBaseUrl( context, this.baseUrlAccess );
+    }
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( RequestContext context, boolean encode )
+    {
+        String baseurl = getPortalBaseUrl( context );
+        if ( ! encode )
+        {
+            return baseurl;
+        }
+        else
+        {
+            return context.getResponse().encodeURL( baseurl );
+        }
+    }
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( RequestContext context, String relativePath )
+    {
+        return getPortalResourceUrl( context, relativePath, false );
+    }
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( RequestContext context, String relativePath, boolean encode )
+    {
+        return HeaderResourceLib.getPortalResourceUrl( relativePath, getPortalBaseUrl( context ), encode, context );
+    }
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( RequestContext context )
+    {
+        return HeaderResourceLib.getPortalUrl( getPortalBaseUrl( context ), context, getDesktopServletPath() );
+    }
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( RequestContext context, boolean encode )
+    {
+        return getPortalUrl( context, null, encode );
+    }
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( RequestContext context, String relativePath )
+    {
+        return getPortalUrl( context, relativePath, false );
+    }
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( RequestContext context, String relativePath, boolean encode )
+    {
+        return HeaderResourceLib.getPortalResourceUrl( relativePath, getPortalUrl( context ), encode, context );
     }
 }
     

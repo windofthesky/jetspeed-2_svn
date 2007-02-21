@@ -21,12 +21,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.decoration.Decoration;
+import org.apache.jetspeed.decoration.LayoutDecoration;
+import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceLib;
@@ -36,6 +40,7 @@ import org.apache.jetspeed.request.RequestContext;
  * Jetspeed Desktop 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: JetspeedDesktopContextImpl.java $
  */
 public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
@@ -46,9 +51,12 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     // base portal url to override default url server info from servlet
     private BasePortalURL baseUrlAccess = null;
     
-    private String themeRootPath = null;
-    private String theme = null;
-    private String resourceName = null;
+    private Theme theme;
+    private LayoutDecoration layoutDecoration;
+    
+    // default extension for layout templates
+    private String defaultLayoutTemplateExtension;
+    
     
     // ... save generated portal urls to avoid duplicate effort
     private String portalBaseUrl;
@@ -56,14 +64,15 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     
     private HeaderResource headerResource;
     
-    public JetspeedDesktopContextImpl( RequestContext context, BasePortalURL baseUrlAccess, String theme, String themeRootPath, String resourceName, HeaderResource headerResource )
+    public JetspeedDesktopContextImpl( RequestContext context, BasePortalURL baseUrlAccess, Theme theme, HeaderResource headerResource, String defaultLayoutTemplateExtension )
     {
+        // String layoutDecorator, String layoutDecoratorRootPath, String resourceName
         this.context = context;
         this.baseUrlAccess = baseUrlAccess;
         this.theme = theme;
-        this.themeRootPath = themeRootPath;
-        this.resourceName = resourceName;
+        this.layoutDecoration = theme.getPageLayoutDecoration();
         this.headerResource = headerResource;
+        this.defaultLayoutTemplateExtension = defaultLayoutTemplateExtension;
     }
     
     
@@ -165,62 +174,62 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
         return HeaderResourceLib.getPortalResourceUrl( relativePath, getPortalUrl(), encode, context );
     }
     
-    
-    public String getDesktopThemeResourceUrl( String relativePath )
+    public String getLayoutDecorationName()
     {
-        return getPortalResourceUrl( getDesktopThemeResource( relativePath ), false );
-    }
-
-    public String getDesktopThemeResource( String relativePath )
-    {
-        if ( relativePath.startsWith( "/" ) )
-        {
-            return themeRootPath + relativePath;
-        }
-        else
-        {
-            return themeRootPath + "/" + relativePath;
-        }
-    }
-
-    public String getDesktopThemeRootUrl()
-    {
-        return getPortalResourceUrl( themeRootPath, false );
+        return layoutDecoration.getName();
     }
     
-    public String getDesktopTheme()
+    public String getLayoutTemplatePath()
     {
-        return theme;
+        return getLayoutTemplatePath( null );
+    }
+    public String getLayoutTemplatePath( String layoutTemplateIdPropertyName )
+    {
+        String id = null;
+        if ( layoutTemplateIdPropertyName != null )
+        {
+            id = layoutDecoration.getProperty( layoutTemplateIdPropertyName );
+        }
+        
+        if ( id == null || id.length() == 0 )
+        {
+            id = layoutDecoration.getProperty( LAYOUT_TEMPLATE_ID_PROP );
+        }
+        
+        if ( id == null || id.length() == 0 )
+        {
+            id = LAYOUT_TEMPLATE_ID_DEFAULT;
+        }
+        
+        String ext = layoutDecoration.getProperty( LAYOUT_TEMPLATE_EXTENSION_PROP );
+        if ( ext == null )
+        {
+            ext = this.defaultLayoutTemplateExtension;
+        }
+        return layoutDecoration.getBasePath( id + ext );
     }
     
-    public ResourceBundle getResourceBundle(Locale locale)
+    public String getLayoutBasePath()
     {
-        String resourceDirName = context.getConfig().getServletContext()
-                .getRealPath( getDesktopThemeResource( RESOURCES_DIRECTORY_NAME ) );
-        File resourceDir = new File(resourceDirName);
-        if (resourceName == null)
-        {
-            throw new NullPointerException( "The resource file is null." );
-        }
-        if ( !resourceDir.isDirectory() )
-        {
-            throw new MissingResourceException(
-                    "Can't find the resource directory: " + resourceDirName,
-                    resourceName + "_" + locale, "");
-        }
-        URL[] urls = new URL[1];
-        try
-        {
-            urls[0] = resourceDir.toURL();
-        }
-        catch (MalformedURLException e)
-        {
-            throw new MissingResourceException(
-                    "The resource directory cannot be parsed as a URL: "
-                            + resourceDirName, resourceName + "_" + locale, "");
-        }
-        return ResourceBundle.getBundle(resourceName, locale,
-                new URLClassLoader(urls));
+        return layoutDecoration.getBasePath();
+    }
+    public String getLayoutBasePath( String relativePath )
+    {
+        return layoutDecoration.getBasePath( relativePath );
+    }
+    
+    public String getLayoutBaseUrl()
+    {
+        return getPortalResourceUrl( getLayoutBasePath(), false );
+    }
+    public String getLayoutBaseUrl( String relativePath )
+    {
+        return getPortalResourceUrl( getLayoutBasePath( relativePath ), false );
+    }
+    
+    public ResourceBundle getLayoutResourceBundle( Locale locale )
+    {
+        return layoutDecoration.getResourceBundle( locale, this.context );
     }
     
     public HeaderResource getHeaderResource()
