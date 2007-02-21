@@ -39,6 +39,7 @@ limitations under the License.
 <c_rt:set var="destLogout" value="<%=dstLogout%>"/>
 <c_rt:set var="destAccount" value="<%=dstAccount%>"/>
 
+<div class="portlet-section-text">
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
@@ -52,14 +53,18 @@ limitations under the License.
     <c:choose>    
       <c:when test="${not empty errorCode}">
         <br>
-        <i><fmt:message key="login.label.ErrorCode.${errorCode}"/></i>
+        <div class="portlet-msg-alert">
+          <fmt:message key="login.label.ErrorCode.${errorCode}"/>
+        </div>
         <br>
       </c:when>
       <c:otherwise>
         <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
         <c:if test="${not empty retryCount}">
           <br>
-          <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
+          <div class="portlet-msg-alert">
+            <fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message>
+          </div>
           <br>
         </c:if>
       </c:otherwise>
@@ -67,18 +72,19 @@ limitations under the License.
     <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="${destLogin}"/>'>
       <table border="0">
       <tr>
-        <td><fmt:message key="login.label.Username"/></td>
+        <td><div class="portlet-form-field-label"><fmt:message key="login.label.Username"/></div></td>
         <c_rt:set var="userName" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.USERNAME)%>"/>
-        <td><input type="text" size="30" name="<%=LoginConstants.USERNAME%>" value="<c:out value="${userName}"/>"></td>
+        <td><input type="text" class="portlet-form-field" size="30" name="<%=LoginConstants.USERNAME%>" value="<c:out value="${userName}"/>"></td>
       </tr>
       <tr>
-        <td><fmt:message key="login.label.Password"/></td>
-        <td><input type="password" size="30" name="<%=LoginConstants.PASSWORD%>"></td>
+        <td><div class="portlet-form-field-label"><fmt:message key="login.label.Password"/></div></td>
+        <td><input type="password" class="portlet-form-field" size="30" name="<%=LoginConstants.PASSWORD%>"></td>
       </tr>
       <tr>
-        <td colspan="2"><input type="submit" value="<fmt:message key="login.label.Login"/>"></td>
+        <td colspan="2"><input type="submit" class="portlet-form-button" value="<fmt:message key="login.label.Login"/>"></td>
       </tr>
       </table>
     </form>
   </c:otherwise>
 </c:choose>
+</div>
