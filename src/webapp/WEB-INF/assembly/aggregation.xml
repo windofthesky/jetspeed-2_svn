@@ -175,6 +175,12 @@
         <constructor-arg index="5">
             <ref bean="HeaderResourceRegistry"/>
         </constructor-arg>
+        <constructor-arg index="6">
+            <ref bean="DecorationFactory"/>
+        </constructor-arg>
+        
+        <!-- Uncomment this to HARD CODE your portal URL -->
+        <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
     </bean>
            
     <bean id="HeaderAggregatorDesktop" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
@@ -196,5 +202,11 @@
         <constructor-arg index="5">
             <ref bean="HeaderResourceRegistry"/>
         </constructor-arg>
+        <constructor-arg index="6">
+            <ref bean="DecorationFactory"/>
+        </constructor-arg>
+        
+        <!-- Uncomment this to HARD CODE your portal URL -->
+        <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
     </bean>
 </beans>
