@@ -28,6 +28,7 @@ public interface Constants
 	public static final String ACTION = "action";
     public static final String REASON = "reason";
 	public static final String PORTLETID = "id";
+    public static final String FRAGMENTID = "id";
     public static final String PORTLETENTITY = "entity";
     public static final String LAYOUTID = "layoutid";
     public static final String WINDOW_STATE = "state";
@@ -72,10 +73,11 @@ public interface Constants
 
     public static final String PAGE_DECORATIONS = "pageDecorations";
     public static final String PORTLET_DECORATIONS = "portletDecorations";
+    public static final String DESKTOP_PAGE_DECORATIONS = "desktopPageDecorations";
+    public static final String DESKTOP_PORTLET_DECORATIONS = "desktopPortletDecorations";
     public static final String LAYOUTS = "layouts";
     public static final String LAYOUT = "layout";
     public static final String DEFAULT_LAYOUT = "defaultLayout";
-    public static final String DESKTOP_THEMES = "desktopThemes";
     public static final String TITLE = "title";
     public static final String SHORT_TITLE = "short-title";    
     public static final String LINK = "link";

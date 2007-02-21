@@ -11,9 +11,15 @@
 #if($velocityCount > 1),#end["$p", "$p"]
 #end        
 ]
-#elseif ($type == "desktopThemes")
+#elseif ($type == "desktopPageDecorations")
 [
-#foreach($dt in $desktopThemes)    
+#foreach($dt in $desktopPageDecorations)    
+#if($velocityCount > 1),#end["$dt", "$dt"]
+#end 
+]
+#elseif ($type == "desktopPortletDecorations")
+[
+#foreach($dt in $desktopPortletDecorations)    
 #if($velocityCount > 1),#end["$dt", "$dt"]
 #end 
 ]
@@ -43,10 +49,15 @@
     <portlet-decoration>$p</portlet-decoration>    
 #end    
     </portlet-decorations>
-    <desktop-themes>
-#foreach($dt in $desktopThemes)    
-    <desktop-theme>$dt</desktop-theme>    
+    <desktop-page-decorations>
+#foreach($dt in $desktopPageDecorations)    
+    <page-decoration>$dt</page-decoration>    
 #end 
-    </desktop-themes>
+    </desktop-page-decorations>
+    <desktop-portlet-decorations>
+#foreach($p in $desktopPortletDecorations)    
+    <portlet-decoration>$p</portlet-decoration>    
+#end    
+    </desktop-portlet-decorations>
 </js>
 #end   

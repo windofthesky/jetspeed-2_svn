@@ -28,7 +28,7 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Get Portal-wide themes lists 
- * (page decorators, portlet decorators, layouts, desktop-themes (skins))
+ * (page decorators, portlet decorators, layouts, desktop-page-decorators, desktop-portlet-decorators)
  *
  * AJAX Parameters: 
  *    none 
@@ -52,39 +52,41 @@ public class GetThemesAction
         this.decorationFactory = decorationFactory;
     }
 
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run( RequestContext requestContext, Map resultMap )
     {
         boolean success = true;
         String status = "success";
         try
         {
-            resultMap.put(ACTION, "getthemes");
-            if (false == checkAccess(requestContext, JetspeedActions.VIEW))
+            resultMap.put( ACTION, "getthemes" );
+            if (false == checkAccess( requestContext, JetspeedActions.VIEW ) )
             {
                     success = false;
-                    resultMap.put(REASON, "Insufficient access to get themes");
+                    resultMap.put( REASON, "Insufficient access to get themes" );
                     return success;
             }                     
-            String type = getActionParameter(requestContext, TYPE);
-            String format = getActionParameter(requestContext, FORMAT);
+            String type = getActionParameter(requestContext, TYPE );
+            String format = getActionParameter(requestContext, FORMAT );
             if (format == null)
                 format = "xml";
-            if (type == null || type.equals(PAGE_DECORATIONS))
-                resultMap.put(PAGE_DECORATIONS, decorationFactory.getPageDecorations(requestContext));
-            if (type == null || type.equals(PORTLET_DECORATIONS))
-                resultMap.put(PORTLET_DECORATIONS, decorationFactory.getPortletDecorations(requestContext));
-            if (type == null || type.equals(LAYOUTS))
-                resultMap.put(LAYOUTS, decorationFactory.getLayouts(requestContext));
-            if (type == null || type.equals(DESKTOP_THEMES))
-                resultMap.put(DESKTOP_THEMES, decorationFactory.getDesktopThemes(requestContext));
-            resultMap.put (TYPE, type);
-            resultMap.put(FORMAT, format);
-            resultMap.put(STATUS, status);
+            if (type == null || type.equals( PAGE_DECORATIONS ) )
+                resultMap.put( PAGE_DECORATIONS, decorationFactory.getPageDecorations( requestContext ) );
+            if (type == null || type.equals( PORTLET_DECORATIONS ) )
+                resultMap.put( PORTLET_DECORATIONS, decorationFactory.getPortletDecorations( requestContext ) );
+            if (type == null || type.equals( LAYOUTS ) )
+                resultMap.put( LAYOUTS, decorationFactory.getLayouts( requestContext ) );
+            if (type == null || type.equals( DESKTOP_PAGE_DECORATIONS) )
+                resultMap.put( DESKTOP_PAGE_DECORATIONS, decorationFactory.getDesktopPageDecorations( requestContext ) );
+            if (type == null || type.equals( DESKTOP_PORTLET_DECORATIONS ) )
+                resultMap.put( DESKTOP_PORTLET_DECORATIONS, decorationFactory.getDesktopPortletDecorations( requestContext ) );
+            resultMap.put( TYPE, type );
+            resultMap.put( FORMAT, format );
+            resultMap.put( STATUS, status );
         } 
         catch (Exception e)
         {
             // Log the exception
-            log.error("exception while getting theme info", e);
+            log.error( "exception while getting theme info", e );
             // Return a failure indicator
             success = false;
         }
