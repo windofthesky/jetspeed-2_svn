@@ -40,7 +40,7 @@ public class PortletApplication
 
     private String description = null;
 
-    private List categories = new ArrayList();
+    private List tags = new ArrayList();
 
     private String publisherName = null;
 
@@ -50,19 +50,16 @@ public class PortletApplication
 
     private String sourceUrl = null;
 
-    private String thumbnailUrl = null;
+    private String imageUrl = null;
 
     //TODO
     //    private Map dependencies;
 
-    //TODO
-    //   private List licenses = new ArrayList();
+    private String licenseName = null;
 
-    private String javaBuildVersion = null;
+    private String licenseUrl = null;
 
-    private String javaRuntimeVersion = null;
-
-    private Locale defaultLocale = Locale.ENGLISH;
+    private String compiledJDKVersion = null;
 
     private List supportedLocales = new ArrayList();
 
@@ -71,14 +68,14 @@ public class PortletApplication
 
     }
 
-    public void addCategory(String category)
+    public void addTag(String category)
     {
-        categories.add(category);
+        tags.add(category);
     }
 
-    public List getCategories()
+    public List getTags()
     {
-        return categories;
+        return tags;
     }
 
     public void addSupportedLocale(Locale locale)
@@ -140,22 +137,6 @@ public class PortletApplication
     }
 
     /**
-     * @return the defaultLocale
-     */
-    public Locale getDefaultLocale()
-    {
-        return defaultLocale;
-    }
-
-    /**
-     * @param defaultLocale the defaultLocale to set
-     */
-    public void setDefaultLocale(Locale defaultLocale)
-    {
-        this.defaultLocale = defaultLocale;
-    }
-
-    /**
      * @return the description
      */
     public String getDescription()
@@ -190,33 +171,17 @@ public class PortletApplication
     /**
      * @return the javaBuildVersion
      */
-    public String getJavaBuildVersion()
+    public String getCompiledJDKVersion()
     {
-        return javaBuildVersion;
+        return compiledJDKVersion;
     }
 
     /**
      * @param javaBuildVersion the javaBuildVersion to set
      */
-    public void setJavaBuildVersion(String javaBuildVersion)
+    public void setCompiledJDKVersion(String javaBuildVersion)
     {
-        this.javaBuildVersion = javaBuildVersion;
-    }
-
-    /**
-     * @return the javaRuntimeVersion
-     */
-    public String getJavaRuntimeVersion()
-    {
-        return javaRuntimeVersion;
-    }
-
-    /**
-     * @param javaRuntimeVersion the javaRuntimeVersion to set
-     */
-    public void setJavaRuntimeVersion(String javaRuntimeVersion)
-    {
-        this.javaRuntimeVersion = javaRuntimeVersion;
+        this.compiledJDKVersion = javaBuildVersion;
     }
 
     /**
@@ -334,17 +299,17 @@ public class PortletApplication
     /**
      * @return the thumbnailUrl
      */
-    public String getThumbnailUrl()
+    public String getImageUrl()
     {
-        return thumbnailUrl;
+        return imageUrl;
     }
 
     /**
      * @param thumbnailUrl the thumbnailUrl to set
      */
-    public void setThumbnailUrl(String thumbnailUrl)
+    public void setImageUrl(String thumbnailUrl)
     {
-        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrl = thumbnailUrl;
     }
 
     /**
@@ -361,6 +326,38 @@ public class PortletApplication
     public void setVersion(String version)
     {
         this.version = version;
+    }
+
+    /**
+     * @return the licenseName
+     */
+    public String getLicenseName()
+    {
+        return licenseName;
+    }
+
+    /**
+     * @param licenseName the licenseName to set
+     */
+    public void setLicenseName(String licenseName)
+    {
+        this.licenseName = licenseName;
+    }
+
+    /**
+     * @return the licenseUrl
+     */
+    public String getLicenseUrl()
+    {
+        return licenseUrl;
+    }
+
+    /**
+     * @param licenseUrl the licenseUrl to set
+     */
+    public void setLicenseUrl(String licenseUrl)
+    {
+        this.licenseUrl = licenseUrl;
     }
 
 }

@@ -42,18 +42,31 @@ public class SimpleConfigHandler extends DefaultHandler
     public void startElement(String uri, String localName, String qName,
             Attributes attributes)
     {
-        if ("portlet".equals(qName))
+        if ("repository".equals(qName))
+        {
+            //TODO version
+            //TODO id
+        }
+        else if ("portlet".equals(qName))
         {
             portletApplication = new PortletApplication();
-            String created = attributes.getValue("created");
-            if (created != null)
+
+            String artifactId = attributes.getValue("id");
+            if (artifactId != null)
             {
-                //TODO
+                portletApplication.setArtifactId(artifactId);
             }
-            String lastModified = attributes.getValue("last-modified");
-            if (lastModified != null)
+
+            String groupId = attributes.getValue("group");
+            if (groupId != null)
             {
-                //TODO
+                portletApplication.setGroupId(groupId);
+            }
+
+            String version = attributes.getValue("version");
+            if (version != null)
+            {
+                portletApplication.setVersion(version);
             }
         }
         synchronized (qNameList)
@@ -80,25 +93,13 @@ public class SimpleConfigHandler extends DefaultHandler
         {
             parentQName = "";
         }
-        if ("portlet-spec-version".equals(qName))
+        if ("portletSpecVersion".equals(qName))
         {
             portletApplication.setPortletSpecVersion(value);
-        }
-        else if ("group-id".equals(qName))
-        {
-            portletApplication.setGroupId(value);
-        }
-        else if ("artifact-id".equals(qName))
-        {
-            portletApplication.setArtifactId(value);
         }
         else if ("packaging".equals(qName))
         {
             portletApplication.setPackaging(value);
-        }
-        else if ("version".equals(qName))
-        {
-            portletApplication.setVersion(value);
         }
         else if ("name".equals(qName))
         {
@@ -108,7 +109,7 @@ public class SimpleConfigHandler extends DefaultHandler
             }
             else if ("license".equals(parentQName))
             {
-                portletApplication.setPublisherName(value);
+                portletApplication.setLicenseName(value);
             }
             else
             {
@@ -119,9 +120,9 @@ public class SimpleConfigHandler extends DefaultHandler
         {
             portletApplication.setDescription(value);
         }
-        else if ("cateogry".equals(qName))
+        else if ("tag".equals(qName))
         {
-            portletApplication.addCategory(value);
+            portletApplication.addTag(value);
         }
         else if ("url".equals(qName))
         {
@@ -129,38 +130,30 @@ public class SimpleConfigHandler extends DefaultHandler
             {
                 portletApplication.setPublisherUrl(value);
             }
+            else if ("license".equals(parentQName))
+            {
+                portletApplication.setLicenseUrl(value);
+            }
         }
-        else if ("binary".equals(qName))
+        else if ("binaryURL".equals(qName))
         {
             portletApplication.setBinaryUrl(value);
         }
-        else if ("source".equals(qName))
+        else if ("sourceURL".equals(qName))
         {
             portletApplication.setSourceUrl(value);
         }
-        else if ("thumbnail".equals(qName))
+        else if ("imageURL".equals(qName))
         {
-            portletApplication.setThumbnailUrl(value);
+            portletApplication.setImageUrl(value);
         }
         //TODO dependencies
         //TODO license
-        else if ("build".equals(qName))
+        else if ("compiledJDKVersion".equals(qName))
         {
-            portletApplication.setJavaBuildVersion(value);
+            portletApplication.setCompiledJDKVersion(value);
         }
-        else if ("runtime".equals(qName))
-        {
-            portletApplication.setJavaRuntimeVersion(value);
-        }
-        else if ("default-locale".equals(qName))
-        {
-            Locale l = getLocaleFromString(value);
-            if (l != null)
-            {
-                portletApplication.setDefaultLocale(l);
-            }
-        }
-        else if ("supported-locale".equals(qName))
+        else if ("locale".equals(qName))
         {
             Locale l = getLocaleFromString(value);
             if (l != null)
