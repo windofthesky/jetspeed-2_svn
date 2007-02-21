@@ -180,14 +180,7 @@ body.layout-tigris
     font-weight: bold;
 }
 
-.layout-tigris #breadcrumbs {
-    border-top: 1px solid #fff;
-    background-color: #ccc;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-    padding: 2px 8px;
-}
+/* .layout-tigris #breadcrumbs located in portal.css and desktop.css */
 
 .layout-tigris #breadcrumbs a {
     text-decoration: none;
